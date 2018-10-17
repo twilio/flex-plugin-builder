@@ -6,7 +6,7 @@ export default class {{pluginClassName}} extends FlexPlugin {
   name = '{{pluginClassName}}';
 
   init(flex, manager) {
-    flex.TaskList.Content.add(<CustomTaskListComponent key="demo-component" />, {
+    flex.AgentDesktopView.Panel1.Content.add(<CustomTaskListComponent key="demo-component" />, {
       sortOrder: -1,
     });
   }
