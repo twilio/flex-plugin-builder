@@ -29,7 +29,7 @@
     "prepublish": "npm run build"
   },
   "devDependencies": {
-    "@twilio/flex-ui": "0.15.1",
+    "@twilio/flex-ui": "^1.0.0",
     "@types/loglevel": "^1.5.3",
     "@types/node": "^10.11.0",
     "typescript": "^3.0.3"
