@@ -1,0 +1,6 @@
+{
+	"devDependencies": {
+		"all-contributors-cli": "^5.4.0",
+		"lerna": "^2.9.1"
+	}
+}

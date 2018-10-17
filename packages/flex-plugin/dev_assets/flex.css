@@ -1,0 +1,9 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700');
+
+body, #container, .Twilio-ContactCenter-Container {
+    font-family: 'Open Sans', sans-serif;
+    width: 100vw;
+    height: 100vh;
+    margin: 0px;
+    display: flex;
+}

@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+
+'use strict';
+
+const { existsSync } = require('fs');
+const { join } = require('path');
+const chalk = require('chalk');
+const { stripIndent } = require('common-tags');
+
+const ERROR = chalk.bold.red('ERROR');
+
+const appConfigPath = join(process.cwd(), 'public', 'appConfig.js');
+
+const appConfigExists = existsSync(appConfigPath);
+if (!appConfigExists) {
+  console.error(stripIndent`
+  ${ERROR} Could not find ${chalk.cyan('public/appConfig.js')}.
+
+  Check your ${chalk.cyan('public/')} directory for ${chalk.cyan(
+    'appConfig.example.js'
+  )}, copy it to ${chalk.cyan(
+    'appConfig.js'
+  )} and modify your Account SID and Service Base URL.
+  `);
+  process.exit(1);
+}

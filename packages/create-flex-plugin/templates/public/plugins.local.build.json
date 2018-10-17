@@ -1,0 +1,13 @@
+[
+  {
+    "name": "{{pluginClassName}}",
+    "version": "0.0.0",
+    "class": "{{pluginClassName}}",
+    "requires": [
+      {
+        "@twilio/flex-ui": "{{flexSdkVersion}}"
+      }
+    ],
+    "src": "http://127.0.0.1:8085"
+  }
+]

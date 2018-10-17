@@ -1,0 +1,64 @@
+{
+  "projectName": "flex-plugin-builder",
+  "projectOwner": "twilio",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "contributors": [
+    {
+      "login": "dkundel",
+      "name": "Dominik Kundel",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1505101?v=4",
+      "profile": "https://dkundel.com",
+      "contributions": [
+        "code",
+        "doc",
+        "ideas"
+      ]
+    },
+    {
+      "login": "kolencherry",
+      "name": "Patrick Kolencherry",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/3395618?v=4",
+      "profile": "https://github.com/kolencherry",
+      "contributions": [
+        "code",
+        "bug"
+      ]
+    },
+    {
+      "login": "jennifermarie",
+      "name": "Jen Aprahamian",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/1070220?v=4",
+      "profile": "http://twitter.com/jennifermarie",
+      "contributions": [
+        "bug",
+        "doc"
+      ]
+    },
+    {
+      "login": "theryankennedy",
+      "name": "Ryan Kennedy",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/218683?v=4",
+      "profile": "https://github.com/theryankennedy",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
+    },
+    {
+      "login": "MartinAmps",
+      "name": "Martin Amps",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/2159342?v=4",
+      "profile": "https://ma.rtin.so",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
+    }
+  ]
+}

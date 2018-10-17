@@ -1,0 +1,42 @@
+{
+  "name": "flex-plugin",
+  "version": "0.6.3",
+  "bin": {
+    "flex-check-start": "./bin/check-start"
+  },
+  "description": "Runtime for Flex Plugins",
+  "keywords": [
+    "flex",
+    "twilio"
+  ],
+  "author": "Dominik Kundel <dkundel@twilio.com>",
+  "homepage": "https://github.com/twilio/flex-plugin-builder",
+  "license": "MIT",
+  "main": "dist/flex-plugin.js",
+  "directories": {
+    "bin": "bin",
+    "lib": "dist",
+    "test": "__tests__"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "dev_assets"
+  ],
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1",
+    "build": "tsc",
+    "prepublish": "npm run build"
+  },
+  "devDependencies": {
+    "@twilio/flex-ui": "0.15.1",
+    "@types/loglevel": "^1.5.3",
+    "@types/node": "^10.11.0",
+    "typescript": "^3.0.3"
+  },
+  "gitHead": "ca02b3d214e6dfa4277b6b69cbbb178783004edf",
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "common-tags": "^1.8.0"
+  }
+}

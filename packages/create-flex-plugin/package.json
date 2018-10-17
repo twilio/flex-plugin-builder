@@ -1,0 +1,55 @@
+{
+  "name": "create-flex-plugin",
+  "version": "0.6.3",
+  "description": "Toolkit to create a new Twilio Flex Plugin",
+  "keywords": [
+    "flex",
+    "twilio",
+    "plugin"
+  ],
+  "author": "Dominik Kundel <dkundel@twilio.com>",
+  "homepage": "https://github.com/twilio/flex-plugin-builder#readme",
+  "license": "MIT",
+  "main": "src/create-flex-plugin.js",
+  "bin": {
+    "create-flex-plugin": "bin/create-flex-plugin"
+  },
+  "directories": {
+    "lib": "src",
+    "test": "__tests__"
+  },
+  "files": [
+    "bin",
+    "src",
+    "templates"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio/flex-plugin-builder.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "dependencies": {
+    "boxen": "^2.0.0",
+    "chalk": "^2.4.1",
+    "common-tags": "^1.8.0",
+    "copy-template-dir": "^1.4.0",
+    "esm": "^3.0.84",
+    "execa": "^1.0.0",
+    "inquirer": "^6.2.0",
+    "lodash": "^4.17.11",
+    "log-symbols": "^2.2.0",
+    "ora": "^3.0.0",
+    "wrap-ansi": "^4.0.0",
+    "yargs": "^12.0.2"
+  },
+  "bugs": {
+    "url": "https://github.com/twilio/flex-plugin-builder/issues"
+  },
+  "devDependencies": {
+    "@twilio/flex-ui": "0.15.1",
+    "flex-plugin": "^0.6.3"
+  },
+  "gitHead": "ca02b3d214e6dfa4277b6b69cbbb178783004edf"
+}

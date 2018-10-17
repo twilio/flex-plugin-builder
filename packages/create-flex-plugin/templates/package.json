@@ -1,0 +1,24 @@
+{
+  "name": "{{pluginFileName}}",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "prestart": "flex-check-start",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test --env=jsdom",
+    "eject": "react-app-rewired eject"
+  },
+  "devDependencies": {
+    "@twilio/flex-ui": "{{flexSdkVersion}}",
+    "react-app-rewire-flex-plugin": "{{flexPluginVersion}}",
+    "react-app-rewired": "^1.6.2"
+  },
+  "dependencies": {
+    "flex-plugin": "{{flexPluginVersion}}",
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2",
+    "react-scripts": "1.1.5"
+  },
+  "config-overrides-path": "node_modules/react-app-rewire-flex-plugin"
+}
