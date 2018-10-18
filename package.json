@@ -1,6 +1,21 @@
 {
+	"scripts": {
+		"test": "jest"
+	},
 	"devDependencies": {
+		"@babel/cli": "^7.1.2",
+		"@babel/core": "^7.1.2",
+		"@babel/preset-env": "^7.1.0",
+		"@babel/preset-typescript": "^7.1.0",
+		"@types/jest": "^23.3.5",
 		"all-contributors-cli": "^5.4.0",
-		"lerna": "^2.9.1"
+		"babel-core": "7.0.0-bridge.0",
+		"babel-jest": "^23.6.0",
+		"babel-polyfill": "^6.26.0",
+		"babel-register": "^6.26.0",
+		"jest": "^23.6.0",
+		"lerna": "^2.9.1",
+		"ts-jest": "^23.10.4",
+		"typescript": "^3.1.3"
 	}
 }
