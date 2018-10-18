@@ -33,11 +33,11 @@ function cli(cwd) {
           describe: 'Auto-install dependencies',
           default: false,
         },
-        yarn: {
-          type: 'boolean',
-          describe: 'Use yarn instead of npm to install',
-          default: false,
-        },
+        // yarn: {
+        //   type: 'boolean',
+        //   describe: 'Use yarn instead of npm to install',
+        //   default: false,
+        // },
         adminPlugin: {
           type: 'boolean',
           describe: 'Load admin plugin'

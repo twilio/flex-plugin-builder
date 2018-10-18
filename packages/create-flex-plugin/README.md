@@ -16,7 +16,7 @@ cd plugin-demo
 npm start
 ```
 
-### How to install/run using `npm` or `yarn`
+### How to install/run using `npm`
 
 #### Using `npm`:
 
@@ -32,16 +32,7 @@ npm install -g create-flex-plugin
 create-flex-plugin plugin-demo
 ```
 
-#### Using `yarn`
-
-```bash
-# Via yarn create
-yarn create flex-plugin plugin-demo
-
-# Install globally
-yarn global add create-flex-plugin
-create-flex-plugin plugin-demo
-```
+### Command line arguments:
 
 ```
 create-flex-plugin <name>
@@ -49,13 +40,13 @@ create-flex-plugin <name>
 Creates a new Twilio Flex Plugin project
 
 Arguments:
-name	Name of your plugin. Needs to start with plugin-
+name    Name of your plugin. Needs to start with plugin-
 
 Options:
   --accountSid, -a  The Account SID for your Flex Project
   --runtimeUrl, -r  The URL to your Twilio Flex Runtime
   --install         Auto-install dependencies         [boolean] [default: false]
-  --yarn            Use yarn instead of npm to install[boolean] [default: false]
+  --adminPlugin     Load admin plugin                                  [boolean]
   -h, --help        Show help                                          [boolean]
   -v, --version     Show version number                                [boolean]
 ```

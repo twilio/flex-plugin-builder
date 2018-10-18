@@ -4,18 +4,15 @@ Twilio Flex Plugins allow you to customize the apperance and behavior of [Twilio
 
 ## Setup
 
-Make sure you have [Node.js](https://nodejs.org) as well as a package manager like [`npm`](https://npmjs.com) or [`yarn`](https://yarnpkg.com/) installed.
+Make sure you have [Node.js](https://nodejs.org) as well as [`npm`](https://npmjs.com) installed.
 
-Afterwards install the dependencies by running `yarn` or `npm install`:
+Afterwards install the dependencies by running `npm install`:
 
 ```bash
 cd {{pluginFileName}}
 
 # If you use npm
 npm install
-
-# If you use yarn
-yarn
 ```
 
 ## Development
@@ -23,7 +20,7 @@ yarn
 In order to develop locally, you can use the Webpack Dev Server by running:
 
 ```bash
-npm start # or yarn start
+npm start
 ```
 
 This will automatically start up the Webpack Dev Server and open the browser for you. Your app will run on `http://localhost:8080`. If you want to change that you can do this by setting the `PORT` environment variable:
@@ -41,7 +38,7 @@ Once you are happy with your plugin, you have to bundle it, in order to deply it
 Run the following command to start the bundling:
 
 ```bash
-npm run build # or yarn build
+npm run build
 ```
 
 Afterwards, you'll find in your project a `build/` folder that contains a file with the name of your plugin project. For example `plugin-example.js`. Take this file and upload it into the Assets part of your Twilio Runtime.
