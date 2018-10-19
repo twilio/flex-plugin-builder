@@ -87,7 +87,7 @@ export default async function createFlexPlugin(config) {
 
   if (!isValidPluginName(pluginName)) {
     log.error('Invalid plugin name. Names need to start with plugin-');
-    process.exit(1);
+    return process.exit(1);
   }
 
   config = parsePluginName(pluginName, config);

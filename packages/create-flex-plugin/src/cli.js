@@ -1,10 +1,11 @@
-import factory from 'yargs/yargs';
+import yargs from 'yargs';
 import createFlexPlugin from './create-flex-plugin';
 import { stripIndent } from 'common-tags';
 
 export default cli;
 
 function cli(cwd) {
+  const factory = yargs.yargs;
   const parser = factory(null, cwd);
 
   parser.alias('h', 'help');
@@ -14,7 +15,7 @@ function cli(cwd) {
     '$0 <name>',
     stripIndent`
     Creates a new Twilio Flex Plugin project
-    
+
     Arguments:
     name\tName of your plugin. Needs to start with plugin-
     `,

@@ -1,9 +1,14 @@
 import cli from '../src/cli';
+import createFlexPlugin from '../src/create-flex-plugin';
+
+jest.mock('../src/create-flex-plugin');
 
 describe('create-flex-plugin cli', () => {
-  // const argv = cli(cwd).parse(['args']);
+  it('should call createFlexPlugin', () => {
+    // Act
+    cli({});
 
-  it('needs tests', () => {
-    expect(true).toBeTruthy();
+    // Assert
+    expect(createFlexPlugin).toHaveBeenCalled();
   });
 });

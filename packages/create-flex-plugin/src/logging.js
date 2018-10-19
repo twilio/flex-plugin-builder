@@ -39,9 +39,9 @@ export function finalMessage(config) {
     Your Twilio Flex plugin project has been successfully created!${
       !config.install ? `\n\n  ${setupMessage}` : ''
     }
-    
+
   ${devMessage}
-    
+
   ${buildMessage}
 
   For more info check the README.md file or go to:
