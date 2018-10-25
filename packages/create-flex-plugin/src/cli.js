@@ -5,7 +5,7 @@ import { stripIndent } from 'common-tags';
 export default cli;
 
 function cli(cwd) {
-  const factory = yargs.yargs;
+  const factory = yargs;
   const parser = factory(null, cwd);
 
   parser.alias('h', 'help');
