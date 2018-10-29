@@ -37,6 +37,7 @@
   "gitHead": "ca02b3d214e6dfa4277b6b69cbbb178783004edf",
   "dependencies": {
     "chalk": "^2.4.1",
-    "common-tags": "^1.8.0"
+    "common-tags": "^1.8.0",
+    "ncp": "^2.0.0"
   }
 }
