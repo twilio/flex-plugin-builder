@@ -88,6 +88,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "rynop",
+      "name": "Ryan Pendergast",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/372730?v=4",
+      "profile": "https://rynop.com",
+      "contributions": [
+        "bug"
+      ]
     }
   ]
 }
