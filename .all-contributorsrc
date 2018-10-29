@@ -79,6 +79,15 @@
         "bug",
         "code"
       ]
+    },
+    {
+      "login": "malandles",
+      "name": "Marc Andrew Landles",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/25748497?v=4",
+      "profile": "https://appwapp.com",
+      "contributions": [
+        "bug"
+      ]
     }
   ]
 }
