@@ -29,14 +29,17 @@
     "prepublish": "npm run build"
   },
   "devDependencies": {
+    "@twilio/flex-ui": "1.0.2",
     "@types/loglevel": "^1.5.3",
     "@types/node": "^10.11.0",
     "typescript": "^3.0.3"
   },
   "gitHead": "ca02b3d214e6dfa4277b6b69cbbb178783004edf",
   "dependencies": {
-    "@twilio/flex-ui": "1.0.2",
     "chalk": "^2.4.1",
     "common-tags": "^1.8.0"
+  },
+  "peerDependencies": {
+    "@twilio/flex-ui": "*"
   }
 }
