@@ -1,5 +1,7 @@
 import * as Flex from '@twilio/flex-ui';
 
+type FlexGlobal = typeof Flex;
+
 declare global {
   interface Window {
     serviceBaseUrl?: string;
@@ -17,13 +19,16 @@ declare const Twilio: {
   }
 }
 
-export interface FlexPlugin {
+export interface IFlexPlugin {
   name: string;
-  getName(): string;
-  init(flex: any, manager: Flex.ContactCenterManager): any;
+  init(flex: FlexGlobal, manager: Flex.Manager): void;
 }
 
-export class FlexPlugin implements FlexPlugin {
+export interface PluginConstructor<T> {
+  new (): T;
+}
+
+export abstract class FlexPlugin implements IFlexPlugin {
   public name: string;
 
   constructor(name: string) {
@@ -31,12 +36,10 @@ export class FlexPlugin implements FlexPlugin {
     console.log(`loading ${this.name} plugin`);
   }
 
-  public getName() {
-    return this.name;
-  }
+  abstract init(flex: FlexGlobal, manager: Flex.Manager): void;
 }
 
-export function loadPlugin(plugin: FlexPlugin) {
+export function loadPlugin<T extends FlexPlugin>(plugin: PluginConstructor<T>) {
   if (Twilio && Twilio.Flex && Twilio.Flex.Plugins) {
     Twilio.Flex.Plugins.init(plugin);
   } else {

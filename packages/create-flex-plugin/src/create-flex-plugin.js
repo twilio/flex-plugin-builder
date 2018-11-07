@@ -104,7 +104,7 @@ export default async function createFlexPlugin(config) {
 
   config.targetDirectory = path.join(process.cwd(), config.pluginFileName);
   config.flexSdkVersion = pkg.devDependencies['@twilio/flex-ui'];
-  config.flexPluginVersion = pkg.devDependencies['flex-plugin'];
+  config.flexPluginVersion = pkg.devDependencies['flex-plugin'].replace('^', '');
   config.pluginJsonContent = JSON.stringify(getPluginJsonContent(config), null, 2);
 
   const templateSpinner = ora('Creating project directory');
