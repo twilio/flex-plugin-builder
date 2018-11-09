@@ -47,9 +47,5 @@
   "bugs": {
     "url": "https://github.com/twilio/flex-plugin-builder/issues"
   },
-  "devDependencies": {
-    "@twilio/flex-ui": "1.1.0",
-    "flex-plugin": "^1.1.0"
-  },
   "gitHead": "ca02b3d214e6dfa4277b6b69cbbb178783004edf"
 }

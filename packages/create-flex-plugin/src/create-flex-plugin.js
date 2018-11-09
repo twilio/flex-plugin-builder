@@ -103,22 +103,25 @@ export default async function createFlexPlugin(config) {
   config.runtimeUrl = config.runtimeUrl || 'http://localhost:8080';
 
   config.targetDirectory = path.join(process.cwd(), config.pluginFileName);
-  config.flexSdkVersion = pkg.devDependencies['@twilio/flex-ui'];
-  config.flexPluginVersion = pkg.devDependencies['flex-plugin'].replace('^', '');
+  config.flexSdkVersion = pkg.version;
+  config.flexPluginVersion = pkg.version;
   config.pluginJsonContent = JSON.stringify(getPluginJsonContent(config), null, 2);
 
   const templateSpinner = ora('Creating project directory');
   try {
     templateSpinner.start();
-    const createdFiles = await copyDir(
+
+    await copyDir(
       templatePath,
       config.targetDirectory,
       config
     );
+
     await moveFile(
       path.join(config.targetDirectory, 'src/DemoPlugin.js'),
       path.join(config.targetDirectory, `src/${config.pluginClassName}.js`)
     );
+
     templateSpinner.succeed();
   } catch (err) {
     templateSpinner.fail(err.message);
