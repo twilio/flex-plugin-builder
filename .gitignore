@@ -63,6 +63,7 @@ typings/
 .DS_Store
 lerna-debug.log
 dist/
+plugin-test/
 **/node_modules
 
 # Package Locks
