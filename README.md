@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/twilio/flex-plugin-builder.svg?branch=master)](https://travis-ci.org/twilio/flex-plugin-builder)
 [![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors)
 [![Code of Conduct](https://img.shields.io/badge/%F0%9F%92%96-code%20of%20conduct-ff69b4.svg?style=flat-square)](CODE_OF_CONDUCT.md)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg?style=flat-square)](https://lernajs.io/)
