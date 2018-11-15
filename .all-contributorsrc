@@ -69,6 +69,43 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "ShelbyZ",
+      "name": "Shelby Hagman",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/1033099?v=4",
+      "profile": "https://shagman.codes",
+      "contributions": [
+        "bug",
+        "code"
+      ]
+    },
+    {
+      "login": "malandles",
+      "name": "Marc Andrew Landles",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/25748497?v=4",
+      "profile": "https://appwapp.com",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "rynop",
+      "name": "Ryan Pendergast",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/372730?v=4",
+      "profile": "https://rynop.com",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "viperguynaz",
+      "name": "Don Irwin",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1885320?v=4",
+      "profile": "https://www.linkedin.com/in/viperguynaz/",
+      "contributions": [
+        "bug"
+      ]
     }
   ]
 }

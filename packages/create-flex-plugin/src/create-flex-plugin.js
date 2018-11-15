@@ -31,8 +31,8 @@ function getPluginJsonContent(config) {
   if (config.adminPlugin) {
     plugins.push({
       "name": "Admin Plugin",
-      "version": "0.6.3",
-      "src": "https:\/\/flexperience.twil.io\/assets\/flex.admin.plugin-0.6.3.js"
+      "version": "0.7.2",
+      "src": "https:\/\/flexperience.twil.io\/assets\/flex.admin.plugin-0.7.2.js"
     });
   }
 
@@ -104,7 +104,7 @@ export default async function createFlexPlugin(config) {
 
   config.targetDirectory = path.join(process.cwd(), config.pluginFileName);
   config.flexSdkVersion = pkg.devDependencies['@twilio/flex-ui'];
-  config.flexPluginVersion = pkg.devDependencies['flex-plugin'];
+  config.flexPluginVersion = pkg.devDependencies['flex-plugin'].replace('^', '');
   config.pluginJsonContent = JSON.stringify(getPluginJsonContent(config), null, 2);
 
   const templateSpinner = ora('Creating project directory');
