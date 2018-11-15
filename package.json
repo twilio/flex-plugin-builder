@@ -1,6 +1,7 @@
 {
 	"scripts": {
-		"test": "jest"
+		"test": "jest",
+		"bootstrap": "lerna bootstrap"
 	},
 	"devDependencies": {
 		"@babel/cli": "^7.1.2",
