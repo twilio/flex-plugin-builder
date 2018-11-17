@@ -8,16 +8,6 @@ const fs = require('fs');
 
 process.env.PORT = process.env.PORT || 8080;
 
-const indexHtmlSource = path.join('..', 'node_modules', 'flex-plugin', 'dev_assets', 'index.html');
-const indexHtmlTarget = path.join('public', 'index.html');
-try {
-  fs.symlinkSync(indexHtmlSource, indexHtmlTarget);
-} catch (err) {
-  if (err.code !== 'EEXIST') {
-    console.error(err);
-  }
-}
-
 function overrideWebpack(config, env) {
   //do stuff with the webpack config...
   const pkg = readPkg.sync();
