@@ -31,6 +31,7 @@ bower_components
 
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
+/plugin-test
 
 # Dependency directories
 node_modules/
@@ -63,6 +64,7 @@ typings/
 .DS_Store
 lerna-debug.log
 dist/
+plugin-test/
 **/node_modules
 
 # Package Locks

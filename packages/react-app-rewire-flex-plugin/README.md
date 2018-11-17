@@ -1,6 +1,6 @@
-![npm](https://img.shields.io/npm/v/react-app-flex-plugin.svg?style=flat-square)
-![npm](https://img.shields.io/npm/dt/react-app-flex-plugin.svg?style=flat-square)
-[![NpmLicense](https://img.shields.io/npm/l/react-app-flex-plugin.svg?style=flat-square)](LICENSE.md)
+![npm](https://img.shields.io/npm/v/react-app-rewire-flex-plugin.svg?style=flat-square)
+![npm](https://img.shields.io/npm/dt/react-app-rewire-flex-plugin.svg?style=flat-square)
+[![NpmLicense](https://img.shields.io/npm/l/react-app-rewire-flex-plugin.svg?style=flat-square)](LICENSE.md)
 
 # `react-app-rewire-flex-plugin`
 

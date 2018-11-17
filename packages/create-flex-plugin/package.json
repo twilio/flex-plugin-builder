@@ -1,6 +1,6 @@
 {
   "name": "create-flex-plugin",
-  "version": "1.0.2",
+  "version": "1.1.1",
   "description": "Toolkit to create a new Twilio Flex Plugin",
   "keywords": [
     "flex",
@@ -48,8 +48,8 @@
     "url": "https://github.com/twilio/flex-plugin-builder/issues"
   },
   "devDependencies": {
-    "@twilio/flex-ui": "^1.0.0",
-    "flex-plugin": "^1.0.2"
+    "@twilio/flex-ui": "1.1.0",
+    "flex-plugin": "^1.1.1"
   },
   "gitHead": "ca02b3d214e6dfa4277b6b69cbbb178783004edf"
 }

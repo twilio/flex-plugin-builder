@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin",
-  "version": "1.0.2",
+  "version": "1.1.1",
   "bin": {
     "flex-check-start": "./bin/check-start"
   },
@@ -29,7 +29,7 @@
     "prepublish": "npm run build"
   },
   "devDependencies": {
-    "@twilio/flex-ui": "^1.0.0",
+    "@twilio/flex-ui": "1.1.1",
     "@types/loglevel": "^1.5.3",
     "@types/node": "^10.11.0",
     "typescript": "^3.0.3"
@@ -39,5 +39,8 @@
     "chalk": "^2.4.1",
     "common-tags": "^1.8.0",
     "ncp": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@twilio/flex-ui": "*"
   }
 }
