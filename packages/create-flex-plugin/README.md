@@ -32,6 +32,8 @@ npm install -g create-flex-plugin
 create-flex-plugin plugin-demo
 ```
 
+We do not support `yarn` at the moment.
+
 ### Command line arguments:
 
 ```
