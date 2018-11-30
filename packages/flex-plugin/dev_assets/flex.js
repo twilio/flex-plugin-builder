@@ -2,6 +2,8 @@ const REDIRECT_KEY = 'LOCAL_FLEX_PLUGIN_LOGIN_REDIRECT';
 const FIRST_LOAD_KEY = 'LOCAL_FLEX_PLUGIN_FIRST_LOAD';
 
 function loadFlex() {
+  const localUrl = location.hostname;
+
   if (
     typeof appConfig === 'undefined' ||
     !appConfig.sso.accountSid ||
@@ -12,7 +14,7 @@ function loadFlex() {
     );
   } else {
     const loginUrl = `http://www.twilio.com/service-login/flex/${appConfig.sso.accountSid || accountSid}?localPort=${window.location.port}`
-    if (!localStorage.getItem(FIRST_LOAD_KEY)) {
+    if (!localStorage.getItem(FIRST_LOAD_KEY) && localUrl === 'flex.twilio.com') {
       localStorage.setItem(FIRST_LOAD_KEY, 'redirected');
       window.location.replace(loginUrl);
       return;
