@@ -47,6 +47,13 @@ function overrideWebpack(config, env) {
     '@twilio/flex-ui': 'flex-plugin/dev_assets/flex-shim.js',
   };
 
+  config.externals = {
+    'react': 'React',
+    'react-dom': 'ReactDOM',
+    'redux': 'Redux',
+    'react-redux': 'ReactRedux'
+  };
+
   return config;
 }
 
