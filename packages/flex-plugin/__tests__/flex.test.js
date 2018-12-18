@@ -23,20 +23,6 @@ describe('flex', () => {
     expect(global.loadFlex).toBeDefined();
   });
 
-  it('should log an error if an `appConfig` object is not available', () => {
-    // Arrange
-    spyOn(console, 'error');
-
-    // Act
-    loadFlex();
-
-    // Assert
-    expect(console.error).toHaveBeenCalledTimes(1);
-    expect(console.error).toHaveBeenCalledWith(
-      'ERROR: You must have a valid appConfig with both accountSid and serviceBaseUrl set.'
-    );
-  });
-
   it('should log an error if an `appConfig` object is missing an accountSid', () => {
     // Arrange
     global.appConfig = {};
@@ -48,26 +34,7 @@ describe('flex', () => {
     // Assert
     expect(console.error).toHaveBeenCalledTimes(1);
     expect(console.error).toHaveBeenCalledWith(
-      'ERROR: You must have a valid appConfig with both accountSid and serviceBaseUrl set.'
-    );
-  });
-
-  it('should log an error if an `appConfig` object is missing a serviceBaseUrl', () => {
-    // Arrange
-    spyOn(console, 'error');
-    global.appConfig = {
-      sso: {
-        accountSid: 'testAccountSid',
-      },
-    };
-
-    // Act
-    loadFlex();
-
-    // Assert
-    expect(console.error).toHaveBeenCalledTimes(1);
-    expect(console.error).toHaveBeenCalledWith(
-      'ERROR: You must have a valid appConfig with both accountSid and serviceBaseUrl set.'
+      'ERROR: You must have a valid appConfig with an accountSid set.'
     );
   });
 
@@ -79,7 +46,6 @@ describe('flex', () => {
       sso: {
         accountSid: 'testAccountSid',
       },
-      serviceBaseUrl: 'testUrl',
     };
     global.appConfig = mockAppConfig;
 
@@ -101,7 +67,6 @@ describe('flex', () => {
       sso: {
         accountSid: 'testAccountSid',
       },
-      serviceBaseUrl: 'testUrl',
     };
     global.appConfig = mockAppConfig;
     const targetEl = '#testContainer';
