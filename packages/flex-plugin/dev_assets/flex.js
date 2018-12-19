@@ -1,11 +1,12 @@
 (function(global, undefined) {
   'use strict';
   global.loadFlex = function loadFlex(targetEl) {
-    if (!(
+    const isAccountSidSet =
       typeof appConfig !== 'undefined' &&
       appConfig.sso &&
-      appConfig.sso.accountSid)
-    ) {
+      appConfig.sso.accountSid;
+
+    if (!isAccountSidSet) {
       console.error(
         'ERROR: You must have a valid appConfig with an accountSid set.'
       );
