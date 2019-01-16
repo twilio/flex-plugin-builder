@@ -1,13 +1,14 @@
 (function(global, undefined) {
   'use strict';
   global.loadFlex = function loadFlex(targetEl) {
-    if (
-      typeof appConfig === 'undefined' ||
-      !(appConfig.sso && appConfig.sso.accountSid) ||
-      !appConfig.serviceBaseUrl
-    ) {
+    const isAccountSidSet =
+      typeof appConfig !== 'undefined' &&
+      appConfig.sso &&
+      appConfig.sso.accountSid;
+
+    if (!isAccountSidSet) {
       console.error(
-        'ERROR: You must have a valid appConfig with both accountSid and serviceBaseUrl set.'
+        'ERROR: You must have a valid appConfig with an accountSid set.'
       );
     } else {
       Twilio.Flex.runDefault(appConfig, targetEl).catch(() => {

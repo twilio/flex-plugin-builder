@@ -133,44 +133,6 @@ describe("@twilio/flex-plugin", () => {
     });
   });
 
-  describe("getRuntimeUrl", () => {
-    test("should return a `serviceBaseUrl` when available into the `window` object", () => {
-      // Arrange
-      window.serviceBaseUrl = "testServiceBaseUrl";
-
-      // Act
-      const expectedGetRuntimeUrl = getRuntimeUrl();
-
-      // Assert
-      expect(expectedGetRuntimeUrl).toEqual("testServiceBaseUrl");
-    });
-
-    test("should return a `serviceBaseUrl` if available into the `appConfig` object and missing inside the `window` one", () => {
-      // Arrange
-      const serviceBaseUrl = "appConfigServiceBaseUrl";
-      window.serviceBaseUrl = undefined;
-      window.appConfig = { serviceBaseUrl };
-
-      // Act
-      const expectedGetRuntimeUrl = getRuntimeUrl();
-
-      // Assert
-      expect(expectedGetRuntimeUrl).toEqual(serviceBaseUrl);
-    });
-
-    test("should return an empty string otherwise", () => {
-      // Arrange
-      window.serviceBaseUrl = undefined;
-      window.appConfig = { serviceBaseUrl: undefined };
-
-      // Act
-      const expectedGetRuntimeUrl = getRuntimeUrl();
-
-      // Assert
-      expect(expectedGetRuntimeUrl).toEqual("");
-    });
-  });
-
   describe("getAssetsUrl", () => {
     test("should return a string", () => {
       // Act
