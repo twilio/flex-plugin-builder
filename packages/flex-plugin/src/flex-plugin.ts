@@ -4,10 +4,7 @@ type FlexGlobal = typeof Flex;
 
 declare global {
   interface Window {
-    serviceBaseUrl?: string;
-    appConfig?: {
-      serviceBaseUrl?: string;
-    }
+    appConfig?: {}
   }
 }
 
@@ -48,16 +45,9 @@ export function loadPlugin<T extends FlexPlugin>(plugin: PluginConstructor<T>) {
 }
 
 export function getRuntimeUrl(): string {
-  if (window.serviceBaseUrl) {
-    return window.serviceBaseUrl;
-  }
-
-  if (window.appConfig && window.appConfig.serviceBaseUrl) {
-    return window.appConfig.serviceBaseUrl;
-  }
-
   if (document && document.currentScript) {
     const pluginScript = document.currentScript;
+
     if (typeof pluginScript['src'] === 'string') {
       const pluginUrl = (pluginScript as HTMLScriptElement).src;
       return pluginUrl.substr(0, pluginUrl.lastIndexOf('/'));
