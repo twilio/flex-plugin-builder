@@ -3,6 +3,5 @@
 'use strict';
 
 require = require('esm')(module /*, options*/);
-require('../src/cli.js')
-  .default()
+require('../src/cli.js')()
   .parse(process.argv.slice(2));
