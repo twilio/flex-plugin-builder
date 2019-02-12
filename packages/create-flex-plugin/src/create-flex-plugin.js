@@ -31,8 +31,8 @@ function getPluginJsonContent(config) {
   if (config.adminPlugin) {
     plugins.push({
       "name": "Admin Plugin",
-      "version": "0.7.2",
-      "src": "https:\/\/flexperience.twil.io\/assets\/flex.admin.plugin-0.7.2.js"
+      "version": "1.0.0",
+      "src": "https://media.twiliocdn.com/flex/flex-admin-plugin-1.0.0.js"
     });
   }
 
