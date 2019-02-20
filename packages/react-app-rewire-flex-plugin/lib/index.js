@@ -1,20 +1,17 @@
 /* config-overrides.js */
-const removeWebpackPlugins = require('react-app-rewire-unplug');
 const readPkg = require('read-pkg');
 const rewireUglifyjs = require('react-app-rewire-uglifyjs');
-const webpack = require('webpack');
 const path = require('path');
-const fs = require('fs');
 
 process.env.PORT = process.env.PORT || 8080;
 
 function overrideWebpack(config, env) {
   //do stuff with the webpack config...
   const pkg = readPkg.sync();
-  const TWILIO_FLEX_VERSION = pkg.devDependencies['@twilio/flex-ui'].replace(
-    '^',
-    ''
-  );
+
+  // node_modules/@twilio/flex-ui/package.json
+  const installedFlexUIPkg = readPkg.sync({cwd: path.join(process.cwd(), 'node_modules', '@twilio/flex-ui')});
+  const TWILIO_FLEX_VERSION = installedFlexUIPkg.version;
 
   config = rewireUglifyjs(config);
 
