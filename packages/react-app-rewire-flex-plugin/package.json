@@ -1,6 +1,6 @@
 {
   "name": "react-app-rewire-flex-plugin",
-  "version": "1.3.4",
+  "version": "1.5.0",
   "description": "Plugin for react-app-rewired to bundle Twilio Flex Plugins",
   "keywords": [
     "flex",
