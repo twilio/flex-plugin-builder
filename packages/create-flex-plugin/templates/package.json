@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "@twilio/flex-ui": "{{flexSdkVersion}}",
-    "react-app-rewire-flex-plugin": "{{flexPluginVersion}}",
+    "react-app-rewire-flex-plugin": "^1",
     "react-app-rewired": "^1.6.2"
   },
   "dependencies": {
