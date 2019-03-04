@@ -38,8 +38,7 @@ describe('create-flex-plugin', () => {
 
     // Act
     await createFlexPlugin({
-      name: 'plugin-test',
-      adminPlugin: true
+      name: 'plugin-test'
     });
 
     // Assert
@@ -53,36 +52,18 @@ describe('create-flex-plugin', () => {
     // Act
     await createFlexPlugin({
       name: 'plugin-test',
-      accountSid: 'fake-sid',
-      adminPlugin: true
+      accountSid: 'fake-sid'
     });
 
     // Assert
     expect(inquirer.prompt).not.toHaveBeenCalled();
   });
 
-  test(`should ask fro including an admin plugin if not specified`, async() => {
-    // Arrange
-    inquirer.prompt = jest.fn(() => Promise.resolve({
-      adminPlugin: false
-    }));
-
-    // Act
-    await createFlexPlugin({
-      name: 'plugin-test',
-      accountSid: 'fake-sid'
-    });
-
-    // Assert
-    expect(inquirer.prompt).toHaveBeenCalledTimes(1);
-  });
-
   test(`should not install any dependency by default`, async() => {
     // Act
     await createFlexPlugin({
       name: 'plugin-test',
-      accountSid: 'fake-sid',
-      adminPlugin: true
+      accountSid: 'fake-sid'
     });
 
     // Assert
@@ -94,7 +75,6 @@ describe('create-flex-plugin', () => {
     await createFlexPlugin({
       name: 'plugin-test',
       accountSid: 'fake-sid',
-      adminPlugin: true,
       install: true
     });
 
