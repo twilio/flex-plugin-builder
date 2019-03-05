@@ -48,7 +48,6 @@ Options:
   --accountSid, -a  The Account SID for your Flex Project
   --runtimeUrl, -r  The URL to your Twilio Flex Runtime
   --install         Auto-install dependencies         [boolean] [default: false]
-  --adminPlugin     Load admin plugin                                  [boolean]
   -h, --help        Show help                                          [boolean]
   -v, --version     Show version number                                [boolean]
 ```
