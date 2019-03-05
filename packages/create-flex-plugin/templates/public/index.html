@@ -1,0 +1,32 @@
+<!-- IMPORTANT -->
+<!-- DO NOT MODIFY THIS FILE -->
+<!-- THIS FILE IS NOT USED FOR BUNDLING-->
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+  <meta name="referrer" content="no-referrer">
+  <title>Twilio Flex</title>
+  <link type="image/x-icon" rel="shortcut icon" href="https://flex.twilio.com/favicon.ico">
+  <link href="/flex.css" rel="stylesheet" />
+  <script src="/flex.js"></script>
+  <script src="/appConfig.js"></script>
+
+  <!-- change the flex-ui version here or by explicitly updating your devDependency -->
+  <script src="https://media.twiliocdn.com/sdk/js/flex/releases/%TWILIO_FLEX_VERSION%/twilio-flex.min.js"></script>
+</head>
+
+<body>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="container"></div>
+  <script>
+    if (Twilio && Twilio.Flex && typeof Twilio.Flex.progress === 'function') {
+      Twilio.Flex.progress('#container');
+    }
+    loadFlex('#container');
+  </script>
+</body>
+
+</html>
