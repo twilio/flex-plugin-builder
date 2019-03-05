@@ -27,15 +27,7 @@ function getPluginJsonContent(config) {
       ],
       "src": `http://localhost:8080/${config.pluginFileName}.js`
     }
-  ]
-  if (config.adminPlugin) {
-    plugins.push({
-      "name": "Admin Plugin",
-      "version": "1.0.1",
-      "src": "https://media.twiliocdn.com/flex/flex-admin-plugin-1.0.1.js"
-    });
-  }
-
+  ];
   return plugins;
 }
 
@@ -62,18 +54,6 @@ async function promptForAccountSid() {
   return response.accountSid;
 }
 
-async function promptForAdminPlugin() {
-  const response = await inquirer.prompt([
-    {
-      type: 'confirm',
-      name: 'adminPlugin',
-      message: 'Do you want to include the Admin Plugin',
-      default: true
-    }
-  ])
-  return response.adminPlugin;
-}
-
 async function installDependencies(config) {
   const command = config.yarn ? 'yarn' : 'npm';
   const args = ['install'];
@@ -94,10 +74,6 @@ export default async function createFlexPlugin(config) {
 
   if (!config.accountSid) {
     config.accountSid = await promptForAccountSid();
-  }
-
-  if (typeof config.adminPlugin === 'undefined') {
-    config.adminPlugin = await promptForAdminPlugin();
   }
 
   config.runtimeUrl = config.runtimeUrl || 'http://localhost:8080';
