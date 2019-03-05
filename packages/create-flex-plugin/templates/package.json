@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "postinstall": "flex-check-start",
     "prestart": "flex-check-start",
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
