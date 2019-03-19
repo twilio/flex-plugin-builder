@@ -14,7 +14,5 @@ var appConfig = {
   sso: {
     accountSid: accountSid
   },
-  ytica: false,
-  logLevel: 'debug',
-  showSupervisorDesktopView: true,
+  logLevel: 'debug'
 };
