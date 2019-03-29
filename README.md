@@ -34,7 +34,7 @@ npx lerna bootstrap
 
 ### 3. Contributing to a package
 
-Please refer to the `README.md` of the respective packages in `packages/` for specific guidelines for those proejcts.
+Please refer to the `README.md` of the respective packages in `packages/` for specific guidelines for those projects.
 
 ### 4. Submitting Changes
 
