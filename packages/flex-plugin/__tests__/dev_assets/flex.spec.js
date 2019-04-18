@@ -1,4 +1,4 @@
-import '../dev_assets/flex';
+import '../../dev_assets/flex';
 
 describe('flex', () => {
   let runDefaultMockedFailResponse = false;
