@@ -69,3 +69,5 @@ plugin-test/
 
 # Package Locks
 package-lock.json
+
+.idea
