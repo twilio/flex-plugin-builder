@@ -1,4 +1,8 @@
-import '../dev_assets/flex';
+import '../../dev_assets/flex';
+
+declare const Twilio: any;
+declare const global: any;
+declare const loadFlex: any;
 
 describe('flex', () => {
   let runDefaultMockedFailResponse = false;

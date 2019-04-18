@@ -20,11 +20,9 @@ function getPluginJsonContent(config) {
       "name": config.pluginClassName,
       "version": "0.0.0",
       "class": config.pluginClassName,
-      "requires": [
-        {
-          "@twilio/flex-ui": config.flexSdkVersion
-        }
-      ],
+      "requires": [{
+        "@twilio/flex-ui": config.flexSdkVersion
+      }],
       "src": `http://localhost:8080/${config.pluginFileName}.js`
     }
   ];
@@ -48,7 +46,15 @@ async function promptForAccountSid() {
       type: 'input',
       name: 'accountSid',
       message: 'Twilio Flex Account SID',
-      validate: x => x.startsWith('AC'),
+      validate: function(accountSid) {
+        const done = this.async();
+
+        if (/^AC[0-9a-z]{32}$/.test(accountSid)) {
+          done(null, true);
+        } else {
+          done('AccountSid is not valid', false);
+        }
+      }
     },
   ]);
   return response.accountSid;
