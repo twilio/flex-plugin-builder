@@ -55,7 +55,7 @@ class cli {
     }
   };
 
-  constructor(cwd) {
+  constructor(cwd: string) {
     this.parser = yargs([], cwd);
 
     this.init();
@@ -66,10 +66,10 @@ class cli {
         .usage<any>('$0 <name>', usage, this.options);
   }
 
-  public parse = (...args) => {
+  public parse = (...args: string[]) => {
     const argv: CLIArguments = this.parser.parse(args[0]);
     createFlexPlugin(argv as FlexPluginArguments);
   }
 }
 
-export default cwd => new cli(cwd);
+export default (cwd: string) => new cli(cwd);
