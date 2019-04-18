@@ -1,10 +1,5 @@
-import {
-  FlexPlugin,
-  loadPlugin,
-  getRuntimeUrl,
-  getAssetsUrl
-} from "../src/flex-plugin";
 import { Flex } from "@twilio/flex-ui/src/FlexGlobal";
+import {FlexPlugin, loadPlugin} from '../../../src';
 
 declare var console;
 
@@ -130,24 +125,6 @@ describe("@twilio/flex-plugin", () => {
       // Assert
       expect(console.warn).not.toHaveBeenCalled();
       expect(global["Twilio"].Flex.Plugins.init).toHaveBeenCalledWith(TestPlugin);
-    });
-  });
-
-  describe("getAssetsUrl", () => {
-    test("should return a string", () => {
-      // Act
-      const assetsUrl: string = getAssetsUrl();
-
-      // Assert
-      expect(typeof assetsUrl).toEqual("string");
-    });
-
-    test("should postfix an `/assets`", () => {
-      // Act
-      const assetsUrl: string = getAssetsUrl();
-
-      // Assert
-      expect(assetsUrl).toMatch(/\/assets$/);
     });
   });
 });
