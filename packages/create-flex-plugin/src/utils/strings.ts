@@ -1,1 +1,1 @@
-export const multilineString = (...args) => args.join('\r\n');
+export const multilineString = (...args: string[]) => args.join('\r\n');

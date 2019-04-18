@@ -8,7 +8,7 @@ import {FlexPluginArguments} from '../lib/create-flex-plugin';
 const ERROR = chalk.bold('ERROR');
 const headline = chalk.bold.green;
 
-export const error = (message, ...args) => {
+export const error = (message: string, ...args: string[]) => {
  console.error(`${symbols.error} ${ERROR} ${message}`, ...args);
 };
 
@@ -44,6 +44,8 @@ export const finalMessage = (config: FlexPluginArguments) => {
     'For more info check the README.md file or go to:',
     '➡ https://www.twilio.com/docs/flex'
   );
+
+  console.log(wrapAnsi);
 
   const columns = (process.stdout.columns || 100) - 14 /* boxen spacing */;
   message = wrapAnsi(message, columns, { hard: true });
