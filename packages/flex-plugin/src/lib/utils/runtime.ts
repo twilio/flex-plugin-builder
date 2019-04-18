@@ -20,11 +20,5 @@ export const getRuntimeUrl = (): string => {
  * @return {string} the url of Assets
  */
 export const getAssetsUrl = (): string => {
-	const url = getRuntimeUrl();
-
-	if (url && url !== '') {
-		return `${url}/assets`;
-	}
-
-	return '';
+	return `${getRuntimeUrl()}/assets`;
 };
