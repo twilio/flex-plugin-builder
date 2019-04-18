@@ -4,7 +4,7 @@ describe("runtime", () => {
 	describe('getAssetsUrl', () => {
 		it("should return a string", () => {
 			const assetsUrl: string = getAssetsUrl();
-			expect(assetsUrl).not.toEqual('')
+			expect(typeof assetsUrl).toEqual("string");
 		});
 
 		it("should postfix an `/assets`", () => {

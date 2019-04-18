@@ -48,11 +48,11 @@
     "@twilio/flex-ui": "*"
   },
   "jest": {
-    "setupFiles": ["<rootDir>/__tests__/setupTest.js"],
     "preset": "ts-jest",
     "testURL": "https://flex.twilio.com/admin",
     "testMatch": [
-      "<rootDir>/__tests__/**/*.ts"
+      "<rootDir>/__tests__/**/*.ts",
+      "<rootDir>/__tests__/**/*.js"
     ],
     "testPathIgnorePatterns": [
       "/node_modules/"
