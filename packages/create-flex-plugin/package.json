@@ -10,7 +10,7 @@
   "author": "Dominik Kundel <dkundel@twilio.com>",
   "homepage": "https://github.com/twilio/flex-plugin-builder#readme",
   "license": "MIT",
-  "main": "src/create-flex-plugin.js",
+  "main": "dist",
   "bin": {
     "create-flex-plugin": "bin/create-flex-plugin"
   },
@@ -28,12 +28,17 @@
     "url": "git+https://github.com/twilio/flex-plugin-builder.git"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "prebuild": "rm -rf dist",
+    "build": "tsc"
   },
   "dependencies": {
+    "@types/chalk": "^2.2.0",
+    "@types/inquirer": "^6.0.0",
+    "@types/yargs": "^13.0.0",
     "boxen": "^2.0.0",
     "chalk": "^2.4.1",
-    "common-tags": "^1.8.0",
     "copy-template-dir": "^1.4.0",
     "esm": "3.1.4",
     "execa": "^1.0.0",
@@ -41,6 +46,8 @@
     "lodash": "^4.17.11",
     "log-symbols": "^2.2.0",
     "ora": "^3.0.0",
+    "path": "^0.12.7",
+    "ts-node": "^8.1.0",
     "wrap-ansi": "^4.0.0",
     "yargs": "^12.0.2"
   },
@@ -48,8 +55,30 @@
     "url": "https://github.com/twilio/flex-plugin-builder/issues"
   },
   "devDependencies": {
-    "@twilio/flex-ui": "^1",
-    "flex-plugin": "^1.3.4"
+    "@types/jest": "^24.0.11",
+    "@types/loglevel": "^1.5.3",
+    "@types/node": "^10.11.0",
+    "jest": "^24.7.1",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.0.3"
   },
-  "gitHead": "ca02b3d214e6dfa4277b6b69cbbb178783004edf"
+  "gitHead": "ca02b3d214e6dfa4277b6b69cbbb178783004edf",
+  "jest": {
+    "preset": "ts-jest",
+    "testURL": "https://flex.twilio.com/admin",
+    "testMatch": [
+      "<rootDir>/__tests__/**/*.test.ts"
+    ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/node_modules",
+      "/node_modules/"
+    ],
+    "moduleDirectories": [
+      "node_modules",
+      "node_modules/@types"
+    ],
+    "transformIgnorePatterns": [
+      "<rootDir>/node_modules/(?!boxen/.*)"
+    ]
+  }
 }

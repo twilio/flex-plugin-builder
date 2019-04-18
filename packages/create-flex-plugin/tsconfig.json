@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "baseUrl": ".",
+    "rootDir": "src",
+    "module": "commonjs",
+    "target": "es5",
+    "lib": ["es6", "dom"],
+    "sourceMap": true,
+    "jsx": "react",
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": false,
+    "noImplicitThis": true,
+    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "noUnusedLocals": false,
+    "skipLibCheck": true,
+    "declaration": true,
+    "resolveJsonModule": true
+  },
+  "exclude": ["node_modules", "__tests__", "dist"]
+}
