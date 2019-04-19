@@ -56,7 +56,7 @@ class CLI {
     };
 
     constructor(cwd?: string) {
-        this.parser = yargs([], cwd);
+        this.parser = yargs([], cwd) as Argv<CLIArguments>;
 
         this.init();
     }
@@ -66,7 +66,7 @@ class CLI {
         createFlexPlugin(argv as FlexPluginArguments);
     }
 
-    private init() {
+    private init = () => {
         this.parser
             .usage<any>('$0 <name>', usage, this.options);
     }
