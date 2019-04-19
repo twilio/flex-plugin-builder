@@ -1,0 +1,27 @@
+{
+  "extends": ["tslint:recommended"],
+  "rules": {
+    "indent": [true, "spaces", 4],
+    "quotemark": [true, "single", "avoid-escape"],
+    "object-literal-sort-keys": false,
+    "interface-name": false,
+    "ordered-imports": false,
+    "variable-name": [
+      true,
+      "allow-leading-underscore",
+      "ban-keywords",
+      "check-format",
+      "allow-pascal-case"
+    ],
+    "whitespace": [
+      true,
+      "check-branch",
+      "check-decl",
+      "check-operator",
+      "check-separator",
+      "check-type",
+      "check-typecast",
+      "check-module"
+    ]
+  }
+}
