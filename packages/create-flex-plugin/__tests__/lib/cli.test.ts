@@ -5,7 +5,7 @@ jest.mock('../../src/lib/create-flex-plugin');
 
 describe('cli', () => {
     it('should call createFlexPlugin', () => {
-        cli().parse([]);
+        cli().parse();
 
         expect(createFlexPlugin).toHaveBeenCalled();
     });
