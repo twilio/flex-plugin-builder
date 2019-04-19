@@ -1,18 +1,18 @@
-import {getAssetsUrl} from '../../../../src';
+import { getAssetsUrl } from '../../../../src';
 
-describe("runtime", () => {
-	describe('getAssetsUrl', () => {
-		it("should return a string", () => {
-			const assetsUrl: string = getAssetsUrl();
-			expect(typeof assetsUrl).toEqual("string");
-		});
+describe('runtime', () => {
+    describe('getAssetsUrl', () => {
+        it('should return a string', () => {
+            const assetsUrl: string = getAssetsUrl();
+            expect(typeof assetsUrl).toEqual('string');
+        });
 
-		it("should postfix an `/assets`", () => {
-			// Act
-			const assetsUrl: string = getAssetsUrl();
+        it('should postfix an `/assets`', () => {
+            // Act
+            const assetsUrl: string = getAssetsUrl();
 
-			// Assert
-			expect(assetsUrl).toMatch(/\/assets$/);
-		});
-	});
+            // Assert
+            expect(assetsUrl).toMatch(/\/assets$/);
+        });
+    });
 });

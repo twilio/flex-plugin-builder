@@ -3,16 +3,17 @@
  * @return {string} the url of Twilio Runtime
  */
 export const getRuntimeUrl = (): string => {
-	if (document && document.currentScript) {
-		const pluginScript = document.currentScript;
+    if (document && document.currentScript) {
+        const pluginScript = document.currentScript;
 
-		if (typeof pluginScript['src'] === 'string') {
-			const pluginUrl = (pluginScript as HTMLScriptElement).src;
-			return pluginUrl.substr(0, pluginUrl.lastIndexOf('/'));
-		}
-	}
+        // tslint:disable-next-line:no-string-literal
+        if (typeof pluginScript['src'] === 'string') {
+            const pluginUrl = (pluginScript as HTMLScriptElement).src;
+            return pluginUrl.substr(0, pluginUrl.lastIndexOf('/'));
+        }
+    }
 
-	return '';
+    return '';
 };
 
 /**
@@ -20,5 +21,5 @@ export const getRuntimeUrl = (): string => {
  * @return {string} the url of Assets
  */
 export const getAssetsUrl = (): string => {
-	return `${getRuntimeUrl()}/assets`;
+    return `${getRuntimeUrl()}/assets`;
 };

@@ -1,130 +1,108 @@
-import { Flex } from "@twilio/flex-ui/src/FlexGlobal";
-import {FlexPlugin, loadPlugin} from '../../../src';
+import { Flex } from '@twilio/flex-ui/src/FlexGlobal';
+import { FlexPlugin, loadPlugin } from '../../../src';
+import { FlexGlobal } from '../../../src/lib/flex-plugin';
 
-declare var console;
+declare var console: Partial<Console>;
 
-describe("@twilio/flex-plugin", () => {
-  // Mocking the console object
-  console = {
-    log: jest.fn(),
-    warn: jest.fn()
-  };
+describe('@twilio/flex-plugin', () => {
+    // Mocking the console object
+    console = {
+        log: jest.fn(),
+        warn: jest.fn(),
+    };
 
-  const PLUGIN_NAME = `Test Plugin`;
+    const PLUGIN_NAME = `Test Plugin`;
 
-  class TestPlugin extends FlexPlugin {
-    constructor() {
-      super(PLUGIN_NAME);
-    }
-
-    init(flex, manager) {}
-  }
-
-  beforeEach(() => jest.clearAllMocks());
-
-  describe("FlexPlugin", () => {
-    class TestFlexPlugin extends FlexPlugin {
-      constructor(name) {
-        super(name);
-      }
-
-      init(flex: any, manager: Flex.Manager): void {}
-    }
-
-    test("Should accept a name and display a message to the console", () => {
-      // Act
-      new TestPlugin();
-
-      // Assert
-      expect(console.log).toHaveBeenCalledWith(`loading ${PLUGIN_NAME} plugin`);
-    });
-
-    test("getName should return the plugin name in a string format", () => {
-      // Arrange
-      const pluginName: string = "plugin-test";
-
-      // Act
-      const flexPlugin: FlexPlugin = new TestFlexPlugin(pluginName);
-      const expectedName: string = flexPlugin.name;
-
-      // Assert
-      expect(expectedName).toEqual(pluginName);
-    });
-  });
-
-  describe("loadPlugin", () => {
-    test(
-      "should log a warning to the console when a `Twilio` namespace is " +
-        "not available to the global scope",
-      () => {
-        // Arrange
-        global["Twilio"] = undefined;
-
-        const expectedWarning =
-          "This version of Flex does not appear to support plugins.";
-
-        // Act
-        loadPlugin(TestPlugin);
-
-        // Assert
-        expect(console.warn).toHaveBeenCalledWith(expectedWarning);
-      }
-    );
-
-    test(
-      "should log a warning to the console when a `Flex` does not exists " +
-        "inside the `Twilio` object",
-      () => {
-        // Arrange
-        global["Twilio"] = {};
-
-        const expectedWarning =
-          "This version of Flex does not appear to support plugins.";
-
-        // Act
-        loadPlugin(TestPlugin);
-
-        // Assert
-        expect(console.warn).toHaveBeenCalledWith(expectedWarning);
-      }
-    );
-
-    test(
-      "should log a warning to the console when `Plugins` does not exists " +
-        "inside the `Twilio.Flex` object",
-      () => {
-        // Arrange
-        global["Twilio"] = {
-          Flex: {}
-        };
-
-        const expectedWarning =
-          "This version of Flex does not appear to support plugins.";
-
-        // Act
-        loadPlugin(TestPlugin);
-
-        // Assert
-        expect(console.warn).toHaveBeenCalledWith(expectedWarning);
-      }
-    );
-
-    test("should initialize the `Twilio.Flex` plugins", () => {
-      // Arrange
-      global["Twilio"] = {
-        Flex: {
-          Plugins: {
-            init: jest.fn()
-          }
+    class TestPlugin extends FlexPlugin {
+        constructor() {
+            super(PLUGIN_NAME);
         }
-      };
 
-      // Act
-      loadPlugin(TestPlugin);
+        public init(flex: FlexGlobal, manager: Flex.Manager) {
+            // no-op
+        }
+    }
 
-      // Assert
-      expect(console.warn).not.toHaveBeenCalled();
-      expect(global["Twilio"].Flex.Plugins.init).toHaveBeenCalledWith(TestPlugin);
+    beforeEach(() => jest.clearAllMocks());
+
+    describe('FlexPlugin', () => {
+        // tslint:disable-next-line:max-classes-per-file
+        class TestFlexPlugin extends FlexPlugin {
+            constructor(name: string) {
+                super(name);
+            }
+
+            public init(flex: any, manager: Flex.Manager): void {
+                // no-op
+            }
+        }
+
+        it('Should accept a name and display a message to the console', () => {
+            // tslint:disable-next-line:no-unused-expression
+            new TestPlugin();
+
+            // tslint:disable-next-line:no-console
+            expect(console.log).toHaveBeenCalledWith(`loading ${PLUGIN_NAME} plugin`);
+        });
+
+        it('getName should return the plugin name in a string format', () => {
+            const pluginName: string = 'plugin-test';
+            const flexPlugin: FlexPlugin = new TestFlexPlugin(pluginName);
+            const expectedName: string = flexPlugin.name;
+
+            expect(expectedName).toEqual(pluginName);
+        });
     });
-  });
+
+    describe('loadPlugin', () => {
+        it('should log a warning when `Twilio` namespace is not available', () => {
+            // tslint:disable-next-line:no-string-literal
+            global['Twilio'] = undefined;
+            loadPlugin(TestPlugin);
+
+            // tslint:disable-next-line:no-console
+            expect(console.warn)
+                .toHaveBeenCalledWith( 'This version of Flex does not appear to support plugins.');
+        });
+
+        it('should log a warning when `Flex` does not exists in Twilio object', () => {
+            // tslint:disable-next-line:no-string-literal
+            global['Twilio'] = {};
+            loadPlugin(TestPlugin);
+
+            // tslint:disable-next-line:no-console
+            expect(console.warn)
+                .toHaveBeenCalledWith('This version of Flex does not appear to support plugins.');
+        });
+
+        it('should log a warning `Plugins` does not exists in `Twilio.Flex`', () => {
+            // tslint:disable-next-line:no-string-literal
+            global['Twilio'] = {
+                Flex: {},
+            };
+            loadPlugin(TestPlugin);
+
+            // tslint:disable-next-line:no-console
+            expect(console.warn)
+                .toHaveBeenCalledWith( 'This version of Flex does not appear to support plugins.');
+        });
+
+        it('should initialize the `Twilio.Flex` plugins', () => {
+            // tslint:disable-next-line:no-string-literal
+            global['Twilio'] = {
+                Flex: {
+                    Plugins: {
+                        init: jest.fn(),
+                    },
+                },
+            };
+
+            loadPlugin(TestPlugin);
+
+            // tslint:disable-next-line:no-console
+            expect(console.warn).not.toHaveBeenCalled();
+            // tslint:disable-next-line:no-string-literal
+            expect(global['Twilio'].Flex.Plugins.init).toHaveBeenCalledWith(TestPlugin);
+        });
+    });
 });

@@ -1,5 +1,6 @@
 import * as Flex from '@twilio/flex-ui';
-type FlexGlobal = typeof Flex;
+
+export type FlexGlobal = typeof Flex;
 
 export interface IFlexPlugin {
   name: string;
@@ -14,15 +15,14 @@ export abstract class FlexPlugin implements IFlexPlugin {
 
   protected constructor(name: string) {
     this.name = name;
+    // tslint:disable-next-line:no-console
     console.log(`loading ${this.name} plugin`);
   }
 
-  abstract init(flex: FlexGlobal, manager: Flex.Manager): void;
+  public abstract init(flex: FlexGlobal, manager: Flex.Manager): void;
 }
 
-export interface PluginConstructor<T> {
-  new (): T;
-}
+export type PluginConstructor<T> = new () => T;
 
 /**
  * Plugin loader helper function
@@ -32,6 +32,7 @@ export const loadPlugin = <T extends FlexPlugin>(plugin: PluginConstructor<T>) =
   if (Twilio && Twilio.Flex && Twilio.Flex.Plugins) {
     Twilio.Flex.Plugins.init(plugin);
   } else {
+    // tslint:disable-next-line:no-console
     console.warn('This version of Flex does not appear to support plugins.');
   }
 };
