@@ -15,7 +15,8 @@
     "noUnusedLocals": false,
     "skipLibCheck": true,
     "declaration": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "types" : ["node", "jest"]
   },
   "exclude": ["node_modules", "__tests__", "dist"]
 }

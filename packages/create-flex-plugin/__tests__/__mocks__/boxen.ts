@@ -1,3 +1,3 @@
-module.exports = function(message) {
+module.exports = (message: string) => {
   return message;
 };
