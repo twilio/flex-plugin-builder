@@ -4,9 +4,9 @@ import createFlexPlugin from '../../src/lib/create-flex-plugin';
 jest.mock('../../src/lib/create-flex-plugin');
 
 describe('cli', () => {
-  it('should call createFlexPlugin', () => {
-    cli(null).parse([]);
+    it('should call createFlexPlugin', () => {
+        cli().parse();
 
-    expect(createFlexPlugin).toHaveBeenCalled();
-  });
+        expect(createFlexPlugin).toHaveBeenCalled();
+    });
 });

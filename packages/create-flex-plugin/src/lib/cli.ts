@@ -5,71 +5,71 @@ const usage = [
     'Creates a new Twilio Flex Plugin project',
     '',
     'Arguments:',
-    'name\tName of your plugin. Needs to start with plugin-'
+    'name\tName of your plugin. Needs to start with plugin-',
 ].join('\r\n');
 
 export interface CLIArguments {
-  accountSid?: string;
-  a?: string;
-  runtimeUrl?: string;
-  r?: string;
-  install?: boolean;
-  i?: boolean;
-  name?: string;
-  yarn?: boolean;
-  y?: boolean;
+    accountSid?: string;
+    a?: string;
+    runtimeUrl?: string;
+    r?: string;
+    install?: boolean;
+    i?: boolean;
+    name?: string;
+    yarn?: boolean;
+    y?: boolean;
 }
 
-class cli {
-  private readonly parser: Argv<CLIArguments>;
-  private options: {[key: string]: Options;} = {
-    accountSid: {
-      alias: 'a',
-      describe: 'The Account SID for your Flex Project',
-      default: null,
-    },
-    runtimeUrl: {
-      alias: 'a',
-      type: 'boolean',
-      default: false,
-      describe: 'Auto-install dependencies'
-    },
-    install: {
-      alias: 'i',
-      type: 'boolean',
-      default: false,
-      describe: 'Auto-install dependencies'
-    },
-    yarn: {
-      alias: 'y',
-      type: 'boolean',
-      default: false,
-      describe: 'Use yarn as your dependency manager',
-    },
-    help: {
-      alias: 'h',
-      description: usage
-    },
-    version: {
-      alias: 'h'
+class CLI {
+    private readonly parser: Argv<CLIArguments>;
+    private options: { [key: string]: Options; } = {
+        accountSid: {
+            alias: 'a',
+            describe: 'The Account SID for your Flex Project',
+            default: null,
+        },
+        runtimeUrl: {
+            alias: 'a',
+            type: 'boolean',
+            default: false,
+            describe: 'Auto-install dependencies',
+        },
+        install: {
+            alias: 'i',
+            type: 'boolean',
+            default: false,
+            describe: 'Auto-install dependencies',
+        },
+        yarn: {
+            alias: 'y',
+            type: 'boolean',
+            default: false,
+            describe: 'Use yarn as your dependency manager',
+        },
+        help: {
+            alias: 'h',
+            description: usage,
+        },
+        version: {
+            alias: 'h',
+        },
+    };
+
+    constructor(cwd?: string) {
+        this.parser = yargs([], cwd) as Argv<CLIArguments>;
+
+        this.init();
     }
-  };
 
-  constructor(cwd: string) {
-    this.parser = yargs([], cwd);
+    public parse = (...args: string[]) => {
+        const argv: CLIArguments = this.parser.parse(args[0]);
+        createFlexPlugin(argv as FlexPluginArguments);
+    }
 
-    this.init();
-  }
-
-  init() {
-    this.parser
-        .usage<any>('$0 <name>', usage, this.options);
-  }
-
-  public parse = (...args: string[]) => {
-    const argv: CLIArguments = this.parser.parse(args[0]);
-    createFlexPlugin(argv as FlexPluginArguments);
-  }
+    private init = () => {
+        this.parser
+            .usage<any>('$0 <name>', usage, this.options);
+    }
 }
 
-export default (cwd: string) => new cli(cwd);
+export default (cwd?: string) => new CLI(cwd);
