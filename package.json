@@ -1,7 +1,7 @@
 {
 	"scripts": {
 		"lint": "tslint --project tsconfig.json",
-		"lint:fix": "tslint --project tsconfig.json",
+		"lint:fix": "tslint --project tsconfig.json --fix",
 		"test": "jest",
 		"test:watch": "jest --watchAll",
 		"bootstrap": "lerna bootstrap"
