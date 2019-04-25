@@ -1,0 +1,42 @@
+{
+  "name": "craco-config-flex-plugin",
+  "version": "1.5.0",
+  "description": "Plugin for craco configs to bundle Twilio Flex Plugins",
+  "keywords": [
+    "flex",
+    "twilio",
+    "craco",
+    "plugins"
+  ],
+  "author": "Kousha Talebian <ktalebian@twilio.com>",
+  "homepage": "https://github.com/twilio/flex-plugin-builder#readme",
+  "license": "MIT",
+  "main": "index.js",
+  "directories": {
+    "dist": "dist",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib",
+    "index.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio/flex-plugin-builder.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/twilio/flex-plugin-builder/issues"
+  },
+  "dependencies": {
+    "read-pkg": "^5.1.0",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {},
+  "peerDependencies": {
+    "flex-plugin": "*",
+    "@craco/craco": "^5.0.2"
+  }
+}
