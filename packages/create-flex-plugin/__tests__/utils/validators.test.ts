@@ -8,6 +8,8 @@ jest.mock('execa');
 jest.mock('../../src/utils/logging');
 
 describe('validators', () => {
+    const accountSid = 'AC00000000000000000000000000000000';
+
     beforeEach(() => jest.clearAllMocks());
 
     const mockPrompt = (mock: Mock) => {
@@ -38,6 +40,34 @@ describe('validators', () => {
             ];
 
             names.map(validators._isValidPluginName)
+                .forEach((resp) => expect(resp).toBeFalsy());
+        });
+    });
+
+    describe('_isSidValid', () => {
+        it('should be valid sid', () => {
+            const sids = [
+                ['AC', 'AC00000000000000000000000000000000'],
+                ['US', 'US00000000000000000000000000000000'],
+                ['AB', 'AB00000000000000000000000000000001'],
+                ['ZX', 'ZX00000000000000000000000000abcdef'],
+            ];
+
+            sids.map((data) => validators._isSidValid(data[0], data[1]))
+                .forEach((resp) => expect(resp).toBeTruthy());
+        });
+
+        it('should be invalid sid', () => {
+            const sids = [
+                ['AC', 'AC00000000000000000000000000000'],
+                ['US', '00000000000000000000000000000000'],
+                ['AB', 'AB000000000000000000000000000000011'],
+                ['ZX', 'ZX00000000000000000000000000abcdeg'],
+                ['DF', ''],
+                ['DF'],
+            ];
+
+            sids.map((data) => validators._isSidValid(data[0], data[1]))
                 .forEach((resp) => expect(resp).toBeFalsy());
         });
     });
@@ -74,7 +104,7 @@ describe('validators', () => {
             // Act
             await validators.default({
                 name: 'plugin-test',
-                accountSid: 'fake-sid',
+                accountSid,
             } as any);
 
             // Assert
