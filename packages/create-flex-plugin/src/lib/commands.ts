@@ -51,7 +51,7 @@ export const _getPluginJsonContent = (config: FlexPluginArguments) => {
         "requires": [{
             "@twilio/flex-ui": config.flexSdkVersion
         }],
-        "src": `http://localhost:8080/${config.name}.js`,
+        "src": `http://localhost:3000/${config.name}.js`,
     }];
 };
 // tslint:enable
