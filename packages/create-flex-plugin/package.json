@@ -43,7 +43,7 @@
     "boxen": "^3.1.0",
     "chalk": "^2.4.1",
     "copy-template-dir": "^1.4.0",
-    "esm": "3.1.4",
+    "esm": "3.2.22",
     "execa": "^1.0.0",
     "inquirer": "^6.2.0",
     "lodash": "^4.17.11",
@@ -52,7 +52,7 @@
     "path": "^0.12.7",
     "ts-node": "^8.1.0",
     "wrap-ansi": "^4.0.0",
-    "yargs": "^12.0.2"
+    "yargs": "^13.2.2"
   },
   "bugs": {
     "url": "https://github.com/twilio/flex-plugin-builder/issues"
