@@ -5,6 +5,8 @@ jest.mock('execa');
 jest.mock('../../src/utils/logging');
 
 describe('create-flex-plugin', () => {
+    const accountSid = 'AC00000000000000000000000000000000';
+
     beforeEach(() => jest.clearAllMocks());
 
     describe('createFlexPlugin', () => {
@@ -12,7 +14,7 @@ describe('create-flex-plugin', () => {
             // Act
             await createFlexPlugin({
                name: 'plugin-test',
-               accountSid: 'fake-sid',
+               accountSid,
             } as any);
 
             // Assert
@@ -23,7 +25,7 @@ describe('create-flex-plugin', () => {
             // Act
             await createFlexPlugin({
                 name: 'plugin-test',
-                accountSid: 'fake-sid',
+                accountSid,
                 install: true,
             } as any);
 

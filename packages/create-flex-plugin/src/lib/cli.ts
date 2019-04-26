@@ -25,11 +25,13 @@ class CLI {
     private options: { [key: string]: Options; } = {
         accountSid: {
             alias: 'a',
+            type: 'string',
             describe: 'The Account SID for your Flex Project',
-            default: null,
+            demandOption: true,
+            default: '',
         },
         runtimeUrl: {
-            alias: 'a',
+            alias: 'r',
             type: 'boolean',
             default: false,
             describe: 'Auto-install dependencies',

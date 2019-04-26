@@ -13,6 +13,23 @@ export const _isValidPluginName = (name: string): boolean => {
 };
 
 /**
+ * Validates sid with the given prefix is valid
+ *
+ * @param prefix {string}   the prefix of the sid
+ * @param sid {string}      the sid to validate
+ * @returns {boolean} whether the sid is valid or not
+ * @private
+ */
+export const _isSidValid = (prefix: string, sid: string = ''): boolean => {
+    if (!sid) {
+        return false;
+    }
+
+    const regex = new RegExp(`^${prefix}[0-9a-f]{32}$`);
+    return regex.test(sid);
+};
+
+/**
  * Prompts the user to enter AccountSid
  */
 export const _promptForAccountSid = async (): Promise<string> => {
@@ -25,7 +42,7 @@ export const _promptForAccountSid = async (): Promise<string> => {
                 throw new Error('Account SID must start with AC');
             }
 
-            if (!/^AC[0-9a-f]{32}$/.test(input)) {
+            if (!_isSidValid('AC', input)) {
                 throw new Error('Account SID is not a valid SID');
             }
 
@@ -52,7 +69,7 @@ const validate = async (config: FlexPluginArguments): Promise<FlexPluginArgument
         return process.exit(1);
     }
 
-    if (!config.accountSid) {
+    if (!_isSidValid('AC', config.accountSid)) {
         config.accountSid = await _promptForAccountSid();
     }
 
