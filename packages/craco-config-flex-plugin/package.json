@@ -1,6 +1,6 @@
 {
   "name": "craco-config-flex-plugin",
-  "version": "1.5.0",
+  "version": "2.0.0-beta.1",
   "description": "Plugin for craco configs to bundle Twilio Flex Plugins",
   "keywords": [
     "flex",
@@ -31,12 +31,11 @@
     "url": "https://github.com/twilio/flex-plugin-builder/issues"
   },
   "dependencies": {
-    "read-pkg": "^5.1.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "read-pkg": "^5.1.0"
   },
-  "devDependencies": {},
   "peerDependencies": {
-    "flex-plugin": "*",
-    "@craco/craco": "^5.0.2"
+    "@craco/craco": "^5.0.2",
+    "flex-plugin": "*"
   }
 }
