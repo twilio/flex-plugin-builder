@@ -1,6 +1,6 @@
 import { FlexPlugin } from 'flex-plugin';
 import React from 'react';
-import CustomTaskListComponent from './CustomTaskListComponent';
+import CustomTaskListComponent from './components/CustomTaskListComponent';
 
 const PLUGIN_NAME = '{{pluginClassName}}';
 
