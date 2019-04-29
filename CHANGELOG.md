@@ -1,7 +1,7 @@
 ## 2.0.0 (XXX)
 
 Create Flex Plugin 2.0 upgrades to the latest
-[reate React App 3](https://github.com/facebook/create-react-app/blob/master/CHANGELOG.md).
+[Create React App 3](https://github.com/facebook/create-react-app/blob/master/CHANGELOG.md).
 
 
 # Highlights
@@ -66,6 +66,20 @@ App 3.x. Please check the CHANGELOG and migration plan on
 and
 [CHANGELOG 2.x to 3.x](https://github.com/facebook/create-react-app/blob/master/CHANGELOG.md)
 on the official Create React App GitHub page.
+
+#### Jest 24
+
+Please check
+[Jest 24](https://github.com/facebook/jest/blob/master/CHANGELOG.md#2400)
+features for any breaking changes.
+
+#### Create React App 3
+
+Please check
+[CHANGELOG 1.x to 2.x](https://github.com/facebook/create-react-app/blob/master/CHANGELOG-2.x.md)
+and
+[CHANGELOG 2.x to 3.x](https://github.com/facebook/create-react-app/blob/master/CHANGELOG.md)
+features for any breaking changes.
 
 ## New Features
 
