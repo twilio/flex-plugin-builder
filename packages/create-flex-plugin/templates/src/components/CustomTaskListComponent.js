@@ -8,7 +8,9 @@ const taskListStyles = {
 };
 
 const CustomTaskListComponent = () => {
-  return <div style={taskListStyles}>This is a demo component</div>;
+  return (
+    <div style={taskListStyles}>This is a demo component</div>
+  );
 };
 
 export default CustomTaskListComponent;
