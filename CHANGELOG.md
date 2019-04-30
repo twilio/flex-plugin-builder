@@ -35,13 +35,13 @@ To update existing plugins, edit `package.json` and modify `scripts` and
     },
     "dependencies": {
         "@craco/craco": "^5.0.2",
-        "flex-plugin": "^2.0.0",
-        "craco-config-flex-plugin": "^2.0.0",
+        "flex-plugin": "^2",
+        "craco-config-flex-plugin": "^2"
     }
 }
 ```
 
-Then add a `craco.config.js` and paste the following:
+Then add a `craco.config.js` to the directory and paste the following:
 
 ```js
 const config = require('craco-config-flex-plugin');
@@ -67,6 +67,8 @@ and
 [CHANGELOG 2.x to 3.x](https://github.com/facebook/create-react-app/blob/master/CHANGELOG.md)
 on the official Create React App GitHub page.
 
+We have also dropped support for React App Rewired.
+
 #### Jest 24
 
 Please check
@@ -80,6 +82,11 @@ Please check
 and
 [CHANGELOG 2.x to 3.x](https://github.com/facebook/create-react-app/blob/master/CHANGELOG.md)
 features for any breaking changes.
+
+### React App Rewired
+
+We have dropped this service and instead replaced it with Create React
+App Config Override. [See below](#craco) for more detail.
 
 ## New Features
 
