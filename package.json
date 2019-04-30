@@ -4,7 +4,8 @@
 		"lint:fix": "tslint --project tsconfig.json --fix",
 		"test": "jest",
 		"test:watch": "jest --watchAll",
-		"bootstrap": "lerna bootstrap"
+		"bootstrap": "lerna bootstrap --no-ci",
+		"postinstall": "npm run bootstrap"
 	},
 	"devDependencies": {
 		"@babel/cli": "^7.1.2",
