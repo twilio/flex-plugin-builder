@@ -4,13 +4,15 @@ node_js:
   - '8'
 
 before_script:
-  - npm run bootstrap
+  - npm install
 
 script:
   - npm run test
+  - npm run lint
 
 branches:
   except:
   - /^v\d+\.\d+\.\d+$/
   only:
   - master
+  - dev
