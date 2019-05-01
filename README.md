@@ -5,15 +5,15 @@
 
 # Twilio Flex Plugin Builder
 
-Twilio Flex Plugins allow you to augment/change the behavior and appearance of a [Twilio Flex](https://www.twilio.com/flex) Contact Center using React.
+Twilio Flex plugins allow you to augment/change the behavior and appearance of a [Twilio Flex](https://www.twilio.com/flex) Contact Center using React.
 
 ## Project Structure
 
 This project is a monorepo project that is housing three separate packages for the creation of Twilio Flex plugins.
 
-- [`create-flex-plugin`](packages/create-flex-plugin) - The CLI tool to start a new Flex Plugin project
+- [`create-flex-plugin`](packages/create-flex-plugin) - The CLI tool to start a new Flex plugin project
 - [`flex-plugin`](packages/flex-plugin) - Runtime dependency for Flex plugins
-- [`craco-config-flex-plugin`](packages/craco-config-flex-plugin) - Config override for [`craco`](https://github.com/sharegate/craco) used to develop and build Flex Plugins
+- [`craco-config-flex-plugin`](packages/craco-config-flex-plugin) - Config override for [`craco`](https://github.com/sharegate/craco) used to develop and build Flex plugins
 
 ## Contributing
 
