@@ -38,7 +38,7 @@ export const finalMessage = (config: FlexPluginArguments) => {
     );
 
     let message = multilineString(
-        `Your Twilio Flex plugin project has been successfully created!`,
+        `Your Twilio Flex Plugin project has been successfully created!`,
         `${config.install ? '' : `\n\n ${setupMessage}`}\n`,
         `${devMessage}\n`,
         `${buildMessage}\n`,
