@@ -13,7 +13,7 @@ This project is a monorepo project that is housing three separate packages for t
 
 - [`create-flex-plugin`](packages/create-flex-plugin) - The CLI tool to start a new Flex Plugin project
 - [`flex-plugin`](packages/flex-plugin) - Runtime dependency for Flex plugins
-- [`react-app-rewire-flex-plugin`](packages/react-app-rewire-flex-plugin) - Config override for [`react-app-rewired`](https://npm.im/react-app-rewired) used to develop and build Flex plugins
+- [`craco-config-flex-plugin`](packages/craco-config-flex-plugin) - Config override for [`craco`](https://github.com/sharegate/craco) used to develop and build Flex Plugins
 
 ## Contributing
 
