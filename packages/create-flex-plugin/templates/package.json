@@ -1,25 +1,37 @@
 {
-  "name": "{{pluginFileName}}",
+  "name": "{{name}}",
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "postinstall": "flex-check-start",
-    "prestart": "flex-check-start",
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
-    "test": "react-app-rewired test --env=jsdom",
-    "eject": "react-app-rewired eject"
+    "bootstrap": "flex-check-start",
+    "postinstall": "npm run bootstrap",
+    "prestart": "npm run bootstrap",
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test --env=jsdom",
+    "eject": "craco eject"
   },
   "devDependencies": {
-    "@twilio/flex-ui": "{{flexSdkVersion}}",
-    "react-app-rewire-flex-plugin": "^1",
-    "react-app-rewired": "^1.6.2"
+    "@twilio/flex-ui": "{{flexSdkVersion}}"
   },
   "dependencies": {
+    "@craco/craco": "^5.0.2",
     "flex-plugin": "{{flexPluginVersion}}",
-    "react": "16.5.2",
-    "react-dom": "16.5.2",
-    "react-scripts": "1.1.5"
+    "craco-config-flex-plugin": "{{cracoConfigVersion}}",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-scripts": "^3.0.0"
   },
-  "config-overrides-path": "node_modules/react-app-rewire-flex-plugin"
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }
