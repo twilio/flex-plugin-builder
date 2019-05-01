@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin",
-  "version": "1.3.4",
+  "version": "2.0.0-beta.1",
   "bin": {
     "flex-check-start": "./bin/check-start"
   },
@@ -12,7 +12,8 @@
   "author": "Dominik Kundel <dkundel@twilio.com>",
   "homepage": "https://github.com/twilio/flex-plugin-builder",
   "license": "MIT",
-  "main": "dist/flex-plugin.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "directories": {
     "bin": "bin",
     "lib": "dist",
@@ -24,14 +25,18 @@
     "dev_assets"
   ],
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "build": "tsc",
     "prepublish": "npm run build"
   },
   "devDependencies": {
-    "@twilio/flex-ui": "1.3.3",
+    "@twilio/flex-ui": "1.8.0",
+    "@types/jest": "^24.0.11",
     "@types/loglevel": "^1.5.3",
-    "@types/node": "^10.11.0",
+    "@types/node": "^11.13.8",
+    "jest": "^24.7.1",
+    "ts-jest": "^24.0.2",
     "typescript": "^3.0.3"
   },
   "gitHead": "ca02b3d214e6dfa4277b6b69cbbb178783004edf",
@@ -42,5 +47,16 @@
   },
   "peerDependencies": {
     "@twilio/flex-ui": "*"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testURL": "https://flex.twilio.com/admin",
+    "testMatch": [
+      "<rootDir>/__tests__/**/*.ts",
+      "<rootDir>/__tests__/**/*.js"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ]
   }
 }

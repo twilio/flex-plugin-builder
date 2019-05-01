@@ -1,8 +1,11 @@
 {
 	"scripts": {
+		"lint": "tslint --project tsconfig.json",
+		"lint:fix": "tslint --project tsconfig.json --fix",
 		"test": "jest",
 		"test:watch": "jest --watchAll",
-		"bootstrap": "lerna bootstrap"
+		"bootstrap": "lerna bootstrap --no-ci",
+		"postinstall": "npm run bootstrap"
 	},
 	"devDependencies": {
 		"@babel/cli": "^7.1.2",
@@ -10,15 +13,19 @@
 		"@babel/polyfill": "^7.0.0",
 		"@babel/preset-env": "^7.1.0",
 		"@babel/preset-typescript": "^7.1.0",
-		"@types/jest": "^23.3.5",
-		"all-contributors-cli": "^5.4.0",
+		"@types/jest": "^24.0.11",
+		"all-contributors-cli": "^6.3.1",
 		"babel-core": "7.0.0-bridge.0",
-		"babel-jest": "^23.6.0",
+		"babel-jest": "^24.7.1",
 		"babel-register": "^6.26.0",
-		"jest": "^23.6.0",
-		"lerna": "^2.9.1",
-		"ts-jest": "^23.10.4",
-		"typescript": "^3.1.3"
+		"jest": "^24.7.1",
+		"lerna": "3.13.4",
+		"ts-jest": "^24.0.2",
+		"tslint": "^5.16.0",
+		"tslint-react": "^4.0.0",
+		"typescript": "^3.4.3"
 	},
-	"dependencies": {}
+	"dependencies": {
+		"@types/node": "^11.13.5"
+	}
 }
