@@ -18,11 +18,19 @@ export interface CLIArguments {
     name?: string;
     yarn?: boolean;
     y?: boolean;
+    template?: string;
+    t?: string;
 }
 
 class CLI {
     private readonly parser: Argv<CLIArguments>;
     private options: { [key: string]: Options; } = {
+        template: {
+            alias: 't',
+            type: 'string',
+            describe: 'A URL to a template directory',
+            default: '',
+        },
         accountSid: {
             alias: 'a',
             type: 'string',
