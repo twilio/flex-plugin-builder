@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`logging finalMessage should render a 'yarn' setup message to the console 1`] = `
+exports[`logging finalMessage should render a yarn setup message to the console 1`] = `
 "Your Twilio Flex Plugin project has been successfully created!
 
 
@@ -20,13 +20,9 @@ For more info check the README.md file or go to:
 ➡ https://www.twilio.com/docs/flex"
 `;
 
-exports[`logging finalMessage should render an 'npm' setup message to the console 1`] = `
+exports[`logging finalMessage should render an instruction message skipping the setup step 1`] = `
 "Your Twilio Flex Plugin project has been successfully created!
 
-
-[1m[32mSetup:[39m[22m
-$ cd undefined/
-$ npm install
 
 [1m[32mDevelopment:[39m[22m
 $ cd undefined/
@@ -40,9 +36,13 @@ For more info check the README.md file or go to:
 ➡ https://www.twilio.com/docs/flex"
 `;
 
-exports[`logging finalMessage should render an instruction message skipping the setup step 1`] = `
+exports[`logging finalMessage should render an npm setup message to the console 1`] = `
 "Your Twilio Flex Plugin project has been successfully created!
 
+
+[1m[32mSetup:[39m[22m
+$ cd undefined/
+$ npm install
 
 [1m[32mDevelopment:[39m[22m
 $ cd undefined/
