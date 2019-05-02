@@ -1,52 +1,58 @@
-const readPkg = require('read-pkg');
+const fs = require('fs');
 const path = require('path');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+
+const appPath = path.join(process.cwd(), 'package.json');
+const flexUIPath = path.join(process.cwd(), 'node_modules', '@twilio/flex-ui', 'package.json');
+const appPkg = JSON.parse(fs.readFileSync(appPath, 'utf8'));
+const flexUIPkg = JSON.parse(fs.readFileSync(flexUIPath, 'utf8'));
+const TWILIO_FLEX_VERSION = flexUIPkg.version;
+
+const UNSUPPORTED_PLUGINS = ['SWPrecacheWebpackPlugin', 'ManifestPlugin'];
 
 module.exports = {
-     configure: (config, context) => {
-          //do stuff with the webpack config...
-          const pkg = readPkg.sync();
-
-          // node_modules/@twilio/flex-ui/package.json
-          const installedFlexUIPkg = readPkg.sync({cwd: path.join(process.cwd(), 'node_modules', '@twilio/flex-ui')});
-          const TWILIO_FLEX_VERSION = installedFlexUIPkg.version;
-
-          config.output.filename = `${pkg.name}.js`;
-          config.output.chunkFilename = `[name].chunk.js`;
-          config.plugins = config.plugins.filter(plugin =>
-               !['SWPrecacheWebpackPlugin', 'ManifestPlugin'].includes(
-                    plugin.constructor.name
-               )
-          );
-          config.plugins.forEach(plugin => {
-               if (plugin.constructor.name === 'HtmlWebpackPlugin') {
-                    plugin.options.inject = false;
-                    plugin.options.hash = false;
-                    return;
-               }
-
-               if (plugin.constructor.name === 'InterpolateHtmlPlugin') {
-                    plugin.replacements = {
-                         ...plugin.replacements,
-                         TWILIO_FLEX_VERSION,
-                    };
-               }
-          });
-
-          config.resolve.alias = {
-               ...config.resolve.alias,
-               '@twilio/flex-ui': 'flex-plugin/dev_assets/flex-shim.js',
+  configure: (config, context) => {
+    config.output.filename = `${appPkg.name}.js`;
+    config.output.chunkFilename = `[name].chunk.js`;
+    config.plugins = config.plugins
+      .filter(plugin => !UNSUPPORTED_PLUGINS.includes(plugin.constructor.name))
+      .map(plugin => {
+        if (plugin.constructor.name === 'HtmlWebpackPlugin') {
+          plugin.options.inject = false;
+          plugin.options.hash = false;
+        } else if (plugin.constructor.name === 'InterpolateHtmlPlugin') {
+          plugin.replacements = {
+            ...plugin.replacements,
+            TWILIO_FLEX_VERSION,
           };
+        }
 
-          config.externals = {
-               'react': 'React',
-               'react-dom': 'ReactDOM',
-               'redux': 'Redux',
-               'react-redux': 'ReactRedux',
-          };
+        return plugin;
+      });
 
-          config.optimization.splitChunks = false;
-          config.optimization.runtimeChunk = false;
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@twilio/flex-ui': 'flex-plugin/dev_assets/flex-shim.js',
+    };
 
-          return config;
-     }
+    config.externals = {
+      'react': 'React',
+      'react-dom': 'ReactDOM',
+      'redux': 'Redux',
+      'react-redux': 'ReactRedux',
+    };
+
+    config.plugins.push(new CleanWebpackPlugin({
+      cleanAfterEveryBuildPatterns: [
+        path.join(process.cwd(), 'build/service-worker.js'),
+        path.join(process.cwd(), 'build/precache-manifest*.js'),
+        path.join(process.cwd(), 'build/index.html'),
+      ],
+    }));
+
+    config.optimization.splitChunks = false;
+    config.optimization.runtimeChunk = false;
+
+    return config;
+  }
 };

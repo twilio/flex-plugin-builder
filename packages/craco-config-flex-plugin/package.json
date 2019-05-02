@@ -31,8 +31,8 @@
     "url": "https://github.com/twilio/flex-plugin-builder/issues"
   },
   "dependencies": {
-    "path": "^0.12.7",
-    "read-pkg": "^5.1.0"
+    "clean-webpack-plugin": "^2.0.1",
+    "path": "^0.12.7"
   },
   "peerDependencies": {
     "@craco/craco": "^5.0.2",
