@@ -1,10 +1,9 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { _downloadDir, GitHubInfo } from "../../src/utils/github";
+import { _downloadDir, GitHubInfo } from '../../src/utils/github';
 import * as github from '../../src/utils/github';
 import Mock = jest.Mock;
 import SpyInstance = jest.SpyInstance;
-
 
 describe('github', () => {
     let mockAxios: MockAdapter;
@@ -13,11 +12,11 @@ describe('github', () => {
     const githubInfo: GitHubInfo = {
         ref: 'master',
         owner: 'twilio',
-        repo: 'flex-plugin-builder'
+        repo: 'flex-plugin-builder',
     };
-    const mock = (key: string, mock: Mock) => {
+    const mock = (key: string, mockFn: Mock) => {
         Object.defineProperty(github, key, {
-            value: mock,
+            value: mockFn,
         });
     };
 
@@ -44,15 +43,15 @@ describe('github', () => {
 
         it('should fail to parse', () => {
             expect(() => github.parseGitHubUrl('/broken')).toThrow();
-        })
+        });
     });
 
     describe('downloadRepo', () => {
-        const _downloadDir = jest.fn();
+        const _downloadDirFn = jest.fn();
 
         beforeEach(() => {
-            _downloadDir.mockClear();
-            mock('_downloadDir', _downloadDir);
+            _downloadDirFn.mockClear();
+            mock('_downloadDir', _downloadDirFn);
         });
 
         afterEach(() => {
@@ -62,32 +61,32 @@ describe('github', () => {
         it('should call _downloadDir', async () => {
             await github.downloadRepo(githubInfo, '/dir');
 
-            expect(_downloadDir).toHaveBeenCalledTimes(1);
-            expect(_downloadDir).toHaveBeenCalledWith(apiGithubUrl, '/dir');
+            expect(_downloadDirFn).toHaveBeenCalledTimes(1);
+            expect(_downloadDirFn).toHaveBeenCalledWith(apiGithubUrl, '/dir');
         });
     });
 
     describe.only('_downloadDir', () => {
         const _downloadFile = jest.fn();
-        let _downloadDir: SpyInstance;
+        let _downloadDirSpy: SpyInstance;
 
         beforeEach(() => {
             _downloadFile.mockReset();
             mock('_downloadFile', _downloadFile);
 
-            _downloadDir = jest.spyOn(github, '_downloadDir');
+            _downloadDirSpy = jest.spyOn(github, '_downloadDir');
         });
 
         afterEach(() => {
             (github._downloadFile as any).mockClear();
-            _downloadDir.mockRestore();
+            _downloadDirSpy.mockRestore();
         });
 
         it('should do nothing if api returns empty result', async () => {
             mockAxios.onGet().reply(() => Promise.resolve([200, []]));
             await github._downloadDir(apiGithubUrl, '/dir');
 
-            expect(_downloadDir).toHaveBeenCalledTimes(1);
+            expect(_downloadDirSpy).toHaveBeenCalledTimes(1);
             expect(_downloadFile).not.toHaveBeenCalled();
         });
 
@@ -112,7 +111,7 @@ describe('github', () => {
         it('should recursively download',  async () => {
             const firstResp = [{
                 type: 'dir',
-                url: 'github.com/twilio'
+                url: 'github.com/twilio',
             }];
             const secondResp = [{
                 type: 'file',

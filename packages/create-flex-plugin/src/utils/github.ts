@@ -11,14 +11,14 @@ export interface GitHubInfo {
 
 export enum GitHubContentType {
     File = 'file',
-    Dir = 'dir'
+    Dir = 'dir',
 }
 
 export interface GitHubContent {
     name: string;
     path: string;
     sha: string;
-    size: number,
+    size: number;
     url: string;
     html_url: string;
     git_url: string;
@@ -47,8 +47,8 @@ export const parseGitHubUrl = (url: string): GitHubInfo => {
     return {
         owner: matches[1],
         repo: matches[2],
-        ref: matches[4] || 'master'
-    }
+        ref: matches[4] || 'master',
+    };
 };
 
 /**
@@ -72,12 +72,16 @@ export const downloadRepo = async (info: GitHubInfo, dir: string) => {
  * @private
  */
 export const _downloadDir = async (url: string, dir: string): Promise<null> => {
-    return axios.get<Array<GitHubContent>>(url)
-        .then(resp => resp.data)
-        .then(contents => {
-            const promises = contents.map(content => {
+    return axios.get<GitHubContent[]>(url)
+        .then((resp) => resp.data)
+        .then((contents) => {
+            const promises = contents.map((content) => {
                 if (content.type === GitHubContentType.Dir) {
                     return _downloadDir(content.url, dir);
+                }
+
+                if (content.type !== GitHubContentType.File) {
+                    throw new Error(`Unexpected content type ${content.type}`);
                 }
 
                 const relativePath = content.download_url.match(/\/template\/(.+)\??/);
@@ -105,12 +109,12 @@ export const _downloadFile = async (url: string, output: string) => {
     const config = {
         url,
         responseType: 'arraybuffer',
-        method: 'get'
+        method: 'get',
     };
 
     const dir = path.dirname(output);
     await mkdirp.sync(dir);
 
     return axios.request(config)
-        .then(result => fs.writeFileSync(output, result.data));
+        .then((result) => fs.writeFileSync(output, result.data));
 };
