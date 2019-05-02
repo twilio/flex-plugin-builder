@@ -1,6 +1,7 @@
 import * as execa from 'execa';
 import { camelCase, upperFirst } from 'lodash';
 import { join } from 'path';
+import * as github from '../utils/github';
 import { FlexPluginArguments } from './create-flex-plugin';
 import * as deps from '../dependencies.json';
 
@@ -42,6 +43,19 @@ export const setupConfiguration = (config: FlexPluginArguments): FlexPluginArgum
 
     return config;
 };
+
+/**
+ * Downloads content from GitHub
+ *
+ * @param config {FlexPluginArguments}  the plugin configuration
+ * @param url {string}                  the GitHub url
+ * @param dir {string}                  the temp directory to save the downloaded file to
+ */
+export const downloadFromGitHub = async (config: FlexPluginArguments, url: string, dir: string) => {
+    const info = github.parseGitHubUrl(url);
+    return await github.downloadRepo(info, dir);
+};
+
 
 // tslint:disable
 export const _getPluginJsonContent = (config: FlexPluginArguments) => {
