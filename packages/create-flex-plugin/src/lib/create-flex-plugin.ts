@@ -4,8 +4,7 @@ import ora from 'ora';
 import * as tmp from 'tmp';
 import { resolve, join } from 'path';
 import { promisify } from 'util';
-import { multilineString } from "../utils/strings";
-import { setupConfiguration, installDependencies, downloadFromGitHub } from "./commands";
+import { setupConfiguration, installDependencies, downloadFromGitHub } from './commands';
 import { CLIArguments } from './cli';
 import * as log from '../utils/logging';
 import validate from '../utils/validators';
@@ -122,8 +121,9 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
     } catch (err) {
         templateSpinner.fail(err.message);
     } finally {
-        // Cleanup
-        dirObject && dirObject.removeCallback();
+        if (dirObject) {
+            dirObject.removeCallback();
+        }
     }
 
     return false;

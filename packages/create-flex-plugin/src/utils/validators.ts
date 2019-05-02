@@ -3,7 +3,8 @@ import { Question } from 'inquirer';
 import { FlexPluginArguments } from '../lib/create-flex-plugin';
 import { error } from './logging';
 
-const URL_REGEX = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/
+// tslint:disable-next-line
+const URL_REGEX = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
 const GITHUB_REGEX = /github\.com/;
 
 /**
@@ -52,6 +53,7 @@ export const _isGitHub = (url: string): boolean => GITHUB_REGEX.test(url);
 
 /**
  * Prompts the user to enter AccountSid
+ * @private
  */
 export const _promptForAccountSid = async (): Promise<string> => {
     const question: Question = {
@@ -76,7 +78,11 @@ export const _promptForAccountSid = async (): Promise<string> => {
     return response.accountSid;
 };
 
-export const _promptForTemplateUrl = async(): Promise<string> => {
+/**
+ * Prompts the user to enter template URL
+ * @private
+ */
+export const _promptForTemplateUrl = async (): Promise<string> => {
     const question: Question = {
         type: 'input',
         name: 'template',

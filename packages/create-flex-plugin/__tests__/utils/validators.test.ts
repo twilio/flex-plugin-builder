@@ -73,7 +73,7 @@ describe('validators', () => {
     });
 
     describe('_promptForAccountSid', () => {
-        it(`should ask for an accountSid if not specified`, async () => {
+        it('should ask for an accountSid if not specified', async () => {
             const prompt = jest.fn(() => Promise.resolve({
                 accountSid: 'test-sid',
             }));
@@ -85,7 +85,7 @@ describe('validators', () => {
     });
 
     describe('_promptForTemplateUrl', () => {
-        it(`should ask for a url if url is invalid`, async () => {
+        it('should ask for a url if url is invalid', async () => {
             const prompt = jest.fn(() => Promise.resolve({
                 url: 'twilio',
             }));
@@ -109,7 +109,7 @@ describe('validators', () => {
             }
         });
 
-        it(`should not ask for an accountSid if already specified`, async () => {
+        it('should not ask for an accountSid if already specified', async () => {
             const prompt = jest.fn();
             mockPrompt(prompt);
 
@@ -123,7 +123,7 @@ describe('validators', () => {
             expect(inquirer.prompt).not.toHaveBeenCalled();
         });
 
-        it(`should not ask for a template url if already specified`, async () => {
+        it('should not ask for a template url if already specified', async () => {
             const prompt = jest.fn();
             mockPrompt(prompt);
 
@@ -154,7 +154,7 @@ describe('validators', () => {
             ];
 
             data.map(validators._isValidUrl)
-                .forEach(resp => expect(resp).toBeTruthy());
+                .forEach((resp) => expect(resp).toBeTruthy());
         });
 
         it('should be invalid URL', () => {
@@ -166,7 +166,7 @@ describe('validators', () => {
             ];
 
             data.map(validators._isValidUrl)
-                .forEach(resp => expect(resp).toBeFalsy());
+                .forEach((resp) => expect(resp).toBeFalsy());
         });
     });
 });
