@@ -21,7 +21,7 @@ describe('create-flex-plugin', () => {
             expect(execa).not.toHaveBeenCalled();
         });
 
-        it('hould install the dependencies if specified', async () => {
+        it('should install the dependencies if specified', async () => {
             // Act
             await createFlexPlugin({
                 name: 'plugin-test',

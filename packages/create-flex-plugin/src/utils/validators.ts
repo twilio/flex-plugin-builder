@@ -4,7 +4,7 @@ import { FlexPluginArguments } from '../lib/create-flex-plugin';
 import { error } from './logging';
 
 // tslint:disable-next-line
-const URL_REGEX = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
+const URL_REGEX = /^(https?:\/\/)?(www\.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
 const GITHUB_REGEX = /github\.com/;
 
 /**
@@ -93,7 +93,7 @@ export const _promptForTemplateUrl = async (): Promise<string> => {
             }
 
             if (!_isGitHub(url)) {
-                throw new Error('Onlt GitHub URLs are currently supported');
+                throw new Error('Only GitHub URLs are currently supported');
             }
 
             return true;

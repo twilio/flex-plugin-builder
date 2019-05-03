@@ -34,7 +34,7 @@ describe('github', () => {
         });
 
         it('should get repo and some ref', () => {
-            const resp = github.parseGitHubUrl(gitHubUrl + '/tree/some-ref');
+            const resp = github.parseGitHubUrl(`${gitHubUrl}/tree/some-ref`);
 
             expect(resp.ref).toEqual('some-ref');
             expect(resp.repo).toEqual('flex-plugin-builder');
