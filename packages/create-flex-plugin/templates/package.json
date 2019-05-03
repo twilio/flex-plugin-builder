@@ -16,8 +16,9 @@
   },
   "dependencies": {
     "@craco/craco": "^5.0.2",
-    "flex-plugin": "{{flexPluginVersion}}",
+    "core-js": "^2.6.5",
     "craco-config-flex-plugin": "{{cracoConfigVersion}}",
+    "flex-plugin": "{{flexPluginVersion}}",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "^3.0.0"
