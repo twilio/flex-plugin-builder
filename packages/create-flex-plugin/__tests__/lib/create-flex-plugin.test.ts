@@ -10,7 +10,7 @@ describe('create-flex-plugin', () => {
     beforeEach(() => jest.clearAllMocks());
 
     describe('createFlexPlugin', () => {
-        it(`should not install any dependency by default`, async () => {
+        it('should not install any dependency by default', async () => {
             // Act
             await createFlexPlugin({
                name: 'plugin-test',
@@ -21,7 +21,7 @@ describe('create-flex-plugin', () => {
             expect(execa).not.toHaveBeenCalled();
         });
 
-        test(`should install the dependencies if specified`, async () => {
+        it('should install the dependencies if specified', async () => {
             // Act
             await createFlexPlugin({
                 name: 'plugin-test',

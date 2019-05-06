@@ -1,16 +1,20 @@
 import * as copy from 'copy-template-dir';
 import * as fs from 'fs';
 import ora from 'ora';
+import * as tmp from 'tmp';
 import { resolve, join } from 'path';
 import { promisify } from 'util';
-import { setupConfiguration, installDependencies } from './commands';
+import { setupConfiguration, installDependencies, downloadFromGitHub } from './commands';
 import { CLIArguments } from './cli';
 import * as log from '../utils/logging';
 import validate from '../utils/validators';
 
-const templatePath = resolve(__dirname, '../../templates');
 const copyDir = promisify(copy);
 const moveFile = promisify(fs.rename);
+
+const templatesRootDir = resolve(__dirname, '../../templates');
+const templateCorePath = resolve(templatesRootDir, 'core');
+const templateJsPath = resolve(templatesRootDir, 'js');
 
 export interface FlexPluginArguments extends CLIArguments {
     targetDirectory: string;
@@ -30,11 +34,17 @@ export const createFlexPlugin = async (config: FlexPluginArguments) => {
     config = setupConfiguration(config);
 
     // Setup the directories
-    await _scaffold(config);
+    if (!await _scaffold(config)) {
+        log.error('Failed to scaffold project');
+        process.exit(1);
+    }
 
     // Install NPM dependencies
     if (config.install) {
-        await _install(config);
+        if (!await _install(config)) {
+            log.error('Failed to install dependencies. Please run `npm install` manually.');
+            config.install = false;
+        }
     }
 
     log.finalMessage(config);
@@ -45,7 +55,7 @@ export const createFlexPlugin = async (config: FlexPluginArguments) => {
  * @param config {FlexPluginArguments}  the configuration
  * @private
  */
-export const _install = async (config: FlexPluginArguments) => {
+export const _install = async (config: FlexPluginArguments): Promise<boolean> => {
     const installSpinner = ora('Installing dependencies');
     try {
         installSpinner.start();
@@ -53,9 +63,13 @@ export const _install = async (config: FlexPluginArguments) => {
         await installDependencies(config);
 
         installSpinner.succeed();
+
+        return true;
     } catch (err) {
         installSpinner.fail(err.message);
     }
+
+    return false;
 };
 
 /**
@@ -64,25 +78,55 @@ export const _install = async (config: FlexPluginArguments) => {
  * @param config {FlexPluginArguments}  the configuration
  * @private
  */
-export const _scaffold = async (config: FlexPluginArguments) => {
+export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> => {
     const templateSpinner = ora('Creating project directory');
+    let dirObject;
+
     try {
         templateSpinner.start();
 
+        // This copies the core such as public/ and craco config.
         await copyDir(
-            templatePath,
+            templateCorePath,
             config.targetDirectory,
             config,
         );
-        await moveFile(
-            join(config.targetDirectory, 'src/DemoPlugin.js'),
-            join(config.targetDirectory, `src/${config.pluginClassName}.js`),
+
+        // Get src directory from template URL if provided
+        let srcPath = templateJsPath;
+        if (config.template) {
+            dirObject = tmp.dirSync();
+            await downloadFromGitHub(config, config.template, dirObject.name);
+            srcPath = dirObject.name;
+        }
+
+        // This copies the src/ directory
+        await copyDir(
+          srcPath,
+          config.targetDirectory,
+          config,
         );
 
+        // Rename plugins
+        if (!dirObject) {
+            await moveFile(
+                join(config.targetDirectory, 'src/DemoPlugin.js'),
+                join(config.targetDirectory, `src/${config.pluginClassName}.js`),
+            );
+        }
+
         templateSpinner.succeed();
+
+        return true;
     } catch (err) {
         templateSpinner.fail(err.message);
+    } finally {
+        if (dirObject) {
+            dirObject.removeCallback();
+        }
     }
+
+    return false;
 };
 
 export default createFlexPlugin;

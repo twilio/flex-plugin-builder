@@ -39,7 +39,10 @@
     "@types/execa": "^0.9.0",
     "@types/inquirer": "^6.0.0",
     "@types/lodash": "^4.14.123",
+    "@types/mkdirp": "^0.5.2",
+    "@types/tmp": "^0.1.0",
     "@types/yargs": "^13.0.0",
+    "axios": "^0.18.0",
     "boxen": "^3.1.0",
     "chalk": "^2.4.1",
     "copy-template-dir": "^1.4.0",
@@ -48,8 +51,10 @@
     "inquirer": "^6.2.0",
     "lodash": "^4.17.11",
     "log-symbols": "^3.0.0",
+    "mkdirp": "^0.5.1",
     "ora": "^3.0.0",
     "path": "^0.12.7",
+    "tmp": "^0.1.0",
     "ts-node": "^8.1.0",
     "wrap-ansi": "^4.0.0",
     "yargs": "^13.2.2"
@@ -60,6 +65,7 @@
   "devDependencies": {
     "@types/jest": "^24.0.11",
     "@types/loglevel": "^1.5.3",
+    "axios-mock-adapter": "^1.16.0",
     "jest": "^24.7.1",
     "ts-jest": "^24.0.2",
     "typescript": "^3.0.3"
