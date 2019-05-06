@@ -29,7 +29,9 @@ This is a monorepo project managed by [lerna](https://github.com/lerna/lerna) fo
 
 This project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
 
-### 1. For Project
+By cloning this project, you will be contributing to the plugin-builder itself. If you want to create a plugin instead, please instead use the guide in (creating a new plugin)[packages/create-flex-plugin/README.md].
+
+### 1. Create a Fork of the Project
 
 Create a fork of this project for your GitHub user by clicking the `Fork` button at the top of this project
 
@@ -42,7 +44,7 @@ npm install
 npx lerna bootstrap
 ```
 
-### 3. Contributing to a package
+### 3. Contributing to a Package
 
 Refer to the `README.md` of the respective packages in `packages/` for specific guidelines for those projects.
 
