@@ -2,7 +2,7 @@
 ![npm](https://img.shields.io/npm/dt/flex-plugin.svg?style=flat-square)
 [![NpmLicense](https://img.shields.io/npm/l/flex-plugin.svg?style=flat-square)](LICENSE.md)
 
-# `flex-plugin`
+# Flex Plugin
 
 Library to help building [Twilio Flex](https://www.twilio.com/flex) Plugins.
 
