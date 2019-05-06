@@ -29,7 +29,7 @@ This is a monorepo project managed by [lerna](https://github.com/lerna/lerna) fo
 
 This project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
 
-By cloning this project, you will be contributing to the plugin-builder itself. If you want to create a plugin instead, please instead use the guide in (creating a new plugin)[packages/create-flex-plugin/README.md].
+By cloning this project, you will be contributing to the plugin-builder itself. If you want to create a plugin instead, please instead use the guide in [creating a new plugin](packages/create-flex-plugin/README.md).
 
 ### 1. Create a Fork of the Project
 
