@@ -7,19 +7,29 @@
 
 Twilio Flex plugins allow you to augment/change the behavior and appearance of a [Twilio Flex](https://www.twilio.com/flex) Contact Center using React.
 
+## User Guide
+
+* [Creating a new plugin](packages/create-flex-plugin/README.md)
+* [Overriding configuration](packages/craco-config-flex-plugin/README.md)
+
+## Changelog
+
+Major changelogs can be found in the [changelog directory](/tree/master/changelog).
+
 ## Project Structure
 
-This project is a monorepo project that is housing three separate packages for the creation of Twilio Flex plugins.
+This is a monorepo project managed by [lerna](https://github.com/lerna/lerna) for creating Twilio Flex plugins.
 
-- [`create-flex-plugin`](packages/create-flex-plugin) - The CLI tool to start a new Flex plugin project
-- [`flex-plugin`](packages/flex-plugin) - Runtime dependency for Flex plugins
-- [`craco-config-flex-plugin`](packages/craco-config-flex-plugin) - Config override for [`craco`](https://github.com/sharegate/craco) used to develop and build Flex plugins
+- [create-flex-plugin](packages/create-flex-plugin): The CLI tool to start a new Flex plugin project
+- [flex-plugin](packages/flex-plugin): Runtime dependency for Flex plugins
+- [craco-config-flex-plugin](packages/craco-config-flex-plugin): Config override for [craco](https://github.com/sharegate/craco) used to develop and build Flex plugins
+
 
 ## Contributing
 
-Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
+This project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
 
-### 1. Create a fork of the project
+### 1. For Project
 
 Create a fork of this project for your GitHub user by clicking the `Fork` button at the top of this project
 
@@ -34,11 +44,12 @@ npx lerna bootstrap
 
 ### 3. Contributing to a package
 
-Please refer to the `README.md` of the respective packages in `packages/` for specific guidelines for those projects.
+Refer to the `README.md` of the respective packages in `packages/` for specific guidelines for those projects.
 
 ### 4. Submitting Changes
 
 When you are happy with your changes, make sure to create a new branch with your changes and open a PR with your changes. For more info check out this [page describing the GitHub workflow](https://guides.github.com/introduction/flow/).
+
 
 ## Contributors
 
@@ -56,3 +67,7 @@ This project follows the [all-contributors](https://github.com/kentcdodds/all-co
 ## License
 
 MIT
+
+
+
+## Project Structure
