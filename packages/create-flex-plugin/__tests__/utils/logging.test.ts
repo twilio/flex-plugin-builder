@@ -14,7 +14,7 @@ describe('logging', () => {
         const SYMBOL_ERROR = symbols.error;
         const ERROR = chalk.bold('ERROR');
 
-        it(`should return a 'console.error' message`, () => {
+        it('should return a console.error message', () => {
             const errorMessage = 'Error message';
             const expectedMessage = `${SYMBOL_ERROR} ${ERROR} ${errorMessage}`;
 
@@ -24,7 +24,7 @@ describe('logging', () => {
             expect(console.error).toHaveBeenCalledWith(expectedMessage);
         });
 
-        it(`should accept any number of arguments`, () => {
+        it('should accept any number of arguments', () => {
             const errorMessage = 'Error message';
             const arg1 = 'argument #1';
             const arg2 = 'argument #2';
@@ -39,7 +39,7 @@ describe('logging', () => {
     });
 
     describe('finalMessage', () => {
-        it(`should render an 'npm' setup message to the console`, () => {
+        it('should render an npm setup message to the console', () => {
             let message = '';
             // tslint:disable-next-line:no-console
             console.log = jest.fn((msg) => message = msg);
@@ -51,7 +51,7 @@ describe('logging', () => {
             expect(message).toMatchSnapshot();
         });
 
-        it(`should render a 'yarn' setup message to the console`, () => {
+        it('should render a yarn setup message to the console', () => {
             let message = '';
             // tslint:disable-next-line:no-console
             console.log = jest.fn((msg) => message = msg);
@@ -63,7 +63,7 @@ describe('logging', () => {
             expect(message).toMatchSnapshot();
         });
 
-        it(`should render an instruction message skipping the setup step`, () => {
+        it('should render an instruction message skipping the setup step', () => {
             let message = '';
             // tslint:disable-next-line:no-console
             console.log = jest.fn((msg) => message = msg);

@@ -3,6 +3,10 @@ import { Question } from 'inquirer';
 import { FlexPluginArguments } from '../lib/create-flex-plugin';
 import { error } from './logging';
 
+// tslint:disable-next-line
+const URL_REGEX = /^(https?:\/\/)?(www\.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
+const GITHUB_REGEX = /github\.com/;
+
 /**
  * Validates the plugin name starts with `plugin-`
  * @param name {string} the plugin name
@@ -30,7 +34,26 @@ export const _isSidValid = (prefix: string, sid: string = ''): boolean => {
 };
 
 /**
+ * Validates the string is valid URL
+ *
+ * @param url {string}  the URL string to validate
+ * @return whether the URL is valid
+ * @private
+ */
+export const _isValidUrl = (url: string): boolean => URL_REGEX.test(url);
+
+/**
+ * Validates the string is a GitHub URL
+ *
+ * @param url {string}  the URL string to validate
+ * @return whether the URL is GitHub
+ * @private
+ */
+export const _isGitHub = (url: string): boolean => GITHUB_REGEX.test(url);
+
+/**
  * Prompts the user to enter AccountSid
+ * @private
  */
 export const _promptForAccountSid = async (): Promise<string> => {
     const question: Question = {
@@ -56,6 +79,33 @@ export const _promptForAccountSid = async (): Promise<string> => {
 };
 
 /**
+ * Prompts the user to enter template URL
+ * @private
+ */
+export const _promptForTemplateUrl = async (): Promise<string> => {
+    const question: Question = {
+        type: 'input',
+        name: 'template',
+        message: 'Template URL',
+        validate: async (url: string) => {
+            if (!_isValidUrl(url)) {
+                throw new Error('Please enter a valid URL');
+            }
+
+            if (!_isGitHub(url)) {
+                throw new Error('Only GitHub URLs are currently supported');
+            }
+
+            return true;
+        },
+    };
+
+    const response = await inquirer.prompt<{ template: string; }> ([question]);
+
+    return response.template;
+};
+
+/**
  * Further validates the configuration
  *
  * @param config {FlexPluginArguments}  the configuration
@@ -71,6 +121,10 @@ const validate = async (config: FlexPluginArguments): Promise<FlexPluginArgument
 
     if (!_isSidValid('AC', config.accountSid)) {
         config.accountSid = await _promptForAccountSid();
+    }
+
+    if (config.template && !_isValidUrl(config.template)) {
+        config.template = await _promptForTemplateUrl();
     }
 
     return config;
