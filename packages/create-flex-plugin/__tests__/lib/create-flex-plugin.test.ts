@@ -25,7 +25,7 @@ describe('create-flex-plugin', () => {
         it('should not install any dependency by default', async () => {
             // Act
             await createFlexPlugin({
-               name: 'plugin-test',
+               name: pluginName,
                accountSid,
             } as any);
 
@@ -36,7 +36,7 @@ describe('create-flex-plugin', () => {
         it('should install the dependencies if specified', async () => {
             // Act
             await createFlexPlugin({
-                name: 'plugin-test',
+                name: pluginName,
                 accountSid,
                 install: true,
             } as any);
