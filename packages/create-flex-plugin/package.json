@@ -44,6 +44,7 @@
     "@types/inquirer": "^6.0.0",
     "@types/lodash": "^4.14.123",
     "@types/mkdirp": "^0.5.2",
+    "@types/ora": "^3.2.0",
     "@types/tmp": "^0.1.0",
     "@types/yargs": "^13.0.0",
     "axios": "^0.18.0",
