@@ -24,8 +24,7 @@
   ],
   "main": "index.js",
   "directories": {
-    "dist": "dist",
-    "test": "__tests__"
+    "lib": "lib"
   },
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1"

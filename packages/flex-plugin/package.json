@@ -27,7 +27,7 @@
     "flex-check-start": "./bin/check-start"
   },
   "directories": {
-    "lib": "dist",
+    "lib": "src",
     "bin": "bin",
     "test": "__tests__"
   },
