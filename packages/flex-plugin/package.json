@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin",
-  "version": "2.0.0",
+  "version": "2.3.0",
   "bin": {
     "flex-check-start": "./bin/check-start"
   },
