@@ -15,6 +15,7 @@ const moveFile = promisify(fs.rename);
 const templatesRootDir = resolve(__dirname, '../../templates');
 const templateCorePath = resolve(templatesRootDir, 'core');
 const templateJsPath = resolve(templatesRootDir, 'js');
+const templateTsPath = resolve(templatesRootDir, 'ts');
 
 export interface FlexPluginArguments extends CLIArguments {
     targetDirectory: string;
@@ -94,6 +95,9 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
 
         // Get src directory from template URL if provided
         let srcPath = templateJsPath;
+        if (config.typescript) {
+            srcPath = templateTsPath;
+        }
         if (config.template) {
             dirObject = tmp.dirSync();
             await downloadFromGitHub(config, config.template, dirObject.name);
@@ -109,9 +113,11 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
 
         // Rename plugins
         if (!dirObject) {
+            const ext = config.typescript ? 'tsx' : 'js';
+
             await moveFile(
-                join(config.targetDirectory, 'src/DemoPlugin.js'),
-                join(config.targetDirectory, `src/${config.pluginClassName}.js`),
+                join(config.targetDirectory, `src/DemoPlugin.${ext}`),
+                join(config.targetDirectory, `src/${config.pluginClassName}.${ext}`),
             );
         }
 
