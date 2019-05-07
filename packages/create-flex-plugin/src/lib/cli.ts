@@ -20,11 +20,19 @@ export interface CLIArguments {
     y?: boolean;
     template?: string;
     t?: string;
+    typescript?: boolean;
+    s?: boolean;
 }
 
 class CLI {
     private readonly parser: Argv<CLIArguments>;
     private options: { [key: string]: Options; } = {
+        typescript: {
+            alias: 's',
+            type: 'boolean',
+            describe: 'Create a TypeScript project',
+            default: false,
+        },
         template: {
             alias: 't',
             type: 'string',
