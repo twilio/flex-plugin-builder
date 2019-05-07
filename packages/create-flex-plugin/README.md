@@ -48,6 +48,7 @@ Options:
   --accountSid, -a  The Account SID for your Flex Project
   --runtimeUrl, -r  The URL to your Twilio Flex Runtime
   --template, -t    A GitHub URL that contains your template
+  --typescript, -s  Create a typescript project
   --install         Auto-install dependencies         [boolean] [default: false]
   -h, --help        Show help                                          [boolean]
   -v, --version     Show version number                                [boolean]
