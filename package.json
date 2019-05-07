@@ -17,8 +17,7 @@
     "postinstall": "npm run bootstrap",
     "lint": "tslint --project tsconfig.json",
     "lint:fix": "tslint --project tsconfig.json --fix",
-    "test": "jest",
-    "test:watch": "jest --watchAll"
+    "test": "lerna run test"
   },
   "dependencies": {
     "@types/node": "^11.13.5"

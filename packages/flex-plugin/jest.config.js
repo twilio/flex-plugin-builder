@@ -1,8 +1,23 @@
-const base = require('./../../jest.config.base');
-
 module.exports = {
-  ...base,
-  rootDir: '../..',
-  name: 'FlexPlugin',
-  displayName: 'FlexPlugin',
+  collectCoverage: true,
+  setupFiles: ['@babel/polyfill'],
+  preset: 'ts-jest',
+  testEnvironment: 'jsdom',
+  collectCoverageFrom: [
+    '<rootDir>/src/**/*.ts',
+  ],
+  testMatch: [
+    '<rootDir>/__tests__/**/*.test.ts'
+  ],
+  transform: {
+    '^.+\\.js?$': 'babel-jest'
+  },
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '<rootDir>/templates/*'
+  ],
+  coveragePathIgnorePatterns: [
+    '/node_modules/',
+    '<rootDir>/templates/*'
+  ]
 };

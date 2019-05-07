@@ -1,14 +1,23 @@
-const base = require('./../../jest.config.base');
-
 module.exports = {
-  ...base,
-  rootDir: '../..',
-  name: 'CreateFlexPlugin',
-  displayName: 'CreateFlexPlugin',
+  collectCoverage: true,
+  setupFiles: ['@babel/polyfill'],
+  preset: 'ts-jest',
+  testEnvironment: 'jsdom',
+  collectCoverageFrom: [
+    '<rootDir>/src/**/*.ts',
+  ],
+  testMatch: [
+    '<rootDir>/__tests__/**/*.test.ts'
+  ],
+  transform: {
+    '^.+\\.js?$': 'babel-jest'
+  },
   testPathIgnorePatterns: [
-    '<rootDir>/packages/create-flex-plugin/templates/*'
+    '/node_modules/',
+    '<rootDir>/templates/*'
   ],
   coveragePathIgnorePatterns: [
-    '<rootDir>/packages/create-flex-plugin/templates/*'
+    '/node_modules/',
+    '<rootDir>/templates/*'
   ]
 };

@@ -1,6 +1,8 @@
+import * as execa from 'execa';
 import chalk from 'chalk';
 import * as symbols from 'log-symbols';
 import * as log from '../../src/utils/logging';
+jest.mock('execa');
 
 describe('logging', () => {
     beforeEach(() => jest.clearAllMocks());
@@ -42,7 +44,7 @@ describe('logging', () => {
         it('should render an npm setup message to the console', () => {
             let message = '';
             // tslint:disable-next-line:no-console
-            console.log = jest.fn((msg) => message = msg);
+            console.log = jest.fn((msg) => (message = msg));
 
             log.finalMessage({} as any);
 
@@ -54,9 +56,9 @@ describe('logging', () => {
         it('should render a yarn setup message to the console', () => {
             let message = '';
             // tslint:disable-next-line:no-console
-            console.log = jest.fn((msg) => message = msg);
+            console.log = jest.fn((msg) => (message = msg));
 
-            log.finalMessage({yarn: true} as any);
+            log.finalMessage({ yarn: true } as any);
 
             // tslint:disable-next-line:no-console
             expect(console.log).toHaveBeenCalled();
@@ -66,9 +68,9 @@ describe('logging', () => {
         it('should render an instruction message skipping the setup step', () => {
             let message = '';
             // tslint:disable-next-line:no-console
-            console.log = jest.fn((msg) => message = msg);
+            console.log = jest.fn((msg) => (message = msg));
 
-            log.finalMessage({install: true} as any);
+            log.finalMessage({ install: true } as any);
 
             // tslint:disable-next-line:no-console
             expect(console.log).toHaveBeenCalled();
