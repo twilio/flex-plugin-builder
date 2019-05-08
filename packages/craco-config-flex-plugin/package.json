@@ -1,6 +1,6 @@
 {
   "name": "craco-config-flex-plugin",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Plugin for craco configs to bundle Twilio Flex Plugins",
   "keywords": [
     "craco",
