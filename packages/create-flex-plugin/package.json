@@ -4,12 +4,24 @@
   "description": "Toolkit to create a new Twilio Flex Plugin",
   "keywords": [
     "flex",
-    "twilio",
-    "plugin"
+    "plugin",
+    "twilio"
   ],
-  "author": "Dominik Kundel <dkundel@twilio.com>",
   "homepage": "https://github.com/twilio/flex-plugin-builder#readme",
+  "bugs": {
+    "url": "https://github.com/twilio/flex-plugin-builder/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio/flex-plugin-builder.git"
+  },
   "license": "MIT",
+  "author": "Dominik Kundel <dkundel@twilio.com>",
+  "files": [
+    "bin",
+    "dist",
+    "templates"
+  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
@@ -17,22 +29,14 @@
   },
   "directories": {
     "lib": "src",
+    "bin": "bin",
     "test": "__tests__"
   },
-  "files": [
-    "bin",
-    "dist",
-    "templates"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/twilio/flex-plugin-builder.git"
-  },
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
     "prebuild": "rm -rf dist",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "cd ../.. && jest packages/create-flex-plugin",
+    "test:watch": "cd ../.. && jest packages/create-flex-plugin --watch"
   },
   "dependencies": {
     "@types/chalk": "^2.2.0",
@@ -59,31 +63,12 @@
     "wrap-ansi": "^4.0.0",
     "yargs": "^13.2.2"
   },
-  "bugs": {
-    "url": "https://github.com/twilio/flex-plugin-builder/issues"
-  },
   "devDependencies": {
-    "@types/jest": "^24.0.11",
     "@types/loglevel": "^1.5.3",
+    "@types/rimraf": "^2.0.2",
     "axios-mock-adapter": "^1.16.0",
-    "jest": "^24.7.1",
-    "ts-jest": "^24.0.2",
+    "rimraf": "^2.6.3",
     "typescript": "^3.0.3"
   },
-  "gitHead": "ca02b3d214e6dfa4277b6b69cbbb178783004edf",
-  "jest": {
-    "preset": "ts-jest",
-    "testURL": "https://flex.twilio.com/admin",
-    "testMatch": [
-      "<rootDir>/__tests__/**/*.test.ts"
-    ],
-    "testPathIgnorePatterns": [
-      "<rootDir>/node_modules",
-      "/node_modules/"
-    ],
-    "moduleDirectories": [
-      "node_modules",
-      "node_modules/@types"
-    ]
-  }
+  "gitHead": "ca02b3d214e6dfa4277b6b69cbbb178783004edf"
 }

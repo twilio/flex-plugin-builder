@@ -1,62 +1,55 @@
 {
   "name": "flex-plugin",
   "version": "2.3.0",
-  "bin": {
-    "flex-check-start": "./bin/check-start"
-  },
   "description": "Runtime for Flex Plugins",
   "keywords": [
     "flex",
     "twilio"
   ],
-  "author": "Dominik Kundel <dkundel@twilio.com>",
   "homepage": "https://github.com/twilio/flex-plugin-builder",
-  "license": "MIT",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "directories": {
-    "bin": "bin",
-    "lib": "dist",
-    "test": "__tests__"
+  "bugs": {
+    "url": "https://github.com/twilio/flex-plugin-builder/issues"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio/flex-plugin-builder.git"
+  },
+  "license": "MIT",
+  "author": "Dominik Kundel <dkundel@twilio.com>",
   "files": [
     "dist",
     "bin",
     "dev_assets"
   ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "flex-check-start": "./bin/check-start"
+  },
+  "directories": {
+    "lib": "src",
+    "bin": "bin",
+    "test": "__tests__"
+  },
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
     "build": "tsc",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "test": "cd ../.. && jest packages/flex-plugin",
+    "test:watch": "cd ../.. && jest packages/flex-plugin --watch"
   },
-  "devDependencies": {
-    "@twilio/flex-ui": "1.8.0",
-    "@types/jest": "^24.0.11",
-    "@types/loglevel": "^1.5.3",
-    "@types/node": "^11.13.8",
-    "jest": "^24.7.1",
-    "ts-jest": "^24.0.2",
-    "typescript": "^3.0.3"
-  },
-  "gitHead": "ca02b3d214e6dfa4277b6b69cbbb178783004edf",
   "dependencies": {
     "chalk": "^2.4.1",
     "common-tags": "^1.8.0",
     "ncp": "^2.0.0"
   },
+  "devDependencies": {
+    "@twilio/flex-ui": "1.8.0",
+    "@types/loglevel": "^1.5.3",
+    "@types/node": "^11.13.8",
+    "typescript": "^3.0.3"
+  },
   "peerDependencies": {
     "@twilio/flex-ui": "*"
   },
-  "jest": {
-    "preset": "ts-jest",
-    "testURL": "https://flex.twilio.com/admin",
-    "testMatch": [
-      "<rootDir>/__tests__/**/*.ts",
-      "<rootDir>/__tests__/**/*.js"
-    ],
-    "testPathIgnorePatterns": [
-      "/node_modules/"
-    ]
-  }
+  "gitHead": "ca02b3d214e6dfa4277b6b69cbbb178783004edf"
 }
