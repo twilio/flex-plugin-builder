@@ -34,7 +34,8 @@ To update existing plugins, edit `package.json` and modify `scripts` and `depend
     "dependencies": {
         "@craco/craco": "^5.0.2",
         "flex-plugin": "^2",
-        "craco-config-flex-plugin": "^2"
+        "craco-config-flex-plugin": "^2",
+        "react-scripts": "^3.0.0"
     }
 }
 ```
