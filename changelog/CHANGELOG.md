@@ -40,7 +40,7 @@ To update existing plugins, edit `package.json` and modify `scripts` and `depend
 }
 ```
 
-Then add a `craco.config.js` to the directory and paste the following:
+Add a `craco.config.js` to the directory and paste the following:
 
 ```js
 const config = require('craco-config-flex-plugin');
@@ -55,7 +55,9 @@ module.exports = {
 };
 ```
 
-Re-run `npm install` to install/update the new dependencies.
+Then update `public/plugins.json` and update the port on `src` from `8085` to `3000`. Finally run `npm install` to install/update the new dependencies.
+
+You also need to move your jest configuration into `craco.config.js`, otherwise CRA will ignore them.
 
 ## Breaking Changes
 
