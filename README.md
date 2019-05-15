@@ -39,7 +39,7 @@ Major changelogs can be found in the [changelog directory](/tree/master/changelo
 
 ## Contributing
 
-Glad to have you contribute to this project! Please visit [CONTRIBUTING](CONTRIBUTING.md) for more information on how to contribute to this project.
+Check out [CONTRIBUTING](CONTRIBUTING.md) for more information on how to contribute to this project.
 
 ## License
 
