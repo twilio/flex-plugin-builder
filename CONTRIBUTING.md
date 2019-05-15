@@ -1,6 +1,31 @@
-# Contributor Covenant Code of Conduct
+## Contributing
 
-## Our Pledge
+Glad to have you contribute to this project!
+
+### 1. Create a Fork of the Project
+
+Create a fork of this project for your GitHub user by clicking the `Fork` button at the top of this project
+
+### 2. Setup
+
+```bash
+git clone git@github.com:<YOUR_USERNAME>/flex-plugin-builder.git
+cd flex-plugin-builder
+npm install
+npx lerna bootstrap
+```
+
+### 3. Contributing to a Package
+
+Refer to the `README.md` of the respective packages in `packages/` for specific guidelines for those projects.
+
+### 4. Submitting Changes
+
+When you are happy with your changes, make sure to create a new branch with your changes and open a PR with your changes. For more info check out this [page describing the GitHub workflow](https://guides.github.com/introduction/flow/).
+
+## Contributor Covenant Code of Conduct
+
+#### Our Pledge
 
 In the interest of fostering an open and welcoming environment, we as
 contributors and maintainers pledge to making participation in our project and
@@ -9,7 +34,7 @@ size, disability, ethnicity, sex characteristics, gender identity and expression
 level of experience, education, socio-economic status, nationality, personal
 appearance, race, religion, or sexual identity and orientation.
 
-## Our Standards
+#### Our Standards
 
 Examples of behavior that contributes to creating a positive environment
 include:
@@ -31,7 +56,7 @@ Examples of unacceptable behavior by participants include:
 * Other conduct which could reasonably be considered inappropriate in a
   professional setting
 
-## Our Responsibilities
+#### Our Responsibilities
 
 Project maintainers are responsible for clarifying the standards of acceptable
 behavior and are expected to take appropriate and fair corrective action in
@@ -43,7 +68,7 @@ that are not aligned to this Code of Conduct, or to ban temporarily or
 permanently any contributor for other behaviors that they deem inappropriate,
 threatening, offensive, or harmful.
 
-## Scope
+#### Scope
 
 This Code of Conduct applies both within project spaces and in public spaces
 when an individual is representing the project or its community. Examples of
