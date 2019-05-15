@@ -15,7 +15,7 @@
         <img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg?style=flat-squar" title="Lerna" />
     </a>
     <a href="./LICENSE.md">
-        <img src="https://img.shields.io/npm/l/@ktalebian/switch.svg?style=flat-square" title="License" />
+        <img src="https://img.shields.io/badge/license-MIT-green.svg" title="License" />
     </a>
 </p>
 
