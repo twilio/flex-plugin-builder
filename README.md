@@ -35,7 +35,7 @@ This is a monorepo project managed by [lerna](https://github.com/lerna/lerna) fo
 
 ## Changelog
 
-Major changelogs can be found in the [changelog directory](/tree/master/changelog).
+Major changelogs can be found in the [changelog directory](/changelog/CHANGELOG.md).
 
 ## Contributing
 
