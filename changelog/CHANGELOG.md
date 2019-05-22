@@ -57,6 +57,8 @@ module.exports = {
 
 Then update `public/plugins.json` and update the port on `src` from `8085` to `3000`. Finally run `npm install` to install/update the new dependencies.
 
+A `.env` file was initially included to prevent the browser from opening Flex on `npm start`. This is no longer needed and can be removed.
+
 You also need to move your jest configuration into `craco.config.js`, otherwise CRA will ignore them.
 
 ## Breaking Changes
