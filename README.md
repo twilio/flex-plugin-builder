@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-    <a href="https://travis-ci.org/twilio/flex-plugin-builder">
-        <img src="https://travis-ci.org/twilio/flex-plugin-builder.svg?branch=master" title="Build Status" />
+    <a href="https://travis-ci.com/twilio/flex-plugin-builder">
+        <img src="https://travis-ci.com/twilio/flex-plugin-builder.svg?branch=master" title="Build Status" />
     </a>
     <a href="#contributors">
         <img src="https://img.shields.io/badge/all_contributors-11-orange.svg?style=flat-square" title="All Contributors" />
