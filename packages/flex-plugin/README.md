@@ -31,6 +31,10 @@ loadPlugin(MyPlugin);
 
 Visit [Twilio Docs](https://www.twilio.com/docs/flex/tutorials/building-flex-plugins) for a tutorial on creating your first plugin.
 
+## React Version
+
+We currently support React v16.5.2. 
+
 ## Contributing
 
 Make sure to follow the instructions in the [main repository](https://github.com/twilio/flex-plugin-builder#contributing) to setup the project
