@@ -1,6 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+import * as fs from 'fs';
+import * as path from 'path';
+import CleanWebpackPlugin from 'clean-webpack-plugin';
+import {Configuration} from 'webpack';
 
 const appPath = path.join(process.cwd(), 'package.json');
 const flexUIPath = path.join(process.cwd(), 'node_modules', '@twilio/flex-ui', 'package.json');
@@ -10,13 +11,18 @@ const TWILIO_FLEX_VERSION = flexUIPkg.version;
 
 const UNSUPPORTED_PLUGINS = ['SWPrecacheWebpackPlugin', 'ManifestPlugin'];
 
-module.exports = {
-  configure: (config, context) => {
+export default {
+  configure: (config: Configuration) => {
+    config.output = config.output || {};
+    config.plugins = config.plugins || [];
+    config.optimization = config.optimization || {};
+    config.resolve = config.resolve || {};
+
     config.output.filename = `${appPkg.name}.js`;
     config.output.chunkFilename = `[name].chunk.js`;
     config.plugins = config.plugins
       .filter(plugin => !UNSUPPORTED_PLUGINS.includes(plugin.constructor.name))
-      .map(plugin => {
+      .map((plugin: any) => {
         if (plugin.constructor.name === 'HtmlWebpackPlugin') {
           plugin.options.inject = false;
           plugin.options.hash = false;
