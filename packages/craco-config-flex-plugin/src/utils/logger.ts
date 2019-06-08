@@ -1,32 +1,55 @@
-import {format} from 'util';
+import { format } from 'util';
 
-type Level = 'log' | 'error' | 'warning';
+type Level = 'info' | 'error' | 'warning';
 
-const _log = (level: Level, ...args: any[]) => {
-  console[level](format.apply({}, args as any));
-};
-
+/**
+ * Debug level log
+ * @param args
+ */
 export const debug = (...args: any[]) => {
   if (process.env.VERBOSE) {
-    _log('log', ...args);
+    _log('info', ...args);
   }
 };
 
-export const log = (...args: any[]) => {
-  _log('log', ...args);
+/**
+ * info level log
+ * @param args
+ */
+export const info = (...args: any[]) => {
+  _log('info', ...args);
 };
 
+/**
+ * error level log
+ * @param args
+ */
 export const error = (...args: any[]) => {
   _log('error', ...args);
 };
 
+/**
+ * warning level log
+ * @param args
+ */
 export const warning = (...args: any[]) => {
   _log('warning', ...args);
 };
 
+/**
+ * The internal logger method
+ *
+ * @param level the log {@link Level}
+ * @param args  the arguments of the logger
+ * @private
+ */
+const _log = (level: Level, ...args: any[]) => {
+  console[level](format.apply({}, args as any));
+};
+
 export default {
   debug,
-  log,
+  info,
   warning,
   error,
 };

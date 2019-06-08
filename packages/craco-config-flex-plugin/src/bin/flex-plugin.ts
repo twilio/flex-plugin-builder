@@ -7,10 +7,10 @@ const scripts = [
   'start',
   'build',
   'test',
-  'release'
 ];
+
 const args = process.argv.slice(2);
-const scriptIndex = args.findIndex(x => scripts.includes(x));
+const scriptIndex = args.findIndex((x) => scripts.includes(x));
 const script = scriptIndex === -1 ? args[0] : args[scriptIndex];
 if (!script) {
   logger.error(`Unknown script ${script}`);
@@ -21,6 +21,6 @@ const nodeArgs = scriptIndex > 0 ? args.slice(0, scriptIndex) : [];
 const scriptPath = require.resolve(`../scripts/${script}`);
 const scriptArgs = args.slice(scriptIndex + 1);
 const processArgs = nodeArgs.concat(scriptPath).concat(scriptArgs);
-const statusCode = spawn(processArgs);
 
-process.exit(statusCode);
+// Run the script and then exit
+process.exit(spawn(processArgs));

@@ -1,2 +1,2 @@
-export {default as devServer} from './lib/devServer';
-export {default as webpack} from './lib/webpack';
+export { default as devServer } from './config/devServer';
+export { default as webpack } from './config/webpack';

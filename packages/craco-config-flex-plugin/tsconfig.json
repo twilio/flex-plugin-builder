@@ -4,7 +4,7 @@
     "outDir": "dist",
     "baseUrl": ".",
     "rootDir": "src",
-    "esModuleInterop": true,
+    "esModuleInterop": true
   },
   "exclude": [
     "node_modules",

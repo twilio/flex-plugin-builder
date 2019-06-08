@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
-import {Configuration} from 'webpack';
+import { Configuration } from 'webpack';
 
 const appPath = path.join(process.cwd(), 'package.json');
 const flexUIPath = path.join(process.cwd(), 'node_modules', '@twilio/flex-ui', 'package.json');
@@ -21,7 +21,7 @@ export default {
     config.output.filename = `${appPkg.name}.js`;
     config.output.chunkFilename = `[name].chunk.js`;
     config.plugins = config.plugins
-      .filter(plugin => !UNSUPPORTED_PLUGINS.includes(plugin.constructor.name))
+      .filter((plugin) => !UNSUPPORTED_PLUGINS.includes(plugin.constructor.name))
       .map((plugin: any) => {
         if (plugin.constructor.name === 'HtmlWebpackPlugin') {
           plugin.options.inject = false;
@@ -60,5 +60,5 @@ export default {
     config.optimization.runtimeChunk = false;
 
     return config;
-  }
+  },
 };
