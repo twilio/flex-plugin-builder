@@ -4,10 +4,11 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   collectCoverageFrom: [
-    '<rootDir>/packages/**/*.ts'
+    '<rootDir>/packages/**/*.ts',
+    '!<rootDir>/packages/**/templates/**/*.ts',
   ],
   testMatch: [
-    '<rootDir>/packages/**/__tests__/**/*.test.ts'
+    '<rootDir>/packages/**/*.test.ts'
   ],
   transform: {
     '^.+\\.js?$': '<rootDir>/node_modules/babel-jest'

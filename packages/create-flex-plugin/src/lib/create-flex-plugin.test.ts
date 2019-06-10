@@ -1,7 +1,7 @@
-import * as execa from 'execa';
-import * as fs from 'fs';
-import * as rimRaf from 'rimraf';
-import createFlexPlugin from '../../src/lib/create-flex-plugin';
+import execa from 'execa';
+import fs from 'fs';
+import rimRaf from 'rimraf';
+import createFlexPlugin from './create-flex-plugin';
 
 jest.mock('../../src/utils/logging');
 

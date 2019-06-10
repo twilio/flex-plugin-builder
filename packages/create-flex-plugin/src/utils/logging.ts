@@ -1,7 +1,7 @@
-import * as boxen from 'boxen';
+import boxen from 'boxen';
 import chalk from 'chalk';
-import * as symbols from 'log-symbols';
-import * as wrapAnsi from 'wrap-ansi';
+import symbols from 'log-symbols';
+import wrapAnsi from 'wrap-ansi';
 import { FlexPluginArguments } from '../lib/create-flex-plugin';
 import { multilineString } from './strings';
 

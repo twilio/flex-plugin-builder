@@ -1,7 +1,7 @@
-import * as execa from 'execa';
-import * as inquirer from 'inquirer';
-import { error } from '../../src/utils/logging';
-import * as validators from '../../src/utils/validators';
+import execa from 'execa';
+import inquirer from 'inquirer';
+import { error } from './logging';
+import * as validators from './validators';
 import Mock = jest.Mock;
 
 jest.mock('execa');
