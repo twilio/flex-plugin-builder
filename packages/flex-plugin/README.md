@@ -1,14 +1,39 @@
-![npm](https://img.shields.io/npm/v/flex-plugin-scripts.svg?style=flat-square)
-![npm](https://img.shields.io/npm/dt/flex-plugin-scripts.svg?style=flat-square)
-[![NpmLicense](https://img.shields.io/npm/l/flex-plugin-scripts.svg?style=flat-square)](LICENSE.md)
+![npm](https://img.shields.io/npm/v/flex-plugin.svg?style=flat-square)
+![npm](https://img.shields.io/npm/dt/flex-plugin.svg?style=flat-square)
+[![NpmLicense](https://img.shields.io/npm/l/flex-plugin.svg?style=flat-square)](LICENSE.md)
 
-# Flex Plugin Scripts
+# Flex Plugin
 
-Scripts to run, build, and deploy Flex Plugins.
+Library to help building [Twilio Flex](https://www.twilio.com/flex) Plugins.
 
 ## Installation
 
-This repo will automatically be installed as part of creating a new Plugin.
+```bash
+npm install flex-plugin
+```
+
+## Usage
+
+```js
+import { loadPlugin, FlexPlugin } from 'flex-plugin';
+
+class MyPlugin extends FlexPlugin {
+  pluginName = 'MyPlugin';
+
+  init(flex, manager) {
+    // setup your flex
+    flex.TaskCanvas.Content.add(<p>Hello</p>);
+  }
+}
+
+loadPlugin(MyPlugin);
+```
+
+Visit [Twilio Docs](https://www.twilio.com/docs/flex/tutorials/building-flex-plugins) for a tutorial on creating your first plugin.
+
+## React Version
+
+We currently support React v16.5.2. 
 
 ## Contributing
 
