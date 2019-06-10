@@ -96,7 +96,7 @@ would use the `master` branch.
 
 ## Contributing
 
-Make sure to follow the instructions in the [main repository](https://github.com/twilio/flex-plugin-builder#contributing) to setup the project
+Make sure to follow the instructions in the [main repository](https://github.com/twilio/flex-plugin-builder#contributing) to set up the project.
 
 ```bash
 # Install dependencies and link local packages with each other
