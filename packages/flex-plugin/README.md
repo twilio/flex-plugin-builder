@@ -37,11 +37,11 @@ We currently support React v16.5.2.
 
 ## Contributing
 
-Make sure to follow the instructions in the [main repository](https://github.com/twilio/flex-plugin-builder#contributing) to setup the project
+Make sure to follow the instructions in the [main repository](https://github.com/twilio/flex-plugin-builder#contributing) to set up the project.
 
 ```bash
 # Install dependencies and link local packages with each other
-cd packages/flex-plugin
+cd packages/flex-plugin-scripts
 npx lerna bootstrap
 
 # Run tests
@@ -50,7 +50,7 @@ npm test
 # To use your local package in a different project
 npm link
 # then in a different project
-npm link flex-plugin
+npm link flex-plugin-scripts
 ```
 
 ## Contributors
