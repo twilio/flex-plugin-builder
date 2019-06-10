@@ -45,7 +45,6 @@
     "typescript": "^3.5.1"
   },
   "peerDependencies": {
-    "@craco/craco": "^5.0.2",
     "flex-plugin": "*"
   }
 }
