@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import * as symbols from 'log-symbols';
-import * as log from '../../src/utils/logging';
+import * as log from '../logging';
 
 describe('logging', () => {
     beforeEach(() => jest.clearAllMocks());

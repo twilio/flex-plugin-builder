@@ -1,4 +1,4 @@
-import * as Flex from '@twilio/flex-ui';
+import Flex from '@twilio/flex-ui';
 
 export type FlexGlobal = typeof Flex;
 
