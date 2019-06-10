@@ -18,7 +18,8 @@
     "lint": "tslint --project tsconfig.json",
     "lint:fix": "tslint --project tsconfig.json --fix",
     "test": "jest",
-    "test:watch": "jest --watchAll"
+    "test:watch": "jest --watchAll",
+    "build": "lerna run build"
   },
   "dependencies": {
     "@types/node": "^11.13.5"
