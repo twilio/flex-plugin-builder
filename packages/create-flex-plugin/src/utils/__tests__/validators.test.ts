@@ -1,11 +1,11 @@
 import execa from 'execa';
 import inquirer from 'inquirer';
-import { error } from './logging';
-import * as validators from './validators';
+import { error } from '../logging';
+import * as validators from '../validators';
 import Mock = jest.Mock;
 
 jest.mock('execa');
-jest.mock('../../src/utils/logging');
+jest.mock('../logging');
 
 describe('validators', () => {
     const accountSid = 'AC00000000000000000000000000000000';

@@ -6,4 +6,4 @@ export {
 export {
     getAssetsUrl,
     getRuntimeUrl,
-} from './lib/utils/runtime';
+} from './utils/runtime';

@@ -1,9 +1,9 @@
 import execa from 'execa';
 import fs from 'fs';
 import rimRaf from 'rimraf';
-import createFlexPlugin from './create-flex-plugin';
+import createFlexPlugin from '../create-flex-plugin';
 
-jest.mock('../../src/utils/logging');
+jest.mock('../../utils/logging');
 
 describe('create-flex-plugin', () => {
     const accountSid = 'AC00000000000000000000000000000000';

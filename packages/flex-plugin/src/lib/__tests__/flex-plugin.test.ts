@@ -1,5 +1,5 @@
 import { Flex } from '@twilio/flex-ui/src/FlexGlobal';
-import { FlexGlobal, FlexPlugin, loadPlugin } from './flex-plugin';
+import { FlexGlobal, FlexPlugin, loadPlugin } from '../flex-plugin';
 
 declare var console: Partial<Console>;
 

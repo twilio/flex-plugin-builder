@@ -1,4 +1,4 @@
-import { getAssetsUrl } from './runtime';
+import { getAssetsUrl } from '../runtime';
 
 describe('runtime', () => {
     describe('getAssetsUrl', () => {
