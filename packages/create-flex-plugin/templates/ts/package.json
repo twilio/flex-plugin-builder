@@ -6,10 +6,10 @@
     "bootstrap": "flex-check-start",
     "postinstall": "npm run bootstrap",
     "prestart": "npm run bootstrap",
-    "start": "flex-publish start",
-    "build": "flex-publish build",
-    "test": "flex-publish test --env=jsdom",
-    "eject": "flex-publish eject"
+    "start": "flex-plugin start",
+    "build": "flex-plugin build",
+    "test": "flex-plugin test --env=jsdom",
+    "eject": "flex-plugin eject"
   },
   "devDependencies": {
     "@twilio/flex-ui": "{{flexSdkVersion}}"
