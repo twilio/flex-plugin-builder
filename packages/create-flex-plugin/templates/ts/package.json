@@ -6,10 +6,10 @@
     "bootstrap": "flex-check-start",
     "postinstall": "npm run bootstrap",
     "prestart": "npm run bootstrap",
-    "start": "craco start",
-    "build": "craco build",
-    "test": "craco test --env=jsdom",
-    "eject": "craco eject"
+    "start": "flex-plugin start",
+    "build": "flex-plugin build",
+    "test": "flex-plugin test --env=jsdom",
+    "eject": "flex-plugin eject"
   },
   "devDependencies": {
     "@twilio/flex-ui": "{{flexSdkVersion}}"

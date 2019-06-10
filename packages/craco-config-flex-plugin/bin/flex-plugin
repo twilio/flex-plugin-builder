@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+
+'use strict';
+
+require = require('esm')(module /*, options*/);
+require('../dist/bin/flex-plugin.js')
+  .default()
+  .parse(process.argv.slice(2));
