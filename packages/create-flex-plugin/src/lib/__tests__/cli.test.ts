@@ -1,7 +1,7 @@
-import cli from '../../src/lib/cli';
-import createFlexPlugin from '../../src/lib/create-flex-plugin';
+import cli from '../cli';
+import createFlexPlugin from '../create-flex-plugin';
 
-jest.mock('../../src/lib/create-flex-plugin');
+jest.mock('../create-flex-plugin');
 
 describe('cli', () => {
     it('should call createFlexPlugin', () => {

@@ -5,7 +5,10 @@
     "rootDir": "src",
     "module": "commonjs",
     "target": "es5",
-    "lib": ["es6", "dom"],
+    "lib": [
+      "es6",
+      "dom"
+    ],
     "sourceMap": true,
     "jsx": "react",
     "moduleResolution": "node",
@@ -16,7 +19,16 @@
     "skipLibCheck": true,
     "declaration": true,
     "resolveJsonModule": true,
-    "types" : ["node", "jest"]
+    "esModuleInterop": true,
+    "types" : [
+      "node",
+      "jest"
+    ]
   },
-  "exclude": ["node_modules", "__tests__", "dist"]
+  "exclude": [
+    "node_modules",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "dist"
+  ]
 }

@@ -1,4 +1,4 @@
-import * as execa from 'execa';
+import execa from 'execa';
 import { camelCase, upperFirst } from 'lodash';
 import { join } from 'path';
 import * as github from '../utils/github';

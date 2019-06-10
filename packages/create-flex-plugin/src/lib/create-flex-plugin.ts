@@ -1,7 +1,7 @@
-import * as copy from 'copy-template-dir';
-import * as fs from 'fs';
+import copy from 'copy-template-dir';
+import fs from 'fs';
 import ora from 'ora';
-import * as tmp from 'tmp';
+import tmp from 'tmp';
 import { resolve, join } from 'path';
 import { promisify } from 'util';
 import { setupConfiguration, installDependencies, downloadFromGitHub } from './commands';

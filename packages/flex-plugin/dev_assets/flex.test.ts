@@ -1,9 +1,12 @@
-import '../../dev_assets/flex';
+import './flex';
+
+declare const global: any;
+declare const loadFlex: (arg?: any) => void;
 
 describe('flex', () => {
   let runDefaultMockedFailResponse = false;
 
-  global.Twilio = {
+  const Twilio = {
     Flex: {
       runDefault: jest.fn().mockImplementation(() => {
         return runDefaultMockedFailResponse
@@ -12,6 +15,8 @@ describe('flex', () => {
       }),
     },
   };
+
+  global.Twilio = Twilio;
 
   beforeEach(() => {
     global.appConfig = {};
