@@ -4,11 +4,11 @@
 
 # Flex Plugin Scripts
 
-Scripts to run, build, and deploy Flex Plugins.
+Scripts to run, build, and deploy Flex plugin.
 
 ## Installation
 
-This repo will automatically be installed as part of creating a new Plugin.
+This repo will automatically be installed as part of creating a new plugin.
 
 ## Contributing
 
