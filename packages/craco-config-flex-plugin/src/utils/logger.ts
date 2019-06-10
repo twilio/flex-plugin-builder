@@ -3,7 +3,7 @@ import { format } from 'util';
 type Level = 'info' | 'error' | 'warning';
 
 /**
- * Debug level log
+ * debug level log
  * @param args
  */
 export const debug = (...args: any[]) => {

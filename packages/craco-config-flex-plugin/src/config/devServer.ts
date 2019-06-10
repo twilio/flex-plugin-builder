@@ -1,18 +1,18 @@
-import * as path from 'path';
+import path from 'path';
 import { Configuration } from 'webpack-dev-server';
 
 const devServerConfig = (config: Configuration) => {
-  const paths = path.join(process.cwd(), 'node_modules', 'flex-plugin', 'dev_assets');
+  const devAssets = path.join(process.cwd(), 'node_modules', 'flex-plugin', 'dev_assets');
 
   if (Array.isArray(config.contentBase)) {
-    config.contentBase.push(paths);
+    config.contentBase.push(devAssets);
   } else if (typeof(config.contentBase) === 'string') {
     config.contentBase = [
       config.contentBase,
-      paths,
+      devAssets,
     ];
   } else {
-    config.contentBase = [paths];
+    config.contentBase = [devAssets];
   }
 
   return config;

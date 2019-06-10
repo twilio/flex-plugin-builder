@@ -11,17 +11,17 @@ const spawn = (processArgs: string[]): number => {
 
   if (child.signal) {
     if (child.signal === 'SIGKILL') {
-      logger.error(`
-        The build failed because the process exited too early.
-        This probably means the system ran out of memory or someone called
-        \`kill -9\` on the process.
-      `);
+      logger.error([
+        'The build failed because the process exited too early. ',
+        'This probably means the system ran out of memory or someone called ',
+        '`kill -9` on the process.',
+      ].join('\n'));
     } else if (child.signal === 'SIGTERM') {
-      logger.warning(`
-        Someone might have called  \`kill\` or \`killall\`, or the system could
-        The build failed because the process exited too early.
-        be shutting down.
-      `);
+      logger.warning([
+        'The build failed because the process exited too early. ',
+        'Someone might have called  `kill` or `killall`, or the system could ',
+        'be shutting down.',
+       ].join('\n'));
     }
 
     process.exit(1);

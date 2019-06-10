@@ -1,12 +1,12 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import {readFileSync } from 'fs';
+import { join } from 'path';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
 import { Configuration } from 'webpack';
 
-const appPath = path.join(process.cwd(), 'package.json');
-const flexUIPath = path.join(process.cwd(), 'node_modules', '@twilio/flex-ui', 'package.json');
-const appPkg = JSON.parse(fs.readFileSync(appPath, 'utf8'));
-const flexUIPkg = JSON.parse(fs.readFileSync(flexUIPath, 'utf8'));
+const appPath = join(process.cwd(), 'package.json');
+const flexUIPath = join(process.cwd(), 'node_modules', '@twilio/flex-ui', 'package.json');
+const appPkg = JSON.parse(readFileSync(appPath, 'utf8'));
+const flexUIPkg = JSON.parse(readFileSync(flexUIPath, 'utf8'));
 const TWILIO_FLEX_VERSION = flexUIPkg.version;
 
 const UNSUPPORTED_PLUGINS = ['SWPrecacheWebpackPlugin', 'ManifestPlugin'];
@@ -50,9 +50,9 @@ export default {
 
     config.plugins.push(new CleanWebpackPlugin({
       cleanAfterEveryBuildPatterns: [
-        path.join(process.cwd(), 'build/service-worker.js'),
-        path.join(process.cwd(), 'build/precache-manifest*.js'),
-        path.join(process.cwd(), 'build/index.html'),
+        join(process.cwd(), 'build/service-worker.js'),
+        join(process.cwd(), 'build/precache-manifest*.js'),
+        join(process.cwd(), 'build/index.html'),
       ],
     }));
 
