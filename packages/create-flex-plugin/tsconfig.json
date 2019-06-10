@@ -6,10 +6,11 @@
     "rootDir": "src"
   },
   "exclude": [
+    "__mocks__",
     "node_modules",
-    "**/*.test.ts",
-    "**/*.spec.ts",
     "dist",
-    "templates"
+    "templates",
+    "**/*.test.ts",
+    "**/*.spec.ts"
   ]
 }
