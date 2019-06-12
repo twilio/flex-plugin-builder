@@ -13,6 +13,16 @@ export const debug = (...args: any[]) => {
 };
 
 /**
+ * trace level trace
+ * @param args
+ */
+export const trace = (...args: any[]) => {
+  if (process.env.DEBUG_TRACE) {
+    _log('info', ...args);
+  }
+};
+
+/**
  * info level log
  * @param args
  */
@@ -52,4 +62,5 @@ export default {
   info,
   warning,
   error,
+  trace,
 };
