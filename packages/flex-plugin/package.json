@@ -41,12 +41,14 @@
   "dependencies": {
     "chalk": "^2.4.1",
     "common-tags": "^1.8.0",
-    "ncp": "^2.0.0"
+    "ncp": "^2.0.0",
+    "shortid": "^2.2.14"
   },
   "devDependencies": {
     "@twilio/flex-ui": "1.8.0",
     "@types/loglevel": "^1.5.3",
     "@types/node": "^11.13.8",
+    "@types/shortid": "^0.0.29",
     "typescript": "^3.0.3"
   },
   "peerDependencies": {
