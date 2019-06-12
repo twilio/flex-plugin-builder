@@ -1,12 +1,22 @@
-export const loadCSS = (href: string) => {
-    const head = document.getElementsByTagName('head')[0];
-    const link  = document.createElement('link');
+import shortid from 'shortid';
 
-    link.id   = 'external-css';
-    link.rel  = 'stylesheet';
-    link.type = 'text/css';
-    link.media = 'all';
-    link.href = href;
+/**
+ * Loads external CSS files into your plugin
+ * Use this method at the beginning of the init() method of the plugin
+ * @param hrefArray Array of CSS file links to load
+ * @return {void}
+ */
+export const loadCSS = (...hrefArray: string[]): void => {
+    hrefArray.forEach((href: string) => {
+        const head = document.getElementsByTagName('head')[0];
+        const link  = document.createElement('link');
 
-    head.appendChild(link);
+        link.id   = `external-css-${shortid.generate()}`;
+        link.rel  = 'stylesheet';
+        link.type = 'text/css';
+        link.media = 'all';
+        link.href = href;
+
+        head.appendChild(link);
+    });
 };

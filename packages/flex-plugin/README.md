@@ -45,7 +45,10 @@ class MyPlugin extends FlexPlugin {
 
   init(flex, manager) {
     loadJS('https//my-publicly-accessible-domain.com/test.js');
-    loadCSS('https//my-publicly-accessible-domain.com/test.css');
+    loadCSS(
+      'https//my-publicly-accessible-domain.com/test.css',
+      'https//my-publicly-accessible-domain.com/test-2.css',
+    );
 
     // set up everything else
   }
