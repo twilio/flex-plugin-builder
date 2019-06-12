@@ -8,7 +8,6 @@ import shortid from 'shortid';
  */
 export const loadCSS = (...hrefArray: string[]): void => {
     hrefArray.forEach((href: string) => {
-        const head = document.getElementsByTagName('head')[0];
         const link  = document.createElement('link');
 
         link.id   = `external-css-${shortid.generate()}`;
@@ -17,6 +16,6 @@ export const loadCSS = (...hrefArray: string[]): void => {
         link.media = 'all';
         link.href = href;
 
-        head.appendChild(link);
+        document.head.appendChild(link);
     });
 };
