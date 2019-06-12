@@ -10,8 +10,8 @@ export default {
   buildDir: path.join(process.cwd(), 'build'),
   packageName: packageName,
   version: packageJson.version,
-  bundlePath: `${path.join(buildDir, packageName)}.js`,
-  sourceMapPath: `${path.join(buildDir, packageName)}.js.map`,
+  localBundlePath: `${path.join(buildDir, packageName)}.js`,
+  localSourceMapPath: `${path.join(buildDir, packageName)}.js.map`,
   appConfig: path.join(process.cwd(), 'public', 'appConfig.js'),
   assetBaseUrlTemplate: assetBaseUrl,
 };

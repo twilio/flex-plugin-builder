@@ -14,7 +14,7 @@ export default class BuildClient extends BaseClient {
   private static pollingIntervalMsec: number = 500;
 
   constructor(auth: AuthConfig, serviceSid: string) {
-    super(auth,  `${ServiceClient.baseUrl}/Services/${serviceSid}`);
+    super(auth,  `${ServiceClient.getBaseUrl()}/Services/${serviceSid}`);
   }
 
   /**

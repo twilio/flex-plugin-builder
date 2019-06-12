@@ -1,6 +1,12 @@
 import { format } from 'util';
+import chalk from 'chalk';
 
-type Level = 'info' | 'error' | 'warning';
+type Level = 'info' | 'error' | 'warn';
+const chalkMap = {
+  info: (args: string) => args,
+  warn: chalk.yellow,
+  error: chalk.red,
+};
 
 /**
  * debug level log
@@ -43,7 +49,7 @@ export const error = (...args: any[]) => {
  * @param args
  */
 export const warning = (...args: any[]) => {
-  _log('warning', ...args);
+  _log('warn', ...args);
 };
 
 /**
@@ -54,7 +60,7 @@ export const warning = (...args: any[]) => {
  * @private
  */
 const _log = (level: Level, ...args: any[]) => {
-  console[level](format.apply({}, args as any));
+  console[level](chalkMap[level](format.apply({}, args as any)));
 };
 
 export default {

@@ -5,7 +5,7 @@ import ServiceClient from './services';
 
 export default class EnvironmentClient extends BaseClient {
   constructor(auth: AuthConfig, serviceSid: string) {
-    super(auth, `${ServiceClient.baseUrl}/Services/${serviceSid}`);
+    super(auth, `${ServiceClient.getBaseUrl()}/Services/${serviceSid}`);
   }
 
   /**

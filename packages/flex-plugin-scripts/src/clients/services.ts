@@ -3,10 +3,17 @@ import BaseClient from './baseClient';
 import { Service, ServiceResource } from './serverless-types';
 
 export default class ServiceClient extends BaseClient {
-  public static baseUrl: string = 'https://serverless.twilio.com/v1';
+  public static getBaseUrl = (): string => {
+    const realm = process.env.TWILIO_SERVERLESS_REALM;
+    if (!realm) {
+      return 'https://serverless.twilio.com/v1';
+    }
+
+    return `https://serverless.${realm.toLowerCase()}.twilio.com/v1`;
+  };
 
   constructor(auth: AuthConfig) {
-    super(auth, ServiceClient.baseUrl);
+    super(auth, ServiceClient.getBaseUrl());
   }
 
   /**

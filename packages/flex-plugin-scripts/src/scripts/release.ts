@@ -16,6 +16,11 @@ const allowedBumps = [
   'custom',
 ];
 
+interface Options {
+  isPublic: boolean;
+  overwrite: boolean;
+}
+
 /**
  * Verifies the new plugin path does not have collision with existing paths of the deployed Runtime service.
  *
@@ -45,19 +50,19 @@ const verifyPath = (baseUrl: string, build: Build) => {
  * 7. Creates a new deployment and sets the Environment build to the new Build.
  *
  * @param nextVersion   the next version of the bundle
- * @param isPublic      whether the file is public
+ * @param options       options for this release
  */
-const release = async (nextVersion: string, isPublic: boolean = false) => {
+const release = async (nextVersion: string, options: Options) => {
   logger.debug('Releasing Flex plugin');
 
-  if (!checkFileExists(paths.bundlePath)) {
+  if (!checkFileExists(paths.localBundlePath)) {
     logger.error('Could not find build file. Did you run `npm run build` first?');
     process.exit(1);
   }
 
   const pluginBaseUrl = paths.assetBaseUrlTemplate.replace('%PLUGIN_VERSION%', nextVersion);
-  const bundlePath = `${pluginBaseUrl}/bundle.js`;
-  const sourceMapPath = `${pluginBaseUrl}/bundle.js.map`;
+  const bundleUri = `${pluginBaseUrl}/bundle.js`;
+  const sourceMapUri = `${pluginBaseUrl}/bundle.js.map`;
 
   // Fetch AccountSid/AuthToken first
   const credentials = await getCredentials();
@@ -75,7 +80,7 @@ const release = async (nextVersion: string, isPublic: boolean = false) => {
       environment,
     };
   });
-  const pluginUrl = `https://${runtime.environment.domain_name}${bundlePath}`;
+  const pluginUrl = `https://${runtime.environment.domain_name}${bundleUri}`;
 
   const buildClient = new BuildClient(credentials, runtime.service.sid);
   const assetClient = new AssetClient(credentials, runtime.service.sid);
@@ -94,7 +99,11 @@ const release = async (nextVersion: string, isPublic: boolean = false) => {
 
     const existingBuild = await buildClient.get(runtime.environment.build_sid);
     if (!verifyPath(pluginBaseUrl, existingBuild)) {
-      throw new Error(`You already have a plugin with the same version: ${pluginUrl}`);
+      if (options.overwrite) {
+        logger.warning('\n', 'Plugin already exists and the flag --overwrite is going to overwrite this plugin.');
+      } else {
+        throw new Error(`You already have a plugin with the same version: ${pluginUrl}`);
+      }
     }
 
     return existingBuild;
@@ -103,13 +112,17 @@ const release = async (nextVersion: string, isPublic: boolean = false) => {
   // Upload plugin bundle and source map to S3
   const buildData = await progress<BuildData>('Uploading your new plugin', async () => {
     // Upload bundle and sourcemap
-    const bundleVersion = await assetClient.upload(paths.packageName, bundlePath, paths.bundlePath, !isPublic);
-    const sourceMapVersion = await assetClient.upload(paths.packageName, sourceMapPath, paths.sourceMapPath, !isPublic);
+    const bundleVersion = await assetClient.upload(paths.packageName, bundleUri, paths.localBundlePath, !options.isPublic);
+    const sourceMapVersion = await assetClient.upload(paths.packageName, sourceMapUri, paths.localBundlePath, !options.isPublic);
+
+    const existingAssets =  !verifyPath(pluginBaseUrl, existingBuild) && options.overwrite
+      ?  existingBuild.asset_versions.filter(v => v.path !== bundleUri && v.path != sourceMapUri)
+      :  existingBuild.asset_versions;
 
     // Create build
     const buildData = {
       FunctionVersions: existingBuild.function_versions.map(v => v.sid),
-      AssetVersions: existingBuild.asset_versions.map(v => v.sid),
+      AssetVersions: existingAssets.map(v => v.sid),
       Dependencies: existingBuild.dependencies,
     };
     buildData.AssetVersions.push(bundleVersion.sid);
@@ -137,6 +150,7 @@ const release = async (nextVersion: string, isPublic: boolean = false) => {
 (async () => {
   const bump = process.argv[3];
   const isPublic = process.argv.includes('--public');
+  const overwrite = process.argv.includes('--overwrite');
 
   if (!allowedBumps.includes(bump)) {
     logger.error('Version bump can only be one of %s', allowedBumps.join(', '));
@@ -153,5 +167,5 @@ const release = async (nextVersion: string, isPublic: boolean = false) => {
     nextVersion = semver.inc(paths.version, bump as ReleaseType) as any;
   }
 
-  await release(nextVersion, isPublic);
+  await release(nextVersion, {isPublic, overwrite});
 })().catch(logger.error);
