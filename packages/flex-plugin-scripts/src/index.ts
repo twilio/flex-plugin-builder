@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
 import spawn from './utils/spawn';
-import * as logger from './utils/logger';
+import logger from './utils/logger';
 
 const scripts = [
+  'release',
   'start',
   'build',
   'test',
@@ -11,9 +12,10 @@ const scripts = [
 
 const args = process.argv.slice(2);
 const scriptIndex = args.findIndex((x) => scripts.includes(x));
-const script = scriptIndex === -1 ? args[0] : args[scriptIndex];
+const script = scriptIndex !== -1 && args[scriptIndex];
 if (!script) {
-  logger.error(`Unknown script ${script}`);
+  const options = logger.colors.blue(scripts.join(', '));
+  logger.error(`Unknown script '${script}'; please choose from one of: ${options}.`);
   process.exit(1);
 }
 

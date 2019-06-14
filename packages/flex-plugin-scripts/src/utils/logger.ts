@@ -2,11 +2,13 @@ import { format } from 'util';
 import chalk from 'chalk';
 
 type Level = 'info' | 'error' | 'warn';
-const chalkMap = {
-  info: (args: string) => args,
-  warn: chalk.yellow,
-  error: chalk.red,
-};
+type Color = 'red' | 'yellow' | 'green' | 'blue';
+
+interface LogArg {
+  color?: Color;
+  level: Level;
+  args: string[];
+}
 
 /**
  * debug level log
@@ -14,7 +16,7 @@ const chalkMap = {
  */
 export const debug = (...args: any[]) => {
   if (process.env.VERBOSE) {
-    _log('info', ...args);
+    _log({level: 'info', args});
   }
 };
 
@@ -24,7 +26,7 @@ export const debug = (...args: any[]) => {
  */
 export const trace = (...args: any[]) => {
   if (process.env.DEBUG_TRACE) {
-    _log('info', ...args);
+    _log({level: 'info', args});
   }
 };
 
@@ -33,7 +35,15 @@ export const trace = (...args: any[]) => {
  * @param args
  */
 export const info = (...args: any[]) => {
-  _log('info', ...args);
+  _log({level: 'info', args});
+};
+
+/**
+ * success level log
+ * @param args
+ */
+export const success = (...args: any[]) => {
+  _log({level: 'info', color: 'green', args});
 };
 
 /**
@@ -41,7 +51,7 @@ export const info = (...args: any[]) => {
  * @param args
  */
 export const error = (...args: any[]) => {
-  _log('error', ...args);
+  _log({level: 'error', color: 'red', args});
 };
 
 /**
@@ -49,18 +59,18 @@ export const error = (...args: any[]) => {
  * @param args
  */
 export const warning = (...args: any[]) => {
-  _log('warn', ...args);
+  _log({level: 'warn', color: 'yellow', args});
 };
 
 /**
- * The internal logger method
- *
- * @param level the log {@link Level}
- * @param args  the arguments of the logger
+ *  The internal logger method
+ * @param args
  * @private
  */
-const _log = (level: Level, ...args: any[]) => {
-  console[level](chalkMap[level](format.apply({}, args as any)));
+const _log = (args: LogArg) => {
+  const color = args.color ? chalk[args.color] : null;
+  const msg = format.apply({}, args.args as any);
+  console[args.level](color && color(msg) || msg);
 };
 
 export default {
@@ -69,4 +79,6 @@ export default {
   warning,
   error,
   trace,
+  success,
+  colors: chalk,
 };

@@ -17,7 +17,7 @@ export default class AssetClient extends BaseClient {
    * @param localFilePath the local path to the file
    * @param isProtected    whether to upload this file as Public or Protected
    */
-  public upload = async (friendlyName: string, uri: string, localFilePath: string, isProtected: boolean = true): Promise<AssetVersion> => {
+  public upload = async (friendlyName: string, uri: string, localFilePath: string, isProtected: boolean = true) => {
     const asset = await this._create(friendlyName);
     const version = await this._createVersion(asset.sid, uri, isProtected);
 

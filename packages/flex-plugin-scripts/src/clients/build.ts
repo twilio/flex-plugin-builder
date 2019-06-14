@@ -10,7 +10,7 @@ export interface BuildData {
 }
 
 export default class BuildClient extends BaseClient {
-  private static timeoutMsec: number = 30000;
+  private static timeoutMsec: number = 60000;
   private static pollingIntervalMsec: number = 500;
 
   constructor(auth: AuthConfig, serviceSid: string) {
@@ -25,22 +25,22 @@ export default class BuildClient extends BaseClient {
    */
   public create = (data: BuildData): Promise<Build> => {
     return new Promise(async (resolve, reject) => {
-      const build = await this._create(data);
-      const sid = build.sid;
+      const newBuild = await this._create(data);
+      const sid = newBuild.sid;
 
       const timeoutId = setTimeout(() => {
         clearInterval(intervalId);
-        reject('Timeout while waiting for new Build status to change to complete.');
+        reject('Timeout while waiting for new Twilio Runtime build status to change to complete.');
       }, BuildClient.timeoutMsec);
 
       const intervalId = setInterval(async () => {
-        const _build = await this.get(sid);
+        const build = await this.get(sid);
 
-        if (_build.status === BuildStatus.Failed) {
+        if (build.status === BuildStatus.Failed) {
           clearInterval(intervalId);
           clearTimeout(timeoutId);
 
-          reject('New Runtime build has failed.');
+          reject('New Twilio Runtime build has failed.');
         }
 
         if (build.status === BuildStatus.Completed) {

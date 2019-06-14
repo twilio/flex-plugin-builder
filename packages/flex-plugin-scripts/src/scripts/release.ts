@@ -60,6 +60,8 @@ const release = async (nextVersion: string, options: Options) => {
     process.exit(1);
   }
 
+  logger.info('Uploading your Flex plugin to Twilio Assets\n');
+
   const pluginBaseUrl = paths.assetBaseUrlTemplate.replace('%PLUGIN_VERSION%', nextVersion);
   const bundleUri = `${pluginBaseUrl}/bundle.js`;
   const sourceMapUri = `${pluginBaseUrl}/bundle.js.map`;
@@ -87,7 +89,7 @@ const release = async (nextVersion: string, options: Options) => {
   const deploymentClient = new DeploymentClient(credentials, runtime.service.sid, runtime.environment.sid);
 
   // Create build
-  const existingBuild = await progress<Build>('Fetching existing Runtime build and validating new plugin bundle', async () => {
+  const existingBuild = await progress<Build>('Validating the new plugin bundle', async () => {
     // This is the first time we are doing a build, so we don't have a pre-existing build
     if (!runtime.environment.build_sid) {
       return {
@@ -110,7 +112,7 @@ const release = async (nextVersion: string, options: Options) => {
   });
 
   // Upload plugin bundle and source map to S3
-  const buildData = await progress<BuildData>('Uploading your new plugin', async () => {
+  const buildData = await progress<BuildData>('Uploading your plugin bundle', async () => {
     // Upload bundle and sourcemap
     const bundleVersion = await assetClient
       .upload(paths.packageName, bundleUri, paths.localBundlePath, !options.isPublic);
@@ -134,23 +136,23 @@ const release = async (nextVersion: string, options: Options) => {
   });
 
   // Create a build, and poll regularly until build is complete
-  const build = await progress<Build>('Creating a new Build', async () => await buildClient.create(buildData));
-
-  // Create a new deployment to set the build to the environment
-  await progress<Deployment>('Deploying your new plugin', async () => {
-    // Create Deployment
-    const deployment = await deploymentClient.create(build.sid);
+  await progress<Build>('Deploying a new build of your Twilio Runtime', async () => {
+    const newBuild = await buildClient.create(buildData);
+    const deployment = await deploymentClient.create(newBuild.sid);
 
     updatePackageVersion(nextVersion);
 
     return deployment;
   });
 
-  logger.info('Successfully uploaded your plugin to %s', pluginUrl);
+  const availability = options.isPublic ? 'publicly' : 'privately';
+  logger.info();
+  logger.success(`🚀  Your plugin is now (${availability}) on ${logger.colors.blue(pluginUrl)}`);
+  logger.info();
 };
 
 (async () => {
-  const bump = process.argv[3];
+  const bump = process.argv[2];
   const isPublic = process.argv.includes('--public');
   const overwrite = process.argv.includes('--overwrite');
 
