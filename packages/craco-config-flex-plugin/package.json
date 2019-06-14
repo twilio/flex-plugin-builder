@@ -27,6 +27,10 @@
     "build": "tsc",
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
+  "dependencies": {
+    "clean-webpack-plugin": "^2.0.2",
+    "path": "^0.12.7"
+  },
   "devDependencies": {
     "@types/jest": "^24.0.13",
     "@types/node": "^12.0.7",
