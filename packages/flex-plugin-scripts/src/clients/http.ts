@@ -1,9 +1,9 @@
-import axios, { AxiosInstance } from "axios";
-import { readFileSync } from "fs";
+import axios, { AxiosInstance } from 'axios';
+import { readFileSync } from 'fs';
 import { stringify } from 'querystring';
-import { format } from "util";
+import { format } from 'util';
 
-import { AuthConfig } from "./auth";
+import { AuthConfig } from './auth';
 import * as logger from '../utils/logger';
 
 export interface HttpConfig {
@@ -29,12 +29,11 @@ export default class Http {
       },
     });
 
-
-    this.client.interceptors.response.use(r => r, this.onError);
+    this.client.interceptors.response.use((r) => r, this.onError);
   }
 
-  public list<R>(uri: string): Promise<Array<R>> {
-    return this.get<Array<R>>(uri);
+  public list<R>(uri: string): Promise<R[]> {
+    return this.get<R[]>(uri);
   }
 
   public get<R>(uri: string): Promise<R> {
@@ -42,7 +41,7 @@ export default class Http {
 
     return this.client
       .get(uri)
-      .then(resp => resp.data || {});
+      .then((resp) => resp.data || {});
   }
 
   public post<R>(uri: string, data: any): Promise<R> {
@@ -50,7 +49,7 @@ export default class Http {
 
     return this.client
       .post(uri, stringify(data))
-      .then(resp => resp.data);
+      .then((resp) => resp.data);
   }
 
   public uploadToS3(filePath: string, url: string, kmsARN: string): Promise<any> {
@@ -72,16 +71,17 @@ export default class Http {
           'X-Amz-Server-Side-Encryption-Aws-Kms-Key-Id': kmsARN,
         },
       })
-      .then(resp => resp.data)
-      .catch(this.onError)
+      .then((resp) => resp.data)
+      .catch(this.onError);
   }
 
   private onError = (err: any): Promise<any> => {
-    const request = err.config;
-    const resp = err.response;
+    const request = err.config || {};
+    const resp = err.response || {};
     const status = resp.status;
     const msg = resp.data && resp.data.message || resp.data;
-    const errMsg = format('Request %s to %s failed with status %s and message %s', request.method, request.url, status, msg);
+    const title = 'Request %s to %s failed with status %s and message %s';
+    const errMsg = format(title, request.method, request.url, status, msg);
 
     if (this.config.exitOnRejection) {
       throw new Error(errMsg);

@@ -1,5 +1,5 @@
 import { AuthConfig } from './auth';
-import BaseClient from "./baseClient";
+import BaseClient from './baseClient';
 import { Environment, EnvironmentResource } from './serverless-types';
 import ServiceClient from './services';
 
@@ -13,8 +13,8 @@ export default class EnvironmentClient extends BaseClient {
    */
   public getDefault = (): Promise<Environment> => {
     return this.list()
-      .then(resource => resource.environments.find(s => s.unique_name === 'default'))
-      .then(environment => {
+      .then((resource) => resource.environments.find((s) => s.unique_name === 'default'))
+      .then((environment) => {
         if (!environment) {
           throw new Error('No Environment named default was found.');
         }

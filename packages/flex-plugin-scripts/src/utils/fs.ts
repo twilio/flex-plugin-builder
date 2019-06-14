@@ -1,5 +1,5 @@
 import fs from 'fs';
-import * as path from "path";
+import * as path from 'path';
 
 const packageJsonPath = path.join(process.cwd(), 'package.json');
 
@@ -11,7 +11,7 @@ const packageJsonPath = path.join(process.cwd(), 'package.json');
 export const checkFilesExist = (files: string[]) => {
   return files
     .map(fs.existsSync)
-    .every(resp => resp);
+    .every((resp) => resp);
 };
 
 /**

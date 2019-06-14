@@ -1,11 +1,11 @@
-import { AuthConfig } from "./auth";
-import BaseClient from "./baseClient";
-import { Build, BuildStatus } from "./serverless-types";
-import ServiceClient from "./services";
+import { AuthConfig } from './auth';
+import BaseClient from './baseClient';
+import { Build, BuildStatus } from './serverless-types';
+import ServiceClient from './services';
 
 export interface BuildData {
-  FunctionVersions: Array<string>;
-  AssetVersions: Array<string>;
+  FunctionVersions: string[];
+  AssetVersions: string[];
   Dependencies: object;
 }
 
@@ -34,9 +34,9 @@ export default class BuildClient extends BaseClient {
       }, BuildClient.timeoutMsec);
 
       const intervalId = setInterval(async () => {
-        const build = await this.get(sid);
+        const _build = await this.get(sid);
 
-        if (build.status === BuildStatus.Failed) {
+        if (_build.status === BuildStatus.Failed) {
           clearInterval(intervalId);
           clearTimeout(timeoutId);
 
@@ -50,7 +50,7 @@ export default class BuildClient extends BaseClient {
         }
       }, BuildClient.pollingIntervalMsec);
     });
-  };
+  }
 
   /**
    * Fetches a build by buildSid
@@ -60,7 +60,7 @@ export default class BuildClient extends BaseClient {
   public get = (buildSid: string): Promise<Build> => {
     return this.http
       .get<Build>(`Builds/${buildSid}`);
-  };
+  }
 
   /**
    * Creates a new instance of build
@@ -71,5 +71,5 @@ export default class BuildClient extends BaseClient {
   private _create = (data: BuildData): Promise<Build> => {
     return this.http
       .post<Build>('Builds', data);
-  };
+  }
 }

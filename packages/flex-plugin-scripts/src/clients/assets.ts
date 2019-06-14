@@ -24,7 +24,7 @@ export default class AssetClient extends BaseClient {
     await this._uploadToS3(version.pre_signed_upload_url, localFilePath);
 
     return this._getVersion(asset.sid, version.sid);
-  };
+  }
 
   /**
    * Returns the {@link AssetVersion}
@@ -36,7 +36,7 @@ export default class AssetClient extends BaseClient {
   private _getVersion = async (assetSid: string, versionSid: string): Promise<AssetVersion> => {
     return this.http
       .get(`Assets/${assetSid}/Versions/${versionSid}`);
-  };
+  }
 
   /**
    * Creates a new {@link Asset}
@@ -46,7 +46,7 @@ export default class AssetClient extends BaseClient {
   private _create = (friendlyName: string): Promise<Asset> => {
     return this.http
       .post<Asset>('Assets', {FriendlyName: friendlyName});
-  };
+  }
 
   /**
    * Creates a new {@link AssetVersion}
@@ -63,7 +63,7 @@ export default class AssetClient extends BaseClient {
 
     return this.http
       .post(`Assets/${assetSid}/Versions`, data);
-  };
+  }
 
   /**
    * Uploads the file to S3 using the pre-signed url
@@ -74,5 +74,5 @@ export default class AssetClient extends BaseClient {
    */
   private _uploadToS3 = (presignedUrl: PresignedUrl, localFilePath: string): Promise<any> => {
     return this.http.uploadToS3(localFilePath, presignedUrl.url, presignedUrl.kmsARN);
-  };
+  }
 }

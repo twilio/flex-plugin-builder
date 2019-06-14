@@ -50,11 +50,11 @@ export interface Asset extends ServerlessEntity {
 }
 
 export interface ServiceResource extends Resource<'services'> {
-  services: Array<Service>
+  services: Service[];
 }
 
 export interface EnvironmentResource extends Resource<'environments'> {
-  environments: Array<Environment>
+  environments: Environment[];
 }
 
 export interface PresignedUrl {
@@ -84,8 +84,8 @@ export interface FunctionVersion extends Version {
 
 export interface Build extends ServerlessEntity {
   status: BuildStatus;
-  asset_versions: Array<AssetVersion>;
-  function_versions: Array<FunctionVersion>;
+  asset_versions: AssetVersion[];
+  function_versions: FunctionVersion[];
   dependencies: object;
   service_sid: string;
 }

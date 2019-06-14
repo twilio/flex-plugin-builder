@@ -1,12 +1,12 @@
-import semver, { ReleaseType } from "semver";
+import semver, { ReleaseType } from 'semver';
 
 import { getCredentials } from '../clients/auth';
-import { BuildData } from "../clients/build";
+import { BuildData } from '../clients/build';
 import { Build, Deployment, Runtime, Version } from '../clients/serverless-types';
 import { checkFileExists, updatePackageVersion } from '../utils/fs';
 import logger from '../utils/logger';
 import paths from '../utils/paths';
-import {AssetClient, ServiceClient, EnvironmentClient, BuildClient, DeploymentClient} from '../clients';
+import { AssetClient, ServiceClient, EnvironmentClient, BuildClient, DeploymentClient } from '../clients';
 import { progress } from '../utils/general';
 
 const allowedBumps = [
@@ -97,8 +97,8 @@ const release = async (nextVersion: string, options: Options) => {
       };
     }
 
-    const existingBuild = await buildClient.get(runtime.environment.build_sid);
-    if (!verifyPath(pluginBaseUrl, existingBuild)) {
+    const _existingBuild = await buildClient.get(runtime.environment.build_sid);
+    if (!verifyPath(pluginBaseUrl, _existingBuild)) {
       if (options.overwrite) {
         logger.warning('\n', 'Plugin already exists and the flag --overwrite is going to overwrite this plugin.');
       } else {
@@ -106,29 +106,31 @@ const release = async (nextVersion: string, options: Options) => {
       }
     }
 
-    return existingBuild;
+    return _existingBuild;
   });
 
   // Upload plugin bundle and source map to S3
   const buildData = await progress<BuildData>('Uploading your new plugin', async () => {
     // Upload bundle and sourcemap
-    const bundleVersion = await assetClient.upload(paths.packageName, bundleUri, paths.localBundlePath, !options.isPublic);
-    const sourceMapVersion = await assetClient.upload(paths.packageName, sourceMapUri, paths.localBundlePath, !options.isPublic);
+    const bundleVersion = await assetClient
+      .upload(paths.packageName, bundleUri, paths.localBundlePath, !options.isPublic);
+    const sourceMapVersion = await assetClient
+      .upload(paths.packageName, sourceMapUri, paths.localBundlePath, !options.isPublic);
 
     const existingAssets =  !verifyPath(pluginBaseUrl, existingBuild) && options.overwrite
-      ?  existingBuild.asset_versions.filter(v => v.path !== bundleUri && v.path != sourceMapUri)
+      ?  existingBuild.asset_versions.filter((v) => v.path !== bundleUri && v.path !== sourceMapUri)
       :  existingBuild.asset_versions;
 
     // Create build
-    const buildData = {
-      FunctionVersions: existingBuild.function_versions.map(v => v.sid),
-      AssetVersions: existingAssets.map(v => v.sid),
+    const data = {
+      FunctionVersions: existingBuild.function_versions.map((v) => v.sid),
+      AssetVersions: existingAssets.map((v) => v.sid),
       Dependencies: existingBuild.dependencies,
     };
-    buildData.AssetVersions.push(bundleVersion.sid);
-    buildData.AssetVersions.push(sourceMapVersion.sid);
+    data.AssetVersions.push(bundleVersion.sid);
+    data.AssetVersions.push(sourceMapVersion.sid);
 
-    return buildData;
+    return data;
   });
 
   // Create a build, and poll regularly until build is complete

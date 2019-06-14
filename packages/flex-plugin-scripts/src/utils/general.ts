@@ -1,4 +1,4 @@
-import ora, {Ora} from 'ora';
+import ora, { Ora } from 'ora';
 
 export type Callback<T, R> = (arg: T) => R;
 
@@ -17,7 +17,7 @@ export const progress = async <R>(title: string, callback: Callback<Ora, any>): 
     spinner.succeed();
 
     return response;
-  } catch(e) {
+  } catch (e) {
     spinner.fail(e.message);
 
     throw e;

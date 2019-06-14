@@ -39,5 +39,5 @@ export const getCredentials = async (): Promise<AuthConfig> => {
   return {
     accountSid: process.env.ACCOUNT_SID as string,
     authToken: process.env.AUTH_TOKEN as string,
-  }
+  };
 };
