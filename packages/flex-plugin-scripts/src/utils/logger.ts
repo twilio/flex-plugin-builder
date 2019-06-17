@@ -62,6 +62,12 @@ export const warning = (...args: any[]) => {
   _log({level: 'warn', color: 'yellow', args});
 };
 
+export const newline = (lines: number = 1) => {
+  for (let i = 0; i < lines; i++) {
+    info();
+  }
+};
+
 /**
  *  The internal logger method
  * @param args
@@ -80,5 +86,6 @@ export default {
   error,
   trace,
   success,
+  newline,
   colors: chalk,
 };

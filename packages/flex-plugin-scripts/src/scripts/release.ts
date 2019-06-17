@@ -2,8 +2,9 @@ import semver, { ReleaseType } from 'semver';
 
 import { getCredentials } from '../clients/auth';
 import { BuildData } from '../clients/build';
-import { Build, Deployment, Runtime, Version } from '../clients/serverless-types';
-import { checkFileExists, updatePackageVersion } from '../utils/fs';
+import { Build, Runtime, Version } from '../clients/serverless-types';
+import availabilityWarning from "../prints/availabilityWarning";
+import { checkFileExists, readPackage, updatePackageVersion } from "../utils/fs";
 import logger from '../utils/logger';
 import paths from '../utils/paths';
 import { AssetClient, ServiceClient, EnvironmentClient, BuildClient, DeploymentClient } from '../clients';
@@ -14,6 +15,7 @@ const allowedBumps = [
   'minor',
   'patch',
   'custom',
+  'overwrite',
 ];
 
 interface Options {
@@ -102,7 +104,8 @@ const release = async (nextVersion: string, options: Options) => {
     const _existingBuild = await buildClient.get(runtime.environment.build_sid);
     if (!verifyPath(pluginBaseUrl, _existingBuild)) {
       if (options.overwrite) {
-        logger.warning('\n', 'Plugin already exists and the flag --overwrite is going to overwrite this plugin.');
+        logger.newline();
+        logger.warning('Plugin already exists and the flag --overwrite is going to overwrite this plugin.');
       } else {
         throw new Error(`You already have a plugin with the same version: ${pluginUrl}`);
       }
@@ -146,15 +149,19 @@ const release = async (nextVersion: string, options: Options) => {
   });
 
   const availability = options.isPublic ? 'publicly' : 'privately';
-  logger.info();
+  logger.newline();
   logger.success(`🚀  Your plugin is now (${availability}) on ${logger.colors.blue(pluginUrl)}`);
-  logger.info();
+  logger.newline();
 };
 
 (async () => {
+  availabilityWarning();
+
   const bump = process.argv[2];
-  const isPublic = process.argv.includes('--public');
-  const overwrite = process.argv.includes('--overwrite');
+  const opts = {
+    isPublic: process.argv.includes('--public'),
+    overwrite: process.argv.includes('--overwrite'),
+  };
 
   if (!allowedBumps.includes(bump)) {
     logger.error('Version bump can only be one of %s', allowedBumps.join(', '));
@@ -167,9 +174,12 @@ const release = async (nextVersion: string, options: Options) => {
     process.exit(1);
   }
 
-  if (bump !== 'custom') {
+  if (bump === 'overwrite') {
+    opts.overwrite = true;
+    nextVersion = readPackage().version;
+  } else if (bump !== 'custom') {
     nextVersion = semver.inc(paths.version, bump as ReleaseType) as any;
   }
 
-  await release(nextVersion, {isPublic, overwrite});
+  await release(nextVersion, opts);
 })().catch(logger.error);
