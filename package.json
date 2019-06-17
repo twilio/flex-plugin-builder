@@ -14,12 +14,18 @@
   ],
   "scripts": {
     "bootstrap": "lerna bootstrap --no-ci",
+    "build": "lerna run build",
     "postinstall": "npm run bootstrap",
     "lint": "tslint --project tsconfig.json",
     "lint:fix": "tslint --project tsconfig.json --fix",
     "test": "jest",
-    "test:watch": "jest --watchAll",
-    "build": "lerna run build"
+    "test:watch": "jest --watchAll"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint",
+      "pre-push": "npm run test"
+    }
   },
   "dependencies": {
     "@types/node": "^11.13.5"
@@ -35,6 +41,7 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^24.7.1",
     "babel-register": "^6.26.0",
+    "husky": "^2.4.1",
     "jest": "^24.7.1",
     "lerna": "3.13.4",
     "ts-jest": "^24.0.2",
