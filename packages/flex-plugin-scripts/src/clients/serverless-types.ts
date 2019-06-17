@@ -1,4 +1,3 @@
-
 export interface Meta<Key> {
   page: number;
   page_size: number;

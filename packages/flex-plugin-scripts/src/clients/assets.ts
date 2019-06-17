@@ -15,7 +15,7 @@ export default class AssetClient extends BaseClient {
    * @param friendlyName  the friendlyName of the asset
    * @param uri           the uri of the Asset
    * @param localFilePath the local path to the file
-   * @param isProtected    whether to upload this file as Public or Protected
+   * @param isProtected   whether to upload this file as Public or Protected
    */
   public upload = async (friendlyName: string, uri: string, localFilePath: string, isProtected: boolean = true) => {
     const asset = await this._create(friendlyName);
@@ -62,7 +62,7 @@ export default class AssetClient extends BaseClient {
     };
 
     return this.http
-      .post(`Assets/${assetSid}/Versions`, data);
+      .post<VersionCreated>(`Assets/${assetSid}/Versions`, data);
   }
 
   /**

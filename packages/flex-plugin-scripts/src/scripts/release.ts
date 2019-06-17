@@ -36,7 +36,7 @@ const verifyPath = (baseUrl: string, build: Build) => {
   const existingAssets = build.asset_versions;
   const existingFunctions = build.function_versions;
 
-  const check = (v: Version) => v.path !== bundlePath && v.path !== sourceMapPath;
+  const check = (version: Version) => version.path !== bundlePath && version.path !== sourceMapPath;
 
   return existingAssets.every(check) && existingFunctions.every(check);
 };
@@ -72,7 +72,7 @@ const release = async (nextVersion: string, options: Options) => {
   const credentials = await getCredentials();
 
   // Fetch the runtime service instance
-  const runtime = await progress<Runtime>('Fetching Runtime Service', async () => {
+  const runtime = await progress<Runtime>('Fetching Twilio Runtime service', async () => {
     const serverlessClient = new ServiceClient(credentials);
     const service = await serverlessClient.getDefault();
 
