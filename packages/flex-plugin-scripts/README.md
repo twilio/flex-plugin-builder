@@ -66,8 +66,6 @@ npm run start
 
 Run this script to use dev-server for local development.
 
-### 
-
 ## Contributing
 
 Make sure to follow the instructions in the [main repository](https://github.com/twilio/flex-plugin-builder#contributing) to set up the project.
