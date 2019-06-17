@@ -36,9 +36,9 @@ const verifyPath = (baseUrl: string, build: Build) => {
   const existingAssets = build.asset_versions;
   const existingFunctions = build.function_versions;
 
-  const check = (version: Version) => version.path !== bundlePath && version.path !== sourceMapPath;
+  const checkPathIsUnused = (v: Version) => v.path !== bundlePath && v.path !== sourceMapPath;
 
-  return existingAssets.every(check) && existingFunctions.every(check);
+  return existingAssets.every(checkPathIsUnused) && existingFunctions.every(checkPathIsUnused);
 };
 
 /**

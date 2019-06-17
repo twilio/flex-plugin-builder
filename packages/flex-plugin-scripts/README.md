@@ -34,11 +34,25 @@ https://domain.twil.io/plugins/dialpad/1.1.1/bundle.js`
 
 You may choose between `major, minor, patch, custom, overwrite` options:
 
-* **major** A major SemVer release version, e.g. going from 1.2.3 to 2.0.0. Example: `npm run release major` 
-* **minor** A minor SemVer release version, e.g. going from 1.2.3 to 1.3.0. Example: `npm run release minor`
-* **patch** A patch SemVer release version, e.g. going from 1.2.3 to 1.2.4. Example: `npm run release patch`
-* **custom** A custom release version if you are not using SemVer versioning. Provide the version as the next argument. Example `npm run release custom v1.2-someTag`
-* **overwrite** Will overwrite the version. Example `npm run release overwrite`
+* **major**: A major SemVer release version, e.g. going from 1.2.3 to 2.0.0. 
+
+    `npm run release major` 
+
+* **minor**: A minor SemVer release version, e.g. going from 1.2.3 to 1.3.0. 
+
+    `npm run release minor` 
+
+* **patch**: A patch SemVer release version, e.g. going from 1.2.3 to 1.2.4.
+
+    `npm run release patch`
+
+* **custom**: A custom release version if you are not using SemVer versioning. Provide the version as the next argument.
+
+    `npm run release custom v1.2-someTag`
+
+* **overwrite**: Will overwrite the version. 
+
+    `npm run release overwrite`
 
 By default, all plugins are uploaded as Protected Assets (i.e. they require a Twilio Signature to be accessed). Plugin can be uploaded as a Public Asset using `--public` in your script.
 
