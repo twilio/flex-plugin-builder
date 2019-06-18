@@ -1,5 +1,5 @@
 import updateNotifier from 'update-notifier';
-import { readPackageJson } from "./fs";
+import { readPackageJson } from './fs';
 
 export default updateNotifier;
 
