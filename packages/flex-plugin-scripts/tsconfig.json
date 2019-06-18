@@ -7,8 +7,8 @@
     "esModuleInterop": true
   },
   "exclude": [
+    "__mocks__",
     "node_modules",
-    "__tests__",
     "dist"
   ]
 }

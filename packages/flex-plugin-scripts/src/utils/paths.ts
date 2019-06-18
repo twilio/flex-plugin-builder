@@ -7,7 +7,7 @@ const buildDir = path.join(process.cwd(), 'build');
 const assetBaseUrl = `/plugins/${packageName}/%PLUGIN_VERSION%`;
 
 export default {
-  buildDir: path.join(process.cwd(), 'build'),
+  buildDir,
   packageName,
   version: packageJson.version,
   localBundlePath: `${path.join(buildDir, packageName)}.js`,

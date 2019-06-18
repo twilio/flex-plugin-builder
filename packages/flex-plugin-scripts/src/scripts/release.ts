@@ -1,7 +1,7 @@
 import semver, { ReleaseType } from 'semver';
 
 import { getCredentials } from '../clients/auth';
-import { BuildData } from '../clients/build';
+import { BuildData } from '../clients/builds';
 import { Build, Runtime, Version } from '../clients/serverless-types';
 import availabilityWarning from '../prints/availabilityWarning';
 import { checkFileExists, readPackage, updatePackageVersion } from '../utils/fs';
@@ -29,7 +29,7 @@ interface Options {
  * @param baseUrl   the baseURL of the file
  * @param build     the existing build
  */
-const verifyPath = (baseUrl: string, build: Build) => {
+export const _verifyPath = (baseUrl: string, build: Build) => {
   const bundlePath = `${baseUrl}/bundle.js`;
   const sourceMapPath = `${baseUrl}/bundle.js.map`;
 
@@ -54,12 +54,12 @@ const verifyPath = (baseUrl: string, build: Build) => {
  * @param nextVersion   the next version of the bundle
  * @param options       options for this release
  */
-const release = async (nextVersion: string, options: Options) => {
+export const _doRelease = async (nextVersion: string, options: Options) => {
   logger.debug('Releasing Flex plugin');
 
   if (!checkFileExists(paths.localBundlePath)) {
     logger.error('Could not find build file. Did you run `npm run build` first?');
-    process.exit(1);
+    return process.exit(1);
   }
 
   logger.info('Uploading your Flex plugin to Twilio Assets\n');
@@ -102,7 +102,7 @@ const release = async (nextVersion: string, options: Options) => {
     }
 
     const _existingBuild = await buildClient.get(runtime.environment.build_sid);
-    if (!verifyPath(pluginBaseUrl, _existingBuild)) {
+    if (!_verifyPath(pluginBaseUrl, _existingBuild)) {
       if (options.overwrite) {
         logger.newline();
         logger.warning('Plugin already exists and the flag --overwrite is going to overwrite this plugin.');
@@ -122,7 +122,7 @@ const release = async (nextVersion: string, options: Options) => {
     const sourceMapVersion = await assetClient
       .upload(paths.packageName, sourceMapUri, paths.localBundlePath, !options.isPublic);
 
-    const existingAssets =  !verifyPath(pluginBaseUrl, existingBuild) && options.overwrite
+    const existingAssets =  !_verifyPath(pluginBaseUrl, existingBuild) && options.overwrite
       ?  existingBuild.asset_versions.filter((v) => v.path !== bundleUri && v.path !== sourceMapUri)
       :  existingBuild.asset_versions;
 
@@ -154,24 +154,24 @@ const release = async (nextVersion: string, options: Options) => {
   logger.newline();
 };
 
-(async () => {
+const release = async (...argv: string[]) => {
   availabilityWarning();
 
-  const bump = process.argv[2];
+  const bump = argv[0];
   const opts = {
-    isPublic: process.argv.includes('--public'),
-    overwrite: process.argv.includes('--overwrite'),
+    isPublic: argv.includes('--public'),
+    overwrite: argv.includes('--overwrite'),
   };
 
   if (!allowedBumps.includes(bump)) {
     logger.error('Version bump can only be one of %s', allowedBumps.join(', '));
-    process.exit(1);
+    return process.exit(1);
   }
 
-  let nextVersion = process.argv[4] as string;
-  if (bump === 'custom' && !process.argv[4]) {
+  let nextVersion = argv[1] as string;
+  if (bump === 'custom' && !argv[1]) {
     logger.error('Custom version bump requires the version value');
-    process.exit(1);
+    return process.exit(1);
   }
 
   if (bump === 'overwrite') {
@@ -181,5 +181,12 @@ const release = async (nextVersion: string, options: Options) => {
     nextVersion = semver.inc(paths.version, bump as ReleaseType) as any;
   }
 
-  await release(nextVersion, opts);
-})().catch(logger.error);
+  await _doRelease(nextVersion, opts);
+};
+
+// Called directly/spawned
+if (require.main === module) {
+  (async () => await release(...process.argv.splice(2)))().catch(logger.error);
+}
+
+export default release;
