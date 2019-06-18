@@ -21,7 +21,7 @@ class MyPlugin extends FlexPlugin {
   pluginName = 'MyPlugin';
 
   init(flex, manager) {
-    // setup your flex
+    // set up your flex
     flex.TaskCanvas.Content.add(<p>Hello</p>);
   }
 }
@@ -30,6 +30,30 @@ loadPlugin(MyPlugin);
 ```
 
 Visit [Twilio Docs](https://www.twilio.com/docs/flex/tutorials/building-flex-plugins) for a tutorial on creating your first plugin.
+
+## Utilities
+
+### Loading External JS/CSS Files
+
+To load external JS/CSS files into your plugin, we provide two helper methods: `loadJS` and `loadCSS`. Use them by calling these methods at the start of plugin initialization.
+
+```js
+import { FlexPlugin, loadJS, loadCSS } from 'flex-plugin';
+
+class MyPlugin extends FlexPlugin {
+  pluginName = 'MyPlugin';
+
+  init(flex, manager) {
+    loadJS('https//my-publicly-accessible-domain.com/test.js');
+    loadCSS(
+      'https//my-publicly-accessible-domain.com/test.css',
+      'https//my-publicly-accessible-domain.com/test-2.css',
+    );
+
+    // set up everything else
+  }
+}
+```
 
 ## React Version
 
