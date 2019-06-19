@@ -94,7 +94,7 @@ describe('fs', () => {
     });
 
     it('should find on two up', () => {
-      const path = '/path1/path2/path3/foo';
+      const path = '/path1/path2/foo';
       // @ts-ignore
       const existsSync = jest.spyOn(fs.default, 'existsSync').mockImplementation((p) => p === path);
 
