@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { logger } from 'flex-dev-utils';
+import { foo } from 'flex-dev-utils';
 
 import spawn from './utils/spawn';
 
