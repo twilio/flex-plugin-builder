@@ -18,7 +18,8 @@
   },
   "license": "MIT",
   "files": [
-    "dist"
+    "dist",
+    "bin"
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -33,12 +34,9 @@
     "test:watch": "cd ../.. && jest packages/flex-plugin-scripts --watch"
   },
   "devDependencies": {
-    "@craco/craco": "^5",
     "@types/cross-spawn": "^6.0.0",
     "@types/jest": "^24.0.13",
     "@types/node": "^12.0.7",
-    "@types/webpack": "^4.4.32",
-    "@types/webpack-dev-server": "^3.1.6",
     "axios": "^0.19.0",
     "cross-spawn": "^6.0.5",
     "esm": "^3.2.25",
@@ -50,20 +48,14 @@
     "flex-plugin": "*"
   },
   "dependencies": {
-    "@types/axios-mock-adapter": "^1.10.0",
     "@types/boxen": "^3.0.1",
-    "@types/chalk": "^2.2.0",
     "@types/inquirer": "^6.0.3",
     "@types/log-symbols": "^3.0.0",
-    "@types/ora": "^3.2.0",
     "@types/semver": "^6.0.0",
-    "axios-mock-adapter": "^1.16.0",
     "boxen": "^4.1.0",
-    "chalk": "^2.4.2",
+    "flex-dev-utils": "^3.0.1-alpha.0",
     "inquirer": "^6.3.1",
-    "jest-mock-axios": "^3.0.0",
     "log-symbols": "^3.0.0",
-    "ora": "^3.4.0",
     "querystring": "^0.2.0",
     "semver": "^6.1.1"
   }

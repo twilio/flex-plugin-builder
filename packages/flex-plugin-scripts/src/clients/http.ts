@@ -2,9 +2,9 @@ import axios, { AxiosInstance } from 'axios';
 import { readFileSync } from 'fs';
 import { stringify } from 'querystring';
 import { format } from 'util';
+import { logger } from 'flex-dev-utils';
 
 import { AuthConfig } from './auth';
-import * as logger from '../utils/logger';
 
 export interface HttpConfig {
   baseURL: string;

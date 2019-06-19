@@ -5,7 +5,7 @@ jest.mock('../../clients/services');
 jest.mock('../../clients/environments');
 jest.mock('../../clients/builds');
 jest.mock('../../clients/deployments');
-jest.mock('../../utils/fs');
+jest.mock('flex-dev-utils/dist/fs');
 jest.mock('../../utils/paths', () => ({
   version: '1.0.0',
   assetBaseUrlTemplate: 'template',
@@ -17,8 +17,8 @@ const ServiceClient = require('../../clients/services').default;
 const EnvironmentClient = require('../../clients/environments').default;
 const BuildClient = require('../../clients/builds').default;
 const DeploymentClient = require('../../clients/deployments').default;
-const logger  = require('../../utils/logger').default;
-const fs = require('../../utils/fs');
+const logger = require('flex-dev-utils').logger;
+const fs = require('flex-dev-utils/dist/fs');
 // tslint:enable
 
 describe('release', () => {
@@ -30,7 +30,7 @@ describe('release', () => {
   jest.spyOn(logger, 'success').mockImplementation(() => { /* no-op */ });
   jest.spyOn(logger, 'newline').mockImplementation(() => { /* no-op */ });
 
-  const readPackage = jest.spyOn(fs, 'readPackage').mockImplementation(() => ({
+  const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockImplementation(() => ({
     version: '1.0.0',
     name: 'plugin-test',
   }));
@@ -110,74 +110,74 @@ describe('release', () => {
   });
 
   it('should bump major', async () => {
-    const fileExists = jest.spyOn(fs, 'checkFileExists').mockImplementation(() => false);
+    const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => false);
 
     await releaseScript.default('major');
 
     expect(doRelease).toHaveBeenCalledTimes(1);
     expect(doRelease).toHaveBeenCalledWith('2.0.0', {isPublic: false, overwrite: false});
 
-    fileExists.mockRestore();
+    checkFilesExist.mockRestore();
   });
 
   it('should bump minor', async () => {
-    const fileExists = jest.spyOn(fs, 'checkFileExists').mockImplementation(() => false);
+    const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => false);
 
     await releaseScript.default('minor');
 
     expect(doRelease).toHaveBeenCalledTimes(1);
     expect(doRelease).toHaveBeenCalledWith('1.1.0', {isPublic: false, overwrite: false});
 
-    fileExists.mockRestore();
+    checkFilesExist.mockRestore();
   });
 
   it('should bump patch', async () => {
-    const fileExists = jest.spyOn(fs, 'checkFileExists').mockImplementation(() => false);
+    const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => false);
 
     await releaseScript.default('patch');
 
     expect(doRelease).toHaveBeenCalledTimes(1);
     expect(doRelease).toHaveBeenCalledWith('1.0.1', {isPublic: false, overwrite: false});
 
-    fileExists.mockRestore();
+    checkFilesExist.mockRestore();
   });
 
   it('should bump custom', async () => {
-    const fileExists = jest.spyOn(fs, 'checkFileExists').mockImplementation(() => false);
+    const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => false);
 
     await releaseScript.default('custom', 'custom-version');
 
     expect(doRelease).toHaveBeenCalledTimes(1);
     expect(doRelease).toHaveBeenCalledWith('custom-version', {isPublic: false, overwrite: false});
 
-    fileExists.mockRestore();
+    checkFilesExist.mockRestore();
   });
 
   it('should bump overwrite', async () => {
-    const fileExists = jest.spyOn(fs, 'checkFileExists').mockImplementation(() => false);
+    const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => false);
 
     await releaseScript.default('overwrite');
 
-    expect(readPackage).toHaveBeenCalledTimes(1);
+    expect(readPackageJson).toHaveBeenCalledTimes(1);
     expect(doRelease).toHaveBeenCalledTimes(1);
     expect(doRelease).toHaveBeenCalledWith('1.0.0', {isPublic: false, overwrite: true});
 
-    fileExists.mockRestore();
+    checkFilesExist.mockRestore();
   });
 
   it('should run as public', async () => {
-    const fileExists = jest.spyOn(fs, 'checkFileExists').mockImplementation(() => false);
+    const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => false);
 
     await releaseScript.default('major', '--public');
 
     expect(doRelease).toHaveBeenCalledTimes(1);
     expect(doRelease).toHaveBeenCalledWith('2.0.0', {isPublic: true, overwrite: false});
 
-    fileExists.mockRestore();
+    checkFilesExist.mockRestore();
   });
 
   it('should not fetch build if environment has no build_sid', async () => {
-    const fileExists = jest.spyOn(fs, 'checkFileExists').mockImplementation(() => true);
+    const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => true);
 
     EnvironmentClient.mockImplementation(() => ({
       getDefault: () => Promise.resolve({sid: 'ZExxx'}),
@@ -186,20 +186,20 @@ describe('release', () => {
     await releaseScript.default('major');
     expect(getBuild).not.toHaveBeenCalled();
 
-    fileExists.mockRestore();
+    checkFilesExist.mockRestore();
   });
 
   it('should get existing build if build_sid exists', async () => {
-    const fileExists = jest.spyOn(fs, 'checkFileExists').mockImplementation(() => true);
+    const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => true);
 
     await releaseScript.default('major');
     expect(getBuild).toHaveBeenCalledTimes(1);
 
-    fileExists.mockRestore();
+    checkFilesExist.mockRestore();
   });
 
   it('should quit if duplicate route is found', async (done) => {
-    const fileExists = jest.spyOn(fs, 'checkFileExists').mockImplementation(() => true);
+    const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => true);
     const verifyPath = jest.spyOn(releaseScript, '_verifyPath').mockImplementation(() => false);
 
     try {
@@ -208,17 +208,17 @@ describe('release', () => {
       done();
     }
 
-    fileExists.mockRestore();
+    checkFilesExist.mockRestore();
     verifyPath.mockRestore();
   });
 
   it('should not quit duplicate route is found but is overwrite', async () => {
-    const fileExists = jest.spyOn(fs, 'checkFileExists').mockImplementation(() => true);
+    const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => true);
     const verifyPath = jest.spyOn(releaseScript, '_verifyPath').mockImplementation(() => false);
 
     await releaseScript.default('overwrite');
 
-    fileExists.mockRestore();
+    checkFilesExist.mockRestore();
     verifyPath.mockRestore();
   });
 

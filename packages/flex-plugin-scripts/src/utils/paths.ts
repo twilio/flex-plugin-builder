@@ -1,7 +1,7 @@
 import * as path from 'path';
-import { readPackage } from './fs';
+import { readPackageJson } from 'flex-dev-utils/dist/fs';
 
-const packageJson = readPackage();
+const packageJson = readPackageJson();
 const packageName = packageJson.name;
 const buildDir = path.join(process.cwd(), 'build');
 const assetBaseUrl = `/plugins/${packageName}/%PLUGIN_VERSION%`;

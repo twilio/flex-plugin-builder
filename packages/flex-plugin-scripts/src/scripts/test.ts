@@ -1,5 +1,6 @@
+import { logger } from 'flex-dev-utils';
+
 import { resolve } from '../utils/require';
-import logger from '../utils/logger';
 
 const doTest = () => {
   logger.debug('Running tests');
