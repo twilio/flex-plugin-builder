@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 
 import { logger } from 'flex-dev-utils';
+import { notify as updateNotify } from 'flex-dev-utils/dist/updateNotifier';
 
 import spawn from './utils/spawn';
+
+// Check for update
+updateNotify();
 
 const scripts = [
   'release',

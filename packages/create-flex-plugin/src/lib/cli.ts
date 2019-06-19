@@ -1,4 +1,5 @@
 import yargs, { Argv, Options } from 'yargs';
+
 import createFlexPlugin, { FlexPluginArguments } from './create-flex-plugin';
 
 const usage = [
