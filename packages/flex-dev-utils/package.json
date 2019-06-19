@@ -4,7 +4,7 @@
   "description": "Common development utility for creating a Flex plugin",
   "keywords": [
     "flex",
-    "plugins",
+    "plugin",
     "twilio",
     "scripts"
   ],

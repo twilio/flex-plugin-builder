@@ -4,13 +4,5 @@
     "outDir": "dist",
     "baseUrl": ".",
     "rootDir": "src"
-  },
-  "exclude": [
-    "__mocks__",
-    "node_modules",
-    "dist",
-    "templates",
-    "**/*.test.ts",
-    "**/*.spec.ts"
-  ]
+  }
 }

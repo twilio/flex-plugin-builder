@@ -26,6 +26,9 @@
     ]
   },
   "exclude": [
+    "**/__mocks__/*",
+    "**/__tests__/*",
+    "**/templates/*",
     "node_modules",
     "**/*.test.ts",
     "**/*.spec.ts",
