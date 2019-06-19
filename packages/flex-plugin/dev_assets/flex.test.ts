@@ -33,13 +33,13 @@ describe('flex', () => {
     global.appConfig = {};
     spyOn(console, 'error');
 
-    // Act
     loadFlex();
 
-    // Assert
+    // tslint:disable-next-line
     expect(console.error).toHaveBeenCalledTimes(1);
+    // tslint:disable-next-line
     expect(console.error).toHaveBeenCalledWith(
-      'ERROR: You must have a valid appConfig with an accountSid set.'
+      'ERROR: You must have a valid appConfig with an accountSid set.',
     );
   });
 
@@ -54,19 +54,17 @@ describe('flex', () => {
     };
     global.appConfig = mockAppConfig;
 
-    // Act
     loadFlex();
 
-    // Assert
+    // tslint:disable-next-line
     expect(console.error).not.toHaveBeenCalled();
     expect(Twilio.Flex.runDefault).toHaveBeenCalledWith(
       mockAppConfig,
-      undefined
+      undefined,
     );
   });
 
   it('should render Twilio Flex inside a custom DOM element', () => {
-    // Arrange
     runDefaultMockedFailResponse = false;
     const mockAppConfig = {
       sso: {
@@ -76,13 +74,11 @@ describe('flex', () => {
     global.appConfig = mockAppConfig;
     const targetEl = '#testContainer';
 
-    // Act
     loadFlex(targetEl);
 
-    // Assert
     expect(Twilio.Flex.runDefault).toHaveBeenCalledWith(
       mockAppConfig,
-      targetEl
+      targetEl,
     );
   });
 });

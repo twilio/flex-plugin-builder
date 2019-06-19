@@ -11,6 +11,7 @@ jest.mock('../../utils/paths', () => ({
   assetBaseUrlTemplate: 'template',
 }));
 
+// tslint:disable
 const AssetClient = require('../../clients/assets').default;
 const ServiceClient = require('../../clients/services').default;
 const EnvironmentClient = require('../../clients/environments').default;
@@ -18,15 +19,16 @@ const BuildClient = require('../../clients/builds').default;
 const DeploymentClient = require('../../clients/deployments').default;
 const logger  = require('../../utils/logger').default;
 const fs = require('../../utils/fs');
+// tslint:enable
 
 describe('release', () => {
   // @ts-ignore
-  const exit: jest.SpyInstance = jest.spyOn(process, 'exit').mockImplementation(() => {});
-  const error: jest.SpyInstance = jest.spyOn(logger, 'error').mockImplementation(() => {});
-  jest.spyOn(logger, 'warning').mockImplementation(() => {});
-  jest.spyOn(logger, 'info').mockImplementation(() => {});
-  jest.spyOn(logger, 'success').mockImplementation(() => {});
-  jest.spyOn(logger, 'newline').mockImplementation(() => {});
+  const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
+  const error = jest.spyOn(logger, 'error').mockImplementation(() => { /* no-op */ });
+  jest.spyOn(logger, 'warning').mockImplementation(() => { /* no-op */ });
+  jest.spyOn(logger, 'info').mockImplementation(() => { /* no-op */ });
+  jest.spyOn(logger, 'success').mockImplementation(() => { /* no-op */ });
+  jest.spyOn(logger, 'newline').mockImplementation(() => { /* no-op */ });
 
   const readPackage = jest.spyOn(fs, 'readPackage').mockImplementation(() => ({
     version: '1.0.0',
@@ -66,7 +68,7 @@ describe('release', () => {
       getDefault: getDefaultEnvironment,
     }));
     AssetClient.mockImplementation(() => ({
-      upload: upload,
+      upload,
     }));
     BuildClient.mockImplementation(() => ({
       get: getBuild,

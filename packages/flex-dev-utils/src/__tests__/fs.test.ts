@@ -1,4 +1,3 @@
-import { getPackageJsonPath, readPackageJson } from "../fs";
 import * as fs from '../fs';
 
 describe('fs', () => {
@@ -39,7 +38,7 @@ describe('fs', () => {
   describe('checkFilesExist', () => {
     it('loop through all files', () => {
       // @ts-ignore
-      const existsSync = jest.spyOn(fs.default, 'existsSync').mockImplementation(() => {});
+      const existsSync = jest.spyOn(fs.default, 'existsSync').mockImplementation(() => { /* no-op */ });
 
       fs.checkFilesExist('file1', 'file2');
       expect(existsSync).toHaveBeenCalledTimes(2);
@@ -52,7 +51,7 @@ describe('fs', () => {
     it('should update version', () => {
       const pkgBefore = {version: 1};
       // @ts-ignore
-      const writeFileSync = jest.spyOn(fs.default, 'writeFileSync').mockImplementation(() => {});
+      const writeFileSync = jest.spyOn(fs.default, 'writeFileSync').mockImplementation(() => { /* no-op */ });
       // @ts-ignore
       const getPackageJsonPath = jest.spyOn(fs, 'getPackageJsonPath').mockImplementation(() => 'package.json');
       const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockImplementation(() => pkgBefore);
@@ -60,7 +59,6 @@ describe('fs', () => {
       fs.updatePackageVersion('2');
       expect(writeFileSync).toHaveBeenCalledTimes(1);
       expect(writeFileSync).toHaveBeenCalledWith('package.json', JSON.stringify({version: '2'}, null, 2));
-
 
       writeFileSync.mockRestore();
       getPackageJsonPath.mockRestore();
