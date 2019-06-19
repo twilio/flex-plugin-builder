@@ -1,6 +1,7 @@
 module.exports = {
-  collectCoverage: true,
-  setupFiles: ['<rootDir>/jest.setup.js'],
+  setupFiles: [
+    '<rootDir>/jest.setup.js'
+  ],
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   collectCoverageFrom: [
@@ -16,7 +17,8 @@ module.exports = {
   testPathIgnorePatterns: [
     '/node_modules/',
   ],
+  collectCoverage: true,
   coveragePathIgnorePatterns: [
     '/node_modules/',
-  ]
+  ],
 };
