@@ -1,22 +1,17 @@
 import execa from 'execa';
-import inquirer from 'inquirer';
-import { error } from '../logging';
+import * as inquirer from 'flex-dev-utils/dist/inquirer';
+import { logger } from 'flex-dev-utils';
+
 import * as validators from '../validators';
-import Mock = jest.Mock;
 
 jest.mock('execa');
-jest.mock('../logging');
+jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/inquirer');
 
 describe('validators', () => {
     const accountSid = 'AC00000000000000000000000000000000';
 
-    beforeEach(() => jest.clearAllMocks());
-
-    const mockPrompt = (mock: Mock) => {
-        Object.defineProperty(inquirer, 'prompt', {
-            value: mock,
-        });
-    };
+    beforeEach(() => jest.resetAllMocks());
 
     describe('_isValidPluginName', () => {
         it('should be valid plugin names', () => {
@@ -74,10 +69,9 @@ describe('validators', () => {
 
     describe('_promptForAccountSid', () => {
         it('should ask for an accountSid if not specified', async () => {
-            const prompt = jest.fn(() => Promise.resolve({
+            (inquirer as any).prompt = jest.fn(() => Promise.resolve({
                 accountSid: 'test-sid',
             }));
-            mockPrompt(prompt);
 
             await validators._promptForAccountSid();
             expect(inquirer.prompt).toHaveBeenCalledTimes(1);
@@ -86,10 +80,9 @@ describe('validators', () => {
 
     describe('_promptForTemplateUrl', () => {
         it('should ask for a url if url is invalid', async () => {
-            const prompt = jest.fn(() => Promise.resolve({
+            (inquirer as any).prompt = jest.fn(() => Promise.resolve({
                 url: 'twilio',
             }));
-            mockPrompt(prompt);
 
             await validators._promptForTemplateUrl();
             expect(inquirer.prompt).toHaveBeenCalledTimes(1);
@@ -105,13 +98,13 @@ describe('validators', () => {
                 await validators.default({} as any);
             } catch (e) {
                 expect(spyExit).toHaveBeenCalledWith(1);
-                expect(error).toHaveBeenCalledWith('Invalid plugin name. Names need to start with plugin-');
+                expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Invalid'));
+                expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('start with plugin-'));
             }
         });
 
         it('should not ask for an accountSid if already specified', async () => {
-            const prompt = jest.fn();
-            mockPrompt(prompt);
+            (inquirer as any).prompt = jest.fn();
 
             // Act
             await validators.default({
@@ -124,8 +117,7 @@ describe('validators', () => {
         });
 
         it('should not ask for a template url if already specified', async () => {
-            const prompt = jest.fn();
-            mockPrompt(prompt);
+            (inquirer as any).prompt = jest.fn();
 
             // Act
             await validators.default({

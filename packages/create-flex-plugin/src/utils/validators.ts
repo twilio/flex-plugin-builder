@@ -1,7 +1,7 @@
-import inquirer from 'inquirer';
-import { Question } from 'inquirer';
+import { logger } from 'flex-dev-utils';
+import { prompt } from 'flex-dev-utils/dist/inquirer';
+
 import { FlexPluginArguments } from '../lib/create-flex-plugin';
-import { error } from './logging';
 
 // tslint:disable-next-line
 const URL_REGEX = /^(https?:\/\/)?(www\.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
@@ -56,24 +56,22 @@ export const _isGitHub = (url: string): boolean => GITHUB_REGEX.test(url);
  * @private
  */
 export const _promptForAccountSid = async (): Promise<string> => {
-    const question: Question = {
-        type: 'input',
-        name: 'accountSid',
-        message: 'Twilio Flex Account SID',
-        validate: async (input: string) => {
-            if (!input.startsWith('AC')) {
-                throw new Error('Account SID must start with AC');
-            }
+    const response = await prompt<{ accountSid: string; }>({
+       type: 'input',
+       name: 'accountSid',
+       message: 'Twilio Flex Account SID',
+       validate: async (input: string) => {
+           if (!input.startsWith('AC')) {
+               throw new Error('Account SID must start with AC');
+           }
 
-            if (!_isSidValid('AC', input)) {
-                throw new Error('Account SID is not a valid SID');
-            }
+           if (!_isSidValid('AC', input)) {
+               throw new Error('Account SID is not a valid SID');
+           }
 
-            return true;
-        },
-    };
-
-    const response = await inquirer.prompt<{ accountSid: string; }> ([question]);
+           return true;
+       },
+   });
 
     return response.accountSid;
 };
@@ -83,24 +81,22 @@ export const _promptForAccountSid = async (): Promise<string> => {
  * @private
  */
 export const _promptForTemplateUrl = async (): Promise<string> => {
-    const question: Question = {
-        type: 'input',
-        name: 'template',
-        message: 'Template URL',
-        validate: async (url: string) => {
-            if (!_isValidUrl(url)) {
-                throw new Error('Please enter a valid URL');
-            }
+    const response = await prompt<{ template: string; }>({
+       type: 'input',
+       name: 'template',
+       message: 'Template URL',
+       validate: async (url: string) => {
+           if (!_isValidUrl(url)) {
+               throw new Error('Please enter a valid URL');
+           }
 
-            if (!_isGitHub(url)) {
-                throw new Error('Only GitHub URLs are currently supported');
-            }
+           if (!_isGitHub(url)) {
+               throw new Error('Only GitHub URLs are currently supported');
+           }
 
-            return true;
-        },
-    };
-
-    const response = await inquirer.prompt<{ template: string; }> ([question]);
+           return true;
+       },
+   });
 
     return response.template;
 };
@@ -115,7 +111,7 @@ const validate = async (config: FlexPluginArguments): Promise<FlexPluginArgument
     config.name = config.name || '';
 
     if (!_isValidPluginName(config.name)) {
-        error('Invalid plugin name. Names need to start with plugin-');
+        logger.error('Invalid plugin name. Names need to start with plugin-');
         return process.exit(1);
     }
 

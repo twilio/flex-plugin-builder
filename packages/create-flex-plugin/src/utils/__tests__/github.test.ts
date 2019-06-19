@@ -1,7 +1,9 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+
 import { _downloadDir, GitHubInfo } from '../github';
 import * as github from '../github';
+
 import Mock = jest.Mock;
 import SpyInstance = jest.SpyInstance;
 
