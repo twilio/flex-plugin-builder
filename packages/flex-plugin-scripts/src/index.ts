@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
+import { logger } from 'flex-dev-utils';
+
 import spawn from './utils/spawn';
-import logger from './utils/logger';
 
 const scripts = [
   'release',

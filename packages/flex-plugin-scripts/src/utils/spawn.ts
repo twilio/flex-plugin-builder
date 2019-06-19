@@ -1,6 +1,5 @@
 import { sync as spawnSync } from 'cross-spawn';
-
-import * as logger from './logger';
+import { logger } from 'flex-dev-utils';
 
 /**
  * Spawns a process and runs it. Will return the exist status code

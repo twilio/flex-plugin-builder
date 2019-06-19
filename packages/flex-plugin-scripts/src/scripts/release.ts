@@ -1,14 +1,14 @@
+import { logger } from 'flex-dev-utils';
+import { progress } from 'flex-dev-utils/dist/ora';
+import { checkFilesExist, readPackageJson, updatePackageVersion } from 'flex-dev-utils/dist/fs';
 import semver, { ReleaseType } from 'semver';
 
 import { getCredentials } from '../clients/auth';
 import { BuildData } from '../clients/builds';
 import { Build, Runtime, Version } from '../clients/serverless-types';
 import availabilityWarning from '../prints/availabilityWarning';
-import { checkFileExists, readPackage, updatePackageVersion } from '../utils/fs';
-import logger from '../utils/logger';
 import paths from '../utils/paths';
 import { AssetClient, ServiceClient, EnvironmentClient, BuildClient, DeploymentClient } from '../clients';
-import { progress } from '../utils/general';
 
 const allowedBumps = [
   'major',
@@ -57,7 +57,7 @@ export const _verifyPath = (baseUrl: string, build: Build) => {
 export const _doRelease = async (nextVersion: string, options: Options) => {
   logger.debug('Releasing Flex plugin');
 
-  if (!checkFileExists(paths.localBundlePath)) {
+  if (!checkFilesExist(paths.localBundlePath)) {
     logger.error('Could not find build file. Did you run `npm run build` first?');
     return process.exit(1);
   }
@@ -176,7 +176,7 @@ const release = async (...argv: string[]) => {
 
   if (bump === 'overwrite') {
     opts.overwrite = true;
-    nextVersion = readPackage().version;
+    nextVersion = readPackageJson().version;
   } else if (bump !== 'custom') {
     nextVersion = semver.inc(paths.version, bump as ReleaseType) as any;
   }

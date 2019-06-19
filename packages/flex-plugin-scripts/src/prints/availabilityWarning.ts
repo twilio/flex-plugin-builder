@@ -1,7 +1,6 @@
 import logSymbols from 'log-symbols';
 import boxen from 'boxen';
-
-import logger from '../utils/logger';
+import { logger } from 'flex-dev-utils';
 
 export default () => {
   const sym = logSymbols.warning;
