@@ -1,12 +1,14 @@
+import { progress } from 'flex-dev-utils/dist/ora';
+import { logger } from 'flex-dev-utils';
 import copy from 'copy-template-dir';
 import fs from 'fs';
-import ora from 'ora';
-import tmp from 'tmp';
+import tmp, { DirResult } from 'tmp';
 import { resolve, join } from 'path';
 import { promisify } from 'util';
+
 import { setupConfiguration, installDependencies, downloadFromGitHub } from './commands';
 import { CLIArguments } from './cli';
-import * as log from '../utils/logging';
+import finalMessage from '../prints/finalMessage';
 import validate from '../utils/validators';
 
 const copyDir = promisify(copy);
@@ -36,25 +38,25 @@ export const createFlexPlugin = async (config: FlexPluginArguments) => {
 
     // Check folder does not exist
     if (fs.existsSync(config.targetDirectory)) {
-        log.error(`Path ${config.targetDirectory} already exists. Please remove it and try again.`);
+        logger.error(`Path ${config.targetDirectory} already exists. Please remove it and try again.`);
         process.exit(1);
     }
 
     // Setup the directories
     if (!await _scaffold(config)) {
-        log.error('Failed to scaffold project');
+        logger.error('Failed to scaffold project');
         process.exit(1);
     }
 
     // Install NPM dependencies
     if (config.install) {
         if (!await _install(config)) {
-            log.error('Failed to install dependencies. Please run `npm install` manually.');
+            logger.error('Failed to install dependencies. Please run `npm install` manually.');
             config.install = false;
         }
     }
 
-    log.finalMessage(config);
+    finalMessage(config);
 };
 
 /**
@@ -63,20 +65,11 @@ export const createFlexPlugin = async (config: FlexPluginArguments) => {
  * @private
  */
 export const _install = async (config: FlexPluginArguments): Promise<boolean> => {
-    const installSpinner = ora('Installing dependencies');
-    try {
-        installSpinner.start();
-
+    return progress<boolean>('Installing dependencies', async () => {
         await installDependencies(config);
 
-        installSpinner.succeed();
-
         return true;
-    } catch (err) {
-        installSpinner.fail(err.message);
-    }
-
-    return false;
+    });
 };
 
 /**
@@ -86,17 +79,14 @@ export const _install = async (config: FlexPluginArguments): Promise<boolean> =>
  * @private
  */
 export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> => {
-    const templateSpinner = ora('Creating project directory');
-    let dirObject;
+    let dirObject: DirResult;
 
-    try {
-        templateSpinner.start();
-
+    const promise = progress<boolean>('Creating project directory', async () => {
         // This copies the core such as public/ and craco config.
         await copyDir(
-            templateCorePath,
-            config.targetDirectory,
-            config,
+          templateCorePath,
+          config.targetDirectory,
+          config,
         );
 
         // Get src directory from template URL if provided
@@ -122,23 +112,21 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
             const ext = config.typescript ? 'tsx' : 'js';
 
             await moveFile(
-                join(config.targetDirectory, `src/DemoPlugin.${ext}`),
-                join(config.targetDirectory, `src/${config.pluginClassName}.${ext}`),
+              join(config.targetDirectory, `src/DemoPlugin.${ext}`),
+              join(config.targetDirectory, `src/${config.pluginClassName}.${ext}`),
             );
         }
 
-        templateSpinner.succeed();
-
         return true;
-    } catch (err) {
-        templateSpinner.fail(err.message);
-    } finally {
+    });
+
+    promise.finally(() => {
         if (dirObject) {
             dirObject.removeCallback();
         }
-    }
+    });
 
-    return false;
+    return promise;
 };
 
 export default createFlexPlugin;

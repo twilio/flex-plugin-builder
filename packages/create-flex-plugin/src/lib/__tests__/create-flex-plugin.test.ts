@@ -1,9 +1,10 @@
 import execa from 'execa';
 import fs from 'fs';
 import rimRaf from 'rimraf';
+
 import createFlexPlugin from '../create-flex-plugin';
 
-jest.mock('../../utils/logging');
+jest.mock('flex-dev-utils/dist/logger');
 
 describe('create-flex-plugin', () => {
     const accountSid = 'AC00000000000000000000000000000000';
@@ -20,7 +21,6 @@ describe('create-flex-plugin', () => {
     });
 
     describe('createFlexPlugin', () => {
-
         it('should not install any dependency by default', async () => {
             // Act
             await createFlexPlugin({
