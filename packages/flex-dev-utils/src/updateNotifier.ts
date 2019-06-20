@@ -3,6 +3,9 @@ import { readPackageJson, findUp } from './fs';
 
 export default updateNotifier;
 
+/**
+ * Checks for update for the package
+ */
 export const checkForUpdate = () => {
   const pkg = module.parent
     ? readPackageJson(findUp(module.parent.filename, 'package.json'))
