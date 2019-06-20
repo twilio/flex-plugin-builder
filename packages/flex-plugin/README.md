@@ -31,7 +31,7 @@ loadPlugin(MyPlugin);
 
 Visit [Twilio Docs](https://www.twilio.com/docs/flex/tutorials/building-flex-plugins) for a tutorial on creating your first plugin.
 
-## Utilities
+## Libraries
 
 ### Loading External JS/CSS Files
 
@@ -55,9 +55,31 @@ class MyPlugin extends FlexPlugin {
 }
 ```
 
-## React Version
+## External Dependencies
 
-We currently support React v16.5.2. 
+The following NPM packages are defined as external dependencies:
+
+```
+react
+react-dom
+redux
+react-redux
+```
+
+When you `build` your plugin, these dependencies will not be included in your bundle. Instead, Flex UI will provide them as global object and your plugin will instead use that instead. 
+
+To ensure you are using the same version that Flex UI is providing, leave the version of the React  that is specified in your `package.json`. See [React Version](#react-version) to see the currently supported version =
+
+## React Versions
+
+We currently support the following versions:
+
+```
+react          16.5.2
+react-dom      16.5.2
+redux          3.7.2
+react-redux    5.1.0
+```
 
 ## Contributing
 
