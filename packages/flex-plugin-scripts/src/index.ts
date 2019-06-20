@@ -5,7 +5,6 @@ import { checkForUpdate } from 'flex-dev-utils/dist/updateNotifier';
 
 import spawn from './utils/spawn';
 
-// Check for update
 checkForUpdate();
 
 const scripts = [
