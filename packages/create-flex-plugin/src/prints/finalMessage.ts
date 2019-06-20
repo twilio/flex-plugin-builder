@@ -7,6 +7,10 @@ import { FlexPluginArguments } from '../lib/create-flex-plugin';
 
 const headline = chalk.bold.green;
 
+/**
+ * Prints the final message after the successful creation of a new project
+ * @param config
+ */
 export default (config: FlexPluginArguments) => {
   const tool = config.yarn ? 'yarn' : 'npm';
 
