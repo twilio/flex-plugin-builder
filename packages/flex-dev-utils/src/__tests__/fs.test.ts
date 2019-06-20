@@ -28,10 +28,24 @@ describe('fs', () => {
       const cwd = jest.spyOn(process, 'cwd').mockImplementation(() => 'test');
 
       const path = fs.getPackageJsonPath();
+
       expect(cwd).toHaveBeenCalledTimes(1);
       expect(path).toEqual('test/package.json');
 
       cwd.mockRestore();
+    });
+
+    it('should read custom path', () => {
+      const str = '{"version":1}';
+      const readFileSync = jest.spyOn(fs.default, 'readFileSync').mockImplementation(() => str);
+
+      const pkg = fs.readPackageJson('another-path');
+
+      expect(pkg).toEqual({version: 1});
+      expect(readFileSync).toHaveBeenCalledTimes(1);
+      expect(readFileSync).toHaveBeenCalledWith('another-path', 'utf8');
+
+      readFileSync.mockRestore();
     });
   });
 
@@ -63,6 +77,45 @@ describe('fs', () => {
       writeFileSync.mockRestore();
       getPackageJsonPath.mockRestore();
       readPackageJson.mockRestore();
+    });
+  });
+
+  describe('findUp', () => {
+    it('should find on one up', () => {
+      const path = '/path1/path2/path3/foo';
+      // @ts-ignore
+      const existsSync = jest.spyOn(fs.default, 'existsSync').mockImplementation((p) => p === path);
+
+      fs.findUp('/path1/path2/path3', 'foo');
+
+      expect(existsSync).toHaveBeenCalledTimes(1);
+
+      existsSync.mockRestore();
+    });
+
+    it('should find on two up', () => {
+      const path = '/path1/path2/foo';
+      // @ts-ignore
+      const existsSync = jest.spyOn(fs.default, 'existsSync').mockImplementation((p) => p === path);
+
+      fs.findUp('/path1/path2/path3', 'foo');
+
+      expect(existsSync).toHaveBeenCalledTimes(2);
+
+      existsSync.mockRestore();
+    });
+
+    it('should fail if it reaches root directory', (done) => {
+      // @ts-ignore
+      const existsSync = jest.spyOn(fs.default, 'existsSync').mockImplementation(() => false);
+
+      try {
+        fs.findUp('/path1/path2/path3', 'foo');
+      } catch (e) {
+        done();
+      }
+
+      existsSync.mockRestore();
     });
   });
 });
