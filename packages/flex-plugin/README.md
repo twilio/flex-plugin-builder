@@ -66,9 +66,9 @@ redux
 react-redux
 ```
 
-When you `build` your plugin, these dependencies will not be included in your bundle. Instead, Flex UI will provide them as global object and your plugin will instead use that instead. 
+When you `build` your plugin, these dependencies will not be included in your bundle. Instead, Flex UI will provide them as global for your plugin to use.
 
-To ensure you are using the same version that Flex UI is providing, leave the version of the React  that is specified in your `package.json`. See [React Version](#react-version) to see the currently supported version =
+To ensure you are using the same version that Flex UI is exposing, leave the version of the React that is specified in your `package.json`. See [React Version](#react-version) to see the currently supported version.
 
 ## React Versions
 
