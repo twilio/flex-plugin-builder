@@ -18,7 +18,7 @@ export type Order = 'desc' | 'asc';
  * @param order         the order of versions. This can be desc or asc
  * @private
  */
-export const _doList = async (visibilities: Visibility[], order: Order) => {
+export const _doList = async (visibilities: Visibility[], order: Order = 'asc') => {
   logger.info('Fetching all available versions of plugin %s', paths.packageName);
 
   const credentials = await getCredentials();

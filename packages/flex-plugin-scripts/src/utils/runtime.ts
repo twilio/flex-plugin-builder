@@ -1,11 +1,13 @@
 import { progress } from 'flex-dev-utils/dist/ora';
+
 import { BuildClient, EnvironmentClient, ServiceClient } from '../clients';
 import { AuthConfig } from '../clients/auth';
-import { Build, Environment, Runtime, Service } from '../clients/serverless-types';
+import { Runtime } from '../clients/serverless-types';
 
 /**
- * Fetches the Runtime environment. This includes:
- * the {@link Service}, the {@link Environment}, and the {@link Build}
+ * Fetches the {@link Runtime}
+ *
+ * @return a Promise of {@link Runtime}
  */
 const getRuntime = async (credentials: AuthConfig): Promise<Runtime> => {
   // Fetch the runtime service instance
@@ -16,14 +18,13 @@ const getRuntime = async (credentials: AuthConfig): Promise<Runtime> => {
     const environmentClient = new EnvironmentClient(credentials, service.sid);
     const environment = await environmentClient.getDefault();
 
-    const runtime: Runtime = { service, environment };
-
-    const buildClient = new BuildClient(credentials, service.sid);
     // This is the first time we are doing a build, so we don't have a pre-existing build
+    const runtime: Runtime = { service, environment };
     if (!environment.build_sid) {
       return runtime;
     }
 
+    const buildClient = new BuildClient(credentials, service.sid);
     runtime.build = await buildClient.get(environment.build_sid);
 
     return runtime;
