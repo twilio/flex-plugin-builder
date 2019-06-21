@@ -64,7 +64,7 @@ export interface PresignedUrl {
 }
 
 export interface Version extends ServerlessEntity {
-  visibility: string;
+  visibility: Visibility;
   service_sid: string;
   path: string;
 }
@@ -98,11 +98,17 @@ export interface Deployment extends ServerlessEntity {
 export interface Runtime {
   service: Service;
   environment: Environment;
+  build?: Build;
 }
 
 export enum FileVisibility {
   Public = 'Public',
   Protected = 'Protected',
+}
+
+export enum Visibility {
+  Public = 'public',
+  Protected = 'protected',
 }
 
 export enum BuildStatus {

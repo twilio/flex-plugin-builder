@@ -3,9 +3,10 @@ import { progress } from 'flex-dev-utils/dist/ora';
 import { checkFilesExist, readPackageJson, updatePackageVersion } from 'flex-dev-utils/dist/fs';
 import semver, { ReleaseType } from 'semver';
 
+import run from './run';
 import { getCredentials } from '../clients/auth';
 import { BuildData } from '../clients/builds';
-import { Build, Runtime, Version } from '../clients/serverless-types';
+import { Build, Version } from '../clients/serverless-types';
 import availabilityWarning from '../prints/availabilityWarning';
 import paths from '../utils/paths';
 import { AssetClient, BuildClient, DeploymentClient } from '../clients';
@@ -69,11 +70,8 @@ export const _doRelease = async (nextVersion: string, options: Options) => {
   const bundleUri = `${pluginBaseUrl}/bundle.js`;
   const sourceMapUri = `${pluginBaseUrl}/bundle.js.map`;
 
-  // Fetch AccountSid/AuthToken first
   const credentials = await getCredentials();
-
   const runtime = await getRuntime(credentials);
-
   const pluginUrl = `https://${runtime.environment.domain_name}${bundleUri}`;
 
   const buildClient = new BuildClient(credentials, runtime.service.sid);
@@ -81,15 +79,20 @@ export const _doRelease = async (nextVersion: string, options: Options) => {
   const deploymentClient = new DeploymentClient(credentials, runtime.service.sid, runtime.environment.sid);
 
   // Check duplicate routes
-  const routeCollision = runtime.build ? !_verifyPath(pluginBaseUrl, runtime.build) : false;
-  if (routeCollision) {
-    if (options.overwrite) {
-      logger.newline();
-      logger.warning('Plugin already exists and the flag --overwrite is going to overwrite this plugin.');
-    } else {
-      throw new Error(`You already have a plugin with the same version: ${pluginUrl}`);
+  const routeCollision = await progress<Build>('Validating the new plugin bundle', async () => {
+    const collision = runtime.build ? !_verifyPath(pluginBaseUrl, runtime.build) : false;
+
+    if (collision) {
+      if (options.overwrite) {
+        logger.newline();
+        logger.warning('Plugin already exists and the flag --overwrite is going to overwrite this plugin.');
+      } else {
+        throw new Error(`You already have a plugin with the same version: ${pluginUrl}`);
+      }
     }
-  }
+
+    return collision;
+  });
 
   const buildAssets = runtime.build ? runtime.build.asset_versions : [];
   const buildFunctions = runtime.build ? runtime.build.function_versions : [];
@@ -165,9 +168,6 @@ const release = async (...argv: string[]) => {
   await _doRelease(nextVersion, opts);
 };
 
-// Called directly/spawned
-if (require.main === module) {
-  (async () => await release(...process.argv.splice(2)))().catch(logger.error);
-}
+run(release);
 
 export default release;
