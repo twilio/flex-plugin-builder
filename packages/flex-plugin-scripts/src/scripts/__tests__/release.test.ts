@@ -1,3 +1,4 @@
+import { logger } from 'flex-dev-utils';
 import * as releaseScript from '../release';
 
 jest.mock('../../clients/assets');
@@ -6,29 +7,25 @@ jest.mock('../../clients/environments');
 jest.mock('../../clients/builds');
 jest.mock('../../clients/deployments');
 jest.mock('flex-dev-utils/dist/fs');
+jest.mock('flex-dev-utils/dist/logger');
+jest.mock('../../utils/runtime');
 jest.mock('../../utils/paths', () => ({
   version: '1.0.0',
   assetBaseUrlTemplate: 'template',
 }));
 
 // tslint:disable
+const Runtime = require('../../utils/runtime').default;
 const AssetClient = require('../../clients/assets').default;
-const ServiceClient = require('../../clients/services').default;
-const EnvironmentClient = require('../../clients/environments').default;
 const BuildClient = require('../../clients/builds').default;
 const DeploymentClient = require('../../clients/deployments').default;
-const logger = require('flex-dev-utils').logger;
 const fs = require('flex-dev-utils/dist/fs');
 // tslint:enable
 
 describe('release', () => {
   // @ts-ignore
   const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
-  const error = jest.spyOn(logger, 'error').mockImplementation(() => { /* no-op */ });
-  jest.spyOn(logger, 'warning').mockImplementation(() => { /* no-op */ });
-  jest.spyOn(logger, 'info').mockImplementation(() => { /* no-op */ });
-  jest.spyOn(logger, 'success').mockImplementation(() => { /* no-op */ });
-  jest.spyOn(logger, 'newline').mockImplementation(() => { /* no-op */ });
+  (logger.colors as any).blue = jest.fn();
 
   const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockImplementation(() => ({
     version: '1.0.0',
@@ -38,10 +35,6 @@ describe('release', () => {
   process.env.ACCOUNT_SID = 'ACxxx';
   process.env.AUTH_TOKEN = 'abc';
 
-  const getDefaultService =
-    jest.fn().mockImplementation(() => Promise.resolve({sid: 'ZSxxx'}));
-  const getDefaultEnvironment =
-    jest.fn().mockImplementation(() => Promise.resolve({sid: 'ZExxx', build_sid: 'ZBxxx'}));
   const upload =
     jest.fn().mockImplementation((_: any, path: string) => {
       if (path.indexOf('map') === -1) {
@@ -51,27 +44,23 @@ describe('release', () => {
       }
     });
   const existingBuild = {sid: 'ZBxxx', asset_versions: [], function_versions: []};
-  const getBuild =
-    jest.fn().mockImplementation(() => Promise.resolve(existingBuild));
   const createBuild =
     jest.fn().mockImplementation(() => Promise.resolve({sid: 'ZByyy'}));
   const createDeployment =
     jest.fn().mockImplementation(() => Promise.resolve({sid: 'ZDxxx'}));
+  Runtime.mockImplementation(() => ({
+    service: {sid: 'ZSxxx'},
+    environment: {sid: 'ZExxx', build_sid: 'ZBxxx', domain_name: 'test.twil.io'},
+    build: existingBuild,
+  }));
 
   beforeEach(() => {
     jest.clearAllMocks();
 
-    ServiceClient.mockImplementation(() => ({
-      getDefault: getDefaultService,
-    }));
-    EnvironmentClient.mockImplementation(() => ({
-      getDefault: getDefaultEnvironment,
-    }));
     AssetClient.mockImplementation(() => ({
       upload,
     }));
     BuildClient.mockImplementation(() => ({
-      get: getBuild,
       create: createBuild,
     }));
     DeploymentClient.mockImplementation(() => ({
@@ -84,8 +73,8 @@ describe('release', () => {
 
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(1);
-    expect(error).toHaveBeenCalledTimes(1);
-    expect(error).toHaveBeenCalledWith(expect.stringContaining('can only be'), expect.anything());
+    expect(logger.error).toHaveBeenCalledTimes(1);
+    expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('can only be'), expect.anything());
     expect(doRelease).not.toHaveBeenCalled();
   });
 
@@ -94,8 +83,8 @@ describe('release', () => {
 
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(1);
-    expect(error).toHaveBeenCalledTimes(1);
-    expect(error).toHaveBeenCalledWith(expect.stringContaining('can only be'), expect.anything());
+    expect(logger.error).toHaveBeenCalledTimes(1);
+    expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('can only be'), expect.anything());
     expect(doRelease).not.toHaveBeenCalled();
   });
 
@@ -104,8 +93,8 @@ describe('release', () => {
 
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(1);
-    expect(error).toHaveBeenCalledTimes(1);
-    expect(error).toHaveBeenCalledWith(expect.stringContaining('Custom version bump'));
+    expect(logger.error).toHaveBeenCalledTimes(1);
+    expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Custom version bump'));
     expect(doRelease).not.toHaveBeenCalled();
   });
 
@@ -172,28 +161,6 @@ describe('release', () => {
 
     expect(doRelease).toHaveBeenCalledTimes(1);
     expect(doRelease).toHaveBeenCalledWith('2.0.0', {isPublic: true, overwrite: false});
-
-    checkFilesExist.mockRestore();
-  });
-
-  it('should not fetch build if environment has no build_sid', async () => {
-    const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => true);
-
-    EnvironmentClient.mockImplementation(() => ({
-      getDefault: () => Promise.resolve({sid: 'ZExxx'}),
-    }));
-
-    await releaseScript.default('major');
-    expect(getBuild).not.toHaveBeenCalled();
-
-    checkFilesExist.mockRestore();
-  });
-
-  it('should get existing build if build_sid exists', async () => {
-    const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => true);
-
-    await releaseScript.default('major');
-    expect(getBuild).toHaveBeenCalledTimes(1);
 
     checkFilesExist.mockRestore();
   });

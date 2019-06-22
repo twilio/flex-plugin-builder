@@ -12,6 +12,7 @@ const scripts = [
   'start',
   'build',
   'test',
+  'list',
 ];
 
 const args = process.argv.slice(2);

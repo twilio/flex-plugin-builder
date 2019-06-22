@@ -26,7 +26,7 @@ const spawn = (processArgs: string[]): number => {
     process.exit(1);
   }
 
-  return child.status;
+  return child.status || 0;
 };
 
 export default spawn;

@@ -3,12 +3,14 @@ import { progress } from 'flex-dev-utils/dist/ora';
 import { checkFilesExist, readPackageJson, updatePackageVersion } from 'flex-dev-utils/dist/fs';
 import semver, { ReleaseType } from 'semver';
 
+import run from './run';
 import { getCredentials } from '../clients/auth';
 import { BuildData } from '../clients/builds';
-import { Build, Runtime, Version } from '../clients/serverless-types';
+import { Build, Version } from '../clients/serverless-types';
 import availabilityWarning from '../prints/availabilityWarning';
 import paths from '../utils/paths';
-import { AssetClient, ServiceClient, EnvironmentClient, BuildClient, DeploymentClient } from '../clients';
+import { AssetClient, BuildClient, DeploymentClient } from '../clients';
+import getRuntime from '../utils/runtime';
 
 const allowedBumps = [
   'major',
@@ -68,41 +70,19 @@ export const _doRelease = async (nextVersion: string, options: Options) => {
   const bundleUri = `${pluginBaseUrl}/bundle.js`;
   const sourceMapUri = `${pluginBaseUrl}/bundle.js.map`;
 
-  // Fetch AccountSid/AuthToken first
   const credentials = await getCredentials();
-
-  // Fetch the runtime service instance
-  const runtime = await progress<Runtime>('Fetching Twilio Runtime service', async () => {
-    const serverlessClient = new ServiceClient(credentials);
-    const service = await serverlessClient.getDefault();
-
-    const environmentClient = new EnvironmentClient(credentials, service.sid);
-    const environment = await environmentClient.getDefault();
-
-    return {
-      service,
-      environment,
-    };
-  });
+  const runtime = await getRuntime(credentials);
   const pluginUrl = `https://${runtime.environment.domain_name}${bundleUri}`;
 
   const buildClient = new BuildClient(credentials, runtime.service.sid);
   const assetClient = new AssetClient(credentials, runtime.service.sid);
   const deploymentClient = new DeploymentClient(credentials, runtime.service.sid, runtime.environment.sid);
 
-  // Create build
-  const existingBuild = await progress<Build>('Validating the new plugin bundle', async () => {
-    // This is the first time we are doing a build, so we don't have a pre-existing build
-    if (!runtime.environment.build_sid) {
-      return {
-        function_versions: [],
-        asset_versions: [],
-        dependencies: {},
-      };
-    }
+  // Check duplicate routes
+  const routeCollision = await progress<Build>('Validating the new plugin bundle', async () => {
+    const collision = runtime.build ? !_verifyPath(pluginBaseUrl, runtime.build) : false;
 
-    const _existingBuild = await buildClient.get(runtime.environment.build_sid);
-    if (!_verifyPath(pluginBaseUrl, _existingBuild)) {
+    if (collision) {
       if (options.overwrite) {
         logger.newline();
         logger.warning('Plugin already exists and the flag --overwrite is going to overwrite this plugin.');
@@ -111,8 +91,12 @@ export const _doRelease = async (nextVersion: string, options: Options) => {
       }
     }
 
-    return _existingBuild;
+    return collision;
   });
+
+  const buildAssets = runtime.build ? runtime.build.asset_versions : [];
+  const buildFunctions = runtime.build ? runtime.build.function_versions : [];
+  const buildDependencies = runtime.build ? runtime.build.dependencies : [];
 
   // Upload plugin bundle and source map to S3
   const buildData = await progress<BuildData>('Uploading your plugin bundle', async () => {
@@ -122,15 +106,15 @@ export const _doRelease = async (nextVersion: string, options: Options) => {
     const sourceMapVersion = await assetClient
       .upload(paths.packageName, sourceMapUri, paths.localBundlePath, !options.isPublic);
 
-    const existingAssets =  !_verifyPath(pluginBaseUrl, existingBuild) && options.overwrite
-      ?  existingBuild.asset_versions.filter((v) => v.path !== bundleUri && v.path !== sourceMapUri)
-      :  existingBuild.asset_versions;
+    const existingAssets = routeCollision && options.overwrite
+      ?  buildAssets.filter((v) => v.path !== bundleUri && v.path !== sourceMapUri)
+      :  buildAssets;
 
     // Create build
     const data = {
-      FunctionVersions: existingBuild.function_versions.map((v) => v.sid),
+      FunctionVersions: buildFunctions.map((v) => v.sid),
       AssetVersions: existingAssets.map((v) => v.sid),
-      Dependencies: existingBuild.dependencies,
+      Dependencies: buildDependencies,
     };
     data.AssetVersions.push(bundleVersion.sid);
     data.AssetVersions.push(sourceMapVersion.sid);
@@ -184,9 +168,6 @@ const release = async (...argv: string[]) => {
   await _doRelease(nextVersion, opts);
 };
 
-// Called directly/spawned
-if (require.main === module) {
-  (async () => await release(...process.argv.splice(2)))().catch(logger.error);
-}
+run(release);
 
 export default release;

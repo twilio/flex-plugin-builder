@@ -17,7 +17,7 @@ export default class ServiceClient extends BaseClient {
   }
 
   /**
-   * Fetches the default {@ Service}
+   * Fetches the default {@link Service}.
    */
   public getDefault = (): Promise<Service> => {
     return this.list()
