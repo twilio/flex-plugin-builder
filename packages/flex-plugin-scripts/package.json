@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-scripts",
-  "version": "3.0.5-alpha.0",
+  "version": "3.0.6-alpha.0",
   "description": "Scripts to run, build and deploy Flex plugins",
   "keywords": [
     "flex",
@@ -39,7 +39,7 @@
     "axios": "^0.19.0",
     "cross-spawn": "^6.0.5",
     "esm": "^3.2.25",
-    "flex-dev-utils": "^3.0.5-alpha.0",
+    "flex-dev-utils": "^3.0.6-alpha.0",
     "inquirer": "^6.3.1",
     "jest": "^24.8.0",
     "path": "^0.12.7",
