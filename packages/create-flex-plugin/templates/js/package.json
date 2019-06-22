@@ -8,7 +8,10 @@
     "prestart": "npm run bootstrap",
     "start": "flex-plugin start",
     "build": "flex-plugin build",
+    "prerelease": "npm run build",
+    "release": "flex-plugin release",
     "test": "flex-plugin test --env=jsdom",
+    "list": "flex-plugin list",
     "eject": "flex-plugin eject"
   },
   "devDependencies": {
