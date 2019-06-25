@@ -17,8 +17,8 @@ describe('list', () => {
   // @ts-ignore
   const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
 
-  process.env.ACCOUNT_SID = 'ACxxx';
-  process.env.AUTH_TOKEN = 'abc';
+  process.env.TWILIO_API_KEY = 'ACxxx';
+  process.env.TWILIO_API_SECRET = 'abc';
 
   beforeEach(() => {
     jest.clearAllMocks();

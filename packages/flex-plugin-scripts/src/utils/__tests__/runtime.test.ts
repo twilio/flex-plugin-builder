@@ -1,9 +1,11 @@
-import { AuthConfig } from '../../clients/auth';
+import { AuthConfig } from 'flex-dev-utils/dist/keytar';
+
 import getRuntime from '../runtime';
 
 jest.mock('../../clients/builds');
 jest.mock('../../clients/environments');
 jest.mock('../../clients/services');
+jest.mock('flex-dev-utils/dist/keytar');
 
 // tslint:disable
 const ServiceClient: jest.Mock = require('../../clients/services').default;
@@ -17,8 +19,8 @@ describe('runtime', () => {
   const buildSid = 'ZBxxx';
 
   const auth: AuthConfig = {
-    accountSid: 'ACxxx',
-    authToken: 'abc123',
+    apiKey: 'SKxxx',
+    apiSecret: 'abc123',
   };
 
   const getServiceDefault = jest.fn();

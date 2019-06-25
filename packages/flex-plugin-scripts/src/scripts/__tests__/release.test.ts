@@ -32,8 +32,8 @@ describe('release', () => {
     name: 'plugin-test',
   }));
   const doRelease = jest.spyOn(releaseScript, '_doRelease');
-  process.env.ACCOUNT_SID = 'ACxxx';
-  process.env.AUTH_TOKEN = 'abc';
+  process.env.TWILIO_API_KEY = 'ACxxx';
+  process.env.TWILIO_API_SECRET = 'abc';
 
   const upload =
     jest.fn().mockImplementation((_: any, path: string) => {

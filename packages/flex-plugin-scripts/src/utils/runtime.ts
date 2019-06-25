@@ -1,7 +1,7 @@
 import { progress } from 'flex-dev-utils/dist/ora';
+import { AuthConfig } from 'flex-dev-utils/dist/keytar';
 
 import { BuildClient, EnvironmentClient, ServiceClient } from '../clients';
-import { AuthConfig } from '../clients/auth';
 import { Runtime } from '../clients/serverless-types';
 
 /**

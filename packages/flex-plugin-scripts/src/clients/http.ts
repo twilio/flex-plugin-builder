@@ -3,8 +3,7 @@ import { readFileSync } from 'fs';
 import { stringify } from 'querystring';
 import { format } from 'util';
 import { logger } from 'flex-dev-utils';
-
-import { AuthConfig } from './auth';
+import { AuthConfig } from 'flex-dev-utils/dist/keytar';
 
 export interface HttpConfig {
   baseURL: string;
@@ -21,8 +20,8 @@ export default class Http {
     this.client = axios.create({
       baseURL: config.baseURL,
       auth: {
-        username: config.auth.accountSid,
-        password: config.auth.authToken,
+        username: config.auth.apiKey,
+        password: config.auth.apiSecret,
       },
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',

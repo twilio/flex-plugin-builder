@@ -1,4 +1,5 @@
-import { AuthConfig } from './auth';
+import { AuthConfig } from 'flex-dev-utils/dist/keytar';
+
 import Http, { HttpConfig } from './http';
 
 export default abstract class BaseClient {
