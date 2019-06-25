@@ -91,7 +91,7 @@ const validate = async (config: FlexPluginArguments): Promise<FlexPluginArgument
         return process.exit(1);
     }
 
-    if (!config.accountSid || !isSidOfType(config.accountSid, 'AC')) {
+    if (!isSidOfType(config.accountSid, 'AC')) {
         config.accountSid = await _promptForAccountSid();
     }
 
