@@ -7,3 +7,4 @@ export { default as strings } from './strings';
 export { default as inquirer } from './inquirer';
 export { default as table } from './table';
 export { default as keytar } from './keytar';
+export { default as sids } from './sids';

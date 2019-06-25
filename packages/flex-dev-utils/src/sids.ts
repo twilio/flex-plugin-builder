@@ -12,3 +12,8 @@ export const isValidSid = (sid: string) => /^[A-Z]{2}[0-9a-f]{32}$/.test(sid);
 export const isSidOfType = (sid: string, prefix: string) => {
   return isValidSid(sid) && prefix && prefix.toUpperCase() === sid.substr(0, 2);
 };
+
+export default {
+  isValidSid,
+  isSidOfType,
+};
