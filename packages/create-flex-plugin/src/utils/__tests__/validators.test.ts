@@ -39,34 +39,6 @@ describe('validators', () => {
         });
     });
 
-    describe('_isSidValid', () => {
-        it('should be valid sid', () => {
-            const sids = [
-                ['AC', 'AC00000000000000000000000000000000'],
-                ['US', 'US00000000000000000000000000000000'],
-                ['AB', 'AB00000000000000000000000000000001'],
-                ['ZX', 'ZX00000000000000000000000000abcdef'],
-            ];
-
-            sids.map((data) => validators._isSidValid(data[0], data[1]))
-                .forEach((resp) => expect(resp).toBeTruthy());
-        });
-
-        it('should be invalid sid', () => {
-            const sids = [
-                ['AC', 'AC00000000000000000000000000000'],
-                ['US', '00000000000000000000000000000000'],
-                ['AB', 'AB000000000000000000000000000000011'],
-                ['ZX', 'ZX00000000000000000000000000abcdeg'],
-                ['DF', ''],
-                ['DF'],
-            ];
-
-            sids.map((data) => validators._isSidValid(data[0], data[1]))
-                .forEach((resp) => expect(resp).toBeFalsy());
-        });
-    });
-
     describe('_promptForAccountSid', () => {
         it('should ask for an accountSid if not specified', async () => {
             (inquirer as any).prompt = jest.fn(() => Promise.resolve({

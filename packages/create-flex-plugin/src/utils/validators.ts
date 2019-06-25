@@ -1,5 +1,6 @@
 import { logger } from 'flex-dev-utils';
 import { prompt } from 'flex-dev-utils/dist/inquirer';
+import { isSidOfType } from 'flex-dev-utils/dist/sids';
 
 import { FlexPluginArguments } from '../lib/create-flex-plugin';
 
@@ -14,23 +15,6 @@ const GITHUB_REGEX = /github\.com/;
  */
 export const _isValidPluginName = (name: string): boolean => {
     return /^plugin-\S.*/.test(name);
-};
-
-/**
- * Validates sid with the given prefix is valid
- *
- * @param prefix {string}   the prefix of the sid
- * @param sid {string}      the sid to validate
- * @returns {boolean} whether the sid is valid or not
- * @private
- */
-export const _isSidValid = (prefix: string, sid: string = ''): boolean => {
-    if (!sid) {
-        return false;
-    }
-
-    const regex = new RegExp(`^${prefix}[0-9a-f]{32}$`);
-    return regex.test(sid);
 };
 
 /**
@@ -61,12 +45,8 @@ export const _promptForAccountSid = async (): Promise<string> => {
        name: 'accountSid',
        message: 'Twilio Flex Account SID',
        validate: async (input: string) => {
-           if (!input.startsWith('AC')) {
-               throw new Error('Account SID must start with AC');
-           }
-
-           if (!_isSidValid('AC', input)) {
-               throw new Error('Account SID is not a valid SID');
+           if (!isSidOfType(input, 'AC')) {
+             return 'Account SID is not a valid SID';
            }
 
            return true;
@@ -111,7 +91,7 @@ const validate = async (config: FlexPluginArguments): Promise<FlexPluginArgument
         return process.exit(1);
     }
 
-    if (!_isSidValid('AC', config.accountSid)) {
+    if (!isSidOfType(config.accountSid, 'AC')) {
         config.accountSid = await _promptForAccountSid();
     }
 
