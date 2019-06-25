@@ -36,12 +36,6 @@ describe('keytar', () => {
       expect(_keytar.findCredentials).not.toHaveBeenCalled();
       expect(credentials).toEqual([]);
     });
-
-    it('should call findCredentials', async () => {
-      await keytar.getService();
-
-      expect(_keytar.findCredentials).toHaveBeenCalledTimes(1);
-    });
   });
 
   describe('getCredentials', () => {
@@ -106,8 +100,6 @@ describe('keytar', () => {
       const creds = await keytar.getCredentials();
 
       expect(inquirer.prompt).toHaveBeenCalledTimes(2);
-      expect(_keytar.setPassword).toHaveBeenCalledTimes(1);
-      expect(_keytar.setPassword).toHaveBeenCalledWith(expect.any(String), 'promptKey', 'promptSecret');
 
       expect(creds).toEqual({apiKey: 'promptKey', apiSecret: 'promptSecret'});
     });
