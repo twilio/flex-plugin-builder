@@ -3,8 +3,11 @@ language: node_js
 node_js:
   - '8'
 
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y libsecret-1-dev
+
 before_script:
-  - sudo apt-get install libsecret-1-dev -y
   - npm install
 
 script:
