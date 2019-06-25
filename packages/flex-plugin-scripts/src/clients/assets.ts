@@ -1,4 +1,5 @@
-import { AuthConfig } from './auth';
+import { AuthConfig } from 'flex-dev-utils/dist/keytar';
+
 import BaseClient from './baseClient';
 import { Asset, AssetVersion, PresignedUrl, FileVisibility, VersionCreated } from './serverless-types';
 import ServiceClient from './services';

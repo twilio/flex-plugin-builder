@@ -1,10 +1,10 @@
 import { logger } from 'flex-dev-utils';
 import { progress } from 'flex-dev-utils/dist/ora';
 import { checkFilesExist, readPackageJson, updatePackageVersion } from 'flex-dev-utils/dist/fs';
+import { getCredentials } from 'flex-dev-utils/dist/keytar';
 import semver, { ReleaseType } from 'semver';
 
 import run from './run';
-import { getCredentials } from '../clients/auth';
 import { BuildData } from '../clients/builds';
 import { Build, Version } from '../clients/serverless-types';
 import availabilityWarning from '../prints/availabilityWarning';

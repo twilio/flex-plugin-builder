@@ -4,6 +4,7 @@ import * as listScript from '../list';
 jest.mock('../../prints/pluginVersions');
 jest.mock('../../utils/runtime');
 jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/keytar');
 jest.mock('../../utils/paths', () => ({
   packageName: 'plugin-test',
 }));
@@ -17,8 +18,8 @@ describe('list', () => {
   // @ts-ignore
   const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
 
-  process.env.ACCOUNT_SID = 'ACxxx';
-  process.env.AUTH_TOKEN = 'abc';
+  process.env.TWILIO_API_KEY = 'SK00000000000000000000000000000000';
+  process.env.TWILIO_API_SECRET = 'abc123';
 
   beforeEach(() => {
     jest.clearAllMocks();
