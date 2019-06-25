@@ -4,6 +4,7 @@ node_js:
   - '8'
 
 before_script:
+  - sudo apt-get install libsecret-1-dev -y
   - npm install
 
 script:
