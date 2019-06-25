@@ -10,7 +10,7 @@ const inquirer = require('../inquirer');
 // tslint:enable
 
 describe('keytar', () => {
-  const apiKey = 'SKxxx';
+  const apiKey = 'SKxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
   const apiSecret = 'abc123';
   const credential = {
     account: apiKey,
@@ -31,7 +31,7 @@ describe('keytar', () => {
   describe('getService', () => {
     it('should not findCredentials if CI is true', async () => {
       process.env.CI = 'true';
-      const credentials = await keytar.getService();
+      const credentials = await keytar._getService();
 
       expect(_keytar.findCredentials).not.toHaveBeenCalled();
       expect(credentials).toEqual([]);
@@ -39,48 +39,22 @@ describe('keytar', () => {
   });
 
   describe('getCredentials', () => {
-    it('should not ask for API key if env is already provided', async () => {
+    it('should use env variables', async () => {
       process.env.TWILIO_API_KEY = 'envApiKey';
-
-      jest
-        .spyOn(keytar, 'getService')
-        .mockImplementation(() => Promise.resolve([]));
-
-      jest
-        .spyOn(inquirer, 'prompt')
-        .mockImplementation(() => ({apiSecret: 'promptSecret'}));
-
-      const creds = await keytar.getCredentials();
-
-      expect(inquirer.prompt).toHaveBeenCalledTimes(1);
-      expect(creds).toEqual({apiKey: 'envApiKey', apiSecret: 'promptSecret'});
-    });
-
-    it('should not ask for API secret if env is already provided', async () => {
       process.env.TWILIO_API_SECRET = 'envApiSecret';
 
-      jest
-        .spyOn(keytar, 'getService')
-        .mockImplementation(() => Promise.resolve([]));
-
-      jest
-        .spyOn(inquirer, 'prompt')
-        .mockImplementation(() => ({apiKey: 'promptKey'}));
+      jest.spyOn(keytar, '_findCredential');
 
       const creds = await keytar.getCredentials();
 
-      expect(inquirer.prompt).toHaveBeenCalledTimes(1);
-      expect(creds).toEqual({apiKey: 'promptKey', apiSecret: 'envApiSecret'});
+      expect(keytar._findCredential).not.toHaveBeenCalled();
+      expect(creds).toEqual({apiKey: 'envApiKey', apiSecret: 'envApiSecret'});
     });
 
     it('should not ask for API key or password if credentials exist', async () => {
       jest
-        .spyOn(keytar, 'getService')
-        .mockImplementation(() => Promise.resolve([credential]));
-
-      jest
-        .spyOn(inquirer, 'prompt')
-        .mockImplementation(() => ({}));
+        .spyOn(keytar, '_findCredential')
+        .mockImplementation(() => Promise.resolve(credential));
 
       const creds = await keytar.getCredentials();
 
@@ -88,19 +62,24 @@ describe('keytar', () => {
       expect(creds).toEqual({apiKey, apiSecret});
     });
 
-    it('should ask for both apiKey and apiSecret and save credentials', async () => {
+    it('should ask for credentials if nothing exists', async () => {
       jest
-        .spyOn(keytar, 'getService')
-        .mockImplementation(() => Promise.resolve([]));
+        .spyOn(keytar, '_findCredential')
+        .mockImplementation(() => Promise.resolve(null));
 
       jest
         .spyOn(inquirer, 'prompt')
-        .mockImplementation(() => ({apiKey: 'promptKey', apiSecret: 'promptSecret'}));
+        .mockImplementation((question: any) => {
+          if (question.type === 'input') {
+            return 'promptKey';
+          } else {
+            return 'promptSecret';
+          }
+        });
 
       const creds = await keytar.getCredentials();
 
       expect(inquirer.prompt).toHaveBeenCalledTimes(2);
-
       expect(creds).toEqual({apiKey: 'promptKey', apiSecret: 'promptSecret'});
     });
 
@@ -108,12 +87,18 @@ describe('keytar', () => {
       process.env.CI = 'true';
 
       jest
-        .spyOn(keytar, 'getService')
-        .mockImplementation(() => Promise.resolve([]));
+        .spyOn(keytar, '_findCredential')
+        .mockImplementation(() => Promise.resolve(null));
 
       jest
         .spyOn(inquirer, 'prompt')
-        .mockImplementation(() => ({apiKey: 'promptKey', apiSecret: 'promptSecret'}));
+        .mockImplementation((question: any) => {
+          if (question.type === 'input') {
+            return 'promptKey';
+          } else {
+            return 'promptSecret';
+          }
+        });
 
       const creds = await keytar.getCredentials();
 
@@ -121,6 +106,50 @@ describe('keytar', () => {
       expect(_keytar.setPassword).not.toHaveBeenCalled();
 
       expect(creds).toEqual({apiKey: 'promptKey', apiSecret: 'promptSecret'});
+    });
+  });
+
+  describe('_findCredential', () => {
+    const badCreds = {
+      account: 'foo',
+      password: 'pass',
+    };
+
+    beforeAll(() => {
+      (keytar._findCredential as any).mockRestore();
+    });
+
+    it('should return null if credentials is empty', async () => {
+      jest
+        .spyOn(keytar, '_getService')
+        .mockImplementation(() => Promise.resolve([]));
+
+      const cred = await keytar._findCredential();
+
+      expect(inquirer.prompt).not.toHaveBeenCalled();
+      expect(cred).toBeNull();
+    });
+
+    it('should return single credential if only one exists', async () => {
+      jest
+        .spyOn(keytar, '_getService')
+        .mockImplementation(() => Promise.resolve([credential]));
+
+      const cred = await keytar._findCredential();
+
+      expect(inquirer.prompt).not.toHaveBeenCalled();
+      expect(cred).toEqual(credential);
+    });
+
+    it('should return null if bogus credentials exist', async () => {
+      jest
+        .spyOn(keytar, '_getService')
+        .mockImplementation(() => Promise.resolve([badCreds, badCreds]));
+
+      const cred = await keytar._findCredential();
+
+      expect(inquirer.prompt).not.toHaveBeenCalled();
+      expect(cred).toBeNull();
     });
   });
 });
