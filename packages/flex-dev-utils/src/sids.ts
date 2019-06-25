@@ -3,7 +3,7 @@
  *
  * @param sid the sid
  */
-export const isValidSid = (sid: string | null) => sid && /^[A-Z]{2}[0-9a-f]{32}$/.test(sid);
+export const isValidSid = (sid: string | null | undefined) => sid && /^[A-Z]{2}[0-9a-f]{32}$/.test(sid);
 
 /**
  * Validates sid is of type prefix provided
@@ -11,7 +11,7 @@ export const isValidSid = (sid: string | null) => sid && /^[A-Z]{2}[0-9a-f]{32}$
  * @param sid     the sid
  * @param prefix  the prefix of the sid
  */
-export const isSidOfType = (sid: string | null, prefix: string) => {
+export const isSidOfType = (sid: string | null | undefined, prefix: string) => {
   return sid && prefix && isValidSid(sid) && prefix.toUpperCase() === sid.substr(0, 2);
 };
 
