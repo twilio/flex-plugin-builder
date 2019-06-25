@@ -1,6 +1,8 @@
 import keytar from 'keytar';
 
 import { prompt, choose, Question, inputNotEmpty } from './inquirer';
+import logger from './logger';
+import { isSidOfType } from './sids';
 
 const SERVICE_NAME = 'com.twilio.flex.plugins.builder';
 
@@ -18,7 +20,21 @@ const apiKeyQuestion: Question = {
   type: 'input',
   name: 'apiKey',
   message: 'Twilio API Key:',
-  validate: inputNotEmpty,
+  validate: async (str: string) => {
+    if (!await inputNotEmpty(str)) {
+      return false;
+    }
+
+    if (!isSidOfType(str, 'SK')) {
+      if (isSidOfType(str, 'AC')) {
+        return 'Please use an API Key instead of your AccountSid';
+      }
+
+      return 'Invalid API Key provided';
+    }
+
+    return true;
+  },
 };
 
 const apiSecretQuestion: Question = {
@@ -43,6 +59,11 @@ export const getCredentials = async (): Promise<AuthConfig> => {
   let apiSecret;
 
   if (process.env.TWILIO_API_KEY && process.env.TWILIO_API_SECRET) {
+    if (!isSidOfType(process.env.TWILIO_API_KEY, 'SK')) {
+      logger.error('API Key is not valid.');
+      return process.exit(1);
+    }
+
     apiKey = process.env.TWILIO_API_KEY;
     apiSecret = process.env.TWILIO_API_SECRET;
     await _saveCredential(apiKey, apiSecret);

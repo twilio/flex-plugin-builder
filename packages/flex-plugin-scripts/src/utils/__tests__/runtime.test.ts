@@ -19,7 +19,7 @@ describe('runtime', () => {
   const buildSid = 'ZBxxx';
 
   const auth: AuthConfig = {
-    apiKey: 'SKxxx',
+    apiKey: 'SK00000000000000000000000000000000',
     apiSecret: 'abc123',
   };
 

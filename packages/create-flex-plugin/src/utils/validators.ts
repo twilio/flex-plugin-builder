@@ -56,7 +56,7 @@ export const _isGitHub = (url: string): boolean => GITHUB_REGEX.test(url);
  * @private
  */
 export const _promptForAccountSid = async (): Promise<string> => {
-    const response = await prompt<{ accountSid: string; }>({
+    return await prompt({
        type: 'input',
        name: 'accountSid',
        message: 'Twilio Flex Account SID',
@@ -72,8 +72,6 @@ export const _promptForAccountSid = async (): Promise<string> => {
            return true;
        },
    });
-
-    return response.accountSid;
 };
 
 /**
@@ -81,7 +79,7 @@ export const _promptForAccountSid = async (): Promise<string> => {
  * @private
  */
 export const _promptForTemplateUrl = async (): Promise<string> => {
-    const response = await prompt<{ template: string; }>({
+    return await prompt({
        type: 'input',
        name: 'template',
        message: 'Template URL',
@@ -97,8 +95,6 @@ export const _promptForTemplateUrl = async (): Promise<string> => {
            return true;
        },
    });
-
-    return response.template;
 };
 
 /**

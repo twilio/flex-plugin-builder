@@ -32,7 +32,7 @@ describe('release', () => {
     name: 'plugin-test',
   }));
   const doRelease = jest.spyOn(releaseScript, '_doRelease');
-  process.env.TWILIO_API_KEY = 'SKxxx';
+  process.env.TWILIO_API_KEY = 'SK00000000000000000000000000000000';
   process.env.TWILIO_API_SECRET = 'abc123';
 
   const upload =

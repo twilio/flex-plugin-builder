@@ -10,7 +10,7 @@ const inquirer = require('../inquirer');
 // tslint:enable
 
 describe('keytar', () => {
-  const apiKey = 'SKxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+  const apiKey = 'SK00000000000000000000000000000000';
   const apiSecret = 'abc123';
   const credential = {
     account: apiKey,
@@ -40,7 +40,7 @@ describe('keytar', () => {
 
   describe('getCredentials', () => {
     it('should use env variables', async () => {
-      process.env.TWILIO_API_KEY = 'envApiKey';
+      process.env.TWILIO_API_KEY = 'SK00000000000000000000000000000001';
       process.env.TWILIO_API_SECRET = 'envApiSecret';
 
       jest.spyOn(keytar, '_findCredential');
@@ -48,7 +48,7 @@ describe('keytar', () => {
       const creds = await keytar.getCredentials();
 
       expect(keytar._findCredential).not.toHaveBeenCalled();
-      expect(creds).toEqual({apiKey: 'envApiKey', apiSecret: 'envApiSecret'});
+      expect(creds).toEqual({apiKey: 'SK00000000000000000000000000000001', apiSecret: 'envApiSecret'});
     });
 
     it('should not ask for API key or password if credentials exist', async () => {

@@ -20,7 +20,7 @@ export const inputNotEmpty = async (input: string) => input && input.length > 0;
  *
  * @param question  the question to prompt the user with
  */
-export const prompt = async <T extends Question>(question: Question): Promise<T['name']> => {
+export const prompt = async (question: Question): Promise<Question['name']> => {
   question.type = question.type || 'input';
 
   const result = await inquirer.prompt(question as IQuestion);
@@ -35,8 +35,8 @@ export const prompt = async <T extends Question>(question: Question): Promise<T[
  * @param question  the question to prompt the user with
  * @param choices   the list of options
  */
-export const choose = async <T extends Question>(question: Question, choices: string[]): Promise<T['name']> => {
+export const choose = async (question: Question, choices: string[]): Promise<Question['name']> => {
   question.type = 'list';
 
-  return prompt<T>(Object.assign(question, {choices}));
+  return prompt(Object.assign(question, {choices}));
 };
