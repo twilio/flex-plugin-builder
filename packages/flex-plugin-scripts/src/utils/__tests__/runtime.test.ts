@@ -6,6 +6,10 @@ jest.mock('../../clients/builds');
 jest.mock('../../clients/environments');
 jest.mock('../../clients/services');
 jest.mock('flex-dev-utils/dist/keytar');
+jest.mock('../../utils/paths', () => ({
+  packageName: 'plugin-test',
+}));
+
 
 // tslint:disable
 const ServiceClient: jest.Mock = require('../../clients/services').default;
@@ -24,7 +28,7 @@ describe('runtime', () => {
   };
 
   const getServiceDefault = jest.fn();
-  const getEnvironmentDefault = jest.fn();
+  const getEnvironment = jest.fn();
   const getBuild = jest.fn();
 
   beforeEach(() => {
@@ -36,10 +40,10 @@ describe('runtime', () => {
       const service = {sid: serviceSid};
       const environment = {sid: environmentSid};
       getServiceDefault.mockImplementation(() => service);
-      getEnvironmentDefault.mockImplementation(() => environment);
+      getEnvironment.mockImplementation(() => environment);
 
       ServiceClient.mockImplementation(() => ({getDefault: getServiceDefault}));
-      EnvironmentClient.mockImplementation(() => ({getDefault: getEnvironmentDefault}));
+      EnvironmentClient.mockImplementation(() => ({get: getEnvironment}));
       BuildClient.mockImplementation(() => ({get: getBuild}));
 
       const runtime = await getRuntime(auth);
@@ -50,7 +54,7 @@ describe('runtime', () => {
 
       expect(EnvironmentClient).toHaveBeenCalledTimes(1);
       expect(EnvironmentClient).toHaveBeenCalledWith(auth, serviceSid);
-      expect(getEnvironmentDefault).toHaveBeenCalledTimes(1);
+      expect(getEnvironment).toHaveBeenCalledTimes(1);
 
       expect(BuildClient).not.toHaveBeenCalled();
 
@@ -64,11 +68,11 @@ describe('runtime', () => {
       const environment = {sid: environmentSid, build_sid: buildSid};
       const build = {sid: buildSid};
       getServiceDefault.mockImplementation(() => service);
-      getEnvironmentDefault.mockImplementation(() => environment);
+      getEnvironment.mockImplementation(() => environment);
       getBuild.mockImplementation(() => build);
 
       ServiceClient.mockImplementation(() => ({getDefault: getServiceDefault}));
-      EnvironmentClient.mockImplementation(() => ({getDefault: getEnvironmentDefault}));
+      EnvironmentClient.mockImplementation(() => ({get: getEnvironment}));
       BuildClient.mockImplementation(() => ({get: getBuild}));
 
       const runtime = await getRuntime(auth);
@@ -79,7 +83,7 @@ describe('runtime', () => {
 
       expect(EnvironmentClient).toHaveBeenCalledTimes(1);
       expect(EnvironmentClient).toHaveBeenCalledWith(auth, serviceSid);
-      expect(getEnvironmentDefault).toHaveBeenCalledTimes(1);
+      expect(getEnvironment).toHaveBeenCalledTimes(1);
 
       expect(BuildClient).toHaveBeenCalledTimes(1);
       expect(BuildClient).toHaveBeenCalledWith(auth, serviceSid);

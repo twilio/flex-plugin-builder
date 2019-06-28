@@ -16,7 +16,7 @@ const getRuntime = async (credentials: AuthConfig): Promise<Runtime> => {
     const service = await serverlessClient.getDefault();
 
     const environmentClient = new EnvironmentClient(credentials, service.sid);
-    const environment = await environmentClient.getDefault();
+    const environment = await environmentClient.get();
 
     // This is the first time we are doing a build, so we don't have a pre-existing build
     const runtime: Runtime = { service, environment };
