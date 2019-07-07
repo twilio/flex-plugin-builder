@@ -4,24 +4,28 @@
   "private": true,
   "scripts": {
     "bootstrap": "flex-check-start",
+    "build": "craco build",
+    "eject": "craco eject",
     "postinstall": "npm run bootstrap",
     "prestart": "npm run bootstrap",
     "start": "craco start",
-    "build": "craco build",
-    "test": "craco test --env=jsdom",
-    "eject": "craco eject"
-  },
-  "devDependencies": {
-    "@twilio/flex-ui": "{{flexSdkVersion}}"
+    "test": "craco test --env=jsdom"
   },
   "dependencies": {
     "@craco/craco": "^5.0.2",
+    "babel-polyfill": "^6.26.0",
     "core-js": "^2.6.5",
     "craco-config-flex-plugin": "{{cracoConfigVersion}}",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.14.0",
     "flex-plugin": "{{flexPluginVersion}}",
     "react": "16.5.2",
     "react-dom": "16.5.2",
-    "react-scripts": "^3.0.0"
+    "react-scripts": "^3.0.0",
+    "react-test-renderer": "^16.8.6"
+  },
+  "devDependencies": {
+    "@twilio/flex-ui": "{{flexSdkVersion}}"
   },
   "browserslist": {
     "production": [
