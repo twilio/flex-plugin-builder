@@ -1,4 +1,5 @@
 import React from 'react';
+import { VERSION } from '@twilio/flex-ui';
 import { FlexPlugin } from 'flex-plugin';
 
 import CustomTaskListContainer from './containers/CustomTaskListContainer';
@@ -35,7 +36,8 @@ export default class {{pluginClassName}} extends FlexPlugin {
    */
   registerReducers(manager) {
     if (!manager.store.addReducer) {
-      // You need Flex-UI 1.9.0 or higher
+      // eslint: disable-next-line
+      console.error(`You need FlexUI > 1.9.0 to use built-in redux; you are currently on ${VERSION}`);
       return;
     }
 
