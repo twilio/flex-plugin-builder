@@ -2,7 +2,7 @@ import React from 'react';
 import * as Flex from '@twilio/flex-ui';
 import { FlexPlugin } from 'flex-plugin';
 
-import CustomTaskListContainer from './containers/CustomTaskListContainer';
+import CustomTaskListContainer from './components/CustomTaskList/CustomTaskList.Container';
 import reducers, { namespace } from './states';
 
 const PLUGIN_NAME = '{{pluginClassName}}';

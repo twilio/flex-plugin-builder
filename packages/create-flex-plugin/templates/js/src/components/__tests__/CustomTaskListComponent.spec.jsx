@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import CustomTaskListComponent from '../CustomTaskListComponent';
+import CustomTaskList from '../CustomTaskList/CustomTaskList';
 
 describe('CustomTaskListComponent', () => {
   it('should render demo component', () => {
@@ -9,7 +9,7 @@ describe('CustomTaskListComponent', () => {
       isOpen: true,
       dismissBar: () => undefined,
     };
-    const wrapper = shallow(<CustomTaskListComponent {...props}/>);
+    const wrapper = shallow(<CustomTaskList {...props}/>);
     expect(wrapper.render().text()).toMatch('This is a dismissible demo component');
   });
 });

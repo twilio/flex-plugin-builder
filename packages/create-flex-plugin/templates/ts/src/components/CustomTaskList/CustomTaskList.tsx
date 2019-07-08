@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { Div, Accented } from './Common.Styles';
-import { StateToProps, DispatchToProps } from '../containers/CustomTaskListContainer';
+import * as CustomTaskListStyles from './CustomTaskList.Styles';
+import { StateToProps, DispatchToProps } from './CustomTaskList.Container';
 
 interface OwnProps {
   // Props passed directly to the component
@@ -11,21 +11,19 @@ interface OwnProps {
 type Props = StateToProps & DispatchToProps & OwnProps;
 
 // It is recommended to keep components stateless and use redux for managing states
-const CustomTaskListComponent = (props: Props) => {
+const CustomTaskList = (props: Props) => {
   if (!props.isOpen) {
     return null;
   }
 
   return (
-    <Div>
+    <CustomTaskListStyles.Div>
       This is a dismissible demo component
-      <Accented
-        onClick={props.dismissBar}
-      >
+      <CustomTaskListStyles.Accented onClick={props.dismissBar}>
         close
-      </Accented>
-    </Div>
+      </CustomTaskListStyles.Accented>
+    </CustomTaskListStyles.Div>
   );
 };
 
-export default CustomTaskListComponent;
+export default CustomTaskList;

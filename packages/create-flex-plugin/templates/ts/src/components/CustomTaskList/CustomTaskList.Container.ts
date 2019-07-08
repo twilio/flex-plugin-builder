@@ -1,9 +1,9 @@
-import { AppState } from '../states';
+import { AppState } from '../../states';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
-import { Actions } from '../states/CustomTaskListState';
-import CustomTaskListComponent from '../components/CustomTaskListComponent';
+import { Actions } from '../../states/CustomTaskListState';
+import CustomTaskList from './CustomTaskList';
 
 export interface StateToProps {
   isOpen: boolean;
@@ -21,4 +21,4 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): DispatchToProps => ({
   dismissBar: bindActionCreators(Actions.dismissBar, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(CustomTaskListComponent);
+export default connect(mapStateToProps, mapDispatchToProps)(CustomTaskList);
