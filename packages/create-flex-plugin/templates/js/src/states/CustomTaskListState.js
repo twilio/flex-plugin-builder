@@ -5,11 +5,7 @@ const initialState = {
 };
 
 export class Actions {
-  static dismissBar = () => {
-    return {
-      type: ACTION_DISMISS_BAR
-    }
-  };
+  static dismissBar = () => ({ type: ACTION_DISMISS_BAR });
 }
 
 export function reduce(state = initialState, action) {

@@ -13,16 +13,12 @@ export interface DispatchToProps {
   dismissBar: () => void;
 }
 
-const mapStateToProps = (state: AppState): StateToProps => {
-  return {
-    isOpen: state.{{pluginNamespace}}.customTaskList.isOpen,
-  };
-};
+const mapStateToProps = (state: AppState): StateToProps => ({
+  isOpen: state.{{pluginNamespace}}.customTaskList.isOpen,
+});
 
-const mapDispatchToProps = (dispatch: Dispatch<any>): DispatchToProps => {
-  return {
-    dismissBar: bindActionCreators(Actions.dismissBar, dispatch),
-  }
-};
+const mapDispatchToProps = (dispatch: Dispatch<any>): DispatchToProps => ({
+  dismissBar: bindActionCreators(Actions.dismissBar, dispatch),
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(CustomTaskListComponent);

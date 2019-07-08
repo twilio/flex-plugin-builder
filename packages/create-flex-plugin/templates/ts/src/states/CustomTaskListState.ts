@@ -1,4 +1,4 @@
-import {Action} from './index';
+import { Action } from './index';
 
 const ACTION_DISMISS_BAR = 'DISMISS_BAR';
 
@@ -11,11 +11,7 @@ const initialState: CustomTaskListState = {
 };
 
 export class Actions {
-  public static dismissBar = (): Action => {
-    return {
-      type: ACTION_DISMISS_BAR
-    }
-  };
+  public static dismissBar = (): Action => ({ type: ACTION_DISMISS_BAR });
 }
 
 export function reduce(state: CustomTaskListState = initialState, action: Action) {
