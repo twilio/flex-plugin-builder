@@ -34,6 +34,7 @@ export const setupConfiguration = (config: FlexPluginArguments): FlexPluginArgum
     const name = config.name || '';
 
     config.pluginClassName = upperFirst(camelCase(name)).replace('Plugin', '') + 'Plugin';
+    config.pluginNamespace = name.toLowerCase().replace('plugin-', '');
     config.runtimeUrl = config.runtimeUrl || 'http://localhost:8080';
     config.targetDirectory = join(process.cwd(), name);
     config.flexSdkVersion = deps['@twilio/flex-ui'];
