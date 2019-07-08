@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Div, Accented } from './styled';
+import { Div, Accented } from './Common.Styles';
 import { StateToProps, DispatchToProps } from '../containers/CustomTaskListContainer';
 
 interface OwnProps {
