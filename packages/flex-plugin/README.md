@@ -44,16 +44,17 @@ class MyPlugin extends FlexPlugin {
   pluginName = 'MyPlugin';
 
   init(flex, manager) {
-    loadJS('https//my-publicly-accessible-domain.com/test.js');
+    loadJS('http://mysite.com/files/flex.js');
     loadCSS(
-      'https//my-publicly-accessible-domain.com/test.css',
-      'https//my-publicly-accessible-domain.com/test-2.css',
+      'http://mysite.com/files/flex.css',
+      'http://mysite.com/files/flex-2.css',
     );
 
     // set up everything else
   }
 }
 ```
+The CSS/JS files must be accessible by Twilio's proxy servers. Local files on your desktop are likely unaccessible via these methods, but your stylesheet may be uploaded to [Twilio Assets](https://support.twilio.com/hc/en-us/articles/360019105433-Getting-Started-with-Twilio-Assets-Beta-) for use here.
 
 ## External Dependencies
 
