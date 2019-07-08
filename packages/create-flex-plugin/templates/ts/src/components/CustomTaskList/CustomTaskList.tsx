@@ -1,6 +1,6 @@
 import React from 'react';
 
-import * as CustomTaskListStyles from './CustomTaskList.Styles';
+import { CustomTaskListComponentStyles } from './CustomTaskList.Styles';
 import { StateToProps, DispatchToProps } from './CustomTaskList.Container';
 
 interface OwnProps {
@@ -17,12 +17,12 @@ const CustomTaskList = (props: Props) => {
   }
 
   return (
-    <CustomTaskListStyles.Div>
+    <CustomTaskListComponentStyles>
       This is a dismissible demo component
-      <CustomTaskListStyles.Accented onClick={props.dismissBar}>
+      <i className="accented" onClick={props.dismissBar}>
         close
-      </CustomTaskListStyles.Accented>
-    </CustomTaskListStyles.Div>
+      </i>
+    </CustomTaskListComponentStyles>
   );
 };
 
