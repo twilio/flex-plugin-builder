@@ -4,7 +4,8 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   collectCoverageFrom: [
-    '<rootDir>/packages/**/__tests__/**/*.ts',
+    '<rootDir>/packages/**/src/**/*.ts',
+    '!<rootDir>/packages/**/src/index.ts',
     '!<rootDir>/packages/**/templates/**/*.ts',
   ],
   testMatch: [
