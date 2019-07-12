@@ -10,10 +10,10 @@
         <img src="https://codecov.io/gh/twilio/flex-plugin-builder/branch/master/graph/badge.svg" title="Code Coverage" />
     </a>
     <a href="#contributors">
-        <img src="https://img.shields.io/badge/all_contributors-11-orange.svg?style=flat-square" title="All Contributors" />
+        <img src="https://img.shields.io/badge/all_contributors-11-orange.svg?style=square" title="All Contributors" />
     </a>
     <a href="./CODE_OF_CONDUCT.md">
-        <img src="https://img.shields.io/badge/%F0%9F%92%96-code%20of%20conduct-ff69b4.svg?style=flat-square" title="Code of Conducts" />
+        <img src="https://img.shields.io/badge/%F0%9F%92%96-code%20of%20conduct-ff69b4.svg?style=square" title="Code of Conducts" />
     </a>
     <a href="https://lernajs.io/">
         <img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg?style=flat-squar" title="Lerna" />

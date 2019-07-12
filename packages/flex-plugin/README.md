@@ -1,6 +1,6 @@
-[![Version](https://img.shields.io/npm/v/flex-plugin.svg?style=flat-square)](https://www.npmjs.com/package/flex-plugin)
-[![Downloads](https://img.shields.io/npm/dt/flex-plugin.svg?style=flat-square)](https://www.npmjs.com/package/flex-plugin)
-[![License](https://img.shields.io/npm/l/flex-plugin.svg?style=flat-square)](../../LICENSE)
+[![Version](https://img.shields.io/npm/v/flex-plugin.svg?style=square)](https://www.npmjs.com/package/flex-plugin)
+[![Downloads](https://img.shields.io/npm/dt/flex-plugin.svg?style=square)](https://www.npmjs.com/package/flex-plugin)
+[![License](https://img.shields.io/npm/l/flex-plugin.svg?style=square)](../../LICENSE)
 
 # Flex Plugin
 
