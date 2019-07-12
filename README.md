@@ -18,7 +18,7 @@
     <a href="https://lernajs.io/">
         <img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg?style=flat-squar" title="Lerna" />
     </a>
-    <a href="./LICENSE.md">
+    <a href="./LICENSE">
         <img src="https://img.shields.io/badge/license-MIT-green.svg" title="License" />
     </a>
 </p>
