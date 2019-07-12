@@ -1,6 +1,6 @@
-![npm](https://img.shields.io/npm/v/craco-config-flex-plugin.svg?style=flat-square)
-![npm](https://img.shields.io/npm/dt/craco-config-flex-plugin.svg?style=flat-square)
-[![NpmLicense](https://img.shields.io/npm/l/craco-config-flex-plugin.svg?style=flat-square)](LICENSE.md)
+[![Version](https://img.shields.io/npm/v/craco-config-flex-plugin.svg?style=square)](https://www.npmjs.com/package/craco-config-flex-plugin)
+[![Download](https://img.shields.io/npm/dt/craco-config-flex-plugin.svg?style=square)](https://www.npmjs.com/package/craco-config-flex-plugin)
+[![License](https://img.shields.io/npm/l/craco-config-flex-plugin.svg?style=square)](../../LICENSE)
 
 # CRACO Config Flex Plugin
 
