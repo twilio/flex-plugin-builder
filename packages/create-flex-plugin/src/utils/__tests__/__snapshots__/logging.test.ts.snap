@@ -4,15 +4,15 @@ exports[`logging finalMessage should render a yarn setup message to the console 
 "Your Twilio Flex Plugin project has been successfully created!
 
 
-Setup:
+[1m[32mSetup:[39m[22m
 $ cd undefined/
 $ yarn
 
-Development:
+[1m[32mDevelopment:[39m[22m
 $ cd undefined/
 $ yarn start
 
-Build Command:
+[1m[32mBuild Command:[39m[22m
 $ cd undefined/
 $ yarn build
 
@@ -24,11 +24,11 @@ exports[`logging finalMessage should render an instruction message skipping the 
 "Your Twilio Flex Plugin project has been successfully created!
 
 
-Development:
+[1m[32mDevelopment:[39m[22m
 $ cd undefined/
 $ npm start
 
-Build Command:
+[1m[32mBuild Command:[39m[22m
 $ cd undefined/
 $ npm run build
 
@@ -40,15 +40,15 @@ exports[`logging finalMessage should render an npm setup message to the console 
 "Your Twilio Flex Plugin project has been successfully created!
 
 
-Setup:
+[1m[32mSetup:[39m[22m
 $ cd undefined/
 $ npm install
 
-Development:
+[1m[32mDevelopment:[39m[22m
 $ cd undefined/
 $ npm start
 
-Build Command:
+[1m[32mBuild Command:[39m[22m
 $ cd undefined/
 $ npm run build
 

@@ -35,8 +35,8 @@
     "prebuild": "rm -rf dist",
     "build": "tsc",
     "prepublish": "npm run build",
-    "test": "cd ../.. && CI=true est packages/flex-plugin",
-    "test:watch": "cd ../.. && CI=true jest packages/flex-plugin --watch"
+    "test": "cd ../.. && jest packages/flex-plugin --color",
+    "test:watch": "cd ../.. && jest packages/flex-plugin --watch --color"
   },
   "dependencies": {
     "chalk": "^2.4.1",
