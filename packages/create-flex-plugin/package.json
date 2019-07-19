@@ -35,8 +35,8 @@
   "scripts": {
     "prebuild": "rm -rf dist",
     "build": "tsc",
-    "test": "cd ../.. && CI=true jest packages/create-flex-plugin",
-    "test:watch": "cd ../.. && CI=true jest packages/create-flex-plugin --watch"
+    "test": "cd ../.. && jest packages/create-flex-plugin --color",
+    "test:watch": "cd ../.. && jest packages/create-flex-plugin --watch --color"
   },
   "dependencies": {
     "@types/chalk": "^2.2.0",
