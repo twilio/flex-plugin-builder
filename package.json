@@ -19,8 +19,8 @@
     "postinstall": "npm run bootstrap",
     "lint": "tslint --project tsconfig.json",
     "lint:fix": "tslint --project tsconfig.json --fix",
-    "test": "CI=true jest --coverage",
-    "test:watch": "CI=true jest --watchAll"
+    "test": "jest --coverage --color",
+    "test:watch": "jest --watchAll --color"
   },
   "husky": {
     "hooks": {
