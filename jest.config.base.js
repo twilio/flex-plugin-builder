@@ -1,10 +1,13 @@
 module.exports = {
   collectCoverage: true,
-  setupFiles: ['<rootDir>/jest.setup.js'],
+  setupFiles: [
+    '<rootDir>/jest.setup.js'
+  ],
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   collectCoverageFrom: [
     '<rootDir>/packages/**/src/**/*.ts',
+    '!<rootDir>/packages/**/src/**/*.test.ts',
     '!<rootDir>/packages/**/src/index.ts',
     '!<rootDir>/packages/**/templates/**/*.ts',
   ],
