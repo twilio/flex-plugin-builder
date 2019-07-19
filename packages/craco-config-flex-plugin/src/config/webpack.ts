@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
-import { Configuration, Plugin } from 'webpack';
+import { Configuration as WebpackConfig, Plugin, Output, Options, Resolve } from 'webpack';
 
 const appPath = join(process.cwd(), 'package.json');
 const flexUIPath = join(process.cwd(), 'node_modules', '@twilio/flex-ui', 'package.json');
@@ -11,8 +11,15 @@ const TWILIO_FLEX_VERSION = flexUIPkg.version;
 
 const UNSUPPORTED_PLUGINS = ['SWPrecacheWebpackPlugin', 'ManifestPlugin'];
 
+interface Configuration extends WebpackConfig {
+  output: Output;
+  plugins: Plugin[];
+  optimization: Options.Optimization;
+  resolve: Resolve;
+}
+
 export default {
-  configure: (config: Configuration) => {
+  configure: (config: WebpackConfig): Configuration => {
     config.output = config.output || {};
     config.plugins = config.plugins || [];
     config.optimization = config.optimization || {};
@@ -59,6 +66,6 @@ export default {
     config.optimization.splitChunks = false;
     config.optimization.runtimeChunk = false;
 
-    return config;
+    return config as Configuration;
   },
 };

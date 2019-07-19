@@ -23,14 +23,11 @@
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "directories": {
-    "lib": "lib"
-  },
   "scripts": {
     "prebuild": "rm -rf dist",
     "build": "tsc",
-    "test": "cd ../.. && CI=true jest packages/create-flex-plugin",
-    "test:watch": "cd ../.. && CI=true jest packages/create-flex-plugin --watch"
+    "test": "cd ../.. && jest packages/craco-config-flex-plugin --color",
+    "test:watch": "cd ../.. && jest packages/craco-config-flex-plugin --watch --color"
   },
   "dependencies": {
     "clean-webpack-plugin": "^2.0.2",

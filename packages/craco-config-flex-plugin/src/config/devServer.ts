@@ -1,7 +1,11 @@
 import path from 'path';
-import { Configuration } from 'webpack-dev-server';
+import { Configuration as DevConfig } from 'webpack-dev-server';
 
-const devServerConfig = (config: Configuration) => {
+export interface Configuration extends DevConfig {
+  contentBase: string[];
+}
+
+const devServerConfig = (config: DevConfig): Configuration => {
   const devAssets = path.join(process.cwd(), 'node_modules', 'flex-plugin', 'dev_assets');
 
   if (Array.isArray(config.contentBase)) {
@@ -15,7 +19,7 @@ const devServerConfig = (config: Configuration) => {
     config.contentBase = [devAssets];
   }
 
-  return config;
+  return config as Configuration;
 };
 
 export default devServerConfig;
