@@ -19,19 +19,32 @@
   "license": "MIT",
   "author": "Kousha Talebian <ktalebian@twilio.com>",
   "files": [
-    "lib",
-    "index.js"
+    "dist"
   ],
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "directories": {
     "lib": "lib"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "prebuild": "rm -rf dist",
+    "build": "tsc",
+    "test": "cd ../.. && CI=true jest packages/create-flex-plugin",
+    "test:watch": "cd ../.. && CI=true jest packages/create-flex-plugin --watch"
   },
   "dependencies": {
-    "clean-webpack-plugin": "^2.0.1",
+    "clean-webpack-plugin": "^2.0.2",
+    "lodash.merge": "^4.6.2",
     "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.13",
+    "@types/node": "^12.0.7",
+    "@types/webpack": "^4.4.32",
+    "@types/webpack-dev-server": "^3.1.6",
+    "jest": "^24.8.0",
+    "path": "^0.12.7",
+    "typescript": "^3.5.1"
   },
   "peerDependencies": {
     "@craco/craco": "^5.0.2",
