@@ -10,7 +10,7 @@
 
 `craco-config-flex-plugin` dependency is added to your `package.json` when you create a new plugin with [create-flex-plugin](https://github.com/twilio/flex-plugin-builder/tree/master/packages/create-flex-plugin).
 
-## Usage 
+## Usage
 
 To add custom `jest` or `webpack` configuration, you can provide `jest.config.js` and `webpack.config.js`. If these files exist in the root directory, then your configuration is merged into the default configuration.
 

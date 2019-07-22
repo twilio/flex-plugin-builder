@@ -10,7 +10,7 @@
     "prestart": "npm run bootstrap",
     "start": "craco start",
     "test": "craco test --env=jsdom",
-    "coverage": "craco test --env=jsdom --coverage  --watchAll=false"
+    "coverage": "craco test --env=jsdom --coverage --watchAll=false"
   },
   "dependencies": {
     "@craco/craco": "^5.0.2",
