@@ -1,4 +1,4 @@
-import devServer, { Configuration } from "../devServer";
+import devServer, { Configuration } from '../devServer';
 
 describe('devServer', () => {
   const defaultContentBase = 'entry1';
