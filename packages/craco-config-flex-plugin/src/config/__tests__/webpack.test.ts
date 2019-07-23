@@ -16,6 +16,22 @@ jest.mock('fs', () => ({
 }));
 
 describe('webpack', () => {
+  it('has all the required fields', () => {
+    const config = webpack.configure({});
+
+    expect(config).toHaveProperty('output');
+    expect(config).toHaveProperty('plugins');
+    expect(config).toHaveProperty('optimization');
+    expect(config).toHaveProperty('resolve');
+  });
+
+  it('checks output property', () => {
+    const config = webpack.configure({});
+
+    expect(config.output.filename).toEqual('app-name.js');
+    expect(config.output.chunkFilename).toEqual('[name].chunk.js');
+  });
+
   it('check externals', () => {
     const config = webpack.configure({});
 
