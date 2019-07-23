@@ -35,7 +35,9 @@ export const updatePackageVersion = (version: string) => {
 };
 
 /**
- * Reads package.json
+ * Reads package.json from the rootDir. This is the package.json of the service running the script.
+ * For example, if a plugin is using a method of flex-plugin-scripts which is calling this, then
+ * the plugin's package.json is returned
  *
  * @param pkgPath   the package.json to read
  */
