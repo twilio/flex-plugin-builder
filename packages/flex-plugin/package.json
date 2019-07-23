@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin",
-  "version": "3.0.8-alpha.0",
+  "version": "3.0.9-alpha.0",
   "description": "Runtime for Flex plugins",
   "keywords": [
     "flex",
