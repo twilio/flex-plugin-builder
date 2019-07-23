@@ -17,13 +17,14 @@
     "packages/*"
   ],
   "scripts": {
+    "coverage": "codecov",
     "bootstrap": "lerna bootstrap --no-ci",
     "build": "lerna run build",
     "postinstall": "npm run bootstrap",
-    "lint": "tslint --project tsconfig.lint.json",
-    "lint:fix": "tslint --project tsconfig.lint.json --fix",
-    "test": "jest",
-    "test:watch": "jest --watchAll"
+    "lint": "tslint --project tsconfig.json",
+    "lint:fix": "tslint --project tsconfig.json --fix",
+    "test": "jest --coverage --color",
+    "test:watch": "jest --watchAll --color"
   },
   "husky": {
     "hooks": {
@@ -45,6 +46,7 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^24.7.1",
     "babel-register": "^6.26.0",
+    "codecov": "^3.5.0",
     "husky": "^2.4.1",
     "jest": "^24.7.1",
     "lerna": "3.13.4",

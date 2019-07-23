@@ -1,6 +1,6 @@
-![npm](https://img.shields.io/npm/v/flex-plugin.svg?style=flat-square)
-![npm](https://img.shields.io/npm/dt/flex-plugin.svg?style=flat-square)
-[![NpmLicense](https://img.shields.io/npm/l/flex-plugin.svg?style=flat-square)](LICENSE.md)
+[![Version](https://img.shields.io/npm/v/flex-plugin.svg?style=square)](https://www.npmjs.com/package/flex-plugin)
+[![Downloads](https://img.shields.io/npm/dt/flex-plugin.svg?style=square)](https://www.npmjs.com/package/flex-plugin)
+[![License](https://img.shields.io/npm/l/flex-plugin.svg?style=square)](../../LICENSE)
 
 # Flex Plugin
 
@@ -31,7 +31,7 @@ loadPlugin(MyPlugin);
 
 Visit [Twilio Docs](https://www.twilio.com/docs/flex/tutorials/building-flex-plugins) for a tutorial on creating your first plugin.
 
-## Utilities
+## Libraries
 
 ### Loading External JS/CSS Files
 
@@ -44,20 +44,43 @@ class MyPlugin extends FlexPlugin {
   pluginName = 'MyPlugin';
 
   init(flex, manager) {
-    loadJS('https//my-publicly-accessible-domain.com/test.js');
+    loadJS('http://mysite.com/files/flex.js');
     loadCSS(
-      'https//my-publicly-accessible-domain.com/test.css',
-      'https//my-publicly-accessible-domain.com/test-2.css',
+      'http://mysite.com/files/flex.css',
+      'http://mysite.com/files/flex-2.css',
     );
 
     // set up everything else
   }
 }
 ```
+The CSS/JS files must be accessible by Twilio's proxy servers. Local files on your desktop are likely unaccessible via these methods, but your stylesheet may be uploaded to [Twilio Assets](https://support.twilio.com/hc/en-us/articles/360019105433-Getting-Started-with-Twilio-Assets-Beta-) for use here.
 
-## React Version
+## External Dependencies
 
-We currently support React v16.5.2. 
+The following NPM packages are defined as external dependencies:
+
+```
+react
+react-dom
+redux
+react-redux
+```
+
+When you `build` your plugin, these dependencies will not be included in your bundle. Instead, Flex UI will provide them as global for your plugin to use.
+
+To ensure you are using the same version that Flex UI is exposing, leave the version of the React that is specified in your `package.json`. See [React Versions](#react-versions) to see the currently supported version.
+
+## React Versions
+
+We currently support the following versions:
+
+```
+react          16.5.2
+react-dom      16.5.2
+redux          3.7.2
+react-redux    5.1.0
+```
 
 ## Contributing
 
