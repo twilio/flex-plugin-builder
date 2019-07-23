@@ -1,11 +1,14 @@
 module.exports = {
+  collectCoverage: true,
   setupFiles: [
     '<rootDir>/jest.setup.js'
   ],
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   collectCoverageFrom: [
-    '<rootDir>/packages/**/__tests__/**/*.ts',
+    '<rootDir>/packages/**/src/**/*.ts',
+    '!<rootDir>/packages/**/src/**/*.test.ts',
+    '!<rootDir>/packages/**/src/index.ts',
     '!<rootDir>/packages/**/templates/**/*.ts',
   ],
   testMatch: [
@@ -17,7 +20,6 @@ module.exports = {
   testPathIgnorePatterns: [
     '/node_modules/',
   ],
-  collectCoverage: true,
   coveragePathIgnorePatterns: [
     '/node_modules/',
   ],

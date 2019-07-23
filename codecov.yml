@@ -1,0 +1,5 @@
+coverage:
+  precision: 2
+  round: nearest
+  ignore:
+    - "packages/**/src/index.ts"
