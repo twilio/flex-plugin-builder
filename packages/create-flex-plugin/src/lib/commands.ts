@@ -5,9 +5,9 @@ import { findUp } from 'flex-dev-utils/dist/fs';
 
 import * as github from '../utils/github';
 import { FlexPluginArguments } from './create-flex-plugin';
+
+// tslint:disable-next-line
 const pkg = require(findUp(__filename, 'package.json'));
-console.log(findUp(__filename, 'package.json'))
-console.log(pkg);
 
 /**
  * Install dependencies
