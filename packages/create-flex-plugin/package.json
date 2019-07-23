@@ -60,7 +60,10 @@
     "yargs": "^13.2.2"
   },
   "devDependencies": {
+    "@twilio/flex-ui": "^1.11.2",
     "axios-mock-adapter": "^1.16.0",
+    "craco-config-flex-plugin": "^3.0.8-alpha.0",
+    "flex-plugin": "^3.0.9-alpha.0",
     "rimraf": "^2.6.3",
     "typescript": "^3.0.3"
   },
