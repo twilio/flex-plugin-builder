@@ -23,8 +23,6 @@ describe('keytar', () => {
     jest.resetAllMocks();
     jest.resetModules();
 
-    // keytar.getService.mockImplementation(() => {});
-
     process.env = { ...OLD_ENV };
   });
 

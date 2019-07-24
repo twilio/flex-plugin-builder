@@ -8,6 +8,9 @@ jest.mock('../../clients/builds');
 jest.mock('../../clients/deployments');
 jest.mock('flex-dev-utils/dist/fs');
 jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/keytar', () => ({
+  getCredentials: jest.fn(),
+}));
 jest.mock('../../utils/runtime');
 jest.mock('../../utils/paths', () => ({
   version: '1.0.0',
@@ -104,7 +107,11 @@ describe('release', () => {
     await releaseScript.default('major');
 
     expect(doRelease).toHaveBeenCalledTimes(1);
-    expect(doRelease).toHaveBeenCalledWith('2.0.0', {isPublic: false, overwrite: false});
+    expect(doRelease).toHaveBeenCalledWith('2.0.0', {
+      isPublic: false,
+      overwrite: false,
+      disallowVersioning: false,
+    });
 
     checkFilesExist.mockRestore();
   });
@@ -115,7 +122,11 @@ describe('release', () => {
     await releaseScript.default('minor');
 
     expect(doRelease).toHaveBeenCalledTimes(1);
-    expect(doRelease).toHaveBeenCalledWith('1.1.0', {isPublic: false, overwrite: false});
+    expect(doRelease).toHaveBeenCalledWith('1.1.0', {
+      isPublic: false,
+      overwrite: false,
+      disallowVersioning: false,
+    });
 
     checkFilesExist.mockRestore();
   });
@@ -126,7 +137,11 @@ describe('release', () => {
     await releaseScript.default('patch');
 
     expect(doRelease).toHaveBeenCalledTimes(1);
-    expect(doRelease).toHaveBeenCalledWith('1.0.1', {isPublic: false, overwrite: false});
+    expect(doRelease).toHaveBeenCalledWith('1.0.1', {
+      isPublic: false,
+      overwrite: false,
+      disallowVersioning: false,
+    });
 
     checkFilesExist.mockRestore();
   });
@@ -137,7 +152,11 @@ describe('release', () => {
     await releaseScript.default('custom', 'custom-version');
 
     expect(doRelease).toHaveBeenCalledTimes(1);
-    expect(doRelease).toHaveBeenCalledWith('custom-version', {isPublic: false, overwrite: false});
+    expect(doRelease).toHaveBeenCalledWith('custom-version', {
+      isPublic: false,
+      overwrite: false,
+      disallowVersioning: false,
+    });
 
     checkFilesExist.mockRestore();
   });
@@ -149,7 +168,11 @@ describe('release', () => {
 
     expect(readPackageJson).toHaveBeenCalledTimes(1);
     expect(doRelease).toHaveBeenCalledTimes(1);
-    expect(doRelease).toHaveBeenCalledWith('1.0.0', {isPublic: false, overwrite: true});
+    expect(doRelease).toHaveBeenCalledWith('1.0.0', {
+      isPublic: false,
+      overwrite: true,
+      disallowVersioning: false,
+    });
 
     checkFilesExist.mockRestore();
   });
@@ -160,7 +183,11 @@ describe('release', () => {
     await releaseScript.default('major', '--public');
 
     expect(doRelease).toHaveBeenCalledTimes(1);
-    expect(doRelease).toHaveBeenCalledWith('2.0.0', {isPublic: true, overwrite: false});
+    expect(doRelease).toHaveBeenCalledWith('2.0.0', {
+      isPublic: true,
+      overwrite: false,
+      disallowVersioning: false,
+    });
 
     checkFilesExist.mockRestore();
   });

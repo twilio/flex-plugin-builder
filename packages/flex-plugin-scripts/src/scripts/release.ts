@@ -1,6 +1,6 @@
 import { logger } from 'flex-dev-utils';
 import { progress } from 'flex-dev-utils/dist/ora';
-import { checkFilesExist, readPackageJson, updatePackageVersion } from 'flex-dev-utils/dist/fs';
+import { checkFilesExist, updatePackageVersion, readPackageJson } from 'flex-dev-utils/dist/fs';
 import { getCredentials } from 'flex-dev-utils/dist/keytar';
 import semver, { ReleaseType } from 'semver';
 
@@ -23,6 +23,7 @@ const allowedBumps = [
 interface Options {
   isPublic: boolean;
   overwrite: boolean;
+  disallowVersioning: boolean;
 }
 
 /**
@@ -84,8 +85,10 @@ export const _doRelease = async (nextVersion: string, options: Options) => {
 
     if (collision) {
       if (options.overwrite) {
-        logger.newline();
-        logger.warning('Plugin already exists and the flag --overwrite is going to overwrite this plugin.');
+        if (!options.disallowVersioning) {
+          logger.newline();
+          logger.warning('Plugin already exists and the flag --overwrite is going to overwrite this plugin.');
+        }
       } else {
         throw new Error(`You already have a plugin with the same version: ${pluginUrl}`);
       }
@@ -141,28 +144,34 @@ export const _doRelease = async (nextVersion: string, options: Options) => {
 const release = async (...argv: string[]) => {
   availabilityWarning();
 
+  const disallowVersioning = argv.includes('--disallow-versioning');
+  let nextVersion = argv[1] as string;
   const bump = argv[0];
   const opts = {
     isPublic: argv.includes('--public'),
-    overwrite: argv.includes('--overwrite'),
+    overwrite: argv.includes('--overwrite') || disallowVersioning,
+    disallowVersioning,
   };
 
-  if (!allowedBumps.includes(bump)) {
-    logger.error('Version bump can only be one of %s', allowedBumps.join(', '));
-    return process.exit(1);
-  }
+  if (!disallowVersioning) {
+    if (!allowedBumps.includes(bump)) {
+      logger.error('Version bump can only be one of %s', allowedBumps.join(', '));
+      return process.exit(1);
+    }
 
-  let nextVersion = argv[1] as string;
-  if (bump === 'custom' && !argv[1]) {
-    logger.error('Custom version bump requires the version value');
-    return process.exit(1);
-  }
+    if (bump === 'custom' && !argv[1]) {
+      logger.error('Custom version bump requires the version value');
+      return process.exit(1);
+    }
 
-  if (bump === 'overwrite') {
-    opts.overwrite = true;
-    nextVersion = readPackageJson().version;
-  } else if (bump !== 'custom') {
-    nextVersion = semver.inc(paths.version, bump as ReleaseType) as any;
+    if (bump === 'overwrite') {
+      opts.overwrite = true;
+      nextVersion = readPackageJson().version;
+    } else if (bump !== 'custom') {
+      nextVersion = semver.inc(paths.version, bump as ReleaseType) as any;
+    }
+  } else {
+    nextVersion = '0.0.0';
   }
 
   await _doRelease(nextVersion, opts);
