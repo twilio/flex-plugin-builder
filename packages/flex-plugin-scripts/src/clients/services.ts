@@ -4,14 +4,23 @@ import BaseClient from './baseClient';
 import { Service, ServiceResource } from './serverless-types';
 
 export default class ServiceClient extends BaseClient {
+  /**
+   * Returns the base URL
+   */
   public static getBaseUrl = (): string => {
+    const realms = ServiceClient.realms;
     const realm = process.env.TWILIO_SERVERLESS_REALM;
-    if (!realm) {
-      return 'https://serverless.twilio.com/v1';
+    if (realm && !realms.includes(realm)) {
+      throw new Error(`Invalid realm ${realm} was provided. Realm must be one of ${realms.join(',')}`);
     }
 
-    return `https://serverless.${realm.toLowerCase()}.twilio.com/v1`;
+    const subDomain = realm && realms.includes(realm) ? `.${realm.toLowerCase()}` : '';
+
+    return `https://serverless${subDomain}.twilio.com/${ServiceClient.version}`;
   }
+
+  private static realms = ['dev', 'stage'];
+  private static version = 'v1';
 
   constructor(auth: AuthConfig) {
     super(auth, ServiceClient.getBaseUrl());
