@@ -33,7 +33,7 @@ export default class ServiceClient extends BaseClient {
   }
 
   /**
-   * Creates an environment with the package name
+   * Creates a {@link Service} with unique name `default`
    */
   public create = (): Promise<Service> => {
     return this.http
