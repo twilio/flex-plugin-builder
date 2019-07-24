@@ -25,10 +25,21 @@ export default class ServiceClient extends BaseClient {
       .then((resource) => resource.services.find((s) => s.unique_name === 'default'))
       .then((service) => {
         if (!service) {
-          throw new Error('No Runtime service named default was found.');
+          return this.create();
         }
 
         return service as Service;
+      });
+  }
+
+  /**
+   * Creates an environment with the package name
+   */
+  public create = (): Promise<Service> => {
+    return this.http
+      .post('Services', {
+        UniqueName: 'default',
+        FriendlyName: 'Flex Plugins Default Service',
       });
   }
 

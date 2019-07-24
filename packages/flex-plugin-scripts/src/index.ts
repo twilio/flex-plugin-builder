@@ -30,5 +30,8 @@ const scriptPath = require.resolve(`./scripts/${script}`);
 const scriptArgs = args.slice(scriptIndex + 1);
 const processArgs = nodeArgs.concat(scriptPath).concat(scriptArgs);
 
+// Temp disallow version while we figure this out
+processArgs.push('--disallow-versioning');
+
 // Run the script and then exit
 process.exit(spawn(processArgs));
