@@ -4,7 +4,7 @@
   "repoType": "github",
   "repoHost": "https://github.com",
   "files": [
-    "README.md"
+    "CONTRIBUTORS.md"
   ],
   "imageSize": 100,
   "commit": true,
@@ -18,6 +18,46 @@
         "code",
         "doc",
         "ideas"
+      ]
+    },
+    {
+      "login": "ktalebian",
+      "name": "Kousha Talebian",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/2308915?s=460&v=4",
+      "profile": "https://www.linkedin.com/in/koushatalebian",
+      "contributions": [
+        "code",
+        "bug",
+        "doc",
+        "ideas",
+        "question",
+        "review"
+      ]
+    },
+    {
+      "login": "ahcai",
+      "name": "Alice Cai",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/4912483?s=460&v=4",
+      "profile": "https://www.linkedin.com/in/alicehcai",
+      "contributions": [
+        "code",
+        "doc",
+        "bug",
+        "question",
+        "review"
+      ]
+    },
+    {
+      "login": "theryankennedy",
+      "name": "Ryan Kennedy",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/218683?v=4",
+      "profile": "https://github.com/theryankennedy",
+      "contributions": [
+        "code",
+        "ideas",
+        "bug",
+        "question",
+        "review"
       ]
     },
     {
@@ -38,16 +78,6 @@
       "contributions": [
         "bug",
         "doc"
-      ]
-    },
-    {
-      "login": "theryankennedy",
-      "name": "Ryan Kennedy",
-      "avatar_url": "https://avatars3.githubusercontent.com/u/218683?v=4",
-      "profile": "https://github.com/theryankennedy",
-      "contributions": [
-        "code",
-        "ideas"
       ]
     },
     {
@@ -102,7 +132,7 @@
       "login": "viperguynaz",
       "name": "Don Irwin",
       "avatar_url": "https://avatars1.githubusercontent.com/u/1885320?v=4",
-      "profile": "https://www.linkedin.com/in/viperguynaz/",
+      "profile": "https://www.linkedin.com/in/viperguynaz",
       "contributions": [
         "bug"
       ]
