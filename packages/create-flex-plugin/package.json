@@ -16,7 +16,7 @@
     "url": "git+https://github.com/twilio/flex-plugin-builder.git"
   },
   "license": "MIT",
-  "author": "Dominik Kundel <dkundel@twilio.com>",
+  "author": "Kousha Talebian <ktalebian@twilio.com>",
   "files": [
     "bin",
     "dist",
