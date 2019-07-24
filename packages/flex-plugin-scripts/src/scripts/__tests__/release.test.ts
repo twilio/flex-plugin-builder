@@ -8,6 +8,9 @@ jest.mock('../../clients/builds');
 jest.mock('../../clients/deployments');
 jest.mock('flex-dev-utils/dist/fs');
 jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/keytar', () => ({
+  getCredentials: jest.fn(),
+}));
 jest.mock('../../utils/runtime');
 jest.mock('../../utils/paths', () => ({
   version: '1.0.0',
