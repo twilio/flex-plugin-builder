@@ -3,6 +3,7 @@ import { stringify } from 'querystring';
 import { format } from 'util';
 import { logger } from 'flex-dev-utils';
 import { AuthConfig } from 'flex-dev-utils/dist/keytar';
+import FormData from 'form-data';
 
 export interface HttpConfig {
   baseURL: string;
@@ -68,6 +69,29 @@ export default class Http {
       .then((resp) => resp.data);
   }
 
+  /**
+   * Uploads the {@link FormData} to the URL
+   *
+   * @param url       the url to upload to
+   * @param formData  the {@link FormData}
+   */
+  public upload = (url: string, formData: FormData): Promise<any> => {
+    return axios
+      .post(url, formData, {
+        headers: formData.getHeaders(),
+        auth: {
+          username: this.config.auth.accountSid,
+          password: this.config.auth.authToken,
+        },
+      })
+      .then((resp) => resp.data)
+      .catch(this.onError);
+  }
+
+  /**
+   * Private error handler
+   * @param err Axios error
+   */
   private onError = (err: any): Promise<any> => {
     const request = err.config || {};
     const resp = err.response || {};

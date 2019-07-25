@@ -40,9 +40,12 @@ export interface Environment extends ServerlessEntity {
   service_sid: string;
 }
 
-export interface Asset extends ServerlessEntity {
+export interface File extends ServerlessEntity {
   friendly_name: string;
   service_sid: string;
+}
+
+export interface Asset extends File {
   links: {
     asset_versions: string;
   };
@@ -56,21 +59,10 @@ export interface EnvironmentResource extends Resource<'environments'> {
   environments: Environment[];
 }
 
-export interface PresignedUrl {
-  url: string;
-  kmsARN: string;
-  expiration: string;
-  method: string;
-}
-
 export interface Version extends ServerlessEntity {
   visibility: Visibility;
   service_sid: string;
   path: string;
-}
-
-export interface VersionCreated extends Version {
-  pre_signed_upload_url: PresignedUrl;
 }
 
 export interface AssetVersion extends Version {
