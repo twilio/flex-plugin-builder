@@ -12,10 +12,10 @@ This repo will automatically be installed as part of creating a new plugin.
 
 ## Scripts
 
-### Release
+### Deploy
 
 ```bash
-npm run release {major, minor, patch, custom, overwrite} {--public}
+npm run deploy {major, minor, patch, custom, overwrite} {--public}
 ```
 
 This script will build, and then deploy your plugin bundle to Twilio Assets. Please note that your accountSid and authToken are required to use this script. Your plugins will be uploaded to Twilio Assets using the following format:
@@ -34,25 +34,25 @@ https://domain.twil.io/plugins/dialpad/1.1.1/bundle.js`
 
 You may choose between `major, minor, patch, custom, overwrite` options:
 
-* **major**: A major SemVer release version, e.g. going from 1.2.3 to 2.0.0. 
+* **major**: A major SemVer deploy version, e.g. going from 1.2.3 to 2.0.0. 
 
-    `npm run release major` 
+    `npm run deploy major` 
 
-* **minor**: A minor SemVer release version, e.g. going from 1.2.3 to 1.3.0. 
+* **minor**: A minor SemVer deploy version, e.g. going from 1.2.3 to 1.3.0. 
 
-    `npm run release minor` 
+    `npm run deploy minor` 
 
-* **patch**: A patch SemVer release version, e.g. going from 1.2.3 to 1.2.4.
+* **patch**: A patch SemVer deploy version, e.g. going from 1.2.3 to 1.2.4.
 
-    `npm run release patch`
+    `npm run deploy patch`
 
-* **custom**: A custom release version if you are not using SemVer versioning. Provide the version as the next argument.
+* **custom**: A custom deploy version if you are not using SemVer versioning. Provide the version as the next argument.
 
-    `npm run release custom v1.2-someTag`
+    `npm run deploy custom v1.2-someTag`
 
 * **overwrite**: Will overwrite the version. 
 
-    `npm run release overwrite`
+    `npm run deploy overwrite`
 
 By default, all plugins are uploaded as Protected Assets (i.e. they require a Twilio Signature to be accessed). Plugin can be uploaded as a Public Asset using `--public` in your script.
 
