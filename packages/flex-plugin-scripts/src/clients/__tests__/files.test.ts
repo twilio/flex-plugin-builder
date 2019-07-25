@@ -23,6 +23,7 @@ describe('FileClient', () => {
   describe('constructor', () => {
     it('should throw error if invalid sid is provided', (done) => {
       try {
+        // tslint:disable-next-line
         new Test('ZSxxx');
       } catch (e) {
         expect(e.message).toContain('not valid');
@@ -32,6 +33,7 @@ describe('FileClient', () => {
     });
 
     it('should instantiate', () => {
+      // tslint:disable-next-line`
       new Test(serviceSid);
       expect(BaseClient).toHaveBeenCalledTimes(1);
     });

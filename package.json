@@ -21,8 +21,8 @@
     "bootstrap": "lerna bootstrap --no-ci",
     "build": "lerna run build",
     "postinstall": "npm run bootstrap",
-    "lint": "tslint --project tsconfig.json",
-    "lint:fix": "tslint --project tsconfig.json --fix",
+    "lint": "tslint --project tsconfig.lint.json",
+    "lint:fix": "tslint --project tsconfig.lint.json --fix",
     "test": "jest --coverage --color",
     "test:watch": "jest --watchAll --color",
     "test:coverage": "jest --coverage --color --watchAll=false"

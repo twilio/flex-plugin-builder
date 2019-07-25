@@ -2,7 +2,7 @@ import webpack from '../webpack';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
 
 jest.mock('path', () => ({
-  join: (...args: string[]) => args.includes('@twilio/flex-ui') ? 'flex-ui' : 'app'
+  join: (...args: string[]) => args.includes('@twilio/flex-ui') ? 'flex-ui' : 'app',
 }));
 
 jest.mock('fs', () => ({
@@ -12,7 +12,7 @@ jest.mock('fs', () => ({
     } else {
       return '{"name":"app-name"}';
     }
-  }
+  },
 }));
 
 describe('webpack', () => {
