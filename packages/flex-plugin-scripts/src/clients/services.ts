@@ -7,7 +7,7 @@ export default class ServiceClient extends BaseClient {
   /**
    * Returns the base URL
    */
-  public static getBaseUrl = (): string => {
+  public static getBaseUrl = (baseUrl = 'serverless'): string => {
     const realms = ServiceClient.realms;
     const realm = process.env.TWILIO_SERVERLESS_REALM;
     if (realm && !realms.includes(realm)) {
@@ -16,7 +16,7 @@ export default class ServiceClient extends BaseClient {
 
     const subDomain = realm && realms.includes(realm) ? `.${realm.toLowerCase()}` : '';
 
-    return `https://serverless${subDomain}.twilio.com/${ServiceClient.version}`;
+    return `https://${baseUrl}${subDomain}.twilio.com/${ServiceClient.version}`;
   }
 
   private static realms = ['dev', 'stage'];

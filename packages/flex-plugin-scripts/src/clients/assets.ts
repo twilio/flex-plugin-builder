@@ -1,12 +1,21 @@
+import axios from 'axios';
 import { AuthConfig } from 'flex-dev-utils/dist/keytar';
+import FormData from 'form-data';
+import { createReadStream } from 'fs';
+import { basename } from 'path';
 
 import BaseClient from './baseClient';
-import { Asset, AssetVersion, PresignedUrl, FileVisibility, VersionCreated } from './serverless-types';
+import Http from './http';
+import { Asset, AssetVersion, FileVisibility } from './serverless-types';
 import ServiceClient from './services';
 
 export default class AssetClient extends BaseClient {
+  protected serviceSid: string;
+
   constructor(auth: AuthConfig, serviceSid: string) {
     super(auth, `${ServiceClient.getBaseUrl()}/Services/${serviceSid}`);
+
+    this.serviceSid = serviceSid;
   }
 
   /**
@@ -20,11 +29,32 @@ export default class AssetClient extends BaseClient {
    */
   public upload = async (friendlyName: string, uri: string, localFilePath: string, isProtected: boolean = true) => {
     const asset = await this._create(friendlyName);
-    const version = await this._createVersion(asset.sid, uri, isProtected);
 
-    await this._uploadToS3(version.pre_signed_upload_url, localFilePath);
+    const contentConfig = {
+      filename: basename(localFilePath),
+      contentType: Http.getContentType(localFilePath),
+    };
+    const form = new FormData();
+    form.append('Path', uri);
+    form.append('Visibility', isProtected ? FileVisibility.Protected : FileVisibility.Public);
+    form.append('Content', createReadStream(localFilePath), contentConfig);
 
-    return this._getVersion(asset.sid, version.sid);
+    const baseUrl = ServiceClient.getBaseUrl('serverless-upload');
+    const url = `${baseUrl}/Services/${this.serviceSid}/Assets/${asset.sid}/Versions`;
+
+    return this.uploadFile(url, form);
+  }
+
+  private uploadFile = (url: string, formData: FormData): Promise<AssetVersion> => {
+    return axios
+      .post(url, formData, {
+        headers: formData.getHeaders(),
+        auth: {
+          username: this.config.auth.accountSid,
+          password: this.config.auth.authToken,
+        },
+      })
+      .then((resp) => resp.data);
   }
 
   /**
@@ -47,33 +77,5 @@ export default class AssetClient extends BaseClient {
   private _create = (friendlyName: string): Promise<Asset> => {
     return this.http
       .post<Asset>('Assets', {FriendlyName: friendlyName});
-  }
-
-  /**
-   * Creates a new {@link AssetVersion}
-   * @param assetSid      the asset sid
-   * @param uri           the uri of the asset
-   * @param isProtected   whether Asset is to be Public or Protected
-   * @private
-   */
-  private _createVersion = (assetSid: string, uri: string, isProtected: boolean = true): Promise<VersionCreated> => {
-    const data = {
-      Path: uri,
-      Visibility: isProtected ? FileVisibility.Protected : FileVisibility.Public,
-    };
-
-    return this.http
-      .post<VersionCreated>(`Assets/${assetSid}/Versions`, data);
-  }
-
-  /**
-   * Uploads the file to S3 using the pre-signed url
-   *
-   * @param presignedUrl  the {@link PresignedUrl} object
-   * @param localFilePath the local path to file
-   * @private
-   */
-  private _uploadToS3 = (presignedUrl: PresignedUrl, localFilePath: string): Promise<any> => {
-    return this.http.uploadToS3(localFilePath, presignedUrl.url, presignedUrl.kmsARN);
   }
 }
