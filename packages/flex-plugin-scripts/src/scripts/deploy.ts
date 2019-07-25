@@ -45,7 +45,7 @@ export const _verifyPath = (baseUrl: string, build: Build) => {
 };
 
 /**
- * The main release script. This script performs the following in order:
+ * The main depoloy script. This script performs the following in order:
  * 1. Verifies bundle file exists, if not warns about running `npm run build` first
  * 2. Fetches the default Service and Environment from Serverless API
  * 3. Fetches existing Build
@@ -55,10 +55,10 @@ export const _verifyPath = (baseUrl: string, build: Build) => {
  * 7. Creates a new deployment and sets the Environment build to the new Build.
  *
  * @param nextVersion   the next version of the bundle
- * @param options       options for this release
+ * @param options       options for this deploy
  */
-export const _doRelease = async (nextVersion: string, options: Options) => {
-  logger.debug('Releasing Flex plugin');
+export const _doDeploy = async (nextVersion: string, options: Options) => {
+  logger.debug('Deploying Flex plugin');
 
   if (!checkFilesExist(paths.localBundlePath)) {
     logger.error('Could not find build file. Did you run `npm run build` first?');
@@ -141,7 +141,7 @@ export const _doRelease = async (nextVersion: string, options: Options) => {
   logger.newline();
 };
 
-const release = async (...argv: string[]) => {
+const deploy = async (...argv: string[]) => {
   availabilityWarning();
 
   const disallowVersioning = argv.includes('--disallow-versioning');
@@ -174,9 +174,9 @@ const release = async (...argv: string[]) => {
     nextVersion = '0.0.0';
   }
 
-  await _doRelease(nextVersion, opts);
+  await _doDeploy(nextVersion, opts);
 };
 
-run(release);
+run(deploy);
 
-export default release;
+export default deploy;

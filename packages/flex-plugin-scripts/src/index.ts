@@ -8,7 +8,7 @@ import spawn from './utils/spawn';
 checkForUpdate();
 
 const scripts = [
-  'release',
+  'deploy',
   'start',
   'build',
   'test',

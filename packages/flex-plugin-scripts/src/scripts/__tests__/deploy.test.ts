@@ -1,5 +1,5 @@
 import { logger } from 'flex-dev-utils';
-import * as releaseScript from '../release';
+import * as deployScript from '../deploy';
 
 jest.mock('../../clients/assets');
 jest.mock('../../clients/services');
@@ -25,7 +25,7 @@ const DeploymentClient = require('../../clients/deployments').default;
 const fs = require('flex-dev-utils/dist/fs');
 // tslint:enable
 
-describe('release', () => {
+describe('deploy', () => {
   // @ts-ignore
   const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
   (logger.colors as any).blue = jest.fn();
@@ -34,7 +34,7 @@ describe('release', () => {
     version: '1.0.0',
     name: 'plugin-test',
   }));
-  const doRelease = jest.spyOn(releaseScript, '_doRelease');
+  const doDeploy = jest.spyOn(deployScript, '_doDeploy');
   process.env.TWILIO_API_KEY = 'SK00000000000000000000000000000000';
   process.env.TWILIO_API_SECRET = 'abc123';
 
@@ -72,42 +72,42 @@ describe('release', () => {
   });
 
   it('should exit if no command is provided', async () => {
-    await releaseScript.default();
+    await deployScript.default();
 
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(1);
     expect(logger.error).toHaveBeenCalledTimes(1);
     expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('can only be'), expect.anything());
-    expect(doRelease).not.toHaveBeenCalled();
+    expect(doDeploy).not.toHaveBeenCalled();
   });
 
   it('should exit if incorrect command is provided', async () => {
-    await releaseScript.default('foo');
+    await deployScript.default('foo');
 
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(1);
     expect(logger.error).toHaveBeenCalledTimes(1);
     expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('can only be'), expect.anything());
-    expect(doRelease).not.toHaveBeenCalled();
+    expect(doDeploy).not.toHaveBeenCalled();
   });
 
   it('should exit if custom is called without an argument', async () => {
-    await releaseScript.default('custom');
+    await deployScript.default('custom');
 
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(1);
     expect(logger.error).toHaveBeenCalledTimes(1);
     expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Custom version bump'));
-    expect(doRelease).not.toHaveBeenCalled();
+    expect(doDeploy).not.toHaveBeenCalled();
   });
 
   it('should bump major', async () => {
     const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => false);
 
-    await releaseScript.default('major');
+    await deployScript.default('major');
 
-    expect(doRelease).toHaveBeenCalledTimes(1);
-    expect(doRelease).toHaveBeenCalledWith('2.0.0', {
+    expect(doDeploy).toHaveBeenCalledTimes(1);
+    expect(doDeploy).toHaveBeenCalledWith('2.0.0', {
       isPublic: false,
       overwrite: false,
       disallowVersioning: false,
@@ -119,10 +119,10 @@ describe('release', () => {
   it('should bump minor', async () => {
     const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => false);
 
-    await releaseScript.default('minor');
+    await deployScript.default('minor');
 
-    expect(doRelease).toHaveBeenCalledTimes(1);
-    expect(doRelease).toHaveBeenCalledWith('1.1.0', {
+    expect(doDeploy).toHaveBeenCalledTimes(1);
+    expect(doDeploy).toHaveBeenCalledWith('1.1.0', {
       isPublic: false,
       overwrite: false,
       disallowVersioning: false,
@@ -134,10 +134,10 @@ describe('release', () => {
   it('should bump patch', async () => {
     const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => false);
 
-    await releaseScript.default('patch');
+    await deployScript.default('patch');
 
-    expect(doRelease).toHaveBeenCalledTimes(1);
-    expect(doRelease).toHaveBeenCalledWith('1.0.1', {
+    expect(doDeploy).toHaveBeenCalledTimes(1);
+    expect(doDeploy).toHaveBeenCalledWith('1.0.1', {
       isPublic: false,
       overwrite: false,
       disallowVersioning: false,
@@ -149,10 +149,10 @@ describe('release', () => {
   it('should bump custom', async () => {
     const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => false);
 
-    await releaseScript.default('custom', 'custom-version');
+    await deployScript.default('custom', 'custom-version');
 
-    expect(doRelease).toHaveBeenCalledTimes(1);
-    expect(doRelease).toHaveBeenCalledWith('custom-version', {
+    expect(doDeploy).toHaveBeenCalledTimes(1);
+    expect(doDeploy).toHaveBeenCalledWith('custom-version', {
       isPublic: false,
       overwrite: false,
       disallowVersioning: false,
@@ -164,11 +164,11 @@ describe('release', () => {
   it('should bump overwrite', async () => {
     const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => false);
 
-    await releaseScript.default('overwrite');
+    await deployScript.default('overwrite');
 
     expect(readPackageJson).toHaveBeenCalledTimes(1);
-    expect(doRelease).toHaveBeenCalledTimes(1);
-    expect(doRelease).toHaveBeenCalledWith('1.0.0', {
+    expect(doDeploy).toHaveBeenCalledTimes(1);
+    expect(doDeploy).toHaveBeenCalledWith('1.0.0', {
       isPublic: false,
       overwrite: true,
       disallowVersioning: false,
@@ -180,10 +180,10 @@ describe('release', () => {
   it('should run as public', async () => {
     const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => false);
 
-    await releaseScript.default('major', '--public');
+    await deployScript.default('major', '--public');
 
-    expect(doRelease).toHaveBeenCalledTimes(1);
-    expect(doRelease).toHaveBeenCalledWith('2.0.0', {
+    expect(doDeploy).toHaveBeenCalledTimes(1);
+    expect(doDeploy).toHaveBeenCalledWith('2.0.0', {
       isPublic: true,
       overwrite: false,
       disallowVersioning: false,
@@ -194,10 +194,10 @@ describe('release', () => {
 
   it('should quit if duplicate route is found', async (done) => {
     const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => true);
-    const verifyPath = jest.spyOn(releaseScript, '_verifyPath').mockImplementation(() => false);
+    const verifyPath = jest.spyOn(deployScript, '_verifyPath').mockImplementation(() => false);
 
     try {
-      await releaseScript.default('major');
+      await deployScript.default('major');
     } catch (e) {
       done();
     }
@@ -208,9 +208,9 @@ describe('release', () => {
 
   it('should not quit duplicate route is found but is overwrite', async () => {
     const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => true);
-    const verifyPath = jest.spyOn(releaseScript, '_verifyPath').mockImplementation(() => false);
+    const verifyPath = jest.spyOn(deployScript, '_verifyPath').mockImplementation(() => false);
 
-    await releaseScript.default('overwrite');
+    await deployScript.default('overwrite');
 
     checkFilesExist.mockRestore();
     verifyPath.mockRestore();
@@ -223,7 +223,7 @@ describe('release', () => {
         function_versions: [],
       };
 
-      expect(releaseScript._verifyPath('/baseUrl', build as any)).toBeFalsy();
+      expect(deployScript._verifyPath('/baseUrl', build as any)).toBeFalsy();
     });
 
     it('should return be false if asset bundle sourcemap path exists', () => {
@@ -232,7 +232,7 @@ describe('release', () => {
         function_versions: [],
       };
 
-      expect(releaseScript._verifyPath('/baseUrl', build as any)).toBeFalsy();
+      expect(deployScript._verifyPath('/baseUrl', build as any)).toBeFalsy();
     });
 
     it('should return be false if function bundle sourcemap path exists', () => {
@@ -241,7 +241,7 @@ describe('release', () => {
         function_versions: [{path: '/baseUrl/bundle.js'}],
       };
 
-      expect(releaseScript._verifyPath('/baseUrl', build as any)).toBeFalsy();
+      expect(deployScript._verifyPath('/baseUrl', build as any)).toBeFalsy();
     });
 
     it('should return be true', () => {
@@ -250,7 +250,7 @@ describe('release', () => {
         function_versions: [{path: '/baseUrl/yetAnotherBundle.js'}],
       };
 
-      expect(releaseScript._verifyPath('/baseUrl', build as any)).toBeTruthy();
+      expect(deployScript._verifyPath('/baseUrl', build as any)).toBeTruthy();
     });
   });
 });
