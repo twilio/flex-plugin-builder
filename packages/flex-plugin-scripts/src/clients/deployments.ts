@@ -13,7 +13,7 @@ export default class EnvironmentClient extends BaseClient {
       throw new Error(`ServiceSid ${serviceSid} is not valid`);
     }
 
-    if (!isSidOfType(environmentSid, 'ZB')) {
+    if (!isSidOfType(environmentSid, 'ZE')) {
       throw new Error(`EnvironmentSid ${environmentSid} is not valid`);
     }
   }
