@@ -44,6 +44,7 @@ export const setupConfiguration = (config: FlexPluginArguments): FlexPluginArgum
     config.flexSdkVersion = pkg.devDependencies['@twilio/flex-ui'];
     config.flexPluginVersion = pkg.devDependencies['flex-plugin'];
     config.cracoConfigVersion = pkg.devDependencies['craco-config-flex-plugin'];
+    config.pluginScriptsVersion = pkg.devDependencies['flex-plugin-scripts'];
     config.pluginJsonContent = JSON.stringify(_getPluginJsonContent(config), null, 2);
 
     return config;

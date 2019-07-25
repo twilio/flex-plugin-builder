@@ -41,7 +41,6 @@
     "esm": "^3.2.25",
     "flex-dev-utils": "^3.0.11-alpha.0",
     "inquirer": "^6.3.1",
-    "jest": "^24.8.0",
     "path": "^0.12.7",
     "querystring": "^0.2.0",
     "semver": "^6.1.1"
