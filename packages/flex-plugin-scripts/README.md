@@ -12,7 +12,7 @@ This repo will automatically be installed as part of creating a new plugin.
 
 ## Scripts
 
-### Release
+### Deploy
 
 ```bash
 npm run deploy {major, minor, patch, custom, overwrite} {--public}
