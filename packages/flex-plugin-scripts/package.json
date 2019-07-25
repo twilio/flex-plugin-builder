@@ -50,7 +50,6 @@
     "@types/cross-spawn": "^6.0.0",
     "@types/jest": "^24.0.13",
     "@types/node": "^12.0.7",
-    "got": "^9.6.0",
     "typescript": "^3.5.1"
   },
   "peerDependencies": {

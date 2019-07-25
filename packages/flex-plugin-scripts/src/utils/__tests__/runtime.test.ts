@@ -18,13 +18,13 @@ const BuildClient: jest.Mock = require('../../clients/builds').default;
 // tslint:enable
 
 describe('runtime', () => {
-  const serviceSid = 'ZSxxx';
-  const environmentSid = 'ZBxxx';
-  const buildSid = 'ZBxxx';
+  const serviceSid = 'ZS00000000000000000000000000000000';
+  const environmentSid = 'ZE00000000000000000000000000000000';
+  const buildSid = 'ZB00000000000000000000000000000000';
 
   const auth: AuthConfig = {
-    apiKey: 'SK00000000000000000000000000000000',
-    apiSecret: 'abc123',
+    accountSid: 'AC00000000000000000000000000000000',
+    authToken: 'abc123',
   };
 
   const getServiceDefault = jest.fn();
