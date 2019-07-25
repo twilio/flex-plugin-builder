@@ -45,7 +45,7 @@ export const _verifyPath = (baseUrl: string, build: Build) => {
 };
 
 /**
- * The main depoloy script. This script performs the following in order:
+ * The main deploy script. This script performs the following in order:
  * 1. Verifies bundle file exists, if not warns about running `npm run build` first
  * 2. Fetches the default Service and Environment from Serverless API
  * 3. Fetches existing Build
