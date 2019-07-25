@@ -1,5 +1,4 @@
 import axios, { AxiosInstance } from 'axios';
-import { readFileSync } from 'fs';
 import { stringify } from 'querystring';
 import { format } from 'util';
 import { logger } from 'flex-dev-utils';
@@ -12,16 +11,34 @@ export interface HttpConfig {
 }
 
 export default class Http {
+  /**
+   * Determines the content type based on file extension
+   *
+   * @param filePath  the local path to the file
+   * @returns the content type
+   */
+  public static getContentType = (filePath: string): string => {
+    const ext = filePath.split('.').pop();
+
+    if (ext === 'js') {
+      return 'application/javascript';
+    } else if (ext === 'map') {
+      return 'application/json';
+    }
+
+    return 'application/octet-stream';
+  }
+
+  protected readonly client: AxiosInstance;
   private readonly config: HttpConfig;
-  private readonly client: AxiosInstance;
 
   constructor(config: HttpConfig) {
     this.config = config;
     this.client = axios.create({
       baseURL: config.baseURL,
       auth: {
-        username: config.auth.apiKey,
-        password: config.auth.apiSecret,
+        username: config.auth.accountSid,
+        password: config.auth.authToken,
       },
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -49,29 +66,6 @@ export default class Http {
     return this.client
       .post(uri, stringify(data))
       .then((resp) => resp.data);
-  }
-
-  public uploadToS3(filePath: string, url: string, kmsARN: string): Promise<any> {
-    logger.trace('Uploading to S3 with presigned URL %s', url);
-
-    const ext = filePath.split('.').pop();
-    let contentType = 'application/octet-stream';
-    if (ext === 'js') {
-      contentType = 'application/javascript';
-    } else if (ext === 'map') {
-      contentType = 'application/json';
-    }
-
-    return axios
-      .put(url, readFileSync(filePath, 'utf8'), {
-        headers: {
-          'Content-Type': contentType,
-          'X-Amz-Server-Side-Encryption': 'aws:kms',
-          'X-Amz-Server-Side-Encryption-Aws-Kms-Key-Id': kmsARN,
-        },
-      })
-      .then((resp) => resp.data)
-      .catch(this.onError);
   }
 
   private onError = (err: any): Promise<any> => {

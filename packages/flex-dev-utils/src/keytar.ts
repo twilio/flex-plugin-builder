@@ -7,8 +7,8 @@ import { isSidOfType } from './sids';
 const SERVICE_NAME = 'com.twilio.flex.plugins.builder';
 
 export interface AuthConfig {
-  apiKey: string;
-  apiSecret: string;
+  accountSid: string;
+  authToken: string;
 }
 
 interface Credential {
@@ -16,31 +16,27 @@ interface Credential {
   password: string;
 }
 
-const apiKeyQuestion: Question = {
+const accountSidQuestion: Question = {
   type: 'input',
-  name: 'apiKey',
-  message: 'Twilio API Key:',
+  name: 'accountSid',
+  message: 'Twilio Account Sid:',
   validate: async (str: string) => {
     if (!await inputNotEmpty(str)) {
       return false;
     }
 
-    if (!isSidOfType(str, 'SK')) {
-      if (isSidOfType(str, 'AC')) {
-        return 'Please use an API Key instead of your AccountSid';
-      }
-
-      return 'Invalid API Key provided';
+    if (!isSidOfType(str, 'AC')) {
+      return 'Invalid Account Sid was provided';
     }
 
     return true;
   },
 };
 
-const apiSecretQuestion: Question = {
+const authTokenQuestion: Question = {
   type: 'password',
-  name: 'apiSecret',
-  message: 'Twilio API Secret:',
+  name: 'authToken',
+  message: 'Twilio Auth Token:',
   validate: inputNotEmpty,
 };
 
@@ -55,37 +51,37 @@ const chooseAccount: Question = {
  * If no credentials exists, then prompts the user to enter the credentials
  */
 export const getCredentials = async (): Promise<AuthConfig> => {
-  let apiKey;
-  let apiSecret;
+  let accountSid;
+  let authToken;
 
-  if (process.env.TWILIO_API_KEY && process.env.TWILIO_API_SECRET) {
-    if (!isSidOfType(process.env.TWILIO_API_KEY, 'SK')) {
-      logger.error('API Key is not valid.');
+  if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+    if (!isSidOfType(process.env.TWILIO_ACCOUNT_SID, 'AC')) {
+      logger.error('AccountSid is not valid.');
       return process.exit(1);
     }
 
-    apiKey = process.env.TWILIO_API_KEY;
-    apiSecret = process.env.TWILIO_API_SECRET;
-    await _saveCredential(apiKey, apiSecret);
+    accountSid = process.env.TWILIO_ACCOUNT_SID;
+    authToken = process.env.TWILIO_AUTH_TOKEN;
+    await _saveCredential(accountSid, authToken);
 
-    return {apiKey, apiSecret};
+    return {accountSid, authToken};
   }
 
   const credential = await _findCredential();
   if (credential) {
-    apiKey = credential.account;
-    apiSecret = credential.password;
-    await _saveCredential(apiKey, apiSecret);
+    accountSid = credential.account;
+    authToken = credential.password;
+    await _saveCredential(accountSid, authToken);
 
-    return {apiKey, apiSecret};
+    return {accountSid, authToken};
   }
 
-  apiKey = await prompt(apiKeyQuestion);
-  apiSecret = await prompt(apiSecretQuestion);
+  accountSid = await prompt(accountSidQuestion);
+  authToken = await prompt(authTokenQuestion);
 
-  await _saveCredential(apiKey, apiSecret);
+  await _saveCredential(accountSid, authToken);
 
-  return {apiKey, apiSecret};
+  return {accountSid, authToken};
 };
 
 /**
@@ -117,9 +113,10 @@ export const _getService = async (): Promise<Credential[]> => {
  */
 export const _findCredential = async (): Promise<Credential | null> => {
   const credentials = await _getService();
+
   const accounts = credentials
     .map((cred) => cred.account)
-    .filter((acc) => acc.substr(0, 2).toLowerCase() === 'sk' && acc.length === 34);
+    .filter((acc) => acc.substr(0, 2).toLowerCase() === 'ac' && acc.length === 34);
 
   if (credentials.length === 0) {
     return null;

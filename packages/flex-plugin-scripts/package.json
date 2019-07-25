@@ -40,6 +40,7 @@
     "cross-spawn": "^6.0.5",
     "esm": "^3.2.25",
     "flex-dev-utils": "^3.0.11-alpha.0",
+    "form-data": "^2.5.0",
     "inquirer": "^6.3.1",
     "path": "^0.12.7",
     "querystring": "^0.2.0",
@@ -49,6 +50,7 @@
     "@types/cross-spawn": "^6.0.0",
     "@types/jest": "^24.0.13",
     "@types/node": "^12.0.7",
+    "got": "^9.6.0",
     "typescript": "^3.5.1"
   },
   "peerDependencies": {

@@ -10,11 +10,11 @@ const inquirer = require('../inquirer');
 // tslint:enable
 
 describe('keytar', () => {
-  const apiKey = 'SK00000000000000000000000000000000';
-  const apiSecret = 'abc123';
+  const accountSid = 'AC00000000000000000000000000000000';
+  const authToken = 'abc123';
   const credential = {
-    account: apiKey,
-    password: apiSecret,
+    account: accountSid,
+    password: authToken,
   };
 
   const OLD_ENV = process.env;
@@ -38,15 +38,15 @@ describe('keytar', () => {
 
   describe('getCredentials', () => {
     it('should use env variables', async () => {
-      process.env.TWILIO_API_KEY = 'SK00000000000000000000000000000001';
-      process.env.TWILIO_API_SECRET = 'envApiSecret';
+      process.env.TWILIO_ACCOUNT_SID = 'AC00000000000000000000000000000001';
+      process.env.TWILIO_AUTH_TOKEN = 'authToken';
 
       jest.spyOn(keytar, '_findCredential');
 
       const creds = await keytar.getCredentials();
 
       expect(keytar._findCredential).not.toHaveBeenCalled();
-      expect(creds).toEqual({apiKey: 'SK00000000000000000000000000000001', apiSecret: 'envApiSecret'});
+      expect(creds).toEqual({accountSid: 'AC00000000000000000000000000000001', authToken: 'authToken'});
     });
 
     it('should not ask for API key or password if credentials exist', async () => {
@@ -57,7 +57,7 @@ describe('keytar', () => {
       const creds = await keytar.getCredentials();
 
       expect(inquirer.prompt).not.toHaveBeenCalled();
-      expect(creds).toEqual({apiKey, apiSecret});
+      expect(creds).toEqual({accountSid, authToken});
     });
 
     it('should ask for credentials if nothing exists', async () => {
@@ -69,16 +69,16 @@ describe('keytar', () => {
         .spyOn(inquirer, 'prompt')
         .mockImplementation((question: any) => {
           if (question.type === 'input') {
-            return 'promptKey';
+            return 'promptAccountSid';
           } else {
-            return 'promptSecret';
+            return 'promptAuthToken';
           }
         });
 
       const creds = await keytar.getCredentials();
 
       expect(inquirer.prompt).toHaveBeenCalledTimes(2);
-      expect(creds).toEqual({apiKey: 'promptKey', apiSecret: 'promptSecret'});
+      expect(creds).toEqual({accountSid: 'promptAccountSid', authToken: 'promptAuthToken'});
     });
 
     it('should ignore setting password if CI=true', async () => {
@@ -92,9 +92,9 @@ describe('keytar', () => {
         .spyOn(inquirer, 'prompt')
         .mockImplementation((question: any) => {
           if (question.type === 'input') {
-            return 'promptKey';
+            return 'promptAccountSid';
           } else {
-            return 'promptSecret';
+            return 'promptAuthToken';
           }
         });
 
@@ -103,7 +103,7 @@ describe('keytar', () => {
       expect(inquirer.prompt).toHaveBeenCalledTimes(2);
       expect(_keytar.setPassword).not.toHaveBeenCalled();
 
-      expect(creds).toEqual({apiKey: 'promptKey', apiSecret: 'promptSecret'});
+      expect(creds).toEqual({accountSid: 'promptAccountSid', authToken: 'promptAuthToken'});
     });
   });
 
