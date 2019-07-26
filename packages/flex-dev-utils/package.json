@@ -30,6 +30,7 @@
     "test:watch": "cd ../.. && jest packages/flex-dev-utils --watch"
   },
   "dependencies": {
+    "@k88/pipe-compose": "^2.1.1",
     "@types/inquirer": "^6.0.3",
     "@types/table": "^4.0.5",
     "@types/update-notifier": "^2.5.0",
@@ -38,9 +39,15 @@
     "inquirer": "^6.3.1",
     "keytar": "^4.10.0",
     "log-symbols": "^3.0.0",
+    "marked": "^0.7.0",
+    "marked-terminal": "^3.2.0",
     "ora": "^3.4.0",
     "table": "^5.4.1",
     "update-notifier": "^3.0.0",
     "util": "^0.12.0"
+  },
+  "devDependencies": {
+    "@types/marked": "^0.6.5",
+    "@types/marked-terminal": "^3.1.1"
   }
 }
