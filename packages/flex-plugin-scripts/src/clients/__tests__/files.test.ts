@@ -33,7 +33,7 @@ describe('FileClient', () => {
     });
 
     it('should instantiate', () => {
-      // tslint:disable-next-line`
+      // tslint:disable-next-line
       new Test(serviceSid);
       expect(BaseClient).toHaveBeenCalledTimes(1);
     });

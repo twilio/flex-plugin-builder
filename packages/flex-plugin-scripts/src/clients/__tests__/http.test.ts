@@ -1,5 +1,4 @@
 import HttpClient from '../http';
-import axios from 'axios';
 
 describe('HttpClient', () => {
   describe('getContentType', () => {
