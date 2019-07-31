@@ -1,8 +1,9 @@
 import marked from 'marked';
 import TerminalRenderer from 'marked-terminal';
+import { pipe } from '@k88/pipe-compose';
+
 import { readFileSync } from './fs';
 import * as logger from './logger';
-import { pipe } from '@k88/pipe-compose';
 
 marked.setOptions({
   renderer: new TerminalRenderer(),
