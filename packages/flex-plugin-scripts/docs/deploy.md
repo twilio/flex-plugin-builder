@@ -9,7 +9,7 @@ The script will build and deploy your plugin to Twilio Assets using Serverless A
 
 **--public**
 
-By default, plugins are uploaded as Protected Assets. A plugin can be uploaded as Public by setting the `--public` flag:
+By default, plugins are uploaded as Private plugin. A plugin can be uploaded as Public by setting the `--public` flag:
 
 ```bash
 npm run deploy -- --public

@@ -1,7 +1,14 @@
 import { logger } from 'flex-dev-utils';
 
 import { resolve } from '../utils/require';
+import run from '../utils/run';
 
+// The craco build.js script path
+export const cracoScriptPath = '@craco/craco/scripts/build.js';
+
+/**
+ * Builds the bundle
+ */
 const build = () => {
   logger.debug('Running build');
 
@@ -11,7 +18,9 @@ const build = () => {
   //   // to be filled
   // });
 
-  require(resolve('@craco/craco/scripts/build.js'));
+  require(resolve(cracoScriptPath));
 };
 
-build();
+run(build);
+
+export default build;
