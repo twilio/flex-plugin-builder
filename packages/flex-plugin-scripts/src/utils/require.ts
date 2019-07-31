@@ -6,7 +6,7 @@ interface PackageReplacement {
   replacement: () => any;
 }
 
-const {require: origRequire} = Module.prototype;
+const { require: origRequire } = Module.prototype;
 const packageReplacements: PackageReplacement[] = [];
 
 /**

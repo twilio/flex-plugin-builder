@@ -65,3 +65,9 @@ export const findUp = (dir: string, file: string): string => {
 
   return findUp(path.resolve(resolved, '..'), file);
 };
+
+/**
+ * Reads the file
+ * @param filePath  the file path
+ */
+export const readFileSync = (filePath: string): string => fs.readFileSync(filePath, 'utf8');
