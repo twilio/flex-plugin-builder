@@ -54,7 +54,9 @@ const spawnScript = (...argv: string[]) => {
   const processArgs = nodeArgs.concat(scriptPath).concat(scriptArgs);
 
   // Temp disallow version while we figure this out
-  processArgs.push('--disallow-versioning');
+  if (script !== 'test') {
+    processArgs.push('--disallow-versioning');
+  }
 
   // Run the script and then exit
   return process.exit(spawn(processArgs));

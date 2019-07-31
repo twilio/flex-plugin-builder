@@ -1,11 +1,20 @@
 import { logger } from 'flex-dev-utils';
 
 import { resolve } from '../utils/require';
+import run from '../utils/run';
 
-const doTest = () => {
+// The craco test.js script path
+export const cracoScriptPath = '@craco/craco/scripts/test.js';
+
+/**
+ * Runs Jest tests
+ */
+const test = () => {
   logger.debug('Running tests');
 
-  require(resolve('@craco/craco/scripts/test.js'));
+  require(resolve(cracoScriptPath));
 };
 
-doTest();
+run(test);
+
+export default test;
