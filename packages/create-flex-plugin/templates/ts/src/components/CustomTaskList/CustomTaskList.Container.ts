@@ -14,7 +14,7 @@ export interface DispatchToProps {
 }
 
 const mapStateToProps = (state: AppState): StateToProps => ({
-  isOpen: state.{{pluginNamespace}}.customTaskList.isOpen,
+  isOpen: state['{{pluginNamespace}}'].customTaskList.isOpen,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<any>): DispatchToProps => ({
