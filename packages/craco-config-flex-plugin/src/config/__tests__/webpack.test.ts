@@ -2,11 +2,7 @@ import webpack from '../webpack';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
 
 jest.mock('path', () => ({
-<<<<<<< HEAD
   join: (...args: string[]) => args.includes('@twilio/flex-ui') ? 'flex-ui' : 'app',
-=======
-  join: (...args: string[]) => args.includes('@twilio/flex-ui') ? 'flex-ui' : 'app'
->>>>>>> master
 }));
 
 jest.mock('fs', () => ({
@@ -16,13 +12,7 @@ jest.mock('fs', () => ({
     } else {
       return '{"name":"app-name"}';
     }
-<<<<<<< HEAD
   },
-}));
-
-describe('webpack', () => {
-=======
-  }
 }));
 
 describe('webpack', () => {
@@ -42,7 +32,6 @@ describe('webpack', () => {
     expect(config.output.chunkFilename).toEqual('[name].chunk.js');
   });
 
->>>>>>> master
   it('check externals', () => {
     const config = webpack.configure({});
 
