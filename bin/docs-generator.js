@@ -3,11 +3,15 @@
 const glob = require('glob');
 const fs = require('fs');
 const path = require('path');
+const pipe = require('@k88/pipe-compose').pipe;
+
 const inlineCommentsRegex = /<!--[\S\s]*-->/;
-const includeRegex = /include\(['"]?([\w\/\.]*)['"]?\)/;
+const includeRegex = /include\(['"]?([\w\/.]*)['"]?\)/;
 const docStartRegex = /docs-generator:start/;
 const docEndRegex = /docs-generator:end/;
-const pipe = require('@k88/pipe-compose').pipe;
+
+const docStartComment = '<!-- docs-generator:start - Do not remove or modify this section -->';
+const docEndComment = '<!-- docs-generator:end - Do not remove or modify this section -->';
 
 const rootDir = path.dirname(__dirname);
 const pattern = `${rootDir}/packages/**/docs.config.js`;
@@ -17,11 +21,9 @@ const packages = glob.sync(pattern, { ignore: '**/node_modules/**' });
  * Validates the configuration format
  *
  * @param config
- * @returns {NodeModule | string | string | *}
+ * @returns boolean
  */
-const validateConfig = (config) => {
-  return config.main && config.output;
-}
+const validateConfig = (config) => config.main && config.output;
 
 /**
  * Flattens array
@@ -30,6 +32,14 @@ const validateConfig = (config) => {
  * @returns {*[]}
  */
 const flatten = (arr) => [].concat.apply([], arr);
+
+/**
+ * Reads the file
+ *
+ * @param filePath    the file path
+ * @returns {string}  the file content
+ */
+const readFile = (filePath) => fs.readFileSync(filePath, 'utf8');
 
 /**
  * Looks up for `<!-- include('/path') --!>` and includes the content
@@ -49,12 +59,12 @@ const addInclude = (dir) => {
         return line;
       }
 
-      const file = fs.readFileSync(path.join(dir, match[1]), 'utf8');
+      const file = readFile(path.join(dir, match[1]));
       const newLine = [
         line,
-        '<!-- docs-generator:start - Do not remove or modify this section -->',
+        docStartComment,
         file.split('\n'),
-        '<!-- docs-generator:end - Do not remove or modify this section -->'
+        docEndComment,
       ];
 
       return flatten(newLine);
@@ -116,7 +126,7 @@ const generate = (dir) => {
     return;
   }
 
-  const main = fs.readFileSync(path.join(dir, config.main), 'utf8');
+  const main = readFile(path.join(dir, config.main));
   const output = path.join(dir, config.output);
 
   const lines = main.split('\n');
