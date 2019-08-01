@@ -4,7 +4,7 @@ import { checkFilesExist, updatePackageVersion, readPackageJson } from 'flex-dev
 import { getCredentials } from 'flex-dev-utils/dist/keytar';
 import semver, { ReleaseType } from 'semver';
 
-import run from './run';
+import run from '../utils/run';
 import { BuildData } from '../clients/builds';
 import { Build, Version } from '../clients/serverless-types';
 import availabilityWarning from '../prints/availabilityWarning';

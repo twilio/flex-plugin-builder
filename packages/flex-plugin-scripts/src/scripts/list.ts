@@ -1,7 +1,7 @@
 import { logger } from 'flex-dev-utils';
 import { getCredentials } from 'flex-dev-utils/dist/keytar';
 
-import run from './run';
+import run from '../utils/run';
 import { Visibility } from '../clients/serverless-types';
 import pluginVersions from '../prints/pluginVersions';
 import paths from '../utils/paths';

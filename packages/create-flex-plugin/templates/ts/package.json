@@ -12,7 +12,8 @@
     "deploy": "flex-plugin deploy",
     "test": "flex-plugin test --env=jsdom",
     "list": "flex-plugin list",
-    "eject": "flex-plugin eject"
+    "eject": "flex-plugin eject",
+    "clear": "flex-plugin clear"
   },
   "devDependencies": {
     "@twilio/flex-ui": "{{flexSdkVersion}}"

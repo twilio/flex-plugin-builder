@@ -2,7 +2,7 @@ import { logger } from 'flex-dev-utils';
 import { clearCredentials } from 'flex-dev-utils/dist/keytar';
 import { progress } from 'flex-dev-utils/dist/ora';
 
-import run from './run';
+import run from '../utils/run';
 
 /**
  * Clears the environment
