@@ -42,7 +42,7 @@ const flatten = (arr) => [].concat.apply([], arr);
 const readFile = (filePath) => fs.readFileSync(filePath, 'utf8');
 
 /**
- * Looks up for `<!-- include('/path') --!>` and includes the content
+ * Looks up for `<!-- docs-generator:include('/path') --!>` and includes the content
  *
  * @param dir
  * @returns {function(*): *[]}

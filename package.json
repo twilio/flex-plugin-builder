@@ -25,7 +25,8 @@
     "lint:fix": "tslint --project tsconfig.lint.json --fix",
     "test": "jest --coverage --color",
     "test:watch": "jest --watchAll --color",
-    "test:coverage": "jest --coverage --color --watchAll=false"
+    "test:coverage": "jest --coverage --color --watchAll=false",
+    "docs": "./bin/docs-generator.js"
   },
   "husky": {
     "hooks": {
