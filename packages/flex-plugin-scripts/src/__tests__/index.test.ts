@@ -31,19 +31,19 @@ describe('index', () => {
   it('should run main script', () => {
     index('build');
     expect(spawn).toHaveBeenCalledTimes(1);
-    expect(spawn).toHaveBeenCalledWith([expect.stringContaining('build'), expect.anything()])
+    expect(spawn).toHaveBeenCalledWith([expect.stringContaining('build'), expect.anything()]);
   });
 
   it('should run main script and pass other args', () => {
     index('build', 'foo');
     expect(spawn).toHaveBeenCalledTimes(1);
-    expect(spawn).toHaveBeenCalledWith([expect.stringContaining('build'), 'foo', expect.anything()])
+    expect(spawn).toHaveBeenCalledWith([expect.stringContaining('build'), 'foo', expect.anything()]);
   });
 
   it('should set no-versioning', () => {
     index('build');
     expect(spawn).toHaveBeenCalledTimes(1);
-    expect(spawn).toHaveBeenCalledWith([expect.anything(), '--disallow-versioning'])
+    expect(spawn).toHaveBeenCalledWith([expect.anything(), '--disallow-versioning']);
   });
 
   it('should render doc', () => {

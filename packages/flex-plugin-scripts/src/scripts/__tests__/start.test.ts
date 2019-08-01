@@ -16,4 +16,3 @@ describe('start', () => {
     expect(utilsRequire.resolve).toHaveBeenCalledWith(startScript.cracoScriptPath);
   });
 });
-
