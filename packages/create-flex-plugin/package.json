@@ -1,6 +1,6 @@
 {
   "name": "create-flex-plugin",
-  "version": "3.1.1-alpha.0",
+  "version": "3.1.2-alpha.0",
   "description": "Toolkit to create a new Twilio Flex plugin",
   "keywords": [
     "flex",
@@ -64,7 +64,7 @@
     "axios-mock-adapter": "^1.16.0",
     "craco-config-flex-plugin": "^3.0.12-alpha.0",
     "flex-plugin": "^3.0.9-alpha.0",
-    "flex-plugin-scripts": "^3.1.1-alpha.0",
+    "flex-plugin-scripts": "^3.1.2-alpha.0",
     "rimraf": "^2.6.3",
     "typescript": "^3.0.3"
   },
