@@ -1,7 +1,7 @@
 import { AuthConfig } from 'flex-dev-utils/dist/keytar';
-import FilesClient from './files';
+import FileClient from './files';
 
-export default class AssetClient extends FilesClient {
+export default class AssetClient extends FileClient {
   constructor(auth: AuthConfig, serviceSid: string) {
     super(auth, 'Assets', serviceSid);
   }

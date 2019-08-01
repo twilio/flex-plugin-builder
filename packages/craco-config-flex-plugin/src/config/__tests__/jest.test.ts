@@ -1,7 +1,7 @@
-import jestConfig  from '../jest';
+import jestConfig from '../jest';
 
 jest.mock('path', () => ({
-  join: (...args: string[]) => args.includes('@twilio/flex-ui') ? 'flex-ui' : 'app'
+  join: (...args: string[]) => args.includes('@twilio/flex-ui') ? 'flex-ui' : 'app',
 }));
 
 describe('jest', () => {

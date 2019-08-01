@@ -7,6 +7,7 @@ module.exports = {
   testEnvironment: 'jsdom',
   collectCoverageFrom: [
     '<rootDir>/packages/**/src/**/*.ts',
+    '!<rootDir>/packages/**/src/**/*.d.ts',
     '!<rootDir>/packages/**/src/**/*.test.ts',
     '!<rootDir>/packages/**/src/index.ts',
     '!<rootDir>/packages/**/templates/**/*.ts',

@@ -1,4 +1,5 @@
 import { AuthConfig } from 'flex-dev-utils/dist/keytar';
+import { isSidOfType } from 'flex-dev-utils/dist/sids';
 
 import BaseClient from './baseClient';
 import { Build, BuildStatus } from './serverless-types';
@@ -16,6 +17,10 @@ export default class BuildClient extends BaseClient {
 
   constructor(auth: AuthConfig, serviceSid: string) {
     super(auth,  `${ServiceClient.getBaseUrl()}/Services/${serviceSid}`);
+
+    if (!isSidOfType(serviceSid, 'ZS')) {
+      throw new Error(`ServiceSid ${serviceSid} is not valid`);
+    }
   }
 
   /**

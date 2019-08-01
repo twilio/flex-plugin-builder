@@ -1,4 +1,4 @@
-import devServer, { Configuration } from "../devServer";
+import devServer, { Configuration } from '../devServer';
 
 describe('devServer', () => {
   const defaultContentBase = 'entry1';
@@ -15,7 +15,7 @@ describe('devServer', () => {
 
   it('should add devAssets when contentBase is array', () => {
     const config = devServer({
-      contentBase: [defaultContentBase]
+      contentBase: [defaultContentBase],
     });
 
     assertConfig(config);
@@ -23,7 +23,7 @@ describe('devServer', () => {
 
   it('should add devAssets when contentBase is string', () => {
     const config = devServer({
-      contentBase: defaultContentBase
+      contentBase: defaultContentBase,
     });
 
     assertConfig(config);

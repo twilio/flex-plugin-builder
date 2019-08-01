@@ -49,10 +49,18 @@ export default class Http {
     this.client.interceptors.response.use((r) => r, this.onError);
   }
 
+  /**
+   * List API endpoint; makes a GET request and returns an array of R
+   * @param uri   the uri endpoint
+   */
   public list<R>(uri: string): Promise<R[]> {
     return this.get<R[]>(uri);
   }
 
+  /**
+   * Makes a GET request to return an instance
+   * @param uri   the uri endpoint
+   */
   public get<R>(uri: string): Promise<R> {
     logger.trace('Making GET request to %s/%s', this.config.baseURL, uri);
 
@@ -61,6 +69,11 @@ export default class Http {
       .then((resp) => resp.data || {});
   }
 
+  /**
+   * Makes a POST request
+   * @param uri   the uri of the endpoint
+   * @param data  the data to post
+   */
   public post<R>(uri: string, data: any): Promise<R> {
     logger.trace('Making POST request to %s/%s with data %s', this.config.baseURL, uri, JSON.stringify(data));
 
@@ -76,6 +89,8 @@ export default class Http {
    * @param formData  the {@link FormData}
    */
   public upload = (url: string, formData: FormData): Promise<any> => {
+    logger.trace('Uploading to %s with formData %s', url, formData);
+
     return axios
       .post(url, formData, {
         headers: formData.getHeaders(),

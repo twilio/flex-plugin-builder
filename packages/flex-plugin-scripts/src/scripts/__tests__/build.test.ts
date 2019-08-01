@@ -16,4 +16,3 @@ describe('build', () => {
     expect(utilsRequire.resolve).toHaveBeenCalledWith(buildScript.cracoScriptPath);
   });
 });
-

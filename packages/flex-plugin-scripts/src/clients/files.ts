@@ -2,6 +2,7 @@ import { AuthConfig } from 'flex-dev-utils/dist/keytar';
 import FormData from 'form-data';
 import { createReadStream } from 'fs';
 import { basename } from 'path';
+import { isSidOfType } from 'flex-dev-utils/dist/sids';
 
 import BaseClient from './baseClient';
 import Http from './http';
@@ -16,6 +17,10 @@ export  default abstract class FilesClient extends BaseClient {
 
   protected constructor(auth: AuthConfig, fileType: FileTypes,  serviceSid: string) {
     super(auth, `${ServiceClient.getBaseUrl()}/Services/${serviceSid}`);
+
+    if (!isSidOfType(serviceSid, 'ZS')) {
+      throw new Error(`ServiceSid ${serviceSid} is not valid`);
+    }
 
     this.fileType = fileType;
     this.serviceSid = serviceSid;
