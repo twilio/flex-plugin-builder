@@ -6,7 +6,7 @@ const path = require('path');
 const pipe = require('@k88/pipe-compose').pipe;
 
 const inlineCommentsRegex = /<!--[\S\s]*-->/;
-const includeRegex = /include\(['"]?([\w\/.]*)['"]?\)/;
+const includeRegex = /docs-generator:include\(['"]?([\w\/.]*)['"]?\)/;
 const docStartRegex = /docs-generator:start/;
 const docEndRegex = /docs-generator:end/;
 

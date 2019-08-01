@@ -13,19 +13,19 @@ This repo will automatically be installed as part of creating a new plugin.
 ## Scripts
 
 ### Deploy
-<!-- include('./docs/deploy.md') -->
+<!-- docs-generator:include('./docs/deploy.md') -->
 
 ### Build
-<!-- include('./docs/build.md') -->
+<!-- docs-generator:include('./docs/build.md') -->
 
 ### Test
-<!-- include('./docs/test.md') -->
+<!-- docs-generator:include('./docs/test.md') -->
 
 ### Start
-<!-- include('./docs/start.md') -->
+<!-- docs-generator:include('./docs/start.md') -->
 
 ### Clear
-<!-- include('./docs/clear.md') -->
+<!-- docs-generator:include('./docs/clear.md') -->
 
 ## Contributing
 
