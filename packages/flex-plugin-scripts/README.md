@@ -13,72 +13,19 @@ This repo will automatically be installed as part of creating a new plugin.
 ## Scripts
 
 ### Deploy
-
-```bash
-npm run deploy {major, minor, patch, custom, overwrite} {--public}
-```
-
-This script will build, and then deploy your plugin bundle to Twilio Assets. Please note that your accountSid and authToken are required to use this script. Your plugins will be uploaded to Twilio Assets using the following format:
-
-```text
-https://domain.twil.io/plugins/${PluginName}/${Version}/bundle.js
-```
-
-Where `PluginName` is the `name` from `package.json`, and `Version` is the `version` from `package.json`. For example:
-
-```text
-https://domain.twil.io/plugins/dialpad/1.0.0/bundle.js
-https://domain.twil.io/plugins/dialpad/1.1.0/bundle.js
-https://domain.twil.io/plugins/dialpad/1.1.1/bundle.js`
-```
-
-You may choose between `major, minor, patch, custom, overwrite` options:
-
-* **major**: A major SemVer deploy version, e.g. going from 1.2.3 to 2.0.0. 
-
-    `npm run deploy major` 
-
-* **minor**: A minor SemVer deploy version, e.g. going from 1.2.3 to 1.3.0. 
-
-    `npm run deploy minor` 
-
-* **patch**: A patch SemVer deploy version, e.g. going from 1.2.3 to 1.2.4.
-
-    `npm run deploy patch`
-
-* **custom**: A custom deploy version if you are not using SemVer versioning. Provide the version as the next argument.
-
-    `npm run deploy custom v1.2-someTag`
-
-* **overwrite**: Will overwrite the version. 
-
-    `npm run deploy overwrite`
-
-By default, all plugins are uploaded as Protected Assets (i.e. they require a Twilio Signature to be accessed). Plugin can be uploaded as a Public Asset using `--public` in your script.
+<!-- include('./docs/deploy.md') -->
 
 ### Build
-
-```bash
-npm run build
-```
-
-Run this script to build and create a single .js bundle for your plugin. You can then upload this to Twilio Assets or serve it via your own plugin service.
+<!-- include('./docs/build.md') -->
 
 ### Test
-
-```bash
-npm run build
-```
-
-Run this script to test your sourcecode.
+<!-- include('./docs/test.md') -->
 
 ### Start
+<!-- include('./docs/start.md') -->
 
-```text
-npm run start
-```
-
-Run this script to use dev-server for local development.
+### Clear
+<!-- include('./docs/clear.md') -->
 
 ## Contributing
 

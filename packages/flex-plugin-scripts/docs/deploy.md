@@ -5,7 +5,7 @@ Usage:
 
 The script will build and deploy your plugin to Twilio Assets using Serverless API. Please note that your AccountSid and AuthToken are required to use this script.
 
-## Options
+#### Options
 
 **--public**
 
