@@ -17,6 +17,9 @@
     "packages/*"
   ],
   "scripts": {
+    "clean": "lerna clean -y && rm -rf node_modules",
+    "clean:install": "npm run clean && npm install",
+    "check": "npm run lint && npm run test",
     "coverage": "codecov",
     "bootstrap": "lerna bootstrap --no-ci",
     "build": "lerna run build",
@@ -24,7 +27,11 @@
     "lint": "tslint --project tsconfig.json",
     "lint:fix": "tslint --project tsconfig.json --fix",
     "test": "jest --coverage --color",
-    "test:watch": "jest --watchAll --color"
+    "test:watch": "jest --watchAll --color",
+    "prepublish": "npm run clean:install && npm run check",
+    "publish": "npm run build && lerna publish",
+    "prepublish:next": "npm run clean:install && npm run check",
+    "publish:next": "npm run build && lerna publish --dist-tag=next"
   },
   "husky": {
     "hooks": {
