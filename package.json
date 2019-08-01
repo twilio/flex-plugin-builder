@@ -26,6 +26,7 @@
     "test": "jest --coverage --color",
     "test:watch": "jest --watchAll --color",
     "test:coverage": "jest --coverage --color --watchAll=false",
+    "contributors": "all-contributors generate",
     "docs": "./bin/docs-generator.js"
   },
   "husky": {
@@ -45,7 +46,7 @@
     "@babel/preset-typescript": "^7.1.0",
     "@k88/pipe-compose": "^2.1.1",
     "@types/jest": "^24.0.11",
-    "all-contributors-cli": "^6.3.1",
+    "all-contributors-cli": "^6.8.1",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^24.7.1",
     "babel-register": "^6.26.0",

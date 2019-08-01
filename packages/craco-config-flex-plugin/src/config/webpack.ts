@@ -64,12 +64,12 @@ const configureWebpack = (config: WebpackConfig): Configuration => {
   };
 
   config.plugins.push(new CleanWebpackPlugin({
-                                               cleanAfterEveryBuildPatterns: [
-                                                 join(process.cwd(), 'build/service-worker.js'),
-                                                 join(process.cwd(), 'build/precache-manifest*.js'),
-                                                 join(process.cwd(), 'build/index.html'),
-                                               ],
-                                             }));
+    cleanAfterEveryBuildPatterns: [
+      join(process.cwd(), 'build/service-worker.js'),
+      join(process.cwd(), 'build/precache-manifest*.js'),
+      join(process.cwd(), 'build/index.html'),
+    ],
+  }));
 
   config.optimization.splitChunks = false;
   config.optimization.runtimeChunk = false;
