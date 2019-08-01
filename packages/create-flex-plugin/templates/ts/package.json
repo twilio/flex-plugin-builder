@@ -40,6 +40,9 @@
     "redux": "3.7.2",
     "typescript": "^3.4.5"
   },
+  "devDependencies": {
+    "@twilio/flex-ui": "{{flexSdkVersion}}"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
