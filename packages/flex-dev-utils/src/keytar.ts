@@ -43,7 +43,7 @@ const authTokenQuestion: Question = {
 const chooseAccount: Question = {
   type: 'list',
   name: 'account',
-  message: 'Select from one of the following API Keys',
+  message: 'Select from one of the following Account Sids',
 };
 
 /**
