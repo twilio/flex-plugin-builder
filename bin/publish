@@ -7,23 +7,32 @@
 ##    ./bin/publish public      publishes as a bump
 ##    ./bin/publish             publishes as next-gen
 
+# Runs script but quits if script exists with non-zero exit code
+function run_script() {
+  eval "$@"
+  if [ $? -eq 1 ] ; then
+    echo "Script '$@' failed - exiting"
+    exit $?
+  fi
+}
+
 # Cleanup
-lerna clean -y
-rm -rf node_modules
+run_script lerna clean -y
+run_script rm -rf node_modules
 
 # Install
-npm install
+run_script npm install
 
 # Lint and test
-npm run lint
-npm run test
+run_script npm run lint
+run_script npm run test
 
 # Build
-npm run build
+run_script npm run build
 
 # Publish
 if [ "$1" == "public" ] ; then
-  lerna publish
+  run_script lerna publish
 else
-  lerna publish --dist-tag next
+  run_script lerna publish --dist-tag next
 fi
