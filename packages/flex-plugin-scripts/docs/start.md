@@ -1,4 +1,4 @@
-The `start` scripts sets up the sever locally so you develop your Flex plugin in real-time.
+The `start` scripts sets up the server locally so you develop your Flex plugin in real-time.
 
 Usage:
     `npm run start`
