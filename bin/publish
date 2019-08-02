@@ -1,0 +1,29 @@
+#!/bin/bash
+
+## Publish Script
+## Cleans up the node_modules, re-installs everything, runs test before publishing
+## By default, it will attempt to publish as next-gen, unless 'public' is provided
+## i.e.
+##    ./bin/publish public      publishes as a bump
+##    ./bin/publish             publishes as next-gen
+
+# Cleanup
+lerna clean -y
+rm -rf node_modules
+
+# Install
+npm install
+
+# Lint and test
+npm run lint
+npm run test
+
+# Build
+npm run build
+
+# Publish
+if [ "$1" == "public" ] ; then
+  lerna publish
+else
+  lerna publish --dist-tag next
+fi
