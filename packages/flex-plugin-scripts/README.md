@@ -57,7 +57,7 @@ Usage:
 ### Start
 <!-- docs-generator:include('./docs/start.md') -->
 <!-- docs-generator:start - Do not remove or modify this section -->
-The `start` scripts sets up the sever locally so you develop your Flex plugin in real-time.
+The `start` scripts sets up the server locally so you develop your Flex plugin in real-time.
 
 Usage:
     `npm run start`
@@ -72,15 +72,13 @@ PORT=4000 npm run start
 
 <!-- docs-generator:end - Do not remove or modify this section -->
 
-### Clear
-<!-- docs-generator:include('./docs/clear.md') -->
+### Remove
+<!-- docs-generator:include('./docs/remove.md') -->
 <!-- docs-generator:start - Do not remove or modify this section -->
-The `clear` script clears out your Flex keychain. 
+The `remove` script removes/delete the the plugin permanently. 
 
 Usage:
-    `npm run clear`
-
-This script clears out your credentials from the Flex keychain. This is useful if you want to remove the AccountSid/AuthToken that is saved in the keychain.
+    `npm run remove`
 
 <!-- docs-generator:end - Do not remove or modify this section -->
 

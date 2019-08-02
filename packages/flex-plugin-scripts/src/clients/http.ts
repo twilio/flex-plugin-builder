@@ -83,6 +83,18 @@ export default class Http {
   }
 
   /**
+   * Makes a delete request
+   *
+   * @param uri   the uri of the endpoint
+   */
+  public delete(uri: string): Promise<void> {
+    logger.trace('Making DELETE request to %s/%s', this.config.baseURL, uri);
+
+    return this.client
+      .delete(uri);
+  }
+
+  /**
    * Uploads the {@link FormData} to the URL
    *
    * @param url       the url to upload to
