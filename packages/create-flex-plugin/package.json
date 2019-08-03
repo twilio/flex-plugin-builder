@@ -7,7 +7,7 @@
     "plugin",
     "twilio"
   ],
-  "homepage": "https://github.com/twilio/flex-plugin-builder#readme",
+  "homepage": "https://github.com/twilio/flex-plugin-builder",
   "bugs": {
     "url": "https://github.com/twilio/flex-plugin-builder/issues"
   },

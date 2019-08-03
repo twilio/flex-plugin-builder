@@ -8,7 +8,7 @@
     "scripts",
     "twilio"
   ],
-  "homepage": "https://github.com/twilio/flex-plugin-builder#readme",
+  "homepage": "https://github.com/twilio/flex-plugin-builder",
   "bugs": {
     "url": "https://github.com/twilio/flex-plugin-builder/issues"
   },
@@ -17,6 +17,7 @@
     "url": "git+https://github.com/twilio/flex-plugin-builder.git"
   },
   "license": "MIT",
+  "author": "Kousha Talebian <ktalebian@twilio.com>",
   "files": [
     "dist"
   ],

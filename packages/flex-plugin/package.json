@@ -5,7 +5,8 @@
   "keywords": [
     "flex",
     "twilio",
-    "plugin"
+    "plugin",
+    "builder"
   ],
   "homepage": "https://github.com/twilio/flex-plugin-builder",
   "bugs": {
