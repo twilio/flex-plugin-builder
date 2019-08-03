@@ -102,12 +102,9 @@ const cleanGeneratedLines = (lines) => {
     return lines;
   }
 
-  const start = docStartLines.reverse();
-  const end = docEndLines.reverse();
-
-  while (start.length) {
-    const startIndex = start.pop();
-    const endIndex = end.pop();
+  while (docStartLines.length) {
+    const startIndex = docStartLines.pop();
+    const endIndex = docEndLines.pop();
 
     lines.splice(startIndex, endIndex - startIndex + 1);
   }
