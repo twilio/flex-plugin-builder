@@ -4,6 +4,11 @@ import BaseClient from './baseClient';
 import { Service, ServiceResource } from './serverless-types';
 
 export default class ServiceClient extends BaseClient {
+  public static NewService = {
+    UniqueName: 'default',
+    FriendlyName: 'Flex Plugins Default Service',
+  };
+
   /**
    * Returns the base URL
    */
@@ -46,10 +51,7 @@ export default class ServiceClient extends BaseClient {
    */
   public create = (): Promise<Service> => {
     return this.http
-      .post('Services', {
-        UniqueName: 'default',
-        FriendlyName: 'Flex Plugins Default Service',
-      });
+      .post('Services', ServiceClient.NewService);
   }
 
   /**

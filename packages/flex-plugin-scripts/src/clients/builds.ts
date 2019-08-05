@@ -1,5 +1,5 @@
 import { AuthConfig } from 'flex-dev-utils/dist/keytar';
-import { isSidOfType } from 'flex-dev-utils/dist/sids';
+import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
 
 import BaseClient from './baseClient';
 import { Build, BuildStatus } from './serverless-types';
@@ -12,13 +12,14 @@ export interface BuildData {
 }
 
 export default class BuildClient extends BaseClient {
+  public static BaseUri = 'Builds';
   private static timeoutMsec: number = 60000;
   private static pollingIntervalMsec: number = 500;
 
   constructor(auth: AuthConfig, serviceSid: string) {
     super(auth,  `${ServiceClient.getBaseUrl()}/Services/${serviceSid}`);
 
-    if (!isSidOfType(serviceSid, 'ZS')) {
+    if (!isSidOfType(serviceSid, SidPrefix.ServiceSid)) {
       throw new Error(`ServiceSid ${serviceSid} is not valid`);
     }
   }
@@ -52,6 +53,7 @@ export default class BuildClient extends BaseClient {
         if (build.status === BuildStatus.Completed) {
           clearInterval(intervalId);
           clearTimeout(timeoutId);
+
           resolve(build);
         }
       }, BuildClient.pollingIntervalMsec);
@@ -61,11 +63,15 @@ export default class BuildClient extends BaseClient {
   /**
    * Fetches a build by buildSid
    *
-   * @param buildSid  the build sid to fetch
+   * @param sid  the build sid to fetch
    */
-  public get = (buildSid: string): Promise<Build> => {
+  public get = (sid: string): Promise<Build> => {
+    if (!isSidOfType(sid, SidPrefix.BuildSid)) {
+      throw new Error(`${sid} is not of type ${SidPrefix.BuildSid}`);
+    }
+
     return this.http
-      .get<Build>(`Builds/${buildSid}`);
+      .get<Build>(`${BuildClient.BaseUri}/${sid}`);
   }
 
   /**
@@ -76,6 +82,6 @@ export default class BuildClient extends BaseClient {
    */
   private _create = (data: BuildData): Promise<Build> => {
     return this.http
-      .post<Build>('Builds', data);
+      .post<Build>(BuildClient.BaseUri, data);
   }
 }
