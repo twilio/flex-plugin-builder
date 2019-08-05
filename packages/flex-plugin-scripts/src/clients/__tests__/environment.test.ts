@@ -78,4 +78,15 @@ describe('EnvironmentClient', () => {
       done();
     }
   });
+
+  it('should warn if incorrect sid is provided to remove', async (done) => {
+    const client = new EnvironmentClient(auth, 'ZS00000000000000000000000000000000');
+
+    try {
+      await client.remove('ZS00000000000000000000000000000000');
+    } catch (e) {
+      expect(e.message).toContain('not of type ZE');
+      done();
+    }
+  });
 });
