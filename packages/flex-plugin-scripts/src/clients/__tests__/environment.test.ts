@@ -116,10 +116,9 @@ describe('EnvironmentClient', () => {
       const environment = await client.create();
 
       expect(post).toHaveBeenCalledTimes(1);
-      expect(post).toHaveBeenCalledWith(EnvironmentClient.BaseUri, {
+      expect(post).toHaveBeenCalledWith(EnvironmentClient.BaseUri, expect.objectContaining({
         UniqueName: 'plugin-test',
-        DomainSuffix: 'plugin-test',
-      });
+      }));
       expect(environment).toEqual(environmentMatch);
 
       post.mockRestore();
