@@ -7,6 +7,8 @@ import ServiceClient from './services';
 import paths from '../utils/paths';
 
 export default class EnvironmentClient extends BaseClient {
+  public static BaseUri = 'Environments';
+
   constructor(auth: AuthConfig, serviceSid: string) {
     super(auth, `${ServiceClient.getBaseUrl()}/Services/${serviceSid}`);
 
@@ -41,7 +43,7 @@ export default class EnvironmentClient extends BaseClient {
    */
   public create = (): Promise<Environment> => {
     return this.http
-      .post('Environments', {
+      .post(EnvironmentClient.BaseUri, {
         UniqueName: paths.packageName,
         DomainSuffix: Math.random().toString(26).slice(2),
       });
@@ -56,7 +58,7 @@ export default class EnvironmentClient extends BaseClient {
     }
 
     return this.http
-      .delete(`Environments/${sid}`);
+      .delete(`${EnvironmentClient.BaseUri}/${sid}`);
   }
 
   /**
@@ -64,6 +66,6 @@ export default class EnvironmentClient extends BaseClient {
    */
   public list = (): Promise<EnvironmentResource> => {
     return this.http
-      .get<EnvironmentResource>('Environments');
+      .get<EnvironmentResource>(EnvironmentClient.BaseUri);
   }
 }
