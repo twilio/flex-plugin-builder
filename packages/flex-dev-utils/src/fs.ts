@@ -1,10 +1,27 @@
 import fs from 'fs';
 import * as path from 'path';
 import os from 'os';
+import * as mkdirp from 'mkdirp';
 
 export default fs;
 
 const rootDir = os.platform() === 'win32' ? process.cwd().split(path.sep)[0] : '/';
+const rootConfigDir = path.join(os.userInfo().homedir, '.flex', 'plugin-builder');
+
+/**
+ * Gets the root config directory
+ */
+export const getConfigDir = () => {
+  if (fs.existsSync(rootConfigDir)) {
+    return rootConfigDir;
+  }
+
+  if (mkdirp.sync(rootConfigDir)) {
+    return rootConfigDir;
+  }
+
+  throw new Error(`Failed to create the root config directory at ${rootConfigDir}`);
+};
 
 /**
  * Checks the provided array of files exist

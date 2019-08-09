@@ -19,6 +19,31 @@ describe('inquirer', () => {
     });
   });
 
+  describe('inputOfLength', () => {
+    it('should return false', async () => {
+      expect(await Inquirer.inputOfLength('', 0)).toBeFalsy();
+      expect(await Inquirer.inputOfLength('not-empty', 20)).toBeFalsy();
+    });
+
+    it('should return true', async () => {
+      expect(await Inquirer.inputOfLength('not-empty', 9)).toBeTruthy();
+    });
+  });
+
+  describe('accountSidValid', () => {
+    it('should return false', async () => {
+      expect(await Inquirer.accountSidValid('')).toBeFalsy();
+      expect(await Inquirer.accountSidValid('AC0000000000000000000000000000000'))
+        .toEqual(expect.any(String));
+      expect(await Inquirer.accountSidValid('AB00000000000000000000000000000000'))
+        .toEqual(expect.any(String));
+    });
+
+    it('should return true', async () => {
+      expect(await Inquirer.accountSidValid('AC00000000000000000000000000000000')).toBeTruthy();
+    });
+  });
+
   describe('validateConfirmation', () => {
     it('should valid false if no default and no answer provided', async () => {
       expect(await Inquirer.validateConfirmation()('')).toEqual(expect.any(String));

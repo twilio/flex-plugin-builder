@@ -1,4 +1,7 @@
 import * as fs from '../fs';
+import * as mkdirp from 'mkdirp';
+
+jest.mock('mkdirp');
 
 describe('fs', () => {
   beforeEach(() => {
@@ -116,6 +119,19 @@ describe('fs', () => {
       }
 
       existsSync.mockRestore();
+    });
+  });
+
+  describe('getConfigDir', () => {
+    it('should return rootConfig if it already exists', () => {
+      const existsSync = jest.spyOn(fs.default, 'existsSync').mockImplementation(() => true);
+      const mkdir = jest.spyOn(mkdirp, 'sync');
+
+      const dir = fs.getConfigDir();
+
+      expect(dir).toContain('plugin-builder');
+      expect(existsSync).toHaveBeenCalledTimes(1);
+      expect(mkdir).not.toHaveBeenCalled();
     });
   });
 });

@@ -1,5 +1,7 @@
 import inquirer, { Question as IQuestion } from 'inquirer';
 
+import { isSidOfType } from './sids';
+
 export default inquirer;
 
 type YNAnswer = 'Y' | 'N';
@@ -11,6 +13,7 @@ export interface Question {
   name: string;
   message: string;
   type?: 'list' | 'input' | 'password';
+
   validate?(input: string): Promise<boolean | string>;
 }
 
@@ -20,6 +23,43 @@ export interface Question {
  * @param input the input to validate
  */
 export const inputNotEmpty = async (input: string) => input && input.length > 0;
+
+/**
+ * Validates that the input is of a given length
+ *
+ * @param input   the input
+ * @param length  the length of the input
+ */
+export const inputOfLength = async (input: string, length: number) => input && input.length >= length;
+
+/**
+ * Validates that the accountSid is valid
+ *
+ * @param str the accountSid
+ */
+export const accountSidValid = async (str: string) => {
+  if (!await inputNotEmpty(str)) {
+    return false;
+  }
+
+  if (!isSidOfType(str, 'AC')) {
+    return 'Invalid Account Sid was provided';
+  }
+
+  return true;
+};
+
+/**
+ * Validates string is strong of a password
+ * @param str
+ */
+export const isPasswordStrong = async (str: string) => {
+  if (!await inputOfLength(str, 8)) {
+    return 'Password must be at least 8 characters long';
+  }
+
+  return true;
+};
 
 /**
  * Confirmation validator
@@ -53,8 +93,8 @@ export const prompt = async (question: Question): Promise<Question['name']> => {
 };
 
 /**
- * Provides a confirmation prompt. The response is a Promise<boolean> with `true` resolving to successful confirmation,
- * and `false` being the rejected confirmation
+ * Provides a confirmation prompt. The response is a Promise<boolean> with `true` resolving to
+ * successful confirmation, and `false` being the rejected confirmation
  *
  * @param question      the question to ask
  * @param defaultAnswer the default answer, can be Y or N
@@ -94,5 +134,5 @@ export const confirm = async (question: string, defaultAnswer?: YNAnswer): Promi
 export const choose = async (question: Question, choices: string[]): Promise<Question['name']> => {
   question.type = 'list';
 
-  return prompt(Object.assign(question, {choices}));
+  return prompt(Object.assign(question, { choices }));
 };

@@ -1,7 +1,7 @@
 import { logger } from 'flex-dev-utils';
 import { progress } from 'flex-dev-utils/dist/ora';
 import { checkFilesExist, updatePackageVersion, readPackageJson } from 'flex-dev-utils/dist/fs';
-import { getCredentials } from 'flex-dev-utils/dist/keytar';
+import { getCredential } from 'flex-dev-utils/dist/credentials';
 import semver, { ReleaseType } from 'semver';
 
 import run from '../utils/run';
@@ -71,13 +71,13 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
   const bundleUri = `${pluginBaseUrl}/bundle.js`;
   const sourceMapUri = `${pluginBaseUrl}/bundle.js.map`;
 
-  const credentials = await getCredentials();
-  const runtime = await getRuntime(credentials);
+  const credential = await getCredential();
+  const runtime = await getRuntime(credential);
   const pluginUrl = `https://${runtime.environment.domain_name}${bundleUri}`;
 
-  const buildClient = new BuildClient(credentials, runtime.service.sid);
-  const assetClient = new AssetClient(credentials, runtime.service.sid);
-  const deploymentClient = new DeploymentClient(credentials, runtime.service.sid, runtime.environment.sid);
+  const buildClient = new BuildClient(credential, runtime.service.sid);
+  const assetClient = new AssetClient(credential, runtime.service.sid);
+  const deploymentClient = new DeploymentClient(credential, runtime.service.sid, runtime.environment.sid);
 
   // Check duplicate routes
   const routeCollision = await progress<Build>('Validating the new plugin bundle', async () => {

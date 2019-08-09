@@ -1,4 +1,4 @@
-import { AuthConfig } from 'flex-dev-utils/dist/keytar';
+import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 
 import BuildClient, { BuildData } from '../builds';
 import { BuildStatus } from '../serverless-types';

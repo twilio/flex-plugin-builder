@@ -1,11 +1,11 @@
-import { AuthConfig } from 'flex-dev-utils/dist/keytar';
+import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 
 import getRuntime from '../runtime';
 
 jest.mock('../../clients/builds');
 jest.mock('../../clients/environments');
 jest.mock('../../clients/services');
-jest.mock('flex-dev-utils/dist/keytar');
+jest.mock('flex-dev-utils/dist/credentials');
 jest.mock('../../utils/paths', () => ({
   packageName: 'plugin-test',
 }));
