@@ -76,6 +76,8 @@ describe('credentials', () => {
       expect(resp).toEqual([]);
       expect(readFileSync).not.toHaveBeenCalled();
       expect(existSync).toHaveBeenCalledTimes(1);
+
+      existSync.mockRestore();
     });
 
     it('should read and parse file', async () => {
@@ -97,6 +99,8 @@ describe('credentials', () => {
       expect(fromSecureString).toHaveBeenCalledTimes(2);
       expect(fromSecureString).toHaveBeenNthCalledWith(1, 'line1', 'masterPassword');
       expect(fromSecureString).toHaveBeenNthCalledWith(2, 'line2', 'masterPassword');
+
+      existSync.mockRestore();
     });
   });
 
@@ -110,6 +114,8 @@ describe('credentials', () => {
 
       expect(_readCredentialFile).not.toHaveBeenCalled();
       expect(writeFileSync).not.toHaveBeenCalled();
+
+      writeFileSync.mockRestore();
     });
 
     it('should append new credential', async () => {
@@ -130,6 +136,8 @@ describe('credentials', () => {
       expect(_readCredentialFile).toHaveBeenCalledWith('masterPassword');
       expect(writeFileSync).toHaveBeenCalledTimes(1);
       expect(writeFileSync).toHaveBeenCalledWith(expect.any(String), 'secure1\nsecure2\nsecure3');
+
+      writeFileSync.mockRestore();
     });
 
     it('should overwrite existing credential', async () => {
@@ -150,6 +158,8 @@ describe('credentials', () => {
       expect(_readCredentialFile).toHaveBeenCalledWith('masterPassword');
       expect(writeFileSync).toHaveBeenCalledTimes(1);
       expect(writeFileSync).toHaveBeenCalledWith(expect.any(String), 'secure2\nsecure3');
+
+      writeFileSync.mockRestore();
     });
   });
 
@@ -217,6 +227,9 @@ describe('credentials', () => {
 
       expect(existsSync).toHaveBeenCalledTimes(1);
       expect(unlinkSync).not.toHaveBeenCalled();
+
+      existsSync.mockRestore();
+      unlinkSync.mockRestore();
     });
 
     it('should remove credential if it exists', async () => {
@@ -227,6 +240,9 @@ describe('credentials', () => {
 
       expect(existsSync).toHaveBeenCalledTimes(1);
       expect(unlinkSync).toHaveBeenCalledTimes(1);
+
+      existsSync.mockRestore();
+      unlinkSync.mockRestore();
     });
   });
 
@@ -328,7 +344,7 @@ describe('credentials', () => {
       expect(cred).toEqual(fakeCred);
       expect(_findCredential).toHaveBeenCalledTimes(1);
       expect(_findCredential).toHaveBeenCalledWith('password', undefined);
-      expect(inquirer.prompt).toHaveBeenCalledTimes(2);
+      expect(prompt).toHaveBeenCalledTimes(2);
       expect(_saveCredential).toHaveBeenCalledWith(fakeCred, 'password');
       expect(process.env.TWILIO_ACCOUNT_SID).toEqual('value');
       expect(process.env.TWILIO_AUTH_TOKEN).toEqual('value');

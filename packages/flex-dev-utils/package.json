@@ -33,8 +33,6 @@
   "dependencies": {
     "@buttercup/credentials": "^1.2.0",
     "@k88/pipe-compose": "^2.1.1",
-    "@types/keytar": "^4.4.0",
-    "@types/mkdirp": "^0.5.2",
     "boxen": "^4.1.0",
     "buttercup": "^2.15.4",
     "chalk": "^2.4.2",
@@ -52,6 +50,7 @@
     "@types/inquirer": "6.0.3",
     "@types/marked": "^0.6.5",
     "@types/marked-terminal": "^3.1.1",
+    "@types/mkdirp": "^0.5.2",
     "@types/table": "^4.0.5",
     "@types/update-notifier": "^2.5.0"
   }

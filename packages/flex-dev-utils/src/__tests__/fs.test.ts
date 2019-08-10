@@ -1,11 +1,14 @@
 import * as fs from '../fs';
-import * as mkdirp from 'mkdirp';
 
 jest.mock('mkdirp');
 
+// tslint:disable-next-line
+const mkdirp = require('mkdirp');
+
 describe('fs', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
+    jest.resetModules();
   });
 
   describe('readPackageJson', () => {
@@ -55,7 +58,7 @@ describe('fs', () => {
   describe('checkFilesExist', () => {
     it('loop through all files', () => {
       // @ts-ignore
-      const existsSync = jest.spyOn(fs.default, 'existsSync').mockImplementation(() => { /* no-op */ });
+      const existsSync = jest.spyOn(fs.default, 'existsSync').mockResolvedValue(true);
 
       fs.checkFilesExist('file1', 'file2');
       expect(existsSync).toHaveBeenCalledTimes(2);
@@ -110,7 +113,7 @@ describe('fs', () => {
 
     it('should fail if it reaches root directory', (done) => {
       // @ts-ignore
-      const existsSync = jest.spyOn(fs.default, 'existsSync').mockImplementation(() => false);
+      const existsSync = jest.spyOn(fs.default, 'existsSync').mockReturnValue(false);
 
       try {
         fs.findUp('/path1/path2/path3', 'foo');
@@ -124,7 +127,7 @@ describe('fs', () => {
 
   describe('getConfigDir', () => {
     it('should return rootConfig if it already exists', () => {
-      const existsSync = jest.spyOn(fs.default, 'existsSync').mockImplementation(() => true);
+      const existsSync = jest.spyOn(fs.default, 'existsSync').mockReturnValue(true);
       const mkdir = jest.spyOn(mkdirp, 'sync');
 
       const dir = fs.getConfigDir();
@@ -132,6 +135,9 @@ describe('fs', () => {
       expect(dir).toContain('plugin-builder');
       expect(existsSync).toHaveBeenCalledTimes(1);
       expect(mkdir).not.toHaveBeenCalled();
+
+      existsSync.mockRestore();
+      mkdir.mockRestore();
     });
   });
 });
