@@ -1,5 +1,6 @@
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
+import { randomString } from 'flex-dev-utils/dist/random';
 
 import BaseClient from './baseClient';
 import { Environment, EnvironmentResource } from './serverless-types';
@@ -8,11 +9,12 @@ import paths from '../utils/paths';
 
 export default class EnvironmentClient extends BaseClient {
   public static BaseUri = 'Environments';
+  public static DomainSuffixLength = 5;
 
   constructor(auth: AuthConfig, serviceSid: string) {
     super(auth, `${ServiceClient.getBaseUrl()}/Services/${serviceSid}`);
 
-    if (!isSidOfType(serviceSid, 'ZS')) {
+    if (!isSidOfType(serviceSid, SidPrefix.ServiceSid)) {
       throw new Error(`ServiceSid ${serviceSid} is not valid`);
     }
   }
@@ -42,10 +44,19 @@ export default class EnvironmentClient extends BaseClient {
    * Creates an environment with the package name
    */
   public create = (): Promise<Environment> => {
-    return this.http
-      .post(EnvironmentClient.BaseUri, {
-        UniqueName: paths.packageName,
-        DomainSuffix: Math.random().toString(26).slice(2).substring(0, 5),
+    return this.list()
+      .then((resource) => resource.environments)
+      .then((environments) => {
+        const list = environments.map((environment) => environment.domain_suffix);
+
+        return randomString(EnvironmentClient.DomainSuffixLength, list);
+      })
+      .then((domainSuffix) => {
+        return this.http
+          .post(EnvironmentClient.BaseUri, {
+            UniqueName: paths.packageName,
+            DomainSuffix: domainSuffix,
+          });
       });
   }
 

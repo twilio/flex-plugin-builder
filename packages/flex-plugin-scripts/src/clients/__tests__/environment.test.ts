@@ -1,4 +1,6 @@
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import * as random from 'flex-dev-utils/dist/random';
+
 import EnvironmentClient from '../environments';
 
 jest.mock('../../utils/paths', () => ({
@@ -10,8 +12,16 @@ describe('EnvironmentClient', () => {
     accountSid: 'ACxxx',
     authToken: 'abc',
   };
-  const environmentMatch = { sid: 'ZE00000000000000000000000000000000', unique_name: 'plugin-test' };
-  const environmentAnother = { sid: 'ZE00000000000000000000000000000001', unique_name: 'plugin-sample' };
+  const environmentMatch = {
+    sid: 'ZE00000000000000000000000000000000',
+    unique_name: 'plugin-test',
+    domain_suffix: 'some-suffix',
+  };
+  const environmentAnother = {
+    sid: 'ZE00000000000000000000000000000001',
+    unique_name: 'plugin-sample',
+    domain_suffix: 'another-suffix',
+  };
   const resourceWithMatch = {
     environments: [ environmentMatch, environmentAnother ],
   };
@@ -110,18 +120,29 @@ describe('EnvironmentClient', () => {
   describe('create', () => {
     it('should check create method', async () => {
       const client = new EnvironmentClient(auth, 'ZS00000000000000000000000000000000');
+      const randomString = jest.spyOn(random, 'randomString').mockReturnValue('foo');
+      const resource = { environments: [environmentMatch, environmentAnother] };
       // @ts-ignore
       const post = jest.spyOn(client.http, 'post').mockResolvedValue(environmentMatch);
+      // @ts-ignore
+      const list = jest.spyOn(client, 'list').mockResolvedValue(resource);
 
       const environment = await client.create();
 
       expect(post).toHaveBeenCalledTimes(1);
-      expect(post).toHaveBeenCalledWith(EnvironmentClient.BaseUri, expect.objectContaining({
+      expect(post).toHaveBeenCalledWith(EnvironmentClient.BaseUri, {
         UniqueName: 'plugin-test',
-      }));
+        DomainSuffix: 'foo',
+      });
+      expect(randomString).toHaveBeenCalledTimes(1);
+      expect(randomString).toHaveBeenCalledWith(5, [
+        environmentMatch.domain_suffix,
+        environmentAnother.domain_suffix,
+      ]);
       expect(environment).toEqual(environmentMatch);
 
       post.mockRestore();
+      list.mockRestore();
     });
   });
 
