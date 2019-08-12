@@ -1,4 +1,4 @@
-import { prompt, choose, Question, inputNotEmpty, accountSidValid } from './inquirer';
+import { prompt, choose, Question, inputNotEmpty, validateAccountSid } from './inquirer';
 import logger from './logger';
 import { isSidOfType } from './sids';
 
@@ -26,7 +26,7 @@ const accountSidQuestion: Question = {
   type: 'input',
   name: 'accountSid',
   message: 'Enter your Twilio Account Sid:',
-  validate: accountSidValid,
+  validate: validateAccountSid,
 };
 
 const authTokenQuestion: Question = {
@@ -58,7 +58,7 @@ export const getCredential = async (): Promise<AuthConfig> => {
 
   // If both accountSid/authToken provided, then use that
   if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
-    if (!await accountSidValid(process.env.TWILIO_ACCOUNT_SID)) {
+    if (!await validateAccountSid(process.env.TWILIO_ACCOUNT_SID)) {
       logger.error('AccountSid is not valid.');
       return process.exit(1);
     }

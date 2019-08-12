@@ -27,7 +27,7 @@ export const inputNotEmpty = async (input: string) => input && input.length > 0;
  *
  * @param str the accountSid
  */
-export const accountSidValid = async (str: string) => {
+export const validateAccountSid = async (str: string) => {
   if (!await inputNotEmpty(str)) {
     return false;
   }

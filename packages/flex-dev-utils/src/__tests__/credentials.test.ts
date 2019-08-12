@@ -30,7 +30,7 @@ describe('credentials', () => {
   });
 
   describe('_getService', () => {
-    it('should not findCredentials if CI is true', async () => {
+    it('should not call findCredentials if CI is true', async () => {
       process.env.CI = 'true';
       const result = await credentials._getService();
 
@@ -38,7 +38,7 @@ describe('credentials', () => {
       expect(result).toEqual([]);
     });
 
-    it('should not findCredentials if CI is true', async () => {
+    it('should findCredentials', async () => {
       const findCredentials = jest.spyOn(keytar, 'findCredentials').mockResolvedValue([]);
       const result = await credentials._getService();
 
@@ -50,7 +50,7 @@ describe('credentials', () => {
   });
 
   describe('getCredential', () => {
-    it('should quit if CI=true but accountSid is not provided', async () => {
+    it('should quit if CI=true and accountSid and authToken are not provided', async () => {
       process.env.CI = 'true';
       process.env.TWILIO_ACCOUNT_SID = 'ACxxx';
 

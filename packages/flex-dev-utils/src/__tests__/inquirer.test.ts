@@ -19,12 +19,12 @@ describe('inquirer', () => {
     });
   });
 
-  describe('accountSidValid', () => {
+  describe('validateAccountSid', () => {
     it('should return false', async () => {
-      expect(await Inquirer.accountSidValid('')).toBeFalsy();
-      expect(await Inquirer.accountSidValid('AC0000000000000000000000000000000'))
+      expect(await Inquirer.validateAccountSid('')).toBeFalsy();
+      expect(await Inquirer.validateAccountSid('AC0000000000000000000000000000000'))
         .toEqual(expect.any(String));
-      expect(await Inquirer.accountSidValid('AB00000000000000000000000000000000'))
+      expect(await Inquirer.validateAccountSid('AB00000000000000000000000000000000'))
         .toEqual(expect.any(String));
     });
 
