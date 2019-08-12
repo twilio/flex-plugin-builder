@@ -64,12 +64,14 @@ describe('credentials', () => {
       process.env.TWILIO_ACCOUNT_SID = 'AB00000000000000000000000000000000';
       process.env.TWILIO_AUTH_TOKEN = authToken;
 
-      const accountSidValid = jest.spyOn(inquirer, 'accountSidValid').mockResolvedValue(false);
+      const validateAccountSid = jest
+        .spyOn(inquirer, 'validateAccountSid')
+        .mockResolvedValue(false);
       const _findCredential = jest.spyOn(credentials, '_findCredential');
 
       await credentials.getCredential();
 
-      expect(accountSidValid).toHaveBeenCalledTimes(1);
+      expect(validateAccountSid).toHaveBeenCalledTimes(1);
       expect(_findCredential).not.toHaveBeenCalled();
       expect(exit).toHaveBeenCalledTimes(1);
     });
@@ -78,12 +80,14 @@ describe('credentials', () => {
       process.env.TWILIO_ACCOUNT_SID = accountSid;
       process.env.TWILIO_AUTH_TOKEN = authToken;
 
-      const accountSidValid = jest.spyOn(inquirer, 'accountSidValid').mockResolvedValue(true);
+      const validateAccountSid = jest
+        .spyOn(inquirer, 'validateAccountSid')
+        .mockResolvedValue(true);
       const _findCredential = jest.spyOn(credentials, '_findCredential');
 
       const creds = await credentials.getCredential();
 
-      expect(accountSidValid).toHaveBeenCalledTimes(1);
+      expect(validateAccountSid).toHaveBeenCalledTimes(1);
       expect(_findCredential).not.toHaveBeenCalled();
       expect(creds).toEqual({ accountSid, authToken });
     });
