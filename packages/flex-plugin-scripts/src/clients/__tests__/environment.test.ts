@@ -1,4 +1,4 @@
-import { AuthConfig } from 'flex-dev-utils/dist/keytar';
+import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 import EnvironmentClient from '../environments';
 
 jest.mock('../../utils/paths', () => ({

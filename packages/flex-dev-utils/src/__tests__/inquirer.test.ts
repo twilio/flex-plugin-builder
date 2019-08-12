@@ -19,6 +19,20 @@ describe('inquirer', () => {
     });
   });
 
+  describe('validateAccountSid', () => {
+    it('should return false', async () => {
+      expect(await Inquirer.validateAccountSid('')).toBeFalsy();
+      expect(await Inquirer.validateAccountSid('AC0000000000000000000000000000000'))
+        .toEqual(expect.any(String));
+      expect(await Inquirer.validateAccountSid('AB00000000000000000000000000000000'))
+        .toEqual(expect.any(String));
+    });
+
+    it('should return true', async () => {
+      expect(await Inquirer.validateAccountSid('AC00000000000000000000000000000000')).toBeTruthy();
+    });
+  });
+
   describe('validateConfirmation', () => {
     it('should valid false if no default and no answer provided', async () => {
       expect(await Inquirer.validateConfirmation()('')).toEqual(expect.any(String));
