@@ -32,7 +32,9 @@ run_script npm run build
 
 # Publish
 if [ "$1" == "public" ] ; then
+  echo "Publishing as a public release"
   run_script lerna publish
 else
+  echo "Publishing as a beta (next) release"
   run_script lerna publish --dist-tag next
 fi
