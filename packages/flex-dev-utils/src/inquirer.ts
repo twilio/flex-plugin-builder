@@ -1,4 +1,5 @@
 import inquirer, { Question as IQuestion } from 'inquirer';
+import { isSidOfType, SidPrefix } from './sids';
 
 export default inquirer;
 
@@ -20,6 +21,23 @@ export interface Question {
  * @param input the input to validate
  */
 export const inputNotEmpty = async (input: string) => input && input.length > 0;
+
+/**
+ * Validates that the accountSid is valid
+ *
+ * @param str the accountSid
+ */
+export const accountSidValid = async (str: string) => {
+  if (!await inputNotEmpty(str)) {
+    return false;
+  }
+
+  if (!isSidOfType(str, SidPrefix.AccountSid)) {
+    return 'Invalid Account Sid was provided';
+  }
+
+  return true;
+};
 
 /**
  * Confirmation validator
@@ -53,8 +71,8 @@ export const prompt = async (question: Question): Promise<Question['name']> => {
 };
 
 /**
- * Provides a confirmation prompt. The response is a Promise<boolean> with `true` resolving to successful confirmation,
- * and `false` being the rejected confirmation
+ * Provides a confirmation prompt. The response is a Promise<boolean> with `true` resolving to
+ * successful confirmation, and `false` being the rejected confirmation
  *
  * @param question      the question to ask
  * @param defaultAnswer the default answer, can be Y or N

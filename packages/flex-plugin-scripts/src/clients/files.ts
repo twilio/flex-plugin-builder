@@ -1,4 +1,4 @@
-import { AuthConfig } from 'flex-dev-utils/dist/keytar';
+import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 import FormData from 'form-data';
 import { createReadStream } from 'fs';
 import { basename } from 'path';

@@ -1,4 +1,4 @@
-import { AuthConfig } from 'flex-dev-utils/dist/keytar';
+import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
 
 import BaseClient from './baseClient';

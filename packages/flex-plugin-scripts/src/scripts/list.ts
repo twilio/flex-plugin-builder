@@ -1,5 +1,5 @@
 import { logger } from 'flex-dev-utils';
-import { getCredentials } from 'flex-dev-utils/dist/keytar';
+import { getCredential } from 'flex-dev-utils/dist/credentials';
 
 import run from '../utils/run';
 import { Visibility } from '../clients/serverless-types';
@@ -21,7 +21,7 @@ export type Order = 'desc' | 'asc';
 export const _doList = async (visibilities: Visibility[], order: Order = 'asc') => {
   logger.info('Fetching all available versions of plugin %s', paths.packageName);
 
-  const credentials = await getCredentials();
+  const credentials = await getCredential();
   const runtime = await getRuntime(credentials);
   const regex = new RegExp(PLUGIN_REGEX_STR.replace('%PLUGIN_NAME%', paths.packageName));
 

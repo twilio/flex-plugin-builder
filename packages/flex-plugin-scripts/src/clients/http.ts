@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import { stringify } from 'querystring';
 import { format } from 'util';
 import { logger } from 'flex-dev-utils';
-import { AuthConfig } from 'flex-dev-utils/dist/keytar';
+import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 import FormData from 'form-data';
 
 export interface HttpConfig {

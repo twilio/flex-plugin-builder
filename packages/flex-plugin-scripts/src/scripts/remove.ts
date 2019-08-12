@@ -1,6 +1,6 @@
 import { logger } from 'flex-dev-utils';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
-import { AuthConfig, getCredentials } from 'flex-dev-utils/dist/keytar';
+import { AuthConfig, getCredential } from 'flex-dev-utils/dist/credentials';
 import { progress } from 'flex-dev-utils/dist/ora';
 import { EnvironmentClient } from '../clients';
 import { Runtime } from '../clients/serverless-types';
@@ -41,7 +41,7 @@ export const _getRuntime = async (credentials: AuthConfig): Promise<Runtime> => 
  */
 export const _doRemove = async () => {
   const pluginName = logger.colors.blue(paths.packageName);
-  const credentials = await getCredentials();
+  const credentials = await getCredential();
   const runtime = await _getRuntime(credentials);
 
   await progress(`Deleting plugin ${pluginName}`, async () => {
