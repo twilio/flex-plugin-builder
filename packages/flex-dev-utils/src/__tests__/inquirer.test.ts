@@ -29,7 +29,7 @@ describe('inquirer', () => {
     });
 
     it('should return true', async () => {
-      expect(await Inquirer.accountSidValid('AC00000000000000000000000000000000')).toBeTruthy();
+      expect(await Inquirer.validateAccountSid('AC00000000000000000000000000000000')).toBeTruthy();
     });
   });
 
