@@ -86,7 +86,7 @@ describe('remove', () => {
     });
   });
 
-  describe('_gerRuntime', () => {
+  describe('_getRuntime', () => {
     const getRuntime = jest.spyOn(runtimeScripts, 'default');
 
     afterEach(() => {
