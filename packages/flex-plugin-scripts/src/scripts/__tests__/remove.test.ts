@@ -1,4 +1,5 @@
 import * as removeScript from '../remove';
+import * as runtimeScripts from '../../utils/runtime';
 
 import { logger } from 'flex-dev-utils';
 import * as inquirer from 'flex-dev-utils/dist/inquirer';
@@ -22,6 +23,11 @@ describe('remove', () => {
   const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
   // @ts-ignore
   logger.colors.blue = jest.fn();
+
+  const credential = {
+    accountSid: 'AC00000000000000000000000000000000',
+    authToken: 'abc',
+  };
 
   const service = { sid: 'ZSxxx' };
   const environment = { sid: 'ZSxxx' };
@@ -77,6 +83,46 @@ describe('remove', () => {
       expect(exit).toHaveBeenCalledWith(0);
 
       _getRuntime.mockRestore();
+    });
+  });
+
+  describe('_gerRuntime', () => {
+    const getRuntime = jest.spyOn(runtimeScripts, 'default');
+
+    afterEach(() => {
+      getRuntime.mockReset();
+    });
+
+    afterAll(() => {
+      getRuntime.mockRestore();
+    });
+
+    it('should exit if no environment exists', async () => {
+      // @ts-ignore
+      getRuntime.mockResolvedValue({ service });
+      EnvironmentClient.mockImplementation(() => ({
+        get: () => {
+          throw new Error('Fail');
+        },
+      }));
+
+      await removeScript._getRuntime(credential);
+
+      expect(exit).toHaveBeenCalledTimes(1);
+      expect(exit).toHaveBeenCalledWith(0);
+    });
+
+    it('should fetch environment and return it', async () => {
+      // @ts-ignore
+      getRuntime.mockResolvedValue({ service });
+      EnvironmentClient.mockImplementation(() => ({
+        get: () => environment,
+      }));
+
+      const result = await removeScript._getRuntime(credential);
+
+      expect(exit).not.toHaveBeenCalled();
+      expect(result).toEqual({ service, environment });
     });
   });
 });

@@ -45,7 +45,7 @@ export default class EnvironmentClient extends BaseClient {
     return this.http
       .post(EnvironmentClient.BaseUri, {
         UniqueName: paths.packageName,
-        DomainSuffix: paths.packageName,
+        DomainSuffix: Math.random().toString(26).slice(2).substring(0, 5),
       });
   }
 
