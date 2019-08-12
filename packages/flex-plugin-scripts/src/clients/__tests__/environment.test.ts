@@ -143,6 +143,7 @@ describe('EnvironmentClient', () => {
 
       post.mockRestore();
       list.mockRestore();
+      randomString.mockRestore();
     });
   });
 
