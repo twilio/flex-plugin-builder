@@ -39,12 +39,6 @@
     "test:watch": "cd ../.. && jest packages/create-flex-plugin --watch --color"
   },
   "dependencies": {
-    "@types/execa": "^0.9.0",
-    "@types/lodash": "^4.14.123",
-    "@types/mkdirp": "^0.5.2",
-    "@types/rimraf": "^2.0.2",
-    "@types/tmp": "^0.1.0",
-    "@types/yargs": "^13.0.0",
     "axios": "^0.18.0",
     "chalk": "^2.4.1",
     "copy-template-dir": "^1.4.0",
@@ -62,12 +56,17 @@
   },
   "devDependencies": {
     "@twilio/flex-ui": "^1.11.2",
+    "@types/execa": "^0.9.0",
+    "@types/lodash": "^4.14.123",
+    "@types/mkdirp": "^0.5.2",
+    "@types/rimraf": "^2.0.2",
+    "@types/tmp": "^0.1.0",
+    "@types/yargs": "^13.0.0",
     "axios-mock-adapter": "^1.16.0",
     "craco-config-flex-plugin": "^3.3.0-beta.0",
     "flex-plugin": "^3.3.0-beta.0",
     "flex-plugin-scripts": "^3.4.1-beta.0",
-    "rimraf": "^2.6.3",
-    "typescript": "^3.0.3"
+    "rimraf": "^2.6.3"
   },
   "gitHead": "ca02b3d214e6dfa4277b6b69cbbb178783004edf"
 }
