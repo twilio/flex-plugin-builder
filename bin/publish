@@ -34,7 +34,7 @@ run_script npm run build
 if [ "$1" == "public" ] ; then
   echo -e "\n------------------------------------"
   echo "-- Publishing as a public release --"
-  echo -e "-----------------------------------------\n"
+  echo -e "------------------------------------\n"
   run_script lerna publish
 else
   echo -e "\n-----------------------------------------"
