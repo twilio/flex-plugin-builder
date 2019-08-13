@@ -17,17 +17,16 @@
     "packages/*"
   ],
   "scripts": {
-    "coverage": "codecov",
     "bootstrap": "lerna bootstrap --no-ci",
     "build": "lerna run build",
+    "coverage": "codecov",
+    "docs": "./bin/docs-generator.js",
     "postinstall": "npm run bootstrap",
     "lint": "tslint --project tsconfig.lint.json",
     "lint:fix": "tslint --project tsconfig.lint.json --fix",
     "test": "jest --coverage --color",
-    "test:watch": "jest --watchAll --color",
     "test:coverage": "jest --coverage --color --watchAll=false",
-    "contributors": "all-contributors generate",
-    "docs": "./bin/docs-generator.js"
+    "test:watch": "jest --watchAll --color"
   },
   "husky": {
     "hooks": {
@@ -35,29 +34,27 @@
       "pre-push": "npm run test"
     }
   },
-  "dependencies": {
-    "@types/node": "^11.13.5"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@babel/cli": "^7.1.2",
     "@babel/core": "^7.1.2",
     "@babel/polyfill": "^7.0.0",
-    "@babel/preset-env": "^7.1.0",
-    "@babel/preset-typescript": "^7.1.0",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-typescript": "^7.3.3",
     "@k88/pipe-compose": "^2.1.1",
     "@types/jest": "^24.0.11",
-    "all-contributors-cli": "^6.8.1",
+    "@types/node": "^11.13.5",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^24.7.1",
     "babel-register": "^6.26.0",
     "codecov": "^3.5.0",
     "glob": "^7.1.4",
-    "husky": "^2.4.1",
+    "husky": "^3.0.3",
     "jest": "^24.7.1",
     "lerna": "3.13.4",
     "ts-jest": "^24.0.2",
-    "tslint": "^5.16.0",
+    "tslint": "^5.18.0",
     "tslint-react": "^4.0.0",
-    "typescript": "^3.4.3"
+    "typescript": "^3.5.3"
   }
 }
