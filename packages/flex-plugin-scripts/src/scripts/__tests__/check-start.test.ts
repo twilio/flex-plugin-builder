@@ -26,7 +26,7 @@ describe('check-start', () => {
     expect(existSync).toHaveBeenCalledTimes(1);
     expect(existSync).toHaveBeenCalledWith(expect.stringContaining('appConfig.js'));
     expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Could not find'));
-    expect(copyFileSync).not.toHaveBeenCalledTimes(1);
+    expect(copyFileSync).not.toHaveBeenCalled();
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(1);
 
@@ -69,5 +69,6 @@ describe('check-start', () => {
     expect(exit).not.toHaveBeenCalled();
 
     existSync.mockRestore();
+    copyFileSync.mockRestore();
   });
 });
