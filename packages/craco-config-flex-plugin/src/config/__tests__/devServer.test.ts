@@ -10,7 +10,7 @@ describe('devServer', () => {
       expect(config.contentBase[0]).toEqual(defaultContentBase);
     }
     const index = hasDefault ? 1 : 0;
-    expect(config.contentBase[index].indexOf('flex-plugin/dev_assets') ).not.toEqual(-1);
+    expect(config.contentBase[index].indexOf('flex-plugin-scripts/dev_assets') ).not.toEqual(-1);
   };
 
   it('should add devAssets when contentBase is array', () => {

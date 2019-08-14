@@ -1,6 +1,6 @@
 import boxen from 'boxen';
 import logSymbols from 'log-symbols';
-import logger from './logger';
+import logger, { LogLevels } from './logger';
 
 export default boxen;
 
@@ -10,7 +10,7 @@ export default boxen;
  * @param level   the log level to display the message as
  * @param msg     the message
  */
-export const print = (level: keyof typeof logger, msg: string) => {
+export const print = (level: LogLevels, msg: string) => {
   const boxed = boxen(msg, {
     padding: 1,
     margin: 1,
