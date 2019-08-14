@@ -14,6 +14,7 @@ const flexUIPkg = JSON.parse(readFileSync(flexUIPath, 'utf8'));
 const TWILIO_FLEX_VERSION = flexUIPkg.version;
 
 const UNSUPPORTED_PLUGINS = ['SWPrecacheWebpackPlugin', 'ManifestPlugin'];
+const FLEX_SHIM = 'flex-plugin-scripts/dev_assets/flex-shim.js';
 
 interface Configuration extends WebpackConfig {
   output: Output;
@@ -53,7 +54,7 @@ const configureWebpack = (config: WebpackConfig): Configuration => {
 
   config.resolve.alias = {
     ...config.resolve.alias,
-    '@twilio/flex-ui': 'flex-plugin/dev_assets/flex-shim.js',
+    '@twilio/flex-ui': FLEX_SHIM,
   };
 
   config.externals = {

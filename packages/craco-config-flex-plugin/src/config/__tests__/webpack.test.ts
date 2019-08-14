@@ -54,4 +54,12 @@ describe('webpack', () => {
     expect(config.optimization.splitChunks).toBeFalsy();
     expect(config.optimization.runtimeChunk).toBeFalsy();
   });
+
+  it('checks alias', () => {
+    const config = webpack.configure({});
+
+    expect(config.resolve.alias).toHaveProperty('@twilio/flex-ui');
+    // @ts-ignore
+    expect(config.resolve.alias['@twilio/flex-ui']).toEqual('flex-plugin-scripts/dev_assets/flex-shim.js');
+  });
 });
