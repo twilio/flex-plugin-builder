@@ -2,7 +2,7 @@
 
 'use strict';
 
-console.log('This script has been moved into `flex-plugin`. Please update package.json `scripts`, and replace the `bootstrap` script from');
+console.log('This script has been moved into `flex-plugin-scripts`. Please update your package.json `scripts`, and replace the `bootstrap` script from');
 console.log('\n  "bootstrap": "flex-check-start"\n');
 console.log('to');
 console.log('\n  "bootstrap": "flex-plugin check-start"\n');
