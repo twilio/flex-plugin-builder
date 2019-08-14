@@ -61,15 +61,6 @@ describe('logger', () => {
     expect(yellow).toHaveBeenCalledWith('var1 var2');
   });
 
-  it('should log warning', () => {
-    logger.warning('var1', 'var2');
-
-    expect(warn).toHaveBeenCalledTimes(1);
-    expect(warn).toHaveBeenCalledWith('var1 var2');
-    expect(yellow).toHaveBeenCalledTimes(1);
-    expect(yellow).toHaveBeenCalledWith('var1 var2');
-  });
-
   it('should log error', () => {
     logger.error('var1', 'var2');
 
@@ -121,5 +112,12 @@ describe('logger', () => {
     logger.trace('var1', 'var2');
 
     expect(info).not.toHaveBeenCalled();
+  });
+
+  it('should call chalk blue', () => {
+    logger.default.coloredStrings.link('some-text');
+
+    expect(blue).toHaveBeenCalledTimes(1);
+    expect(blue).toHaveBeenCalledWith('some-text');
   });
 });

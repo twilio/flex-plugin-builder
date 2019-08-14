@@ -2,42 +2,8 @@
 
 'use strict';
 
-const { existsSync } = require('fs');
-const { join } = require('path');
-const chalk = require('chalk');
-const { stripIndent } = require('common-tags');
-const ncp = require('ncp').ncp;
-const { promisify } = require('util');
-
-(async () => {
-  const cp = promisify(ncp);
-
-  const ERROR = chalk.bold.red('ERROR');
-
-  const appConfigPath = join(process.cwd(), 'public', 'appConfig.js');
-
-  const appConfigExists = existsSync(appConfigPath);
-  if (!appConfigExists) {
-    console.error(stripIndent`
-  ${ERROR} Could not find ${chalk.cyan('public/appConfig.js')}.
-
-  Check your ${chalk.cyan('public/')} directory for ${chalk.cyan(
-        'appConfig.example.js'
-      )}, copy it to ${chalk.cyan(
-        'appConfig.js'
-      )} and modify your Account SID and Service Base URL.
-  `);
-    process.exit(1);
-  }
-
-  const indexSourcePath = join(__dirname,'..', 'dev_assets', 'index.html');
-  const indexTargetPath = join(process.cwd(), 'public', 'index.html');
-  try {
-    await cp(indexSourcePath, indexTargetPath, { clobber: true });
-  } catch (err) {
-    console.log(err);
-    console.error(`${ERROR} Failed to copy index.html file into public/ directory`);
-  }
-})().catch(err => {
-  console.error(err);
-});
+console.log('This script has been moved into `flex-plugin`. Please update package.json `scripts`, and replace the `bootstrap` script from');
+console.log('\n  "bootstrap": "flex-check-start"\n');
+console.log('to');
+console.log('\n  "bootstrap": "flex-plugin check-start"\n');
+process.exit(1);

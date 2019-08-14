@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "bootstrap": "flex-check-start",
+    "bootstrap": "flex-plugin check-start",
     "postinstall": "npm run bootstrap",
     "prestart": "npm run bootstrap",
     "start": "flex-plugin start",

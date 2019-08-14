@@ -18,7 +18,7 @@ const spawnScript = (...argv: string[]) => {
   // Get all the scripts inside /scripts directory
   // `run.js` is an exception, so filter that one out
   const files = readdirSync(join(dir, 'scripts'));
-  const scripts = files
+  let scripts = files
     .filter((f) => {
       const ext = f.split('.').pop();
 
@@ -26,6 +26,7 @@ const spawnScript = (...argv: string[]) => {
     })
     .map((f) => f.split('.')[0])
     .filter((f) => f !== 'run');
+  scripts = [...new Set(scripts)];
 
   const scriptIndex = argv.findIndex((x) => scripts.includes(x));
   const script = scriptIndex !== -1 && argv[scriptIndex];

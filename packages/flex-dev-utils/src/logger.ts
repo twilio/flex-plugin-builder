@@ -79,6 +79,13 @@ const _log = (args: LogArg) => {
   console[args.level](color && color(msg) || msg);
 };
 
+export type LogLevels = 'debug'
+  | 'info'
+  | 'warning'
+  | 'error'
+  | 'trace'
+  | 'success';
+
 export default {
   debug,
   info,
@@ -88,4 +95,7 @@ export default {
   success,
   newline,
   colors: chalk,
+  coloredStrings: {
+    link: (str: string) => chalk.blue(str),
+  },
 };
