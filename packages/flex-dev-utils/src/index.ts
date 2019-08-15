@@ -9,3 +9,4 @@ export { default as table } from './table';
 export { default as credentials } from './credentials';
 export { default as sids } from './sids';
 export { default as random } from './random';
+export { default as validators } from './validators';

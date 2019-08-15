@@ -1,4 +1,4 @@
-import shortid from 'shortid';
+import shortid from './shortid';
 
 /**
  * Loads external CSS files into your plugin
@@ -10,7 +10,7 @@ export const loadCSS = (...hrefArray: string[]): void => {
     hrefArray.forEach((href: string) => {
         const link  = document.createElement('link');
 
-        link.id   = `external-css-${shortid.generate()}`;
+        link.id   = `external-css-${shortid()}`;
         link.rel  = 'stylesheet';
         link.type = 'text/css';
         link.media = 'all';

@@ -1,3 +1,4 @@
+import { logger } from 'flex-dev-utils';
 import * as boxed from 'flex-dev-utils/dist/boxen';
 
 import finalMessage from '../finalMessage';

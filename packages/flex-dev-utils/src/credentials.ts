@@ -1,6 +1,6 @@
-import { prompt, choose, Question, inputNotEmpty, validateAccountSid } from './inquirer';
+import { prompt, choose, Question } from './inquirer';
 import logger from './logger';
-import { isSidOfType } from './sids';
+import { isInputNotEmpty, validateAccountSid } from './validators';
 
 // Keytar is installed as an optional dependency
 // Try to load it here but do not fail if it fails to be required
@@ -33,7 +33,7 @@ const authTokenQuestion: Question = {
   type: 'password',
   name: 'authToken',
   message: 'Enter your Twilio Auth Token:',
-  validate: inputNotEmpty,
+  validate: isInputNotEmpty,
 };
 
 const chooseAccount: Question = {

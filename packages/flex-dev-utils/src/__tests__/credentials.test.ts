@@ -3,10 +3,12 @@ import * as credentials from '../credentials';
 jest.mock('keytar');
 jest.mock('../logger');
 jest.mock('../inquirer');
+jest.mock('../validators');
 
 // tslint:disable
 const keytar = require('keytar');
 const inquirer = require('../inquirer');
+const validators = require('../validators');
 // tslint:enable
 
 describe('credentials', () => {
@@ -65,7 +67,7 @@ describe('credentials', () => {
       process.env.TWILIO_AUTH_TOKEN = authToken;
 
       const validateAccountSid = jest
-        .spyOn(inquirer, 'validateAccountSid')
+        .spyOn(validators, 'validateAccountSid')
         .mockResolvedValue(false);
       const _findCredential = jest.spyOn(credentials, '_findCredential');
 
@@ -81,7 +83,7 @@ describe('credentials', () => {
       process.env.TWILIO_AUTH_TOKEN = authToken;
 
       const validateAccountSid = jest
-        .spyOn(inquirer, 'validateAccountSid')
+        .spyOn(validators, 'validateAccountSid')
         .mockResolvedValue(true);
       const _findCredential = jest.spyOn(credentials, '_findCredential');
 

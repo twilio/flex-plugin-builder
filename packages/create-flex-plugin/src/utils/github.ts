@@ -1,34 +1,34 @@
 import axios from 'axios';
+import { mkdirpSync } from 'flex-dev-utils/dist/fs';
 import fs from 'fs';
 import path from 'path';
-import mkdirp from 'mkdirp';
 
 export interface GitHubInfo {
-    owner: string;
-    repo: string;
-    ref: string;
+  owner: string;
+  repo: string;
+  ref: string;
 }
 
 export enum GitHubContentType {
-    File = 'file',
-    Dir = 'dir',
+  File = 'file',
+  Dir = 'dir',
 }
 
 export interface GitHubContent {
-    name: string;
-    path: string;
-    sha: string;
-    size: number;
-    url: string;
-    html_url: string;
-    git_url: string;
-    download_url: string;
-    type: GitHubContentType;
-    _links: {
-        self: string;
-        git: string;
-        html: string;
-    };
+  name: string;
+  path: string;
+  sha: string;
+  size: number;
+  url: string;
+  html_url: string;
+  git_url: string;
+  download_url: string;
+  type: GitHubContentType;
+  _links: {
+    self: string;
+    git: string;
+    html: string;
+  };
 }
 
 /**
@@ -38,17 +38,17 @@ export interface GitHubContent {
  * @return returns the {@link GitHubInfo}
  */
 export const parseGitHubUrl = (url: string): GitHubInfo => {
-    const matches = url.match(/github\.com\/([0-9a-zA-Z-_]+)\/([0-9a-zA-Z-_]+)(\/tree\/([0-9a-zA-Z._-]+))?/);
+  const matches = url.match(/github\.com\/([0-9a-zA-Z-_]+)\/([0-9a-zA-Z-_]+)(\/tree\/([0-9a-zA-Z._-]+))?/);
 
-    if (!matches || matches.length < 3) {
-        throw new Error('Could not get owner and repo name from GitHub URL');
-    }
+  if (!matches || matches.length < 3) {
+    throw new Error('Could not get owner and repo name from GitHub URL');
+  }
 
-    return {
-        owner: matches[1],
-        repo: matches[2],
-        ref: matches[4] || 'master',
-    };
+  return {
+    owner: matches[1],
+    repo: matches[2],
+    ref: matches[4] || 'master',
+  };
 };
 
 /**
@@ -59,9 +59,9 @@ export const parseGitHubUrl = (url: string): GitHubInfo => {
  * @return null
  */
 export const downloadRepo = async (info: GitHubInfo, dir: string) => {
-    const url = `https://api.github.com/repos/${info.owner}/${info.repo}/contents/template?ref=${info.ref}`;
+  const url = `https://api.github.com/repos/${info.owner}/${info.repo}/contents/template?ref=${info.ref}`;
 
-    return _downloadDir(url, dir);
+  return _downloadDir(url, dir);
 };
 
 /**
@@ -72,30 +72,30 @@ export const downloadRepo = async (info: GitHubInfo, dir: string) => {
  * @private
  */
 export const _downloadDir = async (url: string, dir: string): Promise<null> => {
-    return axios.get<GitHubContent[]>(url)
-        .then((resp) => resp.data)
-        .then((contents) => {
-            const promises = contents.map((content) => {
-                if (content.type === GitHubContentType.Dir) {
-                    return _downloadDir(content.url, dir);
-                }
+  return axios.get<GitHubContent[]>(url)
+    .then((resp) => resp.data)
+    .then((contents) => {
+      const promises = contents.map((content) => {
+        if (content.type === GitHubContentType.Dir) {
+          return _downloadDir(content.url, dir);
+        }
 
-                if (content.type !== GitHubContentType.File) {
-                    throw new Error(`Unexpected content type ${content.type}`);
-                }
+        if (content.type !== GitHubContentType.File) {
+          throw new Error(`Unexpected content type ${content.type}`);
+        }
 
-                const relativePath = content.download_url.match(/\/template\/(.+)\??/);
-                if (!relativePath || relativePath.length !== 2) {
-                    throw new Error('Received invalid URL template');
-                }
-                const output = path.resolve(dir, relativePath[1]);
+        const relativePath = content.download_url.match(/\/template\/(.+)\??/);
+        if (!relativePath || relativePath.length !== 2) {
+          throw new Error('Received invalid URL template');
+        }
+        const output = path.resolve(dir, relativePath[1]);
 
-                return _downloadFile(content.download_url, output);
-            });
+        return _downloadFile(content.download_url, output);
+      });
 
-            return Promise.all(promises);
-        })
-        .then(() => null);
+      return Promise.all(promises);
+    })
+    .then(() => null);
 };
 
 /**
@@ -106,15 +106,15 @@ export const _downloadDir = async (url: string, dir: string): Promise<null> => {
  * @private
  */
 export const _downloadFile = async (url: string, output: string) => {
-    const config = {
-        url,
-        responseType: 'arraybuffer',
-        method: 'get',
-    };
+  const config = {
+    url,
+    responseType: 'arraybuffer',
+    method: 'get',
+  };
 
-    const dir = path.dirname(output);
-    await mkdirp.sync(dir);
+  const dir = path.dirname(output);
+  await mkdirpSync(dir);
 
-    return axios.request(config)
-        .then((result) => fs.writeFileSync(output, result.data));
+  return axios.request(config)
+    .then((result) => fs.writeFileSync(output, result.data));
 };

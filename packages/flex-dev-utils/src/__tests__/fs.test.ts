@@ -2,7 +2,8 @@ import * as fs from '../fs';
 
 describe('fs', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
+    jest.resetModules();
   });
 
   describe('readPackageJson', () => {

@@ -1,6 +1,6 @@
 import execa from 'execa';
 import fs from 'fs';
-import rimRaf from 'rimraf';
+import { rmRfSync } from 'flex-dev-utils/dist/fs';
 
 import createFlexPlugin from '../create-flex-plugin';
 
@@ -12,7 +12,7 @@ describe('create-flex-plugin', () => {
 
   const clearDir = () => {
     if (fs.existsSync(pluginName)) {
-      rimRaf.sync(pluginName);
+      rmRfSync(pluginName);
     }
   };
 

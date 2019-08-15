@@ -1,4 +1,4 @@
-import shortid from 'shortid';
+import shortid from './shortid';
 
 /**
  * Loads external JS files into your plugin.
@@ -10,7 +10,7 @@ export const loadJS = (...srcArray: string[]): void => {
     srcArray.forEach((src: string) => {
         const script  = document.createElement('script');
 
-        script.id = `external-js-${shortid.generate()}`;
+        script.id = `external-js-${shortid()}`;
         script.type = 'text/javascript';
         script.src = src;
 
