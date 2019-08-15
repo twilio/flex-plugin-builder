@@ -38,20 +38,15 @@
     "test:watch": "cd ../.. && jest packages/flex-plugin-scripts --watch"
   },
   "dependencies": {
-    "axios": "^0.19.0",
     "cross-spawn": "^6.0.5",
     "esm": "^3.2.25",
     "flex-dev-utils": "^3.6.0-beta.0",
     "form-data": "^2.5.0",
-    "inquirer": "^6.3.1",
-    "path": "^0.12.7",
     "querystring": "^0.2.0",
     "semver": "^6.1.1"
   },
   "devDependencies": {
     "@types/cross-spawn": "^6.0.0",
-    "@types/inquirer": "^6.0.3",
-    "@types/jest": "^24.0.13",
     "@types/semver": "^6.0.0"
   },
   "peerDependencies": {
