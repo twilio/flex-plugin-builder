@@ -1,8 +1,14 @@
 import * as logger from '../logger';
 
 jest.mock('chalk');
-// tslint:disable-next-line
+jest.mock('wrap-ansi');
+
+// tslint:disable
 const chalk = require('chalk').default;
+const wrapAnsi = require('wrap-ansi');
+// tslint:enable
+
+chalk.bold = chalk.bold || {};
 
 describe('logger', () => {
   const OLD_ENV = process.env;
@@ -15,7 +21,9 @@ describe('logger', () => {
   const yellow = jest.fn();
   const blue = jest.fn();
   const green = jest.fn();
+  const boldGreen = jest.fn();
 
+  chalk.bold.green = boldGreen;
   chalk.red = red;
   chalk.yellow = yellow;
   chalk.blue = blue;
@@ -114,10 +122,35 @@ describe('logger', () => {
     expect(info).not.toHaveBeenCalled();
   });
 
-  it('should call chalk blue', () => {
-    logger.default.coloredStrings.link('some-text');
+  describe('coloredStrings', () => {
+    it('should call chalk blue', () => {
+      logger.default.coloredStrings.link('some-text');
 
-    expect(blue).toHaveBeenCalledTimes(1);
-    expect(blue).toHaveBeenCalledWith('some-text');
+      expect(blue).toHaveBeenCalledTimes(1);
+      expect(blue).toHaveBeenCalledWith('some-text');
+    });
+
+    it('should call chalk green', () => {
+      logger.default.coloredStrings.headline('some-text');
+
+      expect(boldGreen).toHaveBeenCalledTimes(1);
+      expect(boldGreen).toHaveBeenCalledWith('some-text');
+    });
+  });
+
+  describe('wrap', () => {
+    it('should call wrapAnsi with default', () => {
+      logger.wrap('input', 1);
+
+      expect(wrapAnsi).toHaveBeenCalledTimes(1);
+      expect(wrapAnsi).toHaveBeenCalledWith('input', 1, { hard: true });
+    });
+
+    it('should call wrapAnsi with overwrite', () => {
+      logger.wrap('input', 1, { hard: false });
+
+      expect(wrapAnsi).toHaveBeenCalledTimes(1);
+      expect(wrapAnsi).toHaveBeenCalledWith('input', 1, { hard: false });
+    });
   });
 });

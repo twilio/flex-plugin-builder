@@ -1,7 +1,7 @@
-import execa from 'execa';
-import { camelCase, upperFirst } from 'lodash';
-import { join } from 'path';
 import { findUp } from 'flex-dev-utils/dist/fs';
+import execa from 'execa';
+import { camelCase, upperFirst } from 'flex-dev-utils/dist/lodash';
+import { join } from 'path';
 
 import * as github from '../utils/github';
 import { FlexPluginArguments } from './create-flex-plugin';

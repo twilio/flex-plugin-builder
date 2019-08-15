@@ -1,6 +1,6 @@
 import path from 'path';
 import { Configuration as DevConfig } from 'webpack-dev-server';
-import merge from 'lodash.merge';
+import { merge } from 'flex-dev-utils/dist/lodash';
 
 import { loadFile } from '../utils/fs';
 

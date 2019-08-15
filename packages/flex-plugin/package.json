@@ -39,17 +39,9 @@
     "test": "cd ../.. && jest packages/flex-plugin --color",
     "test:watch": "cd ../.. && jest packages/flex-plugin --watch --color"
   },
-  "dependencies": {
-    "shortid": "^2.2.14"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@twilio/flex-ui": "1.8.0",
-    "@types/loglevel": "^1.5.3",
-    "@types/node": "^11.13.8",
-    "@types/shortid": "^0.0.29"
-  },
-  "peerDependencies": {
-    "@twilio/flex-ui": "*"
+    "@twilio/flex-ui": "1.8.0"
   },
   "gitHead": "ca02b3d214e6dfa4277b6b69cbbb178783004edf"
 }

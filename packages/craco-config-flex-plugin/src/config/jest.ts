@@ -1,4 +1,4 @@
-import merge from 'lodash.merge';
+import { merge } from 'flex-dev-utils/dist/lodash';
 
 import { loadFile } from '../utils/fs';
 

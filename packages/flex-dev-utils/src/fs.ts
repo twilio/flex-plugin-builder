@@ -1,10 +1,19 @@
 import fs from 'fs';
 import * as path from 'path';
 import os from 'os';
+import mkdirp from 'mkdirp';
+import tmp, { DirResult as TmpDirResult } from 'tmp';
+import copyTempDir from 'copy-template-dir';
+import { promisify } from 'util';
+import rimRaf from 'rimraf';
 
 export default fs;
 
+// The OS root directory
 const rootDir = os.platform() === 'win32' ? process.cwd().split(path.sep)[0] : '/';
+
+// Promise version of {@link copyTempDir}
+const promiseCopyTempDir = promisify(copyTempDir);
 
 /**
  * Checks the provided array of files exist
@@ -71,3 +80,31 @@ export const findUp = (dir: string, file: string): string => {
  * @param filePath  the file path
  */
 export const readFileSync = (filePath: string): string => fs.readFileSync(filePath, 'utf8');
+
+/**
+ * mkdir -p wrapper
+ */
+export const mkdirpSync = mkdirp.sync;
+
+/**
+ * Copies a template by applying the variables
+ *
+ * @param source    the source
+ * @param target    the target
+ * @param variables the variables
+ */
+export const copyTemplateDir = (source: string, target: string, variables: object) => {
+  return promiseCopyTempDir(source, target, variables);
+};
+
+/**
+ * Create a tmp directory
+ */
+export const tmpDirSync = tmp.dirSync;
+
+/**
+ * rm -rf sync script
+ */
+export const rmRfSync = rimRaf.sync;
+
+export { DirResult as TmpDirResult } from 'tmp';

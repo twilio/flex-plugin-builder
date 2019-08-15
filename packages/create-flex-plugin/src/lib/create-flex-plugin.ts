@@ -1,18 +1,13 @@
 import { progress } from 'flex-dev-utils/dist/ora';
 import { logger } from 'flex-dev-utils';
-import copy from 'copy-template-dir';
+import { copyTemplateDir, tmpDirSync, TmpDirResult } from 'flex-dev-utils/dist/fs';
 import fs from 'fs';
-import tmp, { DirResult } from 'tmp';
 import { resolve, join } from 'path';
-import { promisify } from 'util';
 
 import { setupConfiguration, installDependencies, downloadFromGitHub } from './commands';
 import { CLIArguments } from './cli';
 import finalMessage from '../prints/finalMessage';
 import validate from '../utils/validators';
-
-const copyDir = promisify(copy);
-const moveFile = promisify(fs.rename);
 
 const templatesRootDir = resolve(__dirname, '../../templates');
 const templateCorePath = resolve(templatesRootDir, 'core');
@@ -81,11 +76,11 @@ export const _install = async (config: FlexPluginArguments): Promise<boolean> =>
  * @private
  */
 export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> => {
-    let dirObject: DirResult;
+    let dirObject: TmpDirResult;
 
     const promise = progress<boolean>('Creating project directory', async () => {
         // This copies the core such as public/ and craco config.
-        await copyDir(
+        await copyTemplateDir(
           templateCorePath,
           config.targetDirectory,
           config,
@@ -97,13 +92,13 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
             srcPath = templateTsPath;
         }
         if (config.template) {
-            dirObject = tmp.dirSync();
+            dirObject = tmpDirSync();
             await downloadFromGitHub(config, config.template, dirObject.name);
             srcPath = dirObject.name;
         }
 
         // This copies the src/ directory
-        await copyDir(
+        await copyTemplateDir(
           srcPath,
           config.targetDirectory,
           config,
@@ -113,7 +108,7 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
         if (!dirObject) {
             const ext = config.typescript ? 'tsx' : 'js';
 
-            await moveFile(
+            fs.renameSync(
               join(config.targetDirectory, `src/DemoPlugin.${ext}`),
               join(config.targetDirectory, `src/${config.pluginClassName}.${ext}`),
             );

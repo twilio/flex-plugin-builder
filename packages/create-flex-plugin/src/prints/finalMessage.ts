@@ -1,11 +1,10 @@
-import chalk from 'chalk';
-import wrapAnsi from 'wrap-ansi';
+import { logger } from 'flex-dev-utils';
 import { info as boxedInfo } from 'flex-dev-utils/dist/boxen';
 import { multilineString } from 'flex-dev-utils/dist/strings';
 
 import { FlexPluginArguments } from '../lib/create-flex-plugin';
 
-const headline = chalk.bold.green;
+const headline = logger.coloredStrings.headline;
 
 /**
  * Prints the final message after the successful creation of a new project
@@ -45,7 +44,7 @@ export default (config: FlexPluginArguments) => {
   );
 
   const columns = (process.stdout.columns || 100) - 14;
-  message = wrapAnsi(message, columns, { hard: true });
+  message = logger.wrap(message, columns, { hard: true });
 
   boxedInfo(message, false);
 };

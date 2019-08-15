@@ -2,8 +2,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
 import { Configuration as WebpackConfig, Plugin, Output, Options, Resolve } from 'webpack';
-import merge from 'lodash.merge';
-import clone from 'lodash.clonedeep';
+import { merge, clone } from 'flex-dev-utils/dist/lodash';
 
 import { loadFile } from '../utils/fs';
 

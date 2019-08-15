@@ -1,60 +1,17 @@
 import inquirer, { Question as IQuestion } from 'inquirer';
-import { isSidOfType, SidPrefix } from './sids';
+import { validateConfirmation } from './validators';
 
-export default inquirer;
-
-type YNAnswer = 'Y' | 'N';
-const positiveAnswers = ['y', 'yes'];
-const negativeAnswers = ['n', 'no'];
-const acceptableAnswers = positiveAnswers.concat(negativeAnswers);
+export type YNAnswer = 'Y' | 'N';
+export const positiveAnswers = ['y', 'yes'];
+export const negativeAnswers = ['n', 'no'];
+export const acceptableAnswers = positiveAnswers.concat(negativeAnswers);
 
 export interface Question {
   name: string;
   message: string;
   type?: 'list' | 'input' | 'password';
-  validate?(input: string): Promise<boolean | string>;
+  validate?(input: string): boolean | string | Promise<boolean | string>;
 }
-
-/**
- * Simple input validator to verify it is not empty
- *
- * @param input the input to validate
- */
-export const inputNotEmpty = async (input: string) => input && input.length > 0;
-
-/**
- * Validates that the accountSid is valid
- *
- * @param str the accountSid
- */
-export const validateAccountSid = async (str: string) => {
-  if (!await inputNotEmpty(str)) {
-    return false;
-  }
-
-  if (!isSidOfType(str, SidPrefix.AccountSid)) {
-    return 'Invalid Account Sid was provided';
-  }
-
-  return true;
-};
-
-/**
- * Confirmation validator
- *
- * @param defaultAnswer
- */
-export const validateConfirmation = (defaultAnswer?: YNAnswer) => async (input: string) => {
-  if (!input && defaultAnswer) {
-    input = defaultAnswer;
-  }
-
-  if (acceptableAnswers.includes(input.toLowerCase())) {
-    return true;
-  }
-
-  return 'Please answer with either "y" or "n"';
-};
 
 /**
  * Prompts the user to answer the question. Upon validation, returns the answer.
@@ -114,3 +71,5 @@ export const choose = async (question: Question, choices: string[]): Promise<Que
 
   return prompt(Object.assign(question, {choices}));
 };
+
+export default inquirer;
