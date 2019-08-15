@@ -19,6 +19,9 @@ interface LogArg {
   args: string[];
 }
 
+// The default option for wrap-ansi
+const DefaultWrapOptions = { hard: true };
+
 /**
  * debug level log
  * @param args
@@ -88,8 +91,8 @@ export const newline = (lines: number = 1) => {
  * @param columns   number of columns
  * @param options   options
  */
-export const wrap = (input: string, columns: number, options = {}) => {
-  return wrapAnsi(input, columns, Object.assign({}, { hard: true }, options));
+export const wrap = (input: string, columns: number, options = DefaultWrapOptions) => {
+  return wrapAnsi(input, columns, options);
 };
 
 /**

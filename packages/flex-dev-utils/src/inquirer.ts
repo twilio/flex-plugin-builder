@@ -1,10 +1,5 @@
 import inquirer, { Question as IQuestion } from 'inquirer';
-import { isSidOfType, SidPrefix } from './sids';
 import { validateConfirmation } from './validators';
-
-// tslint:disable-next-line
-const URL_REGEX = /^(https?:\/\/)?(www\.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
-const GITHUB_REGEX = /github\.com/;
 
 export type YNAnswer = 'Y' | 'N';
 export const positiveAnswers = ['y', 'yes'];
