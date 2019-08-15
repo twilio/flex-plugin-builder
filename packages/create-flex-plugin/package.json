@@ -51,7 +51,8 @@
     "@types/yargs": "^13.0.0",
     "craco-config-flex-plugin": "^3.5.0-beta.0",
     "flex-plugin": "^3.5.0-beta.0",
-    "flex-plugin-scripts": "^3.5.0-beta.0"
+    "flex-plugin-scripts": "^3.5.0-beta.0",
+    "axios-mock-adapter": "^1.17.0"
   },
   "gitHead": "ca02b3d214e6dfa4277b6b69cbbb178783004edf"
 }
