@@ -39,6 +39,7 @@
     "test:watch": "cd ../.. && jest packages/create-flex-plugin --watch --color"
   },
   "dependencies": {
+    "axios": "^0.19.0",
     "esm": "3.2.22",
     "execa": "^1.0.0",
     "flex-dev-utils": "^3.5.0-beta.0",

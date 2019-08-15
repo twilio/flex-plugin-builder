@@ -39,8 +39,7 @@
     "test": "cd ../.. && jest packages/flex-plugin --color",
     "test:watch": "cd ../.. && jest packages/flex-plugin --watch --color"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@twilio/flex-ui": "1.8.0"
   },
