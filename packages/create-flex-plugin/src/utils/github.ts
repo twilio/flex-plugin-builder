@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { mkdirpSync } from 'flex-dev-utils/dist/fs';
 import fs from 'fs';
 import path from 'path';
@@ -106,10 +106,10 @@ export const _downloadDir = async (url: string, dir: string): Promise<null> => {
  * @private
  */
 export const _downloadFile = async (url: string, output: string) => {
-  const config = {
+  const config: AxiosRequestConfig = {
     url,
     responseType: 'arraybuffer',
-    method: 'get',
+    method: 'GET',
   };
 
   const dir = path.dirname(output);
