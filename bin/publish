@@ -18,6 +18,7 @@ function run_script() {
 
 # Cleanup
 run_script lerna clean -y
+run_script lerna run clean
 run_script rm -rf node_modules
 
 # Install

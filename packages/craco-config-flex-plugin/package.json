@@ -25,8 +25,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prebuild": "rm -rf dist",
+    "prebuild": "npm run clean",
     "build": "tsc",
+    "clean": "rm -rf dist",
     "test": "cd ../.. && jest packages/craco-config-flex-plugin --color",
     "test:watch": "cd ../.. && jest packages/craco-config-flex-plugin --watch --color"
   },

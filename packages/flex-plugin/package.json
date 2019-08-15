@@ -33,8 +33,9 @@
     "test": "__tests__"
   },
   "scripts": {
-    "prebuild": "rm -rf dist",
+    "prebuild": "npm run clean",
     "build": "tsc",
+    "clean": "rm -rf dist",
     "prepublish": "npm run build",
     "test": "cd ../.. && jest packages/flex-plugin --color",
     "test:watch": "cd ../.. && jest packages/flex-plugin --watch --color"

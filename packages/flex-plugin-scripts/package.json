@@ -30,8 +30,9 @@
     "flex-plugin": "./bin/flex-plugin"
   },
   "scripts": {
-    "prebuild": "rm -rf dist",
+    "prebuild": "npm run clean",
     "build": "tsc",
+    "clean": "rm -rf dist",
     "prepublish": "npm run build",
     "test": "cd ../.. && jest packages/flex-plugin-scripts",
     "test:watch": "cd ../.. && jest packages/flex-plugin-scripts --watch"
