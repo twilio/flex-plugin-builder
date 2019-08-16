@@ -9,7 +9,7 @@ import { multilineString } from 'flex-dev-utils/dist/strings';
 export default (skip: boolean) => {
   if (skip) {
     logger.warning(
-      'SKIP_PREFLIGHT_CHECK=true is used and the warning is ignored; your skip will continue.',
+      'SKIP_PREFLIGHT_CHECK=true is used and the warning is ignored; your script will continue.',
     );
   } else {
     logger.warning(multilineString(
