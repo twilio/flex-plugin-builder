@@ -11,6 +11,7 @@ module.exports = {
     '!<rootDir>/packages/**/src/**/*.test.ts',
     '!<rootDir>/packages/**/src/index.ts',
     '!<rootDir>/packages/**/templates/**/*.ts',
+    '!<rootDir>/packages/**/prints/**/*.ts',
   ],
   testMatch: [
     '<rootDir>/packages/**/*.test.ts'
