@@ -1,4 +1,5 @@
 import { logger } from 'flex-dev-utils';
+
 import * as deployScript from '../deploy';
 
 jest.mock('../../clients/assets');
