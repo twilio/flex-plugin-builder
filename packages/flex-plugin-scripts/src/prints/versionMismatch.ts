@@ -34,7 +34,7 @@ export default (packageName: string, installedVersion: string, requiredVersion: 
   const versionPrint = red(installedVersion);
   logger.info(`However, a different version of this package was detected: ${versionPrint}.`);
   logger.info(`Do not try to install this manually; ${scriptName} manages that for you.`);
-  logger.info('Managing this package yourself is known to cause issue in production environment.');
+  logger.info('Managing this package yourself is known to cause issues in production environments.');
   logger.newline();
 
   instructionToReinstall(
