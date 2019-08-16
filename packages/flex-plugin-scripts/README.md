@@ -1,6 +1,6 @@
 ![npm](https://img.shields.io/npm/v/flex-plugin-scripts.svg?style=flat-square)
 ![npm](https://img.shields.io/npm/dt/flex-plugin-scripts.svg?style=flat-square)
-[![NpmLicense](https://img.shields.io/npm/l/flex-plugin-scripts.svg?style=flat-square)](LICENSE.md)
+[![NpmLicense](https://img.shields.io/npm/l/flex-plugin-scripts.svg?style=flat-square)](../../LICENSE)
 
 # Flex Plugin Scripts
 

@@ -3,4 +3,4 @@ module.exports = {
     "@babel/env",
     "@babel/typescript"
   ]
-}
+};

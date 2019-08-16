@@ -97,8 +97,8 @@ describe('validators', () => {
 
     it('should be invalid URL', () => {
       const data = [
-        'htt://wwww.twilio.com',
-        'http:/wwww.twilio.com',
+        'htt://www.twilio.com',
+        'http:/www.twilio.com',
         'twilio. com',
         'twilio',
       ];

@@ -64,7 +64,7 @@ export const findUp = (dir: string, file: string): string => {
   const resolved = path.resolve(dir);
 
   if (resolved === rootDir) {
-    throw new Error(`Reached OS root directory without findin ${file}`);
+    throw new Error(`Reached OS root directory without finding ${file}`);
   }
 
   const filePath = path.join(resolved, file);

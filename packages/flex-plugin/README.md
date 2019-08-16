@@ -54,7 +54,7 @@ class MyPlugin extends FlexPlugin {
   }
 }
 ```
-The CSS/JS files must be accessible by Twilio's proxy servers. Local files on your desktop are likely unaccessible via these methods, but your stylesheet may be uploaded to [Twilio Assets](https://support.twilio.com/hc/en-us/articles/360019105433-Getting-Started-with-Twilio-Assets-Beta-) for use here.
+The CSS/JS files must be accessible by Twilio's proxy servers. Local files on your desktop are likely inaccessible via these methods, but your stylesheet may be uploaded to [Twilio Assets](https://support.twilio.com/hc/en-us/articles/360019105433-Getting-Started-with-Twilio-Assets-Beta-) for use here.
 
 ## External Dependencies
 
