@@ -1,5 +1,5 @@
 import { findUp } from 'flex-dev-utils/dist/fs';
-import execa from 'execa';
+import { spawn } from 'flex-dev-utils';
 import { camelCase, upperFirst } from 'flex-dev-utils/dist/lodash';
 import { join } from 'path';
 
@@ -15,7 +15,7 @@ const pkg = require(findUp(__filename, 'package.json'));
  * @param config {FlexPluginArguments} the plugin argument
  * @return {string} the stdout of the execution
  */
-export async function installDependencies(config: FlexPluginArguments) {
+export const installDependencies = async (config: FlexPluginArguments) => {
     const shellCmd = config.yarn ? 'yarn' : 'npm';
     const args = ['install'];
     const options = {
@@ -23,10 +23,14 @@ export async function installDependencies(config: FlexPluginArguments) {
         shell: process.env.SHELL,
     };
 
-    const { stdout } = await execa(shellCmd, args, options);
+    const { stdout, exitCode, stderr } = await spawn(shellCmd, args, options);
+
+    if (exitCode === 1) {
+        throw new Error(stderr);
+    }
 
     return stdout;
-}
+};
 
 /**
  * Appends className to the configuration

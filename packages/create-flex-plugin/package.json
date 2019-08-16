@@ -40,17 +40,13 @@
     "test:watch": "cd ../.. && jest packages/create-flex-plugin --watch --color"
   },
   "dependencies": {
-    "axios": "^0.19.0",
-    "esm": "3.2.22",
-    "execa": "^1.0.0",
+    "esm": "^3.2.25",
     "flex-dev-utils": "^3.6.0-beta.0",
     "yargs": "^13.2.2"
   },
   "devDependencies": {
-    "@twilio/flex-ui": "^1.11.2",
-    "@types/execa": "^0.9.0",
+    "@twilio/flex-ui": "^1",
     "@types/yargs": "^13.0.0",
-    "axios-mock-adapter": "^1.17.0",
     "craco-config-flex-plugin": "^3.6.0-beta.0",
     "flex-plugin": "^3.6.0-beta.0",
     "flex-plugin-scripts": "^3.6.0-beta.0"

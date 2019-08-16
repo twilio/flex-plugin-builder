@@ -41,7 +41,7 @@
     "test:watch": "cd ../.. && jest packages/flex-plugin --watch --color"
   },
   "devDependencies": {
-    "@twilio/flex-ui": "1.8.0"
+    "@twilio/flex-ui": "^1"
   },
   "gitHead": "ca02b3d214e6dfa4277b6b69cbbb178783004edf"
 }

@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance } from 'flex-dev-utils/dist/axios';
 import { stringify } from 'querystring';
 import { format } from 'util';
 import { logger } from 'flex-dev-utils';

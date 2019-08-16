@@ -1,5 +1,4 @@
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+import axios, { MockAdapter } from 'flex-dev-utils/dist/axios';
 
 import { _downloadDir, GitHubInfo } from '../github';
 import * as github from '../github';

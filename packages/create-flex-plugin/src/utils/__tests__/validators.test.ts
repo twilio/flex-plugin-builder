@@ -1,10 +1,8 @@
-import execa from 'execa';
 import * as inquirer from 'flex-dev-utils/dist/inquirer';
 import { logger } from 'flex-dev-utils';
 
 import * as validators from '../validators';
 
-jest.mock('execa');
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/inquirer');
 

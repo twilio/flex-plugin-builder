@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 
+import { spawn } from 'flex-dev-utils';
 import { logger } from 'flex-dev-utils';
 import { checkForUpdate } from 'flex-dev-utils/dist/updateNotifier';
 import { readdirSync, existsSync } from 'fs';
 import { render as markedRender } from 'flex-dev-utils/dist/marked';
 import { join, dirname } from 'path';
 
-import spawn from './utils/spawn';
 import run from './utils/run';
 
 checkForUpdate();
 
-const spawnScript = (...argv: string[]) => {
+const spawnScript = async (...argv: string[]) => {
   // Directory of this file
   const dir = dirname(__filename);
 
@@ -60,7 +60,8 @@ const spawnScript = (...argv: string[]) => {
   }
 
   // Run the script and then exit
-  return process.exit(spawn(processArgs));
+  const { exitCode } = await spawn('node', processArgs);
+  return process.exit(exitCode);
 };
 
 export default spawnScript;
