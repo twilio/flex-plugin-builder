@@ -15,7 +15,7 @@ const pkg = require(findUp(__filename, 'package.json'));
  * @param config {FlexPluginArguments} the plugin argument
  * @return {string} the stdout of the execution
  */
-export const installDependencies = async (config: FlexPluginArguments) => {
+export const installDependencies = async (config: FlexPluginArguments): Promise<string> => {
     const shellCmd = config.yarn ? 'yarn' : 'npm';
     const args = ['install'];
     const options = {

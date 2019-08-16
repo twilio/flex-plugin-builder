@@ -40,17 +40,17 @@ export const spawn = async (shellCmd: ShellCmd, args: string[], options: object 
     }
 
     return {
-      exitCodeName,
+      exitCodeName: exitCodeName || '',
       exitCode: exitCode || 0,
-      stdout,
-      stderr,
+      stdout: stdout || '',
+      stderr: stderr || '',
     };
   } catch (e) {
     return {
-      exitCodeName: e.exitCodeName,
+      exitCodeName: e.exitCodeName || '',
       exitCode: e.exitCode || 1,
-      stderr: e.message,
-      stdout: null,
+      stderr: e.message || '',
+      stdout: '',
     };
   }
 };
