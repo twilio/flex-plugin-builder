@@ -13,5 +13,7 @@ describe('clear', () => {
     await clearScript.default();
 
     expect(clearCredentials).toHaveBeenCalledTimes(1);
+
+    clearCredentials.mockRestore();
   });
 });
