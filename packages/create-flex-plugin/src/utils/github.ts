@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig } from 'flex-dev-utils/dist/axios';
 import { mkdirpSync } from 'flex-dev-utils/dist/fs';
 import fs from 'fs';
 import path from 'path';

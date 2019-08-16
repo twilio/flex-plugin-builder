@@ -1,5 +1,5 @@
 import { findUp } from 'flex-dev-utils/dist/fs';
-import execa from 'execa';
+import { spawn } from 'flex-dev-utils';
 import { camelCase, upperFirst } from 'flex-dev-utils/dist/lodash';
 import { join } from 'path';
 
@@ -23,7 +23,11 @@ export async function installDependencies(config: FlexPluginArguments) {
         shell: process.env.SHELL,
     };
 
-    const { stdout } = await execa(shellCmd, args, options);
+    const { stdout, exitCode, stderr } = await spawn(shellCmd, args, options);
+
+    if (exitCode === 1) {
+        throw new Error(stderr);
+    }
 
     return stdout;
 }
