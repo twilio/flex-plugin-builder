@@ -94,5 +94,21 @@ describe('runtime', () => {
       expect(runtime.environment).toEqual(environment);
       expect(runtime.build).toEqual(build);
     });
+
+    it('should return service only', async () => {
+      const service = {sid: serviceSid};
+      getServiceDefault.mockImplementation(() => service);
+      ServiceClient.mockImplementation(() => ({getDefault: getServiceDefault}));
+
+      const runtime = await getRuntime(auth, true);
+
+      expect(ServiceClient).toHaveBeenCalledTimes(1);
+      expect(ServiceClient).toHaveBeenCalledWith(auth);
+      expect(getServiceDefault).toHaveBeenCalledTimes(1);
+
+      expect(runtime.service).toEqual(service);
+      expect(runtime).not.toHaveProperty('environment');
+      expect(runtime).not.toHaveProperty('build');
+    });
   });
 });

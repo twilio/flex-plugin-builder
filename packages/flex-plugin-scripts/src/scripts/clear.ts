@@ -6,9 +6,8 @@ import run from '../utils/run';
 
 /**
  * Clears the environment
- * @param argv
  */
-const clear = async (...argv: string[]) => {
+const clear = async () => {
   logger.info('Clearing caches and stored credentials');
 
   await progress('Removing stored credentials', async () => await clearCredentials());
