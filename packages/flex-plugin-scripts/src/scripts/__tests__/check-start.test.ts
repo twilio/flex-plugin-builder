@@ -111,11 +111,11 @@ describe('check-start', () => {
           throw err;
         });
 
-      checkStartScript._checkPublicDirSync();
+      checkStartScript._checkPublicDirSync(true);
 
       expect(copyFileSync).toHaveBeenCalledTimes(1);
       expect(prints.publicDirCopyFailed).toHaveBeenCalledTimes(1);
-      expect(prints.publicDirCopyFailed).toHaveBeenCalledWith(err);
+      expect(prints.publicDirCopyFailed).toHaveBeenCalledWith(err, true);
       expect(exit).toHaveBeenCalledTimes(1);
       expect(exit).toHaveBeenCalledWith(1);
 
@@ -127,7 +127,7 @@ describe('check-start', () => {
         .spyOn(fs, 'copyFileSync')
         .mockReturnValue(undefined);
 
-      checkStartScript._checkPublicDirSync();
+      checkStartScript._checkPublicDirSync(true);
 
       expect(copyFileSync).toHaveBeenCalledTimes(1);
       expect(prints.publicDirCopyFailed).not.toHaveBeenCalled();
