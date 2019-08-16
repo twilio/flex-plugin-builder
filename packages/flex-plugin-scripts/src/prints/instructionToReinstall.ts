@@ -1,6 +1,11 @@
 import { logger } from 'flex-dev-utils';
 import { printList } from 'flex-dev-utils/dist/prints';
 
+/**
+ * Instructions for removing node_modules and lock files and re-installing
+ *
+ * @param extras  any extra steps to include
+ */
 export default (...extras: string[]) => {
   const nameColor = logger.coloredStrings.name;
   const headline = logger.coloredStrings.headline;

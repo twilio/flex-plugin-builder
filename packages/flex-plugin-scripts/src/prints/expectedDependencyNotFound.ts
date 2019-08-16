@@ -2,6 +2,11 @@ import { logger } from 'flex-dev-utils';
 
 import instructionToReinstall from './instructionToReinstall';
 
+/**
+ * An expected dependency from flex-ui package.json is missing.
+ *
+ * @param packageName the package name
+ */
 export default (packageName: string) => {
   const nameColor = logger.coloredStrings.name;
   const flexUIName = nameColor('@twilio/flex-ui');

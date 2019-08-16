@@ -1,6 +1,11 @@
 import { logger } from 'flex-dev-utils';
 import { multilineString } from 'flex-dev-utils/dist/strings';
 
+/**
+ * Prints the SKIP_PREFLIGHT_CHECK message
+ *
+ * @param skip  whether SKIP_PREFLIGHT_CHECK is already set
+ */
 export default (skip: boolean) => {
   if (skip) {
     logger.warning(
