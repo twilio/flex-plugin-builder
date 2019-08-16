@@ -22,7 +22,11 @@ describe('logger', () => {
   const blue = jest.fn();
   const green = jest.fn();
   const boldGreen = jest.fn();
+  const whiteBright = jest.fn();
+  const cyan = jest.fn();
 
+  chalk.cyan = cyan;
+  chalk.bold.whiteBright = whiteBright;
   chalk.bold.green = boldGreen;
   chalk.red = red;
   chalk.yellow = yellow;
@@ -135,6 +139,27 @@ describe('logger', () => {
 
       expect(boldGreen).toHaveBeenCalledTimes(1);
       expect(boldGreen).toHaveBeenCalledWith('some-text');
+    });
+
+    it('should call chalk green', () => {
+      logger.default.coloredStrings.headline('some-text');
+
+      expect(boldGreen).toHaveBeenCalledTimes(1);
+      expect(boldGreen).toHaveBeenCalledWith('some-text');
+    });
+
+    it('should call chalk bright white', () => {
+      logger.default.coloredStrings.name('some-text');
+
+      expect(whiteBright).toHaveBeenCalledTimes(1);
+      expect(whiteBright).toHaveBeenCalledWith('some-text');
+    });
+
+    it('should call chalk cyan', () => {
+      logger.default.coloredStrings.digit('some-text');
+
+      expect(cyan).toHaveBeenCalledTimes(1);
+      expect(cyan).toHaveBeenCalledWith('some-text');
     });
   });
 

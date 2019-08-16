@@ -41,4 +41,15 @@ describe('spawn', () => {
 
     expect(logger.error).toHaveBeenCalledTimes(1);
   });
+
+  it('should catch exception', async () => {
+    execa.mockImplementation(() => {
+      throw new Error('some-error');
+    });
+
+    const resp = await spawn('node', args);
+
+    expect(resp.exitCode).toEqual(1);
+    expect(resp.stderr).toEqual('some-error');
+  });
 });

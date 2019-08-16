@@ -119,5 +119,7 @@ export default {
   coloredStrings: {
     link: (str: string) => chalk.blue(str),
     headline: (str: string) => chalk.bold.green(str),
+    name: (str: string) => chalk.bold.whiteBright(str),
+    digit: (str: string) => chalk.cyan(str),
   },
 };
