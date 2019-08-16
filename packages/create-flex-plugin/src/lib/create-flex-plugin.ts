@@ -36,13 +36,13 @@ export const createFlexPlugin = async (config: FlexPluginArguments) => {
     // Check folder does not exist
     if (fs.existsSync(config.targetDirectory)) {
         logger.error(`Path ${config.targetDirectory} already exists. Please remove it and try again.`);
-        process.exit(1);
+        return process.exit(1);
     }
 
     // Setup the directories
     if (!await _scaffold(config)) {
         logger.error('Failed to scaffold project');
-        process.exit(1);
+        return process.exit(1);
     }
 
     // Install NPM dependencies

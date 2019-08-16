@@ -15,7 +15,7 @@ const pkg = require(findUp(__filename, 'package.json'));
  * @param config {FlexPluginArguments} the plugin argument
  * @return {string} the stdout of the execution
  */
-export async function installDependencies(config: FlexPluginArguments) {
+export const installDependencies = async (config: FlexPluginArguments) => {
     const shellCmd = config.yarn ? 'yarn' : 'npm';
     const args = ['install'];
     const options = {
@@ -30,7 +30,7 @@ export async function installDependencies(config: FlexPluginArguments) {
     }
 
     return stdout;
-}
+};
 
 /**
  * Appends className to the configuration
