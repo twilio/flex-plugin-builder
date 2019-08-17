@@ -93,7 +93,7 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
         }
         if (config.template) {
             dirObject = tmpDirSync();
-            await downloadFromGitHub(config, config.template, dirObject.name);
+            await downloadFromGitHub(config.template, dirObject.name);
             srcPath = dirObject.name;
         }
 
