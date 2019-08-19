@@ -45,11 +45,11 @@ export const isRegularMatrix = (matrix: string[][]) => matrix
  */
 export const printArray = (header: string[], data: string[][]) => {
   if (!isRegularMatrix(data)) {
-    logger.warning('Table rows are not all the same length; this may produce irregular tabular view.');
+    logger.warning('Table rows are not all the same length; this may produce an irregular tabular view.');
   }
 
   if (header.length !== Object.keys(data[0]).length) {
-    logger.warning('Header length does not match data row length; printing table without header');
+    logger.warning('Header length does not match data row length; printing table without header.');
   } else {
     data.unshift(header.map((h) => h.toUpperCase()));
   }

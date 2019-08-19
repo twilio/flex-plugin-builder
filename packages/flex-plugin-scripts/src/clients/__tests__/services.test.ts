@@ -98,7 +98,7 @@ describe('ServiceClient', () => {
       const newService = await client.create();
 
       expect(post).toHaveBeenCalledTimes(1);
-      expect(post).toHaveBeenCalledWith(ServiceClient.BaseUri, ServiceClient.NewService);
+      expect(post).toHaveBeenCalledWith(ServiceClient.BASE_URI, ServiceClient.NewService);
       expect(newService).toEqual(service);
 
       post.mockRestore();
@@ -116,8 +116,8 @@ describe('ServiceClient', () => {
       expect(list).toHaveLength(1);
       expect(list[0]).toEqual(service);
       expect(get).toHaveBeenCalledTimes(1);
-      expect(get).toHaveBeenCalledWith(ServiceClient.BaseUri);
-      expect(get).toHaveBeenCalledWith(ServiceClient.BaseUri);
+      expect(get).toHaveBeenCalledWith(ServiceClient.BASE_URI);
+      expect(get).toHaveBeenCalledWith(ServiceClient.BASE_URI);
 
       get.mockRestore();
     });
