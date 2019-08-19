@@ -13,6 +13,7 @@ const packageReplacements: PackageReplacement[] = [];
  * Hijacks the {@link require} so we can replace npm packages
  * @param name
  */
+/* istanbul ignore next */
 Module.prototype.require = function(name: string) {
   const match = packageReplacements.find((pr) => pr.name === name);
   if (match) {
@@ -27,6 +28,7 @@ Module.prototype.require = function(name: string) {
  * @param name          the package name to hijack
  * @param replacement   the package replacement
  */
+/* istanbul ignore next */
 export const hijack = (name: string, replacement: any) => {
   if (packageReplacements.find((pr) => pr.name === name)) {
     throw new Error(`Package ${name} is already hijacked`);

@@ -57,15 +57,14 @@ export const setupConfiguration = (config: FlexPluginArguments): FlexPluginArgum
 /**
  * Downloads content from GitHub
  *
- * @param config {FlexPluginArguments}  the plugin configuration
  * @param url {string}                  the GitHub url
  * @param dir {string}                  the temp directory to save the downloaded file to
  */
-export const downloadFromGitHub = async (config: FlexPluginArguments, url: string, dir: string) => {
+export const downloadFromGitHub = async ( url: string, dir: string) => {
     const info = github.parseGitHubUrl(url);
+
     return await github.downloadRepo(info, dir);
 };
-
 
 // tslint:disable
 export const _getPluginJsonContent = (config: FlexPluginArguments) => {

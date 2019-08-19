@@ -71,3 +71,5 @@ plugin-test/
 package-lock.json
 
 .idea
+
+.lerna_backup

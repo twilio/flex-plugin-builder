@@ -1,5 +1,7 @@
-import webpack from '../webpack';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
+
+import * as utilsFs from '../../utils/fs';
+import webpack from '../webpack';
 
 jest.mock('path', () => ({
   join: (...args: string[]) => args.includes('@twilio/flex-ui') ? 'flex-ui' : 'app',
@@ -61,5 +63,21 @@ describe('webpack', () => {
     expect(config.resolve.alias).toHaveProperty('@twilio/flex-ui');
     // @ts-ignore
     expect(config.resolve.alias['@twilio/flex-ui']).toEqual('flex-plugin-scripts/dev_assets/flex-shim.js');
+  });
+
+  it('should load custom config', () => {
+    const loadFile = jest
+      .spyOn(utilsFs, 'loadFile')
+      .mockReturnValue({
+        name: 'foo',
+        devServer: { public: 'bar' },
+      });
+
+    const config = webpack.configure({});
+
+    expect(config.name).toEqual('foo');
+    expect(config).not.toHaveProperty('devServer');
+
+    loadFile.mockRestore();
   });
 });

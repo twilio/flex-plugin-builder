@@ -1,4 +1,5 @@
 import devServer, { Configuration } from '../devServer';
+import * as utilsFs from '../../utils/fs';
 
 describe('devServer', () => {
   const defaultContentBase = 'entry1';
@@ -33,5 +34,20 @@ describe('devServer', () => {
     const config = devServer({});
 
     assertConfig(config, false);
+  });
+
+  it('should load custom config', () => {
+    const loadFile = jest
+      .spyOn(utilsFs, 'loadFile')
+      .mockReturnValue({
+        devServer: { public: 'bar' },
+      });
+
+    const config = devServer({});
+
+    assertConfig(config, false);
+    expect(config.public).toEqual('bar');
+
+    loadFile.mockRestore();
   });
 });

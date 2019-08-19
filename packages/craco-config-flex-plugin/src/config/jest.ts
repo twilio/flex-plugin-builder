@@ -4,6 +4,7 @@ import { loadFile } from '../utils/fs';
 
 interface JestConfig {
   testPathIgnorePatterns?: string[];
+  preset?: string;
 }
 
 interface Configuration extends JestConfig {

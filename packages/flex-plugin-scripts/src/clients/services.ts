@@ -4,6 +4,7 @@ import BaseClient from './baseClient';
 import { Service, ServiceResource } from './serverless-types';
 
 export default class ServiceClient extends BaseClient {
+  public static BASE_URI = 'Services';
   public static NewService = {
     UniqueName: 'default',
     FriendlyName: 'Flex Plugins Default Service',
@@ -51,7 +52,7 @@ export default class ServiceClient extends BaseClient {
    */
   public create = (): Promise<Service> => {
     return this.http
-      .post('Services', ServiceClient.NewService);
+      .post(ServiceClient.BASE_URI, ServiceClient.NewService);
   }
 
   /**
@@ -59,6 +60,6 @@ export default class ServiceClient extends BaseClient {
    */
   public list = (): Promise<ServiceResource> => {
     return this.http
-      .get<ServiceResource>('Services');
+      .get<ServiceResource>(ServiceClient.BASE_URI);
   }
 }

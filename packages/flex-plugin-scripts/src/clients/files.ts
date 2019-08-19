@@ -54,18 +54,6 @@ export  default abstract class FilesClient extends BaseClient {
   }
 
   /**
-   * Returns the {@link Version}
-   *
-   * @param fileSid     the file sid
-   * @param versionSid  the version sid
-   * @private
-   */
-  public getVersion = async (fileSid: string, versionSid: string): Promise<Version> => {
-    return this.http
-      .get(`${this.fileType}/${fileSid}/Versions/${versionSid}`);
-  }
-
-  /**
    * Creates a new {@link File}
    * @param friendlyName  the friendly name of the file
    * @private

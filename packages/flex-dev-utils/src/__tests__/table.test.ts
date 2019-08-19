@@ -8,7 +8,8 @@ jest.mock('table');
 
 describe('table', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
+    jest.resetModules();
   });
 
   describe('isRegularMatrix', () => {
@@ -39,6 +40,27 @@ describe('table', () => {
       expect(_table).toHaveBeenCalledTimes(1);
       expect(_table).toHaveBeenCalledWith([['HEADER'], ['data']], expect.any(Object));
       expect(logger.info).toHaveBeenCalledTimes(1);
+    });
+
+    it('should warn about irregular matrix', () => {
+      const isRegularMatrix = jest
+        .spyOn(table, 'isRegularMatrix')
+        .mockReturnValue(false);
+
+      const data = [['data']];
+      table.printArray(['header'], data);
+
+      expect(isRegularMatrix).toHaveBeenCalledTimes(1);
+      expect(isRegularMatrix).toHaveBeenCalledWith(data);
+      expect(logger.warning).toHaveBeenCalledTimes(1);
+
+      isRegularMatrix.mockRestore();
+    });
+
+    it('should warn about headers length not being the same as data length', () => {
+      table.printArray(['header'], [['data', 'another']]);
+
+      expect(logger.warning).toHaveBeenCalledTimes(1);
     });
   });
 
