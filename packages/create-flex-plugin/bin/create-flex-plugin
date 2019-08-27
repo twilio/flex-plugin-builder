@@ -7,4 +7,4 @@ require = require('esm')(module /*, options*/);
 const CLI = require('../dist').default;
 const cli = new CLI();
 
-cli.parse(process.argv.slice(2));
+cli.parse(...process.argv.slice(2));
