@@ -7,7 +7,7 @@ import { readdirSync, existsSync } from 'fs';
 import { render as markedRender } from 'flex-dev-utils/dist/marked';
 import { join, dirname } from 'path';
 
-import run from './utils/run';
+import run, { isSelfScript } from './utils/run';
 
 checkForUpdate();
 
@@ -37,7 +37,7 @@ const spawnScript = async (...argv: string[]) => {
     return process.exit(1);
   }
 
-// Print help doc and quit
+  // Print help doc and quit
   if (argv.includes('--help') && script) {
     const docPath = join(dir, '../docs', script) + '.md';
     if (!existsSync(docPath)) {
@@ -59,9 +59,13 @@ const spawnScript = async (...argv: string[]) => {
     processArgs.push('--disallow-versioning');
   }
 
-  // Run the script and then exit
+  // Run the script
   const { exitCode } = await spawn('node', processArgs);
-  return process.exit(exitCode);
+
+  // Exit if not an embedded script
+  if (isSelfScript()) {
+    process.exit(exitCode);
+  }
 };
 
 export default spawnScript;

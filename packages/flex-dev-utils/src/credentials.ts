@@ -162,14 +162,14 @@ export const _getService = async (): Promise<Credential[]> => {
  */
 export const _saveCredential = async (account: string, password: string) => {
   // Do not store password on CI builds
-  if (!process.env.CI) {
+  if (!process.env.CI && !process.env.SKIP_CREDENTIALS_SAVING) {
     await _getKeytar().setPassword(SERVICE_NAME, account, password);
   }
 };
 
 /**
  * Keytar is required optionally and so may not exist.
- * Throw an error if it is tried to be used and it is not found
+ * It will throw an error if a local installation not found.
  *
  * @private
  */
