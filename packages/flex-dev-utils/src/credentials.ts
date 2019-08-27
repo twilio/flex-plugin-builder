@@ -169,7 +169,7 @@ export const _saveCredential = async (account: string, password: string) => {
 
 /**
  * Keytar is required optionally and so may not exist.
- * It will throw an error if a local installation not found.
+ * It will throw an error if a local installation is not found.
  *
  * @private
  */
