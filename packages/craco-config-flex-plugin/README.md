@@ -12,9 +12,9 @@
 
 ## Usage
 
-To add custom `jest` or `webpack` configuration, you can provide `jest.config.js` and `webpack.config.js`. If these files exist in the root directory, then your configuration is merged into the default configuration.
+To add custom `jest` or `webpack` configuration, you can provide `jest.config.js` and `webpack.config.js`. If these files exist in the root directory, then your configuration is merged into the default configuration; i.e. `merge(defaultConfig, yourConfig)`.
 
-For more control over the configuration, you can edit the `craco.config.js`. Please visit [craco documentation](https://github.com/sharegate/craco/tree/master/packages/craco#configuration-overview) for more information.
+For more control over the configuration, you can edit the `craco.config.js`. You will need to use `craco.config.js` if you need to append changes to the configuration, as opposed to replace a key completely. For example, if you need to append a plugin, you will need to use `craco.config.js` and do `config.plugins.push(anotherPlugin)`. Please visit [craco documentation](https://github.com/sharegate/craco/tree/master/packages/craco#configuration-overview) for more information.
 
 ## Contributing
 
