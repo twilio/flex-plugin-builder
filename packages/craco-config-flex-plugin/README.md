@@ -4,7 +4,7 @@
 
 # CRACO Config Flex Plugin
 
-[CRACO](https://github.com/sharegate/craco) configuration override to build a Flex plugin.
+[CRACO](https://github.com/sharegate/craco) is an easy and comprehensible configuration layer for create-react-app. It allows you to customize your flex-plugin (such as eslint, babel, webpack, etc) without using `eject`.
 
 ## Installation
 
