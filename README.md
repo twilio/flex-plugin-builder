@@ -25,6 +25,13 @@
 
 ## Getting Started
 
+---
+**NOTE**
+
+Flex plugin builder v3 is available in beta. Docs are available on the [dev branch](https://github.com/twilio/flex-plugin-builder/tree/dev). For more information please visit [Twilio Docs - Flex Plugin Builder](https://www.twilio.com/docs/flex/plugin-builder#plugin-builder-v3)
+
+---
+
 This is a monorepo project managed by [lerna](https://github.com/lerna/lerna) for creating Twilio Flex plugins.
 
 - [create-flex-plugin](packages/create-flex-plugin): The CLI tool to start a new Flex plugin project
