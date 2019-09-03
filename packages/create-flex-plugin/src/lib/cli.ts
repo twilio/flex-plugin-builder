@@ -26,9 +26,9 @@ export interface CLIArguments {
   s?: boolean;
 }
 
-class CLI {
-  private readonly parser: Argv<CLIArguments>;
-  private options: { [key: string]: Options; } = {
+export default class CLI {
+  public static description = usage;
+  public static flags: { [key: string]: Options; } = {
     typescript: {
       alias: 's',
       type: 'boolean',
@@ -74,6 +74,7 @@ class CLI {
       alias: 'h',
     },
   };
+  private readonly parser: Argv<CLIArguments>;
 
   constructor(cwd?: string) {
     this.parser = yargs([], cwd) as Argv<CLIArguments>;
@@ -81,15 +82,13 @@ class CLI {
     this.init();
   }
 
-  public parse = (...args: string[]) => {
-    const argv: CLIArguments = this.parser.parse(args[0]);
-    createFlexPlugin(argv as FlexPluginArguments);
+  public parse = async (...args: string[]) => {
+    const argv: CLIArguments = this.parser.parse(args);
+    await createFlexPlugin(argv as FlexPluginArguments);
   }
 
   private init = () => {
     this.parser
-      .usage<any>('$0 <name>', usage, this.options);
+      .usage<any>('$0 <name>', usage, CLI.flags);
   }
 }
-
-export default (cwd?: string) => new CLI(cwd);

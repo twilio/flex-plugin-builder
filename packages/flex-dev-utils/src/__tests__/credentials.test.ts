@@ -203,6 +203,28 @@ describe('credentials', () => {
     });
   });
 
+  describe('_saveCredential', () => {
+    it('should not save if CI is set to true', () => {
+      const _getKeytar = jest.spyOn(credentials, '_getKeytar');
+      process.env.CI = 'true';
+
+      credentials._saveCredential(accountSid, authToken);
+      expect(_getKeytar).not.toHaveBeenCalled();
+
+      _getKeytar.mockRestore();
+    });
+
+    it('should not save if SKIP_CREDENTIALS_SAVING is set to true', () => {
+      const _getKeytar = jest.spyOn(credentials, '_getKeytar');
+      process.env.SKIP_CREDENTIALS_SAVING = 'true';
+
+      credentials._saveCredential(accountSid, authToken);
+      expect(_getKeytar).not.toHaveBeenCalled();
+
+      _getKeytar.mockRestore();
+    });
+  });
+
   describe('_getKeytar', () => {
     it('should get keytar if it exists', () => {
       const _keytar = credentials._getKeytar();

@@ -5,8 +5,18 @@ jest.mock('../create-flex-plugin');
 
 describe('cli', () => {
   it('should call createFlexPlugin', () => {
-    cli().parse();
+    new cli().parse();
 
     expect(createFlexPlugin).toHaveBeenCalled();
+  });
+
+  it('should have static description', () => {
+    expect(cli).toHaveProperty('description');
+    expect(cli.description).toContain('new Twilio Flex Plugin');
+  });
+
+  it('should have static flag', () => {
+    expect(cli).toHaveProperty('flags');
+    expect(cli.flags).toHaveProperty('typescript');
   });
 });

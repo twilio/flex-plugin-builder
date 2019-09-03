@@ -3,6 +3,8 @@
 'use strict';
 
 require = require('esm')(module /*, options*/);
-require('../dist')
-  .default()
-  .parse(process.argv.slice(2));
+
+const CLI = require('../dist').default;
+const cli = new CLI();
+
+cli.parse(...process.argv.slice(2));

@@ -8,7 +8,7 @@ type Callback = (...argv: string[]) => void;
  * @param callback
  */
 export default (callback: Callback) => {
-  if (require.main === module.parent) {
+  if (isSelfScript()) {
     (async () => await callback(...process.argv.splice(2)))()
       .catch((e) => {
         if (process.env.DEBUG === 'true') {
@@ -19,3 +19,5 @@ export default (callback: Callback) => {
       });
   }
 };
+
+export const isSelfScript = () => require.main === module.parent;
