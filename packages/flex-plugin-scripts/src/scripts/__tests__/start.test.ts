@@ -12,7 +12,9 @@ describe('start', () => {
 
   it('should run craco start', () => {
     startScript.default();
+
     expect(utilsRequire.resolve).toHaveBeenCalledTimes(1);
     expect(utilsRequire.resolve).toHaveBeenCalledWith(startScript.cracoScriptPath);
+    expect(process.env.BROWSER).toContain('sub/browser.js');
   });
 });

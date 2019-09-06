@@ -45,6 +45,7 @@
     "marked": "^0.7.0",
     "marked-terminal": "^3.2.0",
     "mkdirp": "^0.5.1",
+    "open": "^6.4.0",
     "ora": "^3.4.0",
     "rimraf": "^3.0.0",
     "table": "^5.4.1",
