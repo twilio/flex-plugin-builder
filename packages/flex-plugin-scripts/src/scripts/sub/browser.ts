@@ -50,6 +50,7 @@ export const _getPortAndUrl = (...argv: string[]) => {
  * @param pkgPath       the package path
  * @private
  */
+/* istanbul ignore next */
 export const _requirePackages = (pluginsPath: string, pkgPath: string) => {
   const plugins = require(pluginsPath) as Plugin[];
   const pkg = require(pkgPath);
