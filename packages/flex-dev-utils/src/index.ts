@@ -14,3 +14,4 @@ export { default as validators } from './validators';
 export { default as spawn } from './spawn';
 export { default as axios } from './axios';
 export { default as prints } from './prints';
+export { default as open } from './open';
