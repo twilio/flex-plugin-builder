@@ -9,7 +9,7 @@ import { BuildData } from '../clients/builds';
 import { Build, Version } from '../clients/serverless-types';
 import availabilityWarning from '../prints/availabilityWarning';
 import paths from '../utils/paths';
-import { AssetClient, BuildClient, DeploymentClient } from '../clients';
+import { AssetClient, BuildClient, DeploymentClient, ConfigurationClient } from '../clients';
 import getRuntime from '../utils/runtime';
 
 const allowedBumps = [
@@ -75,6 +75,7 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
   const runtime = await getRuntime(credentials);
   const pluginUrl = `https://${runtime.environment.domain_name}${bundleUri}`;
 
+  const configurationClient = new ConfigurationClient(credentials);
   const buildClient = new BuildClient(credentials, runtime.service.sid);
   const assetClient = new AssetClient(credentials, runtime.service.sid);
   const deploymentClient = new DeploymentClient(credentials, runtime.service.sid, runtime.environment.sid);
@@ -123,6 +124,11 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
     data.AssetVersions.push(sourceMapVersion.sid);
 
     return data;
+  });
+
+  // Register service sid with Config service
+  await progress('Registering plugin with Flex', async () => {
+    await configurationClient.registerSid(runtime.service.sid);
   });
 
   // Create a build, and poll regularly until build is complete

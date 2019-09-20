@@ -51,6 +51,21 @@ describe('ServiceClient', () => {
     });
   });
 
+  describe('get', () => {
+    it('should get service by sid', async () => {
+      const client = new ServiceClient(auth);
+      // @ts-ignore
+      const get = jest.spyOn(client.http, 'get').mockResolvedValue(service);
+
+      const response = await client.get(service.sid);
+
+      expect(get).toHaveBeenCalledTimes(1);
+      expect(get).toHaveBeenCalledWith(expect.stringContaining(service.sid));
+      expect(get).toHaveBeenCalledWith(expect.stringContaining(ServiceClient.BASE_URI));
+      expect(response).toEqual(service);
+    });
+  });
+
   describe('getDefault', () => {
     it('should find service', async () => {
       const client = new ServiceClient(auth);

@@ -4,6 +4,7 @@ import * as deployScript from '../deploy';
 
 jest.mock('../../clients/assets');
 jest.mock('../../clients/services');
+jest.mock('../../clients/configurations');
 jest.mock('../../clients/environments');
 jest.mock('../../clients/builds');
 jest.mock('../../clients/deployments');
@@ -23,10 +24,19 @@ const Runtime = require('../../utils/runtime').default;
 const AssetClient = require('../../clients/assets').default;
 const BuildClient = require('../../clients/builds').default;
 const DeploymentClient = require('../../clients/deployments').default;
+const ConfigurationClient = require('../../clients/configurations').default;
 const fs = require('flex-dev-utils/dist/fs');
 // tslint:enable
 
 describe('deploy', () => {
+  const accountSid = 'AC00000000000000000000000000000000';
+  const serviceSid = 'ZS00000000000000000000000000000000';
+  const environmentSid = 'ZE00000000000000000000000000000000';
+  const buildSid = 'ZB00000000000000000000000000000000';
+  const deploymentSid = 'ZD00000000000000000000000000000000';
+  const versionJSSid = 'ZV00000000000000000000000000000000';
+  const versionMapSid = 'ZV00000000000000000000000000000001';
+
   // @ts-ignore
   const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
   (logger.colors as any).blue = jest.fn();
@@ -35,41 +45,35 @@ describe('deploy', () => {
     version: '1.0.0',
     name: 'plugin-test',
   }));
+  const config = {account_sid: accountSid, serverless_service_sids: [serviceSid]};
   const doDeploy = jest.spyOn(deployScript, '_doDeploy');
-  process.env.TWILIO_API_KEY = 'SK00000000000000000000000000000000';
-  process.env.TWILIO_API_SECRET = 'abc123';
 
-  const upload =
-    jest.fn().mockImplementation((_: any, path: string) => {
+  const upload = jest.fn()
+    .mockImplementation((_: any, path: string) => {
       if (path.indexOf('map') === -1) {
-        return Promise.resolve({sid: 'ZVxxx'});
+        return Promise.resolve({sid: versionMapSid});
       } else {
-        return Promise.resolve({sid: 'ZVyyy'});
+        return Promise.resolve({sid: versionJSSid});
       }
     });
-  const existingBuild = {sid: 'ZBxxx', asset_versions: [], function_versions: []};
-  const createBuild =
-    jest.fn().mockImplementation(() => Promise.resolve({sid: 'ZByyy'}));
-  const createDeployment =
-    jest.fn().mockImplementation(() => Promise.resolve({sid: 'ZDxxx'}));
+  const existingBuild = {sid: buildSid, asset_versions: [], function_versions: []};
+  const createBuild = jest.fn().mockResolvedValue({sid: buildSid});
+  const createDeployment = jest.fn().mockResolvedValue({sid: deploymentSid});
+  const registerSid = jest.fn().mockResolvedValue(config);
+
   Runtime.mockImplementation(() => ({
-    service: {sid: 'ZSxxx'},
-    environment: {sid: 'ZExxx', build_sid: 'ZBxxx', domain_name: 'test.twil.io'},
+    service: {sid: serviceSid},
+    environment: {sid: environmentSid, build_sid: buildSid, domain_name: 'test.twil.io'},
     build: existingBuild,
   }));
 
   beforeEach(() => {
     jest.clearAllMocks();
 
-    AssetClient.mockImplementation(() => ({
-      upload,
-    }));
-    BuildClient.mockImplementation(() => ({
-      create: createBuild,
-    }));
-    DeploymentClient.mockImplementation(() => ({
-      create: createDeployment,
-    }));
+    AssetClient.mockImplementation(() => ({ upload }));
+    BuildClient.mockImplementation(() => ({ create: createBuild }));
+    DeploymentClient.mockImplementation(() => ({ create: createDeployment }));
+    ConfigurationClient.mockImplementation(() => ({ registerSid }));
   });
 
   it('should exit if no command is provided', async () => {
