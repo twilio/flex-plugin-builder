@@ -57,7 +57,7 @@ describe('ServiceClient', () => {
       // @ts-ignore
       const get = jest.spyOn(client.http, 'get').mockResolvedValue(service);
 
-      const response = client.get(service.sid);
+      const response = await client.get(service.sid);
 
       expect(get).toHaveBeenCalledTimes(1);
       expect(get).toHaveBeenCalledWith(expect.stringContaining(service.sid));
