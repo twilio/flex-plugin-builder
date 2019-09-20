@@ -1,7 +1,7 @@
 import { progress } from 'flex-dev-utils/dist/ora';
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 
-import { BuildClient, EnvironmentClient, ServiceClient } from '../clients';
+import { BuildClient, ConfigurationClient, EnvironmentClient, ServiceClient } from '../clients';
 import { Runtime } from '../clients/serverless-types';
 
 /**
@@ -13,7 +13,12 @@ const getRuntime = async (credentials: AuthConfig, serviceOnly = false): Promise
   // Fetch the runtime service instance
   return await progress<Runtime>('Fetching Twilio Runtime service', async () => {
     const serverlessClient = new ServiceClient(credentials);
-    const service = await serverlessClient.getDefault();
+    const configurationClient = new ConfigurationClient(credentials);
+
+    const serviceSid = (await configurationClient.getServiceSids())[0];
+    const service = serviceSid
+      ? await serverlessClient.get(serviceSid)
+      : await serverlessClient.getDefault();
 
     if (serviceOnly) {
       return { service };

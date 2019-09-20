@@ -33,6 +33,16 @@ export default class ServiceClient extends BaseClient {
   }
 
   /**
+   * Fetches an instance of Serverless service
+   *
+   * @param sid the service sid
+   */
+  public get = (sid: string): Promise<Service> => {
+    return this.http
+      .get<Service>(`${ServiceClient.BASE_URI}/${sid}`);
+  }
+
+  /**
    * Fetches the default {@link Service}.
    */
   public getDefault = (): Promise<Service> => {

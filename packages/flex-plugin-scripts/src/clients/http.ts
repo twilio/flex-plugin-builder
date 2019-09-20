@@ -5,10 +5,12 @@ import { logger } from 'flex-dev-utils';
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 import FormData from 'form-data';
 
+export type ContentType = 'application/x-www-form-urlencoded' | 'application/json';
 export interface HttpConfig {
   baseURL: string;
   auth: AuthConfig;
   exitOnRejection?: boolean;
+  contentType?: ContentType;
 }
 
 export default class Http {
@@ -32,9 +34,11 @@ export default class Http {
 
   protected readonly client: AxiosInstance;
   private readonly config: HttpConfig;
+  private readonly jsonPOST: boolean;
 
   constructor(config: HttpConfig) {
     this.config = config;
+    this.jsonPOST = config.contentType === 'application/json';
     this.client = axios.create({
       baseURL: config.baseURL,
       auth: {
@@ -42,7 +46,7 @@ export default class Http {
         password: config.auth.authToken,
       },
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': config.contentType ? config.contentType : 'application/x-www-form-urlencoded',
       },
     });
 
@@ -76,9 +80,12 @@ export default class Http {
    */
   public post<R>(uri: string, data: any): Promise<R> {
     logger.trace('Making POST request to %s/%s with data %s', this.config.baseURL, uri, JSON.stringify(data));
+    if (!this.jsonPOST) {
+      data = stringify(data);
+    }
 
     return this.client
-      .post(uri, stringify(data))
+      .post(uri, data)
       .then((resp) => resp.data);
   }
 
