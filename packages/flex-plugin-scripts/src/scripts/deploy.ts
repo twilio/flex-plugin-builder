@@ -108,7 +108,7 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
     const bundleVersion = await assetClient
       .upload(paths.packageName, bundleUri, paths.localBundlePath, !options.isPublic);
     const sourceMapVersion = await assetClient
-      .upload(paths.packageName, sourceMapUri, paths.localBundlePath, !options.isPublic);
+      .upload(paths.packageName, sourceMapUri, paths.localSourceMapPath, !options.isPublic);
 
     const existingAssets = routeCollision && options.overwrite
       ?  buildAssets.filter((v) => v.path !== bundleUri && v.path !== sourceMapUri)
