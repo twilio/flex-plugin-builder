@@ -7,6 +7,9 @@
 ##    ./bin/publish public      publishes as a bump
 ##    ./bin/publish             publishes as next-gen
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+LERNA="$DIR/../node_modules/.bin/lerna"
+
 # Runs script but quits if script exists with non-zero exit code
 function run_script() {
   eval "$@"
@@ -17,7 +20,7 @@ function run_script() {
 }
 
 # Cleanup
-run_script lerna clean -y
+run_script $LERNA clean -y
 run_script rm -rf node_modules
 
 # Install
@@ -32,7 +35,7 @@ run_script npm run build
 
 # Publish
 if [ "$1" == "public" ] ; then
-  run_script lerna publish
+  run_script $LERNA publish
 else
-  run_script lerna publish --dist-tag next
+  run_script $LERNA publish --dist-tag next
 fi
