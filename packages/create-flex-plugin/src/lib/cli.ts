@@ -71,7 +71,7 @@ export default class CLI {
       description: usage,
     },
     version: {
-      alias: 'h',
+      alias: 'v',
     },
   };
   private readonly parser: Argv<CLIArguments>;
