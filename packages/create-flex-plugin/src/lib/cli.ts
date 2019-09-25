@@ -69,7 +69,7 @@ class CLI {
             description: usage,
         },
         version: {
-            alias: 'h',
+            alias: 'v',
         },
     };
 
