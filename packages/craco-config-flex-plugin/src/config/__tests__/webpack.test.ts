@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { SourceMapDevToolPlugin } from 'webpack';
+import { Configuration, SourceMapDevToolPlugin } from 'webpack';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
 
 import * as utilsFs from '../../utils/fs';
@@ -18,9 +18,10 @@ fs.readFileSync = jest.fn().mockImplementation((path: string) => {
 });
 
 describe('webpack', () => {
+  const getConfig = (opts = {}) => require('../webpack').default.configure(opts);
+
   it('has all the required fields', () => {
-    const webpack = require('../webpack').default;
-    const config = webpack.configure({});
+    const config = getConfig();
 
     expect(config).toHaveProperty('output');
     expect(config).toHaveProperty('plugins');
@@ -29,16 +30,14 @@ describe('webpack', () => {
   });
 
   it('checks output property', () => {
-    const webpack = require('../webpack').default;
-    const config = webpack.configure({});
+    const config = getConfig();
 
     expect(config.output.filename).toEqual('app-name.js');
     expect(config.output.chunkFilename).toEqual('[name].chunk.js');
   });
 
   it('check externals', () => {
-    const webpack = require('../webpack').default;
-    const config = webpack.configure({});
+    const config = getConfig();
 
     expect(config.externals).toHaveProperty('react');
     expect(config.externals).toHaveProperty('react-dom');
@@ -47,8 +46,7 @@ describe('webpack', () => {
   });
 
   it('check plugins', () => {
-    const webpack = require('../webpack').default;
-    const config = webpack.configure({});
+    const config = getConfig();
 
     expect(config.plugins.length).toEqual(2);
     expect(config.plugins[0] instanceof CleanWebpackPlugin).toBeTruthy();
@@ -56,19 +54,16 @@ describe('webpack', () => {
   });
 
   it('check optimization', () => {
-    const webpack = require('../webpack').default;
-    const config = webpack.configure({});
+    const config = getConfig();
 
     expect(config.optimization.splitChunks).toBeFalsy();
     expect(config.optimization.runtimeChunk).toBeFalsy();
   });
 
   it('checks alias', () => {
-    const webpack = require('../webpack').default;
-    const config = webpack.configure({});
+    const config = getConfig();
 
     expect(config.resolve.alias).toHaveProperty('@twilio/flex-ui');
-    // @ts-ignore
     expect(config.resolve.alias['@twilio/flex-ui']).toEqual('flex-plugin-scripts/dev_assets/flex-shim.js');
   });
 
@@ -81,7 +76,7 @@ describe('webpack', () => {
         devServer: { public: 'bar' },
       });
 
-    const config = webpack.configure({});
+    const config = getConfig();
 
     expect(config.name).toEqual('foo');
     expect(config).not.toHaveProperty('devServer');
