@@ -33,7 +33,8 @@
   },
   "dependencies": {
     "clean-webpack-plugin": "^2.0.2",
-    "flex-dev-utils": "^3.8.0-beta.0"
+    "flex-dev-utils": "^3.8.0-beta.0",
+    "webpack": "^4.41.0"
   },
   "devDependencies": {
     "@types/webpack": "^4.4.32",
