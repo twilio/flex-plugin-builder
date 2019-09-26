@@ -1,24 +1,25 @@
+import fs from 'fs';
+import { SourceMapDevToolPlugin } from 'webpack';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
 
 import * as utilsFs from '../../utils/fs';
-import webpack from '../webpack';
 
 jest.mock('path', () => ({
   join: (...args: string[]) => args.includes('@twilio/flex-ui') ? 'flex-ui' : 'app',
 }));
 
-jest.mock('fs', () => ({
-  readFileSync: (path: string) => {
-    if (path === 'flex-ui') {
-      return '{"version":"1.2.3"}';
-    } else {
-      return '{"name":"app-name"}';
-    }
-  },
-}));
+jest.mock('fs');
+fs.readFileSync = jest.fn().mockImplementation((path: string) => {
+  if (path === 'flex-ui') {
+    return '{"version":"1.2.3"}';
+  } else {
+    return '{"name":"app-name"}';
+  }
+});
 
 describe('webpack', () => {
   it('has all the required fields', () => {
+    const webpack = require('../webpack').default;
     const config = webpack.configure({});
 
     expect(config).toHaveProperty('output');
@@ -28,6 +29,7 @@ describe('webpack', () => {
   });
 
   it('checks output property', () => {
+    const webpack = require('../webpack').default;
     const config = webpack.configure({});
 
     expect(config.output.filename).toEqual('app-name.js');
@@ -35,6 +37,7 @@ describe('webpack', () => {
   });
 
   it('check externals', () => {
+    const webpack = require('../webpack').default;
     const config = webpack.configure({});
 
     expect(config.externals).toHaveProperty('react');
@@ -44,13 +47,16 @@ describe('webpack', () => {
   });
 
   it('check plugins', () => {
+    const webpack = require('../webpack').default;
     const config = webpack.configure({});
 
-    expect(config.plugins.length).toEqual(1);
+    expect(config.plugins.length).toEqual(2);
     expect(config.plugins[0] instanceof CleanWebpackPlugin).toBeTruthy();
+    expect(config.plugins[1] instanceof SourceMapDevToolPlugin).toBeTruthy();
   });
 
   it('check optimization', () => {
+    const webpack = require('../webpack').default;
     const config = webpack.configure({});
 
     expect(config.optimization.splitChunks).toBeFalsy();
@@ -58,6 +64,7 @@ describe('webpack', () => {
   });
 
   it('checks alias', () => {
+    const webpack = require('../webpack').default;
     const config = webpack.configure({});
 
     expect(config.resolve.alias).toHaveProperty('@twilio/flex-ui');
@@ -66,6 +73,7 @@ describe('webpack', () => {
   });
 
   it('should load custom config', () => {
+    const webpack = require('../webpack').default;
     const loadFile = jest
       .spyOn(utilsFs, 'loadFile')
       .mockReturnValue({

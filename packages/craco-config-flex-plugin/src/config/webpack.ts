@@ -1,7 +1,14 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
-import { Configuration as WebpackConfig, Plugin, Output, Options, Resolve } from 'webpack';
+import {
+  Configuration as WebpackConfig,
+  Plugin,
+  Output,
+  Options,
+  Resolve,
+  SourceMapDevToolPlugin,
+} from 'webpack';
 import { merge, clone } from 'flex-dev-utils/dist/lodash';
 
 import { loadFile } from '../utils/fs';
@@ -32,6 +39,7 @@ const configureWebpack = (config: WebpackConfig): Configuration => {
   config.plugins = config.plugins || [];
   config.optimization = config.optimization || {};
   config.resolve = config.resolve || {};
+  config.devtool = 'hidden-source-map';
 
   config.output.filename = `${appPkg.name}.js`;
   config.output.chunkFilename = `[name].chunk.js`;
@@ -69,6 +77,9 @@ const configureWebpack = (config: WebpackConfig): Configuration => {
       join(process.cwd(), 'build/precache-manifest*.js'),
       join(process.cwd(), 'build/index.html'),
     ],
+  }));
+  config.plugins.push(new SourceMapDevToolPlugin({
+    append: '\n//# sourceMappingURL=bundle.js.map',
   }));
 
   config.optimization.splitChunks = false;
