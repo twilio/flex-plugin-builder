@@ -1,8 +1,16 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
-import { Configuration as WebpackConfig, Plugin, Output, Options, Resolve } from 'webpack';
-import { merge, clone } from 'flex-dev-utils/dist/lodash';
+import {
+  Configuration as WebpackConfig,
+  Plugin,
+  Output,
+  Options,
+  Resolve,
+  SourceMapDevToolPlugin,
+} from 'webpack';
+import merge from 'lodash.merge';
+import clone from 'lodash.clonedeep';
 
 import { loadFile } from '../utils/fs';
 
@@ -13,7 +21,6 @@ const flexUIPkg = JSON.parse(readFileSync(flexUIPath, 'utf8'));
 const TWILIO_FLEX_VERSION = flexUIPkg.version;
 
 const UNSUPPORTED_PLUGINS = ['SWPrecacheWebpackPlugin', 'ManifestPlugin'];
-const FLEX_SHIM = 'flex-plugin-scripts/dev_assets/flex-shim.js';
 
 interface Configuration extends WebpackConfig {
   output: Output;
@@ -32,6 +39,7 @@ const configureWebpack = (config: WebpackConfig): Configuration => {
   config.plugins = config.plugins || [];
   config.optimization = config.optimization || {};
   config.resolve = config.resolve || {};
+  config.devtool = 'hidden-source-map';
 
   config.output.filename = `${appPkg.name}.js`;
   config.output.chunkFilename = `[name].chunk.js`;
@@ -53,7 +61,7 @@ const configureWebpack = (config: WebpackConfig): Configuration => {
 
   config.resolve.alias = {
     ...config.resolve.alias,
-    '@twilio/flex-ui': FLEX_SHIM,
+    '@twilio/flex-ui': 'flex-plugin/dev_assets/flex-shim.js',
   };
 
   config.externals = {
@@ -69,6 +77,9 @@ const configureWebpack = (config: WebpackConfig): Configuration => {
       join(process.cwd(), 'build/precache-manifest*.js'),
       join(process.cwd(), 'build/index.html'),
     ],
+  }));
+  config.plugins.push(new SourceMapDevToolPlugin({
+    append: '\n//# sourceMappingURL=bundle.js.map',
   }));
 
   config.optimization.splitChunks = false;
