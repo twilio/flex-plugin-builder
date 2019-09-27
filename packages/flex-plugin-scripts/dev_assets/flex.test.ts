@@ -28,21 +28,6 @@ describe('flex', () => {
     expect(global.loadFlex).toBeDefined();
   });
 
-  it('should log an error if an `appConfig` object is missing an accountSid', () => {
-    // Arrange
-    global.appConfig = {};
-    spyOn(console, 'error');
-
-    loadFlex();
-
-    // tslint:disable-next-line
-    expect(console.error).toHaveBeenCalledTimes(1);
-    // tslint:disable-next-line
-    expect(console.error).toHaveBeenCalledWith(
-      'ERROR: You must have a valid appConfig with an accountSid set.',
-    );
-  });
-
   it('should invoke `Twilio.Flex.runDefault`', () => {
     // Arrange
     spyOn(console, 'error');
