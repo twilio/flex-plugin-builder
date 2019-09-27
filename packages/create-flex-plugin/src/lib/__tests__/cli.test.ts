@@ -19,4 +19,10 @@ describe('cli', () => {
     expect(cli).toHaveProperty('flags');
     expect(cli.flags).toHaveProperty('typescript');
   });
+
+  it('should have accountSid as optional', () => {
+    expect(cli).toHaveProperty('flags');
+    expect(cli.flags).toHaveProperty('accountSid');
+    expect(cli.flags.accountSid).not.toHaveProperty('demandOption');
+  });
 });

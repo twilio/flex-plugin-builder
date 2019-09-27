@@ -32,8 +32,6 @@ export interface FlexPluginArguments extends CLIArguments {
 export const createFlexPlugin = async (config: FlexPluginArguments) => {
   config = await validate(config);
   config = setupConfiguration(config);
-  // @ts-ignore
-  const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
 
   // Check folder does not exist
   if (fs.existsSync(config.targetDirectory)) {

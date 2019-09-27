@@ -50,7 +50,7 @@ const validate = async (config: FlexPluginArguments): Promise<FlexPluginArgument
     return process.exit(1);
   }
 
-  if (!isSidOfType(config.accountSid, SidPrefix.AccountSid)) {
+  if (config.accountSid && !isSidOfType(config.accountSid, SidPrefix.AccountSid)) {
     config.accountSid = await _promptForAccountSid();
   }
 
