@@ -13,9 +13,8 @@ export default (callback: Callback) => {
       .catch((e) => {
         if (process.env.DEBUG === 'true') {
           logger.info(e);
-        } else {
-          process.exit(1);
         }
+        process.exit(1);
       });
   }
 };

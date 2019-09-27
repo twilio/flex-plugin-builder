@@ -20,7 +20,7 @@ fs.readFileSync = jest.fn().mockImplementation((path: string) => {
 describe('webpack', () => {
   const getConfig = (opts = {}) => require('../webpack').default.configure(opts);
 
-  it('has all the required fields', () => {
+  it('should have all the required fields', () => {
     const config = getConfig();
 
     expect(config).toHaveProperty('output');
@@ -29,14 +29,14 @@ describe('webpack', () => {
     expect(config).toHaveProperty('resolve');
   });
 
-  it('checks output property', () => {
+  it('should check output property', () => {
     const config = getConfig();
 
     expect(config.output.filename).toEqual('app-name.js');
     expect(config.output.chunkFilename).toEqual('[name].chunk.js');
   });
 
-  it('check externals', () => {
+  it('should check externals', () => {
     const config = getConfig();
 
     expect(config.externals).toHaveProperty('react');
@@ -45,12 +45,12 @@ describe('webpack', () => {
     expect(config.externals).toHaveProperty('react-redux');
   });
 
-  it('check plugins', () => {
+  it('should check plugins', () => {
     const config = getConfig();
 
-    expect(config.plugins.length).toEqual(2);
-    expect(config.plugins[0] instanceof CleanWebpackPlugin).toBeTruthy();
-    expect(config.plugins[1] instanceof SourceMapDevToolPlugin).toBeTruthy();
+    expect(config.plugins).toHaveLength(2);
+    expect(config.plugins[0]).toBeInstanceOf(CleanWebpackPlugin);
+    expect(config.plugins[1]).toBeInstanceOf(SourceMapDevToolPlugin);
   });
 
   it('check optimization', () => {
@@ -60,7 +60,7 @@ describe('webpack', () => {
     expect(config.optimization.runtimeChunk).toBeFalsy();
   });
 
-  it('checks alias', () => {
+  it('should check alias', () => {
     const config = getConfig();
 
     expect(config.resolve.alias).toHaveProperty('@twilio/flex-ui');
@@ -68,7 +68,6 @@ describe('webpack', () => {
   });
 
   it('should load custom config', () => {
-    const webpack = require('../webpack').default;
     const loadFile = jest
       .spyOn(utilsFs, 'loadFile')
       .mockReturnValue({
@@ -82,5 +81,50 @@ describe('webpack', () => {
     expect(config).not.toHaveProperty('devServer');
 
     loadFile.mockRestore();
+  });
+
+  it('should filter out unsupported plugins', () => {
+    const plugins = [
+      { constructor: { name: 'SWPrecacheWebpackPlugin' }},
+      { constructor: { name: 'ManifestPlugin' }},
+    ];
+
+    const config = getConfig({ plugins });
+
+    expect(config.plugins).toHaveLength(2);
+    expect(config.plugins[0]).toBeInstanceOf(CleanWebpackPlugin);
+    expect(config.plugins[1]).toBeInstanceOf(SourceMapDevToolPlugin);
+  });
+
+  it('should update HtmlWebpackPlugin plugin', () => {
+    const plugin = {
+      constructor: { name: 'HtmlWebpackPlugin' },
+      options: {
+        inject: true,
+        hash: true,
+      },
+    };
+
+    const config = getConfig({plugins: [plugin]});
+
+    expect(config.plugins).toHaveLength(3);
+    expect(config.plugins[0].options.inject).toEqual(false);
+    expect(config.plugins[0].options.hash).toEqual(false);
+    expect(config.plugins[1]).toBeInstanceOf(CleanWebpackPlugin);
+    expect(config.plugins[2]).toBeInstanceOf(SourceMapDevToolPlugin);
+  });
+
+  it('should update InterpolateHtmlPlugin plugin', () => {
+    const plugin = {
+      constructor: { name: 'InterpolateHtmlPlugin' },
+    };
+
+    const config = getConfig({plugins: [plugin]});
+
+    expect(config.plugins).toHaveLength(3);
+    expect(config.plugins[0].replacements).toHaveProperty('TWILIO_FLEX_VERSION');
+    expect(config.plugins[0].replacements.TWILIO_FLEX_VERSION).toEqual('1.2.3');
+    expect(config.plugins[1]).toBeInstanceOf(CleanWebpackPlugin);
+    expect(config.plugins[2]).toBeInstanceOf(SourceMapDevToolPlugin);
   });
 });

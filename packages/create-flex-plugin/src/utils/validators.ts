@@ -15,12 +15,12 @@ import { FlexPluginArguments } from '../lib/create-flex-plugin';
  * @private
  */
 export const _promptForAccountSid = async (): Promise<string> => {
-    return await prompt({
-       type: 'input',
-       name: 'accountSid',
-       message: 'Twilio Flex Account SID',
-       validate: validateAccountSid,
-   });
+  return await prompt({
+    type: 'input',
+    name: 'accountSid',
+    message: 'Twilio Flex Account SID',
+    validate: validateAccountSid,
+  });
 };
 
 /**
@@ -28,12 +28,12 @@ export const _promptForAccountSid = async (): Promise<string> => {
  * @private
  */
 export const _promptForTemplateUrl = async (): Promise<string> => {
-    return await prompt({
-       type: 'input',
-       name: 'template',
-       message: 'Template URL',
-       validate: validateGitHubUrl,
-   });
+  return await prompt({
+    type: 'input',
+    name: 'template',
+    message: 'Template URL',
+    validate: validateGitHubUrl,
+  });
 };
 
 /**
@@ -42,23 +42,23 @@ export const _promptForTemplateUrl = async (): Promise<string> => {
  * @param config {FlexPluginArguments}  the configuration
  * @return {Promise<FlexPluginArguments>}
  */
-const validate = async (config: FlexPluginArguments): Promise<FlexPluginArguments>  => {
-    config.name = config.name || '';
+const validate = async (config: FlexPluginArguments): Promise<FlexPluginArguments> => {
+  config.name = config.name || '';
 
-    if (!isValidPluginName(config.name)) {
-        logger.error('Invalid plugin name. Names need to start with plugin-');
-        return process.exit(1);
-    }
+  if (!isValidPluginName(config.name)) {
+    logger.error('Invalid plugin name. Names need to start with plugin-');
+    return process.exit(1);
+  }
 
-    if (!isSidOfType(config.accountSid, SidPrefix.AccountSid)) {
-        config.accountSid = await _promptForAccountSid();
-    }
+  if (!isSidOfType(config.accountSid, SidPrefix.AccountSid)) {
+    config.accountSid = await _promptForAccountSid();
+  }
 
-    if (config.template && !isValidUrl(config.template)) {
-        config.template = await _promptForTemplateUrl();
-    }
+  if (config.template && !isValidUrl(config.template)) {
+    config.template = await _promptForTemplateUrl();
+  }
 
-    return config;
+  return config;
 };
 
 export default validate;

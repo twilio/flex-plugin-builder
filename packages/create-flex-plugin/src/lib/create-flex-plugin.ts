@@ -15,14 +15,14 @@ const templateJsPath = resolve(templatesRootDir, 'js');
 const templateTsPath = resolve(templatesRootDir, 'ts');
 
 export interface FlexPluginArguments extends CLIArguments {
-    targetDirectory: string;
-    flexSdkVersion: string;
-    flexPluginVersion: string;
-    cracoConfigVersion: string;
-    pluginScriptsVersion: string;
-    pluginJsonContent: string;
-    pluginClassName: string;
-    pluginNamespace: string;
+  targetDirectory: string;
+  flexSdkVersion: string;
+  flexPluginVersion: string;
+  cracoConfigVersion: string;
+  pluginScriptsVersion: string;
+  pluginJsonContent: string;
+  pluginClassName: string;
+  pluginNamespace: string;
 }
 
 /**
@@ -30,30 +30,32 @@ export interface FlexPluginArguments extends CLIArguments {
  * @param config {FlexPluginArguments} the configuration
  */
 export const createFlexPlugin = async (config: FlexPluginArguments) => {
-    config = await validate(config);
-    config = setupConfiguration(config);
+  config = await validate(config);
+  config = setupConfiguration(config);
+  // @ts-ignore
+  const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
 
-    // Check folder does not exist
-    if (fs.existsSync(config.targetDirectory)) {
-        logger.error(`Path ${config.targetDirectory} already exists. Please remove it and try again.`);
-        return process.exit(1);
+  // Check folder does not exist
+  if (fs.existsSync(config.targetDirectory)) {
+    logger.error(`Path ${config.targetDirectory} already exists. Please remove it and try again.`);
+    return process.exit(1);
+  }
+
+  // Setup the directories
+  if (!await _scaffold(config)) {
+    logger.error('Failed to scaffold project');
+    return process.exit(1);
+  }
+
+  // Install NPM dependencies
+  if (config.install) {
+    if (!await _install(config)) {
+      logger.error('Failed to install dependencies. Please run `npm install` manually.');
+      config.install = false;
     }
+  }
 
-    // Setup the directories
-    if (!await _scaffold(config)) {
-        logger.error('Failed to scaffold project');
-        return process.exit(1);
-    }
-
-    // Install NPM dependencies
-    if (config.install) {
-        if (!await _install(config)) {
-            logger.error('Failed to install dependencies. Please run `npm install` manually.');
-            config.install = false;
-        }
-    }
-
-    finalMessage(config);
+  finalMessage(config);
 };
 
 /**
@@ -62,11 +64,11 @@ export const createFlexPlugin = async (config: FlexPluginArguments) => {
  * @private
  */
 export const _install = async (config: FlexPluginArguments): Promise<boolean> => {
-    return progress<boolean>('Installing dependencies', async () => {
-        await installDependencies(config);
+  return progress<boolean>('Installing dependencies', async () => {
+    await installDependencies(config);
 
-        return true;
-    });
+    return true;
+  });
 };
 
 /**
@@ -76,54 +78,54 @@ export const _install = async (config: FlexPluginArguments): Promise<boolean> =>
  * @private
  */
 export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> => {
-    let dirObject: TmpDirResult;
+  let dirObject: TmpDirResult;
 
-    const promise = progress<boolean>('Creating project directory', async () => {
-        // This copies the core such as public/ and craco config.
-        await copyTemplateDir(
-          templateCorePath,
-          config.targetDirectory,
-          config,
-        );
+  const promise = progress<boolean>('Creating project directory', async () => {
+    // This copies the core such as public/ and craco config.
+    await copyTemplateDir(
+      templateCorePath,
+      config.targetDirectory,
+      config,
+    );
 
-        // Get src directory from template URL if provided
-        let srcPath = templateJsPath;
-        if (config.typescript) {
-            srcPath = templateTsPath;
-        }
-        if (config.template) {
-            dirObject = tmpDirSync();
-            await downloadFromGitHub(config.template, dirObject.name);
-            srcPath = dirObject.name;
-        }
+    // Get src directory from template URL if provided
+    let srcPath = templateJsPath;
+    if (config.typescript) {
+      srcPath = templateTsPath;
+    }
+    if (config.template) {
+      dirObject = tmpDirSync();
+      await downloadFromGitHub(config.template, dirObject.name);
+      srcPath = dirObject.name;
+    }
 
-        // This copies the src/ directory
-        await copyTemplateDir(
-          srcPath,
-          config.targetDirectory,
-          config,
-        );
+    // This copies the src/ directory
+    await copyTemplateDir(
+      srcPath,
+      config.targetDirectory,
+      config,
+    );
 
-        // Rename plugins
-        if (!dirObject) {
-            const ext = config.typescript ? 'tsx' : 'js';
+    // Rename plugins
+    if (!dirObject) {
+      const ext = config.typescript ? 'tsx' : 'js';
 
-            fs.renameSync(
-              join(config.targetDirectory, `src/DemoPlugin.${ext}`),
-              join(config.targetDirectory, `src/${config.pluginClassName}.${ext}`),
-            );
-        }
+      fs.renameSync(
+        join(config.targetDirectory, `src/DemoPlugin.${ext}`),
+        join(config.targetDirectory, `src/${config.pluginClassName}.${ext}`),
+      );
+    }
 
-        return true;
-    });
+    return true;
+  });
 
-    promise.finally(() => {
-        if (dirObject) {
-            dirObject.removeCallback();
-        }
-    });
+  promise.finally(() => {
+    if (dirObject) {
+      dirObject.removeCallback();
+    }
+  });
 
-    return promise;
+  return promise;
 };
 
 export default createFlexPlugin;

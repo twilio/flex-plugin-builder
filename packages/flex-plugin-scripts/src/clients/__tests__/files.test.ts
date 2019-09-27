@@ -2,7 +2,6 @@ import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 
 import FileClient from '../files';
 import BaseClient from '../baseClient';
-import ServiceClient from '../services';
 
 jest.mock('../baseClient');
 
@@ -15,9 +14,6 @@ describe('FileClient', () => {
       super(auth, 'Assets', sid);
     }
   }
-  const file = {
-    sid: 'ZS00000000000000000000000000000000',
-  };
 
   beforeEach(() => {
     jest.resetAllMocks();
