@@ -59,15 +59,14 @@ describe('validators', () => {
             expect(prompt).not.toHaveBeenCalled();
         });
 
-        it('should ask for an accountSid if no sid is provided', async () => {
-            const prompt = jest.spyOn(inquirer, 'prompt').mockResolvedValue(accountSid);
+        it('should not ask for an accountSid if no sid is provided', async () => {
+            const prompt = jest.spyOn(inquirer, 'prompt');
 
             const config = await validators.default({
                 name: 'plugin-test',
             } as any);
 
-            expect(prompt).toHaveBeenCalledTimes(1);
-            expect(config.accountSid).toEqual(accountSid);
+            expect(prompt).not.toHaveBeenCalled();
         });
 
         it('should ask for an accountSid if incorrect accountSid', async () => {

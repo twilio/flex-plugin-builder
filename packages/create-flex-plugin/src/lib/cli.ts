@@ -45,7 +45,6 @@ export default class CLI {
       alias: 'a',
       type: 'string',
       describe: 'The Account SID for your Flex Project',
-      demandOption: true,
       default: '',
     },
     runtimeUrl: {
