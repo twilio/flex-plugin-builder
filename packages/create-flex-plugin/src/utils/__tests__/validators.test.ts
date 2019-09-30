@@ -1,3 +1,4 @@
+import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import * as inquirer from 'flex-dev-utils/dist/inquirer';
 import { logger } from 'flex-dev-utils';
 
@@ -36,15 +37,12 @@ describe('validators', () => {
 
     describe('validate', () => {
         it('should error out if plugin name is not valid', async () => {
-            const spyExit = jest.spyOn(process, 'exit')
-                .mockImplementation(() => { throw new Error('asd'); });
-
             try {
                 await validators.default({} as any);
             } catch (e) {
-                expect(spyExit).toHaveBeenCalledWith(1);
-                expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Invalid'));
-                expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('start with plugin-'));
+                expect(e).toBeInstanceOf(FlexPluginError);
+                expect(e.message).toContain('Invalid plugin name');
+                expect(e.message).toContain('start with plugin-');
             }
         });
 

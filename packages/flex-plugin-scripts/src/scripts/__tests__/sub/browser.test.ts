@@ -1,4 +1,5 @@
 import { fs } from 'flex-dev-utils';
+import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 
 import { _getPortAndUrl, _replacePlugins, _requirePackages } from '../../sub/browser';
 import * as browserScript from '../../sub/browser';
@@ -7,41 +8,53 @@ jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/open');
 
 describe('sub/browser', () => {
-  // @ts-ignore
-  const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
-
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  const expectExited = () => {
-    expect(exit).toHaveBeenCalledTimes(1);
-    expect(exit).toHaveBeenCalledWith(1);
+  const expectException = (e: Error, msg: string) => {
+    expect(e).toBeInstanceOf(FlexPluginError);
+    expect(e.message).toContain(msg);
   };
 
   describe('_getPort', () => {
-    it('should exit if no url is provided', async () => {
-      await browserScript._getPort('');
+    const _expectException = (e: Error) => expectException(e, 'local port');
 
-      expectExited();
+    it('should exit if no url is provided', async (done) => {
+      try {
+        await browserScript._getPort('');
+      } catch (e) {
+        _expectException(e);
+        done();
+      }
+
     });
 
-    it('should exit if empty url is provided', async () => {
-      await browserScript._getPort('');
-
-      expectExited();
+    it('should exit if empty url is provided', async (done) => {
+      try {
+       await browserScript._getPort('');
+      } catch (e) {
+        _expectException(e);
+        done();
+      }
     });
 
-    it('should exit if no port is provided', async () => {
-      await browserScript._getPort('http://localhost');
-
-      expectExited();
+    it('should exit if no port is provided', async (done) => {
+      try {
+        await browserScript._getPort('http://localhost');
+      } catch (e) {
+        _expectException(e);
+        done();
+      }
     });
 
-    it('should exit if un-localhost is provided', async () => {
-      await browserScript._getPort('http://twilio.com:1234');
-
-      expectExited();
+    it('should exit if un-localhost is provided', async (done) => {
+      try {
+        await browserScript._getPort('http://twilio.com:1234');
+      } catch (e) {
+        _expectException(e);
+        done();
+      }
     });
 
     it('should return port provided', async () => {
@@ -54,22 +67,35 @@ describe('sub/browser', () => {
   });
 
   describe('_getPortAndUrl', () => {
-    it('should exit if no argument is provided', () => {
-      browserScript._getPortAndUrl();
+    const _expectException = (e: Error) => expectException(e, 'localhost server');
 
-      expectExited();
+    it('should exit if no argument is provided', (done) => {
+      try {
+        browserScript._getPortAndUrl();
+      } catch (e) {
+        _expectException(e);
+        done();
+      }
+
     });
 
-    it('should exit if empty string is provided', () => {
-      browserScript._getPortAndUrl('');
+    it('should exit if empty string is provided', (done) => {
+      try {
+        browserScript._getPortAndUrl('');
+      } catch (e) {
+        _expectException(e);
+        done();
+      }
 
-      expectExited();
     });
 
-    it('should exit if invalid string is provided', () => {
-      browserScript._getPortAndUrl('https://twilio.com');
-
-      expectExited();
+    it('should exit if invalid string is provided', (done) => {
+      try {
+        browserScript._getPortAndUrl('https://twilio.com');
+      } catch (e) {
+        _expectException(e);
+        done();
+      }
     });
 
     it('should find url and port', () => {
