@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-scripts",
-  "version": "3.10.0-beta.0",
+  "version": "3.11.0-beta.0",
   "description": "Scripts to run, build and deploy Flex plugins",
   "keywords": [
     "flex",
@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "esm": "^3.2.25",
-    "flex-dev-utils": "^3.8.0-beta.0",
+    "flex-dev-utils": "^3.11.0-beta.0",
     "form-data": "^2.5.0",
     "querystring": "^0.2.0",
     "semver": "^6.1.1"
