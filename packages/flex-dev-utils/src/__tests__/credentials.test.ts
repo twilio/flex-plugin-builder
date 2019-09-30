@@ -1,4 +1,5 @@
 import * as credentials from '../credentials';
+import { FlexPluginError } from '../errors';
 
 jest.mock('keytar');
 jest.mock('../logger');
@@ -12,9 +13,6 @@ const validators = require('../validators');
 // tslint:enable
 
 describe('credentials', () => {
-  // @ts-ignore
-  const exit = jest.spyOn(process, 'exit').mockReturnValue();
-
   const accountSid = 'AC00000000000000000000000000000000';
   const authToken = 'abc123';
   const credential = {
@@ -56,10 +54,11 @@ describe('credentials', () => {
       process.env.CI = 'true';
       process.env.TWILIO_ACCOUNT_SID = 'ACxxx';
 
-      await credentials.getCredential();
-
-      expect(exit).toHaveBeenCalledTimes(1);
-      expect(exit).toHaveBeenCalledWith(1);
+      try {
+        await credentials.getCredential();
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+      }
     });
 
     it('should quit if invalid accountSid env var is provided', async () => {
@@ -71,11 +70,14 @@ describe('credentials', () => {
         .mockResolvedValue(false);
       const _findCredential = jest.spyOn(credentials, '_findCredential');
 
-      await credentials.getCredential();
+      try {
+        await credentials.getCredential();
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+      }
 
       expect(validateAccountSid).toHaveBeenCalledTimes(1);
       expect(_findCredential).not.toHaveBeenCalled();
-      expect(exit).toHaveBeenCalledTimes(1);
     });
 
     it('should use env variables', async () => {

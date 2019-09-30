@@ -1,4 +1,5 @@
 import { logger } from 'flex-dev-utils';
+import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 
 type Callback = (...argv: string[]) => void;
 
@@ -11,10 +12,16 @@ export default (callback: Callback) => {
   if (isSelfScript()) {
     (async () => await callback(...process.argv.splice(2)))()
       .catch((e) => {
-        if (process.env.DEBUG === 'true') {
-          logger.info(e);
+        if (e instanceof FlexPluginError) {
+          e.print();
+          if (process.env.DEBUG) {
+            e.details();
+          }
+        } else {
+          logger.error(e);
         }
-        process.exit(1);
+
+        return process.exit(1);
       });
   }
 };

@@ -2,6 +2,7 @@ import { logger } from 'flex-dev-utils';
 import { progress } from 'flex-dev-utils/dist/ora';
 import { checkFilesExist, updatePackageVersion, readPackageJson } from 'flex-dev-utils/dist/fs';
 import { getCredential } from 'flex-dev-utils/dist/credentials';
+import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import semver, { ReleaseType } from 'semver';
 
 import run from '../utils/run';
@@ -61,8 +62,7 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
   logger.debug('Deploying Flex plugin');
 
   if (!checkFilesExist(paths.localBundlePath)) {
-    logger.error('Could not find build file. Did you run `npm run build` first?');
-    return process.exit(1);
+    throw new FlexPluginError('Could not find build file. Did you run `npm run build` first?');
   }
 
   logger.info('Uploading your Flex plugin to Twilio Assets\n');
@@ -91,7 +91,7 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
           logger.warning('Plugin already exists and the flag --overwrite is going to overwrite this plugin.');
         }
       } else {
-        throw new Error(`You already have a plugin with the same version: ${pluginUrl}`);
+        throw new FlexPluginError(`You already have a plugin with the same version: ${pluginUrl}`);
       }
     }
 
@@ -161,13 +161,11 @@ const deploy = async (...argv: string[]) => {
 
   if (!disallowVersioning) {
     if (!allowedBumps.includes(bump)) {
-      logger.error('Version bump can only be one of %s', allowedBumps.join(', '));
-      return process.exit(1);
+      throw new FlexPluginError(`Version bump can only be one of ${allowedBumps.join(', ')}`);
     }
 
     if (bump === 'custom' && !argv[1]) {
-      logger.error('Custom version bump requires the version value');
-      return process.exit(1);
+      throw new FlexPluginError('Custom version bump requires the version value');
     }
 
     if (bump === 'overwrite') {

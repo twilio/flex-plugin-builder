@@ -7,6 +7,16 @@ import copyTempDir from 'copy-template-dir';
 import { promisify } from 'util';
 import rimRaf from 'rimraf';
 
+export interface PackageJson {
+  name: string;
+  version: string;
+  dependencies: {
+    'flex-plugin': string;
+    'flex-plugin-scripts': string;
+    'craco-config-flex-plugin': string;
+  };
+}
+
 export default fs;
 
 // The OS root directory
@@ -50,7 +60,7 @@ export const updatePackageVersion = (version: string) => {
  *
  * @param pkgPath   the package.json to read
  */
-export const readPackageJson = (pkgPath: string = getPackageJsonPath()) => {
+export const readPackageJson = (pkgPath: string = getPackageJsonPath()): PackageJson => {
   return JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 };
 

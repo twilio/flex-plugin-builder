@@ -1,4 +1,5 @@
 import { logger, fs, open } from 'flex-dev-utils';
+import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { join } from 'path';
 import run from '../../utils/run';
 
@@ -15,9 +16,7 @@ interface Plugin {
 export const _getPort = (url: string) => {
   const matches = url.match(/localhost:(\d*)/);
   if (!matches) {
-    logger.error('Could not find a local port on url %s', url);
-
-    return process.exit(1);
+    throw new FlexPluginError(`Could not find a local port on url ${url}`);
   }
 
   return matches[1];
@@ -32,9 +31,7 @@ export const _getPort = (url: string) => {
 export const _getPortAndUrl = (...argv: string[]) => {
   const url = argv.find((a) => a.indexOf('localhost:') !== -1);
   if (!url) {
-    logger.error('No localhost server was found running.');
-
-    return process.exit(1);
+    throw new FlexPluginError('No localhost server was found running.');
   }
 
   return {
