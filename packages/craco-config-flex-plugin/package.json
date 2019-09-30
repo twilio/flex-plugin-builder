@@ -34,7 +34,7 @@
   "dependencies": {
     "clean-webpack-plugin": "^2.0.2",
     "flex-dev-utils": "^3.11.0-beta.0",
-    "webpack": "^4.40.2"
+    "webpack": "4.40.2"
   },
   "devDependencies": {
     "@types/webpack": "^4.4.32",

@@ -30,7 +30,7 @@
     "flex-plugin-scripts": "{{pluginScriptsVersion}}",
     "react": "16.5.2",
     "react-dom": "16.5.2",
-    "react-scripts": "^3.0.0",
+    "react-scripts": "3.1.2",
     "react-test-renderer": "^16.8.6"
   },
   "browserslist": {
