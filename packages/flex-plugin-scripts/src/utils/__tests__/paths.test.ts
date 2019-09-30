@@ -9,6 +9,11 @@ describe('paths', () => {
   const validPackage = {
     name: 'plugin-test',
     version: '1.2.3',
+    dependencies: {
+      'flex-plugin-scripts': '1',
+      'flex-plugin': '2',
+      'craco-config-flex-plugin': '3',
+    },
   };
 
   it('should give you the paths', () => {

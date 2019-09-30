@@ -53,7 +53,7 @@ export const _doRemove = async () => {
   logger.newline();
   logger.info(`🎉️  Plugin ${pluginName} was successfully removed.`);
 
-  return process.exit(0);
+  process.exit(0);
 };
 
 /**
