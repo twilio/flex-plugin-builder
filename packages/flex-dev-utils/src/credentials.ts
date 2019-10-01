@@ -1,5 +1,5 @@
+import { FlexPluginError } from './errors';
 import { prompt, choose, Question } from './inquirer';
-import logger from './logger';
 import { isInputNotEmpty, validateAccountSid } from './validators';
 
 // Keytar is installed as an optional dependency
@@ -52,15 +52,13 @@ export const getCredential = async (): Promise<AuthConfig> => {
 
   const missingCredentials = !process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN;
   if (process.env.CI && missingCredentials) {
-    logger.error('❌  Running script in CI, but no AccountSid and/or AuthToken was provided');
-    return process.exit(1);
+    throw new FlexPluginError('❌  Running script in CI, but no AccountSid and/or AuthToken was provided');
   }
 
   // If both accountSid/authToken provided, then use that
   if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
     if (!await validateAccountSid(process.env.TWILIO_ACCOUNT_SID)) {
-      logger.error('AccountSid is not valid.');
-      return process.exit(1);
+      throw new FlexPluginError('AccountSid is not valid.');
     }
 
     accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -132,6 +130,7 @@ export const _findCredential = async (accountSid?: string): Promise<Credential |
   if (accounts.length === 0) {
     return null;
   }
+  /* istanbul ignore next */
   if (accounts.length === 1) {
     return credentials.find((cred) => cred.account === accounts[0]) as Credential;
   }
@@ -173,6 +172,7 @@ export const _saveCredential = async (account: string, password: string) => {
  *
  * @private
  */
+/* istanbul ignore next */
 export const _getKeytar = () => {
   if (keytar) {
     return keytar;

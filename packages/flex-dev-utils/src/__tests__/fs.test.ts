@@ -1,3 +1,4 @@
+import { PackageJson } from '../fs';
 import * as fs from '../fs';
 
 describe('fs', () => {
@@ -64,16 +65,26 @@ describe('fs', () => {
 
   describe('updatePackageVersion', () => {
     it('should update version', () => {
-      const pkgBefore = {version: 1};
+      const pkgBefore: PackageJson = {
+        version: '1',
+        name: 'plugin-test',
+        dependencies: {
+          'flex-plugin-scripts': '1',
+          'flex-plugin': '2',
+          'craco-config-flex-plugin': '3',
+        },
+      };
+      const pkgAfter: PackageJson = Object.assign({}, pkgBefore, {version: '2'});
+
       // @ts-ignore
       const writeFileSync = jest.spyOn(fs.default, 'writeFileSync').mockImplementation(() => { /* no-op */ });
       // @ts-ignore
-      const getPackageJsonPath = jest.spyOn(fs, 'getPackageJsonPath').mockImplementation(() => 'package.json');
-      const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockImplementation(() => pkgBefore);
+      const getPackageJsonPath = jest.spyOn(fs, 'getPackageJsonPath').mockReturnValue('package.json');
+      const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockReturnValue(pkgBefore);
 
       fs.updatePackageVersion('2');
       expect(writeFileSync).toHaveBeenCalledTimes(1);
-      expect(writeFileSync).toHaveBeenCalledWith('package.json', JSON.stringify({version: '2'}, null, 2));
+      expect(writeFileSync).toHaveBeenCalledWith('package.json', JSON.stringify(pkgAfter, null, 2));
 
       writeFileSync.mockRestore();
       getPackageJsonPath.mockRestore();

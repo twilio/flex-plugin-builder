@@ -1,4 +1,4 @@
-import { logger } from 'flex-dev-utils';
+import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { prompt } from 'flex-dev-utils/dist/inquirer';
 import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
 import {
@@ -46,8 +46,7 @@ const validate = async (config: FlexPluginArguments): Promise<FlexPluginArgument
   config.name = config.name || '';
 
   if (!isValidPluginName(config.name)) {
-    logger.error('Invalid plugin name. Names need to start with plugin-');
-    return process.exit(1);
+    throw new FlexPluginError('Invalid plugin name. Names need to start with plugin-');
   }
 
   if (config.accountSid && !isSidOfType(config.accountSid, SidPrefix.AccountSid)) {

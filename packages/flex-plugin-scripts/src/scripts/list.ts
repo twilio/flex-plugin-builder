@@ -1,5 +1,6 @@
 import { logger } from 'flex-dev-utils';
 import { getCredential } from 'flex-dev-utils/dist/credentials';
+import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 
 import run from '../utils/run';
 import { Visibility } from '../clients/serverless-types';
@@ -52,8 +53,7 @@ const list = async (...argv: string[]) => {
   const order = argv.includes('--desc') ? 'desc' : 'asc';
 
   if (publicOnly && privateOnly) {
-    logger.error('You cannot use --public-only and --private-only flags together.');
-    return process.exit(1);
+    throw new FlexPluginError('You cannot use --public-only and --private-only flags together.');
   }
 
   const visibilities: Visibility[] = [];

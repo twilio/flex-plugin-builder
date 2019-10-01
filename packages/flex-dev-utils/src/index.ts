@@ -15,3 +15,4 @@ export { default as spawn } from './spawn';
 export { default as axios } from './axios';
 export { default as prints } from './prints';
 export { default as open } from './open';
+export { default as errors } from './errors';

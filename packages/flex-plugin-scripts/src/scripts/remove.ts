@@ -31,6 +31,7 @@ export const _getRuntime = async (credentials: AuthConfig): Promise<Runtime> => 
 
     logger.newline();
     logger.info(`⚠️  Plugin ${pluginName} was not found or was already removed.`);
+
     return process.exit(0);
   }
 };
@@ -51,6 +52,7 @@ export const _doRemove = async () => {
 
   logger.newline();
   logger.info(`🎉️  Plugin ${pluginName} was successfully removed.`);
+
   process.exit(0);
 };
 

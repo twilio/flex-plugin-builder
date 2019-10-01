@@ -1,4 +1,5 @@
 import { logger } from 'flex-dev-utils';
+import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 
 import * as deployScript from '../deploy';
 
@@ -37,16 +38,8 @@ describe('deploy', () => {
   const versionJSSid = 'ZV00000000000000000000000000000000';
   const versionMapSid = 'ZV00000000000000000000000000000001';
 
-  // @ts-ignore
-  const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
   (logger.colors as any).blue = jest.fn();
-
-  const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockImplementation(() => ({
-    version: '1.0.0',
-    name: 'plugin-test',
-  }));
   const config = {account_sid: accountSid, serverless_service_sids: [serviceSid]};
-  const doDeploy = jest.spyOn(deployScript, '_doDeploy');
 
   const upload = jest.fn()
     .mockImplementation((_: any, path: string) => {
@@ -77,134 +70,160 @@ describe('deploy', () => {
   });
 
   describe('default', () => {
-    it('should exit if no command is provided', async () => {
-      await deployScript.default();
+    const doDeploy = jest.spyOn(deployScript, '_doDeploy').mockResolvedValue(undefined);
+    const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockReturnValue({
+      version: '1.0.0',
+      name: 'plugin-test',
+    });
 
-      expect(exit).toHaveBeenCalledTimes(1);
-      expect(exit).toHaveBeenCalledWith(1);
-      expect(logger.error).toHaveBeenCalledTimes(1);
-      expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('can only be'), expect.anything());
+    const expectDoDeployCalled = (version: string, options: object) => {
+      expect(doDeploy).toHaveBeenCalledTimes(1);
+      expect(doDeploy).toHaveBeenCalledWith(version, options);
+    };
+
+    afterAll(() => {
+      doDeploy.mockRestore();
+      readPackageJson.mockRestore();
+    });
+
+    it('should thrown an exception if no command is provided', async (done) => {
+      try {
+        await deployScript.default();
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+        expect(e.message).toContain('can only be');
+        done();
+      }
+
       expect(doDeploy).not.toHaveBeenCalled();
     });
 
-    it('should exit if incorrect command is provided', async () => {
-      await deployScript.default('foo');
+    it('should throw an exception if incorrect command is provided', async (done) => {
+      try {
+        await deployScript.default('foo');
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+        expect(e.message).toContain('can only be');
+        done();
+      }
 
-      expect(exit).toHaveBeenCalledTimes(1);
-      expect(exit).toHaveBeenCalledWith(1);
-      expect(logger.error).toHaveBeenCalledTimes(1);
-      expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('can only be'), expect.anything());
       expect(doDeploy).not.toHaveBeenCalled();
     });
 
-    it('should exit if custom is called without an argument', async () => {
-      await deployScript.default('custom');
+    it('should throw an exception if custom is called without an argument', async (done) => {
+      try {
+        await deployScript.default('custom');
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+        expect(e.message).toContain('Custom version bump');
+        done();
+      }
 
-      expect(exit).toHaveBeenCalledTimes(1);
-      expect(exit).toHaveBeenCalledWith(1);
-      expect(logger.error).toHaveBeenCalledTimes(1);
-      expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Custom version bump'));
       expect(doDeploy).not.toHaveBeenCalled();
     });
 
     it('should bump major', async () => {
-      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => false);
-
       await deployScript.default('major');
 
-      expect(doDeploy).toHaveBeenCalledTimes(1);
-      expect(doDeploy).toHaveBeenCalledWith('2.0.0', {
+      expectDoDeployCalled('2.0.0', {
         isPublic: false,
         overwrite: false,
         disallowVersioning: false,
       });
-
-      checkFilesExist.mockRestore();
     });
 
     it('should bump minor', async () => {
-      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => false);
-
       await deployScript.default('minor');
 
-      expect(doDeploy).toHaveBeenCalledTimes(1);
-      expect(doDeploy).toHaveBeenCalledWith('1.1.0', {
+      expectDoDeployCalled('1.1.0', {
         isPublic: false,
         overwrite: false,
         disallowVersioning: false,
       });
-
-      checkFilesExist.mockRestore();
     });
 
     it('should bump patch', async () => {
-      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => false);
-
       await deployScript.default('patch');
 
-      expect(doDeploy).toHaveBeenCalledTimes(1);
-      expect(doDeploy).toHaveBeenCalledWith('1.0.1', {
+      expectDoDeployCalled('1.0.1', {
         isPublic: false,
         overwrite: false,
         disallowVersioning: false,
       });
-
-      checkFilesExist.mockRestore();
     });
 
     it('should bump custom', async () => {
-      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => false);
-
       await deployScript.default('custom', 'custom-version');
 
-      expect(doDeploy).toHaveBeenCalledTimes(1);
-      expect(doDeploy).toHaveBeenCalledWith('custom-version', {
+      expectDoDeployCalled('custom-version', {
         isPublic: false,
         overwrite: false,
         disallowVersioning: false,
       });
-
-      checkFilesExist.mockRestore();
     });
 
     it('should bump overwrite', async () => {
-      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => false);
-
       await deployScript.default('overwrite');
 
-      expect(readPackageJson).toHaveBeenCalledTimes(1);
-      expect(doDeploy).toHaveBeenCalledTimes(1);
-      expect(doDeploy).toHaveBeenCalledWith('1.0.0', {
+      expectDoDeployCalled('1.0.0', {
         isPublic: false,
         overwrite: true,
         disallowVersioning: false,
       });
-
-      checkFilesExist.mockRestore();
     });
 
     it('should run as public', async () => {
-      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => false);
-
       await deployScript.default('major', '--public');
 
-      expect(doDeploy).toHaveBeenCalledTimes(1);
-      expect(doDeploy).toHaveBeenCalledWith('2.0.0', {
+      expectDoDeployCalled('2.0.0', {
         isPublic: true,
         overwrite: false,
         disallowVersioning: false,
       });
+    });
+
+    it('should not allow version bumping', async () => {
+      await deployScript.default('--disallow-versioning');
+
+      expect(doDeploy).toHaveBeenCalledTimes(1);
+      expect(doDeploy).toHaveBeenCalledWith('0.0.0', expect.any(Object));
+    });
+  });
+
+  describe('_doDeploy', () => {
+    it('should quite if build/ does not exist', async (done) => {
+      const options = {
+        isPublic: true,
+        overwrite: false,
+        disallowVersioning: false,
+      };
+      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(false);
+
+      try {
+        await deployScript._doDeploy('1.0.0', options);
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+        expect(e.message).toContain('Could not find');
+        done();
+      }
 
       checkFilesExist.mockRestore();
     });
 
     it('should quit if duplicate route is found', async (done) => {
-      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => true);
-      const verifyPath = jest.spyOn(deployScript, '_verifyPath').mockImplementation(() => false);
+      const options = {
+        isPublic: true,
+        overwrite: false,
+        disallowVersioning: false,
+      };
+      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
+      const verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(false);
 
       try {
-        await deployScript.default('major');
+        await deployScript._doDeploy('1.0.0', options);
       } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+        expect(e.message).toContain('You already have a plugin');
         done();
       }
 
@@ -213,21 +232,18 @@ describe('deploy', () => {
     });
 
     it('should not quit duplicate route is found but is overwrite', async () => {
-      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockImplementation(() => true);
-      const verifyPath = jest.spyOn(deployScript, '_verifyPath').mockImplementation(() => false);
+      const options = {
+        isPublic: true,
+        overwrite: true,
+        disallowVersioning: false,
+      };
+      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
+      const verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(false);
 
-      await deployScript.default('overwrite');
+      await deployScript._doDeploy('1.0.0', options);
 
       checkFilesExist.mockRestore();
       verifyPath.mockRestore();
-    });
-
-    it('should not allow version bumping', async () => {
-
-      await deployScript.default('--disallow-versioning');
-
-      expect(doDeploy).toHaveBeenCalledTimes(1);
-      expect(doDeploy).toHaveBeenCalledWith('0.0.0', expect.any(Object));
     });
   });
 

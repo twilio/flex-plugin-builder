@@ -1,4 +1,5 @@
 import { logger } from 'flex-dev-utils';
+import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { join } from 'path';
 import { readPackageJson } from 'flex-dev-utils/dist/fs';
 
@@ -8,8 +9,7 @@ const buildDir = join(process.cwd(), 'build');
 const assetBaseUrl = `/plugins/${packageName}/%PLUGIN_VERSION%`;
 
 if (packageName.substr(0, 6) !== 'plugin') {
-  logger.error('Package name is \'%s\', but it must start with \'plugin\'.', packageName);
-  process.exit(1);
+  throw new FlexPluginError(`Package name "${packageName}" does not start with "plugin".`);
 }
 
 export default {
