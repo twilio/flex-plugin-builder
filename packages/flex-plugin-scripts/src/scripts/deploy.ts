@@ -165,7 +165,7 @@ const deploy = async (...argv: string[]) => {
     }
 
     if (bump === 'custom' && !argv[1]) {
-      throw new FlexPluginError('Custom version bump requires the version value');
+      throw new FlexPluginError('Custom version bump requires the version value.');
     }
 
     if (bump === 'overwrite') {

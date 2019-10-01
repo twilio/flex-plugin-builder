@@ -9,7 +9,7 @@ const buildDir = join(process.cwd(), 'build');
 const assetBaseUrl = `/plugins/${packageName}/%PLUGIN_VERSION%`;
 
 if (packageName.substr(0, 6) !== 'plugin') {
-  throw new FlexPluginError(`Package name "${packageName}" does not start with "plugin"`);
+  throw new FlexPluginError(`Package name "${packageName}" does not start with "plugin".`);
 }
 
 export default {
