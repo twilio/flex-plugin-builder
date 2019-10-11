@@ -41,7 +41,7 @@
     "babel-polyfill": "^6.26.0",
     "core-js": "^2.6.5",
     "enzyme": "^3.10.0",
-    "enzyme-adapter-react-16": "^1.14.0",
+    "enzyme-adapter-react-16": "^1.15.1",
     "esm": "^3.2.25",
     "flex-dev-utils": "^3.14.0-beta.0",
     "form-data": "^2.5.1",
