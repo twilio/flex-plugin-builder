@@ -34,4 +34,22 @@ describe('inquirer', () => {
       expect(answer).toBeFalsy();
     });
   });
+
+  describe('choose', () => {
+    it('should prompt question', async () => {
+      const myQuestion = {
+        name: 'the-question',
+        message: 'the-message',
+      };
+      const choices = ['option1', 'option2'];
+      const askedQuestion = Object.assign(myQuestion, {type: 'list'}, {choices});
+
+      jest.spyOn(Inquirer, 'prompt').mockResolvedValue('the-choice');
+      const answer = await Inquirer.choose(myQuestion, choices);
+
+      expect(answer).toEqual('the-choice');
+      expect(Inquirer.prompt).toHaveBeenCalledTimes(1);
+      expect(Inquirer.prompt).toHaveBeenCalledWith(askedQuestion);
+    });
+  });
 });
