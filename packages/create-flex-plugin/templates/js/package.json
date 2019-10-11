@@ -7,6 +7,7 @@
     "postinstall": "npm run bootstrap",
     "prestart": "npm run bootstrap",
     "start": "flex-plugin start",
+    "prebuild": "rm -rf build && npm run bootstrap",
     "build": "flex-plugin build",
     "predeploy": "npm run build",
     "deploy": "flex-plugin deploy",
@@ -20,7 +21,7 @@
     "@twilio/flex-ui": "{{flexSdkVersion}}"
   },
   "dependencies": {
-    "@craco/craco": "^5.0.2",
+    "@craco/craco": "^5.5.0",
     "babel-polyfill": "^6.26.0",
     "core-js": "^2.6.5",
     "craco-config-flex-plugin": "{{cracoConfigVersion}}",
@@ -30,8 +31,8 @@
     "flex-plugin-scripts": "{{pluginScriptsVersion}}",
     "react": "16.5.2",
     "react-dom": "16.5.2",
-    "react-scripts": "3.1.2",
-    "react-test-renderer": "^16.8.6"
+    "react-scripts": "3.2.0",
+    "react-test-renderer": "^16.10.2"
   },
   "browserslist": {
     "production": [
