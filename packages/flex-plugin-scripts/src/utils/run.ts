@@ -9,7 +9,7 @@ type Callback = (...argv: string[]) => void;
  * @param callback
  */
 export default (callback: Callback) => {
-  if (isSelfScript()) {
+  if (isRequiredScript()) {
     (async () => await callback(...process.argv.splice(2)))()
       .catch((e) => {
         if (e instanceof FlexPluginError) {
@@ -26,4 +26,4 @@ export default (callback: Callback) => {
   }
 };
 
-export const isSelfScript = () => require.main === module.parent;
+export const isRequiredScript = () => require.main === module.parent;

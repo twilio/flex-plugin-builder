@@ -7,7 +7,7 @@ import { readdirSync, existsSync } from 'fs';
 import { render as markedRender } from 'flex-dev-utils/dist/marked';
 import { join, dirname } from 'path';
 
-import run, { isSelfScript } from './utils/run';
+import run, { isRequiredScript } from './utils/run';
 
 checkForUpdate();
 
@@ -63,7 +63,7 @@ const spawnScript = async (...argv: string[]) => {
   const { exitCode } = await spawn('node', processArgs);
 
   // Exit if not an embedded script
-  if (isSelfScript()) {
+  if (argv.includes('--process-exit') || !isRequiredScript()) {
     process.exit(exitCode);
   }
 };
