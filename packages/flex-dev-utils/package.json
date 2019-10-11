@@ -38,35 +38,35 @@
     "boxen": "^4.1.0",
     "chalk": "^2.4.2",
     "copy-template-dir": "^1.4.0",
-    "execa": "^2.0.4",
+    "execa": "^2.1.0",
     "inquirer": "6.3.1",
     "lodash": "^4.17.15",
     "log-symbols": "^3.0.0",
     "marked": "^0.7.0",
-    "marked-terminal": "^3.2.0",
+    "marked-terminal": "^3.3.0",
     "mkdirp": "^0.5.1",
     "open": "^6.4.0",
     "ora": "^3.4.0",
     "rimraf": "^3.0.0",
-    "table": "^5.4.1",
+    "table": "^5.4.6",
     "tmp": "^0.1.0",
-    "update-notifier": "^3.0.0",
-    "util": "^0.12.0",
+    "update-notifier": "^3.0.1",
+    "util": "^0.12.1",
     "wrap-ansi": "^4.0.0"
   },
   "devDependencies": {
     "@types/inquirer": "6.0.3",
-    "@types/lodash": "^4.14.136",
+    "@types/lodash": "^4.14.144",
     "@types/marked": "^0.6.5",
     "@types/marked-terminal": "^3.1.1",
     "@types/mkdirp": "^0.5.2",
     "@types/rimraf": "^2.0.2",
-    "@types/table": "^4.0.5",
+    "@types/table": "^4.0.7",
     "@types/tmp": "^0.1.0",
     "@types/update-notifier": "^2.5.0",
     "@types/wrap-ansi": "^3.0.0"
   },
   "optionalDependencies": {
-    "keytar": "^4.10.0"
+    "keytar": "^4.13.0"
   }
 }
