@@ -21,7 +21,7 @@ export interface Question {
 export const prompt = async (question: Question): Promise<Question['name']> => {
   question.type = question.type || 'input';
 
-  const result = await inquirer.prompt(question as IQuestion);
+  const result = await inquirer.prompt([question as IQuestion]);
   const nameKey = Object.keys(question).find((k) => k === 'name') as string;
 
   return result[question[nameKey]];
