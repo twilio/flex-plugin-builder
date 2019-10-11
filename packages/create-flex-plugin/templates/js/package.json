@@ -21,18 +21,11 @@
     "@twilio/flex-ui": "{{flexSdkVersion}}"
   },
   "dependencies": {
-    "@craco/craco": "^5.5.0",
-    "babel-polyfill": "^6.26.0",
-    "core-js": "^2.6.5",
     "craco-config-flex-plugin": "{{cracoConfigVersion}}",
-    "enzyme": "^3.10.0",
-    "enzyme-adapter-react-16": "^1.14.0",
     "flex-plugin": "{{flexPluginVersion}}",
     "flex-plugin-scripts": "{{pluginScriptsVersion}}",
     "react": "16.5.2",
-    "react-dom": "16.5.2",
-    "react-scripts": "3.2.0",
-    "react-test-renderer": "^16.10.2"
+    "react-dom": "16.5.2"
   },
   "browserslist": {
     "production": [

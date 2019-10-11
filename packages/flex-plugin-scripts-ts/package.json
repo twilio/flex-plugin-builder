@@ -1,0 +1,49 @@
+{
+  "name": "flex-plugin-scripts-ts",
+  "version": "3.14.0-beta.0",
+  "description": "TS Scripts to run, build and deploy Flex plugins",
+  "keywords": [
+    "flex",
+    "plugins",
+    "scripts",
+    "twilio",
+    "typescript",
+    "ts"
+  ],
+  "homepage": "https://github.com/twilio/flex-plugin-builder",
+  "bugs": {
+    "url": "https://github.com/twilio/flex-plugin-builder/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio/flex-plugin-builder.git"
+  },
+  "license": "MIT",
+  "author": "Kousha Talebian <ktalebian@twilio.com>",
+  "files": [
+    "dist",
+    "docs"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepublish": "npm run build",
+    "test": "cd ../.. && jest packages/flex-plugin-scripts-ts",
+    "test:watch": "cd ../.. && jest packages/flex-plugin-scripts-ts --watch"
+  },
+  "dependencies": {
+    "@types/enzyme": "^3.10.3",
+    "@types/jest": "^24.0.18",
+    "@types/node": "^12.7.12",
+    "@types/react": "^16.8.16",
+    "@types/react-dom": "^16.8.4",
+    "@types/react-redux": "^7.1.1",
+    "typescript": "^3.6.4"
+  },
+  "peerDependencies": {
+    "flex-plugin": "*"
+  }
+}

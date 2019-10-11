@@ -20,6 +20,7 @@ export interface FlexPluginArguments extends CLIArguments {
   flexPluginVersion: string;
   cracoConfigVersion: string;
   pluginScriptsVersion: string;
+  pluginScriptsTsVersion: string;
   pluginJsonContent: string;
   pluginClassName: string;
   pluginNamespace: string;

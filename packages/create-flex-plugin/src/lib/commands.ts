@@ -49,6 +49,7 @@ export const setupConfiguration = (config: FlexPluginArguments): FlexPluginArgum
   config.flexPluginVersion = pkg.devDependencies['flex-plugin'];
   config.cracoConfigVersion = pkg.devDependencies['craco-config-flex-plugin'];
   config.pluginScriptsVersion = pkg.devDependencies['flex-plugin-scripts'];
+  config.pluginScriptsTsVersion = pkg.devDependencies['flex-plugin-scripts-ts'];
   config.pluginJsonContent = JSON.stringify(_getPluginJsonContent(config), null, 2);
 
   return config;
