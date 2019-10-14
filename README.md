@@ -25,27 +25,22 @@
 
 ## Getting Started
 
----
-**NOTE**
-
-Flex plugin builder v3 is available in beta. Docs are available on the [dev branch](https://github.com/twilio/flex-plugin-builder/tree/dev). For more information please visit [Twilio Docs - Flex Plugin Builder](https://www.twilio.com/docs/flex/plugin-builder#plugin-builder-v3)
-
----
-
 This is a monorepo project managed by [lerna](https://github.com/lerna/lerna) for creating Twilio Flex plugins.
 
 - [create-flex-plugin](packages/create-flex-plugin): The CLI tool to start a new Flex plugin project
 - [flex-plugin](packages/flex-plugin): Runtime dependency for Flex plugins
+- [flex-plugin-scripts](packages/flex-plugin-scripts): The scripts used for building, testing, and deploying your plugin
 - [craco-config-flex-plugin](packages/craco-config-flex-plugin): Config override for [Create React App](https://github.com/facebook/create-react-app) using [craco](https://github.com/sharegate/craco)
 
 ## User Guide
 
 * [Creating a new plugin](packages/create-flex-plugin/README.md)
 * [Overriding configuration](packages/craco-config-flex-plugin/README.md)
+* [Available Scripts](packages/flex-plugin-scripts/README.md)
 
 ## Changelog
 
-Major changelogs can be found in the [changelog directory](/changelog/CHANGELOG.md).
+Major changelogs can be found in the [changelog directory](/changelog).
 
 ## Contributing
 
