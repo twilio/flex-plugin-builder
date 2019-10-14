@@ -17,13 +17,17 @@ class FlexPluginsDeploy extends FlexPluginScripts {
     };
   }
 
-  async runCommand() {
+  async run() {
     process.env.SKIP_CREDENTIALS_SAVING = 'true';
     process.env.TWILIO_ACCOUNT_SID = this.twilioClient.username;
     process.env.TWILIO_AUTH_TOKEN = this.twilioClient.password;
 
     await this.runScript('build');
     await this.runScript('deploy');
+  }
+
+  async runCommand() {
+    return this.run();
   }
 }
 

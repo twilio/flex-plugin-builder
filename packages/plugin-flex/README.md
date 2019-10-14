@@ -10,8 +10,6 @@ build and deploy Twilio Flex plugins; it uses the [Flex Plugin Builder](https://
 * [Requirements](#requirements)
 * [Usage](#usage)
 * [Commands](#commands)
-* [Contributing](#contributing)
-* [License](#license)
 <!-- tocstop -->
 
 # Requirements
@@ -44,8 +42,99 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`twilio flex:plugins:create PluginName`](#twilio-flexpluginscreate)
-* [`twilio flex:plugins:start`](#twilio-flex-start)
-* [`twilio flex:plugins:build`](#twilio-flex-build)
-* [`twilio flex:plugins:deploy`](#twilio-flex-deploy)
-* [`twilio flex:plugins:remove`](#twilio-flex-remove)
+* [`twilio flex:plugins:build`](#twilio-flexpluginsbuild)
+* [`twilio flex:plugins:create NAME`](#twilio-flexpluginscreate-name)
+* [`twilio flex:plugins:deploy`](#twilio-flexpluginsdeploy)
+* [`twilio flex:plugins:remove`](#twilio-flexpluginsremove)
+* [`twilio flex:plugins:start`](#twilio-flexpluginsstart)
+
+## `twilio flex:plugins:build`
+
+```
+USAGE
+  $ twilio flex:plugins:build
+
+OPTIONS
+  -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv)            [default: columns] Format of command output.
+  -p, --profile=profile            Shorthand identifier for your profile.
+```
+
+_See code: [src/commands/flex/plugins/build.ts](https://github.com/twilio/plugin-debugger/blob/v0.1.0/src/commands/flex/plugins/build.ts)_
+
+## `twilio flex:plugins:create NAME`
+
+Creates a new Twilio Flex Plugin project
+
+```
+USAGE
+  $ twilio flex:plugins:create NAME
+
+ARGUMENTS
+  NAME  Creates a new Twilio Flex Plugin project
+
+        Arguments:
+        name	Name of your plugin. Needs to start with plugin-
+
+OPTIONS
+  -a, --accountSid=accountSid      The Account SID for your Flex Project
+  -h, --help=help
+  -i, --install                    Auto-install dependencies
+  -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv)            [default: columns] Format of command output.
+  -p, --profile=profile            Shorthand identifier for your profile.
+  -r, --runtimeUrl                 Auto-install dependencies
+  -s, --typescript                 Create a TypeScript project
+  -t, --template=template          A URL to a template directory
+  -v, --version=version
+  -y, --yarn                       Use yarn as your dependency manager
+
+DESCRIPTION
+  Arguments:
+  name	Name of your plugin. Needs to start with plugin-
+```
+
+_See code: [src/commands/flex/plugins/create.ts](https://github.com/twilio/plugin-debugger/blob/v0.1.0/src/commands/flex/plugins/create.ts)_
+
+## `twilio flex:plugins:deploy`
+
+```
+USAGE
+  $ twilio flex:plugins:deploy
+
+OPTIONS
+  -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv)            [default: columns] Format of command output.
+  -p, --profile=profile            Shorthand identifier for your profile.
+```
+
+_See code: [src/commands/flex/plugins/deploy.ts](https://github.com/twilio/plugin-debugger/blob/v0.1.0/src/commands/flex/plugins/deploy.ts)_
+
+## `twilio flex:plugins:remove`
+
+```
+USAGE
+  $ twilio flex:plugins:remove
+
+OPTIONS
+  -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv)            [default: columns] Format of command output.
+  -p, --profile=profile            Shorthand identifier for your profile.
+```
+
+_See code: [src/commands/flex/plugins/remove.ts](https://github.com/twilio/plugin-debugger/blob/v0.1.0/src/commands/flex/plugins/remove.ts)_
+
+## `twilio flex:plugins:start`
+
+```
+USAGE
+  $ twilio flex:plugins:start
+
+OPTIONS
+  -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv)            [default: columns] Format of command output.
+  -p, --profile=profile            Shorthand identifier for your profile.
+```
+
+_See code: [src/commands/flex/plugins/start.ts](https://github.com/twilio/plugin-debugger/blob/v0.1.0/src/commands/flex/plugins/start.ts)_
+<!-- commandsstop -->
