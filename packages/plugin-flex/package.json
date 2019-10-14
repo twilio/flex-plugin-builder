@@ -1,0 +1,66 @@
+{
+  "name": "@twilio-labs/plugin-flex",
+  "version": "0.1.0",
+  "description": "Create, develop and deploy Flex plugins using the Twilio CLI",
+  "keywords": [
+    "oclif-plugin"
+  ],
+  "homepage": "https://github.com/twilio/plugin-flex",
+  "bugs": "https://github.com/twilio/twilio-cli/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/twilio/plugin-debugger.git"
+  },
+  "license": "MIT",
+  "author": "Twilio @twilio",
+  "files": [
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json",
+    "/dist",
+    "package-lock.json"
+  ],
+  "scripts": {
+    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "postpack": "rm -f oclif.manifest.json",
+    "test": "nyc --check-coverage --lines 90 --reporter=html --reporter=text mocha --forbid-only \"test/**/*.test.js\"",
+    "posttest": "eslint --ignore-path .gitignore . && npm audit",
+    "version": "oclif-dev readme && git add README.md"
+  },
+  "dependencies": {
+    "@oclif/command": "^1.5.19",
+    "@oclif/config": "^1.13.3",
+    "@twilio/cli-core": "^4.1.1",
+    "clear": "^0.1.0",
+    "create-flex-plugin": "^3.14.0-beta.0",
+    "flex-plugin-scripts": "^3.14.0-beta.0"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1.22.2",
+    "@oclif/test": "^1.2.5",
+    "@twilio/cli-test": "^2.0.1",
+    "chai": "^4.2.0",
+    "eslint": "^6.5.1",
+    "eslint-config-oclif": "^3.1.0",
+    "globby": "^10.0.1",
+    "keytar": "^4.13.0",
+    "mocha": "^6.2.1",
+    "nyc": "^14.1.1",
+    "typescript": "^3.6.4"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "oclif": {
+    "name": "flex",
+    "commands": "./src/commands",
+    "bin": "twilio",
+    "devPlugins": [
+      "@oclif/plugin-help"
+    ],
+    "topics": {
+      "flex": {
+        "description": "Create, develop and deploy Flex plugins using the Twilio CLI"
+      }
+    }
+  }
+}
