@@ -1,4 +1,4 @@
 import open from 'open';
 
-/* eslint-disable */
+/* istanbul ignore next */
 export default open;
