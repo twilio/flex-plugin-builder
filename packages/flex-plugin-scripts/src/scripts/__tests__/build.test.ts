@@ -12,7 +12,7 @@ describe('build', () => {
 
   it('should run craco build', () => {
     buildScript.default();
-    expect(utilsRequire.resolve).toHaveBeenCalledTimes(1);
-    expect(utilsRequire.resolve).toHaveBeenCalledWith(buildScript.cracoScriptPath);
+    expect(utilsRequire.runCraco).toHaveBeenCalledTimes(1);
+    expect(utilsRequire.runCraco).toHaveBeenCalledWith(buildScript.cracoScriptPath);
   });
 });
