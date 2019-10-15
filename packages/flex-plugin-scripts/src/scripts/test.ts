@@ -12,7 +12,7 @@ export const cracoScriptPath = '@craco/craco/scripts/test.js';
 const test = () => {
   logger.debug('Running tests');
 
-  require(resolve(cracoScriptPath));
+  require(cracoScriptPath);
 };
 
 run(test);

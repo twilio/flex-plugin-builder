@@ -4,24 +4,30 @@
   "private": true,
   "scripts": {
     "bootstrap": "flex-plugin check-start",
-    "postinstall": "npm run bootstrap",
-    "prestart": "npm run bootstrap",
-    "start": "flex-plugin start",
     "prebuild": "rm -rf build && npm run bootstrap",
     "build": "flex-plugin build",
+    "clear": "flex-plugin clear",
     "predeploy": "npm run build",
     "deploy": "flex-plugin deploy",
-    "test": "flex-plugin test --env=jsdom",
+    "eject": "flex-plugin eject",
+    "postinstall": "npm run bootstrap",
     "list": "flex-plugin list",
-    "clear": "flex-plugin clear",
     "remove": "flex-plugin remove",
-    "eject": "flex-plugin eject"
-  },
-  "devDependencies": {
-    "@twilio/flex-ui": "{{flexSdkVersion}}"
+    "prestart": "npm run bootstrap",
+    "start": "flex-plugin start",
+    "test": "flex-plugin test --env=jsdom"
   },
   "dependencies": {
-    "@craco/craco": "^5.5.0",
+    "craco-config-flex-plugin": "{{cracoConfigVersion}}",
+    "flex-plugin": "{{flexPluginVersion}}",
+    "flex-plugin-scripts": "{{pluginScriptsVersion}}",
+    "react": "16.5.2",
+    "react-dom": "16.5.2",
+    "react-scripts": "3.2.0",
+    "typescript": "^3.6.4"
+  },
+  "devDependencies": {
+    "@twilio/flex-ui": "{{flexSdkVersion}}",
     "@types/enzyme": "^3.10.3",
     "@types/jest": "^24.0.18",
     "@types/node": "^12.7.12",
@@ -29,18 +35,8 @@
     "@types/react-dom": "^16.8.4",
     "@types/react-redux": "^7.1.1",
     "babel-polyfill": "^6.26.0",
-    "core-js": "^2.6.5",
-    "craco-config-flex-plugin": "{{cracoConfigVersion}}",
     "enzyme": "^3.10.0",
-    "enzyme-adapter-react-16": "^1.14.0",
-    "flex-plugin": "{{flexPluginVersion}}",
-    "flex-plugin-scripts": "{{pluginScriptsVersion}}",
-    "react": "16.5.2",
-    "react-dom": "16.5.2",
-    "react-scripts": "3.2.0",
-    "react-test-renderer": "^16.10.2",
-    "redux": "3.7.2",
-    "typescript": "^3.6.4"
+    "enzyme-adapter-react-16": "^1.14.0"
   },
   "browserslist": {
     "production": [

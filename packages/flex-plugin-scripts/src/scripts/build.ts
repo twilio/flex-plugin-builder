@@ -18,7 +18,7 @@ const build = () => {
   //   // to be filled
   // });
 
-  require(resolve(cracoScriptPath));
+  require(cracoScriptPath);
 };
 
 run(build);

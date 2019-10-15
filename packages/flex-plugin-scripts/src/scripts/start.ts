@@ -16,7 +16,7 @@ const start = () => {
   // This will overwrite React App from opening the browser and allows us to control the flow
   process.env.BROWSER = join(__dirname, 'sub', 'browser.js');
 
-  require(resolve(cracoScriptPath));
+  require(cracoScriptPath);
 };
 
 run(start);

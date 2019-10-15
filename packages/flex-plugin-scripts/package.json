@@ -38,6 +38,12 @@
     "test:watch": "cd ../.. && jest packages/flex-plugin-scripts --watch"
   },
   "dependencies": {
+    "@craco/craco": "^5.5.0",
+    "babel-polyfill": "^6.26.0",
+    "core-js": "^2.6.5",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.14.0",
+    "react-test-renderer": "^16.10.2",
     "esm": "^3.2.25",
     "flex-dev-utils": "^3.14.0-beta.0",
     "form-data": "^2.5.1",
