@@ -38,6 +38,13 @@ export const hijack = (name: string, replacement: any) => {
 };
 
 /**
+ * Runs craco
+ * @param module  the module name
+ */
+/* istanbul ignore next */
+export const runCraco = (module: string) => require(module);
+
+/**
  * Resolves the path to the script's node_modules
  * @param path  the path relative to node_modules
  */

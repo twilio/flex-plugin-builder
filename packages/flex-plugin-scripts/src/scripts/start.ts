@@ -1,7 +1,7 @@
 import { logger } from 'flex-dev-utils';
 import { join } from 'path';
 
-import { resolve } from '../utils/require';
+import { runCraco } from '../utils/require';
 import run from '../utils/run';
 
 // The craco start.js script path
@@ -16,7 +16,7 @@ const start = () => {
   // This will overwrite React App from opening the browser and allows us to control the flow
   process.env.BROWSER = join(__dirname, 'sub', 'browser.js');
 
-  require(cracoScriptPath);
+  runCraco(cracoScriptPath);
 };
 
 run(start);
