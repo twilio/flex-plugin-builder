@@ -25,4 +25,7 @@ module.exports = {
   coveragePathIgnorePatterns: [
     '/node_modules/',
   ],
+  modulePathIgnorePatterns: [
+    '<rootDir>/packages/create-flex-plugin/templates/'
+  ]
 };
