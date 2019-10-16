@@ -1,0 +1,56 @@
+{
+  "name": "flex-plugin-scripts",
+  "version": "3.15.0-beta.0",
+  "description": "Scripts to run, build and deploy Flex plugins",
+  "keywords": [
+    "flex",
+    "plugins",
+    "scripts",
+    "twilio"
+  ],
+  "homepage": "https://github.com/twilio/flex-plugin-builder",
+  "bugs": {
+    "url": "https://github.com/twilio/flex-plugin-builder/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio/flex-plugin-builder.git"
+  },
+  "license": "MIT",
+  "author": "Kousha Talebian <ktalebian@twilio.com>",
+  "files": [
+    "dist",
+    "bin",
+    "docs",
+    "dev_assets"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "flex-plugin": "./bin/flex-plugin"
+  },
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepublish": "npm run build",
+    "test": "cd ../.. && jest packages/flex-plugin-scripts",
+    "test:watch": "cd ../.. && jest packages/flex-plugin-scripts --watch"
+  },
+  "dependencies": {
+    "@craco/craco": "^5.5.0",
+    "core-js": "^2.6.5",
+    "esm": "^3.2.25",
+    "flex-dev-utils": "^3.15.0-beta.0",
+    "form-data": "^2.5.1",
+    "querystring": "^0.2.0",
+    "react-test-renderer": "^16.10.2",
+    "semver": "^6.3.0"
+  },
+  "devDependencies": {
+    "@types/semver": "^6.0.2"
+  },
+  "peerDependencies": {
+    "flex-plugin": "*"
+  }
+}

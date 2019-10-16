@@ -31,7 +31,7 @@ Please provide the steps to reproduce this bug:
 
 A clear and concise description of what you expected to happen.
 
-### Screenhots
+### Screenshots
 
 If applicable, add screenshots to help explain your problem.
 

@@ -3,38 +3,40 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "bootstrap": "flex-check-start",
-    "build": "craco build",
-    "eject": "craco eject",
+    "bootstrap": "flex-plugin check-start",
+    "prebuild": "rm -rf build && npm run bootstrap",
+    "build": "flex-plugin build",
+    "clear": "flex-plugin clear",
+    "predeploy": "npm run build",
+    "deploy": "flex-plugin deploy",
+    "eject": "flex-plugin eject",
     "postinstall": "npm run bootstrap",
+    "list": "flex-plugin list",
+    "remove": "flex-plugin remove",
     "prestart": "npm run bootstrap",
-    "start": "craco start",
-    "test": "craco test --env=jsdom",
-    "coverage": "craco test --env=jsdom --coverage --watchAll=false"
+    "start": "flex-plugin start",
+    "test": "flex-plugin test --env=jsdom"
   },
   "dependencies": {
-    "@craco/craco": "^5.0.2",
-    "@types/enzyme": "^3.10.1",
-    "@types/jest": "^24.0.12",
-    "@types/node": "^12.0.0",
+    "craco-config-flex-plugin": "{{cracoConfigVersion}}",
+    "flex-plugin": "{{flexPluginVersion}}",
+    "flex-plugin-scripts": "{{pluginScriptsVersion}}",
+    "react": "16.5.2",
+    "react-dom": "16.5.2",
+    "react-scripts": "3.2.0",
+    "typescript": "^3.6.4"
+  },
+  "devDependencies": {
+    "@twilio/flex-ui": "{{flexSdkVersion}}",
+    "@types/enzyme": "^3.10.3",
+    "@types/jest": "^24.0.18",
+    "@types/node": "^12.7.12",
     "@types/react": "^16.8.16",
     "@types/react-dom": "^16.8.4",
     "@types/react-redux": "^7.1.1",
     "babel-polyfill": "^6.26.0",
-    "core-js": "^2.6.5",
-    "craco-config-flex-plugin": "{{cracoConfigVersion}}",
     "enzyme": "^3.10.0",
-    "enzyme-adapter-react-16": "^1.14.0",
-    "flex-plugin": "{{flexPluginVersion}}",
-    "react": "16.5.2",
-    "react-dom": "16.5.2",
-    "react-scripts": "^3.0.0",
-    "react-test-renderer": "^16.8.6",
-    "redux": "3.7.2",
-    "typescript": "^3.4.5"
-  },
-  "devDependencies": {
-    "@twilio/flex-ui": "{{flexSdkVersion}}"
+    "enzyme-adapter-react-16": "^1.14.0"
   },
   "browserslist": {
     "production": [

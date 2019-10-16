@@ -1,4 +1,5 @@
 import devServer, { Configuration } from '../devServer';
+import * as utilsFs from '../../utils/fs';
 
 describe('devServer', () => {
   const defaultContentBase = 'entry1';
@@ -10,12 +11,12 @@ describe('devServer', () => {
       expect(config.contentBase[0]).toEqual(defaultContentBase);
     }
     const index = hasDefault ? 1 : 0;
-    expect(config.contentBase[index].indexOf('flex-plugin/dev_assets') ).not.toEqual(-1);
+    expect(config.contentBase[index].indexOf('flex-plugin-scripts/dev_assets') ).not.toEqual(-1);
   };
 
   it('should add devAssets when contentBase is array', () => {
     const config = devServer({
-      contentBase: [defaultContentBase]
+      contentBase: [defaultContentBase],
     });
 
     assertConfig(config);
@@ -23,7 +24,7 @@ describe('devServer', () => {
 
   it('should add devAssets when contentBase is string', () => {
     const config = devServer({
-      contentBase: defaultContentBase
+      contentBase: defaultContentBase,
     });
 
     assertConfig(config);
@@ -33,5 +34,20 @@ describe('devServer', () => {
     const config = devServer({});
 
     assertConfig(config, false);
+  });
+
+  it('should load custom config', () => {
+    const loadFile = jest
+      .spyOn(utilsFs, 'loadFile')
+      .mockReturnValue({
+        devServer: { public: 'bar' },
+      });
+
+    const config = devServer({});
+
+    assertConfig(config, false);
+    expect(config.public).toEqual('bar');
+
+    loadFile.mockRestore();
   });
 });

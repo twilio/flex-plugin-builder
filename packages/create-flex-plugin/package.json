@@ -1,13 +1,13 @@
 {
   "name": "create-flex-plugin",
-  "version": "2.9.1",
-  "description": "Toolkit to create a new Twilio Flex Plugin",
+  "version": "3.15.1-beta.0",
+  "description": "Toolkit to create a new Twilio Flex plugin",
   "keywords": [
     "flex",
     "plugin",
     "twilio"
   ],
-  "homepage": "https://github.com/twilio/flex-plugin-builder#readme",
+  "homepage": "https://github.com/twilio/flex-plugin-builder",
   "bugs": {
     "url": "https://github.com/twilio/flex-plugin-builder/issues"
   },
@@ -33,42 +33,23 @@
     "test": "__tests__"
   },
   "scripts": {
-    "prebuild": "rm -rf dist",
+    "prebuild": "npm run clean",
     "build": "tsc",
+    "clean": "rm -rf dist",
     "test": "cd ../.. && jest packages/create-flex-plugin --color",
     "test:watch": "cd ../.. && jest packages/create-flex-plugin --watch --color"
   },
   "dependencies": {
-    "@types/chalk": "^2.2.0",
-    "@types/execa": "^0.9.0",
-    "@types/inquirer": "^6.0.0",
-    "@types/lodash": "^4.14.123",
-    "@types/mkdirp": "^0.5.2",
-    "@types/tmp": "^0.1.0",
-    "@types/yargs": "^13.0.0",
-    "axios": "^0.18.0",
-    "boxen": "^3.1.0",
-    "chalk": "^2.4.1",
-    "copy-template-dir": "^1.4.0",
-    "esm": "3.2.22",
-    "execa": "^1.0.0",
-    "inquirer": "^6.2.0",
-    "lodash": "^4.17.11",
-    "log-symbols": "^3.0.0",
-    "mkdirp": "^0.5.1",
-    "ora": "^3.0.0",
-    "path": "^0.12.7",
-    "tmp": "^0.1.0",
-    "ts-node": "^8.1.0",
-    "wrap-ansi": "^4.0.0",
-    "yargs": "^13.2.2"
+    "esm": "^3.2.25",
+    "flex-dev-utils": "^3.15.0-beta.0",
+    "yargs": "^14.2.0"
   },
   "devDependencies": {
-    "@types/loglevel": "^1.5.3",
-    "@types/rimraf": "^2.0.2",
-    "axios-mock-adapter": "^1.16.0",
-    "rimraf": "^2.6.3",
-    "typescript": "^3.0.3"
+    "@twilio/flex-ui": "^1",
+    "@types/yargs": "^13.0.3",
+    "craco-config-flex-plugin": "^3.15.0-beta.0",
+    "flex-plugin": "^3.7.0-beta.0",
+    "flex-plugin-scripts": "^3.15.0-beta.0"
   },
   "gitHead": "ca02b3d214e6dfa4277b6b69cbbb178783004edf"
 }

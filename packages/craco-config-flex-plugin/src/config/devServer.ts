@@ -1,6 +1,6 @@
 import path from 'path';
 import { Configuration as DevConfig } from 'webpack-dev-server';
-import merge from 'lodash.merge';
+import { merge } from 'flex-dev-utils/dist/lodash';
 
 import { loadFile } from '../utils/fs';
 
@@ -14,7 +14,7 @@ export interface Configuration extends DevConfig {
  * @param config  the {@link DevConfig}
  */
 const configureDevServer = (config: DevConfig): Configuration => {
-  const devAssets = path.join(process.cwd(), 'node_modules', 'flex-plugin', 'dev_assets');
+  const devAssets = path.join(process.cwd(), 'node_modules', 'flex-plugin-scripts', 'dev_assets');
 
   if (Array.isArray(config.contentBase)) {
     config.contentBase.push(devAssets);

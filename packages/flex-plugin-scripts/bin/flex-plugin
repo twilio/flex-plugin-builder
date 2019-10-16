@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+
+'use strict';
+
+require = require('esm')(module /*, options*/);
+require('../dist').default(...process.argv.splice(2));

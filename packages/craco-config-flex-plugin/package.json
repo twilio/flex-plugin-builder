@@ -1,14 +1,15 @@
 {
   "name": "craco-config-flex-plugin",
-  "version": "2.9.1",
-  "description": "Plugin for craco configs to bundle Twilio Flex Plugins",
+  "version": "3.15.0-beta.0",
+  "description": "Craco configs to bundle Twilio Flex plugins",
   "keywords": [
+    "config",
     "craco",
     "flex",
-    "plugins",
+    "plugin",
     "twilio"
   ],
-  "homepage": "https://github.com/twilio/flex-plugin-builder#readme",
+  "homepage": "https://github.com/twilio/flex-plugin-builder",
   "bugs": {
     "url": "https://github.com/twilio/flex-plugin-builder/issues"
   },
@@ -24,30 +25,23 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prebuild": "rm -rf dist",
+    "prebuild": "npm run clean",
     "build": "tsc",
+    "clean": "rm -rf dist",
     "test": "cd ../.. && jest packages/craco-config-flex-plugin --color",
     "test:watch": "cd ../.. && jest packages/craco-config-flex-plugin --watch --color"
   },
   "dependencies": {
     "clean-webpack-plugin": "^2.0.2",
-    "lodash.clonedeep": "^4.5.0",
-    "lodash.merge": "^4.6.2",
-    "path": "^0.12.7"
+    "flex-dev-utils": "^3.15.0-beta.0",
+    "webpack": "4.41.0"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.13",
-    "@types/lodash.clonedeep": "^4.5.6",
-    "@types/lodash.merge": "^4.6.6",
-    "@types/node": "^12.0.7",
-    "@types/webpack": "^4.4.32",
-    "@types/webpack-dev-server": "^3.1.6",
-    "jest": "^24.8.0",
-    "path": "^0.12.7",
-    "typescript": "^3.5.1"
+    "@types/webpack": "^4.39.3",
+    "@types/webpack-dev-server": "^3.1.7"
   },
   "peerDependencies": {
-    "@craco/craco": "^5.0.2",
+    "@craco/craco": "^5.5.0",
     "flex-plugin": "*"
   }
 }

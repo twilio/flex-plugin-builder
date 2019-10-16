@@ -7,9 +7,11 @@ module.exports = {
   testEnvironment: 'jsdom',
   collectCoverageFrom: [
     '<rootDir>/packages/**/src/**/*.ts',
+    '!<rootDir>/packages/**/src/**/*.d.ts',
     '!<rootDir>/packages/**/src/**/*.test.ts',
     '!<rootDir>/packages/**/src/index.ts',
     '!<rootDir>/packages/**/templates/**/*.ts',
+    '!<rootDir>/packages/**/prints/**/*.ts',
   ],
   testMatch: [
     '<rootDir>/packages/**/*.test.ts'
@@ -22,5 +24,8 @@ module.exports = {
   ],
   coveragePathIgnorePatterns: [
     '/node_modules/',
+  ],
+  modulePathIgnorePatterns: [
+    '<rootDir>/packages/create-flex-plugin/templates/'
   ]
 };

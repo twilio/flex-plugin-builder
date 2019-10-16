@@ -54,7 +54,7 @@ class MyPlugin extends FlexPlugin {
   }
 }
 ```
-The CSS/JS files must be accessible by Twilio's proxy servers. Local files on your desktop are likely unaccessible via these methods, but your stylesheet may be uploaded to [Twilio Assets](https://support.twilio.com/hc/en-us/articles/360019105433-Getting-Started-with-Twilio-Assets-Beta-) for use here.
+The CSS/JS files must be accessible by Twilio's proxy servers. Local files on your desktop are likely inaccessible via these methods, but your stylesheet may be uploaded to [Twilio Assets](https://support.twilio.com/hc/en-us/articles/360019105433-Getting-Started-with-Twilio-Assets-Beta-) for use here.
 
 ## External Dependencies
 
@@ -84,11 +84,11 @@ react-redux    5.1.0
 
 ## Contributing
 
-Make sure to follow the instructions in the [main repository](https://github.com/twilio/flex-plugin-builder#contributing) to setup the project
+Make sure to follow the instructions in the [main repository](https://github.com/twilio/flex-plugin-builder#contributing) to set up the project.
 
 ```bash
 # Install dependencies and link local packages with each other
-cd packages/flex-plugin
+cd packages/flex-plugin-scripts
 npx lerna bootstrap
 
 # Run tests
@@ -97,7 +97,7 @@ npm test
 # To use your local package in a different project
 npm link
 # then in a different project
-npm link flex-plugin
+npm link flex-plugin-scripts
 ```
 
 ## Contributors
@@ -106,4 +106,5 @@ Thank you to all the lovely contributors to this project. Please check the main 
 
 ## License
 
-MIT
+[MIT](../../LICENSE)
+

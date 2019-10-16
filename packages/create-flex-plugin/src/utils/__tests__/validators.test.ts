@@ -1,83 +1,23 @@
-import execa from 'execa';
-import inquirer from 'inquirer';
-import { error } from '../logging';
-import * as validators from '../validators';
-import Mock = jest.Mock;
+import { FlexPluginError } from 'flex-dev-utils/dist/errors';
+import * as inquirer from 'flex-dev-utils/dist/inquirer';
+import { logger } from 'flex-dev-utils';
 
-jest.mock('execa');
-jest.mock('../logging');
+import * as validators from '../validators';
+
+jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/inquirer');
 
 describe('validators', () => {
     const accountSid = 'AC00000000000000000000000000000000';
+    const url = 'https://twilio.com';
 
-    beforeEach(() => jest.clearAllMocks());
-
-    const mockPrompt = (mock: Mock) => {
-        Object.defineProperty(inquirer, 'prompt', {
-            value: mock,
-        });
-    };
-
-    describe('_isValidPluginName', () => {
-        it('should be valid plugin names', () => {
-            const names = [
-                'plugin-foo',
-                'plugin-foo-bar',
-                'plugin-2',
-                'plugin-foo_bar',
-            ];
-
-            names.map(validators._isValidPluginName)
-                .forEach((resp) => expect(resp).toBeTruthy());
-        });
-
-        it('should be an invalid plugin names', () => {
-            const names = [
-                'plugin',
-                'plugin-',
-                'name',
-                'name-plugin',
-            ];
-
-            names.map(validators._isValidPluginName)
-                .forEach((resp) => expect(resp).toBeFalsy());
-        });
-    });
-
-    describe('_isSidValid', () => {
-        it('should be valid sid', () => {
-            const sids = [
-                ['AC', 'AC00000000000000000000000000000000'],
-                ['US', 'US00000000000000000000000000000000'],
-                ['AB', 'AB00000000000000000000000000000001'],
-                ['ZX', 'ZX00000000000000000000000000abcdef'],
-            ];
-
-            sids.map((data) => validators._isSidValid(data[0], data[1]))
-                .forEach((resp) => expect(resp).toBeTruthy());
-        });
-
-        it('should be invalid sid', () => {
-            const sids = [
-                ['AC', 'AC00000000000000000000000000000'],
-                ['US', '00000000000000000000000000000000'],
-                ['AB', 'AB000000000000000000000000000000011'],
-                ['ZX', 'ZX00000000000000000000000000abcdeg'],
-                ['DF', ''],
-                ['DF'],
-            ];
-
-            sids.map((data) => validators._isSidValid(data[0], data[1]))
-                .forEach((resp) => expect(resp).toBeFalsy());
-        });
-    });
+    beforeEach(() => jest.resetAllMocks());
 
     describe('_promptForAccountSid', () => {
         it('should ask for an accountSid if not specified', async () => {
-            const prompt = jest.fn(() => Promise.resolve({
+            (inquirer as any).prompt = jest.fn(() => Promise.resolve({
                 accountSid: 'test-sid',
             }));
-            mockPrompt(prompt);
 
             await validators._promptForAccountSid();
             expect(inquirer.prompt).toHaveBeenCalledTimes(1);
@@ -86,10 +26,9 @@ describe('validators', () => {
 
     describe('_promptForTemplateUrl', () => {
         it('should ask for a url if url is invalid', async () => {
-            const prompt = jest.fn(() => Promise.resolve({
+            (inquirer as any).prompt = jest.fn(() => Promise.resolve({
                 url: 'twilio',
             }));
-            mockPrompt(prompt);
 
             await validators._promptForTemplateUrl();
             expect(inquirer.prompt).toHaveBeenCalledTimes(1);
@@ -98,75 +37,71 @@ describe('validators', () => {
 
     describe('validate', () => {
         it('should error out if plugin name is not valid', async () => {
-            const spyExit = jest.spyOn(process, 'exit')
-                .mockImplementation(() => { throw new Error('asd'); });
-
             try {
                 await validators.default({} as any);
             } catch (e) {
-                expect(spyExit).toHaveBeenCalledWith(1);
-                expect(error).toHaveBeenCalledWith('Invalid plugin name. Names need to start with plugin-');
+                expect(e).toBeInstanceOf(FlexPluginError);
+                expect(e.message).toContain('Invalid plugin name');
+                expect(e.message).toContain('start with plugin-');
             }
         });
 
         it('should not ask for an accountSid if already specified', async () => {
-            const prompt = jest.fn();
-            mockPrompt(prompt);
+            const prompt = jest.spyOn(inquirer, 'prompt');
 
-            // Act
             await validators.default({
                 name: 'plugin-test',
                 accountSid,
             } as any);
 
-            // Assert
-            expect(inquirer.prompt).not.toHaveBeenCalled();
+            expect(prompt).not.toHaveBeenCalled();
+        });
+
+        it('should not ask for an accountSid if no sid is provided', async () => {
+            const prompt = jest.spyOn(inquirer, 'prompt');
+
+            const config = await validators.default({
+                name: 'plugin-test',
+            } as any);
+
+            expect(prompt).not.toHaveBeenCalled();
+        });
+
+        it('should ask for an accountSid if incorrect accountSid', async () => {
+            const prompt = jest.spyOn(inquirer, 'prompt').mockResolvedValue(accountSid);
+
+            const config = await validators.default({
+                name: 'plugin-test',
+                accountSid: 'abcd',
+            } as any);
+
+            expect(prompt).toHaveBeenCalledTimes(1);
+            expect(config.accountSid).toEqual(accountSid);
         });
 
         it('should not ask for a template url if already specified', async () => {
-            const prompt = jest.fn();
-            mockPrompt(prompt);
+            const prompt = jest.spyOn(inquirer, 'prompt');
 
-            // Act
             await validators.default({
                 name: 'plugin-test',
                 accountSid,
                 template: 'github.com/twilio/flex-plugin',
             } as any);
 
-            // Assert
-            expect(inquirer.prompt).not.toHaveBeenCalled();
-        });
-    });
-
-    describe('_isValidUrl', () => {
-        it('should be valid URL', () => {
-            const data = [
-                'https://wwww.twilio.com',
-                'www.twilio.com',
-                'twilio.com',
-                'https://www.twilio.com/foo/bar/baz',
-                'www.twilio.com/foo/bar/baz',
-                'twilio.com/foo/bar/baz',
-                'https://www.twilio.com/foo/bar/baz?query=true&another=true',
-                'www.twilio.com/foo/bar/baz?query=true&another=true',
-                'twilio.com/foo/bar/baz?query=true&another=true',
-            ];
-
-            data.map(validators._isValidUrl)
-                .forEach((resp) => expect(resp).toBeTruthy());
+            expect(prompt).not.toHaveBeenCalled();
         });
 
-        it('should be invalid URL', () => {
-            const data = [
-                'htt://wwww.twilio.com',
-                'http:/wwww.twilio.com',
-                'twilio. com',
-                'twilio',
-            ];
+        it('should ask for template url if invalid url is provided', async () => {
+            const prompt = jest.spyOn(inquirer, 'prompt').mockResolvedValue(url);
 
-            data.map(validators._isValidUrl)
-                .forEach((resp) => expect(resp).toBeFalsy());
+            const config = await validators.default({
+                name: 'plugin-test',
+                accountSid,
+                template: 'incorrect-url',
+            } as any);
+
+            expect(prompt).toHaveBeenCalledTimes(1);
+            expect(config.template).toEqual(url);
         });
     });
 });

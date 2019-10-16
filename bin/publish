@@ -21,6 +21,7 @@ function run_script() {
 
 # Cleanup
 run_script $LERNA clean -y
+run_script $LERNA run clean
 run_script rm -rf node_modules
 
 # Install
@@ -35,7 +36,13 @@ run_script npm run build
 
 # Publish
 if [ "$1" == "public" ] ; then
+  echo -e "\n------------------------------------"
+  echo "-- Publishing as a public release --"
+  echo -e "------------------------------------\n"
   run_script $LERNA publish
 else
+  echo -e "\n-----------------------------------------"
+  echo "-- Publishing as a beta (next) release --"
+  echo -e "-----------------------------------------\n"
   run_script $LERNA publish --dist-tag next
 fi
