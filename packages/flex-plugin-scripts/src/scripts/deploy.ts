@@ -8,7 +8,6 @@ import semver, { ReleaseType } from 'semver';
 import run from '../utils/run';
 import { BuildData } from '../clients/builds';
 import { Build, Version } from '../clients/serverless-types';
-import availabilityWarning from '../prints/availabilityWarning';
 import paths from '../utils/paths';
 import { AssetClient, BuildClient, DeploymentClient, ConfigurationClient } from '../clients';
 import getRuntime from '../utils/runtime';
@@ -148,8 +147,6 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
 };
 
 const deploy = async (...argv: string[]) => {
-  availabilityWarning();
-
   const disallowVersioning = argv.includes('--disallow-versioning');
   let nextVersion = argv[1] as string;
   const bump = argv[0];
