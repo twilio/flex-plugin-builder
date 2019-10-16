@@ -5,7 +5,7 @@ const FlexPluginScripts = require('../../../sub-commands/flex-plugin-scripts');
  */
 class FlexPluginsDeploy extends FlexPluginScripts {
   constructor(argv, config, secureStorage) {
-    super(argv, config, secureStorage);
+    super(argv, config, secureStorage, { strict: false });
 
     this.exit = process.exit;
     process.exit = exitCode => {
@@ -18,6 +18,8 @@ class FlexPluginsDeploy extends FlexPluginScripts {
   }
 
   async run() {
+    await super.run();
+
     process.env.SKIP_CREDENTIALS_SAVING = 'true';
     process.env.TWILIO_ACCOUNT_SID = this.twilioClient.username;
     process.env.TWILIO_AUTH_TOKEN = this.twilioClient.password;
@@ -30,5 +32,7 @@ class FlexPluginsDeploy extends FlexPluginScripts {
     return this.run();
   }
 }
+
+FlexPluginsDeploy.description = 'Builds and deploys your Flex plugin to Twilio Assets';
 
 module.exports = FlexPluginsDeploy;

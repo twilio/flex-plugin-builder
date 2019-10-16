@@ -13,4 +13,6 @@ class FlexPluginsBuild extends FlexPluginScripts {
   }
 }
 
+FlexPluginsBuild.description = 'Builds your Flex plugin and creates a JavaScript and sourcemap bundle';
+
 module.exports = FlexPluginsBuild;

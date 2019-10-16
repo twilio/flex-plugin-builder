@@ -70,12 +70,10 @@ class FlexPluginsCreate extends TwilioClientCommand {
 }
 
 FlexPluginsCreate.description = CreateFlexPlugin.description;
-
 FlexPluginsCreate.flags = Object.assign(
   FlexPluginsCreate.parseYargs(CreateFlexPlugin.flags),
   TwilioClientCommand.flags
 );
-
 FlexPluginsCreate.args = [{
   name: 'name',
   required: true,

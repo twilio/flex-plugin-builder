@@ -50,6 +50,8 @@ USAGE
 
 ## `twilio flex:plugins:build`
 
+Builds your Flex plugin and creates a JavaScript and sourcemap bundle
+
 ```
 USAGE
   $ twilio flex:plugins:build
@@ -98,6 +100,8 @@ _See code: [src/commands/flex/plugins/create.ts](https://github.com/twilio/plugi
 
 ## `twilio flex:plugins:deploy`
 
+Builds and deploys your Flex plugin to Twilio Assets
+
 ```
 USAGE
   $ twilio flex:plugins:deploy
@@ -112,6 +116,8 @@ _See code: [src/commands/flex/plugins/deploy.ts](https://github.com/twilio/plugi
 
 ## `twilio flex:plugins:remove`
 
+Removes your Flex plugin
+
 ```
 USAGE
   $ twilio flex:plugins:remove
@@ -125,6 +131,8 @@ OPTIONS
 _See code: [src/commands/flex/plugins/remove.ts](https://github.com/twilio/plugin-debugger/blob/v0.1.0/src/commands/flex/plugins/remove.ts)_
 
 ## `twilio flex:plugins:start`
+
+Starts a dev-server to build your Flex plugin locally
 
 ```
 USAGE

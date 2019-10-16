@@ -13,4 +13,6 @@ class FlexPluginsStart extends FlexPluginScripts {
   }
 }
 
+FlexPluginsStart.description = 'Starts a dev-server to build your Flex plugin locally';
+
 module.exports = FlexPluginsStart;
