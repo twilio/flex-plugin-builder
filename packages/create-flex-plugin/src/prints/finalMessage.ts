@@ -34,11 +34,19 @@ export default (config: FlexPluginArguments) => {
     `$ ${buildCommand}`,
   );
 
+  const deployCommand = config.yarn ? 'yarn deploy' : 'npm run deploy';
+  const deployMessage = multilineString(
+    `${headline('Deploy Command:')}`,
+    `$ cd ${config.name}/`,
+    `$ ${deployCommand}`,
+  );
+
   let message = multilineString(
     `Your Twilio Flex Plugin project has been successfully created!`,
     `${config.install ? '' : `\n\n ${setupMessage}`}\n`,
     `${devMessage}\n`,
     `${buildMessage}\n`,
+    `${deployMessage}\n`,
     'For more info check the README.md file or go to:',
     '➡ https://www.twilio.com/docs/flex',
   );

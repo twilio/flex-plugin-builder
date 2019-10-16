@@ -16,6 +16,10 @@ $ yarn start
 $ cd undefined/
 $ yarn build
 
+[1m[32mDeploy Command:[39m[22m
+$ cd undefined/
+$ yarn deploy
+
 For more info check the README.md file or go to:
 ➡ https://www.twilio.com/docs/flex"
 `;
@@ -31,6 +35,10 @@ $ npm start
 [1m[32mBuild Command:[39m[22m
 $ cd undefined/
 $ npm run build
+
+[1m[32mDeploy Command:[39m[22m
+$ cd undefined/
+$ npm run deploy
 
 For more info check the README.md file or go to:
 ➡ https://www.twilio.com/docs/flex"
@@ -51,6 +59,10 @@ $ npm start
 [1m[32mBuild Command:[39m[22m
 $ cd undefined/
 $ npm run build
+
+[1m[32mDeploy Command:[39m[22m
+$ cd undefined/
+$ npm run deploy
 
 For more info check the README.md file or go to:
 ➡ https://www.twilio.com/docs/flex"
