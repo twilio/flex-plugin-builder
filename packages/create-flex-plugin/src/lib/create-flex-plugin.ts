@@ -117,11 +117,15 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
     return true;
   });
 
-  promise.finally(() => {
+  const cleanUp = () => {
     if (dirObject) {
       dirObject.removeCallback();
     }
-  });
+  };
+
+  promise
+    .then(cleanUp)
+    .catch(cleanUp);
 
   return promise;
 };
