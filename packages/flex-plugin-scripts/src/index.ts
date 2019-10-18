@@ -7,7 +7,7 @@ import { readdirSync, existsSync } from 'fs';
 import { render as markedRender } from 'flex-dev-utils/dist/marked';
 import { join, dirname } from 'path';
 
-import run, { isRequiredScript } from './utils/run';
+import run, { exit } from './utils/run';
 
 checkForUpdate();
 
@@ -59,13 +59,8 @@ const spawnScript = async (...argv: string[]) => {
     processArgs.push('--disallow-versioning');
   }
 
-  // Run the script
   const { exitCode } = await spawn('node', processArgs);
-
-  // Exit if not an embedded script
-  if (argv.includes('--process-exit') || !isRequiredScript()) {
-    process.exit(exitCode);
-  }
+  exit(exitCode, argv);
 };
 
 export default spawnScript;
