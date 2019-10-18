@@ -1,5 +1,6 @@
 import index from '../index';
 import { logger } from 'flex-dev-utils';
+import * as run from '../utils/run';
 import { render as markedRender } from 'flex-dev-utils/dist/marked';
 
 jest.mock('flex-dev-utils/dist/spawn');
@@ -91,5 +92,13 @@ describe('index', () => {
     expect(exit).toHaveBeenCalledWith(0);
     expect(spawn).not.toHaveBeenCalled();
     expect(markedRender).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call exit', async () => {
+    spawn.mockResolvedValue({ exitCode: 0 });
+    const runExit = jest.spyOn(run, 'exit').mockReturnValue();
+
+    await index('build');
+    expect(runExit).toHaveBeenCalledTimes(1);
   });
 });
