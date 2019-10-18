@@ -1,18 +1,16 @@
 import { logger } from 'flex-dev-utils';
+import craco from '../utils/craco';
 
-import { runCraco } from '../utils/require';
-import run from '../utils/run';
-
-// The craco test.js script path
-export const cracoScriptPath = '@craco/craco/scripts/test.js';
+import run, { exit } from '../utils/run';
 
 /**
  * Runs Jest tests
  */
-const test = () => {
+const test = async (...args: string[]) => {
   logger.debug('Running tests');
 
-  runCraco(cracoScriptPath);
+  const exitCode = await craco('test', ...args);
+  exit(exitCode, args);
 };
 
 run(test);

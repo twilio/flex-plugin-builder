@@ -1,5 +1,5 @@
 import Module from 'module';
-import { resolve as pathResolve } from 'path';
+import { resolve as pathResolve, join } from 'path';
 
 interface PackageReplacement {
   name: string;
@@ -38,14 +38,17 @@ export const hijack = (name: string, replacement: any) => {
 };
 
 /**
- * Runs craco
- * @param module  the module name
+ * Resolves the path to the given module. Appends the process.cwd node_modules as well
+ *
+ * @param module the module to resolve
  */
 /* istanbul ignore next */
-export const runCraco = (module: string) => require(module);
+export const resolve = (module: string): string => {
+  const paths: string[] = require.main && require.main.paths || [];
+  const nodeModulesPath = join(process.cwd(), 'node_modules');
+  if (!paths.includes(nodeModulesPath)) {
+    paths.push(nodeModulesPath);
+  }
 
-/**
- * Resolves the path to the script's node_modules
- * @param path  the path relative to node_modules
- */
-export const resolve = (path: string) => pathResolve(process.cwd(), 'node_modules', path);
+  return require.resolve(module, { paths });
+};
