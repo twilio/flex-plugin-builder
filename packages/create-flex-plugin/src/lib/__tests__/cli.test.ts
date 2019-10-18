@@ -2,13 +2,12 @@ import cli from '../cli';
 import createFlexPlugin from '../create-flex-plugin';
 
 jest.mock('../create-flex-plugin');
-jest.mock('flex-dev-utils/dist/runner');
 
 describe('cli', () => {
   it('should call createFlexPlugin', () => {
     new cli().parse();
 
-    expect(createFlexPlugin).toHaveBeenCalled();
+    expect(createFlexPlugin).toHaveBeenCalledTimes(1);
   });
 
   it('should have static description', () => {
