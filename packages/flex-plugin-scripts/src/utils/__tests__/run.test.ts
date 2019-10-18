@@ -71,7 +71,7 @@ describe('run', () => {
   });
 
   describe('exit', () => {
-    it('should quit if isRequiredScript is true', () => {
+    it('should quit if isRequiredScript is false', () => {
       const isRequiredScript = jest.spyOn(run, 'isRequiredScript').mockReturnValue(false);
 
       run.exit(123, []);
