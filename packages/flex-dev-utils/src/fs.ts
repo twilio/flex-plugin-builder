@@ -6,7 +6,6 @@ import tmp, { DirResult as TmpDirResult } from 'tmp';
 import copyTempDir from 'copy-template-dir';
 import { promisify } from 'util';
 import rimRaf from 'rimraf';
-import { FlexPluginError } from './errors';
 
 export interface PackageJson {
   name: string;
