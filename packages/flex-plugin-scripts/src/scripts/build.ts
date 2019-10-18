@@ -1,4 +1,5 @@
-import { logger, spawn } from 'flex-dev-utils';
+import { logger } from 'flex-dev-utils';
+import craco from '../utils/craco';
 
 import run, { exit } from '../utils/run';
 
@@ -14,12 +15,7 @@ const build = async (...args: string[]) => {
   //   // to be filled
   // });
 
-  const spawnCmd = [
-    require.resolve('.bin/craco'),
-    'build',
-  ];
-
-  const { exitCode } = await spawn('node', spawnCmd.concat(args));
+  const exitCode = await craco('build', ...args);
   exit(exitCode, args);
 };
 

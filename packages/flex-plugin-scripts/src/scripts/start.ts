@@ -1,5 +1,6 @@
-import { logger, spawn } from 'flex-dev-utils';
+import { logger } from 'flex-dev-utils';
 import { join } from 'path';
+import craco from '../utils/craco';
 
 import run, { exit } from '../utils/run';
 
@@ -12,12 +13,7 @@ const start = async (...args: string[]) => {
   // This will overwrite React App from opening the browser and allows us to control the flow
   process.env.BROWSER = join(__dirname, 'sub', 'browser.js');
 
-  const spawnCmd = [
-    require.resolve('.bin/craco'),
-    'start',
-  ];
-
-  const { exitCode } = await spawn('node', spawnCmd.concat(args));
+  const exitCode = await craco('start', ...args);
   exit(exitCode, args);
 };
 
