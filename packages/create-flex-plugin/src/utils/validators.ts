@@ -1,5 +1,6 @@
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
+import { ValidationError } from 'flex-dev-utils/dist/errors';
 import { prompt } from 'flex-dev-utils/dist/inquirer';
+import { logger } from 'flex-dev-utils';
 import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
 import {
   isValidPluginName,
@@ -46,7 +47,9 @@ const validate = async (config: FlexPluginArguments): Promise<FlexPluginArgument
   config.name = config.name || '';
 
   if (!isValidPluginName(config.name)) {
-    throw new FlexPluginError('Invalid plugin name. Names need to start with plugin-');
+    const coloredName = logger.coloredStrings.name;
+    const msg = `Invalid plugin name ${coloredName(config.name)}. Names need to start with plugin-`;
+    throw new ValidationError(msg);
   }
 
   if (config.accountSid && !isSidOfType(config.accountSid, SidPrefix.AccountSid)) {

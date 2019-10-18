@@ -2,12 +2,16 @@ import { PackageJson, readPackageJson } from '../fs';
 import logger from '../logger';
 
 export default class FlexPluginError extends Error {
-  private readonly pkg: PackageJson;
+  private readonly pkg: PackageJson | null;
 
   constructor(msg?: string) {
     super(msg);
 
-    this.pkg = readPackageJson();
+    try {
+      this.pkg = readPackageJson();
+    } catch (e) {
+      this.pkg = null;
+    }
 
     Object.setPrototypeOf(this, FlexPluginError.prototype);
   }
@@ -18,17 +22,19 @@ export default class FlexPluginError extends Error {
 
   public details = () => {
     const headline = logger.coloredStrings.headline;
-    const deps = this.pkg.dependencies;
-    const names = [
-      'craco-config-flex-plugin',
-      'flex-plugin',
-      'flex-plugin-scripts',
-    ];
+    if (this.pkg) {
+      const deps = this.pkg.dependencies;
+      const names = [
+        'craco-config-flex-plugin',
+        'flex-plugin',
+        'flex-plugin-scripts',
+      ];
 
-    logger.newline();
-    logger.info(`Your plugin ${this.pkg.name} is using the following versions:`);
-    logger.newline();
-    names.forEach((name) => logger.info(`\t ${headline(`"${name}": "${deps[name]}"`)}`));
-    logger.newline();
+      logger.newline();
+      logger.info(`Your plugin ${this.pkg.name} is using the following versions:`);
+      logger.newline();
+      names.forEach((name) => logger.info(`\t ${headline(`"${name}": "${deps[name]}"`)}`));
+      logger.newline();
+    }
   }
 }

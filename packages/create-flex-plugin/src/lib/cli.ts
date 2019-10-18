@@ -1,5 +1,6 @@
 import yargs, { Argv, Options } from 'yargs';
 import { multilineString } from 'flex-dev-utils/dist/strings';
+import { runner } from 'flex-dev-utils';
 
 import createFlexPlugin, { FlexPluginArguments } from './create-flex-plugin';
 
@@ -83,7 +84,8 @@ export default class CLI {
 
   public parse = async (...args: string[]) => {
     const argv: CLIArguments = this.parser.parse(args);
-    await createFlexPlugin(argv as FlexPluginArguments);
+
+    await runner(() => createFlexPlugin(argv as FlexPluginArguments));
   }
 
   private init = () => {
