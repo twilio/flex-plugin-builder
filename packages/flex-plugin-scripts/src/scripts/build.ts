@@ -1,11 +1,15 @@
-import { logger, spawn } from 'flex-dev-utils';
+import { logger } from 'flex-dev-utils';
 
-import run, { exit } from '../utils/run';
+import { runCraco } from '../utils/require';
+import run from '../utils/run';
+
+// The craco build.js script path
+export const cracoScriptPath = '@craco/craco/scripts/build.js';
 
 /**
  * Builds the bundle
  */
-const build = async (...args: string[]) => {
+const build = () => {
   logger.debug('Running build');
 
   // This prints a hosting instruction specific to react applications
@@ -14,13 +18,7 @@ const build = async (...args: string[]) => {
   //   // to be filled
   // });
 
-  const spawnCmd = [
-    require.resolve('.bin/craco'),
-    'build',
-  ];
-
-  const { exitCode } = await spawn('node', spawnCmd.concat(args));
-  exit(exitCode, args);
+  runCraco(cracoScriptPath);
 };
 
 run(build);
