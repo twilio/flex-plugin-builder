@@ -23,7 +23,7 @@ class FlexPluginScripts extends TwilioClientCommand {
       throw new Error(`${this.cwd} directory is not a flex plugin directory`);
     }
 
-    if (opts.strict === false) {
+    if (this.opts.strict === false) {
       this.constructor.strict = false;
     }
   }
