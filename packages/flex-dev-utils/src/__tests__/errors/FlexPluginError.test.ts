@@ -2,7 +2,6 @@ import FlexPluginError from '../../errors/FlexPluginError';
 import * as logger from '../../logger';
 import * as fs from '../../fs';
 
-jest.mock('flex-dev-utils/dist/logger');
 jest.mock('../../logger');
 
 describe('FlexPluginError', () => {
@@ -13,6 +12,7 @@ describe('FlexPluginError', () => {
   it('should create a new instance', () => {
     const err = new FlexPluginError();
 
+    expect(err).toBeInstanceOf(FlexPluginError);
     expect(err instanceof FlexPluginError).toEqual(true);
   });
 
@@ -25,8 +25,7 @@ describe('FlexPluginError', () => {
   });
 
   it('should print details', () => {
-    const readPackageJson = jest
-      .spyOn(fs, 'readPackageJson')
+    jest.spyOn(fs, 'readPackageJson')
       .mockReturnValue({
         name: 'plugin-test',
         version: '1.2.3',
@@ -41,5 +40,15 @@ describe('FlexPluginError', () => {
 
     err.details();
     expect(logger.info).toHaveBeenCalledTimes(4);
+  });
+
+  it('should not print any details if pkg is not found', () => {
+    jest.spyOn(fs, 'readPackageJson')
+      .mockImplementation(() => { throw new Error(); });
+
+    const err = new FlexPluginError();
+
+    err.details();
+    expect(logger.info).not.toHaveBeenCalled();
   });
 });

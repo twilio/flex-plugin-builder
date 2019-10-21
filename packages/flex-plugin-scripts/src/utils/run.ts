@@ -1,31 +1,20 @@
-import { logger } from 'flex-dev-utils';
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-
-type Callback = (...argv: string[]) => void;
+import { runner } from 'flex-dev-utils';
+import { Callback } from 'flex-dev-utils/dist/runner';
 
 /**
  * Runs the callback function if the process is spawned.
  *
  * @param callback
  */
-export default (callback: Callback) => {
+export default async (callback: Callback) => {
   if (isRequiredScript()) {
-    (async () => await callback(...process.argv.splice(2)))()
-      .catch((e) => {
-        if (e instanceof FlexPluginError) {
-          e.print();
-          if (process.env.DEBUG) {
-            e.details();
-          }
-        } else {
-          logger.error(e);
-        }
-
-        return process.exit(1);
-      });
+    await runner(callback, ...process.argv.splice(2));
   }
 };
 
+/**
+ * Returns true if module is required (i.e. not spawned)
+ */
 export const isRequiredScript = () => require.main === module.parent;
 
 /**

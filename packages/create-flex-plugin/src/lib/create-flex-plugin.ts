@@ -1,6 +1,8 @@
+import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { progress } from 'flex-dev-utils/dist/ora';
 import { logger } from 'flex-dev-utils';
 import { copyTemplateDir, tmpDirSync, TmpDirResult } from 'flex-dev-utils/dist/fs';
+import { singleLineString } from 'flex-dev-utils/dist/strings';
 import fs from 'fs';
 import { resolve, join } from 'path';
 
@@ -35,14 +37,15 @@ export const createFlexPlugin = async (config: FlexPluginArguments) => {
 
   // Check folder does not exist
   if (fs.existsSync(config.targetDirectory)) {
-    logger.error(`Path ${config.targetDirectory} already exists. Please remove it and try again.`);
-    return process.exit(1);
+    throw new FlexPluginError(singleLineString(
+      `Path ${logger.coloredStrings.link(config.targetDirectory)} already exists;`,
+      'please remove it and try again.',
+    ));
   }
 
   // Setup the directories
   if (!await _scaffold(config)) {
-    logger.error('Failed to scaffold project');
-    return process.exit(1);
+    throw new FlexPluginError('Failed to scaffold project');
   }
 
   // Install NPM dependencies

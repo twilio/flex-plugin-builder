@@ -7,7 +7,7 @@ describe('cli', () => {
   it('should call createFlexPlugin', () => {
     new cli().parse();
 
-    expect(createFlexPlugin).toHaveBeenCalled();
+    expect(createFlexPlugin).toHaveBeenCalledTimes(1);
   });
 
   it('should have static description', () => {

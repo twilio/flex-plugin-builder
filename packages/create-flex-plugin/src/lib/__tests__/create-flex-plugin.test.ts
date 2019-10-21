@@ -1,3 +1,4 @@
+import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import fs from 'fs';
 import { logger } from 'flex-dev-utils';
 import { rmRfSync } from 'flex-dev-utils/dist/fs';
@@ -12,9 +13,6 @@ describe('create-flex-plugin', () => {
   const accountSid = 'AC00000000000000000000000000000000';
   const pluginName = 'plugin-test';
 
-  // @ts-ignore
-  const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
-
   const clearDir = () => {
     if (fs.existsSync(pluginName)) {
       rmRfSync(pluginName);
@@ -23,6 +21,7 @@ describe('create-flex-plugin', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   afterEach(clearDir);
@@ -57,7 +56,7 @@ describe('create-flex-plugin', () => {
       expect(installDependencies).toHaveBeenCalledWith(config);
     });
 
-    it('should quit if directory already exists', async () => {
+    it('should quit if directory already exists', async (done) => {
       const existsSync = jest.spyOn(fs, 'existsSync').mockReturnValue(true);
       const scaffold = jest.spyOn(createFlexPluginScripts, '_scaffold');
 
@@ -67,14 +66,44 @@ describe('create-flex-plugin', () => {
         targetDirectory: '/tmp',
       } as FlexPluginArguments;
 
-      await createFlexPluginScripts.default(config);
+      try {
+        await createFlexPluginScripts.default(config);
+      } catch (e) {
+        expect(scaffold).not.toHaveBeenCalled();
+        expect(e).toBeInstanceOf(FlexPluginError);
+        expect(e.message).toContain('already exists');
 
-      expect(exit).toHaveBeenCalledTimes(1);
-      expect(exit).toHaveBeenCalledWith(1);
-      expect(scaffold).not.toHaveBeenCalled();
+        existsSync.mockRestore();
+        scaffold.mockRestore();
 
-      existsSync.mockRestore();
-      scaffold.mockRestore();
+        done();
+      }
+    });
+
+    it('should quit if scaffolding fails', async (done) => {
+      const existsSync = jest.spyOn(fs, 'existsSync').mockReturnValue(false);
+      const scaffold = jest.spyOn(createFlexPluginScripts, '_scaffold')
+        .mockResolvedValue(false);
+
+      const config = {
+        name: pluginName,
+        accountSid,
+        targetDirectory: '/tmp',
+      } as FlexPluginArguments;
+
+      try {
+        await createFlexPluginScripts.default(config);
+      } catch (e) {
+        expect(scaffold).toHaveBeenCalledTimes(1);
+        expect(e).toBeInstanceOf(FlexPluginError);
+        expect(e.message).toContain('Failed');
+        expect(e.message).toContain('scaffold project');
+
+        existsSync.mockRestore();
+        scaffold.mockRestore();
+
+        done();
+      }
     });
 
     it('should warn if installation fails', async () => {
@@ -88,6 +117,7 @@ describe('create-flex-plugin', () => {
         accountSid,
         install: true,
       } as FlexPluginArguments;
+
       await createFlexPluginScripts.default(config);
 
       expect(logger.error).toHaveBeenCalled();
