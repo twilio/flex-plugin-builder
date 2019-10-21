@@ -48,7 +48,7 @@ const validate = async (config: FlexPluginArguments): Promise<FlexPluginArgument
 
   if (!isValidPluginName(config.name)) {
     const coloredName = logger.coloredStrings.name;
-    const msg = `Invalid plugin name ${coloredName(config.name)}. Names need to start with plugin-`;
+    const msg = `Invalid plugin name ${coloredName(config.name)}; plugin name must start with plugin-`;
     throw new ValidationError(msg);
   }
 
