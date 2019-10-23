@@ -14,16 +14,15 @@
   "license": "MIT",
   "author": "Twilio @twilio",
   "files": [
-    "npm-shrinkwrap.json",
-    "oclif.manifest.json",
-    "dist",
-    "package-lock.json",
-    "src"
+    "/oclif.manifest.json",
+    "/src",
+    "/package-lock.json",
+    "LICENSE",
+    "README.md"
   ],
   "scripts": {
-    "docs": "oclif-dev manifest && oclif-dev readme",
-    "postdocs": "rm -f oclif.manifest.json",
-    "test": "nyc --check-coverage --lines 90 --reporter=html --reporter=text mocha --forbid-only \"test/**/*.test.js\"",
+    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint --ignore-path .gitignore . && npm audit",
     "version": "oclif-dev readme && git add README.md"
   },
