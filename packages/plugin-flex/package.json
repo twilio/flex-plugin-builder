@@ -14,10 +14,11 @@
   "license": "MIT",
   "author": "Twilio @twilio",
   "files": [
-    "/npm-shrinkwrap.json",
-    "/oclif.manifest.json",
-    "/dist",
-    "package-lock.json"
+    "npm-shrinkwrap.json",
+    "oclif.manifest.json",
+    "dist",
+    "package-lock.json",
+    "src"
   ],
   "scripts": {
     "docs": "oclif-dev manifest && oclif-dev readme",
