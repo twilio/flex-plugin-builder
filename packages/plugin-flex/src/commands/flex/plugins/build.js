@@ -1,4 +1,5 @@
 const FlexPluginScripts = require('../../../sub-commands/flex-plugin-scripts');
+const createDescription = require('../../../utils/general').createDescription;
 
 /**
  * Builds the flex-plugin
@@ -13,6 +14,6 @@ class FlexPluginsBuild extends FlexPluginScripts {
   }
 }
 
-FlexPluginsBuild.description = 'Builds your Flex plugin and creates a JavaScript and sourcemap bundle';
+FlexPluginsBuild.description = createDescription('Builds your Flex plugin and creates a JavaScript and sourcemap bundle', true);
 
 module.exports = FlexPluginsBuild;

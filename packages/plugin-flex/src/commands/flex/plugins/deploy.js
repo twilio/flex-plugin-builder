@@ -1,4 +1,5 @@
 const FlexPluginScripts = require('../../../sub-commands/flex-plugin-scripts');
+const createDescription = require('../../../utils/general').createDescription;
 
 /**
  * Builds and then deploys the Flex plugin
@@ -33,6 +34,6 @@ class FlexPluginsDeploy extends FlexPluginScripts {
   }
 }
 
-FlexPluginsDeploy.description = 'Builds and deploys your Flex plugin to Twilio Assets';
+FlexPluginsDeploy.description = createDescription('Builds and deploys your Flex plugin to Twilio Assets', true);
 
 module.exports = FlexPluginsDeploy;

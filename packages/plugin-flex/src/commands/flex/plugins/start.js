@@ -1,4 +1,5 @@
 const FlexPluginScripts = require('../../../sub-commands/flex-plugin-scripts');
+const createDescription = require('../../../utils/general').createDescription;
 
 /**
  * Starts the dev-server for building and iterating on a flex-plugin
@@ -13,6 +14,6 @@ class FlexPluginsStart extends FlexPluginScripts {
   }
 }
 
-FlexPluginsStart.description = 'Starts a dev-server to build your Flex plugin locally';
+FlexPluginsStart.description = createDescription('Starts a dev-server to build your Flex plugin locally', true);
 
 module.exports = FlexPluginsStart;

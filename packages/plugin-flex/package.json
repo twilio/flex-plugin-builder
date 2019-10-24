@@ -9,7 +9,7 @@
   "bugs": "https://github.com/twilio/twilio-cli/issues",
   "repository": {
     "type": "git",
-    "url": "https://github.com/twilio/plugin-debugger.git"
+    "url": "https://github.com/twilio/plugin-flex.git"
   },
   "license": "MIT",
   "author": "Twilio @twilio",
@@ -41,8 +41,7 @@
     "eslint": "^6.5.1",
     "eslint-config-oclif": "^3.1.0",
     "globby": "^10.0.1",
-    "keytar": "^4.13.0",
-    "typescript": "^3.6.4"
+    "keytar": "^4.13.0"
   },
   "engines": {
     "node": ">=8.0.0"

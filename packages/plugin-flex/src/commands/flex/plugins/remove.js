@@ -1,4 +1,5 @@
 const FlexPluginScripts = require('../../../sub-commands/flex-plugin-scripts');
+const createDescription = require('../../../utils/general').createDescription;
 
 /**
  * Deletes the flex-plugin
@@ -13,6 +14,6 @@ class FlexPluginsRemove extends FlexPluginScripts {
   }
 }
 
-FlexPluginsRemove.description = 'Removes your Flex plugin';
+FlexPluginsRemove.description = createDescription('Removes your Flex plugin', true);
 
 module.exports = FlexPluginsRemove;

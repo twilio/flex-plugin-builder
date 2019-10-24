@@ -2,6 +2,8 @@ const { flags } = require('@oclif/command');
 const { TwilioClientCommand } = require('@twilio/cli-core').baseCommands;
 const CreateFlexPlugin = require('create-flex-plugin').default;
 
+const createDescription = require('../../../utils/general').createDescription;
+
 /**
  * Creates a new Flex plugin
  */
@@ -69,7 +71,7 @@ class FlexPluginsCreate extends TwilioClientCommand {
   }
 }
 
-FlexPluginsCreate.description = CreateFlexPlugin.description;
+FlexPluginsCreate.description = createDescription(CreateFlexPlugin.description);
 FlexPluginsCreate.flags = Object.assign(
   FlexPluginsCreate.parseYargs(CreateFlexPlugin.flags),
   TwilioClientCommand.flags
