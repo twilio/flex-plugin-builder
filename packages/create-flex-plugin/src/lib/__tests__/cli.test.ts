@@ -1,13 +1,23 @@
+import * as run from 'flex-plugin-scripts/dist/utils/run';
 import cli from '../cli';
 import createFlexPlugin from '../create-flex-plugin';
 
 jest.mock('../create-flex-plugin');
 
 describe('cli', () => {
-  it('should call createFlexPlugin', () => {
-    new cli().parse();
+  const exit = jest.spyOn(process, 'exit').mockReturnThis();
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+    jest.resetModules();
+  });
+
+  it('should call createFlexPlugin', async () => {
+    await new cli().parse();
 
     expect(createFlexPlugin).toHaveBeenCalledTimes(1);
+    expect(exit).toHaveBeenCalledTimes(1);
+    expect(exit).toHaveBeenCalledWith(0);
   });
 
   it('should have static description', () => {

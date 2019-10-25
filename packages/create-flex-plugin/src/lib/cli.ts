@@ -85,7 +85,8 @@ export default class CLI {
   public parse = async (...args: string[]) => {
     const argv: CLIArguments = this.parser.parse(args);
 
-    await runner(() => createFlexPlugin(argv as FlexPluginArguments));
+    await runner(async () => await createFlexPlugin(argv as FlexPluginArguments));
+    return process.exit(0);
   }
 
   private init = () => {
