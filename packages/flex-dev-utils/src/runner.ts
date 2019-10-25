@@ -9,17 +9,18 @@ export type Callback = (...argv: string[]) => void;
  * @param args
  */
 export default async (callback: Callback, ...args: string[]) => {
-  (async () => await callback(...args))()
-    .catch((e) => {
-      if (e instanceof FlexPluginError) {
-        e.print();
-        if (process.env.DEBUG) {
-          e.details();
-        }
-      } else {
-        logger.error(e);
+  try {
+    return await callback(...args);
+  } catch (e) {
+    if (e instanceof FlexPluginError) {
+      e.print();
+      if (process.env.DEBUG) {
+        e.details();
       }
+    } else {
+      logger.error(e);
+    }
 
-      return process.exit(1);
-    });
+    return process.exit(1);
+  }
 };
