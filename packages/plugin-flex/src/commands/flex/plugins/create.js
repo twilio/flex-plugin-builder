@@ -24,7 +24,7 @@ class FlexPluginsCreate extends TwilioClientCommand {
           char: arg.alias,
           description: arg.describe,
           default: arg.default,
-          required: false
+          required: false,
         });
 
         return result;
@@ -58,9 +58,9 @@ class FlexPluginsCreate extends TwilioClientCommand {
    * @returns {Promise<void>}
    */
   async run() {
-    const { flags, args } = this.parse(FlexPluginsCreate);
+    const { flags: instanceFlags, args } = this.parse(FlexPluginsCreate);
     const createFlexPlugin = new CreateFlexPlugin();
-    const scriptArgs = FlexPluginsCreate.toArgv(flags);
+    const scriptArgs = FlexPluginsCreate.toArgv(instanceFlags);
     scriptArgs.unshift(args.name);
 
     await createFlexPlugin.parse(...scriptArgs);
@@ -74,12 +74,14 @@ class FlexPluginsCreate extends TwilioClientCommand {
 FlexPluginsCreate.description = createDescription(CreateFlexPlugin.description);
 FlexPluginsCreate.flags = Object.assign(
   FlexPluginsCreate.parseYargs(CreateFlexPlugin.flags),
-  TwilioClientCommand.flags
+  TwilioClientCommand.flags,
 );
-FlexPluginsCreate.args = [{
-  name: 'name',
-  required: true,
-  description: CreateFlexPlugin.description
-}];
+FlexPluginsCreate.args = [
+  {
+    name: 'name',
+    required: true,
+    description: CreateFlexPlugin.description,
+  },
+];
 
 module.exports = FlexPluginsCreate;

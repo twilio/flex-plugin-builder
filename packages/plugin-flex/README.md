@@ -62,7 +62,7 @@ OPTIONS
   -p, --profile=profile            Shorthand identifier for your profile.
 ```
 
-_See code: [src/commands/flex/plugins/build.js](https://github.com/twilio-labs/plugin-flex/blob/v0.1.4/src/commands/flex/plugins/build.js)_
+_See code: [src/commands/flex/plugins/build.js](https://github.com/twilio-labs/plugin-flex/blob/v0.1.5/src/commands/flex/plugins/build.js)_
 
 ## `twilio flex:plugins:create NAME`
 
@@ -96,7 +96,7 @@ DESCRIPTION
   name	Name of your plugin. Needs to start with plugin-.
 ```
 
-_See code: [src/commands/flex/plugins/create.js](https://github.com/twilio-labs/plugin-flex/blob/v0.1.4/src/commands/flex/plugins/create.js)_
+_See code: [src/commands/flex/plugins/create.js](https://github.com/twilio-labs/plugin-flex/blob/v0.1.5/src/commands/flex/plugins/create.js)_
 
 ## `twilio flex:plugins:deploy`
 
@@ -112,7 +112,7 @@ OPTIONS
   -p, --profile=profile            Shorthand identifier for your profile.
 ```
 
-_See code: [src/commands/flex/plugins/deploy.js](https://github.com/twilio-labs/plugin-flex/blob/v0.1.4/src/commands/flex/plugins/deploy.js)_
+_See code: [src/commands/flex/plugins/deploy.js](https://github.com/twilio-labs/plugin-flex/blob/v0.1.5/src/commands/flex/plugins/deploy.js)_
 
 ## `twilio flex:plugins:remove`
 
@@ -128,7 +128,7 @@ OPTIONS
   -p, --profile=profile            Shorthand identifier for your profile.
 ```
 
-_See code: [src/commands/flex/plugins/remove.js](https://github.com/twilio-labs/plugin-flex/blob/v0.1.4/src/commands/flex/plugins/remove.js)_
+_See code: [src/commands/flex/plugins/remove.js](https://github.com/twilio-labs/plugin-flex/blob/v0.1.5/src/commands/flex/plugins/remove.js)_
 
 ## `twilio flex:plugins:start`
 
@@ -144,5 +144,5 @@ OPTIONS
   -p, --profile=profile            Shorthand identifier for your profile.
 ```
 
-_See code: [src/commands/flex/plugins/start.js](https://github.com/twilio-labs/plugin-flex/blob/v0.1.4/src/commands/flex/plugins/start.js)_
+_See code: [src/commands/flex/plugins/start.js](https://github.com/twilio-labs/plugin-flex/blob/v0.1.5/src/commands/flex/plugins/start.js)_
 <!-- commandsstop -->
