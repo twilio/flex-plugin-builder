@@ -17,7 +17,7 @@ export default (url: string, isPublic: boolean, account: Account) => {
   logger.success(singleLineString(
     '🚀  Your plugin has been successfully deployed to your Flex project',
     `${nameLogger(account.friendly_name)} (${nameLogger(account.sid)}).`,
-    `It is hosted (${availability}) as a Twilio Assets on ${logger.coloredStrings.link(url)}.`,
+    `It is hosted (${availability}) as a Twilio Asset on ${logger.coloredStrings.link(url)}.`,
   ));
   logger.newline();
 };
