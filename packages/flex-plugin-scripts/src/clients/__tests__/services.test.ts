@@ -20,6 +20,8 @@ describe('ServiceClient', () => {
 
   beforeEach(() => {
     process.env = { ...OLD_ENV };
+
+    jest.clearAllMocks();
   });
 
   describe('getBaseUrl', () => {
@@ -38,7 +40,7 @@ describe('ServiceClient', () => {
 
       expect(baseUrl).toEqual('https://another.twilio.com/v1');
       expect(getBaseUrl).toHaveBeenCalledTimes(1);
-      expect(getBaseUrl).toHaveBeenCalledWith('serverless', 'v1');
+      expect(getBaseUrl).toHaveBeenCalledWith('another', 'v1');
     });
   });
 
