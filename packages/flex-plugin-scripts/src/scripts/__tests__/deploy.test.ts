@@ -1,8 +1,10 @@
 import { logger } from 'flex-dev-utils';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 
+import * as prints from '../../prints';
 import * as deployScript from '../deploy';
 
+jest.mock('../../clients/accounts');
 jest.mock('../../clients/assets');
 jest.mock('../../clients/services');
 jest.mock('../../clients/configurations');
@@ -22,6 +24,7 @@ jest.mock('../../utils/paths', () => ({
 
 // tslint:disable
 const Runtime = require('../../utils/runtime').default;
+const AccountClient = require('../../clients/accounts').default;
 const AssetClient = require('../../clients/assets').default;
 const BuildClient = require('../../clients/builds').default;
 const DeploymentClient = require('../../clients/deployments').default;
@@ -37,10 +40,15 @@ describe('deploy', () => {
   const deploymentSid = 'ZD00000000000000000000000000000000';
   const versionJSSid = 'ZV00000000000000000000000000000000';
   const versionMapSid = 'ZV00000000000000000000000000000001';
+  const accountObject = {
+    account_sid: accountSid,
+    friendly_name: 'test-account',
+  };
 
   (logger.colors as any).blue = jest.fn();
   const config = {account_sid: accountSid, serverless_service_sids: [serviceSid]};
 
+  const getAccount = jest.fn().mockResolvedValue(accountObject);
   const upload = jest.fn()
     .mockImplementation((_: any, path: string) => {
       if (path.indexOf('map') === -1) {
@@ -63,6 +71,7 @@ describe('deploy', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
+    AccountClient.mockImplementation(() => ({ get: getAccount }));
     AssetClient.mockImplementation(() => ({ upload }));
     BuildClient.mockImplementation(() => ({ create: createBuild }));
     DeploymentClient.mockImplementation(() => ({ create: createDeployment }));
@@ -241,6 +250,26 @@ describe('deploy', () => {
       const verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(false);
 
       await deployScript._doDeploy('1.0.0', options);
+
+      checkFilesExist.mockRestore();
+      verifyPath.mockRestore();
+    });
+
+    it('should deploy and write a success message', async () => {
+      const options = {
+        isPublic: true,
+        overwrite: true,
+        disallowVersioning: false,
+      };
+      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
+      const verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(true);
+      const deploySuccessful = jest.spyOn(prints, 'deploySuccessful');
+
+      await deployScript._doDeploy('1.0.0', options);
+
+      expect(AssetClient).toHaveBeenCalledTimes(1);
+      expect(getAccount).toHaveBeenCalledTimes(1);
+      expect(deploySuccessful).toHaveBeenCalledTimes(1);
 
       checkFilesExist.mockRestore();
       verifyPath.mockRestore();

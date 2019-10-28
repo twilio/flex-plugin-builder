@@ -14,18 +14,9 @@ export default class ServiceClient extends BaseClient {
    * Returns the base URL
    */
   public static getBaseUrl = (baseUrl = 'serverless'): string => {
-    const realms = ServiceClient.realms;
-    const realm = process.env.TWILIO_SERVERLESS_REALM;
-    if (realm && !realms.includes(realm)) {
-      throw new Error(`Invalid realm ${realm} was provided. Realm must be one of ${realms.join(',')}`);
-    }
-
-    const subDomain = realm && realms.includes(realm) ? `.${realm.toLowerCase()}` : '';
-
-    return `https://${baseUrl}${subDomain}.twilio.com/${ServiceClient.version}`;
+    return BaseClient.getBaseUrl(baseUrl, ServiceClient.version);
   }
 
-  private static realms = ['dev', 'stage'];
   private static version = 'v1';
 
   constructor(auth: AuthConfig) {

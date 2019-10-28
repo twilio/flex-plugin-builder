@@ -1,5 +1,7 @@
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import BaseClient from '../baseClient';
 import ConfigurationClient from '../configurations';
+import ServiceClient from '../services';
 
 describe('ConfigurationClient', () => {
   const serviceSid = 'ZS00000000000000000000000000000000';
@@ -19,28 +21,12 @@ describe('ConfigurationClient', () => {
 
   describe('getBaseUrl', () => {
     it('should get prod baseUrl', () => {
-      // @ts-ignore
+      const getBaseUrl = jest.spyOn(BaseClient, 'getBaseUrl');
       const baseUrl = ConfigurationClient.getBaseUrl();
 
       expect(baseUrl).toEqual('https://flex-api.twilio.com/v1');
-    });
-
-    it('should get dev baseUrl', () => {
-      process.env.TWILIO_SERVERLESS_REALM = 'dev';
-      // @ts-ignore
-      const baseUrl = ConfigurationClient.getBaseUrl();
-
-      expect(baseUrl).toEqual('https://flex-api.dev.twilio.com/v1');
-    });
-
-    it('should throw error if invalid realm is provided', (done) => {
-      try {
-        process.env.TWILIO_SERVERLESS_REALM = 'invalid';
-        // @ts-ignore
-        ConfigurationClient.getBaseUrl();
-      } catch (e) {
-        done();
-      }
+      expect(getBaseUrl).toHaveBeenCalledTimes(1);
+      expect(getBaseUrl).toHaveBeenCalledWith('flex-api', 'v1');
     });
   });
 

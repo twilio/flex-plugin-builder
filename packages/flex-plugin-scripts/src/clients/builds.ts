@@ -47,7 +47,7 @@ export default class BuildClient extends BaseClient {
           clearInterval(intervalId);
           clearTimeout(timeoutId);
 
-          reject('New Twilio Runtime build has failed.');
+          reject('Twilio Runtime build has failed.');
         }
 
         if (build.status === BuildStatus.Completed) {

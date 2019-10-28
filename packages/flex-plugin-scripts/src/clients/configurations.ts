@@ -6,23 +6,14 @@ import { Configuration } from './configuration-types';
 export default class ConfigurationClient extends BaseClient {
   public static BaseUrl = 'Configuration';
 
-  private static realms = ['dev', 'stage'];
-  private static version = 'v1';
-
   /**
    * Gets the base URL
    */
-  private static getBaseUrl = (): string => {
-    const realms = ConfigurationClient.realms;
-    const realm = process.env.TWILIO_SERVERLESS_REALM;
-    if (realm && !realms.includes(realm)) {
-      throw new Error(`Invalid realm ${realm} was provided. Realm must be one of ${realms.join(',')}`);
-    }
-
-    const subDomain = realm && realms.includes(realm) ? `.${realm.toLowerCase()}` : '';
-
-    return `https://flex-api${subDomain}.twilio.com/${ConfigurationClient.version}`;
+  public static getBaseUrl = (): string => {
+    return BaseClient.getBaseUrl('flex-api', ConfigurationClient.version);
   }
+
+  private static version = 'v1';
 
   constructor(auth: AuthConfig) {
     super(auth, ConfigurationClient.getBaseUrl(), { contentType: 'application/json' });

@@ -4,6 +4,8 @@ import { checkFilesExist, updatePackageVersion, readPackageJson } from 'flex-dev
 import { getCredential } from 'flex-dev-utils/dist/credentials';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import semver, { ReleaseType } from 'semver';
+import AccountsClient from '../clients/accounts';
+import { deploySuccessful } from '../prints';
 
 import run from '../utils/run';
 import { BuildData } from '../clients/builds';
@@ -71,6 +73,7 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
   const sourceMapUri = `${pluginBaseUrl}/bundle.js.map`;
 
   const credentials = await getCredential();
+
   const runtime = await getRuntime(credentials);
   const pluginUrl = `https://${runtime.environment.domain_name}${bundleUri}`;
 
@@ -140,10 +143,9 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
     return deployment;
   });
 
-  const availability = options.isPublic ? 'publicly' : 'privately';
-  logger.newline();
-  logger.success(`🚀  Your plugin is now (${availability}) on ${logger.colors.blue(pluginUrl)}`);
-  logger.newline();
+  const accountClient = new AccountsClient(credentials);
+  const account = await accountClient.get(runtime.service.account_sid);
+  deploySuccessful(pluginUrl, options.isPublic, account);
 };
 
 const deploy = async (...argv: string[]) => {

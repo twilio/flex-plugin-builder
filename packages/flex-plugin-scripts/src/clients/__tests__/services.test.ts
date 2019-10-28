@@ -1,4 +1,5 @@
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import BaseClient from '../baseClient';
 import ServiceClient from '../services';
 
 describe('ServiceClient', () => {
@@ -19,35 +20,27 @@ describe('ServiceClient', () => {
 
   beforeEach(() => {
     process.env = { ...OLD_ENV };
+
+    jest.clearAllMocks();
   });
 
   describe('getBaseUrl', () => {
     it('should get prod baseUrl', () => {
+      const getBaseUrl = jest.spyOn(BaseClient, 'getBaseUrl');
       const baseUrl = ServiceClient.getBaseUrl();
 
       expect(baseUrl).toEqual('https://serverless.twilio.com/v1');
+      expect(getBaseUrl).toHaveBeenCalledTimes(1);
+      expect(getBaseUrl).toHaveBeenCalledWith('serverless', 'v1');
     });
 
     it('should get prod baseUrl with custom baseUrl', () => {
+      const getBaseUrl = jest.spyOn(BaseClient, 'getBaseUrl');
       const baseUrl = ServiceClient.getBaseUrl('another');
 
       expect(baseUrl).toEqual('https://another.twilio.com/v1');
-    });
-
-    it('should get dev baseUrl', () => {
-      process.env.TWILIO_SERVERLESS_REALM = 'dev';
-      const baseUrl = ServiceClient.getBaseUrl();
-
-      expect(baseUrl).toEqual('https://serverless.dev.twilio.com/v1');
-    });
-
-    it('should throw error if invalid realm is provided', (done) => {
-      try {
-        process.env.TWILIO_SERVERLESS_REALM = 'invalid';
-        ServiceClient.getBaseUrl();
-      } catch (e) {
-        done();
-      }
+      expect(getBaseUrl).toHaveBeenCalledTimes(1);
+      expect(getBaseUrl).toHaveBeenCalledWith('another', 'v1');
     });
   });
 
