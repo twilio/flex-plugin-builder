@@ -36,4 +36,28 @@ describe('BaseClient', () => {
       expect(client.getConfig().contentType).toEqual('application/json');
     });
   });
+
+  describe('getBaseUrl', () => {
+    it('should get prod baseUrl', () => {
+      const baseUrl = BaseClient.getBaseUrl('foo', 'v1');
+
+      expect(baseUrl).toEqual('https://foo.twilio.com/v1');
+    });
+
+    it('should get dev baseUrl', () => {
+      process.env.TWILIO_SERVERLESS_REALM = 'dev';
+      const baseUrl = BaseClient.getBaseUrl('bar', 'v2');
+
+      expect(baseUrl).toEqual('https://bar.dev.twilio.com/v2');
+    });
+
+    it('should throw error if invalid realm is provided', (done) => {
+      try {
+        process.env.TWILIO_SERVERLESS_REALM = 'invalid';
+        BaseClient.getBaseUrl('foo', 'v1');
+      } catch (e) {
+        done();
+      }
+    });
+  });
 });
