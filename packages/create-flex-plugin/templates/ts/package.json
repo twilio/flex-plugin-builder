@@ -10,6 +10,7 @@
     "predeploy": "npm run build",
     "deploy": "flex-plugin deploy",
     "eject": "flex-plugin eject",
+    "info": "flex-plugin info",
     "postinstall": "npm run bootstrap",
     "list": "flex-plugin list",
     "remove": "flex-plugin remove",

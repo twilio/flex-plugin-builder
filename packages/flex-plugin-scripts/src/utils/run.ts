@@ -23,7 +23,7 @@ export const isRequiredScript = () => require.main === module.parent;
  * @param exitCode  the exitCode
  * @param args      the process argument
  */
-export const exit = (exitCode: number, args: string[]) => {
+export const exit = (exitCode: number, args: string[] = []) => {
   // Exit if not an embedded script
   if (args.includes('--process-exit') || !isRequiredScript()) {
     process.exit(exitCode);
