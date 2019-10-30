@@ -1,6 +1,6 @@
 import { logger } from 'flex-dev-utils';
 
-import { PackageDetail } from '../scripts/version';
+import { PackageDetail } from '../scripts/info';
 import instructionToReinstall from './instructionToReinstall';
 
 export default (foundPackages: PackageDetail[], notFoundPackages: PackageDetail[]) => {

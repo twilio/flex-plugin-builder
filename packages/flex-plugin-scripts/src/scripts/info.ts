@@ -3,8 +3,9 @@ import { join } from 'path';
 import { packagesVersion } from '../prints';
 
 import { resolve } from '../utils/require';
-import run, { exit } from '../utils/run';
+import run from '../utils/run';
 
+/* istanbul ignore next */
 const LIST_OF_PACKAGES: string[] = [
   '@twilio/flex-ui',
   'flex-plugin-scripts',
@@ -32,7 +33,8 @@ export interface PackageDetail {
  * @param packages
  * @private
  */
-const _getPackageDetails = (packages: string[]): PackageDetail[] => {
+/* istanbul ignore next */
+export const _getPackageDetails = (packages: string[]): PackageDetail[] => {
   return packages
     .map((name) => {
       const detail: PackageDetail = {
@@ -58,17 +60,16 @@ const _getPackageDetails = (packages: string[]): PackageDetail[] => {
 /**
  * Prints the list of versions of important packages
  */
-const version = async () => {
-  logger.debug('Printing versions');
+const info = async () => {
+  logger.debug('Displaying information about the plugin');
 
   const details = _getPackageDetails(LIST_OF_PACKAGES);
   const found = details.filter((d) => d.found);
   const notFound = details.filter((d) => !d.found);
 
   packagesVersion(found, notFound);
-  exit(0);
 };
 
-run(version);
+run(info);
 
-export default version;
+export default info;
