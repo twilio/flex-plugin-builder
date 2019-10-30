@@ -101,6 +101,9 @@ Usage:
 
 <!-- docs-generator:end - Do not remove or modify this section -->
 
+### Info
+<!-- docs-generator:include('./docs/info.md') -->
+
 ## Contributing
 
 Make sure to follow the instructions in the [main repository](https://github.com/twilio/flex-plugin-builder#contributing) to set up the project.
