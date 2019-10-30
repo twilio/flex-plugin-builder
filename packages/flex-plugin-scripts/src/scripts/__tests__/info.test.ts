@@ -31,15 +31,15 @@ describe('info', () => {
         .spyOn(infoScript, '_getPackageDetails')
         .mockReturnValue([foundPackage, notFoundPackage]);
 
-      const packagesVersion = jest
-        .spyOn(prints, 'packagesVersion')
+      const packagesVersions = jest
+        .spyOn(prints, 'packagesVersions')
         .mockReturnThis();
 
       await infoScript.default();
 
       expect(_getPackageDetails).toHaveBeenCalledTimes(1);
-      expect(packagesVersion).toHaveBeenCalledTimes(1);
-      expect(packagesVersion).toHaveBeenCalledWith([foundPackage], [notFoundPackage]);
+      expect(packagesVersions).toHaveBeenCalledTimes(1);
+      expect(packagesVersions).toHaveBeenCalledWith([foundPackage], [notFoundPackage]);
     });
   });
 });
