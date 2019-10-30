@@ -1,6 +1,6 @@
 import { logger } from 'flex-dev-utils';
 import { join } from 'path';
-import { packagesVersion } from '../prints';
+import { packagesVersions } from '../prints';
 
 import { resolve } from '../utils/require';
 import run from '../utils/run';
@@ -67,7 +67,7 @@ const info = async () => {
   const found = details.filter((d) => d.found);
   const notFound = details.filter((d) => !d.found);
 
-  packagesVersion(found, notFound);
+  packagesVersions(found, notFound);
 };
 
 run(info);

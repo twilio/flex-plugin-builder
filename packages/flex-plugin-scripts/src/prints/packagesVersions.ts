@@ -15,7 +15,7 @@ export default (foundPackages: PackageDetail[], notFoundPackages: PackageDetail[
 
   if (notFoundPackages.length) {
     logger.newline();
-    logger.error('However some required packages were not found:');
+    logger.error('However, some required packages were not found:');
     logger.newline();
     notFoundPackages
       .forEach((detail) => {

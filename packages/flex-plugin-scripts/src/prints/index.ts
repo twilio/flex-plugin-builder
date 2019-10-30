@@ -6,4 +6,4 @@ export { default as publicDirCopyFailed } from './publicDirCopyFailed';
 export { default as versionMismatch } from './versionMismatch';
 export { default as expectedDependencyNotFound } from './expectedDependencyNotFound';
 export { default as deploySuccessful } from './deploySuccessful';
-export { default as packagesVersion } from './packagesVersion';
+export { default as packagesVersions } from './packagesVersions';
