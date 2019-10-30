@@ -103,6 +103,15 @@ Usage:
 
 ### Info
 <!-- docs-generator:include('./docs/info.md') -->
+<!-- docs-generator:start - Do not remove or modify this section -->
+The `info` script provides information about your plugin, including the version of important packages that are currently installed. 
+
+Use this script to provide information to the Twilio support team whenever you are having an issue with your plugin-builder.
+
+Usage:
+    `npm run info`
+
+<!-- docs-generator:end - Do not remove or modify this section -->
 
 ## Contributing
 
