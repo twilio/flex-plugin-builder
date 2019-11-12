@@ -69,7 +69,7 @@ export const downloadFromGitHub = async (url: string, dir: string) => {
 // tslint:disable
 export const _getPluginJsonContent = (config: FlexPluginArguments) => {
   return [{
-    'name': config.pluginClassName,
+    'name': config.name,
     'version': '0.0.0',
     'class': config.pluginClassName,
     'requires': [{

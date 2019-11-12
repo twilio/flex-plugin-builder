@@ -1,11 +1,8 @@
-import { logger, fs, open } from 'flex-dev-utils';
+import { fs, open } from 'flex-dev-utils';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { join } from 'path';
 import run from '../../utils/run';
-
-interface Plugin {
-  src: string;
-}
+import pluginServer, { Plugin } from '../start/pluginServer';
 
 /**
  * Extracts port from a localhost url
@@ -87,6 +84,8 @@ const browser = async (...argv: string[]) => {
 
   // Now open browser
   await open(url);
+  // Run a dev-server plugin service to talk with Flex plugin service
+  pluginServer(port);
 };
 
 run(browser);
