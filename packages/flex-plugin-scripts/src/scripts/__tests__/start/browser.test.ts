@@ -112,6 +112,7 @@ describe('sub/browser', () => {
       const plugins = [{
         src: 'http://localhost:1234/plugin-test.js',
         name: 'plugin-test',
+        enabled: true,
       }];
       const pkg = { name: 'plugin-test' };
       const port = '2345';

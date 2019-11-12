@@ -113,8 +113,6 @@ Usage:
 
 <!-- docs-generator:end - Do not remove or modify this section -->
 
-## Using Live 
-
 ## Contributing
 
 Make sure to follow the instructions in the [main repository](https://github.com/twilio/flex-plugin-builder#contributing) to set up the project.
