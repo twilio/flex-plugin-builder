@@ -14,6 +14,7 @@ export interface Plugin {
 
 /* istanbul ignore next */
 const pluginsJsonPath = join(process.cwd(), 'public/plugins.json');
+/* istanbul ignore next */
 const pluginsServiceConfigPath = join(process.cwd(), 'public', 'pluginsService.js');
 
 /**
@@ -141,7 +142,7 @@ export const _server = (browserPort: number ) => async (req: IncomingMessage, re
     res.end(JSON.stringify(plugins));
   } catch (err) {
     res.writeHead(500, responseHeaders);
-    res.end(err.message);
+    res.end(err);
   }
 };
 

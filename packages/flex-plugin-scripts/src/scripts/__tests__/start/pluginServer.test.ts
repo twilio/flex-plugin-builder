@@ -116,6 +116,7 @@ describe('pluginServer', () => {
   });
 
   describe('_server', () => {
+    const jweHeaders = { 'x-flex-jwe': 'jweToken' };
     const getReqResp = (method: string, headers: object, url: string) => {
       // @ts-ignore
       const resp = {
@@ -182,8 +183,7 @@ describe('pluginServer', () => {
     });
 
     it('should getPlugins and rebase', async (done) => {
-      const headers = { 'x-flex-jwe': 'jweToken' };
-      const { req, resp } = getReqResp('GET', headers, '/plugins');
+      const { req, resp } = getReqResp('GET', jweHeaders, '/plugins');
 
       jest
         .spyOn(pluginServerScript, '_getHeaders')
@@ -206,6 +206,47 @@ describe('pluginServer', () => {
       expect(resp.end).toHaveBeenCalledWith('[{"name":"plugin-1"}]');
 
       done();
+    });
+
+    it('should fail', async (done) => {
+      const { req, resp } = getReqResp('GET', jweHeaders, '/plugins');
+
+      jest
+        .spyOn(pluginServerScript, '_getHeaders')
+        .mockReturnValue({ header: 'true' } as any);
+      const _getRemotePlugins = jest
+        .spyOn(pluginServerScript, '_getRemotePlugins')
+        .mockRejectedValue('failed-message');
+      const _rebasePlugins = jest
+        .spyOn(pluginServerScript, '_rebasePlugins');
+
+      await pluginServerScript._server(9000)(req , resp);
+
+      expect(resp.writeHead).toHaveBeenCalledTimes(1);
+      expect(resp.writeHead).toHaveBeenCalledWith(500, { header: 'true' });
+      expect(_getRemotePlugins).toHaveBeenCalledTimes(1);
+      expect(_getRemotePlugins).toHaveBeenCalledWith('jweToken', undefined);
+      expect(_rebasePlugins).not.toHaveBeenCalled();
+      expect(resp.end).toHaveBeenCalledTimes(1);
+      expect(resp.end).toHaveBeenCalledWith('failed-message');
+
+      done();
+    });
+  });
+
+  describe('_generatePluginServiceConfig', () => {
+    it('should include port in the url', () => {
+      const writeFileSync = jest
+        .spyOn(fs.default, 'writeFileSync')
+        .mockReturnThis();
+
+      pluginServerScript._generatePluginServiceConfig(1234);
+
+      expect(writeFileSync).toHaveBeenCalledTimes(1);
+      expect(writeFileSync).toHaveBeenCalledWith(
+        expect.stringContaining('pluginsService.js'),
+        expect.stringContaining('localhost:1234'),
+      );
     });
   });
 });
