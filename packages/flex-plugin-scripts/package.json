@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-scripts",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "Scripts to run, build and deploy Flex plugins",
   "keywords": [
     "flex",
