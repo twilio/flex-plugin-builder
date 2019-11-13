@@ -1,8 +1,9 @@
 import { fs } from 'flex-dev-utils';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 
-import { _getPortAndUrl, _replacePlugins, _requirePackages } from '../../sub/browser';
-import * as browserScript from '../../sub/browser';
+import { _getPortAndUrl, _replacePlugins, _requirePackages } from '../../start/browser';
+import * as browserScript from '../../start/browser';
+import * as pluginServerScript from '../../start/pluginServer';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/open');
@@ -108,7 +109,11 @@ describe('sub/browser', () => {
 
   describe('_replacePlugins', () => {
     it('should replace port', () => {
-      const plugins = [{  src: 'http://localhost:1234/plugin-test.js' }];
+      const plugins = [{
+        src: 'http://localhost:1234/plugin-test.js',
+        name: 'plugin-test',
+        enabled: true,
+      }];
       const pkg = { name: 'plugin-test' };
       const port = '2345';
 
@@ -135,6 +140,8 @@ describe('sub/browser', () => {
 
   describe('browser', () => {
     it('should call update package and open browser', async () => {
+      const pluginServer = jest.spyOn(pluginServerScript, 'default').mockReturnThis();
+
       const url = 'http://localhost:1234';
       const port = '1234';
 
@@ -151,6 +158,8 @@ describe('sub/browser', () => {
       expect(getPortAndUrl).toHaveBeenCalledWith('arg1');
       expect(replacePlugins).toHaveBeenCalledTimes(1);
       expect(replacePlugins).toHaveBeenCalledWith(port);
+      expect(pluginServer).toHaveBeenCalledTimes(1);
+      expect(pluginServer).toHaveBeenCalledWith(port);
 
       getPortAndUrl.mockRestore();
       replacePlugins.mockRestore();

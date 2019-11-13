@@ -141,7 +141,7 @@ describe('commands', () => {
       const resp = commands._getPluginJsonContent(config);
 
       expect(resp).toHaveLength(1);
-      expect(resp[0].name).toEqual(config.pluginClassName);
+      expect(resp[0].name).toEqual(config.name);
       expect(resp[0].version).toEqual('0.0.0');
       expect(resp[0].class).toEqual(config.pluginClassName);
       expect(resp[0].src).toEqual(expect.stringContaining(config.name as string));
