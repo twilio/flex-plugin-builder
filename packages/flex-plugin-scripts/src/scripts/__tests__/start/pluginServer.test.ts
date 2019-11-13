@@ -247,6 +247,8 @@ describe('pluginServer', () => {
         expect.stringContaining('pluginsService.js'),
         expect.stringContaining('localhost:1234'),
       );
+
+      writeFileSync.mockRestore();
     });
   });
 });
