@@ -18,7 +18,7 @@ export default async (callback: Callback) => {
 export const isRequiredScript = () => require.main === module.parent;
 
 /**
- * Exits if `--process-exit` is provided OR if script is spawned
+ * Exits unless --no-process-exit flag is provided
  *
  * @param exitCode  the exitCode
  * @param args      the process argument
