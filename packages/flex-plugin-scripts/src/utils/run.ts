@@ -18,14 +18,14 @@ export default async (callback: Callback) => {
 export const isRequiredScript = () => require.main === module.parent;
 
 /**
- * Exits if `--process-exit` is provided OR if script is spawned
+ * Exits unless --no-process-exit flag is provided
  *
  * @param exitCode  the exitCode
  * @param args      the process argument
  */
 export const exit = (exitCode: number, args: string[] = []) => {
   // Exit if not an embedded script
-  if (args.includes('--process-exit') || !isRequiredScript()) {
+  if (!args.includes('--no-process-exit')) {
     process.exit(exitCode);
   }
 };

@@ -40,14 +40,13 @@ describe('index', () => {
   it('should run main script', async () => {
     spawn.mockResolvedValue({ exitCode: 0 });
 
-    await index('build', '--process-exit');
+    await index('build');
 
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(0);
     expect(spawn).toHaveBeenCalledTimes(1);
     assertSpawn([
       expect.stringContaining('build'),
-      '--process-exit',
       expect.anything(),
     ]);
   });
@@ -55,7 +54,7 @@ describe('index', () => {
   it('should run main script and pass other args', async () => {
     spawn.mockResolvedValue({ exitCode: 0 });
 
-    await index('build', 'foo',  '--process-exit');
+    await index('build', 'foo');
 
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(0);
@@ -63,7 +62,6 @@ describe('index', () => {
     assertSpawn([
       expect.stringContaining('build'),
       'foo',
-      '--process-exit',
       expect.anything(),
     ]);
   });
@@ -71,14 +69,13 @@ describe('index', () => {
   it('should set no-versioning', async () => {
     spawn.mockResolvedValue({ exitCode: 0 });
 
-    await index('build', '--process-exit');
+    await index('build');
 
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(0);
     expect(spawn).toHaveBeenCalledTimes(1);
     assertSpawn([
       expect.anything(),
-      '--process-exit',
       '--disallow-versioning',
     ]);
   });

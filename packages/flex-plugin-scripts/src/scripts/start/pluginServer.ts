@@ -173,11 +173,13 @@ const pluginServer = async (browserPort: string | number) => {
   const port = Number(browserPort);
   _generatePluginServiceConfig(port + 1);
 
-  http
+  const server = http
     .createServer(_server(port))
     .listen(port + 1, '127.0.0.1', () => {
       logger.debug(`Local plugin server running on port ${port + 1}`);
     });
+
+  process.on('exit', () => server.close());
 };
 
 export default pluginServer;
