@@ -71,33 +71,17 @@ describe('run', () => {
   });
 
   describe('exit', () => {
-    it('should quit if isRequiredScript is false', () => {
-      const isRequiredScript = jest.spyOn(run, 'isRequiredScript').mockReturnValue(false);
+    it('should not quit if arg has the flag', () => {
+      run.exit(123, ['--no-process-exit']);
 
-      run.exit(123, []);
-
-      expect(isRequiredScript).toHaveBeenCalledTimes(1);
-      expect(exit).toHaveBeenCalledTimes(1);
-      expect(exit).toHaveBeenCalledWith(123);
-    });
-
-    it('should quit if arg has the flag', () => {
-      const isRequiredScript = jest.spyOn(run, 'isRequiredScript').mockReturnValue(true);
-
-      run.exit(123, ['--process-exit']);
-
-      expect(isRequiredScript).not.toHaveBeenCalled();
-      expect(exit).toHaveBeenCalledTimes(1);
-      expect(exit).toHaveBeenCalledWith(123);
-    });
-
-    it('should not quit', () => {
-      const isRequiredScript = jest.spyOn(run, 'isRequiredScript').mockReturnValue(true);
-
-      run.exit(123, []);
-
-      expect(isRequiredScript).toHaveBeenCalledTimes(1);
       expect(exit).not.toHaveBeenCalled();
+    });
+
+    it('should quit by default', () => {
+      run.exit(123);
+
+      expect(exit).toHaveBeenCalledTimes(1);
+      expect(exit).toHaveBeenCalledWith(123);
     });
   });
 });

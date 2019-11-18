@@ -40,14 +40,13 @@ describe('index', () => {
   it('should run main script', async () => {
     spawn.mockResolvedValue({ exitCode: 0 });
 
-    await index('build', '--process-exit');
+    await index('build');
 
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(0);
     expect(spawn).toHaveBeenCalledTimes(1);
     assertSpawn([
       expect.stringContaining('build'),
-      '--process-exit',
       expect.anything(),
     ]);
   });
