@@ -98,29 +98,37 @@ describe('logger', () => {
     expect(info).toHaveBeenCalledWith('var1 var2');
   });
 
-  it('should call debug if verbose is set', () => {
-    process.env.VERBOSE = 'true';
+  it('should call debug if debug is set', () => {
+    process.env.DEBUG = 'true';
     logger.debug('var1', 'var2');
 
     expect(info).toHaveBeenCalledTimes(1);
     expect(info).toHaveBeenCalledWith('var1 var2');
   });
 
-  it('should not call debug if verbose is not set', () => {
+  it('should call debug if trace is set', () => {
+    process.env.TRACE = 'true';
+    logger.debug('var1', 'var2');
+
+    expect(info).toHaveBeenCalledTimes(1);
+    expect(info).toHaveBeenCalledWith('var1 var2');
+  });
+
+  it('should not call debug if debug is not set', () => {
     logger.debug('var1', 'var2');
 
     expect(info).not.toHaveBeenCalled();
   });
 
-  it('should call trace if DEBUG_TRACE is set', () => {
-    process.env.DEBUG_TRACE = 'true';
+  it('should call trace if TRACE is set', () => {
+    process.env.TRACE = 'true';
     logger.trace('var1', 'var2');
 
     expect(info).toHaveBeenCalledTimes(1);
     expect(info).toHaveBeenCalledWith('var1 var2');
   });
 
-  it('should not call trace if DEBUG_TRACE is not set', () => {
+  it('should not call trace if TRACE is not set', () => {
     logger.trace('var1', 'var2');
 
     expect(info).not.toHaveBeenCalled();

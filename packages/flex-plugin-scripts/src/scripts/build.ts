@@ -7,7 +7,7 @@ import run, { exit } from '../utils/run';
  * Builds the bundle
  */
 const build = async (...args: string[]) => {
-  logger.debug('Running build');
+  logger.debug('Building Flex plugin bundle');
 
   // This prints a hosting instruction specific to react applications
   // We should replace it with instruction about Twilio Assets

@@ -4,12 +4,24 @@ export default ora.default;
 
 export type OraCallback<T, R> = (arg: T) => R;
 
+interface OraOptions {
+  text: string;
+  isEnabled?: boolean;
+}
+
 /**
  * Added for testing purposes
  * @param title
  */
 /* istanbul ignore next */
-export const _getSpinner = (title: string) => ora.default(title);
+export const _getSpinner = (text: string) => {
+  const options: OraOptions = { text };
+  if (process.env.DEBUG || process.env.TRACE) {
+    options.isEnabled = false;
+  }
+
+  return ora.default(options);
+};
 
 /**
  * Am {@link ora} progress wrapper

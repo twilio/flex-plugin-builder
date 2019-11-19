@@ -12,7 +12,7 @@ export default abstract class BaseClient {
    */
   public static getBaseUrl = (subDomain: string, version: string): string => {
     const realms = BaseClient.realms;
-    const realm = process.env.TWILIO_SERVERLESS_REALM;
+    const realm = process.env.REALM;
     if (realm && !realms.includes(realm)) {
       throw new Error(`Invalid realm ${realm} was provided. Realm must be one of ${realms.join(',')}`);
     }
