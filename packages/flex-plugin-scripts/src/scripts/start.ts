@@ -9,7 +9,7 @@ import { findPorts } from './start/server';
  * Starts the dev-server
  */
 const start = async (...args: string[]) => {
-  logger.debug('Staring local development environment');
+  logger.debug('Starting local development environment');
 
   // Finds the first available free port where two consecutive ports are free
   const port = await findPorts();
