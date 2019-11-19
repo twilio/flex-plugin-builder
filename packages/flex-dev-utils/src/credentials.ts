@@ -1,4 +1,5 @@
 import { FlexPluginError } from './errors';
+import { logger } from './index';
 import { prompt, choose, Question } from './inquirer';
 import { isInputNotEmpty, validateAccountSid } from './validators';
 
@@ -8,7 +9,11 @@ let keytar: any;
 try {
   // tslint:disable-next-line
   keytar = require('keytar');
-} catch (e) { /* no-op */ }
+} catch (e) {
+  if (!process.env.CI) {
+    logger.debug('Failed to require keytar', e);
+  }
+}
 
 const SERVICE_NAME = 'com.twilio.flex.plugins.builder';
 
