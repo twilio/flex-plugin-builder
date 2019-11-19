@@ -10,6 +10,10 @@ Scripts to run, build, and deploy Flex plugin.
 
 This repo will automatically be installed as part of creating a new plugin.
 
+## Verbose/Debug Mode
+
+All scripts can run with `DEBUG=1` for a more verbose mode. You may also use `TRACE=1` for an even more verbose mode.
+
 ## Scripts
 
 ### Deploy

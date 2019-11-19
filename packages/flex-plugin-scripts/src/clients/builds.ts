@@ -1,3 +1,4 @@
+import { logger } from 'flex-dev-utils/dist';
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
 
@@ -41,7 +42,10 @@ export default class BuildClient extends BaseClient {
       }, BuildClient.timeoutMsec);
 
       const intervalId = setInterval(async () => {
+        logger.debug('Checking Serverless Build status');
+
         const build = await this.get(sid);
+        logger.debug('Build status is', build.status);
 
         if (build.status === BuildStatus.Failed) {
           clearInterval(intervalId);

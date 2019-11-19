@@ -66,7 +66,7 @@ export default class Http {
    * @param uri   the uri endpoint
    */
   public get<R>(uri: string): Promise<R> {
-    logger.trace('Making GET request to %s/%s', this.config.baseURL, uri);
+    logger.debug('Making GET request to %s/%s', this.config.baseURL, uri);
 
     return this.client
       .get(uri)
@@ -79,7 +79,7 @@ export default class Http {
    * @param data  the data to post
    */
   public post<R>(uri: string, data: any): Promise<R> {
-    logger.trace('Making POST request to %s/%s with data %s', this.config.baseURL, uri, JSON.stringify(data));
+    logger.debug('Making POST request to %s/%s with data %s', this.config.baseURL, uri, JSON.stringify(data));
     if (!this.jsonPOST) {
       data = stringify(data);
     }
@@ -95,7 +95,7 @@ export default class Http {
    * @param uri   the uri of the endpoint
    */
   public delete(uri: string): Promise<void> {
-    logger.trace('Making DELETE request to %s/%s', this.config.baseURL, uri);
+    logger.debug('Making DELETE request to %s/%s', this.config.baseURL, uri);
 
     return this.client
       .delete(uri);
@@ -108,7 +108,8 @@ export default class Http {
    * @param formData  the {@link FormData}
    */
   public upload = (url: string, formData: FormData): Promise<any> => {
-    logger.trace('Uploading to %s with formData %s', url, formData);
+    logger.debug('Uploading formData to %s', url);
+    logger.trace(formData);
 
     return axios
       .post(url, formData, {
@@ -127,6 +128,8 @@ export default class Http {
    * @param err Axios error
    */
   private onError = (err: any): Promise<any> => {
+    logger.trace('Http request failed', err);
+
     const request = err.config || {};
     const resp = err.response || {};
     const status = resp.status;

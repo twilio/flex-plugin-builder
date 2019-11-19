@@ -45,7 +45,7 @@ describe('BaseClient', () => {
     });
 
     it('should get dev baseUrl', () => {
-      process.env.TWILIO_SERVERLESS_REALM = 'dev';
+      process.env.REALM = 'dev';
       const baseUrl = BaseClient.getBaseUrl('bar', 'v2');
 
       expect(baseUrl).toEqual('https://bar.dev.twilio.com/v2');
@@ -53,7 +53,7 @@ describe('BaseClient', () => {
 
     it('should throw error if invalid realm is provided', (done) => {
       try {
-        process.env.TWILIO_SERVERLESS_REALM = 'invalid';
+        process.env.REALM = 'invalid';
         BaseClient.getBaseUrl('foo', 'v1');
       } catch (e) {
         done();

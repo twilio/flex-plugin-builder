@@ -27,7 +27,7 @@ const DefaultWrapOptions = { hard: true };
  * @param args
  */
 export const debug = (...args: any[]) => {
-  if (process.env.VERBOSE) {
+  if (process.env.DEBUG || process.env.TRACE) {
     _log({level: 'info', args});
   }
 };
@@ -37,7 +37,7 @@ export const debug = (...args: any[]) => {
  * @param args
  */
 export const trace = (...args: any[]) => {
-  if (process.env.DEBUG_TRACE) {
+  if (process.env.TRACE) {
     _log({level: 'info', args});
   }
 };

@@ -60,8 +60,6 @@ export const _verifyPath = (baseUrl: string, build: Build) => {
  * @param options       options for this deploy
  */
 export const _doDeploy = async (nextVersion: string, options: Options) => {
-  logger.debug('Deploying Flex plugin');
-
   if (!checkFilesExist(paths.localBundlePath)) {
     throw new FlexPluginError('Could not find build file. Did you run `npm run build` first?');
   }
@@ -149,6 +147,8 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
 };
 
 const deploy = async (...argv: string[]) => {
+  logger.debug('Deploying Flex plugin');
+
   const disallowVersioning = argv.includes('--disallow-versioning');
   let nextVersion = argv[1] as string;
   const bump = argv[0];

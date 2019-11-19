@@ -1,3 +1,4 @@
+import { logger } from 'flex-dev-utils';
 import { existsSync, copyFileSync } from 'fs';
 import semver from 'semver';
 import { join } from 'path';
@@ -116,6 +117,7 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, na
  * Runs pre-start/build checks
  */
 const checkStart = async () => {
+  logger.debug('Checking Flex plugin project directory');
   const allowSkip = process.env.SKIP_PREFLIGHT_CHECK === 'true';
 
   _checkAppConfig();
