@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "bootstrap": "flex-plugin check-start",
-    "prebuild": "rm -rf build && npm run bootstrap",
+    "prebuild": "rimraf build && npm run bootstrap",
     "build": "flex-plugin build",
     "clear": "flex-plugin clear",
     "predeploy": "npm run build",
@@ -37,7 +37,8 @@
     "@types/react-redux": "^7.1.1",
     "babel-polyfill": "^6.26.0",
     "enzyme": "^3.10.0",
-    "enzyme-adapter-react-16": "^1.14.0"
+    "enzyme-adapter-react-16": "^1.14.0",
+    "rimraf": "^3.0.0"
   },
   "browserslist": {
     "production": [
