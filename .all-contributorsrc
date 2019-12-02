@@ -138,6 +138,16 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "sleepypikachu",
+      "name": "Elliot",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/1455101?v=4",
+      "profile": "https://github.com/sleepypikachu",
+      "contributions": [
+        "code"
+      ]
     }
-  ]
+  ],
+  "skipCi": true
 }
