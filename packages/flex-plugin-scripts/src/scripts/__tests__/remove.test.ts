@@ -39,7 +39,7 @@ describe('remove', () => {
   });
 
   describe('default', () => {
-    const doRemove = jest.spyOn(removeScript, '_doRemove').mockResolvedValue();
+    const doRemove = jest.spyOn(removeScript, '_doRemove').mockReturnThis();
 
     afterAll(() => {
       doRemove.mockRestore();
