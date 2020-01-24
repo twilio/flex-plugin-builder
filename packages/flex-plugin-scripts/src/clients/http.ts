@@ -8,6 +8,7 @@ import FormData from 'form-data';
 export type ContentType = 'application/x-www-form-urlencoded' | 'application/json';
 export interface HttpConfig {
   baseURL: string;
+  userAgent?: string;
   auth: AuthConfig;
   exitOnRejection?: boolean;
   contentType?: ContentType;
@@ -49,6 +50,10 @@ export default class Http {
         'Content-Type': config.contentType ? config.contentType : 'application/x-www-form-urlencoded',
       },
     });
+
+    if (config.userAgent) {
+        this.client.defaults.headers['User-Agent'] = config.userAgent;
+    }
 
     this.client.interceptors.response.use((r) => r, this.onError);
   }
