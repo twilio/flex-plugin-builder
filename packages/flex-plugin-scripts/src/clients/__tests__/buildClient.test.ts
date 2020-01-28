@@ -1,5 +1,6 @@
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 import BaseClient, { BaseClientOptions } from '../baseClient';
+import * as packageUtil from '../../utils/package';
 
 describe('BaseClient', () => {
   const credential = {
@@ -20,10 +21,12 @@ describe('BaseClient', () => {
     expect(client.getConfig().baseURL).toEqual(testBaseUrl);
     expect(client.getConfig().auth).toEqual(credential);
     expect(client.getConfig().exitOnRejection).toBeTruthy();
+    expect(client.getConfig().userAgent).toEqual('custom-user-agent');
   };
 
   describe('constructor', () => {
     it('should set the config correctly', () => {
+      BaseClient.userAgent = 'custom-user-agent';
       const client = new Test(credential, testBaseUrl);
 
       expectConfig(client);
@@ -37,8 +40,42 @@ describe('BaseClient', () => {
     });
   });
 
+  describe('buildUserAgent', () => {
+    it('should build a user agent', () => {
+      const packageDetailMock = jest
+        .spyOn(packageUtil, 'getPackageDetails')
+        .mockReturnValue([
+          {
+            name: 'p1',
+            found: true,
+            package: {
+              name: 'p1',
+              version: '1.0',
+            },
+          },
+          {
+            name: 'p2',
+            found: false,
+            package: {},
+          },
+          {
+            name: 'p3',
+            found: true,
+            package: {
+              name: 'p3',
+              version: '2.0.0',
+            },
+          },
+        ]);
+
+      const userAgent = BaseClient.getUserAgent(['p1', 'p2', 'p3']);
+      expect(userAgent).toEqual('p1/1.0 p2/? p3/2.0.0');
+    });
+  });
+
   describe('getBaseUrl', () => {
     it('should get prod baseUrl', () => {
+      process.env.REALM = '';
       const baseUrl = BaseClient.getBaseUrl('foo', 'v1');
 
       expect(baseUrl).toEqual('https://foo.twilio.com/v1');

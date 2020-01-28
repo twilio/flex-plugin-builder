@@ -1,4 +1,5 @@
-import { PackageDetail } from '../info';
+import { PackageDetail } from '../../utils/package';
+import * as packageUtil from '../../utils/package';
 import * as infoScript from '../info';
 import * as prints from '../../prints';
 
@@ -27,8 +28,8 @@ describe('info', () => {
 
   describe('default', () => {
     it('should get package details and print them', async () => {
-      const _getPackageDetails = jest
-        .spyOn(infoScript, '_getPackageDetails')
+      const getPackageDetails = jest
+        .spyOn(packageUtil, 'getPackageDetails')
         .mockReturnValue([foundPackage, notFoundPackage]);
 
       const packagesVersions = jest
@@ -37,7 +38,7 @@ describe('info', () => {
 
       await infoScript.default();
 
-      expect(_getPackageDetails).toHaveBeenCalledTimes(1);
+      expect(getPackageDetails).toHaveBeenCalledTimes(1);
       expect(packagesVersions).toHaveBeenCalledTimes(1);
       expect(packagesVersions).toHaveBeenCalledWith([foundPackage], [notFoundPackage]);
     });

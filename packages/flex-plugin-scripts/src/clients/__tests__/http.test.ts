@@ -8,6 +8,7 @@ describe('HttpClient', () => {
       accountSid: 'AC00000000000000000000000000000000',
       authToken: 'abc123',
     },
+    userAgent: '007',
   };
   let config: HttpConfig;
 
@@ -64,6 +65,21 @@ describe('HttpClient', () => {
       // @ts-ignore
       expect(http.client.defaults.headers['Content-Type'])
         .toEqual('application/json');
+    });
+
+    it('should set user agent when defined', () => {
+      const http = new HttpClient(config);
+      // @ts-ignore
+      expect(http.client.defaults.headers['User-Agent'])
+        .toEqual('007');
+    });
+
+    it('should handle no user agent', () => {
+      config.userAgent = undefined;
+      const http = new HttpClient(config);
+      // @ts-ignore
+      expect(http.client.defaults.headers['User-Agent'])
+        .toBeUndefined();
     });
   });
 
