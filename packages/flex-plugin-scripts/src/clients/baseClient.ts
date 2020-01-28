@@ -56,5 +56,4 @@ export default abstract class BaseClient {
     this.config = config;
     this.http = new Http(this.config);
   }
-
 }
