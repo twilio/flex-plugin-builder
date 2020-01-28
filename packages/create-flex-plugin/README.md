@@ -83,13 +83,13 @@ See [flex-plugin-template-sample](https://github.com/ktalebian/flex-plugin-templ
 The `--template` link can contain a reference, which can be a `tag` or a `branch` name. For example 
 
 ```bash
-create-flex-plugin --template https://github.com/ktalebian/flex-plugin-template-sample/tree/1.0.0
+create-flex-plugin <plugin-name> --template https://github.com/ktalebian/flex-plugin-template-sample/tree/1.0.0
 ```
 
 would use the tagged version `1.0.0`, while
 
 ```bash
-create-flex-plugin --template https://github.com/ktalebian/flex-plugin-template-sample/tree/master
+create-flex-plugin <plugin-name> --template https://github.com/ktalebian/flex-plugin-template-sample/tree/master
 ```
 
 would use the `master` branch.
