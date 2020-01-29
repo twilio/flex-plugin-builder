@@ -1,6 +1,25 @@
 import { resolve } from './require';
 import { join } from 'path';
 
+export const FLEX_PACKAGES: string[] = [
+  '@twilio/flex-ui',
+  'flex-plugin-scripts',
+  'flex-plugin',
+  'flex-dev-utils',
+  'craco-config-flex-plugin',
+];
+
+/* istanbul ignore next */
+export const LIST_OF_PACKAGES: string[] = [
+  ...FLEX_PACKAGES,
+  '@craco/craco',
+  'react-scripts',
+  'react',
+  'react-dom',
+  'redux',
+  'react-redux',
+];
+
 export interface PackageDetail {
   name: string;
   found: boolean;
