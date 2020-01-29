@@ -1,9 +1,7 @@
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 
 import Http, { ContentType, HttpConfig } from './http';
-import { FLEX_PACKAGES } from '../scripts/info';
-import { getPackageDetails, PackageDetail } from '../utils/package';
-import { logger } from 'flex-dev-utils';
+import { getPackageDetails, FLEX_PACKAGES } from '../utils/package';
 
 export interface BaseClientOptions {
   contentType: ContentType;
