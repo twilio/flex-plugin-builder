@@ -31,7 +31,7 @@ export default abstract class BaseClient {
   public static getUserAgent(packages: string[] = FLEX_PACKAGES): string {
     return getPackageDetails(packages)
             .reduce((userAgentString, pkg) =>
-                `${userAgentString} ${pkg.name}/${pkg.found ? pkg.package.version : '?'}`, '')
+                `${userAgentString} ${pkg.name}/${pkg.found ? pkg.package.version : '?'}`, 'Flex Plugin Builder')
             .trimLeft();
   }
 
