@@ -69,7 +69,7 @@ describe('BaseClient', () => {
         ]);
 
       const userAgent = BaseClient.getUserAgent(['p1', 'p2', 'p3']);
-      expect(userAgent).toEqual('p1/1.0 p2/? p3/2.0.0');
+      expect(userAgent).toEqual('Flex Plugin Builder p1/1.0 p2/? p3/2.0.0');
     });
   });
 
