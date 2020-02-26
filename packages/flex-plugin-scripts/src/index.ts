@@ -55,7 +55,7 @@ const spawnScript = async (...argv: string[]) => {
   const processArgs = nodeArgs.concat(scriptPath).concat(scriptArgs);
 
   // Temp disallow version while we figure this out
-  if (script !== 'test') {
+  if (script !== 'test' && !processArgs.includes('--pilot-plugins-api')) {
     processArgs.push('--disallow-versioning');
   }
 

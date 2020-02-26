@@ -1,7 +1,6 @@
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 import BaseClient from '../baseClient';
 import ConfigurationClient from '../configurations';
-import ServiceClient from '../services';
 
 describe('ConfigurationClient', () => {
   const serviceSid = 'ZS00000000000000000000000000000000';

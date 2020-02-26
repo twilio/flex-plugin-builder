@@ -5,13 +5,13 @@ import { getCredential } from 'flex-dev-utils/dist/credentials';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import semver, { ReleaseType } from 'semver';
 import AccountsClient from '../clients/accounts';
-import { deploySuccessful } from '../prints';
+import { deploySuccessful, pluginsApiWarning } from '../prints';
 
 import run from '../utils/run';
 import { BuildData } from '../clients/builds';
 import { Build, Version } from '../clients/serverless-types';
 import paths from '../utils/paths';
-import { AssetClient, BuildClient, DeploymentClient, ConfigurationClient } from '../clients';
+import { AssetClient, BuildClient, DeploymentClient, ConfigurationClient, PluginsApiClient } from '../clients';
 import getRuntime from '../utils/runtime';
 
 const allowedBumps = [
@@ -26,6 +26,7 @@ interface Options {
   isPublic: boolean;
   overwrite: boolean;
   disallowVersioning: boolean;
+  isPluginsPilot: boolean;
 }
 
 /**
@@ -64,13 +65,22 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
     throw new FlexPluginError('Could not find build file. Did you run `npm run build` first?');
   }
 
-  logger.info('Uploading your Flex plugin to Twilio Assets\n');
-
   const pluginBaseUrl = paths.assetBaseUrlTemplate.replace('%PLUGIN_VERSION%', nextVersion);
   const bundleUri = `${pluginBaseUrl}/bundle.js`;
   const sourceMapUri = `${pluginBaseUrl}/bundle.js.map`;
 
   const credentials = await getCredential();
+  if (options.isPluginsPilot) {
+    const pluginsApiClient = new PluginsApiClient(credentials);
+    const hasFlag = await pluginsApiClient.hasFlag();
+    if (!hasFlag) {
+      throw new FlexPluginError('This command is currently in Preview and is restricted to users while we work on improving it. If you would like to participate, please contact team-flex@twilio.com to learn more.');
+    }
+
+    pluginsApiWarning();
+  }
+
+  logger.info('Uploading your Flex plugin to Twilio Assets\n');
 
   const runtime = await getRuntime(credentials);
   const pluginUrl = `https://${runtime.environment.domain_name}${bundleUri}`;
@@ -155,6 +165,7 @@ const deploy = async (...argv: string[]) => {
   const opts = {
     isPublic: argv.includes('--public'),
     overwrite: argv.includes('--overwrite') || disallowVersioning,
+    isPluginsPilot: argv.includes('--pilot-plugins-api'),
     disallowVersioning,
   };
 
