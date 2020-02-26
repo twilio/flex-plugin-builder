@@ -21,7 +21,7 @@ describe('ConfigurationClient', () => {
     it('should get prod baseUrl', () => {
       const baseUrl = PluginsApiClient.getBaseUrl();
 
-      expect(baseUrl).toEqual('https://flex-api.twilio.com/v1/PluginsService');
+      expect(baseUrl).toEqual('https://flex-api.twilio.com/v1/PluginService');
     });
   });
 
