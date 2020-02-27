@@ -235,7 +235,7 @@ describe('deploy', () => {
         await deployScript._doDeploy('1.0.0', options);
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
-        expect(e.message).toContain('enrolled in the Plugins API');
+        expect(e.message).toContain('is currently in Preview ');
         done();
       }
 
