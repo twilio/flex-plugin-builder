@@ -23,6 +23,7 @@ const allowedBumps = [
 
 interface Options {
   isPublic: boolean;
+  overwrite: boolean;
   disallowVersioning: boolean;
   isPluginsPilot: boolean;
 }
@@ -93,7 +94,14 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
     const collision = runtime.build ? !_verifyPath(pluginBaseUrl, runtime.build) : false;
 
     if (collision) {
-      throw new FlexPluginError(`You already have a plugin with the same version: ${pluginUrl}`);
+      if (options.overwrite) {
+        if (!options.disallowVersioning) {
+          logger.newline();
+          logger.warning('Plugin already exists and the flag --overwrite is going to overwrite this plugin.');
+        }
+      } else {
+        throw new FlexPluginError(`You already have a plugin with the same version: ${pluginUrl}`);
+      }
     }
 
     return collision;
@@ -111,7 +119,7 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
     const sourceMapVersion = await assetClient
       .upload(paths.packageName, sourceMapUri, paths.localSourceMapPath, !options.isPublic);
 
-    const existingAssets = routeCollision
+    const existingAssets = routeCollision && options.overwrite
       ?  buildAssets.filter((v) => v.path !== bundleUri && v.path !== sourceMapUri)
       :  buildAssets;
 
@@ -155,6 +163,7 @@ const deploy = async (...argv: string[]) => {
   const bump = argv[0];
   const opts: Options = {
     isPublic: argv.includes('--public'),
+    overwrite: argv.includes('--overwrite') || disallowVersioning,
     isPluginsPilot: argv.includes('--pilot-plugins-api'),
     disallowVersioning,
   };
@@ -168,7 +177,10 @@ const deploy = async (...argv: string[]) => {
       throw new FlexPluginError('Custom version bump requires the version value.');
     }
 
-    if (bump !== 'custom') {
+    if (bump === 'overwrite') {
+      opts.overwrite = true;
+      nextVersion = readPackageJson().version;
+    } else if (bump !== 'custom') {
       nextVersion = semver.inc(paths.version, bump as ReleaseType) as any;
     }
   } else {

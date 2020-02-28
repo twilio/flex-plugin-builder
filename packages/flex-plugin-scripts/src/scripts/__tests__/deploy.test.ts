@@ -138,6 +138,7 @@ describe('deploy', () => {
 
       expectDoDeployCalled('2.0.0', {
         isPublic: false,
+        overwrite: false,
         isPluginsPilot: false,
         disallowVersioning: false,
       });
@@ -148,6 +149,7 @@ describe('deploy', () => {
 
       expectDoDeployCalled('1.1.0', {
         isPublic: false,
+        overwrite: false,
         isPluginsPilot: false,
         disallowVersioning: false,
       });
@@ -158,6 +160,7 @@ describe('deploy', () => {
 
       expectDoDeployCalled('1.0.1', {
         isPublic: false,
+        overwrite: false,
         isPluginsPilot: false,
         disallowVersioning: false,
       });
@@ -168,6 +171,7 @@ describe('deploy', () => {
 
       expectDoDeployCalled('custom-version', {
         isPublic: false,
+        overwrite: false,
         isPluginsPilot: false,
         disallowVersioning: false,
       });
@@ -178,6 +182,7 @@ describe('deploy', () => {
 
       expectDoDeployCalled('2.0.0', {
         isPublic: true,
+        overwrite: false,
         isPluginsPilot: false,
         disallowVersioning: false,
       });
@@ -195,6 +200,7 @@ describe('deploy', () => {
 
       expectDoDeployCalled('2.0.0', {
         isPublic: false,
+        overwrite: false,
         isPluginsPilot: true,
         disallowVersioning: false,
       });
@@ -205,6 +211,7 @@ describe('deploy', () => {
     it('should quit if running the pilot program but not have the flag set', async (done) => {
       const options = {
         isPublic: true,
+        overwrite: false,
         isPluginsPilot: true,
         disallowVersioning: false,
       };
@@ -217,7 +224,7 @@ describe('deploy', () => {
         await deployScript._doDeploy('1.0.0', options);
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
-        expect(e.message).toContain('is currently in Preview ');
+        expect(e.message).toContain('is currently in Preview');
         done();
       }
 
@@ -227,6 +234,7 @@ describe('deploy', () => {
     it('should run if pilot feature enabled', async () => {
       const options = {
         isPublic: true,
+        overwrite: false,
         isPluginsPilot: true,
         disallowVersioning: false,
       };
@@ -239,9 +247,10 @@ describe('deploy', () => {
       checkFilesExist.mockRestore();
     });
 
-    it('should quite if build does not exist', async (done) => {
+    it('should quit if build does not exist', async (done) => {
       const options = {
         isPublic: true,
+        overwrite: false,
         isPluginsPilot: false,
         disallowVersioning: false,
       };
@@ -261,6 +270,7 @@ describe('deploy', () => {
     it('should quit if duplicate route is found', async (done) => {
       const options = {
         isPublic: true,
+        overwrite: false,
         isPluginsPilot: false,
         disallowVersioning: false,
       };
@@ -282,6 +292,7 @@ describe('deploy', () => {
     it('should deploy and write a success message', async () => {
       const options = {
         isPublic: true,
+        overwrite: true,
         isPluginsPilot: false,
         disallowVersioning: false,
       };
