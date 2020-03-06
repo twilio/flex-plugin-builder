@@ -22,11 +22,11 @@ describe('logger', () => {
   const blue = jest.fn();
   const green = jest.fn();
   const boldGreen = jest.fn();
-  const whiteBright = jest.fn();
+  const magetna = jest.fn();
   const cyan = jest.fn();
 
   chalk.cyan = cyan;
-  chalk.bold.whiteBright = whiteBright;
+  chalk.bold.magetna = magetna;
   chalk.bold.green = boldGreen;
   chalk.red = red;
   chalk.yellow = yellow;
@@ -156,11 +156,11 @@ describe('logger', () => {
       expect(boldGreen).toHaveBeenCalledWith('some-text');
     });
 
-    it('should call chalk bright white', () => {
+    it('should call chalk bright magetna', () => {
       logger.default.coloredStrings.name('some-text');
 
-      expect(whiteBright).toHaveBeenCalledTimes(1);
-      expect(whiteBright).toHaveBeenCalledWith('some-text');
+      expect(magetna).toHaveBeenCalledTimes(1);
+      expect(magetna).toHaveBeenCalledWith('some-text');
     });
 
     it('should call chalk cyan', () => {
