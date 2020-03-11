@@ -1,7 +1,7 @@
 @twilio-labs/plugin-flex
 ========================
 
-Twilio CLI plugin to interact with the [Flex Plugin Builder](github.com/twilio/flex-plugin-builder)
+Twilio CLI plugin to interact with the [Flex Plugin Builder](https://github.com/twilio/flex-plugin-builder)
 
 This plugin adds functionality to the [Twilio CLI](https://github.com/twilio/twilio-cli) to locally develop,
 build and deploy [Twilio Flex plugins](https://www.twilio.com/docs/flex/plugin-builder); it uses the [Flex Plugin Builder](https://github.com/twilio/flex-plugin-builder).
