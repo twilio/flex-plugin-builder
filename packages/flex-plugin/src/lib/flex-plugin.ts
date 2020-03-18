@@ -12,11 +12,22 @@ export interface IFlexPlugin {
  */
 export abstract class FlexPlugin implements IFlexPlugin {
   public name: string;
+  public identifier: string = __FPB_PLUGIN_IDENTIFIER;
+  public version: string = __FBP_PLUGIN_VERSION;
+  public dependencies: object = {
+    'flex-plugin-scripts': __FPB_FLEX_PLUGIN_SCRIPTS_VERSION,
+    'flex-plugin': __FPB_FLEX_PLUGIN_VERSION,
+    'craco-config-flex-plugin': __FPB_CRACO_CONFIG_FLEX_PLUGIN,
+    'flex-ui': __FPB_FLEX_UI_VERSION,
+    'react': __FPB_REACT_VERSION,
+    'react-dom': __FPB_REACT_DOM_VERSION,
+  };
 
   protected constructor(name: string) {
     this.name = name;
+
     // tslint:disable-next-line:no-console
-    console.log(`loading ${this.name} plugin`);
+    console.log(`loading ${this.name}@${this.version} plugin`);
   }
 
   public abstract init(flex: FlexGlobal, manager: Flex.Manager): void;

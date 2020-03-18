@@ -1,8 +1,9 @@
 import fs from 'fs';
-import { Configuration, SourceMapDevToolPlugin } from 'webpack';
+import { Configuration, SourceMapDevToolPlugin, DefinePlugin } from 'webpack';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
 
 import * as utilsFs from '../../utils/fs';
+import * as devFs from 'flex-dev-utils/dist/fs';
 
 jest.mock('path', () => ({
   join: (...args: string[]) => args.includes('@twilio/flex-ui') ? 'flex-ui' : 'app',
@@ -18,7 +19,14 @@ fs.readFileSync = jest.fn().mockImplementation((path: string) => {
 });
 
 describe('webpack', () => {
+  const getDependencyVersion = jest
+    .spyOn(devFs, 'getDependencyVersion')
+    .mockReturnValue('1.2.3');
   const getConfig = (opts = {}) => require('../webpack').default.configure(opts);
+
+  afterAll(() => {
+    getDependencyVersion.mockRestore();
+  });
 
   it('should have all the required fields', () => {
     const config = getConfig();
@@ -48,7 +56,7 @@ describe('webpack', () => {
   it('should check plugins', () => {
     const config = getConfig();
 
-    expect(config.plugins).toHaveLength(2);
+    expect(config.plugins).toHaveLength(3);
     expect(config.plugins[0]).toBeInstanceOf(CleanWebpackPlugin);
     expect(config.plugins[1]).toBeInstanceOf(SourceMapDevToolPlugin);
   });
@@ -91,7 +99,7 @@ describe('webpack', () => {
 
     const config = getConfig({ plugins });
 
-    expect(config.plugins).toHaveLength(2);
+    expect(config.plugins).toHaveLength(3);
     expect(config.plugins[0]).toBeInstanceOf(CleanWebpackPlugin);
     expect(config.plugins[1]).toBeInstanceOf(SourceMapDevToolPlugin);
   });
@@ -107,7 +115,7 @@ describe('webpack', () => {
 
     const config = getConfig({plugins: [plugin]});
 
-    expect(config.plugins).toHaveLength(3);
+    expect(config.plugins).toHaveLength(4);
     expect(config.plugins[0].options.inject).toEqual(false);
     expect(config.plugins[0].options.hash).toEqual(false);
     expect(config.plugins[1]).toBeInstanceOf(CleanWebpackPlugin);
@@ -121,10 +129,25 @@ describe('webpack', () => {
 
     const config = getConfig({plugins: [plugin]});
 
-    expect(config.plugins).toHaveLength(3);
+    expect(config.plugins).toHaveLength(4);
     expect(config.plugins[0].replacements).toHaveProperty('TWILIO_FLEX_VERSION');
     expect(config.plugins[0].replacements.TWILIO_FLEX_VERSION).toEqual('1.2.3');
     expect(config.plugins[1]).toBeInstanceOf(CleanWebpackPlugin);
     expect(config.plugins[2]).toBeInstanceOf(SourceMapDevToolPlugin);
+  });
+
+  it('should add DefinePlugin', () => {
+    const config = getConfig();
+    const plugin = config.plugins[2] as any;
+    expect(plugin).toBeInstanceOf(DefinePlugin);
+    expect(config.definitions).toHaveProperty('__FPB_PLUGIN_IDENTIFIER:');
+    expect(config.definitions).toHaveProperty('__FBP_PLUGIN_VERSION');
+    expect(config.definitions).toHaveProperty('__FPB_FLEX_PLUGIN_SCRIPTS_VERSION');
+    expect(config.definitions).toHaveProperty('__FPB_FLEX_PLUGIN_VERSION');
+    expect(config.definitions).toHaveProperty('__FPB_CRACO_CONFIG_FLEX_PLUGIN');
+    expect(config.definitions).toHaveProperty('__FPB_FLEX_UI_VERSION');
+    expect(config.definitions).toHaveProperty('__FPB_REACT_VERSION');
+    expect(config.definitions).toHaveProperty('__FPB_REACT_DOM_VERSION');
+    expect(config.definitions.__FPB_FLEX_PLUGIN_SCRIPTS_VERSION).toEqual('\'1.2.3\'');
   });
 });
