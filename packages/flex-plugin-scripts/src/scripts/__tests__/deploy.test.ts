@@ -121,7 +121,7 @@ describe('deploy', () => {
       expect(doDeploy).not.toHaveBeenCalled();
     });
 
-    it('should throw an exception if custom is called without an argument', async (done) => {
+    it('should throw an exception if custom version is called without an argument', async (done) => {
       try {
         await deployScript.default('version');
       } catch (e) {
