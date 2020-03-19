@@ -140,11 +140,11 @@ describe('webpack', () => {
     const config = getConfig();
     const plugin = config.plugins[2] as any;
     expect(plugin).toBeInstanceOf(DefinePlugin);
-    expect(plugin.definitions).toHaveProperty('__FPB_PLUGIN_IDENTIFIER');
+    expect(plugin.definitions).toHaveProperty('__FPB_PLUGIN_UNIQUE_NAME');
     expect(plugin.definitions).toHaveProperty('__FBP_PLUGIN_VERSION');
     expect(plugin.definitions).toHaveProperty('__FPB_FLEX_PLUGIN_SCRIPTS_VERSION');
     expect(plugin.definitions).toHaveProperty('__FPB_FLEX_PLUGIN_VERSION');
-    expect(plugin.definitions).toHaveProperty('__FPB_CRACO_CONFIG_FLEX_PLUGIN');
+    expect(plugin.definitions).toHaveProperty('__FPB_CRACO_CONFIG_FLEX_PLUGIN_VERSION');
     expect(plugin.definitions).toHaveProperty('__FPB_FLEX_UI_VERSION');
     expect(plugin.definitions).toHaveProperty('__FPB_REACT_VERSION');
     expect(plugin.definitions).toHaveProperty('__FPB_REACT_DOM_VERSION');
