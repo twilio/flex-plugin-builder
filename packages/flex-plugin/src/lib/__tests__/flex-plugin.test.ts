@@ -21,21 +21,21 @@ describe('@twilio/flex-plugin', () => {
     const REACT_VERSION = '2.4.0';
     const REACT_DOM_VERSION = '2.5.0';
     // @ts-ignore
-    globalThis.__FPB_PLUGIN_IDENTIFIER = IDENTIFIER;
+    global.__FPB_PLUGIN_IDENTIFIER = IDENTIFIER;
     // @ts-ignore
-    globalThis.__FBP_PLUGIN_VERSION = PLUGIN_VERSION;
+    global.__FBP_PLUGIN_VERSION = PLUGIN_VERSION;
     // @ts-ignore
-    globalThis.__FPB_FLEX_PLUGIN_SCRIPTS_VERSION = FLEX_PLUGIN_SCRIPTS_VERSION;
+    global.__FPB_FLEX_PLUGIN_SCRIPTS_VERSION = FLEX_PLUGIN_SCRIPTS_VERSION;
     // @ts-ignore
-    globalThis.__FPB_FLEX_PLUGIN_VERSION = FLEX_PLUGIN_VERSION;
+    global.__FPB_FLEX_PLUGIN_VERSION = FLEX_PLUGIN_VERSION;
     // @ts-ignore
-    globalThis.__FPB_CRACO_CONFIG_FLEX_PLUGIN = CRACO_CONFIG_VERSION;
+    global.__FPB_CRACO_CONFIG_FLEX_PLUGIN = CRACO_CONFIG_VERSION;
     // @ts-ignore
-    globalThis.__FPB_FLEX_UI_VERSION = FLEX_UI_VERSION;
+    global.__FPB_FLEX_UI_VERSION = FLEX_UI_VERSION;
     // @ts-ignore
-    globalThis.__FPB_REACT_VERSION = REACT_VERSION;
+    global.__FPB_REACT_VERSION = REACT_VERSION;
     // @ts-ignore
-    globalThis.__FPB_REACT_DOM_VERSION = REACT_DOM_VERSION;
+    global.__FPB_REACT_DOM_VERSION = REACT_DOM_VERSION;
 
     class TestPlugin extends FlexPlugin {
         constructor() {
