@@ -140,7 +140,7 @@ describe('webpack', () => {
     const config = getConfig();
     const plugin = config.plugins[2] as any;
     expect(plugin).toBeInstanceOf(DefinePlugin);
-    expect(config.definitions).toHaveProperty('__FPB_PLUGIN_IDENTIFIER:');
+    expect(config.definitions).toHaveProperty('__FPB_PLUGIN_IDENTIFIER');
     expect(config.definitions).toHaveProperty('__FBP_PLUGIN_VERSION');
     expect(config.definitions).toHaveProperty('__FPB_FLEX_PLUGIN_SCRIPTS_VERSION');
     expect(config.definitions).toHaveProperty('__FPB_FLEX_PLUGIN_VERSION');
