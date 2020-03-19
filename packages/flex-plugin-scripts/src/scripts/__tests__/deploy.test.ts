@@ -123,7 +123,7 @@ describe('deploy', () => {
 
     it('should throw an exception if custom is called without an argument', async (done) => {
       try {
-        await deployScript.default('custom');
+        await deployScript.default('version');
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(e.message).toContain('Custom version bump');
@@ -166,8 +166,8 @@ describe('deploy', () => {
       });
     });
 
-    it('should bump custom', async () => {
-      await deployScript.default('custom', 'custom-version');
+    it('should bump custom version', async () => {
+      await deployScript.default('version', 'custom-version');
 
       expectDoDeployCalled('custom-version', {
         isPublic: false,
