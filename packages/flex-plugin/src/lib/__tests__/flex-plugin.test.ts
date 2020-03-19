@@ -71,7 +71,8 @@ describe('@twilio/flex-plugin', () => {
             expect(plugin.dependencies['flex-plugin']).toEqual(FLEX_PLUGIN_VERSION);
             expect(plugin.dependencies['craco-config-flex-plugin']).toEqual(CRACO_CONFIG_VERSION);
             expect(plugin.dependencies['flex-ui']).toEqual(FLEX_UI_VERSION);
-            expect(plugin.dependencies.react).toEqual(REACT_VERSION);
+            // tslint:disable-next-line
+            expect(plugin.dependencies['react']).toEqual(REACT_VERSION);
             expect(plugin.dependencies['react-dom']).toEqual(REACT_DOM_VERSION);
         });
 
