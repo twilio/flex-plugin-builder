@@ -41,14 +41,14 @@
   },
   "dependencies": {
     "esm": "^3.2.25",
-    "flex-dev-utils": "^3.3.4",
+    "flex-dev-utils": "^3.5.0",
     "yargs": "^14.2.0"
   },
   "devDependencies": {
     "@twilio/flex-ui": "^1",
     "@types/yargs": "^13.0.3",
-    "craco-config-flex-plugin": "^3.4.2",
-    "flex-plugin": "^3.0.0",
+    "craco-config-flex-plugin": "^3.5.0",
+    "flex-plugin": "^3.5.0",
     "flex-plugin-scripts": "^4.0.1-alpha.0"
   },
   "gitHead": "ca02b3d214e6dfa4277b6b69cbbb178783004edf"

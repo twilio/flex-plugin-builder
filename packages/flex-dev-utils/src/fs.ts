@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { join } from 'path';
 import * as path from 'path';
 import os from 'os';
 import mkdirp from 'mkdirp';
@@ -24,6 +25,9 @@ const rootDir = os.platform() === 'win32' ? process.cwd().split(path.sep)[0] : '
 
 // Promise version of {@link copyTempDir}
 const promiseCopyTempDir = promisify(copyTempDir);
+
+// Node directory
+const nodeModulesPath = join(process.cwd(), 'node_modules');
 
 /**
  * Checks the provided array of files exist
@@ -116,5 +120,15 @@ export const tmpDirSync = tmp.dirSync;
  * rm -rf sync script
  */
 export const rmRfSync = rimRaf.sync;
+
+/**
+ * Returns the version of the dependency that is installed in node_modules
+ * @param pkgName  the package name
+ * @return the version of the package installed
+ */
+/* istanbul ignore next */
+export const getDependencyVersion = (pkgName: string) => {
+  return require(join(nodeModulesPath, pkgName, 'package.json')).version;
+};
 
 export { DirResult as TmpDirResult } from 'tmp';
