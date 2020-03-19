@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-scripts",
-  "version": "3.4.3",
+  "version": "3.5.0",
   "description": "Scripts to run, build and deploy Flex plugins",
   "keywords": [
     "flex",
@@ -41,7 +41,7 @@
     "@craco/craco": "^5.6.3",
     "core-js": "^2.6.5",
     "esm": "^3.2.25",
-    "flex-dev-utils": "^3.4.3",
+    "flex-dev-utils": "^3.5.0",
     "form-data": "^2.5.1",
     "querystring": "^0.2.0",
     "react-test-renderer": "^16.10.2",
