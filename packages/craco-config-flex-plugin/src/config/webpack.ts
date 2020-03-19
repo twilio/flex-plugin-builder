@@ -10,6 +10,8 @@ import {
   SourceMapDevToolPlugin,
 } from 'webpack';
 import { merge, clone } from 'flex-dev-utils/dist/lodash';
+import { getDependencyVersion, readPackageJson } from 'flex-dev-utils/dist/fs';
+import { DefinePlugin } from 'webpack';
 
 import { loadFile } from '../utils/fs';
 
@@ -80,6 +82,17 @@ const configureWebpack = (config: WebpackConfig): Configuration => {
   }));
   config.plugins.push(new SourceMapDevToolPlugin({
     append: '\n//# sourceMappingURL=bundle.js.map',
+  }));
+  const pkg = readPackageJson();
+  config.plugins.push(new DefinePlugin({
+    __FPB_PLUGIN_UNIQUE_NAME: `'${pkg.name}'`,
+    __FBP_PLUGIN_VERSION: `'${pkg.version}'`,
+    __FPB_FLEX_PLUGIN_SCRIPTS_VERSION: `'${getDependencyVersion('flex-plugin-scripts')}'`,
+    __FPB_FLEX_PLUGIN_VERSION: `'${getDependencyVersion('flex-plugin')}'`,
+    __FPB_CRACO_CONFIG_FLEX_PLUGIN_VERSION: `'${getDependencyVersion('craco-config-flex-plugin')}'`,
+    __FPB_FLEX_UI_VERSION: `'${getDependencyVersion('@twilio/flex-ui')}'`,
+    __FPB_REACT_VERSION: `'${getDependencyVersion('react')}'`,
+    __FPB_REACT_DOM_VERSION: `'${getDependencyVersion('react-dom')}'`,
   }));
 
   config.optimization.splitChunks = false;
