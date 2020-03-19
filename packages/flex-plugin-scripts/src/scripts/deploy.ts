@@ -18,7 +18,7 @@ const allowedBumps = [
   'major',
   'minor',
   'patch',
-  'custom',
+  'version',
 ];
 
 interface Options {
@@ -173,14 +173,14 @@ const deploy = async (...argv: string[]) => {
       throw new FlexPluginError(`Version bump can only be one of ${allowedBumps.join(', ')}`);
     }
 
-    if (bump === 'custom' && !argv[1]) {
+    if (bump === 'version' && !argv[1]) {
       throw new FlexPluginError('Custom version bump requires the version value.');
     }
 
     if (bump === 'overwrite') {
       opts.overwrite = true;
       nextVersion = readPackageJson().version;
-    } else if (bump !== 'custom') {
+    } else if (bump !== 'version') {
       nextVersion = semver.inc(paths.version, bump as ReleaseType) as any;
     }
   } else {
