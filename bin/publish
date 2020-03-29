@@ -19,18 +19,6 @@ function run_script() {
   fi
 }
 
-# Show notification
-if [ "$1" == "public" ] ; then
-  echo -e "\n------------------------------------"
-  echo "-- Publishing as a public release --"
-  echo -e "------------------------------------\n"
-else
-  echo -e "\n-----------------------------------------"
-  echo "-- Publishing as a beta (next) release --"
-  echo -e "-----------------------------------------\n"
-fi
-sleep 5
-
 # Cleanup
 run_script $LERNA clean -y
 run_script $LERNA run clean

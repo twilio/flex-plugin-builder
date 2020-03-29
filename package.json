@@ -26,9 +26,7 @@
     "lint:fix": "tslint --project tsconfig.lint.json --fix",
     "test": "jest --coverage --color",
     "test:coverage": "jest --coverage --color --watchAll=false",
-    "test:watch": "jest --watchAll --color",
-    "publish:public": "bin/publish public",
-    "publish:next": "bin/publish"
+    "test:watch": "jest --watchAll --color"
   },
   "husky": {
     "hooks": {
