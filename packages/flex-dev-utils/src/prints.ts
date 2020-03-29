@@ -17,3 +17,5 @@ export const printList = (...lines: string[]) => {
   logger.info(multilineString(...lines));
   logger.newline();
 };
+
+export default {};

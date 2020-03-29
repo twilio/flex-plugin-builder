@@ -21,3 +21,5 @@ export const randomString = (length: number, list: string[] = []) => {
 
   return str;
 };
+
+export default randomString;

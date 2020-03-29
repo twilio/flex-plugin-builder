@@ -89,3 +89,5 @@ export const isValidUrl = (url: string): boolean => URL_REGEX.test(url);
  * @private
  */
 export const isGitHubUrl = (url: string): boolean => GITHUB_REGEX.test(url);
+
+export default {};

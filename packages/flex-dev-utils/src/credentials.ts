@@ -185,3 +185,5 @@ export const _getKeytar = () => {
 
   throw new Error('Optional dependency keytar was not installed');
 };
+
+export default getCredential;
