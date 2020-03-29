@@ -1,5 +1,6 @@
 import { resolve } from './require';
 import { join } from 'path';
+import * as fs from 'flex-dev-utils/dist/fs';
 
 export const FLEX_PACKAGES: string[] = [
   '@twilio/flex-ui',
@@ -54,4 +55,16 @@ export const getPackageDetails = (packages: string[]): PackageDetail[] => {
 
             return detail;
         });
+};
+
+/**
+ * Returns the webpack configuration, either from customer's webpack.config.js or the default config
+ */
+export const getWebpack = () => {
+  const webpackPath = join(process.cwd(), 'webpack.config.js');
+  if (fs.checkFilesExist(webpackPath)) {
+    return require(webpackPath);
+  }
+
+  return require('../config/webpack.config');
 };
