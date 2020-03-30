@@ -48,7 +48,7 @@ export default class Http {
       },
       headers: {
         'Content-Type': config.contentType ? config.contentType : 'application/x-www-form-urlencoded',
-      }
+      },
     });
 
     if (config.userAgent) {
