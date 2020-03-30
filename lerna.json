@@ -4,8 +4,8 @@
     "packages/*"
   ],
   "command": {
-    "bootstrap": {
-      "npmClientArgs": ["--no-package-lock"]
+    "publish": {
+      "ignoreChanges": ["package-lock.json"]
     }
   },
   "version": "3.6.1"
