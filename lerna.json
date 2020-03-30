@@ -5,7 +5,7 @@
   ],
   "command": {
     "publish": {
-      "ignoreChanges": ["package-lock.json"]
+      "ignoreChanges": ["packages/*/package-lock.json", "package-lock.json"]
     }
   },
   "version": "3.6.1"
