@@ -49,6 +49,7 @@ export default class Http {
       headers: {
         'Content-Type': config.contentType ? config.contentType : 'application/x-www-form-urlencoded',
       },
+      maxContentLength: Infinity
     });
 
     if (config.userAgent) {
