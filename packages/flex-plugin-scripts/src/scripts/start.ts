@@ -3,7 +3,7 @@ import { join } from 'path';
 import craco from '../utils/craco';
 
 import run, { exit } from '../utils/run';
-import { findPorts } from './start/server';
+import { findPorts, getDefaultPort } from './start/server';
 
 /**
  * Starts the dev-server
@@ -12,7 +12,7 @@ const start = async (...args: string[]) => {
   logger.debug('Starting local development environment');
 
   // Finds the first available free port where two consecutive ports are free
-  const port = await findPorts();
+  const port = await findPorts(getDefaultPort(process.env.PORT));
   process.env.PORT = port.toString();
 
   // This script runs after React Script is finished running

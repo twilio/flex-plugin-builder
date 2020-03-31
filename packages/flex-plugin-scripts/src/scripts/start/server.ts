@@ -1,5 +1,25 @@
 import net from 'net';
 
+export const DEFAULT_PORT = 3000;
+
+/**
+ * Returns the default port
+ * @param port  optional port parameter
+ */
+export const getDefaultPort = (port?: string) => {
+  if (port) {
+    const numeric = parseInt(port, 10);
+
+    if (isNaN(numeric)) {
+      return DEFAULT_PORT;
+    }
+
+    return numeric;
+  }
+
+  return DEFAULT_PORT;
+};
+
 /**
  * Finds the first available two consecutive ports
  *
