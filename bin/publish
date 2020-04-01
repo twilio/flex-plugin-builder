@@ -30,6 +30,8 @@ while [ $secs -gt 0 ]; do
   sleep 1
   : $((secs--))
 done
+echo -ne "Publishing as a \033[1m${tag}\033[0m release\033[0K\r"
+echo -ne "\r\n"
 
 # Cleanup
 run_script $LERNA clean -y
