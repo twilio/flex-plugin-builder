@@ -2,7 +2,6 @@ import axios, { AxiosRequestConfig } from 'flex-dev-utils/dist/axios';
 import { mkdirpSync } from 'flex-dev-utils/dist/fs';
 import fs from 'fs';
 import path from 'path';
-import has = Reflect.has;
 
 export interface GitHubInfo {
   owner: string;
