@@ -56,27 +56,23 @@ Options:
 
 ### Creating a Plugin from Custom Template
 
-When creating a new plugin, you may provide a `--template` URL to a GitHub repo that contains your custom template.
+When creating a new plugin, you may provide a `--template` URL to a GitHub repo containing the source code of a Flex plugin. Create Flex Plugin will copy over the entire content from the directory, including all scripts, files and directories that are not part of the src folder. The repo has to be a valid node repository which means that it expects files such as `package.json`, `.gitignore`, `README.md`, etc to be present.
 
 #### Template Directory Hierarchy
 
 Your GitHub project should be
-
 ```
 /
-  template/
-    src/
+     src/
       index.js
       ...
     ...
 ```
 
-Create Flex Plugin will copy over the content from the `template` directory, and expects a `index.js`. 
-
-We will provide a `public/` folder as well as `package.json` but you may override these by including them in your `template/` folder.
+Create Flex Plugin will copy over the content from the directory, and expects an `index.js` in the src folder. We will also provide a `public/` folder and a `package.json` but you may override these by including them in your base GitHub repo.
 
 See [flex-plugin-template-sample](https://github.com/ktalebian/flex-plugin-template-sample) for a basic example and 
-[flex-plugin-template-now](https://github.com/cwkendall/flex-plugin-template-now) for a more complete example.
+[plugin-agent-autoresponse](github.com/johnfischelli/plugin-agent-autoresponse) for a more complete example.
 
 #### Version Support
 

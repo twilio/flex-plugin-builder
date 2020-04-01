@@ -6,7 +6,8 @@ import * as github from '../github';
 describe('github', () => {
   let mockAxios: MockAdapter;
   const gitHubUrl = 'https://github.com/twilio/flex-plugin-builder';
-  const apiGithubUrl = 'https://api.github.com/repos/twilio/flex-plugin-builder/contents/template?ref=master';
+  const apiGithubUrlTemplated = 'https://api.github.com/repos/twilio/flex-plugin-builder/contents/template?ref=master';
+  const apiGithubUrl = 'https://api.github.com/repos/twilio/flex-plugin-builder/contents?ref=master';
   const githubInfo = {
     ref: 'master',
     owner: 'twilio',
@@ -14,7 +15,14 @@ describe('github', () => {
   };
 
   beforeEach(() => {
+    jest.resetAllMocks();
+    jest.resetModules();
+
     mockAxios = new MockAdapter(axios);
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
   });
 
   describe('parseGitHubUrl', () => {
@@ -40,17 +48,97 @@ describe('github', () => {
   });
 
   describe('downloadRepo', () => {
-    it('should call _downloadDir', async () => {
+    it('should call _downloadDir with a templated url', async () => {
       const _downloadDir = jest
         .spyOn(github, '_downloadDir')
         .mockResolvedValue(null);
+      const _hasTemplateDir = jest
+        .spyOn(github, '_hasTemplateDir')
+        .mockResolvedValue(true);
 
       await github.downloadRepo(githubInfo, '/dir');
 
+      expect(_hasTemplateDir).toHaveBeenCalledTimes(1);
+      expect(_hasTemplateDir).toHaveBeenCalledWith(githubInfo);
+
       expect(_downloadDir).toHaveBeenCalledTimes(1);
-      expect(_downloadDir).toHaveBeenCalledWith(apiGithubUrl, '/dir');
+      expect(_downloadDir).toHaveBeenCalledWith(apiGithubUrlTemplated, '/dir', github._getBaseRegex(githubInfo, true));
 
       _downloadDir.mockRestore();
+      _hasTemplateDir.mockRestore();
+    });
+
+    it('should call _downloadDir with a normal url', async () => {
+      const _downloadDir = jest
+        .spyOn(github, '_downloadDir')
+        .mockResolvedValue(null);
+      const _hasTemplateDir = jest
+        .spyOn(github, '_hasTemplateDir')
+        .mockResolvedValue(false);
+
+      await github.downloadRepo(githubInfo, '/dir');
+
+      expect(_hasTemplateDir).toHaveBeenCalledTimes(1);
+      expect(_hasTemplateDir).toHaveBeenCalledWith(githubInfo);
+
+      expect(_downloadDir).toHaveBeenCalledTimes(1);
+      expect(_downloadDir).toHaveBeenCalledWith(apiGithubUrl, '/dir', github._getBaseRegex(githubInfo, false));
+
+      _downloadDir.mockRestore();
+      _hasTemplateDir.mockRestore();
+    });
+  });
+
+  describe('_getBaseRegex', () => {
+    it('should return a templated base regex', () => {
+      const regex = github._getBaseRegex(githubInfo, true);
+      expect(regex).toEqual('\/twilio\/flex-plugin-builder\/master\/template\/');
+    });
+
+    it('should return a non-templated base regex', () => {
+      const regex = github._getBaseRegex(githubInfo, false);
+      expect(regex).toEqual('\/twilio\/flex-plugin-builder\/master\/');
+    });
+  });
+
+  describe('_hasTemplateDir', () => {
+    it('should return true if there is a template dir', async () => {
+      const resp = [{
+        name: 'foo'
+      }, {
+        name: 'template',
+        type: 'dir'
+      }];
+
+      mockAxios.onGet().reply(() => Promise.resolve([200, resp]));
+
+      expect(await github._hasTemplateDir(githubInfo)).toEqual(true);
+    });
+
+    it('should return false if there is a template file', async () => {
+      const resp = [{
+        name: 'foo'
+      }, {
+        name: 'template',
+        type: 'file'
+      }];
+
+      mockAxios.onGet().reply(() => Promise.resolve([200, resp]));
+
+      expect(await github._hasTemplateDir(githubInfo)).toEqual(false);
+    });
+
+    it('should return false if there is no template dir', async () => {
+      const resp = [{
+        name: 'foo'
+      }, {
+        name: 'something-else',
+        type: 'dir'
+      }];
+
+      mockAxios.onGet().reply(() => Promise.resolve([200, resp]));
+
+      expect(await github._hasTemplateDir(githubInfo)).toEqual(false);
     });
   });
 
@@ -69,7 +157,7 @@ describe('github', () => {
 
     it('should do nothing if api returns empty result', async () => {
       mockAxios.onGet().reply(() => Promise.resolve([200, []]));
-      await github._downloadDir(apiGithubUrl, '/dir');
+      await github._downloadDir(apiGithubUrlTemplated, '/dir', '');
 
       expect(_downloadFile).not.toHaveBeenCalled();
     });
@@ -84,7 +172,7 @@ describe('github', () => {
       }];
 
       mockAxios.onGet().reply(() => Promise.resolve([200, resp]));
-      await github._downloadDir(apiGithubUrl, '/dir');
+      await github._downloadDir(apiGithubUrlTemplated, '/dir', 'github.com\/twilio\/template\/');
 
       expect(_downloadFile).toHaveBeenCalledTimes(2);
       expect(_downloadFile).toHaveBeenNthCalledWith(1, resp[0].download_url, '/dir/file1.js');
@@ -102,13 +190,13 @@ describe('github', () => {
       }];
 
       mockAxios.onGet().reply((request) => {
-        if (request.url === apiGithubUrl) {
+        if (request.url === apiGithubUrlTemplated) {
           return Promise.resolve([200, firstResp]);
         } else {
           return Promise.resolve([200, secondResp]);
         }
       });
-      await github._downloadDir(apiGithubUrl, '/dir');
+      await github._downloadDir(apiGithubUrlTemplated, '/dir', 'github.com\/twilio\/template\/');
 
       expect(_downloadFile).toHaveBeenCalledTimes(1);
       expect(_downloadFile).toHaveBeenNthCalledWith(1, secondResp[0].download_url, '/dir/file2.js');
@@ -123,7 +211,7 @@ describe('github', () => {
       mockAxios.onGet().reply(() => Promise.resolve([200, resp]));
 
       try {
-        await github._downloadDir(apiGithubUrl, '/dir');
+        await github._downloadDir(apiGithubUrlTemplated, '/dir', 'github.com\/twilio\/template\/');
       } catch (e) {
         expect(e.message).toContain('Unexpected content type');
         done();
@@ -139,7 +227,7 @@ describe('github', () => {
       mockAxios.onGet().reply(() => Promise.resolve([200, resp]));
 
       try {
-        await github._downloadDir(apiGithubUrl, '/dir');
+        await github._downloadDir(apiGithubUrlTemplated, '/dir', 'github.com\/twilio\/template\/');
       } catch (e) {
         expect(e.message).toContain('invalid URL');
         done();
