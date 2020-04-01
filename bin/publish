@@ -37,7 +37,7 @@ run_script $LERNA run clean
 run_script rm -rf node_modules
 
 # Install
-run_script npm install
+run_script npm install --no-package-lock
 
 # Lint and test
 run_script npm run lint
