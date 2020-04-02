@@ -12,11 +12,12 @@ export interface Action extends ReduxAction {
 }
 
 // Register all component states under the namespace
-export interface AppState extends FlexAppState {
+export interface AppState {
+  flex: FlexAppState;
   '{{pluginNamespace}}': {
-    customTaskList: CustomTaskListState,
+    customTaskList: CustomTaskListState;
     // Other states
-  }
+  };
 }
 
 // Combine the reducers
