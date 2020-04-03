@@ -14,7 +14,6 @@ export interface PackageJson {
   dependencies: {
     'flex-plugin': string;
     'flex-plugin-scripts': string;
-    'craco-config-flex-plugin': string;
   };
 }
 

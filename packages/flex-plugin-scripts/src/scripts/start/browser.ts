@@ -1,7 +1,6 @@
 import { fs, open } from 'flex-dev-utils';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { join } from 'path';
-import run from '../../utils/run';
 import pluginServer, { Plugin } from '../start/pluginServer';
 
 /**
@@ -61,7 +60,7 @@ export const _requirePackages = (pluginsPath: string, pkgPath: string) => {
  * @param port  the port to update to
  * @private
  */
-export const _replacePlugins = (port: string) => {
+export const _replacePlugins = (port: number) => {
   const pluginsPath = join(process.cwd(), 'public', 'plugins.json');
   const pkgPath = join(process.cwd(), 'package.json');
   const { plugins, pkg } = _requirePackages(pluginsPath, pkgPath);
@@ -70,16 +69,16 @@ export const _replacePlugins = (port: string) => {
   const existingPort = _getPort(plugins[pluginIndex].src);
 
   // Replace port and re-write to file
-  plugins[pluginIndex].src = plugins[pluginIndex].src.replace(existingPort, port);
+  plugins[pluginIndex].src = plugins[pluginIndex].src.replace(existingPort, port.toString());
   fs.writeFileSync(pluginsPath, JSON.stringify(plugins, null, 2));
 };
 
 /**
  * Dynamically updates the plugins.json file, and then opens the browser
- * @param argv
+ * @param port  the port number
  */
-const browser = async (...argv: string[]) => {
-  const { url, port } = _getPortAndUrl(...argv);
+const openBrowser = async (port: number) => {
+  const url = `http://localhost:${port}`;
   _replacePlugins(port);
 
   // Now open browser
@@ -88,6 +87,4 @@ const browser = async (...argv: string[]) => {
   pluginServer(port);
 };
 
-run(browser);
-
-export default browser;
+export default openBrowser;

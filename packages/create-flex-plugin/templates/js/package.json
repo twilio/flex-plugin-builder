@@ -19,12 +19,10 @@
     "test": "flex-plugin test --env=jsdom"
   },
   "dependencies": {
-    "craco-config-flex-plugin": "{{cracoConfigVersion}}",
     "flex-plugin": "{{flexPluginVersion}}",
     "flex-plugin-scripts": "{{pluginScriptsVersion}}",
     "react": "16.5.2",
-    "react-dom": "16.5.2",
-    "react-scripts": "3.4.1"
+    "react-dom": "16.5.2"
   },
   "devDependencies": {
     "@twilio/flex-ui": "{{flexSdkVersion}}",

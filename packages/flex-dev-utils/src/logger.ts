@@ -96,6 +96,15 @@ export const wrap = (input: string, columns: number, options = DefaultWrapOption
 };
 
 /**
+ * Clears the terminal
+ */
+export const clearTerminal = () => {
+  process.stdout.write(
+    process.platform === 'win32' ? '\x1B[2J\x1B[0f' : '\x1B[2J\x1B[3J\x1B[H'
+  );
+};
+
+/**
  *  The internal logger method
  * @param args
  * @private
@@ -115,6 +124,7 @@ export default {
   success,
   newline,
   wrap,
+  clearTerminal,
   colors: chalk,
   coloredStrings: {
     link: (str: string) => chalk.blue(str),

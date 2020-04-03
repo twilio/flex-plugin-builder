@@ -6,7 +6,6 @@
   "command": {
     "publish": {
       "ignoreChanges": [
-        "packages/craco-config-flex-plugin/package-lock.json",
         "packages/create-flex-plugin/package-lock.json",
         "packages/flex-dev-utils/package-lock.json",
         "packages/flex-plugin-scripts/package-lock.json",

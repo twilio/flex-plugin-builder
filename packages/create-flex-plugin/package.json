@@ -47,7 +47,6 @@
   "devDependencies": {
     "@twilio/flex-ui": "^1",
     "@types/yargs": "^13.0.3",
-    "craco-config-flex-plugin": "^4.0.4-alpha.0",
     "flex-plugin": "^4.0.2-alpha.0",
     "flex-plugin-scripts": "^4.0.4-alpha.0"
   },

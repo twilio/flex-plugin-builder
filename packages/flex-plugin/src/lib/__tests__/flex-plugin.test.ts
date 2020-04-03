@@ -16,7 +16,6 @@ describe('@twilio/flex-plugin', () => {
     const UNIQUE_NAME = 'plugin-identifier';
     const FLEX_PLUGIN_SCRIPTS_VERSION = '2.0.0';
     const FLEX_PLUGIN_VERSION = '2.1.0';
-    const CRACO_CONFIG_VERSION = '2.2.0';
     const FLEX_UI_VERSION = '2.3.0';
     const REACT_VERSION = '2.4.0';
     const REACT_DOM_VERSION = '2.5.0';
@@ -28,8 +27,6 @@ describe('@twilio/flex-plugin', () => {
     global.__FPB_FLEX_PLUGIN_SCRIPTS_VERSION = FLEX_PLUGIN_SCRIPTS_VERSION;
     // @ts-ignore
     global.__FPB_FLEX_PLUGIN_VERSION = FLEX_PLUGIN_VERSION;
-    // @ts-ignore
-    global.__FPB_CRACO_CONFIG_FLEX_PLUGIN_VERSION = CRACO_CONFIG_VERSION;
     // @ts-ignore
     global.__FPB_FLEX_UI_VERSION = FLEX_UI_VERSION;
     // @ts-ignore
@@ -69,7 +66,6 @@ describe('@twilio/flex-plugin', () => {
             expect(plugin.uniqueName).toEqual(UNIQUE_NAME);
             expect(plugin.dependencies['flex-plugin-scripts']).toEqual(FLEX_PLUGIN_SCRIPTS_VERSION);
             expect(plugin.dependencies['flex-plugin']).toEqual(FLEX_PLUGIN_VERSION);
-            expect(plugin.dependencies['craco-config-flex-plugin']).toEqual(CRACO_CONFIG_VERSION);
             expect(plugin.dependencies['flex-ui']).toEqual(FLEX_UI_VERSION);
             // tslint:disable-next-line
             expect(plugin.dependencies['react']).toEqual(REACT_VERSION);

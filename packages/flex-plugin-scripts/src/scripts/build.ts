@@ -1,5 +1,8 @@
-import { logger } from 'flex-dev-utils';
-import craco from '../utils/craco';
+import { fs, logger } from 'flex-dev-utils';
+import webpack from 'webpack';
+import getConfiguration from '../config';
+import webpackFactory from '../config/webpack.config';
+
 
 import run, { exit } from '../utils/run';
 
@@ -9,14 +12,29 @@ import run, { exit } from '../utils/run';
 const build = async (...args: string[]) => {
   logger.debug('Building Flex plugin bundle');
 
-  // This prints a hosting instruction specific to react applications
-  // We should replace it with instruction about Twilio Assets
-  // hijack('react-dev-utils/printHostingInstructions', () => {
-  //   // to be filled
-  // });
+  process.env.NODE_ENV = 'production';
 
-  const exitCode = await craco('build', ...args);
-  exit(exitCode, args);
+  await _buildBundle();
+};
+
+export const _buildBundle = async (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const config = getConfiguration('webpack', 'production');
+
+    webpack(config)
+      .run((err, stats) => {
+        if (err) {
+          return reject(err);
+        }
+
+        const result = stats.toJson();
+        if (result.errors.length) {
+          return reject(result.errors);
+        }
+
+        return resolve();
+      });
+  });
 };
 
 run(build);

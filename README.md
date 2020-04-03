@@ -30,12 +30,10 @@ This is a monorepo project managed by [lerna](https://github.com/lerna/lerna) fo
 - [create-flex-plugin](packages/create-flex-plugin): The CLI tool to start a new Flex plugin project
 - [flex-plugin](packages/flex-plugin): Runtime dependency for Flex plugins
 - [flex-plugin-scripts](packages/flex-plugin-scripts): The scripts used for building, testing, and deploying your plugin
-- [craco-config-flex-plugin](packages/craco-config-flex-plugin): Config override for [Create React App](https://github.com/facebook/create-react-app) using [craco](https://github.com/sharegate/craco)
 
 ## User Guide
 
 * [Creating a new plugin](packages/create-flex-plugin/README.md)
-* [Overriding configuration](packages/craco-config-flex-plugin/README.md)
 * [Available Scripts](packages/flex-plugin-scripts/README.md)
 
 ## Changelog

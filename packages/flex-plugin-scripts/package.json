@@ -38,17 +38,28 @@
     "test:watch": "cd ../.. && jest packages/flex-plugin-scripts --watch"
   },
   "dependencies": {
-    "@craco/craco": "^5.6.3",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-react": "^7.9.4",
+    "@k88/interpolate-html-plugin": "^1.0.2",
+    "babel-loader": "^8.1.0",
+    "babel-plugin-named-asset-import": "^0.3.6",
+    "babel-preset-react-app": "^9.1.2",
     "core-js": "^2.6.5",
     "esm": "^3.2.25",
     "flex-dev-utils": "^4.0.4-alpha.0",
     "form-data": "^2.5.1",
+    "html-webpack-plugin": "^4.0.4",
     "querystring": "^0.2.0",
     "react-test-renderer": "^16.10.2",
-    "semver": "^6.3.0"
+    "semver": "^6.3.0",
+    "webpack": "^4.42.1",
+    "webpack-dev-server": "^3.10.3"
   },
   "devDependencies": {
-    "@types/semver": "^6.0.2"
+    "@types/semver": "^6.0.2",
+    "@types/webpack": "^4.41.10",
+    "@types/webpack-dev-server": "^3.10.1"
   },
   "peerDependencies": {
     "flex-plugin": "*"

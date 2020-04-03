@@ -25,7 +25,6 @@ export default class FlexPluginError extends Error {
     if (this.pkg) {
       const deps = this.pkg.dependencies;
       const names = [
-        'craco-config-flex-plugin',
         'flex-plugin',
         'flex-plugin-scripts',
       ];

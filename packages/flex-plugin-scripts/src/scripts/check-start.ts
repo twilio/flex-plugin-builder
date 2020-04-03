@@ -8,7 +8,6 @@ import {
   publicDirCopyFailed,
   versionMismatch,
 } from '../prints';
-import cracoConfigMissing from '../prints/cracoConfigMissing';
 import expectedDependencyNotFound from '../prints/expectedDependencyNotFound';
 import run from '../utils/run';
 
@@ -19,7 +18,6 @@ interface Package {
 const nodeModulesPath = join(process.cwd(), 'node_modules');
 const flexUIPkgPath = join(nodeModulesPath, '@twilio/flex-ui/package.json');
 const appConfigPath = join(process.cwd(), 'public', 'appConfig.js');
-const cracoConfigPath = join(process.cwd(), 'craco.config.js');
 const indexSourcePath = join(__dirname, '..', '..', 'dev_assets', 'index.html');
 const indexTargetPath = join(process.cwd(), 'public', 'index.html');
 
@@ -36,18 +34,6 @@ const PackagesToVerify = [
 export const _checkAppConfig = () => {
   if (!existsSync(appConfigPath)) {
     appConfigMissing();
-
-    return process.exit(1);
-  }
-};
-
-/**
- * Checks that craco-config path exists
- * @private
- */
-export const _checkCracoConfig = () => {
-  if (!existsSync(cracoConfigPath)) {
-    cracoConfigMissing();
 
     return process.exit(1);
   }
@@ -121,7 +107,6 @@ const checkStart = async () => {
   const allowSkip = process.env.SKIP_PREFLIGHT_CHECK === 'true';
 
   _checkAppConfig();
-  _checkCracoConfig();
   _checkPublicDirSync(allowSkip);
   _checkExternalDepsVersions(allowSkip);
 };

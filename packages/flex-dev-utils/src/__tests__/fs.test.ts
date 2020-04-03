@@ -71,7 +71,6 @@ describe('fs', () => {
         dependencies: {
           'flex-plugin-scripts': '1',
           'flex-plugin': '2',
-          'craco-config-flex-plugin': '3',
         },
       };
       const pkgAfter: PackageJson = Object.assign({}, pkgBefore, {version: '2'});
