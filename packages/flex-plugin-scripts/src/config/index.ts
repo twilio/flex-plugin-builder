@@ -12,11 +12,6 @@ interface Configurations {
   webpack: WebpackConfigurations;
   devServer: WebpackDevConfigurations;
 }
-interface ConfigurationFactoryOptions {
-  isProd: boolean;
-  isDev: boolean;
-  isTest: boolean;
-}
 
 const getConfiguration = <C extends ConfigurationTypes>(name: ConfigurationTypes, env: Environment): Configurations[C] => {
   const pwd = process.cwd();

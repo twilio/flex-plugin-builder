@@ -13,7 +13,7 @@ export interface IFlexPlugin {
 export abstract class FlexPlugin implements IFlexPlugin {
   public name: string;
   public uniqueName: string = __FPB_PLUGIN_UNIQUE_NAME;
-  public version: string = __FBP_PLUGIN_VERSION;
+  public version: string = __FPB_PLUGIN_VERSION;
   public dependencies: object = {
     'flex-plugin-scripts': __FPB_FLEX_PLUGIN_SCRIPTS_VERSION,
     'flex-plugin': __FPB_FLEX_PLUGIN_VERSION,

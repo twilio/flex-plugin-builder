@@ -41,7 +41,7 @@ export const _getPlugins = (env: Environment): Plugin[] => {
 
   plugins.push(new DefinePlugin({
     __FPB_PLUGIN_UNIQUE_NAME: `'${paths.packageName}'`,
-    __FBP_PLUGIN_VERSION: `'${paths.version}'`,
+    __FPB_PLUGIN_VERSION: `'${paths.version}'`,
     __FPB_FLEX_PLUGIN_SCRIPTS_VERSION: `'${getDependencyVersion('flex-plugin-scripts')}'`,
     __FPB_FLEX_PLUGIN_VERSION: `'${getDependencyVersion('flex-plugin')}'`,
     __FPB_FLEX_UI_VERSION: `'${getDependencyVersion('@twilio/flex-ui')}'`,

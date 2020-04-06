@@ -28,7 +28,7 @@ export const _buildBundle = async (): Promise<void> => {
         }
 
         const result = stats.toJson();
-        if (result.errors.length) {
+        if (stats.hasErrors()) {
           return reject(result.errors);
         }
 

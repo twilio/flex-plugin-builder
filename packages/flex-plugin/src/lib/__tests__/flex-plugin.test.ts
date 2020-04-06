@@ -22,7 +22,7 @@ describe('@twilio/flex-plugin', () => {
     // @ts-ignore
     global.__FPB_PLUGIN_UNIQUE_NAME = UNIQUE_NAME;
     // @ts-ignore
-    global.__FBP_PLUGIN_VERSION = PLUGIN_VERSION;
+    global.__FPB_PLUGIN_VERSION = PLUGIN_VERSION;
     // @ts-ignore
     global.__FPB_FLEX_PLUGIN_SCRIPTS_VERSION = FLEX_PLUGIN_SCRIPTS_VERSION;
     // @ts-ignore
