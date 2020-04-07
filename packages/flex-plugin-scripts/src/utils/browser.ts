@@ -1,7 +1,7 @@
 import { fs, open } from 'flex-dev-utils';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { join } from 'path';
-import pluginServer, { Plugin } from '../start/pluginServer';
+import pluginServer, { Plugin } from '../scripts/start/pluginServer';
 
 /**
  * Extracts port from a localhost url
@@ -16,24 +16,6 @@ export const _getPort = (url: string) => {
   }
 
   return matches[1];
-};
-
-/**
- * Finds the port and localhost url from the argv
- *
- * @param argv
- * @private
- */
-export const _getPortAndUrl = (...argv: string[]) => {
-  const url = argv.find((a) => a.indexOf('localhost:') !== -1);
-  if (!url) {
-    throw new FlexPluginError('No localhost server was found running.');
-  }
-
-  return {
-    url,
-    port: _getPort(url),
-  };
 };
 
 /**

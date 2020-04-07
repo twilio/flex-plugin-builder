@@ -1,12 +1,12 @@
-import { logger } from 'flex-dev-utils';
-import webpack from 'webpack';
+import { logger, env } from 'flex-dev-utils';
+import { findPorts, getDefaultPort, getUrls } from 'flex-dev-utils/dist/urls';
 import WebpackDevServer from 'webpack-dev-server';
+
 import getConfiguration from '../config';
 
 import run from '../utils/run';
-import openBrowser from './start/browser';
-import { findPorts, getDefaultPort } from './start/server';
-
+import openBrowser from '../utils/browser';
+import compiler from '../utils/compiler';
 const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
 
 /**
@@ -18,25 +18,34 @@ const start = async (...args: string[]) => {
   // Finds the first available free port where two consecutive ports are free
   const port = await findPorts(getDefaultPort(process.env.PORT));
 
-  process.env.NODE_ENV = 'development';
-  process.env.HOST = process.env.HOST || '0.0.0.0';
-  process.env.PORT = port.toString();
+  env.setBabelEnv('development');
+  env.setNodeEnv('development');
+  env.setHost('0.0.0.0');
+  env.setPort(port);
 
-  startDevServer(Number(process.env.PORT), process.env.HOST);
+  // Future node version will silently consume unhandled exception
+  process.on('unhandledRejection', err => { throw err; });
+
+  _startDevServer(port);
 };
 
-export const startDevServer = (port: number, host: string) => {
+export const _startDevServer = (port: number) => {
   const config = getConfiguration('webpack', 'development');
   const devConfig = getConfiguration('devServer', 'development');
-  const devServer = new WebpackDevServer(webpack(config), devConfig);
+  const devCompiler = compiler(config, true);
+  const devServer = new WebpackDevServer(devCompiler, devConfig);
+  const { local } = getUrls(port);
 
-  devServer.listen(port, host, async (err) => {
+  devServer.listen(local.port, local.host, async (err) => {
     if (err) {
       logger.error(err);
       return;
     }
-    logger.clearTerminal();
-    logger.info('Starting development server...');
+
+    if (!env.isTerminalPersisted()) {
+      logger.clearTerminal();
+    }
+    logger.notice('Starting development server...');
 
     await openBrowser(port);
   });

@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import wrapAnsi from 'wrap-ansi';
 
 type Level = 'info' | 'error' | 'warn';
-type Color = 'red' | 'yellow' | 'green' | 'blue';
+type Color = 'red' | 'yellow' | 'green' | 'blue' | 'cyan';
 
 // LogLevels
 export type LogLevels = 'debug'
@@ -74,6 +74,10 @@ export const warning = (...args: any[]) => {
   _log({level: 'warn', color: 'yellow', args});
 };
 
+export const notice = (...args: any[]) => {
+  _log({level: 'info', color: 'cyan', args});
+}
+
 /**
  * Appends new line
  * @param lines the number of lines to append
@@ -125,9 +129,11 @@ export default {
   newline,
   wrap,
   clearTerminal,
+  notice,
   colors: chalk,
   coloredStrings: {
     link: (str: string) => chalk.blue(str),
+    notice: (str: string) => chalk.cyan(str),
     headline: (str: string) => chalk.bold.green(str),
     name: (str: string) => chalk.bold.magenta(str),
     digit: (str: string) => chalk.cyan(str),

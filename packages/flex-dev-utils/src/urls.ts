@@ -1,4 +1,16 @@
+import url from 'url';
+import address from 'address';
 import net from 'net';
+
+export interface ServiceUrl {
+  url: string;
+  port: number;
+  host: string;
+}
+interface InternalServiceUrls {
+  local: ServiceUrl;
+  network: ServiceUrl;
+}
 
 export const DEFAULT_PORT = 3000;
 
@@ -35,6 +47,37 @@ export const findPorts = async (startPort: number = 3000): Promise<number> => {
   }
 };
 
+export const getUrls = (port: number): InternalServiceUrls => {
+  const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
+
+  const localUrl = url.format({
+    protocol,
+    port,
+    hostname: 'localhost',
+    pathname: '/',
+  });
+  const networkUrl = url.format({
+    protocol,
+    port,
+    hostname: address.ip(),
+    pathname: '/',
+  });
+
+  return {
+    local: {
+      url: localUrl,
+      port,
+      host: '0.0.0.0',
+    },
+    network: {
+      url: networkUrl,
+      port,
+      host: address.ip(),
+    },
+  };
+};
+
+
 /**
  * Finds whether the port is available
  *
@@ -56,3 +99,5 @@ const _findPort = (port: number) => {
       .on('error', () => resolve(port));
   });
 };
+
+export default url;

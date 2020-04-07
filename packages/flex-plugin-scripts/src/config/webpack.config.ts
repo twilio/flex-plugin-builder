@@ -1,10 +1,19 @@
 import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
+import PnpWebpackPlugin from 'pnp-webpack-plugin';
+import { Environment } from 'flex-dev-utils/dist/env';
 import { getDependencyVersion } from 'flex-dev-utils/dist/fs';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import { Configuration, SourceMapDevToolPlugin, Plugin, DefinePlugin } from 'webpack';
+import webpack, {
+  Configuration,
+  SourceMapDevToolPlugin,
+  Plugin,
+  DefinePlugin,
+  HotModuleReplacementPlugin, Resolve,
+} from 'webpack';
 
 import paths from '../utils/paths';
-import { Environment } from './index';
+import Optimization = webpack.Options.Optimization;
 
 const FLEX_SHIM = 'flex-plugin-scripts/dev_assets/flex-shim.js';
 const EXTERNALS = {
@@ -56,6 +65,8 @@ export const _getPlugins = (env: Environment): Plugin[] => {
   }
 
   if (env === 'development') {
+    plugins.push(new HotModuleReplacementPlugin());
+
     const pkg = require(paths.flexUIPkgPath);
     plugins.push(new HtmlWebpackPlugin({
       inject: false,
@@ -70,24 +81,91 @@ export const _getPlugins = (env: Environment): Plugin[] => {
   return plugins;
 };
 
+export const _getEntries = (env: Environment): string[] => {
+  const entry: string[] = [];
+
+  if (env === 'development') {
+    entry.push(
+      require.resolve('@k88/cra-webpack-hot-dev-client/build'),
+    );
+  }
+
+  entry.push(paths.appEntryPath);
+
+  return entry;
+};
+
+export const _getOptimization = (env: Environment): Optimization => {
+  const isProd = env === 'production';
+  return {
+    splitChunks: false,
+    runtimeChunk: false,
+    minimize: isProd,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          parse: {
+            ecma: 8,
+          },
+          compress: {
+            ecma: 5,
+            warnings: false,
+            comparisons: false,
+            inline: 2,
+          },
+          mangle: {
+            safari10: true,
+          },
+          keep_classnames: isProd,
+          keep_fnames: isProd,
+          output: {
+            ecma: 5,
+            comments: false,
+            ascii_only: true,
+          },
+        },
+        sourceMap: true,
+      }),
+    ],
+  };
+};
+
+export const _getResolve = (env: Environment): Resolve => {
+  const isProd = env === 'production';
+
+  const resolve: Resolve = {
+    modules: ['node_modules', paths.appNodeModules],
+    extensions: paths.extensions.map(e => `.${e}`),
+    alias: {
+      '@twilio/flex-ui': FLEX_SHIM,
+    },
+    plugins: [
+      PnpWebpackPlugin,
+    ]
+  };
+
+  if (isProd && resolve.alias) {
+    resolve.alias['scheduler/tracing'] = 'scheduler/tracing-profiling';
+  }
+
+  return resolve;
+};
+
 export default (env: Environment) => {
   const isProd = env === 'production';
   const config: Configuration = {
-    entry: [
-      paths.appEntryPath
-    ],
+    entry: _getEntries(env),
     output: {
       path: paths.appBuildDir,
+      pathinfo: !isProd,
+      futureEmitAssets: true,
       filename: `${paths.packageName}.js`,
       publicPath: paths.appPublicDir,
+      globalObject: 'this',
     },
     bail: isProd,
     devtool: 'hidden-source-map',
-    optimization: {
-      splitChunks: false,
-      runtimeChunk: false,
-      minimize: isProd,
-    },
+    optimization: _getOptimization(env),
     node: {
       module: 'empty',
       dgram: 'empty',
@@ -98,12 +176,11 @@ export default (env: Environment) => {
       tls: 'empty',
       child_process: 'empty',
     },
-    resolve: {
-      modules: ['node_modules', paths.appNodeModules],
-      extensions: paths.extensions.map(e => `.${e}`),
-      alias: {
-        '@twilio/flex-ui': FLEX_SHIM,
-      }
+    resolve: _getResolve(env),
+    resolveLoader: {
+      plugins: [
+        PnpWebpackPlugin.moduleLoader(module),
+      ]
     },
     externals: EXTERNALS,
     module: {
