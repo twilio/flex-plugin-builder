@@ -9,9 +9,7 @@ import paths from '../utils/paths';
  */
 export default () => {
   const { local } = getUrls(env.getPort());
-  const sockHost = process.env.WDS_SOCKET_HOST;
-  const sockPath = process.env.WDS_SOCKET_PATH;
-  const sockPort = process.env.WDS_SOCKET_PORT;
+  const socket = env.getWSSocket();
 
   const config: Configuration = {
     compress: true,
@@ -27,9 +25,9 @@ export default () => {
 
     // We're using native sockjs-node
     transportMode: 'ws',
-    sockHost,
-    sockPath,
-    sockPort,
+    sockHost: socket.host,
+    sockPath: socket.path,
+    sockPort: socket.port,
 
     // If path not found, load homepage, and let flex-ui handle the navigation
     historyApiFallback: {
@@ -37,7 +35,7 @@ export default () => {
       index: '/',
     },
 
-    //
+    // this is used to optimize cpu
     // watchOptions: {
     // //  ignored: ignoredFiles(paths.appSrc),
     // },

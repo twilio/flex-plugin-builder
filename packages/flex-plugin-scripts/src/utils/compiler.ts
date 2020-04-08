@@ -25,7 +25,7 @@ export default (config: Configuration, devServer = false): Compiler => {
     if (!devServer) {
       return compiler;
     }
-    const { local, network } = getUrls(Number(process.env.PORT));
+    const { local, network } = getUrls(env.getPort());
 
     compiler.hooks.invalid.tap(HOOK_RECOMPILE, () => {
       if (!env.isTerminalPersisted()) {

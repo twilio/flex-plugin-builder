@@ -28,6 +28,11 @@ export const setBabelEnv = (_env: Environment) => process.env.BABEL_ENV = _env;
 export const getLifecycle = () => process.env.npm_lifecycle_event;
 export const isLifecycle = (cycle: Lifecycle) => process.env.npm_lifecycle_event === cycle;
 export const isHTTPS = () => process.env.HTTPS === 'true';
+export const getWSSocket = () => ({
+  host: process.env.WDS_SOCKET_HOST,
+  path: process.env.WDS_SOCKET_PATH,
+  port: process.env.WDS_SOCKET_PORT,
+});
 
 export default {
   isTerminalPersisted,
@@ -50,4 +55,5 @@ export default {
   getLifecycle,
   isLifecycle,
   isHTTPS,
+  getWSSocket,
 };
