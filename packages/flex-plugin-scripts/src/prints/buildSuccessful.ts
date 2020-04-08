@@ -2,6 +2,9 @@ import { logger } from 'flex-dev-utils';
 import { Bundle } from '../scripts/build';
 import paths from '../utils/paths';
 
+/**
+ * Prints the successful message when a build has successfully compiled
+ */
 export default (bundles: Bundle[], warnings?: string[]) => {
   if (warnings && warnings.length) {
     const pkgName = logger.colors.yellow.bold(paths.packageName);

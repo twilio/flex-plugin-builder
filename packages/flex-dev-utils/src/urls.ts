@@ -1,6 +1,7 @@
 import url from 'url';
 import address from 'address';
 import net from 'net';
+import { isHTTPS } from './env';
 
 export interface ServiceUrl {
   url: string;
@@ -47,8 +48,12 @@ export const findPorts = async (startPort: number = 3000): Promise<number> => {
   }
 };
 
+/**
+ * Returns the local and network urls
+ * @param port  the port the server is running on
+ */
 export const getUrls = (port: number): InternalServiceUrls => {
-  const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
+  const protocol = isHTTPS() ? 'https' : 'http';
 
   const localUrl = url.format({
     protocol,

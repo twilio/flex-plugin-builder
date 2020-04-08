@@ -1,12 +1,14 @@
-import { logger, env } from 'flex-dev-utils';
+import { logger, env, fs, open } from 'flex-dev-utils';
+import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { findPorts, getDefaultPort, getUrls } from 'flex-dev-utils/dist/urls';
 import WebpackDevServer from 'webpack-dev-server';
 
 import getConfiguration from '../config';
+import paths from '../utils/paths';
 
 import run from '../utils/run';
-import openBrowser from '../utils/browser';
 import compiler from '../utils/compiler';
+import pluginServer, { Plugin } from './start/pluginServer';
 const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
 
 /**
@@ -29,6 +31,11 @@ const start = async (...args: string[]) => {
   _startDevServer(port);
 };
 
+/**
+ * Starts the webpack dev-server
+ * @param port  the port the server is running on
+ * @private
+ */
 export const _startDevServer = (port: number) => {
   const config = getConfiguration('webpack', 'development');
   const devConfig = getConfiguration('devServer', 'development');
@@ -47,7 +54,9 @@ export const _startDevServer = (port: number) => {
     }
     logger.notice('Starting development server...');
 
-    await openBrowser(port);
+    _updatePluginsUrl(port);
+    await pluginServer(port);
+    await open(local.url);
   });
 
   termSignals.forEach((sig) => {
@@ -64,6 +73,45 @@ export const _startDevServer = (port: number) => {
     });
     process.stdin.resume();
   }
+};
+
+/**
+ * requires packages
+ *
+ * @param pluginsPath   the plugins path
+ * @param pkgPath       the package path
+ * @private
+ */
+/* istanbul ignore next */
+export const _requirePackages = (pluginsPath: string, pkgPath: string) => {
+  const plugins = require(pluginsPath) as Plugin[];
+  const pkg = require(pkgPath);
+
+  return {
+    plugins,
+    pkg,
+  };
+};
+
+/**
+ * Replaces the port in plugins.json and re-writes ito the file
+ *
+ * @param port  the port to update to
+ * @private
+ */
+export const _updatePluginsUrl = (port: number) => {
+  const { plugins, pkg } = _requirePackages(paths.pluginsJsonPath, paths.packageJsonPath);
+
+  const pluginIndex = plugins.findIndex((p) => p.src.indexOf(pkg.name) !== -1);
+  const url = plugins[pluginIndex].src;
+  const matches = url.match(/localhost:(\d*)/);
+  if (!matches) {
+    throw new FlexPluginError(`Could not find a local port on url ${url}`);
+  }
+
+  // Replace port and re-write to file
+  plugins[pluginIndex].src = plugins[pluginIndex].src.replace(matches[1], port.toString());
+  fs.writeFileSync(paths.pluginsJsonPath, JSON.stringify(plugins, null, 2));
 };
 
 

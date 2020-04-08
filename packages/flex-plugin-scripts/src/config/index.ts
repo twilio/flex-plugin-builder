@@ -13,30 +13,34 @@ interface Configurations {
   devServer: WebpackDevConfigurations;
 }
 
+/**
+ * Returns the configuration; if customer has provided a webpack.config.js, then the generated config is passed to their Function for modification
+ * @param name  the configuration name
+ * @param env   the environment
+ */
 const getConfiguration = <C extends ConfigurationTypes>(name: ConfigurationTypes, env: Environment): Configurations[C] => {
   const pwd = process.cwd();
-  const path = join(pwd, 'webpack.config.js');
-  const webpackConfig = webpackFactory(env);
-  const devConfig = devFactory();
-
   const isProd = env === 'production';
+  const isDev = env === 'development';
 
   if (name === 'webpack') {
-    // If this is dev-server, we'll return the devServer factory instead
-    // if (checkFilesExist(path) && isProd) {
-    //   return require(path)(webpackConfig);
-    // }
+    const path = join(pwd, 'webpack.config.js');
+    const config = webpackFactory(env);
+    if (checkFilesExist(path)) {
+      return require(path)(config, { isProd, isDev });
+    }
 
-    return webpackConfig;
+    return config;
   }
 
   if (name === 'devServer') {
-    // const config = Object.assign({}, webpackConfig, devConfig);
-    // if (checkFilesExist(path)) {
-    //   return require(path)(config);
-    // }
+    const path = join(pwd, 'webpack.dev.js');
+    const config = devFactory();
+    if (checkFilesExist(path)) {
+      return require(path)(config, { isProd, isDev });
+    }
 
-    return devConfig;
+    return config;
   }
 
   throw new FlexPluginError('Unsupported configuration name');

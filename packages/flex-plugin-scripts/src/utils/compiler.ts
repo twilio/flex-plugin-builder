@@ -1,5 +1,5 @@
 import { logger, env } from 'flex-dev-utils';
-import { webpackFormatMessages } from 'flex-dev-utils/dist/formats';
+import webpackFormatMessages from '@k88/format-webpack-messages';
 import { getUrls } from 'flex-dev-utils/dist/urls';
 import webpack, { Compiler, Configuration } from 'webpack';
 import { devServerSuccessful } from '../prints';
@@ -10,6 +10,11 @@ import paths from './paths';
 const HOOK_RECOMPILE = 'invalid';
 const HOOK_COMPILE_FINISHED = 'done';
 
+/**
+ * Creates a webpack
+ * @param config
+ * @param devServer
+ */
 export default (config: Configuration, devServer = false): Compiler => {
   logger.debug('Creating a webpack compiler using ', JSON.stringify(config));
 

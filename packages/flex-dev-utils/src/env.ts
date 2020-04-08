@@ -1,43 +1,53 @@
-const env = process.env;
-
 export type Environment = 'production' | 'development';
+export type Lifecycle = 'build' | 'prebuild' | 'deploy' | 'predeploy';
 
+/**
+ * Helper method to test whether env variable is defined
+ * @param key the env to lookup
+ * @return whether the key is set
+ */
 const isDefined = (key: string | undefined) => typeof key === 'string' && key !== '';
 
-export const isTerminalPersisted = () => env.PERSIST_TERMINAL === 'true';
-export const isCI = () => env.CI === 'true';
-export const isDebug = () => env.DEBUG === 'true';
-export const isVerbose = () => env.TRACE === 'true';
-export const getAccountSid = () => env.TWILIO_ACCOUNT_SID;
-export const getAuthToken = () => env.TWILIO_AUTH_TOKEN;
-export const getRealm = () => env.REALM;
-export const hasHost = () => isDefined(env.HOST);
-export const getHost = () => env.HOST;
-export const setHost = (host: string) => env.HOST = host;
-export const hasPort = () => isDefined(env.PORT);
-export const getPort = () => Number(env.PORT);
-export const setPort = (port: number) => env.PORT = String(port);
-export const getNodeEnv = () => env.NODE_ENV;
-export const setNodeEnv = (_env: Environment) => env.NODE_ENV = _env;
-export const getBabelEnv = () => env.BABEL_ENV;
-export const setBabelEnv = (_env: Environment) => env.BABEL_ENV = _env;
+export const isTerminalPersisted = () => process.env.PERSIST_TERMINAL === 'true';
+export const isCI = () => process.env.CI === 'true';
+export const isDebug = () => process.env.DEBUG === 'true';
+export const isVerbose = () => process.env.TRACE === 'true';
+export const getAccountSid = () => process.env.TWILIO_ACCOUNT_SID;
+export const getAuthToken = () => process.env.TWILIO_AUTH_TOKEN;
+export const getRealm = () => process.env.REALM;
+export const hasHost = () => isDefined(process.env.HOST);
+export const getHost = () => process.env.HOST;
+export const setHost = (host: string) => process.env.HOST = host;
+export const hasPort = () => isDefined(process.env.PORT);
+export const getPort = () => Number(process.env.PORT);
+export const setPort = (port: number) => process.env.PORT = String(port);
+export const getNodeEnv = () => process.env.NODE_ENV;
+export const setNodeEnv = (_env: Environment) => process.env.NODE_ENV = _env;
+export const getBabelEnv = () => process.env.BABEL_ENV;
+export const setBabelEnv = (_env: Environment) => process.env.BABEL_ENV = _env;
+export const getLifecycle = () => process.env.npm_lifecycle_event;
+export const isLifecycle = (cycle: Lifecycle) => process.env.npm_lifecycle_event === cycle;
+export const isHTTPS = () => process.env.HTTPS === 'true';
 
 export default {
   isTerminalPersisted,
-isCI,
-isDebug,
-isVerbose,
-getAccountSid,
-getAuthToken,
-getRealm,
+  isCI,
+  isDebug,
+  isVerbose,
+  getAccountSid,
+  getAuthToken,
+  getRealm,
   hasHost,
-getHost,
-setHost,
+  getHost,
+  setHost,
   hasPort,
-getPort,
-setPort,
-getNodeEnv,
-setNodeEnv,
-getBabelEnv,
-setBabelEnv,
+  getPort,
+  setPort,
+  getNodeEnv,
+  setNodeEnv,
+  getBabelEnv,
+  setBabelEnv,
+  getLifecycle,
+  isLifecycle,
+  isHTTPS,
 };

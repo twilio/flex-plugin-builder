@@ -1,6 +1,7 @@
 import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import PnpWebpackPlugin from 'pnp-webpack-plugin';
+import ModuleScopePlugin from '@k88/module-scope-plugin';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { getDependencyVersion } from 'flex-dev-utils/dist/fs';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -22,9 +23,14 @@ const EXTERNALS = {
   'redux': 'Redux',
   'react-redux': 'ReactRedux',
 };
+
+/**
+ * Returns the Babel Loader configuration
+ * @param isProd  whether this is a production build
+ */
 const babelLoader = (isProd: boolean) => ({
   test: new RegExp('\.(' + paths.extensions.join('|') + ')$'),
-  include: paths.appSrcDir,
+  include: paths.srcDir,
   loader: require.resolve('babel-loader'),
   options: {
     customize: require.resolve('babel-preset-react-app/webpack-overrides'),
@@ -45,6 +51,11 @@ const babelLoader = (isProd: boolean) => ({
   },
 });
 
+/**
+ * Returns an array of {@link Plugin} for Webpack
+ * @param env the environment
+ * @private
+ */
 export const _getPlugins = (env: Environment): Plugin[] => {
   const plugins: Plugin[] = [];
 
@@ -81,6 +92,11 @@ export const _getPlugins = (env: Environment): Plugin[] => {
   return plugins;
 };
 
+/**
+ * Returns the `entry` key of the webpack
+ * @param env the environment
+ * @private
+ */
 export const _getEntries = (env: Environment): string[] => {
   const entry: string[] = [];
 
@@ -90,11 +106,16 @@ export const _getEntries = (env: Environment): string[] => {
     );
   }
 
-  entry.push(paths.appEntryPath);
+  entry.push(paths.entryPath);
 
   return entry;
 };
 
+/**
+ * Returns the `optimization` key of webpack
+ * @param env the environment
+ * @private
+ */
 export const _getOptimization = (env: Environment): Optimization => {
   const isProd = env === 'production';
   return {
@@ -130,17 +151,23 @@ export const _getOptimization = (env: Environment): Optimization => {
   };
 };
 
+/**
+ * Returns the `resolve` key of webpack
+ * @param env the environment
+ * @private
+ */
 export const _getResolve = (env: Environment): Resolve => {
   const isProd = env === 'production';
 
   const resolve: Resolve = {
-    modules: ['node_modules', paths.appNodeModules],
+    modules: ['node_modules', paths.nodeModulesDir],
     extensions: paths.extensions.map(e => `.${e}`),
     alias: {
       '@twilio/flex-ui': FLEX_SHIM,
     },
     plugins: [
       PnpWebpackPlugin,
+      new ModuleScopePlugin(paths.srcDir, [paths.packageJsonPath]),
     ]
   };
 
@@ -151,16 +178,21 @@ export const _getResolve = (env: Environment): Resolve => {
   return resolve;
 };
 
+/**
+ * Main method for generating a webpack configuration
+ * @param env
+ */
 export default (env: Environment) => {
   const isProd = env === 'production';
+
   const config: Configuration = {
     entry: _getEntries(env),
     output: {
-      path: paths.appBuildDir,
+      path: paths.buildDir,
       pathinfo: !isProd,
       futureEmitAssets: true,
       filename: `${paths.packageName}.js`,
-      publicPath: paths.appPublicDir,
+      publicPath: paths.publicDir,
       globalObject: 'this',
     },
     bail: isProd,

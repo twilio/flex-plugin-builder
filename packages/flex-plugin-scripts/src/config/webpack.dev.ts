@@ -4,6 +4,9 @@ import { Configuration } from 'webpack-dev-server';
 
 import paths from '../utils/paths';
 
+/**
+ * Generates a webpack-dev configuration
+ */
 export default () => {
   const { local } = getUrls(env.getPort());
   const sockHost = process.env.WDS_SOCKET_HOST;
@@ -14,7 +17,7 @@ export default () => {
     compress: true,
     clientLogLevel: 'none',
     contentBase: [
-      paths.appPublicDir,
+      paths.publicDir,
       paths.devAssetsDir,
     ],
     publicPath: '/',

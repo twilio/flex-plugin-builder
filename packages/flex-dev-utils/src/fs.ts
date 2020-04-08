@@ -3,7 +3,7 @@ import { join } from 'path';
 import * as path from 'path';
 import os from 'os';
 import mkdirp from 'mkdirp';
-import tmp, { DirResult as TmpDirResult } from 'tmp';
+import tmp from 'tmp';
 import copyTempDir from 'copy-template-dir';
 import { promisify } from 'util';
 import rimRaf from 'rimraf';
@@ -18,6 +18,9 @@ export interface PackageJson {
 }
 
 export default fs;
+
+// Working directory
+const cwd = fs.realpathSync(process.cwd());
 
 // The OS root directory
 const rootDir = os.platform() === 'win32' ? process.cwd().split(path.sep)[0] : '/';
@@ -128,6 +131,38 @@ export const rmRfSync = rimRaf.sync;
 /* istanbul ignore next */
 export const getDependencyVersion = (pkgName: string) => {
   return require(join(nodeModulesPath, pkgName, 'package.json')).version;
+};
+
+/**
+ * Builds path relative to cwd
+ * @param paths  the paths
+ */
+export const resolveCwd = (...paths: string[]) => resolveRelative(cwd, ...paths);
+
+/**
+ * Builds path relative to the given dir
+ * @param dir   the dir
+ * @param paths the paths
+ */
+export const resolveRelative = (dir: string, ...paths: string[]) => {
+  if (paths.length === 0) {
+    return dir;
+  }
+
+  const lastElement = paths[paths.length - 1];
+  // Check if last element is an extension
+  if (lastElement.charAt(0) !== '.') {
+    return join(dir, ...paths);
+  }
+
+  // Only one entry as extension
+  if (paths.length === 1) {
+    return join(`${dir}${lastElement}`);
+  }
+  const secondLastElement = paths[paths.length - 2];
+  const remainder = paths.slice(0, paths.length - 2);
+
+  return join(dir, ...[...remainder, `${secondLastElement}${lastElement}`]);
 };
 
 export { DirResult as TmpDirResult } from 'tmp';

@@ -32,7 +32,6 @@
     "test:watch": "cd ../.. && jest packages/flex-dev-utils --watch"
   },
   "dependencies": {
-    "@k88/format-webpack-messages": "^1.0.0",
     "@k88/pipe-compose": "^2.1.1",
     "@types/inquirer": "^6.5.0",
     "address": "^1.1.2",

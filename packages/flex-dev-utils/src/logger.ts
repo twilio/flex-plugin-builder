@@ -74,9 +74,13 @@ export const warning = (...args: any[]) => {
   _log({level: 'warn', color: 'yellow', args});
 };
 
+/**
+ * Notice log is info level with a cyan color
+ * @param args
+ */
 export const notice = (...args: any[]) => {
   _log({level: 'info', color: 'cyan', args});
-}
+};
 
 /**
  * Appends new line
@@ -133,7 +137,6 @@ export default {
   colors: chalk,
   coloredStrings: {
     link: (str: string) => chalk.blue(str),
-    notice: (str: string) => chalk.cyan(str),
     headline: (str: string) => chalk.bold.green(str),
     name: (str: string) => chalk.bold.magenta(str),
     digit: (str: string) => chalk.cyan(str),

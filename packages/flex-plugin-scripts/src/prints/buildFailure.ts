@@ -3,16 +3,9 @@ import paths from '../utils/paths';
 
 const GITHUB_FEATURE_REQUEST = 'https://bit.ly/2UMdbbj';
 
-const logError = (error: string) => {
-  logger.info(error);
-
-  if (error.indexOf('You may need an appropriate loader') !== -1) {
-    const link = logger.coloredStrings.link(GITHUB_FEATURE_REQUEST);
-    logger.newline();
-    logger.notice(`You may file a feature request on GitHub (${link}) so we can add this loader.`);
-  }
-};
-
+/**
+ * Prints the errors when a build has failed to compile
+ */
 export default (errors: any[]) => {
   errors = errors || [];
   if (!errors.length) {
@@ -36,3 +29,18 @@ export default (errors: any[]) => {
     logger.newline();
   });
 }
+
+/**
+ * Logs the error line ; tries to parse and print useful information based on the error
+ * @param error the error line
+ */
+const logError = (error: string) => {
+  logger.info(error);
+
+  if (error.indexOf('You may need an appropriate loader') !== -1) {
+    const link = logger.coloredStrings.link(GITHUB_FEATURE_REQUEST);
+    logger.newline();
+    logger.notice(`You may file a feature request on GitHub (${link}) so we can add this loader.`);
+  }
+};
+
