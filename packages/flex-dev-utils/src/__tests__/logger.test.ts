@@ -98,6 +98,13 @@ describe('logger', () => {
     expect(info).toHaveBeenCalledWith('var1 var2');
   });
 
+  it('should notice info', () => {
+    logger.notice('var1', 'var2');
+
+    expect(info).toHaveBeenCalledTimes(1);
+    expect(info).toHaveBeenCalledWith('var1 var2');
+  });
+
   it('should call debug if debug is set', () => {
     process.env.DEBUG = 'true';
     logger.debug('var1', 'var2');

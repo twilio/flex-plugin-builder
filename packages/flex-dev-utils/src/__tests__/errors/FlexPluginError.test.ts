@@ -38,7 +38,7 @@ describe('FlexPluginError', () => {
     const err = new FlexPluginError();
 
     err.details();
-    expect(logger.info).toHaveBeenCalledTimes(4);
+    expect(logger.info).toHaveBeenCalledTimes(3);
   });
 
   it('should not print any details if pkg is not found', () => {

@@ -60,7 +60,7 @@ export const _verifyPath = (baseUrl: string, build: Build) => {
  * @param options       options for this deploy
  */
 export const _doDeploy = async (nextVersion: string, options: Options) => {
-  if (!checkFilesExist(paths.localBundlePath)) {
+  if (!checkFilesExist(paths.bundlePath)) {
     throw new FlexPluginError('Could not find build file. Did you run `npm run build` first?');
   }
 
@@ -115,9 +115,9 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
   const buildData = await progress<BuildData>('Uploading your plugin bundle', async () => {
     // Upload bundle and sourcemap
     const bundleVersion = await assetClient
-      .upload(paths.packageName, bundleUri, paths.localBundlePath, !options.isPublic);
+      .upload(paths.packageName, bundleUri, paths.bundlePath, !options.isPublic);
     const sourceMapVersion = await assetClient
-      .upload(paths.packageName, sourceMapUri, paths.localSourceMapPath, !options.isPublic);
+      .upload(paths.packageName, sourceMapUri, paths.sourceMapPath, !options.isPublic);
 
     const existingAssets = routeCollision && options.overwrite
       ?  buildAssets.filter((v) => v.path !== bundleUri && v.path !== sourceMapUri)

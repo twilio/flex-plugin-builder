@@ -1,10 +1,21 @@
 import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
+import ModuleScopePlugin from '@k88/module-scope-plugin';
+import { Environment } from 'flex-dev-utils/dist/env';
 import { getDependencyVersion } from 'flex-dev-utils/dist/fs';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import { Configuration, SourceMapDevToolPlugin, Plugin, DefinePlugin } from 'webpack';
+import PnpWebpackPlugin from 'pnp-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
+import webpack, {
+  Configuration,
+  DefinePlugin,
+  HotModuleReplacementPlugin,
+  Plugin,
+  Resolve,
+  SourceMapDevToolPlugin,
+} from 'webpack';
 
 import paths from '../utils/paths';
-import { Environment } from './index';
+import Optimization = webpack.Options.Optimization;
 
 const FLEX_SHIM = 'flex-plugin-scripts/dev_assets/flex-shim.js';
 const EXTERNALS = {
@@ -13,9 +24,14 @@ const EXTERNALS = {
   'redux': 'Redux',
   'react-redux': 'ReactRedux',
 };
+
+/**
+ * Returns the Babel Loader configuration
+ * @param isProd  whether this is a production build
+ */
 const babelLoader = (isProd: boolean) => ({
   test: new RegExp('\.(' + paths.extensions.join('|') + ')$'),
-  include: paths.appSrcDir,
+  include: paths.srcDir,
   loader: require.resolve('babel-loader'),
   options: {
     customize: require.resolve('babel-preset-react-app/webpack-overrides'),
@@ -36,6 +52,11 @@ const babelLoader = (isProd: boolean) => ({
   },
 });
 
+/**
+ * Returns an array of {@link Plugin} for Webpack
+ * @param env the environment
+ * @private
+ */
 export const _getPlugins = (env: Environment): Plugin[] => {
   const plugins: Plugin[] = [];
 
@@ -49,13 +70,15 @@ export const _getPlugins = (env: Environment): Plugin[] => {
     __FPB_REACT_DOM_VERSION: `'${getDependencyVersion('react-dom')}'`,
   }));
 
-  if (env === 'production') {
+  if (env === Environment.Production) {
     plugins.push(new SourceMapDevToolPlugin({
       append: '\n//# sourceMappingURL=bundle.js.map',
     }));
   }
 
-  if (env === 'development') {
+  if (env === Environment.Development) {
+    plugins.push(new HotModuleReplacementPlugin());
+
     const pkg = require(paths.flexUIPkgPath);
     plugins.push(new HtmlWebpackPlugin({
       inject: false,
@@ -70,24 +93,112 @@ export const _getPlugins = (env: Environment): Plugin[] => {
   return plugins;
 };
 
-export default (env: Environment) => {
-  const isProd = env === 'production';
-  const config: Configuration = {
-    entry: [
-      paths.appEntryPath
+/**
+ * Returns the `entry` key of the webpack
+ * @param env the environment
+ * @private
+ */
+export const _getEntries = (env: Environment): string[] => {
+  const entry: string[] = [];
+
+  if (env === Environment.Development) {
+    entry.push(
+      require.resolve('@k88/cra-webpack-hot-dev-client/build'),
+    );
+  }
+
+  entry.push(paths.entryPath);
+
+  return entry;
+};
+
+/**
+ * Returns the `optimization` key of webpack
+ * @param env the environment
+ * @private
+ */
+export const _getOptimization = (env: Environment): Optimization => {
+  const isProd = env === Environment.Production;
+  return {
+    splitChunks: false,
+    runtimeChunk: false,
+    minimize: isProd,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          parse: {
+            ecma: 8,
+          },
+          compress: {
+            ecma: 5,
+            warnings: false,
+            comparisons: false,
+            inline: 2,
+          },
+          mangle: {
+            safari10: true,
+          },
+          keep_classnames: isProd,
+          keep_fnames: isProd,
+          output: {
+            ecma: 5,
+            comments: false,
+            ascii_only: true,
+          },
+        },
+        sourceMap: true,
+      }),
     ],
+  };
+};
+
+/**
+ * Returns the `resolve` key of webpack
+ * @param env the environment
+ * @private
+ */
+export const _getResolve = (env: Environment): Resolve => {
+  const isProd = env === Environment.Production;
+
+  const resolve: Resolve = {
+    modules: ['node_modules', paths.nodeModulesDir],
+    extensions: paths.extensions.map(e => `.${e}`),
+    alias: {
+      '@twilio/flex-ui': FLEX_SHIM,
+    },
+    plugins: [
+      PnpWebpackPlugin,
+      new ModuleScopePlugin(paths.srcDir, [paths.packageJsonPath]),
+    ]
+  };
+
+  if (isProd && resolve.alias) {
+    resolve.alias['scheduler/tracing'] = 'scheduler/tracing-profiling';
+  }
+
+  return resolve;
+};
+
+/**
+ * Main method for generating a webpack configuration
+ * @param env
+ */
+export default (env: Environment) => {
+  const isProd = env === Environment.Production;
+
+  const config: Configuration = {
+    entry: _getEntries(env),
     output: {
-      path: paths.appBuildDir,
+      path: paths.buildDir,
+      pathinfo: !isProd,
+      futureEmitAssets: true,
       filename: `${paths.packageName}.js`,
-      publicPath: paths.appPublicDir,
+      publicPath: paths.publicDir,
+      globalObject: 'this',
     },
     bail: isProd,
     devtool: 'hidden-source-map',
-    optimization: {
-      splitChunks: false,
-      runtimeChunk: false,
-      minimize: isProd,
-    },
+    optimization: _getOptimization(env),
     node: {
       module: 'empty',
       dgram: 'empty',
@@ -98,12 +209,11 @@ export default (env: Environment) => {
       tls: 'empty',
       child_process: 'empty',
     },
-    resolve: {
-      modules: ['node_modules', paths.appNodeModules],
-      extensions: paths.extensions.map(e => `.${e}`),
-      alias: {
-        '@twilio/flex-ui': FLEX_SHIM,
-      }
+    resolve: _getResolve(env),
+    resolveLoader: {
+      plugins: [
+        PnpWebpackPlugin.moduleLoader(module),
+      ]
     },
     externals: EXTERNALS,
     module: {
@@ -119,7 +229,7 @@ export default (env: Environment) => {
     },
     plugins: _getPlugins(env),
   };
-  config.mode = isProd ? 'production' : 'development';
+  config.mode = isProd ? Environment.Production : Environment.Development;
 
   return config;
 };

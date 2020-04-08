@@ -34,6 +34,7 @@
   "dependencies": {
     "@k88/pipe-compose": "^2.1.1",
     "@types/inquirer": "^6.5.0",
+    "address": "^1.1.2",
     "axios": "^0.19.0",
     "axios-mock-adapter": "^1.17.0",
     "boxen": "^4.1.0",
@@ -46,12 +47,14 @@
     "marked": "^0.7.0",
     "marked-terminal": "^3.3.0",
     "mkdirp": "^0.5.1",
+    "net": "^1.0.2",
     "open": "^6.4.0",
     "ora": "^4.0.2",
     "rimraf": "^3.0.0",
     "table": "^5.4.6",
     "tmp": "^0.1.0",
     "update-notifier": "^3.0.1",
+    "url": "^0.11.0",
     "util": "^0.12.1",
     "wrap-ansi": "^4.0.0"
   },

@@ -24,12 +24,40 @@ describe('paths', () => {
 
     expect(readPackageJson).toHaveBeenCalledTimes(1);
     expect(exit).not.toHaveBeenCalled();
+
+    // build/ directory
+    expect(paths.buildDir).toEqual(expect.stringMatching('build$'));
+    expect(paths.bundlePath).toContain('build');
+    expect(paths.bundlePath).toContain(validPackage.name);
+    expect(paths.bundlePath).toEqual(expect.stringMatching('\.js$'));
+    expect(paths.sourceMapPath).toContain('build');
+    expect(paths.sourceMapPath).toContain(validPackage.name);
+    expect(paths.sourceMapPath).toEqual(expect.stringMatching('\.js\.map$'));
+
+    // src/ directory
+    expect(paths.srcDir).toEqual(expect.stringMatching('src$'));
+    expect(paths.entryPath).toContain('src');
+    expect(paths.entryPath).toEqual(expect.stringMatching('index$'));
+
+    // node_modules/ directory
+    expect(paths.nodeModulesDir).toEqual(expect.stringMatching('node_modules$'));
+    expect(paths.flexUIDir).toContain('node_modules');
+    expect(paths.flexUIDir).toContain('@twilio/flex-ui');
+    expect(paths.flexUIPkgPath).toContain('@twilio/flex-ui');
+    expect(paths.flexUIPkgPath).toEqual(expect.stringMatching('package\.json$'));
+    expect(paths.devAssetsDir).toContain('flex-plugin-scripts');
+
+    // public/ directory
+    expect(paths.publicDir).toEqual(expect.stringMatching('public$'));
+    expect(paths.indexHtmlPath).toEqual(expect.stringMatching('index\.html$'));
+    expect(paths.appConfig).toEqual(expect.stringMatching('appConfig\.js$'));
+    expect(paths.pluginsJsonPath).toEqual(expect.stringMatching('plugins\.json$'));
+
+    // package.json
     expect(paths.packageName).toEqual('plugin-test');
     expect(paths.version).toEqual('1.2.3');
-    expect(paths.buildDir).toContain('build');
-    expect(paths.localBundlePath).toContain('build/plugin-test.js');
-    expect(paths.localSourceMapPath).toContain('build/plugin-test.js.map');
-    expect(paths.appConfig).toContain('public/appConfig.js');
+
+    // others
     expect(paths.assetBaseUrlTemplate).toContain('plugin-test/%PLUGIN_VERSION%');
 
     readPackageJson.mockRestore();
