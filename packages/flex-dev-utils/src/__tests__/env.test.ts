@@ -1,4 +1,4 @@
-import env from '../env';
+import env, { Environment, Lifecycle } from '../env';
 
 describe('env', () => {
   const OLD_ENV = process.env;
@@ -125,8 +125,8 @@ describe('env', () => {
     });
 
     it('should set node env', () => {
-      env.setNodeEnv('development');
-      expect(env.getNodeEnv()).toEqual('development');
+      env.setNodeEnv(Environment.Development);
+      expect(env.getNodeEnv()).toEqual(Environment.Development);
     });
   });
 
@@ -142,24 +142,24 @@ describe('env', () => {
 
     it('should set babel env', () => {
       expect(env.getBabelEnv()).toEqual(undefined);
-      env.setBabelEnv('development');
-      expect(env.getBabelEnv()).toEqual('development');
+      env.setBabelEnv(Environment.Development);
+      expect(env.getBabelEnv()).toEqual(Environment.Development);
     });
   });
 
   describe('lifeCycle', () => {
     it('should return babel env', () => {
-      process.env.npm_lifecycle_event = 'test';
-      expect(env.getLifecycle()).toEqual('test');
+      process.env.npm_lifecycle_event = Lifecycle.Test;
+      expect(env.getLifecycle()).toEqual(Lifecycle.Test);
     });
 
     it('should return true for correct lifecycle', () => {
-      process.env.npm_lifecycle_event = 'build';
-      expect(env.isLifecycle('build')).toEqual(true);
+      process.env.npm_lifecycle_event = Lifecycle.Build;
+      expect(env.isLifecycle(Lifecycle.Build)).toEqual(true);
     });
 
     it('should return false for lifecycle', () => {
-      expect(env.isLifecycle('build')).toEqual(false);
+      expect(env.isLifecycle(Lifecycle.Build)).toEqual(false);
     });
   });
 

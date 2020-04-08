@@ -1,14 +1,16 @@
-import { logger, env, fs, open } from 'flex-dev-utils';
+import { env, fs, logger, open } from 'flex-dev-utils';
+import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import { findPorts, getDefaultPort, getUrls } from 'flex-dev-utils/dist/urls';
+import { findPorts, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import WebpackDevServer from 'webpack-dev-server';
 
-import getConfiguration from '../config';
+import getConfiguration, { ConfigurationType } from '../config';
+import compiler from '../utils/compiler';
 import paths from '../utils/paths';
 
 import run from '../utils/run';
-import compiler from '../utils/compiler';
 import pluginServer, { Plugin } from './start/pluginServer';
+
 const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
 
 /**
@@ -20,8 +22,8 @@ const start = async (...args: string[]) => {
   // Finds the first available free port where two consecutive ports are free
   const port = await findPorts(getDefaultPort(process.env.PORT));
 
-  env.setBabelEnv('development');
-  env.setNodeEnv('development');
+  env.setBabelEnv(Environment.Development);
+  env.setNodeEnv(Environment.Development);
   env.setHost('0.0.0.0');
   env.setPort(port);
 
@@ -37,11 +39,11 @@ const start = async (...args: string[]) => {
  * @private
  */
 export const _startDevServer = (port: number) => {
-  const config = getConfiguration('webpack', 'development');
-  const devConfig = getConfiguration('devServer', 'development');
+  const config = getConfiguration(ConfigurationType.Webpack, Environment.Development);
+  const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development);
   const devCompiler = compiler(config, true);
   const devServer = new WebpackDevServer(devCompiler, devConfig);
-  const { local } = getUrls(port);
+  const { local } = getLocalAndNetworkUrls(port);
 
   devServer.listen(local.port, local.host, async (err) => {
     if (err) {

@@ -159,7 +159,7 @@ describe('fs', () => {
       expect(fs.resolveRelative('foo', 'bar', 'baz')).toEqual('foo/bar/baz');
     });
 
-    it('should build path with two items and an extension extension', () => {
+    it('should build path with two items and an extension', () => {
       expect(fs.resolveRelative('foo', 'bar', '.baz')).toEqual('foo/bar.baz');
     });
 
@@ -167,7 +167,7 @@ describe('fs', () => {
       expect(fs.resolveRelative('foo', 'bar', 'baz', 'test', 'it')).toEqual('foo/bar/baz/test/it');
     });
 
-    it('should build path with multiple items and an extension extension', () => {
+    it('should build path with multiple items and an extension', () => {
       expect(fs.resolveRelative('foo', 'bar', 'baz', 'test', '.it')).toEqual('foo/bar/baz/test.it');
     });
   });

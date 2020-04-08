@@ -1,5 +1,5 @@
 import { env } from 'flex-dev-utils';
-import { getUrls } from 'flex-dev-utils/dist/urls';
+import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import { Configuration } from 'webpack-dev-server';
 
 import paths from '../utils/paths';
@@ -8,7 +8,7 @@ import paths from '../utils/paths';
  * Generates a webpack-dev configuration
  */
 export default () => {
-  const { local } = getUrls(env.getPort());
+  const { local } = getLocalAndNetworkUrls(env.getPort());
   const socket = env.getWSSocket();
 
   const config: Configuration = {

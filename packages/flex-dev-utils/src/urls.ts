@@ -52,7 +52,7 @@ export const findPorts = async (startPort: number = 3000): Promise<number> => {
  * Returns the local and network urls
  * @param port  the port the server is running on
  */
-export const getUrls = (port: number): InternalServiceUrls => {
+export const getLocalAndNetworkUrls = (port: number): InternalServiceUrls => {
   const protocol = isHTTPS() ? 'https' : 'http';
 
   const localUrl = url.format({

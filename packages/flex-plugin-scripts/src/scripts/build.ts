@@ -1,7 +1,8 @@
-import { logger, env } from 'flex-dev-utils';
+import { env, logger } from 'flex-dev-utils';
+import { Environment } from 'flex-dev-utils/dist/env';
 import webpack from 'webpack';
 
-import getConfiguration from '../config';
+import getConfiguration, { ConfigurationType } from '../config';
 import { buildFailure, buildSuccessful } from '../prints';
 import run, { exit } from '../utils/run';
 
@@ -25,8 +26,8 @@ export interface Bundle {
 const build = async (...args: string[]) => {
   logger.debug('Building Flex plugin bundle');
 
-  env.setBabelEnv('production');
-  env.setNodeEnv('production');
+  env.setBabelEnv(Environment.Production);
+  env.setNodeEnv(Environment.Production);
 
   if (!env.isTerminalPersisted()) {
     logger.clearTerminal();
@@ -46,7 +47,7 @@ const build = async (...args: string[]) => {
 
 export const _buildBundle = async (): Promise<BuildBundle> => {
   return new Promise((resolve, reject) => {
-    const config = getConfiguration('webpack', 'production');
+    const config = getConfiguration(ConfigurationType.Webpack, Environment.Production);
 
     webpack(config)
       .run((err, stats) => {

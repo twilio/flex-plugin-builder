@@ -1,5 +1,14 @@
-export type Environment = 'production' | 'development';
-export type Lifecycle = 'build' | 'prebuild' | 'deploy' | 'predeploy';
+export enum Environment {
+  Production = 'production',
+  Development = 'development',
+};
+export enum Lifecycle {
+  Test = 'test',
+  Build = 'build',
+  Prebuild = 'prebuild',
+  Deploy = 'deploy',
+  Predeploy = 'predeploy',
+}
 
 /**
  * Helper method to test whether env variable is defined

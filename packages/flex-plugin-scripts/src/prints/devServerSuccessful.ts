@@ -10,7 +10,7 @@ export default (local: ServiceUrl, network: ServiceUrl) => {
   const pkgName = logger.colors.bold(paths.packageName);
 
   logger.newline();
-  logger.info(`Your plugin ${pkgName} is running on the browser on:`);
+  logger.info(`Your plugin ${pkgName} is running in the browser on:`);
   logger.newline();
   logger.info('\t', logger.colors.bold('Local:'), '\t', local.url);
   logger.info('\t', logger.colors.bold('Network:'), '\t', network.url);

@@ -19,7 +19,7 @@ describe('urls', () => {
       expect(urls.getDefaultPort('')).toEqual(urls.DEFAULT_PORT);
     });
 
-    it('should return default if port is not not a number string', () => {
+    it('should return default if port is not a number string', () => {
       expect(urls.getDefaultPort('abc')).toEqual(urls.DEFAULT_PORT);
     });
 
@@ -32,7 +32,7 @@ describe('urls', () => {
     });
   });
 
-  describe('getUrls', () => {
+  describe('getLocalAndNetworkUrls', () => {
     const OLD_ENV = process.env;
 
     beforeEach(() => {
@@ -41,7 +41,7 @@ describe('urls', () => {
 
     it('should return http', () => {
       const ip = jest.spyOn(address, 'ip').mockReturnValue('192.0.0.0');
-      const result = urls.getUrls(1234);
+      const result = urls.getLocalAndNetworkUrls(1234);
 
       expect(result.local.host).toEqual('0.0.0.0');
       expect(result.local.port).toEqual(1234);
@@ -57,7 +57,7 @@ describe('urls', () => {
     it('should return https', () => {
       process.env.HTTPS = 'true';
       const ip = jest.spyOn(address, 'ip').mockReturnValue('192.0.0.0');
-      const result = urls.getUrls(1234);
+      const result = urls.getLocalAndNetworkUrls(1234);
 
       expect(result.local.host).toEqual('0.0.0.0');
       expect(result.local.port).toEqual(1234);

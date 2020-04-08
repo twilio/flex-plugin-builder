@@ -1,6 +1,6 @@
 import { logger, env } from 'flex-dev-utils';
 import webpackFormatMessages from '@k88/format-webpack-messages';
-import { getUrls } from 'flex-dev-utils/dist/urls';
+import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import webpack, { Compiler, Configuration } from 'webpack';
 import { devServerSuccessful } from '../prints';
 import paths from './paths';
@@ -25,7 +25,7 @@ export default (config: Configuration, devServer = false): Compiler => {
     if (!devServer) {
       return compiler;
     }
-    const { local, network } = getUrls(env.getPort());
+    const { local, network } = getLocalAndNetworkUrls(env.getPort());
 
     compiler.hooks.invalid.tap(HOOK_RECOMPILE, () => {
       if (!env.isTerminalPersisted()) {

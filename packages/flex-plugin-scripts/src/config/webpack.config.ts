@@ -1,16 +1,17 @@
 import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
-import TerserPlugin from 'terser-webpack-plugin';
-import PnpWebpackPlugin from 'pnp-webpack-plugin';
 import ModuleScopePlugin from '@k88/module-scope-plugin';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { getDependencyVersion } from 'flex-dev-utils/dist/fs';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import PnpWebpackPlugin from 'pnp-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
 import webpack, {
   Configuration,
-  SourceMapDevToolPlugin,
-  Plugin,
   DefinePlugin,
-  HotModuleReplacementPlugin, Resolve,
+  HotModuleReplacementPlugin,
+  Plugin,
+  Resolve,
+  SourceMapDevToolPlugin,
 } from 'webpack';
 
 import paths from '../utils/paths';
@@ -69,13 +70,13 @@ export const _getPlugins = (env: Environment): Plugin[] => {
     __FPB_REACT_DOM_VERSION: `'${getDependencyVersion('react-dom')}'`,
   }));
 
-  if (env === 'production') {
+  if (env === Environment.Production) {
     plugins.push(new SourceMapDevToolPlugin({
       append: '\n//# sourceMappingURL=bundle.js.map',
     }));
   }
 
-  if (env === 'development') {
+  if (env === Environment.Development) {
     plugins.push(new HotModuleReplacementPlugin());
 
     const pkg = require(paths.flexUIPkgPath);
@@ -100,7 +101,7 @@ export const _getPlugins = (env: Environment): Plugin[] => {
 export const _getEntries = (env: Environment): string[] => {
   const entry: string[] = [];
 
-  if (env === 'development') {
+  if (env === Environment.Development) {
     entry.push(
       require.resolve('@k88/cra-webpack-hot-dev-client/build'),
     );
@@ -117,7 +118,7 @@ export const _getEntries = (env: Environment): string[] => {
  * @private
  */
 export const _getOptimization = (env: Environment): Optimization => {
-  const isProd = env === 'production';
+  const isProd = env === Environment.Production;
   return {
     splitChunks: false,
     runtimeChunk: false,
@@ -157,7 +158,7 @@ export const _getOptimization = (env: Environment): Optimization => {
  * @private
  */
 export const _getResolve = (env: Environment): Resolve => {
-  const isProd = env === 'production';
+  const isProd = env === Environment.Production;
 
   const resolve: Resolve = {
     modules: ['node_modules', paths.nodeModulesDir],
@@ -183,7 +184,7 @@ export const _getResolve = (env: Environment): Resolve => {
  * @param env
  */
 export default (env: Environment) => {
-  const isProd = env === 'production';
+  const isProd = env === Environment.Production;
 
   const config: Configuration = {
     entry: _getEntries(env),
@@ -228,7 +229,7 @@ export default (env: Environment) => {
     },
     plugins: _getPlugins(env),
   };
-  config.mode = isProd ? 'production' : 'development';
+  config.mode = isProd ? Environment.Production : Environment.Development;
 
   return config;
 };

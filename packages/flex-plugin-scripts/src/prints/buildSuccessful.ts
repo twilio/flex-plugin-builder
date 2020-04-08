@@ -1,4 +1,5 @@
-import { logger, env } from 'flex-dev-utils';
+import { env, logger } from 'flex-dev-utils';
+import { Lifecycle } from 'flex-dev-utils/dist/env';
 import { Bundle } from '../scripts/build';
 import paths from '../utils/paths';
 
@@ -30,7 +31,7 @@ export default (bundles: Bundle[], warnings?: string[]) => {
     });
 
   // Build command invoked directly, and not as a predeploy script
-  if (env.isLifecycle('build')) {
+  if (env.isLifecycle(Lifecycle.Build)) {
     logger.newline();
     logger.info('Your', logger.colors.bold('plugin'), 'is now ready to be deployed.');
     logger.info('You can deploy it to Twilio using:');
