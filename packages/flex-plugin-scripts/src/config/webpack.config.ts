@@ -2,13 +2,14 @@ import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
 import ModuleScopePlugin from '@k88/module-scope-plugin';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { getDependencyVersion } from 'flex-dev-utils/dist/fs';
+import { resolveModulePath } from 'flex-dev-utils/dist/require';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import PnpWebpackPlugin from 'pnp-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import webpack, {
   Configuration,
   DefinePlugin,
-  HotModuleReplacementPlugin,
+  HotModuleReplacementPlugin, Loader,
   Plugin,
   Resolve,
   SourceMapDevToolPlugin,
@@ -17,6 +18,9 @@ import webpack, {
 import paths from '../utils/paths';
 import Optimization = webpack.Options.Optimization;
 
+interface LoaderOption { [name: string]: any };
+
+const IMAGE_SIZE_BYTE = 10 * 1024;
 const FLEX_SHIM = 'flex-plugin-scripts/dev_assets/flex-shim.js';
 const EXTERNALS = {
   'react': 'React',
@@ -29,7 +33,7 @@ const EXTERNALS = {
  * Returns the Babel Loader configuration
  * @param isProd  whether this is a production build
  */
-const babelLoader = (isProd: boolean) => ({
+const _getBabelLoader = (isProd: boolean) => ({
   test: new RegExp('\.(' + paths.extensions.join('|') + ')$'),
   include: paths.srcDir,
   loader: require.resolve('babel-loader'),
@@ -51,6 +55,132 @@ const babelLoader = (isProd: boolean) => ({
     compact: isProd,
   },
 });
+
+/**
+ * Gets the image loader
+ * @private
+ */
+export const _getImageLoader = () => ({
+    test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+    loader: require.resolve('url-loader'),
+    options: {
+      limit: IMAGE_SIZE_BYTE,
+    },
+});
+
+/**
+ * Gets the styles loader
+ * @param isProd  whether this is a production build
+ * @private
+ */
+export const _getStyleLoaders = (isProd: boolean) => {
+  const getStyleLoader = (options: LoaderOption, preProcessor?: string, implementation?: string) => {
+    const loaders: Loader[] = [];
+    if (!isProd) {
+      loaders.push(require.resolve('style-loader'));
+    }
+    loaders.push(
+      {
+        loader: require.resolve('css-loader'),
+        options: options,
+      },
+      {
+        // Options for PostCSS as we reference these options twice
+        // Adds vendor prefixing based on your specified browser support in
+        // package.json
+        loader: require.resolve('postcss-loader'),
+        options: {
+          // Necessary for external CSS imports to work
+          // https://github.com/facebook/create-react-app/issues/2677
+          ident: 'postcss',
+          plugins: () => [
+            require('postcss-flexbugs-fixes'),
+            require('postcss-preset-env')({
+              autoprefixer: {
+                flexbox: 'no-2009',
+              },
+              stage: 3,
+            }),
+          ],
+          sourceMap: isProd,
+        },
+      }
+    );
+
+    if (preProcessor) {
+      const preProcessorOptions: Record<string, any> = {
+        sourceMap: isProd,
+      };
+
+      if (implementation) {
+        const nodePath = resolveModulePath(implementation);
+        if (nodePath) {
+          preProcessorOptions.implementation = require(nodePath);
+        }
+      }
+
+      loaders.push(
+        {
+          loader: require.resolve('resolve-url-loader'),
+          options: {
+            sourceMap: isProd,
+          },
+        },
+        {
+          loader: require.resolve(preProcessor),
+          options: preProcessorOptions,
+        }
+      );
+    }
+
+    return loaders;
+  };
+
+  return [
+    {
+      test: /\.css$/,
+      exclude: /\.module\.css$/,
+      use: getStyleLoader( {
+        importLoaders: 1,
+        sourceMap: isProd,
+      }),
+      sideEffects: true,
+    },
+    {
+      test: /\.module\.css$/,
+      use: getStyleLoader({
+        importLoaders: 1,
+        sourceMap: isProd,
+        modules: true
+      }),
+    },
+    {
+      test: /\.(scss|sass)$/,
+      exclude: /\.module\.(scss|sass)$/,
+      use: getStyleLoader(
+        {
+          importLoaders: 3,
+          sourceMap: isProd,
+        },
+        'sass-loader',
+        'node-sass',
+      ),
+      sideEffects: true,
+    },
+    {
+      test: /\.module\.(scss|sass)$/,
+      use: getStyleLoader(
+        {
+          importLoaders: 3,
+          sourceMap: isProd,
+          modules: true,
+        },
+        'sass-loader',
+        'node-sass',
+      ),
+    },
+  ];
+};
 
 /**
  * Returns an array of {@link Plugin} for Webpack
@@ -222,7 +352,9 @@ export default (env: Environment) => {
         { parser: { requireEnsure: false } },
         {
           oneOf: [
-            babelLoader(isProd),
+            _getImageLoader(),
+            _getBabelLoader(isProd),
+            ..._getStyleLoaders(isProd),
           ]
         },
       ]
