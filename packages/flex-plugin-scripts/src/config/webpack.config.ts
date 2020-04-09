@@ -74,24 +74,29 @@ export const _getImageLoader = () => ({
  * @private
  */
 export const _getStyleLoaders = (isProd: boolean) => {
+  /**
+   * Gets the loader for the given style
+   * @param options the options
+   * @param preProcessor  the pre-processor, for example scss-loader
+   * @param implementation  the implementation for thr scss-loader
+   */
   const getStyleLoader = (options: LoaderOption, preProcessor?: string, implementation?: string) => {
     const loaders: Loader[] = [];
+
+    // This is for hot-reloading to work
     if (!isProd) {
       loaders.push(require.resolve('style-loader'));
     }
+
+    // All css loader
     loaders.push(
       {
         loader: require.resolve('css-loader'),
-        options: options,
+        options,
       },
       {
-        // Options for PostCSS as we reference these options twice
-        // Adds vendor prefixing based on your specified browser support in
-        // package.json
         loader: require.resolve('postcss-loader'),
         options: {
-          // Necessary for external CSS imports to work
-          // https://github.com/facebook/create-react-app/issues/2677
           ident: 'postcss',
           plugins: () => [
             require('postcss-flexbugs-fixes'),
@@ -107,6 +112,7 @@ export const _getStyleLoaders = (isProd: boolean) => {
       }
     );
 
+    // Add a pre-processor loader (converting SCSS to CSS)
     if (preProcessor) {
       const preProcessorOptions: Record<string, any> = {
         sourceMap: isProd,

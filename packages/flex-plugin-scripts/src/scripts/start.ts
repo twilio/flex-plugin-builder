@@ -3,7 +3,7 @@ import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
 import { findPorts, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
-import { join } from "path";
+import { join } from 'path';
 import WebpackDevServer from 'webpack-dev-server';
 
 import getConfiguration, { ConfigurationType } from '../config';
