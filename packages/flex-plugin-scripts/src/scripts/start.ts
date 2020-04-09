@@ -1,7 +1,9 @@
 import { env, fs, logger, open } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
+import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
 import { findPorts, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
+import { join } from 'path';
 import WebpackDevServer from 'webpack-dev-server';
 
 import getConfiguration, { ConfigurationType } from '../config';
@@ -18,6 +20,7 @@ const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
  */
 const start = async (...args: string[]) => {
   logger.debug('Starting local development environment');
+  addCWDNodeModule();
 
   // Finds the first available free port where two consecutive ports are free
   const port = await findPorts(getDefaultPort(process.env.PORT));
@@ -27,7 +30,7 @@ const start = async (...args: string[]) => {
   env.setHost('0.0.0.0');
   env.setPort(port);
 
-  // Future node version will silently consume unhandled exception
+  // Future  node version will silently consume unhandled exception
   process.on('unhandledRejection', err => { throw err; });
 
   _startDevServer(port);

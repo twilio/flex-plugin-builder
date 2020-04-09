@@ -1,5 +1,6 @@
 import { env, logger } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
+import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
 import webpack from 'webpack';
 
 import getConfiguration, { ConfigurationType } from '../config';
@@ -25,6 +26,8 @@ export interface Bundle {
  */
 const build = async (...args: string[]) => {
   logger.debug('Building Flex plugin bundle');
+
+  addCWDNodeModule();
 
   env.setBabelEnv(Environment.Production);
   env.setNodeEnv(Environment.Production);
