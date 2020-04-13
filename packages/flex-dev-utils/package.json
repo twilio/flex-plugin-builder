@@ -34,6 +34,7 @@
   "dependencies": {
     "@k88/pipe-compose": "^2.1.1",
     "@types/inquirer": "^6.5.0",
+    "app-module-path": "^2.2.0",
     "axios": "^0.19.0",
     "axios-mock-adapter": "^1.17.0",
     "boxen": "^4.1.0",
@@ -56,6 +57,7 @@
     "wrap-ansi": "^4.0.0"
   },
   "devDependencies": {
+    "@types/app-module-path": "^2.2.0",
     "@types/lodash": "^4.14.144",
     "@types/marked": "^0.6.5",
     "@types/marked-terminal": "^3.1.1",

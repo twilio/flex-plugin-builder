@@ -1,3 +1,4 @@
+import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
@@ -8,6 +9,7 @@ import {
   Options,
   Resolve,
   SourceMapDevToolPlugin,
+  RuleSetLoader, Module,
 } from 'webpack';
 import { merge, clone } from 'flex-dev-utils/dist/lodash';
 import { getDependencyVersion, readPackageJson } from 'flex-dev-utils/dist/fs';
@@ -23,8 +25,10 @@ const TWILIO_FLEX_VERSION = flexUIPkg.version;
 
 const UNSUPPORTED_PLUGINS = ['SWPrecacheWebpackPlugin', 'ManifestPlugin'];
 const FLEX_SHIM = 'flex-plugin-scripts/dev_assets/flex-shim.js';
+const CSS_EXTRACT = 'mini-css-extract-plugin';
 
 interface Configuration extends WebpackConfig {
+  module: Module;
   output: Output;
   plugins: Plugin[];
   optimization: Options.Optimization;
@@ -37,6 +41,8 @@ interface Configuration extends WebpackConfig {
  * @param config  the {@link WebpackConfig}
  */
 const configureWebpack = (config: WebpackConfig): Configuration => {
+  addCWDNodeModule();
+
   config.output = config.output || {};
   config.plugins = config.plugins || [];
   config.optimization = config.optimization || {};
@@ -97,6 +103,25 @@ const configureWebpack = (config: WebpackConfig): Configuration => {
 
   config.optimization.splitChunks = false;
   config.optimization.runtimeChunk = false;
+
+  // Allow CSS to be bundled into the minified JS
+  if (config.module && config.module.rules && config.mode === 'production') {
+    config.module.rules
+      .filter(rule => rule.oneOf)
+      .forEach(oneOf => {
+        (oneOf.oneOf || [])
+          .filter(rule => rule.use)
+          .map(rule => rule.use as RuleSetLoader[])
+          .forEach(use => {
+            const index = use.findIndex(u => u.loader && u.loader.indexOf(CSS_EXTRACT) !== -1);
+            if (index !== -1) {
+              use.splice(index, 1);
+              // @ts-ignore
+              use.unshift(require.resolve('style-loader'));
+            }
+          });
+      });
+  }
 
   return config as Configuration;
 };
