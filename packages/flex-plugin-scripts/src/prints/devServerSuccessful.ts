@@ -19,6 +19,6 @@ export default (local: ServiceUrl, network: ServiceUrl) => {
   logger.info('This is a development build and is not intended to be used for production.');
   logger.info('To create a production build, use either:');
   logger.newline();
-  logger.info('\t', logger.colors.cyan('npm'), 'run build');
-  logger.info('\t', logger.colors.cyan('npm'), 'run deploy');
+  logger.installInfo('npm', 'run build');
+  logger.installInfo('npm', 'run deploy');
 };

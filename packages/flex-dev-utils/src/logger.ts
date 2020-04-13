@@ -1,4 +1,4 @@
-import { format } from 'util';
+import { format, inspect } from 'util';
 import chalk from 'chalk';
 import wrapAnsi from 'wrap-ansi';
 
@@ -93,6 +93,15 @@ export const newline = (lines: number = 1) => {
 };
 
 /**
+ * A wrapper for showing bash command information such as `npm install foo`
+ * @param command the bash command
+ * @param args  the remaining arguments
+ */
+export const installInfo = (command: string, ...args: string[]) => {
+  info('\t', chalk.cyan(command), ...args);
+};
+
+/**
  * Word wrapping using ANSI escape codes
  *
  * @param input     the string to wrap
@@ -134,6 +143,7 @@ export default {
   wrap,
   clearTerminal,
   notice,
+  installInfo,
   colors: chalk,
   coloredStrings: {
     link: (str: string) => chalk.blue(str),

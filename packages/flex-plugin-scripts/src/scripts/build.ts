@@ -6,6 +6,7 @@ import webpack from 'webpack';
 import getConfiguration, { ConfigurationType } from '../config';
 import { buildFailure, buildSuccessful } from '../prints';
 import run, { exit } from '../utils/run';
+import validateTypescript from '../utils/validateTypescript';
 
 interface BuildBundle {
   warnings?: string[];
@@ -28,6 +29,7 @@ const build = async (...args: string[]) => {
   logger.debug('Building Flex plugin bundle');
 
   addCWDNodeModule();
+  validateTypescript();
 
   env.setBabelEnv(Environment.Production);
   env.setNodeEnv(Environment.Production);

@@ -1,5 +1,9 @@
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import { readPackageJson, resolveCwd, resolveRelative } from 'flex-dev-utils/dist/fs';
+import {
+  checkFilesExist,
+  readPackageJson,
+  resolveCwd,
+  resolveRelative,
+} from 'flex-dev-utils/dist/fs';
 
 // All directories
 const nodeModulesDir = resolveCwd('node_modules');
@@ -11,6 +15,9 @@ const flexUIDir = resolveRelative(nodeModulesDir, '@twilio/flex-ui');
 // package.json information
 const packageJson = readPackageJson();
 const packageName = packageJson.name;
+
+// Others
+const tsConfigPath = resolveCwd('tsconfig.json');
 
 export default {
   // build/ directory paths
@@ -34,10 +41,12 @@ export default {
   appConfig: resolveRelative(publicDir, 'appConfig.js'),
   pluginsJsonPath: resolveRelative(publicDir, 'plugins.json'),
 
-  // package.json
+  // app
   packageName,
+  tsConfigPath,
   version: packageJson.version,
   packageJsonPath: resolveCwd('package.json'),
+  isTSProject: () => checkFilesExist(tsConfigPath),
 
   // others
   assetBaseUrlTemplate: `/plugins/${packageName}/%PLUGIN_VERSION%`,

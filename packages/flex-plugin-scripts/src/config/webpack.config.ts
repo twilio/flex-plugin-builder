@@ -1,8 +1,9 @@
 import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
 import ModuleScopePlugin from '@k88/module-scope-plugin';
 import { Environment } from 'flex-dev-utils/dist/env';
-import { getDependencyVersion } from 'flex-dev-utils/dist/fs';
+import { getDependencyVersion, checkFilesExist } from 'flex-dev-utils/dist/fs';
 import { resolveModulePath } from 'flex-dev-utils/dist/require';
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import PnpWebpackPlugin from 'pnp-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
@@ -195,6 +196,7 @@ export const _getStyleLoaders = (isProd: boolean) => {
  */
 export const _getPlugins = (env: Environment): Plugin[] => {
   const plugins: Plugin[] = [];
+  const isDev = env === Environment.Development;
 
   plugins.push(new DefinePlugin({
     __FPB_PLUGIN_UNIQUE_NAME: `'${paths.packageName}'`,
@@ -223,6 +225,33 @@ export const _getPlugins = (env: Environment): Plugin[] => {
     }));
     plugins.push(new InterpolateHtmlPlugin({
       TWILIO_FLEX_VERSION: pkg.version,
+    }));
+  }
+  const hasPnp = 'pnp' in process.versions;
+
+  if (paths.isTSProject()) {
+    const typescriptPath = resolveModulePath('typescript');
+    plugins.push(new ForkTsCheckerWebpackPlugin({
+      typescript: typescriptPath ? typescriptPath : undefined,
+      async: isDev,
+      useTypescriptIncrementalApi: true,
+      checkSyntacticErrors: true,
+      resolveModuleNameModule: hasPnp
+        ? `${__dirname}/pnpTs.js`
+        : undefined,
+      resolveTypeReferenceDirectiveModule: hasPnp
+        ? `${__dirname}/pnpTs.js`
+        : undefined,
+      tsconfig: paths.tsConfigPath,
+      reportFiles: [
+        '**',
+        '!**/__tests__/**',
+        '!**/?(*.)(spec|test).*',
+        '!**/src/setupProxy.*',
+        '!**/src/setupTests.*',
+      ],
+      silent: true,
+      // formatter: isEnvProduction ? typescriptFormatter : undefined,
     }));
   }
 
@@ -298,7 +327,7 @@ export const _getResolve = (env: Environment): Resolve => {
 
   const resolve: Resolve = {
     modules: ['node_modules', paths.nodeModulesDir],
-    extensions: paths.extensions.map(e => `.${e}`),
+    extensions: paths.extensions.filter(e => paths.isTSProject() || e.includes('ts')).map(e => `.${e}`),
     alias: {
       '@twilio/flex-ui': FLEX_SHIM,
     },
