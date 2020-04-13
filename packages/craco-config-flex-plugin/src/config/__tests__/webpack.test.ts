@@ -5,6 +5,7 @@ import CleanWebpackPlugin from 'clean-webpack-plugin';
 import * as utilsFs from '../../utils/fs';
 import * as devFs from 'flex-dev-utils/dist/fs';
 
+jest.mock('flex-dev-utils/dist/require');
 jest.mock('path', () => ({
   join: (...args: string[]) => args.includes('@twilio/flex-ui') ? 'flex-ui' : 'app',
 }));
