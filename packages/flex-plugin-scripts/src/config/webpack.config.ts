@@ -229,7 +229,7 @@ export const _getPlugins = (env: Environment): Plugin[] => {
   }
   const hasPnp = 'pnp' in process.versions;
 
-  if (paths.isTSProject()) {
+  if (paths.app.isTSProject()) {
     const typescriptPath = resolveModulePath('typescript');
     plugins.push(new ForkTsCheckerWebpackPlugin({
       typescript: typescriptPath ? typescriptPath : undefined,
@@ -324,7 +324,7 @@ export const _getOptimization = (env: Environment): Optimization => {
  */
 export const _getResolve = (env: Environment): Resolve => {
   const isProd = env === Environment.Production;
-  const extensions = !paths.isTSProject()
+  const extensions = !paths.app.isTSProject()
     ? paths.extensions.filter(e => !e.includes('ts'))
     : paths.extensions;
 

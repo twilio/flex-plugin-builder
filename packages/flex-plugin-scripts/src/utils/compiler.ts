@@ -43,7 +43,7 @@ export default (config: Configuration, devServer = false): Compiler => {
     let tsMessagesPromise: Promise<ErrorsAndWarnings>;
     let tsMessagesResolver: FunctionalCallback<ErrorsAndWarnings, void>;
 
-    if (paths.isTSProject()) {
+    if (paths.app.isTSProject()) {
       compiler.hooks.beforeCompile.tap('beforeCompile', () => {
         tsMessagesPromise = new Promise(resolve => {
           tsMessagesResolver = (msgs: ErrorsAndWarnings) => resolve(msgs);
@@ -82,7 +82,7 @@ export default (config: Configuration, devServer = false): Compiler => {
       }
       const result = stats.toJson({ all: false, errors: true, warnings: true });
 
-      if (paths.isTSProject() && !stats.hasErrors()) {
+      if (paths.app.isTSProject() && !stats.hasErrors()) {
         const delayedMsg = setTimeout(() => {
           logger.notice('Waiting for Typescript check results...');
         }, 100);

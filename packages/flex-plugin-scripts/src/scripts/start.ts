@@ -10,7 +10,6 @@ import compiler from '../utils/compiler';
 import paths from '../utils/paths';
 
 import run, { exit } from '../utils/run';
-import validateTypescript from '../utils/validateTypescript';
 import pluginServer, { Plugin } from './start/pluginServer';
 
 const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
@@ -22,7 +21,6 @@ const start = async (...args: string[]) => {
   logger.debug('Starting local development environment');
 
   addCWDNodeModule();
-  validateTypescript();
 
   // Finds the first available free port where two consecutive ports are free
   const port = await findPorts(getDefaultPort(process.env.PORT));

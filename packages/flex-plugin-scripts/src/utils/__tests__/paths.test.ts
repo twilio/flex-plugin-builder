@@ -45,7 +45,9 @@ describe('paths', () => {
     expect(paths.flexUIDir).toContain('@twilio/flex-ui');
     expect(paths.flexUIPkgPath).toContain('@twilio/flex-ui');
     expect(paths.flexUIPkgPath).toEqual(expect.stringMatching('package\.json$'));
-    expect(paths.devAssetsDir).toContain('flex-plugin-scripts');
+
+    // scripts
+    expect(paths.scripts.devAssetsDir).toContain('flex-plugin-scripts');
 
     // public/ directory
     expect(paths.publicDir).toEqual(expect.stringMatching('public$'));

@@ -1,25 +1,21 @@
-import { logger } from 'flex-dev-utils';
+import { env, logger } from 'flex-dev-utils';
+import { checkFilesExist, findGlobs, resolveRelative } from 'flex-dev-utils/dist/fs';
+import { resolveModulePath } from 'flex-dev-utils/dist/require';
 import { existsSync, copyFileSync } from 'fs';
 import semver from 'semver';
-import { join } from 'path';
 
 import {
   appConfigMissing,
-  publicDirCopyFailed,
+  publicDirCopyFailed, typescriptNotInstalled,
   versionMismatch,
 } from '../prints';
 import expectedDependencyNotFound from '../prints/expectedDependencyNotFound';
-import run from '../utils/run';
+import paths from '../utils/paths';
+import run, { exit } from '../utils/run';
 
 interface Package {
   dependencies: object;
 }
-
-const nodeModulesPath = join(process.cwd(), 'node_modules');
-const flexUIPkgPath = join(nodeModulesPath, '@twilio/flex-ui/package.json');
-const appConfigPath = join(process.cwd(), 'public', 'appConfig.js');
-const indexSourcePath = join(__dirname, '..', '..', 'dev_assets', 'index.html');
-const indexTargetPath = join(process.cwd(), 'public', 'index.html');
 
 const PackagesToVerify = [
   'react',
@@ -27,15 +23,48 @@ const PackagesToVerify = [
 ];
 
 /**
+ * Returns true if there are any .d.ts/.ts/.tsx files
+ */
+export const _hasTypescriptFiles = () => findGlobs('**/*.(ts|tsx)', '!**/node_modules', '!**/*.d.ts').length !== 0;
+
+/**
+ * Validates the TypeScript project
+ * @private
+ */
+export const _validateTypescriptProject = () => {
+  if (!_hasTypescriptFiles()) {
+    return;
+  }
+
+  if (!resolveModulePath('typescript')) {
+    typescriptNotInstalled();
+    exit(1);
+
+    return;
+  }
+
+  if (checkFilesExist(paths.tsConfigPath)) {
+    return;
+  }
+
+  if (!env.isTerminalPersisted()) {
+    logger.clearTerminal();
+  }
+  env.persistTerminal();
+  logger.warning('No tsconfig.json was found, creating a default one.');
+  copyFileSync(paths.scripts.tsConfigPath, paths.app.tsConfigPath);
+};
+
+/**
  * Checks appConfig exists
  *
  * @private
  */
 export const _checkAppConfig = () => {
-  if (!existsSync(appConfigPath)) {
+  if (!existsSync(paths.appConfig)) {
     appConfigMissing();
 
-    return process.exit(1);
+    return exit(1);
   }
 };
 
@@ -47,11 +76,11 @@ export const _checkAppConfig = () => {
  */
 export const _checkPublicDirSync = (allowSkip: boolean) => {
   try {
-    copyFileSync(indexSourcePath, indexTargetPath);
+    copyFileSync(paths.scripts.indexHTMLPath, paths.indexHtmlPath);
   } catch (e) {
     publicDirCopyFailed(e, allowSkip);
 
-    return process.exit(1);
+    return exit(1);
   }
 };
 
@@ -63,7 +92,7 @@ export const _checkPublicDirSync = (allowSkip: boolean) => {
  */
 /* istanbul ignore next */
 export const _checkExternalDepsVersions = (allowSkip: boolean) => {
-  const flexUIPkg = require(flexUIPkgPath);
+  const flexUIPkg = require(paths.flexUIPkgPath);
 
   PackagesToVerify.forEach((name) => _verifyPackageVersion(flexUIPkg, allowSkip, name));
 };
@@ -81,20 +110,20 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, na
   if (!expectedDependency) {
     expectedDependencyNotFound(name);
 
-    return process.exit(1);
+    return exit(1);
   }
 
   // @ts-ignore
   const requiredVersion = semver.coerce(expectedDependency).version;
 
-  const installedPath = join(nodeModulesPath, name, 'package.json');
+  const installedPath = resolveRelative(paths.nodeModulesDir, name, 'package.json');
   const installedVersion = require(installedPath).version;
 
   if (requiredVersion !== installedVersion) {
     versionMismatch(name, installedVersion, requiredVersion, allowSkip);
 
     if (!allowSkip) {
-      return process.exit(1);
+      return exit(1);
     }
   }
 };
@@ -104,11 +133,11 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, na
  */
 const checkStart = async () => {
   logger.debug('Checking Flex plugin project directory');
-  const allowSkip = process.env.SKIP_PREFLIGHT_CHECK === 'true';
 
   _checkAppConfig();
-  _checkPublicDirSync(allowSkip);
-  _checkExternalDepsVersions(allowSkip);
+  _checkPublicDirSync(env.skipPreflightCheck());
+  _checkExternalDepsVersions(env.skipPreflightCheck());
+  _validateTypescriptProject();
 };
 
 run(checkStart);
