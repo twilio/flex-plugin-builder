@@ -9,7 +9,7 @@ import getConfiguration, { ConfigurationType } from '../config';
 import compiler from '../utils/compiler';
 import paths from '../utils/paths';
 
-import run from '../utils/run';
+import run, { exit } from '../utils/run';
 import validateTypescript from '../utils/validateTypescript';
 import pluginServer, { Plugin } from './start/pluginServer';
 
@@ -50,6 +50,17 @@ export const _startDevServer = (port: number) => {
   const devServer = new WebpackDevServer(devCompiler, devConfig);
   const { local } = getLocalAndNetworkUrls(port);
 
+  // Show TS errors on browser
+  devCompiler.hooks.tsCompiled.tap('afterTSCompile', (warnings, errors) => {
+    if (warnings.length) {
+      devServer.sockWrite(devServer.sockets, 'warnings', warnings);
+    }
+    if (errors.length) {
+      devServer.sockWrite(devServer.sockets, 'errors', errors);
+    }
+  });
+
+  // Start the dev-server
   devServer.listen(local.port, local.host, async (err) => {
     if (err) {
       logger.error(err);
@@ -66,18 +77,15 @@ export const _startDevServer = (port: number) => {
     await open(local.url);
   });
 
-  termSignals.forEach((sig) => {
-    process.on(sig, () => {
-      devServer.close();
-      process.exit();
-    });
-  });
+  // Close server and exit
+  const cleanUp = () => {
+    devServer.close();
+    exit(0);
+  };
 
-  if (process.env.CI !== 'true') {
-    process.stdin.on('end', () => {
-      devServer.close();
-      process.exit();
-    });
+  termSignals.forEach((sig) => process.on(sig, cleanUp));
+  if (!env.isCI()) {
+    process.stdin.on('end', cleanUp);
     process.stdin.resume();
   }
 };

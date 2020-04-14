@@ -1,7 +1,7 @@
 import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
 import ModuleScopePlugin from '@k88/module-scope-plugin';
 import { Environment } from 'flex-dev-utils/dist/env';
-import { getDependencyVersion, checkFilesExist } from 'flex-dev-utils/dist/fs';
+import { getDependencyVersion } from 'flex-dev-utils/dist/fs';
 import { resolveModulePath } from 'flex-dev-utils/dist/require';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -324,10 +324,13 @@ export const _getOptimization = (env: Environment): Optimization => {
  */
 export const _getResolve = (env: Environment): Resolve => {
   const isProd = env === Environment.Production;
+  const extensions = !paths.isTSProject()
+    ? paths.extensions.filter(e => !e.includes('ts'))
+    : paths.extensions;
 
   const resolve: Resolve = {
     modules: ['node_modules', paths.nodeModulesDir],
-    extensions: paths.extensions.filter(e => paths.isTSProject() || e.includes('ts')).map(e => `.${e}`),
+    extensions: extensions.map(e => `.${e}`),
     alias: {
       '@twilio/flex-ui': FLEX_SHIM,
     },
