@@ -1,3 +1,4 @@
+import { installInfo } from '../logger';
 import * as logger from '../logger';
 
 jest.mock('chalk');
@@ -103,6 +104,12 @@ describe('logger', () => {
 
     expect(info).toHaveBeenCalledTimes(1);
     expect(info).toHaveBeenCalledWith('var1 var2');
+  });
+
+  it('should use installInfo', () => {
+    logger.installInfo('cmd', 'arg1', 'arg2');
+
+    expect(info).toHaveBeenCalledTimes(1);
   });
 
   it('should call debug if debug is set', () => {

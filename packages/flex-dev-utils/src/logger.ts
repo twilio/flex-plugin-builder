@@ -1,4 +1,4 @@
-import { format, inspect } from 'util';
+import { format } from 'util';
 import chalk from 'chalk';
 import wrapAnsi from 'wrap-ansi';
 

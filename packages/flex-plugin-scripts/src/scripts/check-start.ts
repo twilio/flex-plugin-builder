@@ -43,7 +43,7 @@ export const _validateTypescriptProject = () => {
     return;
   }
 
-  if (checkFilesExist(paths.tsConfigPath)) {
+  if (checkFilesExist(paths.app.tsConfigPath)) {
     return;
   }
 

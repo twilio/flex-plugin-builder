@@ -1,5 +1,8 @@
 import { PackageJson } from '../fs';
 import * as fs from '../fs';
+import * as globby from 'globby';
+
+jest.mock('globby');
 
 describe('fs', () => {
   beforeEach(() => {
@@ -169,6 +172,19 @@ describe('fs', () => {
 
     it('should build path with multiple items and an extension', () => {
       expect(fs.resolveRelative('foo', 'bar', 'baz', 'test', '.it')).toEqual('foo/bar/baz/test.it');
+    });
+  });
+
+  describe('findGlobsIn', () => {
+    it('should call globby', () => {
+      const dirs = ['path1', 'path2'];
+      const sync = jest.spyOn(globby, 'sync').mockReturnValue(dirs);
+      const patterns = ['pattern1', 'pattern2'];
+      const result = fs.findGlobsIn('the-dir', ...patterns);
+
+      expect(result).toEqual(dirs);
+      expect(sync).toHaveBeenCalledTimes(1);
+      expect(sync).toHaveBeenCalledWith(patterns, { cwd: 'the-dir' });
     });
   });
 });

@@ -1,5 +1,6 @@
 import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
 import ModuleScopePlugin from '@k88/module-scope-plugin';
+import typescriptFormatter from '@k88/typescript-compile-error-formatter';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { getDependencyVersion } from 'flex-dev-utils/dist/fs';
 import { resolveModulePath } from 'flex-dev-utils/dist/require';
@@ -197,6 +198,7 @@ export const _getStyleLoaders = (isProd: boolean) => {
 export const _getPlugins = (env: Environment): Plugin[] => {
   const plugins: Plugin[] = [];
   const isDev = env === Environment.Development;
+  const isProd = env === Environment.Production;
 
   plugins.push(new DefinePlugin({
     __FPB_PLUGIN_UNIQUE_NAME: `'${paths.packageName}'`,
@@ -231,8 +233,8 @@ export const _getPlugins = (env: Environment): Plugin[] => {
 
   if (paths.app.isTSProject()) {
     const typescriptPath = resolveModulePath('typescript');
-    plugins.push(new ForkTsCheckerWebpackPlugin({
-      typescript: typescriptPath ? typescriptPath : undefined,
+    const config: Partial<ForkTsCheckerWebpackPlugin.Options> = {
+      typescript: typescriptPath || undefined,
       async: isDev,
       useTypescriptIncrementalApi: true,
       checkSyntacticErrors: true,
@@ -242,17 +244,22 @@ export const _getPlugins = (env: Environment): Plugin[] => {
       resolveTypeReferenceDirectiveModule: hasPnp
         ? `${__dirname}/pnpTs.js`
         : undefined,
-      tsconfig: paths.tsConfigPath,
+      tsconfig: paths.app.tsConfigPath,
       reportFiles: [
         '**',
         '!**/__tests__/**',
+        '!**/__mocks__/**',
         '!**/?(*.)(spec|test).*',
         '!**/src/setupProxy.*',
         '!**/src/setupTests.*',
       ],
       silent: true,
-      // formatter: isEnvProduction ? typescriptFormatter : undefined,
-    }));
+    };
+    if (isProd) {
+      config.formatter = typescriptFormatter
+    }
+
+    plugins.push(new ForkTsCheckerWebpackPlugin(config));
   }
 
   return plugins;

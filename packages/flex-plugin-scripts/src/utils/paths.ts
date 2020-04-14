@@ -33,7 +33,7 @@ export default {
   // plugin-app (the customer app)
   app: {
     dir: process.cwd(),
-    tsConfigPath: resolveCwd('tsconfig.json'),
+    tsConfigPath,
     isTSProject: () => checkFilesExist(tsConfigPath),
   },
 
@@ -61,7 +61,6 @@ export default {
 
   // app
   packageName,
-  tsConfigPath,
   version: packageJson.version,
   packageJsonPath: resolveCwd('package.json'),
 

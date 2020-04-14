@@ -18,6 +18,17 @@ describe('env', () => {
     })
   });
 
+  describe('skipPreflightCheck', () => {
+    it('should return true', () => {
+      process.env.SKIP_PREFLIGHT_CHECK = 'true';
+      expect(env.skipPreflightCheck()).toEqual(true);
+    });
+
+    it('should return false', () => {
+      expect(env.skipPreflightCheck()).toEqual(false);
+    })
+  });
+
   describe('CI', () => {
     it('should return true', () => {
       process.env.CI = 'true';

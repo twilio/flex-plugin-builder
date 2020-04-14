@@ -122,7 +122,7 @@ export default (config: Configuration, devServer = false): Compiler => {
       }
 
       // Show warning messages
-      logger.warning(`Compiled plugin ${logger.colors.yellow.bold(paths.packageName)} with warning.`);
+      logger.warning(`Compiled plugin ${logger.colors.yellow.bold(paths.packageName)} with warning(s).`);
       logger.info(formatted.warnings.join('\n'));
       logger.newline();
     });
