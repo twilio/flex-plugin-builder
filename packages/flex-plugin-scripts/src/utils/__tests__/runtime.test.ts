@@ -7,8 +7,10 @@ jest.mock('../../clients/configurations');
 jest.mock('../../clients/environments');
 jest.mock('../../clients/services');
 jest.mock('flex-dev-utils/dist/credentials');
-jest.mock('../../utils/paths', () => ({
-  packageName: 'plugin-test',
+jest.mock('flex-dev-utils/dist/paths', () => ({
+  app: {
+    name: 'plugin-test',
+  },
 }));
 
 // tslint:disable

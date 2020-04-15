@@ -1,8 +1,6 @@
-import { env } from 'flex-dev-utils';
+import { env, paths } from 'flex-dev-utils';
 import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import { Configuration } from 'webpack-dev-server';
-
-import paths from '../utils/paths';
 
 /**
  * Generates a webpack-dev configuration
@@ -15,7 +13,7 @@ export default () => {
     compress: true,
     clientLogLevel: 'none',
     contentBase: [
-      paths.publicDir,
+      paths.app.publicDir,
       paths.scripts.devAssetsDir,
     ],
     publicPath: '/',

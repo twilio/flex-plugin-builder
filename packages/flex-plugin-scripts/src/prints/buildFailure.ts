@@ -1,5 +1,4 @@
-import { logger } from 'flex-dev-utils';
-import paths from '../utils/paths';
+import { logger, paths } from 'flex-dev-utils';
 
 const GITHUB_FEATURE_REQUEST = 'https://bit.ly/2UMdbbj';
 
@@ -12,7 +11,7 @@ export default (errors: any[]) => {
     errors = [errors];
   }
 
-  const pkgName = logger.colors.red.bold(paths.packageName);
+  const pkgName = logger.colors.red.bold(paths.app.name);
   logger.error(`Failed to compile plugin ${pkgName}.`);
   logger.newline();
 

@@ -1,7 +1,6 @@
-import { findUp } from 'flex-dev-utils/dist/fs';
+import { findUp, resolveCwd } from 'flex-dev-utils/dist/fs';
 import { spawn } from 'flex-dev-utils';
 import { camelCase, upperFirst } from 'flex-dev-utils/dist/lodash';
-import { join } from 'path';
 
 import * as github from '../utils/github';
 import { FlexPluginArguments } from './create-flex-plugin';
@@ -44,7 +43,7 @@ export const setupConfiguration = (config: FlexPluginArguments): FlexPluginArgum
   config.pluginClassName = upperFirst(camelCase(name)).replace('Plugin', '') + 'Plugin';
   config.pluginNamespace = name.toLowerCase().replace('plugin-', '');
   config.runtimeUrl = config.runtimeUrl || 'http://localhost:8080';
-  config.targetDirectory = join(process.cwd(), name);
+  config.targetDirectory = resolveCwd(name);
   config.flexSdkVersion = pkg.devDependencies['@twilio/flex-ui'];
   config.flexPluginVersion = pkg.devDependencies['flex-plugin'];
   config.pluginScriptsVersion = pkg.devDependencies['flex-plugin-scripts'];

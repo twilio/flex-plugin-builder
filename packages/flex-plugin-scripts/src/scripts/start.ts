@@ -1,4 +1,5 @@
 import { env, fs, logger, open } from 'flex-dev-utils';
+import paths from 'flex-dev-utils/dist/paths';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
@@ -7,7 +8,6 @@ import WebpackDevServer from 'webpack-dev-server';
 
 import getConfiguration, { ConfigurationType } from '../config';
 import compiler from '../utils/compiler';
-import paths from '../utils/paths';
 
 import run, { exit } from '../utils/run';
 import pluginServer, { Plugin } from './start/pluginServer';
@@ -113,7 +113,7 @@ export const _requirePackages = (pluginsPath: string, pkgPath: string) => {
  * @private
  */
 export const _updatePluginsUrl = (port: number) => {
-  const { plugins, pkg } = _requirePackages(paths.pluginsJsonPath, paths.packageJsonPath);
+  const { plugins, pkg } = _requirePackages(paths.app.pluginsJsonPath, paths.app.pkgPath);
 
   const pluginIndex = plugins.findIndex((p) => p.src.indexOf(pkg.name) !== -1);
   const url = plugins[pluginIndex].src;
@@ -124,7 +124,7 @@ export const _updatePluginsUrl = (port: number) => {
 
   // Replace port and re-write to file
   plugins[pluginIndex].src = plugins[pluginIndex].src.replace(matches[1], port.toString());
-  fs.writeFileSync(paths.pluginsJsonPath, JSON.stringify(plugins, null, 2));
+  fs.writeFileSync(paths.app.pkgPath, JSON.stringify(plugins, null, 2));
 };
 
 

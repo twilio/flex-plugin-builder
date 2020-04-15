@@ -1,4 +1,5 @@
 import { Environment } from 'flex-dev-utils/dist/env';
+import paths from 'flex-dev-utils/dist/paths';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { checkFilesExist } from 'flex-dev-utils/dist/fs';
 import { join } from 'path';
@@ -23,7 +24,7 @@ interface Configurations {
  * @param env   the environment
  */
 const getConfiguration = <C extends ConfigurationType>(name: ConfigurationType, env: Environment): Configurations[C] => {
-  const pwd = process.cwd();
+  const pwd = paths.cwd;
   const isProd = env === Environment.Production;
   const isDev = env === Environment.Development;
 

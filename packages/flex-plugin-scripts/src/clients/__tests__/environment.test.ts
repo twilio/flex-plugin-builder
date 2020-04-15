@@ -3,8 +3,10 @@ import * as random from 'flex-dev-utils/dist/random';
 
 import EnvironmentClient from '../environments';
 
-jest.mock('../../utils/paths', () => ({
-  packageName: 'plugin-test',
+jest.mock('flex-dev-utils/dist/paths', () => ({
+  app: {
+    name: 'plugin-test',
+  },
 }));
 
 describe('EnvironmentClient', () => {

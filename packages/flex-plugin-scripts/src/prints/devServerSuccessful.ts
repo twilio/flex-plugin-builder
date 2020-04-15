@@ -1,13 +1,12 @@
-import { logger } from 'flex-dev-utils';
+import { logger, paths } from 'flex-dev-utils';
 import { ServiceUrl } from 'flex-dev-utils/dist/urls';
-import paths from '../utils/paths';
 
 /**
  * Prints the message when dev-server has successfully compiled
  */
 export default (local: ServiceUrl, network: ServiceUrl) => {
   logger.success('Compiled successfully!');
-  const pkgName = logger.colors.bold(paths.packageName);
+  const pkgName = logger.colors.bold(paths.app.name);
 
   logger.newline();
   logger.info(`Your plugin ${pkgName} is running in the browser on:`);
