@@ -1,5 +1,6 @@
 import {
-  checkFilesExist, PackageJson,
+  checkFilesExist,
+  PackageJson,
   readPackageJson,
   resolveCwd,
   resolveRelative,
