@@ -1,8 +1,10 @@
 import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
 import ModuleScopePlugin from '@k88/module-scope-plugin';
+import typescriptFormatter from '@k88/typescript-compile-error-formatter';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { getDependencyVersion } from 'flex-dev-utils/dist/fs';
 import { resolveModulePath } from 'flex-dev-utils/dist/require';
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import PnpWebpackPlugin from 'pnp-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
@@ -195,6 +197,8 @@ export const _getStyleLoaders = (isProd: boolean) => {
  */
 export const _getPlugins = (env: Environment): Plugin[] => {
   const plugins: Plugin[] = [];
+  const isDev = env === Environment.Development;
+  const isProd = env === Environment.Production;
 
   plugins.push(new DefinePlugin({
     __FPB_PLUGIN_UNIQUE_NAME: `'${paths.packageName}'`,
@@ -224,6 +228,38 @@ export const _getPlugins = (env: Environment): Plugin[] => {
     plugins.push(new InterpolateHtmlPlugin({
       TWILIO_FLEX_VERSION: pkg.version,
     }));
+  }
+  const hasPnp = 'pnp' in process.versions;
+
+  if (paths.app.isTSProject()) {
+    const typescriptPath = resolveModulePath('typescript');
+    const config: Partial<ForkTsCheckerWebpackPlugin.Options> = {
+      typescript: typescriptPath || undefined,
+      async: isDev,
+      useTypescriptIncrementalApi: true,
+      checkSyntacticErrors: true,
+      resolveModuleNameModule: hasPnp
+        ? `${__dirname}/pnpTs.js`
+        : undefined,
+      resolveTypeReferenceDirectiveModule: hasPnp
+        ? `${__dirname}/pnpTs.js`
+        : undefined,
+      tsconfig: paths.app.tsConfigPath,
+      reportFiles: [
+        '**',
+        '!**/__tests__/**',
+        '!**/__mocks__/**',
+        '!**/?(*.)(spec|test).*',
+        '!**/src/setupProxy.*',
+        '!**/src/setupTests.*',
+      ],
+      silent: true,
+    };
+    if (isProd) {
+      config.formatter = typescriptFormatter
+    }
+
+    plugins.push(new ForkTsCheckerWebpackPlugin(config));
   }
 
   return plugins;
@@ -295,10 +331,13 @@ export const _getOptimization = (env: Environment): Optimization => {
  */
 export const _getResolve = (env: Environment): Resolve => {
   const isProd = env === Environment.Production;
+  const extensions = !paths.app.isTSProject()
+    ? paths.extensions.filter(e => !e.includes('ts'))
+    : paths.extensions;
 
   const resolve: Resolve = {
     modules: ['node_modules', paths.nodeModulesDir],
-    extensions: paths.extensions.map(e => `.${e}`),
+    extensions: extensions.map(e => `.${e}`),
     alias: {
       '@twilio/flex-ui': FLEX_SHIM,
     },

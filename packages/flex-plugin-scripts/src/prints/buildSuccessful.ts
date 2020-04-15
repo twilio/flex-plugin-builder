@@ -36,6 +36,6 @@ export default (bundles: Bundle[], warnings?: string[]) => {
     logger.info('Your', logger.colors.bold('plugin'), 'is now ready to be deployed.');
     logger.info('You can deploy it to Twilio using:');
     logger.newline();
-    logger.info('\t', logger.colors.cyan('npm'), 'run deploy');
+    logger.installInfo('npm', 'run deploy');
   }
 }

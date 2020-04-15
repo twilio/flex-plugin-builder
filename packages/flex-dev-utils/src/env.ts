@@ -17,6 +17,8 @@ export enum Lifecycle {
  */
 const isDefined = (key: string | undefined) => typeof key === 'string' && key !== '';
 
+export const persistTerminal = () => process.env.PERSIST_TERMINAL = 'true';
+export const skipPreflightCheck = () => process.env.SKIP_PREFLIGHT_CHECK === 'true';
 export const isTerminalPersisted = () => process.env.PERSIST_TERMINAL === 'true';
 export const isCI = () => process.env.CI === 'true';
 export const isDebug = () => process.env.DEBUG === 'true';
@@ -44,6 +46,8 @@ export const getWSSocket = () => ({
 });
 
 export default {
+  persistTerminal,
+  skipPreflightCheck,
   isTerminalPersisted,
   isCI,
   isDebug,

@@ -16,7 +16,7 @@ export default () => {
     clientLogLevel: 'none',
     contentBase: [
       paths.publicDir,
-      paths.devAssetsDir,
+      paths.scripts.devAssetsDir,
     ],
     publicPath: '/',
     contentBasePublicPath: '/',
