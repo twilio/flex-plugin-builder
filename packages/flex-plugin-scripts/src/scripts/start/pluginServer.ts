@@ -1,5 +1,6 @@
 import { logger } from 'flex-dev-utils';
 import fs, { readFileSync, readPackageJson } from 'flex-dev-utils/dist/fs';
+import paths from 'flex-dev-utils/dist/paths';
 import { multilineString } from 'flex-dev-utils/dist/strings';
 import { join } from 'path';
 import http, { IncomingMessage, ServerResponse } from 'http';
@@ -12,17 +13,12 @@ export interface Plugin {
   remote?: boolean;
 }
 
-/* istanbul ignore next */
-const pluginsJsonPath = join(process.cwd(), 'public/plugins.json');
-/* istanbul ignore next */
-const pluginsServiceConfigPath = join(process.cwd(), 'public', 'pluginsService.js');
-
 /**
  * Returns local plugins from  public/plugins.json
  * @private
  */
 /* istanbul ignore next */
-export const _getLocalPlugins = () => JSON.parse(readFileSync(pluginsJsonPath)) as Plugin[];
+export const _getLocalPlugins = () => JSON.parse(readFileSync(paths.app.pkgPath)) as Plugin[];
 
 /**
  * Generates the response headers
@@ -161,7 +157,7 @@ export const _generatePluginServiceConfig = (port: number) => {
     '}',
   );
 
-  fs.writeFileSync(pluginsServiceConfigPath, str);
+  fs.writeFileSync(paths.app.pluginsServicePath, str);
 };
 
 /**

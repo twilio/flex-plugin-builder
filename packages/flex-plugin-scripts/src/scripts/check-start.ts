@@ -1,4 +1,5 @@
 import { env, logger } from 'flex-dev-utils';
+import paths from 'flex-dev-utils/dist/paths';
 import { checkFilesExist, findGlobs, resolveRelative } from 'flex-dev-utils/dist/fs';
 import { resolveModulePath } from 'flex-dev-utils/dist/require';
 import { existsSync, copyFileSync } from 'fs';
@@ -10,7 +11,6 @@ import {
   versionMismatch,
 } from '../prints';
 import expectedDependencyNotFound from '../prints/expectedDependencyNotFound';
-import paths from '../utils/paths';
 import run, { exit } from '../utils/run';
 
 interface Package {
@@ -51,6 +51,7 @@ export const _validateTypescriptProject = () => {
   if (!env.isTerminalPersisted()) {
     logger.clearTerminal();
   }
+
   env.persistTerminal();
   logger.warning('No tsconfig.json was found, creating a default one.');
   copyFileSync(paths.scripts.tsConfigPath, paths.app.tsConfigPath);
@@ -62,7 +63,7 @@ export const _validateTypescriptProject = () => {
  * @private
  */
 export const _checkAppConfig = () => {
-  if (!existsSync(paths.appConfig)) {
+  if (!existsSync(paths.app.appConfig)) {
     appConfigMissing();
 
     return exit(1);
@@ -77,7 +78,7 @@ export const _checkAppConfig = () => {
  */
 export const _checkPublicDirSync = (allowSkip: boolean) => {
   try {
-    copyFileSync(paths.scripts.indexHTMLPath, paths.indexHtmlPath);
+    copyFileSync(paths.scripts.indexHTMLPath, paths.app.indexHtmlPath);
   } catch (e) {
     publicDirCopyFailed(e, allowSkip);
 
@@ -93,7 +94,7 @@ export const _checkPublicDirSync = (allowSkip: boolean) => {
  */
 /* istanbul ignore next */
 export const _checkExternalDepsVersions = (allowSkip: boolean) => {
-  const flexUIPkg = require(paths.flexUIPkgPath);
+  const flexUIPkg = require(paths.app.flexUIPkgPath);
 
   PackagesToVerify.forEach((name) => _verifyPackageVersion(flexUIPkg, allowSkip, name));
 };
@@ -117,7 +118,7 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, na
   // @ts-ignore
   const requiredVersion = semver.coerce(expectedDependency).version;
 
-  const installedPath = resolveRelative(paths.nodeModulesDir, name, 'package.json');
+  const installedPath = resolveRelative(paths.app.nodeModulesDir, name, 'package.json');
   const installedVersion = require(installedPath).version;
 
   if (requiredVersion !== installedVersion) {

@@ -18,8 +18,10 @@ jest.mock('flex-dev-utils/dist/credentials', () => ({
   getCredential: jest.fn(),
 }));
 jest.mock('../../utils/runtime');
-jest.mock('../../utils/paths', () => ({
-  version: '1.0.0',
+jest.mock('flex-dev-utils/dist/paths', () => ({
+  app: {
+    version: '1.0.0',
+  },
   assetBaseUrlTemplate: 'template',
 }));
 

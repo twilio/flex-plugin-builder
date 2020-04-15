@@ -1,14 +1,13 @@
-import { env, logger } from 'flex-dev-utils';
+import { env, logger, paths } from 'flex-dev-utils';
 import { Lifecycle } from 'flex-dev-utils/dist/env';
 import { Bundle } from '../scripts/build';
-import paths from '../utils/paths';
 
 /**
  * Prints the successful message when a build has successfully compiled
  */
 export default (bundles: Bundle[], warnings?: string[]) => {
   if (warnings && warnings.length) {
-    const pkgName = logger.colors.yellow.bold(paths.packageName);
+    const pkgName = logger.colors.yellow.bold(paths.app.name);
     logger.error(`Plugin ${pkgName} was successfully compiled with some warnings.`);
     logger.newline();
     warnings.forEach((warning, index) => {
@@ -17,7 +16,7 @@ export default (bundles: Bundle[], warnings?: string[]) => {
       logger.info(warning);
     });
   } else {
-    const pkgName = logger.colors.green.bold(paths.packageName);
+    const pkgName = logger.colors.green.bold(paths.app.name);
     logger.success(`Plugin ${pkgName} was successfully compiled.`);
   }
   logger.newline();

@@ -1,3 +1,4 @@
+import paths from 'flex-dev-utils/dist/paths';
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
 import { randomString } from 'flex-dev-utils/dist/random';
@@ -5,7 +6,6 @@ import { randomString } from 'flex-dev-utils/dist/random';
 import BaseClient from './baseClient';
 import { Environment, EnvironmentResource } from './serverless-types';
 import ServiceClient from './services';
-import paths from '../utils/paths';
 
 export default class EnvironmentClient extends BaseClient {
   public static BaseUri = 'Environments';
@@ -26,13 +26,13 @@ export default class EnvironmentClient extends BaseClient {
    */
   public get = (create = true): Promise<Environment> => {
     return this.list()
-      .then((resource) => resource.environments.find((s) => s.unique_name === paths.packageName))
+      .then((resource) => resource.environments.find((s) => s.unique_name === paths.app.name))
       .then((environment) => {
         if (!environment) {
           if (create) {
             return this.create();
           } else {
-            throw new Error(`No environment with unique_name ${paths.packageName} was found`);
+            throw new Error(`No environment with unique_name ${paths.app.name} was found`);
           }
         }
 
@@ -54,7 +54,7 @@ export default class EnvironmentClient extends BaseClient {
       .then((domainSuffix) => {
         return this.http
           .post(EnvironmentClient.BaseUri, {
-            UniqueName: paths.packageName,
+            UniqueName: paths.app.name,
             DomainSuffix: domainSuffix,
           });
       });

@@ -1,4 +1,4 @@
-import { logger, env } from 'flex-dev-utils';
+import { logger, env, paths } from 'flex-dev-utils';
 import webpackFormatMessages from '@k88/format-webpack-messages';
 import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import { SyncHook } from 'tapable';
@@ -6,7 +6,6 @@ import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import typescriptFormatter, { Issue } from '@k88/typescript-compile-error-formatter';
 import webpack, { Compiler as WebpackCompiler, Configuration } from 'webpack';
 import { devServerSuccessful } from '../prints';
-import paths from './paths';
 import CompilerHooks = webpack.compilation.CompilerHooks;
 
 export interface ErrorsAndWarnings {
@@ -115,14 +114,14 @@ export default (config: Configuration, devServer = false): Compiler => {
         // So only show the first error
         formatted.errors.length = 1;
 
-        logger.error(`Failed to compile plugin ${logger.colors.red.bold(paths.packageName)}.`);
+        logger.error(`Failed to compile plugin ${logger.colors.red.bold(paths.app.name)}.`);
         logger.info(formatted.errors.join('\n'));
         logger.newline();
         return;
       }
 
       // Show warning messages
-      logger.warning(`Compiled plugin ${logger.colors.yellow.bold(paths.packageName)} with warning(s).`);
+      logger.warning(`Compiled plugin ${logger.colors.yellow.bold(paths.app.name)} with warning(s).`);
       logger.info(formatted.warnings.join('\n'));
       logger.newline();
     });

@@ -1,3 +1,4 @@
+import { paths } from 'flex-dev-utils';
 import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
 import ModuleScopePlugin from '@k88/module-scope-plugin';
 import typescriptFormatter from '@k88/typescript-compile-error-formatter';
@@ -17,10 +18,9 @@ import webpack, {
   SourceMapDevToolPlugin,
 } from 'webpack';
 
-import paths from '../utils/paths';
 import Optimization = webpack.Options.Optimization;
 
-interface LoaderOption { [name: string]: any };
+interface LoaderOption { [name: string]: any }
 
 const IMAGE_SIZE_BYTE = 10 * 1024;
 const FLEX_SHIM = 'flex-plugin-scripts/dev_assets/flex-shim.js';
@@ -37,7 +37,7 @@ const EXTERNALS = {
  */
 const _getBabelLoader = (isProd: boolean) => ({
   test: new RegExp('\.(' + paths.extensions.join('|') + ')$'),
-  include: paths.srcDir,
+  include: paths.app.srcDir,
   loader: require.resolve('babel-loader'),
   options: {
     customize: require.resolve('babel-preset-react-app/webpack-overrides'),
@@ -201,8 +201,8 @@ export const _getPlugins = (env: Environment): Plugin[] => {
   const isProd = env === Environment.Production;
 
   plugins.push(new DefinePlugin({
-    __FPB_PLUGIN_UNIQUE_NAME: `'${paths.packageName}'`,
-    __FPB_PLUGIN_VERSION: `'${paths.version}'`,
+    __FPB_PLUGIN_UNIQUE_NAME: `'${paths.app.name}'`,
+    __FPB_PLUGIN_VERSION: `'${paths.app.version}'`,
     __FPB_FLEX_PLUGIN_SCRIPTS_VERSION: `'${getDependencyVersion('flex-plugin-scripts')}'`,
     __FPB_FLEX_PLUGIN_VERSION: `'${getDependencyVersion('flex-plugin')}'`,
     __FPB_FLEX_UI_VERSION: `'${getDependencyVersion('@twilio/flex-ui')}'`,
@@ -219,11 +219,11 @@ export const _getPlugins = (env: Environment): Plugin[] => {
   if (env === Environment.Development) {
     plugins.push(new HotModuleReplacementPlugin());
 
-    const pkg = require(paths.flexUIPkgPath);
+    const pkg = require(paths.app.flexUIPkgPath);
     plugins.push(new HtmlWebpackPlugin({
       inject: false,
       hash: false,
-      template: paths.indexHtmlPath,
+      template: paths.app.indexHtmlPath,
     }));
     plugins.push(new InterpolateHtmlPlugin({
       TWILIO_FLEX_VERSION: pkg.version,
@@ -279,7 +279,7 @@ export const _getEntries = (env: Environment): string[] => {
     );
   }
 
-  entry.push(paths.entryPath);
+  entry.push(paths.app.entryPath);
 
   return entry;
 };
@@ -336,14 +336,14 @@ export const _getResolve = (env: Environment): Resolve => {
     : paths.extensions;
 
   const resolve: Resolve = {
-    modules: ['node_modules', paths.nodeModulesDir],
+    modules: ['node_modules', paths.app.nodeModulesDir],
     extensions: extensions.map(e => `.${e}`),
     alias: {
       '@twilio/flex-ui': FLEX_SHIM,
     },
     plugins: [
       PnpWebpackPlugin,
-      new ModuleScopePlugin(paths.srcDir, [paths.packageJsonPath]),
+      new ModuleScopePlugin(paths.app.srcDir, [paths.app.pkgPath]),
     ]
   };
 
@@ -364,11 +364,11 @@ export default (env: Environment) => {
   const config: Configuration = {
     entry: _getEntries(env),
     output: {
-      path: paths.buildDir,
+      path: paths.app.buildDir,
       pathinfo: !isProd,
       futureEmitAssets: true,
-      filename: `${paths.packageName}.js`,
-      publicPath: paths.publicDir,
+      filename: `${paths.app.name}.js`,
+      publicPath: paths.app.publicDir,
       globalObject: 'this',
     },
     bail: isProd,
