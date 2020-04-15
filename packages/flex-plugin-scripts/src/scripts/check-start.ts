@@ -25,6 +25,7 @@ const PackagesToVerify = [
 /**
  * Returns true if there are any .d.ts/.ts/.tsx files
  */
+/* istanbul ignore next */
 export const _hasTypescriptFiles = () => findGlobs('**/*.(ts|tsx)', '!**/node_modules', '!**/*.d.ts').length !== 0;
 
 /**
