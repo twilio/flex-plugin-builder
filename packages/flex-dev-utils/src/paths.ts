@@ -15,8 +15,16 @@ const srcDir = resolveCwd('src');
 const flexUIDir = resolveRelative(nodeModulesDir, '@twilio/flex-ui');
 
 // package.json information
-const packageJson: PackageJson = readPackageJson();
-const packageName = packageJson.name;
+let pkgName = '';
+let pkgVersion = '';
+// This file can be required in locations that don't have package.json
+try {
+  const pkg: PackageJson = readPackageJson();
+  pkgName = pkg.name;
+  pkgVersion = pkg.version;
+} catch (e) {
+  // no-op
+}
 
 // Others
 const tsConfigPath = resolveCwd('tsconfig.json');
@@ -35,16 +43,16 @@ export default {
   // plugin-app (the customer app)
   app: {
     dir: process.cwd(),
-    name: packageName,
-    version: packageJson.version,
+    name: pkgName,
+    version: pkgVersion,
     pkgPath: resolveCwd('package.json'),
     tsConfigPath,
     isTSProject: () => checkFilesExist(tsConfigPath),
 
     // build/*
     buildDir,
-    bundlePath: resolveRelative(buildDir, packageName, '.js'),
-    sourceMapPath: resolveRelative(buildDir, packageName, '.js.map'),
+    bundlePath: resolveRelative(buildDir, pkgName, '.js'),
+    sourceMapPath: resolveRelative(buildDir, pkgName, '.js.map'),
 
     // src/*
     srcDir,
@@ -64,6 +72,6 @@ export default {
   },
 
   // others
-  assetBaseUrlTemplate: `/plugins/${packageName}/%PLUGIN_VERSION%`,
+  assetBaseUrlTemplate: `/plugins/${pkgName}/%PLUGIN_VERSION%`,
   extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
 };
