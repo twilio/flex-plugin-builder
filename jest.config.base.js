@@ -12,6 +12,8 @@ module.exports = {
     '!<rootDir>/packages/**/src/index.ts',
     '!<rootDir>/packages/**/templates/**/*.ts',
     '!<rootDir>/packages/**/prints/**/*.ts',
+    '!<rootDir>/packages/flex-plugin-scripts/src/config/jestTransforms/*.ts',
+    '!<rootDir>/packages/flex-plugin-scripts/src/config/webpack/*.ts',
   ],
   testMatch: [
     '<rootDir>/packages/**/*.test.ts'

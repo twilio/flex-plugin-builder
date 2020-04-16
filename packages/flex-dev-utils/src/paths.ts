@@ -54,7 +54,7 @@ export default {
     isTSProject: () => checkFilesExist(tsConfigPath),
     setupTestsPaths: [
       resolveCwd('setupTests.js'),
-      resolveRelative(srcDir, 'setupTests'),
+      resolveRelative(srcDir, 'setupTests.js'),
     ],
 
     // build/*

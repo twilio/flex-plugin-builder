@@ -57,6 +57,17 @@ describe('paths', () => {
     expect(paths.app.name).toEqual('plugin-test');
     expect(paths.app.version).toEqual('1.2.3');
 
+    // typescript
+    expect(paths.app.tsConfigPath).toContain('tsconfig.json');
+    expect(paths.app.isTSProject()).toEqual(true);
+
+    // setup tests
+    expect(paths.app.setupTestsPaths).toHaveLength(2);
+    expect(paths.app.setupTestsPaths[0]).toContain('setupTests.js');
+    expect(paths.app.setupTestsPaths[0]).not.toContain('src');
+    expect(paths.app.setupTestsPaths[1]).toContain('setupTests.js');
+    expect(paths.app.setupTestsPaths[1]).toContain('src');
+
     // others
     expect(paths.assetBaseUrlTemplate).toContain('plugin-test/%PLUGIN_VERSION%');
 

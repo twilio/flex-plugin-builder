@@ -46,19 +46,24 @@ describe('env', () => {
       expect(env.isDebug()).toEqual(true);
     });
 
+    it('should return with trace true', () => {
+      process.env.TRACE = 'true';
+      expect(env.isDebug()).toEqual(true);
+    });
+
     it('should return false', () => {
       expect(env.isDebug()).toEqual(false);
     })
   });
 
-  describe('verbos', () => {
+  describe('trace', () => {
     it('should return true', () => {
       process.env.TRACE = 'true';
-      expect(env.isVerbose()).toEqual(true);
+      expect(env.isTrace()).toEqual(true);
     });
 
     it('should return false', () => {
-      expect(env.isVerbose()).toEqual(false);
+      expect(env.isTrace()).toEqual(false);
     })
   });
 
