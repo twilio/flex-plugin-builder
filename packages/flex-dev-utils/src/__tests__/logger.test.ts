@@ -1,4 +1,3 @@
-import { installInfo } from '../logger';
 import * as logger from '../logger';
 
 jest.mock('chalk');

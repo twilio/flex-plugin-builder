@@ -1,6 +1,7 @@
 import { format } from 'util';
 import chalk from 'chalk';
 import wrapAnsi from 'wrap-ansi';
+import env from './env';
 
 type Level = 'info' | 'error' | 'warn';
 type Color = 'red' | 'yellow' | 'green' | 'blue' | 'cyan';
@@ -27,7 +28,7 @@ const DefaultWrapOptions = { hard: true };
  * @param args
  */
 export const debug = (...args: any[]) => {
-  if (process.env.DEBUG || process.env.TRACE) {
+  if (env.isDebug()) {
     _log({level: 'info', args});
   }
 };
@@ -37,7 +38,7 @@ export const debug = (...args: any[]) => {
  * @param args
  */
 export const trace = (...args: any[]) => {
-  if (process.env.TRACE) {
+  if (env.isTrace()) {
     _log({level: 'info', args});
   }
 };
@@ -115,10 +116,9 @@ export const wrap = (input: string, columns: number, options = DefaultWrapOption
 /**
  * Clears the terminal
  */
+/* istanbul ignore next */
 export const clearTerminal = () => {
-  process.stdout.write(
-    process.platform === 'win32' ? '\x1B[2J\x1B[0f' : '\x1B[2J\x1B[3J\x1B[H'
-  );
+  process.stdout.write(env.isWin32() ? '\x1B[2J\x1B[0f' : '\x1B[2J\x1B[3J\x1B[H');
 };
 
 /**

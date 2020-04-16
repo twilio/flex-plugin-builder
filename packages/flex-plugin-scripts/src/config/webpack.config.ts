@@ -239,10 +239,10 @@ export const _getPlugins = (env: Environment): Plugin[] => {
       useTypescriptIncrementalApi: true,
       checkSyntacticErrors: true,
       resolveModuleNameModule: hasPnp
-        ? `${__dirname}/pnpTs.js`
+        ? `${__dirname}/webpack/pnpTs.js`
         : undefined,
       resolveTypeReferenceDirectiveModule: hasPnp
-        ? `${__dirname}/pnpTs.js`
+        ? `${__dirname}/webpack/pnpTs.js`
         : undefined,
       tsconfig: paths.app.tsConfigPath,
       reportFiles: [

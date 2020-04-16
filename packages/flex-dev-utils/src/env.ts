@@ -19,12 +19,14 @@ export enum Lifecycle {
  */
 const isDefined = (key: string | undefined) => typeof key === 'string' && key !== '';
 
+/* istanbul ignore next */
+export const isWin32 = () => process.platform === 'win32';
 export const persistTerminal = () => process.env.PERSIST_TERMINAL = 'true';
 export const skipPreflightCheck = () => process.env.SKIP_PREFLIGHT_CHECK === 'true';
 export const isTerminalPersisted = () => process.env.PERSIST_TERMINAL === 'true';
 export const isCI = () => process.env.CI === 'true';
-export const isDebug = () => process.env.DEBUG === 'true';
-export const isVerbose = () => process.env.TRACE === 'true';
+export const isTrace = () => process.env.TRACE === 'true';
+export const isDebug = () => process.env.DEBUG === 'true' || isTrace();
 export const getAccountSid = () => process.env.TWILIO_ACCOUNT_SID;
 export const getAuthToken = () => process.env.TWILIO_AUTH_TOKEN;
 export const getRealm = () => process.env.REALM;
@@ -48,12 +50,13 @@ export const getWSSocket = () => ({
 });
 
 export default {
+  isWin32,
   persistTerminal,
   skipPreflightCheck,
   isTerminalPersisted,
   isCI,
   isDebug,
-  isVerbose,
+  isTrace,
   getAccountSid,
   getAuthToken,
   getRealm,

@@ -1,4 +1,4 @@
-import { resolve } from './require';
+import { resolveModulePath } from 'flex-dev-utils/dist/require';
 import { join } from 'path';
 
 export const FLEX_PACKAGES: string[] = [
@@ -40,7 +40,7 @@ export const getPackageDetails = (packages: string[]): PackageDetail[] => {
             };
 
             try {
-                const resolvedPath = resolve(join(name, 'package.json'));
+                const resolvedPath = resolveModulePath(join(name, 'package.json'));
                 if (resolvedPath) {
                     detail.package = require(resolvedPath);
                     detail.found = true;

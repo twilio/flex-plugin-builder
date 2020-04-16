@@ -13,10 +13,21 @@ export const addCWDNodeModule = () => appModule.addPath(paths.app.nodeModulesDir
  * Returns the absolute path to the pkg if found
  * @param pkg the package to lookup
  */
+/* istanbul ignore next */
 export const resolveModulePath = (pkg: string) => {
   try {
     return require.resolve(pkg);
   } catch (e) {
-    return false;
+    // Now try to specifically set the node_modules path
+    const requirePaths: string[] = require.main && require.main.paths || [];
+    if (!requirePaths.includes(paths.app.nodeModulesDir)) {
+      requirePaths.push(paths.app.nodeModulesDir);
+    }
+
+    try {
+      return require.resolve(pkg, { paths: requirePaths });
+    } catch (e) {
+      return false;
+    }
   }
 };
