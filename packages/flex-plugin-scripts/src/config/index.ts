@@ -2,19 +2,21 @@ import { Environment } from 'flex-dev-utils/dist/env';
 import paths from 'flex-dev-utils/dist/paths';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { checkFilesExist } from 'flex-dev-utils/dist/fs';
-import { join } from 'path';
 import { Configuration as WebpackConfigurations } from 'webpack';
 import { Configuration as WebpackDevConfigurations } from 'webpack-dev-server';
 import webpackFactory from './webpack.config';
 import devFactory from './webpack.dev';
+import jestFactory, { JestConfigurations } from './jest.config';
 
 export enum ConfigurationType {
   Webpack = 'webpack',
   DevServer = 'devServer',
+  Jest = 'jest',
 }
 interface Configurations {
   webpack: WebpackConfigurations;
   devServer: WebpackDevConfigurations;
+  jest: JestConfigurations;
 }
 
 /**
@@ -23,29 +25,38 @@ interface Configurations {
  * @param name  the configuration name
  * @param env   the environment
  */
-const getConfiguration = <C extends ConfigurationType>(name: ConfigurationType, env: Environment): Configurations[C] => {
-  const pwd = paths.cwd;
-  const isProd = env === Environment.Production;
-  const isDev = env === Environment.Development;
+const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment): Configurations[T] => {
+  const args = {
+    isProd: env === Environment.Production,
+    isDev: env === Environment.Development,
+    isTest: env === Environment.Test,
+  };
 
   if (name === ConfigurationType.Webpack) {
-    const path = join(pwd, 'webpack.config.js');
     const config = webpackFactory(env);
-    if (checkFilesExist(path)) {
-      return require(path)(config, { isProd, isDev });
+    if (checkFilesExist(paths.app.webpackConfigPath)) {
+      return require(paths.app.webpackConfigPath)(config, args);
     }
 
-    return config;
+    return config as Configurations[T];
   }
 
   if (name === ConfigurationType.DevServer) {
-    const path = join(pwd, 'webpack.dev.js');
     const config = devFactory();
-    if (checkFilesExist(path)) {
-      return require(path)(config, { isProd, isDev });
+    if (checkFilesExist(paths.app.devServerConfigPath)) {
+      return require(paths.app.devServerConfigPath)(config, args);
     }
 
-    return config;
+    return config as Configurations[T];
+  }
+
+  if (name === ConfigurationType.Jest) {
+    const config = jestFactory();
+    if (checkFilesExist(paths.app.jestConfigPath)) {
+      return require(paths.app.jestConfigPath)(config, args);
+    }
+
+    return config as Configurations[T];
   }
 
   throw new FlexPluginError('Unsupported configuration name');

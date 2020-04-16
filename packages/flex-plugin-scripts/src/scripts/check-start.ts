@@ -1,7 +1,7 @@
 import { env, logger } from 'flex-dev-utils';
 import paths from 'flex-dev-utils/dist/paths';
 import { checkFilesExist, findGlobs, resolveRelative } from 'flex-dev-utils/dist/fs';
-import { resolveModulePath } from 'flex-dev-utils/dist/require';
+import { addCWDNodeModule, resolveModulePath } from 'flex-dev-utils/dist/require';
 import { existsSync, copyFileSync } from 'fs';
 import semver from 'semver';
 
@@ -135,6 +135,8 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, na
  */
 const checkStart = async () => {
   logger.debug('Checking Flex plugin project directory');
+
+  addCWDNodeModule();
 
   _checkAppConfig();
   _checkPublicDirSync(env.skipPreflightCheck());

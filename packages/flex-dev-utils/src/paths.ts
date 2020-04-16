@@ -47,8 +47,15 @@ export default {
     name: pkgName,
     version: pkgVersion,
     pkgPath: resolveCwd('package.json'),
+    jestConfigPath: resolveCwd('jest.config.js'),
+    webpackConfigPath: resolveCwd('webpack.config.js'),
+    devServerConfigPath: resolveCwd('webpack.dev.js'),
     tsConfigPath,
     isTSProject: () => checkFilesExist(tsConfigPath),
+    setupTestsPaths: [
+      resolveCwd('setupTests.js'),
+      resolveRelative(srcDir, 'setupTests'),
+    ],
 
     // build/*
     buildDir,

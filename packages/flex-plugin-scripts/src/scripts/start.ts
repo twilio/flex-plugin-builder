@@ -124,9 +124,8 @@ export const _updatePluginsUrl = (port: number) => {
 
   // Replace port and re-write to file
   plugins[pluginIndex].src = plugins[pluginIndex].src.replace(matches[1], port.toString());
-  fs.writeFileSync(paths.app.pkgPath, JSON.stringify(plugins, null, 2));
+  fs.writeFileSync(paths.app.pluginsJsonPath, JSON.stringify(plugins, null, 2));
 };
-
 
 run(start);
 

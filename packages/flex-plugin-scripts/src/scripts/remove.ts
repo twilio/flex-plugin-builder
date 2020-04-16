@@ -60,7 +60,7 @@ export const _doRemove = async () => {
  * Removes the plugin by deleting it's associated Environment
  */
 const remove = async () => {
-  logger.debug('Removing Flex plugin');
+  logger.debug('Removing plugin');
 
   const pluginName = logger.colors.blue(paths.app.name);
   const question = `Are you sure you want to permanently remove plugin ${pluginName}?`;
