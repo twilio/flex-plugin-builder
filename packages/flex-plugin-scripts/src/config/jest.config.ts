@@ -4,6 +4,9 @@ import { checkFilesExist } from 'flex-dev-utils/dist/fs';
 
 export interface JestConfigurations extends Partial<InitialOptions> {}
 
+/**
+ * Main method for generating a default Jest configuration
+ */
 export default (): JestConfigurations => {
   const setupTestsFile = paths.app.setupTestsPaths.find(x => checkFilesExist(x));
 
