@@ -11,3 +11,4 @@ export { default as buildSuccessful } from './buildSuccessful';
 export { default as buildFailure } from './buildFailure';
 export { default as devServerSuccessful } from './devServerSuccessful';
 export { default as typescriptNotInstalled } from './typescriptNotInstalled';
+export { default as jestNotInstalled } from './jestNotInstalled';

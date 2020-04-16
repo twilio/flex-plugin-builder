@@ -48,6 +48,8 @@ export const _doList = async (visibilities: Visibility[], order: Order = 'asc') 
  * @param argv
  */
 const list = async (...argv: string[]) => {
+  logger.debug('Listing plugin versions');
+
   const publicOnly = argv.includes('--public-only');
   const privateOnly = argv.includes('--private-only');
   const order = argv.includes('--desc') ? 'desc' : 'asc';
