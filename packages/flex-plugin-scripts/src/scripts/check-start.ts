@@ -48,10 +48,7 @@ export const _validateTypescriptProject = () => {
     return;
   }
 
-  if (!env.isTerminalPersisted()) {
-    logger.clearTerminal();
-  }
-
+  logger.clearTerminal();
   env.persistTerminal();
   logger.warning('No tsconfig.json was found, creating a default one.');
   copyFileSync(paths.scripts.tsConfigPath, paths.app.tsConfigPath);

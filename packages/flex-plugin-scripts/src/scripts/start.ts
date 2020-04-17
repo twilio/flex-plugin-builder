@@ -1,5 +1,6 @@
-import { env, fs, logger, open } from 'flex-dev-utils';
+import { env, logger, open } from 'flex-dev-utils';
 import paths from 'flex-dev-utils/dist/paths';
+import fs from 'flex-dev-utils/dist/fs';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
@@ -41,6 +42,7 @@ const start = async (...args: string[]) => {
  * @param port  the port the server is running on
  * @private
  */
+/* istanbul ignore next */
 export const _startDevServer = (port: number) => {
   const config = getConfiguration(ConfigurationType.Webpack, Environment.Development);
   const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development);
@@ -65,9 +67,7 @@ export const _startDevServer = (port: number) => {
       return;
     }
 
-    if (!env.isTerminalPersisted()) {
-      logger.clearTerminal();
-    }
+    logger.clearTerminal();
     logger.notice('Starting development server...');
 
     _updatePluginsUrl(port);
@@ -116,6 +116,9 @@ export const _updatePluginsUrl = (port: number) => {
   const { plugins, pkg } = _requirePackages(paths.app.pluginsJsonPath, paths.app.pkgPath);
 
   const pluginIndex = plugins.findIndex((p) => p.src.indexOf(pkg.name) !== -1);
+  if (pluginIndex === -1) {
+    throw new FlexPluginError(`Could not find plugin ${pkg.name}`);
+  }
   const url = plugins[pluginIndex].src;
   const matches = url.match(/localhost:(\d*)/);
   if (!matches) {

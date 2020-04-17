@@ -114,11 +114,13 @@ export const wrap = (input: string, columns: number, options = DefaultWrapOption
 };
 
 /**
- * Clears the terminal
+ * Clears the terminal either if forced is provided, or if persist_terminal env is not set
  */
 /* istanbul ignore next */
-export const clearTerminal = () => {
-  process.stdout.write(env.isWin32() ? '\x1B[2J\x1B[0f' : '\x1B[2J\x1B[3J\x1B[H');
+export const clearTerminal = (forced = false) => {
+  if (forced || !env.isTerminalPersisted()) {
+    process.stdout.write(env.isWin32() ? '\x1B[2J\x1B[0f' : '\x1B[2J\x1B[3J\x1B[H');
+  }
 };
 
 /**

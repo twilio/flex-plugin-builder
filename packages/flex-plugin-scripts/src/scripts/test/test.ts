@@ -4,6 +4,12 @@ import { resolveModulePath } from 'flex-dev-utils/dist/require';
 import * as jest from 'jest';
 import getConfiguration, { ConfigurationType } from '../../config';
 
+/**
+ * Runs jest
+ * @param env
+ * @param args
+ */
+/* istanbul ignore next */
 export default (env: string, ...args: string[]) => {
   const config = getConfiguration(ConfigurationType.Jest, Environment.Test);
   const runArgs: string[] = [...args];

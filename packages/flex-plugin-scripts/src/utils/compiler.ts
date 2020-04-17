@@ -6,6 +6,7 @@ import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import typescriptFormatter, { Issue } from '@k88/typescript-compile-error-formatter';
 import webpack, { Compiler as WebpackCompiler, Configuration } from 'webpack';
 import { devServerSuccessful } from '../prints';
+import { FunctionalCallback } from '../types';
 import CompilerHooks = webpack.compilation.CompilerHooks;
 
 export interface ErrorsAndWarnings {
@@ -20,13 +21,12 @@ export interface Compiler extends WebpackCompiler {
   hooks: Hook;
 }
 
-export type FunctionalCallback<D, R> = (data: D) => R;
-
 /**
  * Creates a webpack
  * @param config
  * @param devServer
  */
+/* istanbul ignore next */
 export default (config: Configuration, devServer = false): Compiler => {
   logger.debug('Creating a webpack compiler using ', JSON.stringify(config));
 
@@ -68,17 +68,12 @@ export default (config: Configuration, devServer = false): Compiler => {
 
     // invalid is `bundle invalidated` and is invoked when files are modified in dev-server.
     compiler.hooks.invalid.tap('invalid', () => {
-      if (!env.isTerminalPersisted()) {
-        logger.clearTerminal();
-      }
-
+      logger.clearTerminal();
       logger.info('Re-compiling...');
     });
 
     compiler.hooks.done.tap('done', async stats => {
-      if (!env.isTerminalPersisted()) {
-        logger.clearTerminal();
-      }
+      logger.clearTerminal();
       const result = stats.toJson({ all: false, errors: true, warnings: true });
 
       if (paths.app.isTSProject() && !stats.hasErrors()) {

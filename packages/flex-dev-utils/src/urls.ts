@@ -19,7 +19,7 @@ export const DEFAULT_PORT = 3000;
  * Returns the default port
  * @param port  optional port parameter
  */
-export const getDefaultPort = (port?: string) => {
+export const getDefaultPort = (port?: string): number => {
   if (port) {
     const numeric = parseInt(port, 10);
 
