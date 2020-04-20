@@ -1,8 +1,24 @@
 import { InitialOptions } from '@jest/types/build/Config';
-import { paths } from 'flex-dev-utils';
+import paths from 'flex-dev-utils/dist/paths';
 import { checkFilesExist } from 'flex-dev-utils/dist/fs';
 
-export interface JestConfigurations extends Partial<InitialOptions> {}
+interface RegexObject {
+  [regex: string]: string;
+}
+
+export interface JestConfigurations extends Partial<InitialOptions> {
+  rootDir: string;
+  roots: string[];
+  collectCoverageFrom: string[];
+  setupFiles: string[];
+  setupFilesAfterEnv: string[];
+  testMatch: string[];
+  transform: RegexObject;
+  transformIgnorePatterns: string[];
+  moduleNameMapper: RegexObject;
+  moduleFileExtensions: string[];
+  watchPlugins: string[];
+}
 
 /**
  * Main method for generating a default Jest configuration

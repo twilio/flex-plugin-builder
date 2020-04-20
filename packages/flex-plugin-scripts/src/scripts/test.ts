@@ -7,11 +7,13 @@ import { jestNotInstalled } from '../prints';
 
 import run, { exit } from '../utils/run';
 
+export const DEFAULT_JEST_ENV = 'jsdom';
+
 /**
  * Validates that this is Jest test framework and that all dependencies are installed.
  * @private
  */
-const _validateJest = () => {
+export const _validateJest = () => {
   if (!checkFilesExist(paths.app.jestConfigPath)) {
     return;
   }
@@ -31,12 +33,19 @@ const _validateJest = () => {
  */
 export const _parseArgs = (...args: string[]) => {
   const cleanArgs: string[] = [];
-  let jestEnv = 'jsdom';
+  let jestEnv = DEFAULT_JEST_ENV;
+  let skipNext = false;
 
   args.forEach((arg, index) => {
+    if (skipNext) {
+      skipNext = false;
+      return;
+    }
+
     if (arg === '--env') {
       if (args[index + 1]) {
         jestEnv = args[index + 1];
+        skipNext = true;
       }
       return;
     }
@@ -66,9 +75,7 @@ const test = async (...args: string[]) => {
 
   const { jestEnv, cleanArgs } = _parseArgs(...args);
 
-  if (!env.isTerminalPersisted()) {
-    logger.clearTerminal();
-  }
+  logger.clearTerminal();
   logger.notice('Running tests...');
 
   // We run this as a separate module here so that we don't have to import optional `jest` module if not needed

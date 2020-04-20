@@ -5,6 +5,7 @@ import { Configuration } from 'webpack-dev-server';
 /**
  * Generates a webpack-dev configuration
  */
+/* istanbul ignore next */
 export default () => {
   const { local } = getLocalAndNetworkUrls(env.getPort());
   const socket = env.getWSSocket();
