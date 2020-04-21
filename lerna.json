@@ -4,6 +4,9 @@
     "packages/*"
   ],
   "command": {
+    "bootstrap": {
+      "npmClientArgs": ["--no-package-lock"]
+    },
     "publish": {
       "ignoreChanges": [
         "packages/craco-config-flex-plugin/package-lock.json",
