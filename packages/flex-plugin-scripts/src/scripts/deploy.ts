@@ -1,9 +1,9 @@
-import { logger } from 'flex-dev-utils';
+import { logger, semver } from 'flex-dev-utils';
+import { ReleaseType } from 'flex-dev-utils/dist/semver';
 import { progress } from 'flex-dev-utils/dist/ora';
 import { checkFilesExist, updatePackageVersion, readPackageJson } from 'flex-dev-utils/dist/fs';
 import { getCredential } from 'flex-dev-utils/dist/credentials';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import semver, { ReleaseType } from 'semver';
 import AccountsClient from '../clients/accounts';
 import { deploySuccessful } from '../prints';
 
