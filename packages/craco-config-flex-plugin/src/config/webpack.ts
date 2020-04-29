@@ -21,12 +21,12 @@ import { loadFile } from '../utils/fs';
 const appPath = join(process.cwd(), 'package.json');
 const flexUIPath = join(process.cwd(), 'node_modules', '@twilio/flex-ui', 'package.json');
 const reactPath = join(process.cwd(), 'node_modules', 'react', 'package.json');
-const reactVersionPath = join(process.cwd(), 'node_modules', 'react-dom', 'package.json');
+const reactDomPath = join(process.cwd(), 'node_modules', 'react-dom', 'package.json');
 const appPkg = JSON.parse(readFileSync(appPath, 'utf8'));
 
-const TWILIO_FLEX_VERSION = JSON.parse(readFileSync(flexUIPath, 'utf8')).version;
+const FLEX_UI_VERSION = JSON.parse(readFileSync(flexUIPath, 'utf8')).version;
 const REACT_VERSION = JSON.parse(readFileSync(reactPath, 'utf8')).version;
-const REACT_DOM_VERSION = JSON.parse(readFileSync(reactVersionPath, 'utf8')).version;
+const REACT_DOM_VERSION = JSON.parse(readFileSync(reactDomPath, 'utf8')).version;
 
 const UNSUPPORTED_PLUGINS = ['SWPrecacheWebpackPlugin', 'ManifestPlugin'];
 const FLEX_SHIM = 'flex-plugin-scripts/dev_assets/flex-shim.js';
@@ -68,7 +68,7 @@ export const getJSScripts = (flexUIVersion: string, reactVersion: string, reactD
 const configureWebpack = (config: WebpackConfig): Configuration => {
   addCWDNodeModule();
 
-  const JSScripts = getJSScripts(TWILIO_FLEX_VERSION, REACT_VERSION, REACT_DOM_VERSION);
+  const JSScripts = getJSScripts(FLEX_UI_VERSION, REACT_VERSION, REACT_DOM_VERSION);
   config.output = config.output || {};
   config.plugins = config.plugins || [];
   config.optimization = config.optimization || {};

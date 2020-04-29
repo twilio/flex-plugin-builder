@@ -4,7 +4,8 @@ import { join } from 'path';
 
 import {
   appConfigMissing,
-  publicDirCopyFailed, unbundledReactMismatch,
+  publicDirCopyFailed,
+  unbundledReactMismatch,
   versionMismatch,
 } from '../prints';
 import cracoConfigMissing from '../prints/cracoConfigMissing';
