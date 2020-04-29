@@ -1,4 +1,5 @@
 import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
+import { semver } from 'flex-dev-utils';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
@@ -19,9 +20,13 @@ import { loadFile } from '../utils/fs';
 
 const appPath = join(process.cwd(), 'package.json');
 const flexUIPath = join(process.cwd(), 'node_modules', '@twilio/flex-ui', 'package.json');
+const reactPath = join(process.cwd(), 'node_modules', 'react', 'package.json');
+const reactVersionPath = join(process.cwd(), 'node_modules', 'react-dom', 'package.json');
 const appPkg = JSON.parse(readFileSync(appPath, 'utf8'));
-const flexUIPkg = JSON.parse(readFileSync(flexUIPath, 'utf8'));
-const TWILIO_FLEX_VERSION = flexUIPkg.version;
+
+const TWILIO_FLEX_VERSION = JSON.parse(readFileSync(flexUIPath, 'utf8')).version;
+const REACT_VERSION = JSON.parse(readFileSync(reactPath, 'utf8')).version;
+const REACT_DOM_VERSION = JSON.parse(readFileSync(reactVersionPath, 'utf8')).version;
 
 const UNSUPPORTED_PLUGINS = ['SWPrecacheWebpackPlugin', 'ManifestPlugin'];
 const FLEX_SHIM = 'flex-plugin-scripts/dev_assets/flex-shim.js';
@@ -36,6 +41,26 @@ interface Configuration extends WebpackConfig {
 }
 
 /**
+ * Returns the JS scripts to inject into the index.html file
+ * @param flexUIVersion   the flex-ui version
+ * @param reactVersion    the react version
+ * @param reactDOMVersion the react-dom version
+ */
+export const getJSScripts = (flexUIVersion: string, reactVersion: string, reactDOMVersion: string): string[] => {
+  if (!semver.satisfies(flexUIVersion, '>=1.19.0')) {
+    return [
+      `<script src="https://assets.flex.twilio.com/releases/flex-ui/${flexUIVersion}/twilio-flex.min.js"></script>`,
+    ];
+  }
+
+  return [
+    `<script crossorigin src="https://unpkg.com/react@${reactVersion}/umd/react.development.js"></script>`,
+    `<script crossorigin src="https://unpkg.com/react-dom@${reactDOMVersion}/umd/react-dom.development.js"></script>`,
+    `<script src="https://assets.flex.twilio.com/releases/flex-ui/${flexUIVersion}/twilio-flex.unbundled-react.min.js"></script>`,
+  ];
+};
+
+/**
  * Configures webpack for building Flex plugins
  *
  * @param config  the {@link WebpackConfig}
@@ -43,6 +68,7 @@ interface Configuration extends WebpackConfig {
 const configureWebpack = (config: WebpackConfig): Configuration => {
   addCWDNodeModule();
 
+  const JSScripts = getJSScripts(TWILIO_FLEX_VERSION, REACT_VERSION, REACT_DOM_VERSION);
   config.output = config.output || {};
   config.plugins = config.plugins || [];
   config.optimization = config.optimization || {};
@@ -60,7 +86,7 @@ const configureWebpack = (config: WebpackConfig): Configuration => {
       } else if (plugin.constructor.name === 'InterpolateHtmlPlugin') {
         plugin.replacements = {
           ...plugin.replacements,
-          TWILIO_FLEX_VERSION,
+          FPM_JS_SCRIPTS: JSScripts.join('\n'),
         };
       }
 
