@@ -54,7 +54,9 @@ export const _verifyPath = (baseUrl: string, build: Build) => {
  * @private
  */
 export const _verifyFlexUIVersion = (flexUI: string, allowReact: boolean) => {
-  if (allowReact && !semver.satisfies('1.19.0', flexUI)) {
+  const coerced = semver.coerce(flexUI);
+  const UISupports = semver.satisfies('1.19.0', flexUI) || (coerced && semver.satisfies(coerced, '>=1.19.0'));
+  if (allowReact && !UISupports) {
     throw new FlexPluginError(singleLineString(
       `The ui_version ${flexUI} is incompatible with unbundled React.`,
       'Please upgrade the ui_version of your Configuration to >= 1.19.0',

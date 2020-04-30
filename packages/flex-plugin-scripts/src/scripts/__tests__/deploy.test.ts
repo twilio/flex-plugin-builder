@@ -330,6 +330,11 @@ describe('deploy', () => {
     });
 
     it('should not throw any exceptions', () => {
+      deployScript._verifyFlexUIVersion('^1', true);
+      deployScript._verifyFlexUIVersion('^1.1', true);
+      deployScript._verifyFlexUIVersion('^1.19.0', true);
+      deployScript._verifyFlexUIVersion('~1.19.0', true);
+      deployScript._verifyFlexUIVersion('~1.19.1', true);
       deployScript._verifyFlexUIVersion('1.19.0', true);
       deployScript._verifyFlexUIVersion('1.19.1', true);
       deployScript._verifyFlexUIVersion('1.20.0', true);
