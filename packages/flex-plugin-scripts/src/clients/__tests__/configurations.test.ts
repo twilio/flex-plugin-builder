@@ -1,7 +1,6 @@
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 import BaseClient from '../baseClient';
 import ConfigurationClient from '../configurations';
-import ServiceClient from '../services';
 
 describe('ConfigurationClient', () => {
   const serviceSid = 'ZS00000000000000000000000000000000';
@@ -63,7 +62,11 @@ describe('ConfigurationClient', () => {
   describe('getServiceSids', () => {
     it('should return empty array if key is null', async () => {
       const client = new ConfigurationClient(auth);
-      const config = { account_sid: accountSid, serverless_service_sids: null };
+      const config = {
+        account_sid: accountSid,
+        serverless_service_sids: null,
+        ui_version: '',
+      };
       // @ts-ignore
       const get = jest.spyOn(client.http, 'get').mockResolvedValue(config);
 
@@ -75,7 +78,11 @@ describe('ConfigurationClient', () => {
 
     it('should return sids', async () => {
       const client = new ConfigurationClient(auth);
-      const config = { account_sid: accountSid, serverless_service_sids: [serviceSid] };
+      const config = {
+        account_sid: accountSid,
+        serverless_service_sids: [serviceSid],
+        ui_version: '',
+      };
       // @ts-ignore
       const get = jest.spyOn(client.http, 'get').mockResolvedValue(config);
 
@@ -89,8 +96,19 @@ describe('ConfigurationClient', () => {
   describe('registerSid', () => {
     it('should append sid to existing sids', async () => {
       const client = new ConfigurationClient(auth);
-      const config = { account_sid: accountSid, serverless_service_sids: [serviceSid] };
-      const updated = { account_sid: accountSid, serverless_service_sids: [serviceSid, anotherSid] };
+      const config = {
+        account_sid: accountSid,
+        serverless_service_sids: [serviceSid],
+        ui_version: '',
+      };
+      const payload = {
+        account_sid: accountSid,
+        serverless_service_sids: [serviceSid, anotherSid],
+      };
+      const updated = {
+        ...payload,
+        ui_version: '',
+      };
 
       const get = jest.spyOn(client, 'get').mockResolvedValue(config);
       const update = jest.spyOn(client, 'update').mockResolvedValue(updated);
@@ -99,14 +117,25 @@ describe('ConfigurationClient', () => {
 
       expect(get).toHaveBeenCalledTimes(1);
       expect(update).toHaveBeenCalledTimes(1);
-      expect(update).toHaveBeenCalledWith(updated);
+      expect(update).toHaveBeenCalledWith(payload);
       expect(result).toEqual(updated);
     });
 
     it('should add the first sid to null', async () => {
       const client = new ConfigurationClient(auth);
-      const config = { account_sid: accountSid, serverless_service_sids: null };
-      const updated = { account_sid: accountSid, serverless_service_sids: [serviceSid] };
+      const config = {
+        account_sid: accountSid,
+        serverless_service_sids: null,
+        ui_version: '',
+      };
+      const payload = {
+        account_sid: accountSid,
+        serverless_service_sids: [serviceSid],
+      };
+      const updated = {
+        ...payload,
+        ui_version: '',
+      };
 
       const get = jest.spyOn(client, 'get').mockResolvedValue(config);
       const update = jest.spyOn(client, 'update').mockResolvedValue(updated);
@@ -115,13 +144,17 @@ describe('ConfigurationClient', () => {
 
       expect(get).toHaveBeenCalledTimes(1);
       expect(update).toHaveBeenCalledTimes(1);
-      expect(update).toHaveBeenCalledWith(updated);
+      expect(update).toHaveBeenCalledWith(payload);
       expect(result).toEqual(updated);
     });
 
     it('should return the original config if sid is already added', async () => {
       const client = new ConfigurationClient(auth);
-      const config = { account_sid: accountSid, serverless_service_sids: [serviceSid] };
+      const config = {
+        account_sid: accountSid,
+        serverless_service_sids: [serviceSid],
+        ui_version: '',
+      };
 
       const get = jest.spyOn(client, 'get').mockResolvedValue(config);
       const update = jest.spyOn(client, 'update').mockResolvedValue(config);
@@ -131,6 +164,23 @@ describe('ConfigurationClient', () => {
       expect(get).toHaveBeenCalledTimes(1);
       expect(update).not.toHaveBeenCalled();
       expect(result).toEqual(config);
+    });
+  });
+
+  describe('getFlexUIVersion', () => {
+    it('should get the ui_version field', async () => {
+      const client = new ConfigurationClient(auth);
+      const config = {
+        account_sid: accountSid,
+        serverless_service_sids: [serviceSid],
+        ui_version: '1.2.3',
+      };
+      const get = jest.spyOn(client, 'get').mockResolvedValue(config);
+
+      const uiVersion = await client.getFlexUIVersion();
+
+      expect(get).toHaveBeenCalledTimes(1);
+      expect(uiVersion).toEqual(config.ui_version);
     });
   });
 });

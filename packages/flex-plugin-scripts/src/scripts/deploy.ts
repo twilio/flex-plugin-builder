@@ -4,6 +4,7 @@ import { progress } from 'flex-dev-utils/dist/ora';
 import { checkFilesExist, updatePackageVersion, readPackageJson } from 'flex-dev-utils/dist/fs';
 import { getCredential } from 'flex-dev-utils/dist/credentials';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
+import { singleLineString } from 'flex-dev-utils/dist/strings';
 import AccountsClient from '../clients/accounts';
 import { deploySuccessful } from '../prints';
 
@@ -47,6 +48,21 @@ export const _verifyPath = (baseUrl: string, build: Build) => {
 };
 
 /**
+ * Validates Flex UI version requirement
+ * @param flexUI      the flex ui version
+ * @param allowReact  whether this deploy supports unbundled React
+ * @private
+ */
+export const _verifyFlexUIVersion = (flexUI: string, allowReact: boolean) => {
+  if (allowReact && !semver.satisfies('1.19.0', flexUI)) {
+    throw new FlexPluginError(singleLineString(
+      `The ui_version ${flexUI} is incompatible with unbundled React.`,
+      'Please upgrade the ui_version of your Configuration to >= 1.19.0',
+    ));
+  }
+};
+
+/**
  * The main deploy script. This script performs the following in order:
  * 1. Verifies bundle file exists, if not warns about running `npm run build` first
  * 2. Fetches the default Service and Environment from Serverless API
@@ -79,6 +95,10 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
   const buildClient = new BuildClient(credentials, runtime.service.sid);
   const assetClient = new AssetClient(credentials, runtime.service.sid);
   const deploymentClient = new DeploymentClient(credentials, runtime.service.sid, runtime.environment.sid);
+
+  // Validate Flex UI version
+  const allowReact = process.env.UNBUNDLED_REACT === 'true';
+  _verifyFlexUIVersion(await configurationClient.getFlexUIVersion(), allowReact);
 
   // Check duplicate routes
   const routeCollision = await progress<Build>('Validating the new plugin bundle', async () => {

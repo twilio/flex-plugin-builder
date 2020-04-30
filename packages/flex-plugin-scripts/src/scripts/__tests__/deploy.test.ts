@@ -46,7 +46,11 @@ describe('deploy', () => {
   };
 
   (logger.colors as any).blue = jest.fn();
-  const config = {account_sid: accountSid, serverless_service_sids: [serviceSid]};
+  const config = {
+    account_sid: accountSid,
+    serverless_service_sids: [serviceSid],
+    ui_version: '1.19.0',
+  };
 
   const getAccount = jest.fn().mockResolvedValue(accountObject);
   const upload = jest.fn()
@@ -61,6 +65,7 @@ describe('deploy', () => {
   const createBuild = jest.fn().mockResolvedValue({sid: buildSid});
   const createDeployment = jest.fn().mockResolvedValue({sid: deploymentSid});
   const registerSid = jest.fn().mockResolvedValue(config);
+  const getFlexUIVersion = jest.fn().mockResolvedValue(config);
 
   Runtime.mockImplementation(() => ({
     service: {sid: serviceSid},
@@ -75,7 +80,7 @@ describe('deploy', () => {
     AssetClient.mockImplementation(() => ({ upload }));
     BuildClient.mockImplementation(() => ({ create: createBuild }));
     DeploymentClient.mockImplementation(() => ({ create: createDeployment }));
-    ConfigurationClient.mockImplementation(() => ({ registerSid }));
+    ConfigurationClient.mockImplementation(() => ({ registerSid, getFlexUIVersion }));
   });
 
   describe('default', () => {
@@ -311,6 +316,23 @@ describe('deploy', () => {
       };
 
       expect(deployScript._verifyPath('/baseUrl', build as any)).toBeTruthy();
+    });
+  });
+
+  describe('_verifyFlexUIVersion', () => {
+    it('should throw exception if unsupported flex-ui version is provided', (done) => {
+      try {
+        deployScript._verifyFlexUIVersion('1.18.0', true);
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+        done();
+      }
+    });
+
+    it('should not throw any exceptions', () => {
+      deployScript._verifyFlexUIVersion('1.19.0', true);
+      deployScript._verifyFlexUIVersion('1.19.1', true);
+      deployScript._verifyFlexUIVersion('1.20.0', true);
     });
   });
 });
