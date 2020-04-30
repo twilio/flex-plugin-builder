@@ -1,11 +1,11 @@
-import { logger } from 'flex-dev-utils';
+import { logger, semver } from 'flex-dev-utils';
 import { existsSync, copyFileSync } from 'fs';
-import semver from 'semver';
 import { join } from 'path';
 
 import {
   appConfigMissing,
   publicDirCopyFailed,
+  unbundledReactMismatch,
   versionMismatch,
 } from '../prints';
 import cracoConfigMissing from '../prints/cracoConfigMissing';
@@ -13,6 +13,7 @@ import expectedDependencyNotFound from '../prints/expectedDependencyNotFound';
 import run from '../utils/run';
 
 interface Package {
+  version: string;
   dependencies: object;
 }
 
@@ -76,10 +77,10 @@ export const _checkPublicDirSync = (allowSkip: boolean) => {
  * @private
  */
 /* istanbul ignore next */
-export const _checkExternalDepsVersions = (allowSkip: boolean) => {
+export const _checkExternalDepsVersions = (allowSkip: boolean, allowReact: boolean) => {
   const flexUIPkg = require(flexUIPkgPath);
 
-  PackagesToVerify.forEach((name) => _verifyPackageVersion(flexUIPkg, allowSkip, name));
+  PackagesToVerify.forEach((name) => _verifyPackageVersion(flexUIPkg, allowSkip, allowReact, name));
 };
 
 /**
@@ -87,11 +88,13 @@ export const _checkExternalDepsVersions = (allowSkip: boolean) => {
  *
  * @param flexUIPkg   the flex-ui package.json
  * @param allowSkip   whether to allow skip
+ * @param allowReact  whether to allow unbundled react
  * @param name        the package to check
  * @private
  */
-export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, name: string) => {
+export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, allowReact: boolean, name: string) => {
   const expectedDependency = flexUIPkg.dependencies[name];
+  const supportsUnbundled = semver.satisfies(flexUIPkg.version, '>=1.19.0');
   if (!expectedDependency) {
     expectedDependencyNotFound(name);
 
@@ -105,7 +108,16 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, na
   const installedVersion = require(installedPath).version;
 
   if (requiredVersion !== installedVersion) {
-    versionMismatch(name, installedVersion, requiredVersion, allowSkip);
+    if (allowReact) {
+      if (supportsUnbundled) {
+        return;
+      }
+
+      unbundledReactMismatch(flexUIPkg.version, name, installedVersion, allowSkip);
+    } else {
+      versionMismatch(name, installedVersion, requiredVersion, allowSkip);
+    }
+
 
     if (!allowSkip) {
       return process.exit(1);
@@ -119,11 +131,12 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, na
 const checkStart = async () => {
   logger.debug('Checking Flex plugin project directory');
   const allowSkip = process.env.SKIP_PREFLIGHT_CHECK === 'true';
+  const allowReact = process.env.UNBUNDLED_REACT === 'true';
 
   _checkAppConfig();
   _checkCracoConfig();
   _checkPublicDirSync(allowSkip);
-  _checkExternalDepsVersions(allowSkip);
+  _checkExternalDepsVersions(allowSkip, allowReact);
 };
 
 run(checkStart);

@@ -44,11 +44,9 @@
     "flex-dev-utils": "^3.9.0",
     "form-data": "^2.5.1",
     "querystring": "^0.2.0",
-    "react-test-renderer": "^16.10.2",
-    "semver": "^6.3.0"
+    "react-test-renderer": "^16.10.2"
   },
   "devDependencies": {
-    "@types/semver": "^6.0.2"
   },
   "peerDependencies": {
     "flex-plugin": "*"

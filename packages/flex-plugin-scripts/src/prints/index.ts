@@ -7,3 +7,4 @@ export { default as versionMismatch } from './versionMismatch';
 export { default as expectedDependencyNotFound } from './expectedDependencyNotFound';
 export { default as deploySuccessful } from './deploySuccessful';
 export { default as packagesVersions } from './packagesVersions';
+export { default as unbundledReactMismatch } from './unbundledReactMismatch';

@@ -6,6 +6,7 @@ import * as checkStartScript from '../check-start';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('../../prints/versionMismatch');
+jest.mock('../../prints/unbundledReactMismatch');
 jest.mock('../../prints/appConfigMissing');
 jest.mock('../../prints/cracoConfigMissing');
 jest.mock('../../prints/publicDirCopyFailed');
@@ -54,25 +55,32 @@ describe('check-start', () => {
       _checkExternalDepsVersions.mockRestore();
     });
 
-    const expectCalled = (allowSkip: boolean) => {
+    const expectCalled = (allowSkip: boolean, allowReact: boolean) => {
       expect(_checkAppConfig).toHaveBeenCalledTimes(1);
       expect(_checkCracoConfig).toHaveBeenCalledTimes(1);
       expect(_checkPublicDirSync).toHaveBeenCalledTimes(1);
       expect(_checkExternalDepsVersions).toHaveBeenCalledTimes(1);
-      expect(_checkExternalDepsVersions).toHaveBeenCalledWith(allowSkip);
+      expect(_checkExternalDepsVersions).toHaveBeenCalledWith(allowSkip, allowReact);
     };
 
     it('should call all methods', async () => {
       await checkStartScript.default();
 
-      expectCalled(false);
+      expectCalled(false, false);
     });
 
     it('should call all methods and allow skip', async () => {
       process.env.SKIP_PREFLIGHT_CHECK = 'true';
       await checkStartScript.default();
 
-      expectCalled(true);
+      expectCalled(true, false);
+    });
+
+    it('should call all methods and allow react', async () => {
+      process.env.UNBUNDLED_REACT = 'true';
+      await checkStartScript.default();
+
+      expectCalled(false, true);
     });
   });
 
@@ -180,9 +188,10 @@ describe('check-start', () => {
   describe('_verifyPackageVersion', () => {
     it('should quit if expected dependency is not found', () => {
       const pkg = {
+        version: '1.18.0',
         dependencies: {},
       };
-      checkStartScript._verifyPackageVersion(pkg, false, 'foo');
+      checkStartScript._verifyPackageVersion(pkg, false, false, 'foo');
 
       expect(prints.expectedDependencyNotFound).toHaveBeenCalledTimes(1);
       expect(prints.expectedDependencyNotFound).toHaveBeenCalledWith('foo');
@@ -192,9 +201,10 @@ describe('check-start', () => {
 
     it('should warn about version mismatch and quit', () => {
       const pkg = {
+        version: '1.18.0',
         dependencies: { lerna: '10.0.0' },
       };
-      checkStartScript._verifyPackageVersion(pkg, false, 'lerna');
+      checkStartScript._verifyPackageVersion(pkg, false, false, 'lerna');
 
       expect(prints.versionMismatch).toHaveBeenCalledTimes(1);
       expect(prints.versionMismatch).toHaveBeenCalledWith('lerna', lernaVersion, '10.0.0', false);
@@ -204,9 +214,10 @@ describe('check-start', () => {
 
     it('should warn about version mismatch but not quit', () => {
       const pkg = {
+        version: '1.18.0',
         dependencies: { lerna: '10.0.0' },
       };
-      checkStartScript._verifyPackageVersion(pkg, true, 'lerna');
+      checkStartScript._verifyPackageVersion(pkg, true, false, 'lerna');
 
       expect(prints.versionMismatch).toHaveBeenCalledTimes(1);
       expect(prints.versionMismatch).toHaveBeenCalledWith('lerna', lernaVersion, '10.0.0', true);
@@ -215,19 +226,46 @@ describe('check-start', () => {
 
     it('should find no conflict with pinned dependency', () => {
       const pkg = {
+        version: '1.18.0',
         dependencies: { lerna: lernaVersion },
       };
-      checkStartScript._verifyPackageVersion(pkg, false, 'lerna');
+      checkStartScript._verifyPackageVersion(pkg, false, false, 'lerna');
 
       expect(exit).not.toHaveBeenCalled();
     });
 
     it('should find no conflict with unpinned dependency', () => {
       const pkg = {
+        version: '1.18.0',
         dependencies: { lerna: `^${lernaVersion}` },
       };
-      checkStartScript._verifyPackageVersion(pkg, false, 'lerna');
+      checkStartScript._verifyPackageVersion(pkg, false, false, 'lerna');
 
+      expect(exit).not.toHaveBeenCalled();
+    });
+
+    it('should warn if allowReact but unsupported flex-ui', () => {
+      const pkg = {
+        version: '1.18.0',
+        dependencies: { lerna: `10.0.0` },
+      };
+      checkStartScript._verifyPackageVersion(pkg, false, true, 'lerna');
+
+      expect(prints.unbundledReactMismatch).toHaveBeenCalledTimes(1);
+      expect(prints.unbundledReactMismatch).toHaveBeenCalledWith('1.18.0', 'lerna', lernaVersion, false);
+      expect(prints.versionMismatch).not.toHaveBeenCalled();
+      expect(exit).toHaveBeenCalled();
+    });
+
+    it('should warn if allowReact', () => {
+      const pkg = {
+        version: '1.19.0',
+        dependencies: { lerna: `10.0.0` },
+      };
+      checkStartScript._verifyPackageVersion(pkg, false, true, 'lerna');
+
+      expect(prints.unbundledReactMismatch).not.toHaveBeenCalled();
+      expect(prints.versionMismatch).not.toHaveBeenCalled();
       expect(exit).not.toHaveBeenCalled();
     });
   });
