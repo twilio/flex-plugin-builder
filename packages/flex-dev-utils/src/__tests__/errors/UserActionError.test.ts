@@ -7,7 +7,7 @@ describe('UserActionError', () => {
   });
 
   it('should extend FlexPluginError', () => {
-    expect(new UserActionError("")).toBeInstanceOf(FlexPluginError);
+    expect(new UserActionError('')).toBeInstanceOf(FlexPluginError);
   });
 
   it('should pass reason to message', () => {
