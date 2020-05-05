@@ -1,11 +1,15 @@
 import { logger, semver } from 'flex-dev-utils';
 import { ReleaseType } from 'flex-dev-utils/dist/semver';
 import { progress } from 'flex-dev-utils/dist/ora';
+import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { checkFilesExist, updatePackageVersion, readPackageJson } from 'flex-dev-utils/dist/fs';
 import { getCredential } from 'flex-dev-utils/dist/credentials';
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
+import { FlexPluginError, UserActionError } from 'flex-dev-utils/dist/errors';
+import { singleLineString } from 'flex-dev-utils/dist/strings';
 import AccountsClient from '../clients/accounts';
+import { UIDependencies } from '../clients/configuration-types';
 import { deploySuccessful } from '../prints';
+import { getPackageVersion } from '../utils/require';
 
 import run from '../utils/run';
 import { BuildData } from '../clients/builds';
@@ -47,6 +51,49 @@ export const _verifyPath = (baseUrl: string, build: Build) => {
 };
 
 /**
+ * Validates Flex UI version requirement
+ * @param flexUI      the flex ui version
+ * @param allowReact  whether this deploy supports unbundled React
+ * @private
+ */
+export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: UIDependencies, allowReact: boolean) => {
+  const coerced = semver.coerce(flexUI);
+  if (!allowReact) {
+    return;
+  }
+  const UISupports = semver.satisfies('1.19.0', flexUI) || (coerced && semver.satisfies(coerced, '>=1.19.0'));
+  if (!UISupports) {
+    throw new FlexPluginError(singleLineString(
+      `The ui_version ${flexUI} is incompatible with unbundled React.`,
+      'Please upgrade the ui_version of your Configuration to >= 1.19.0',
+    ));
+  }
+
+  if (!dependencies.react || !dependencies['react-dom']) {
+    throw new FlexPluginError('To use unbundled React, you need to set the React version from the Developer page');
+  }
+
+  const reactSupported = semver.satisfies(getPackageVersion('react'), `${dependencies.react}`);
+  const reactDOMSupported = semver.satisfies(getPackageVersion('react-dom'), `${dependencies['react-dom']}`);
+  if (!reactSupported || !reactDOMSupported) {
+    logger.newline();
+    logger.warning(singleLineString(
+      `The React version ${getPackageVersion('react')} installed locally`,
+      `is incompatible with the React version ${dependencies.react} installed on your Flex project.`,
+    ));
+    logger.info(singleLineString(
+      'We recommend to either update your local React version or to upgrade the React',
+      'installed on your Flex project.',
+    ));
+    const answer = await confirm('Do you still want to continue deploying?', 'N');
+    if (!answer) {
+      logger.newline();
+      throw new UserActionError('User rejected confirmation to deploy with mismatched React version.');
+    }
+  }
+};
+
+/**
  * The main deploy script. This script performs the following in order:
  * 1. Verifies bundle file exists, if not warns about running `npm run build` first
  * 2. Fetches the default Service and Environment from Serverless API
@@ -79,6 +126,12 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
   const buildClient = new BuildClient(credentials, runtime.service.sid);
   const assetClient = new AssetClient(credentials, runtime.service.sid);
   const deploymentClient = new DeploymentClient(credentials, runtime.service.sid, runtime.environment.sid);
+
+  // Validate Flex UI version
+  const allowReact = process.env.UNBUNDLED_REACT === 'true';
+  const uiVersion = await configurationClient.getFlexUIVersion();
+  const uiDependencies = await configurationClient.getUIDependencies();
+  await _verifyFlexUIConfiguration(uiVersion, uiDependencies, allowReact);
 
   // Check duplicate routes
   const routeCollision = await progress<Build>('Validating the new plugin bundle', async () => {

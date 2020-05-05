@@ -10,6 +10,7 @@ import {
 } from '../prints';
 import cracoConfigMissing from '../prints/cracoConfigMissing';
 import expectedDependencyNotFound from '../prints/expectedDependencyNotFound';
+import { getPackageVersion, nodeModulesPath } from '../utils/require';
 import run from '../utils/run';
 
 interface Package {
@@ -17,7 +18,6 @@ interface Package {
   dependencies: object;
 }
 
-const nodeModulesPath = join(process.cwd(), 'node_modules');
 const flexUIPkgPath = join(nodeModulesPath, '@twilio/flex-ui/package.json');
 const appConfigPath = join(process.cwd(), 'public', 'appConfig.js');
 const cracoConfigPath = join(process.cwd(), 'craco.config.js');
@@ -103,9 +103,7 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, al
 
   // @ts-ignore
   const requiredVersion = semver.coerce(expectedDependency).version;
-
-  const installedPath = join(nodeModulesPath, name, 'package.json');
-  const installedVersion = require(installedPath).version;
+  const installedVersion = getPackageVersion(name);
 
   if (requiredVersion !== installedVersion) {
     if (allowReact) {
