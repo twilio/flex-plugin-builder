@@ -86,6 +86,6 @@ export default class ConfigurationClient extends BaseClient {
   public getUIDependencies = async (): Promise<UIDependencies> => {
     const config = await this.get();
 
-    return config.ui_dependencies;
+    return config.ui_dependencies || {};
   }
 }

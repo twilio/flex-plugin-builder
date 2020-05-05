@@ -191,6 +191,19 @@ describe('ConfigurationClient', () => {
   });
 
   describe('getUIDependencies', () => {
+    it('should return empty object if no ui_dependencies is set', async () => {
+      const client = new ConfigurationClient(auth);
+      const config = {
+        account_sid: accountSid,
+        serverless_service_sids: [],
+        ui_version: '',
+      };
+
+      const get = jest.spyOn(client, 'get').mockResolvedValue(config);
+      const dependencies = await client.getUIDependencies();
+      expect(dependencies).toEqual({});
+    });
+
     it('should get the ui_dependencies field', async () => {
       const client = new ConfigurationClient(auth);
       const config = {
