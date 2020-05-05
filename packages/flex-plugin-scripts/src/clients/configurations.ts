@@ -1,7 +1,7 @@
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 
 import BaseClient from './baseClient';
-import { Configuration } from './configuration-types';
+import { Configuration, UIDependencies } from './configuration-types';
 
 interface UpdateConfigurationPayload extends Partial<Configuration> {
   account_sid: string;
@@ -79,4 +79,13 @@ export default class ConfigurationClient extends BaseClient {
 
     return config.ui_version;
   };
+
+  /**
+   * Returns the Flex UI dependencies stored on the Configuration service
+   */
+  public getUIDependencies = async (): Promise<UIDependencies> => {
+    const config = await this.get();
+
+    return config.ui_dependencies;
+  }
 }

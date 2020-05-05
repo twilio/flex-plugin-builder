@@ -100,6 +100,7 @@ describe('ConfigurationClient', () => {
         account_sid: accountSid,
         serverless_service_sids: [serviceSid],
         ui_version: '',
+        ui_dependencies: {},
       };
       const payload = {
         account_sid: accountSid,
@@ -108,6 +109,7 @@ describe('ConfigurationClient', () => {
       const updated = {
         ...payload,
         ui_version: '',
+        ui_dependencies: {},
       };
 
       const get = jest.spyOn(client, 'get').mockResolvedValue(config);
@@ -127,6 +129,7 @@ describe('ConfigurationClient', () => {
         account_sid: accountSid,
         serverless_service_sids: null,
         ui_version: '',
+        ui_dependencies: {},
       };
       const payload = {
         account_sid: accountSid,
@@ -135,6 +138,7 @@ describe('ConfigurationClient', () => {
       const updated = {
         ...payload,
         ui_version: '',
+        ui_dependencies: {},
       };
 
       const get = jest.spyOn(client, 'get').mockResolvedValue(config);
@@ -154,6 +158,7 @@ describe('ConfigurationClient', () => {
         account_sid: accountSid,
         serverless_service_sids: [serviceSid],
         ui_version: '',
+        ui_dependencies: {},
       };
 
       const get = jest.spyOn(client, 'get').mockResolvedValue(config);
@@ -172,8 +177,9 @@ describe('ConfigurationClient', () => {
       const client = new ConfigurationClient(auth);
       const config = {
         account_sid: accountSid,
-        serverless_service_sids: [serviceSid],
+        serverless_service_sids: [],
         ui_version: '1.2.3',
+        ui_dependencies: {},
       };
       const get = jest.spyOn(client, 'get').mockResolvedValue(config);
 
@@ -181,6 +187,27 @@ describe('ConfigurationClient', () => {
 
       expect(get).toHaveBeenCalledTimes(1);
       expect(uiVersion).toEqual(config.ui_version);
+    });
+  });
+
+  describe('getUIDependencies', () => {
+    it('should get the ui_dependencies field', async () => {
+      const client = new ConfigurationClient(auth);
+      const config = {
+        account_sid: accountSid,
+        serverless_service_sids: [],
+        ui_version: '',
+        ui_dependencies: {
+          react: '1.2.3',
+          'react-dom': '1.2.3',
+        },
+      };
+      const get = jest.spyOn(client, 'get').mockResolvedValue(config);
+
+      const dependencies = await client.getUIDependencies();
+
+      expect(get).toHaveBeenCalledTimes(1);
+      expect(dependencies).toEqual(config.ui_dependencies);
     });
   });
 });
