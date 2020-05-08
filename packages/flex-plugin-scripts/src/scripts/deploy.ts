@@ -64,8 +64,9 @@ export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: U
   const UISupports = semver.satisfies('1.19.0', flexUI) || (coerced && semver.satisfies(coerced, '>=1.19.0'));
   if (!UISupports) {
     throw new FlexPluginError(singleLineString(
-      `The ui_version ${flexUI} is incompatible with unbundled React.`,
-      'Please upgrade the ui_version of your Configuration to >= 1.19.0',
+      `We detected that your account is using Flex UI version ${flexUI} which is incompatible`,
+      `with unbundled React. Please visit https://flex.twilio.com/admin/versioning and update to`,
+      `version 1.19 or above.`,
     ));
   }
 
@@ -82,8 +83,8 @@ export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: U
       `is incompatible with the React version ${dependencies.react} installed on your Flex project.`,
     ));
     logger.info(singleLineString(
-      'We recommend to either update your local React version or to upgrade the React',
-      'installed on your Flex project.',
+      'Change your local React version or visit https://flex.twilio.com/admin/developers to',
+      `change the React version installed on your Flex project.`,
     ));
     const answer = await confirm('Do you still want to continue deploying?', 'N');
     if (!answer) {
