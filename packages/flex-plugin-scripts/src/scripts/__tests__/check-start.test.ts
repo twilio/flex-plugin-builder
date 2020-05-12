@@ -11,11 +11,12 @@ jest.mock('../../prints/appConfigMissing');
 jest.mock('../../prints/cracoConfigMissing');
 jest.mock('../../prints/publicDirCopyFailed');
 jest.mock('../../prints/expectedDependencyNotFound');
+jest.mock('../../prints/loadPluginCountError');
 
 // tslint:disable-next-line
 const lernaVersion = require(join(process.cwd(), 'node_modules/lerna/package.json')).version;
 
-describe('check-start', () => {
+describe('CheckStartScript', () => {
   // @ts-ignore
   const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
   const OLD_ENV = process.env;
@@ -40,12 +41,16 @@ describe('check-start', () => {
     const _checkExternalDepsVersions = jest
       .spyOn(checkStartScript, '_checkExternalDepsVersions')
       .mockReturnValue(undefined);
+    const _checkPluginCount = jest
+      .spyOn(checkStartScript, '_checkPluginCount')
+      .mockReturnValue(undefined);
 
     beforeEach(() => {
       _checkAppConfig.mockReset();
       _checkCracoConfig.mockReset();
       _checkPublicDirSync.mockReset();
       _checkExternalDepsVersions.mockReset();
+      _checkPluginCount.mockReset();
     });
 
     afterAll(() => {
@@ -53,6 +58,7 @@ describe('check-start', () => {
       _checkCracoConfig.mockRestore();
       _checkPublicDirSync.mockRestore();
       _checkExternalDepsVersions.mockRestore();
+      _checkPluginCount.mockRestore();
     });
 
     const expectCalled = (allowSkip: boolean, allowReact: boolean) => {
@@ -61,6 +67,7 @@ describe('check-start', () => {
       expect(_checkPublicDirSync).toHaveBeenCalledTimes(1);
       expect(_checkExternalDepsVersions).toHaveBeenCalledTimes(1);
       expect(_checkExternalDepsVersions).toHaveBeenCalledWith(allowSkip, allowReact);
+      expect(_checkPluginCount).toHaveBeenCalledTimes(1);
     };
 
     it('should call all methods', async () => {
@@ -267,6 +274,50 @@ describe('check-start', () => {
       expect(prints.unbundledReactMismatch).not.toHaveBeenCalled();
       expect(prints.versionMismatch).not.toHaveBeenCalled();
       expect(exit).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('_checkPluginCount', () => {
+    const _readIndexPage = jest
+      .spyOn(checkStartScript, '_readIndexPage');
+
+    beforeEach(() => {
+      _readIndexPage.mockReset();
+    });
+
+    afterAll(() => {
+      _readIndexPage.mockRestore();
+    });
+
+    it('should check with no error', () => {
+      _readIndexPage.mockReturnValue('blahblah\nFlexPlugin.loadPlugin\nblahblah');
+      checkStartScript._checkPluginCount();
+
+      expect(_readIndexPage).toHaveBeenCalledTimes(1);
+      expect(exit).not.toHaveBeenCalled();
+      expect(prints.loadPluginCountError).not.toHaveBeenCalled();
+    });
+
+    it('should warn no loadPlugin was called', () => {
+      _readIndexPage.mockReturnValue('blahblah');
+      checkStartScript._checkPluginCount();
+
+      expect(_readIndexPage).toHaveBeenCalledTimes(1);
+      expect(exit).toHaveBeenCalledTimes(1);
+      expect(exit).toHaveBeenCalledWith(1);
+      expect(prints.loadPluginCountError).toHaveBeenCalledTimes(1);
+      expect(prints.loadPluginCountError).toHaveBeenCalledWith(0);
+    });
+
+    it('should warn that multiple loadPlugins were called', () => {
+      _readIndexPage.mockReturnValue('blahblah\nloadPlugin\nloadPlugin\nloadPlugin\nblahblah');
+      checkStartScript._checkPluginCount();
+
+      expect(_readIndexPage).toHaveBeenCalledTimes(1);
+      expect(exit).toHaveBeenCalledTimes(1);
+      expect(exit).toHaveBeenCalledWith(1);
+      expect(prints.loadPluginCountError).toHaveBeenCalledTimes(1);
+      expect(prints.loadPluginCountError).toHaveBeenCalledWith(3);
     });
   });
 });

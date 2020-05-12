@@ -8,3 +8,4 @@ export { default as expectedDependencyNotFound } from './expectedDependencyNotFo
 export { default as deploySuccessful } from './deploySuccessful';
 export { default as packagesVersions } from './packagesVersions';
 export { default as unbundledReactMismatch } from './unbundledReactMismatch';
+export { default as loadPluginCountError } from './loadPluginCountError';
