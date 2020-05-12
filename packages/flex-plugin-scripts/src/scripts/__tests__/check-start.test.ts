@@ -283,18 +283,10 @@ describe('CheckStartScript', () => {
 
     beforeEach(() => {
       _readIndexPage.mockReset();
-    })
+    });
 
     afterAll(() => {
       _readIndexPage.mockRestore();
-    })
-
-    it('should check with no error', () => {
-      _readIndexPage.mockReturnValue('blahblah\nFlexPlugin.loadPlugin\nblahblah');
-      checkStartScript._checkPluginCount();
-
-      expect(_readIndexPage).toHaveBeenCalledTimes(1);
-      expect(exit).not.toHaveBeenCalled();
     });
 
     it('should check with no error', () => {
