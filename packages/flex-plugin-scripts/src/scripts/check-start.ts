@@ -1,5 +1,6 @@
 import { logger, semver } from 'flex-dev-utils';
-import { existsSync, copyFileSync } from 'fs';
+import { FlexPluginError } from 'flex-dev-utils/dist/errors';
+import { existsSync, copyFileSync, readFileSync } from 'fs';
 import { join } from 'path';
 
 import {
@@ -7,9 +8,10 @@ import {
   publicDirCopyFailed,
   unbundledReactMismatch,
   versionMismatch,
+  cracoConfigMissing,
+  expectedDependencyNotFound,
+  loadPluginCountError,
 } from '../prints';
-import cracoConfigMissing from '../prints/cracoConfigMissing';
-import expectedDependencyNotFound from '../prints/expectedDependencyNotFound';
 import { getPackageVersion, nodeModulesPath } from '../utils/require';
 import run from '../utils/run';
 
@@ -19,6 +21,7 @@ interface Package {
 }
 
 const flexUIPkgPath = join(nodeModulesPath, '@twilio/flex-ui/package.json');
+const srcIndexPath = join(process.cwd(), 'src', 'index');
 const appConfigPath = join(process.cwd(), 'public', 'appConfig.js');
 const cracoConfigPath = join(process.cwd(), 'craco.config.js');
 const indexSourcePath = join(__dirname, '..', '..', 'dev_assets', 'index.html');
@@ -124,6 +127,44 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, al
 };
 
 /**
+ * Returns the content of src/index.{js/ts}
+ * @private
+ */
+/* istanbul ignore next */
+export const _readIndexPage = (): string => {
+  try {
+    return readFileSync(`${srcIndexPath}.js`, 'utf8');
+  } catch (e1) {
+    try {
+      return readFileSync(`${srcIndexPath}.ts`, 'utf8');
+    } catch (e2) {
+      // This should never happen
+      throw new FlexPluginError('No index.js or index.ts was found in your src directory');
+    }
+  }
+}
+
+/**
+ * Checks how many plugins this single JS bundle is exporting
+ * You can only have one plugin per JS bundle
+ * @private
+ */
+export const _checkPluginCount = () => {
+  const content = _readIndexPage();
+  const match = content.match(/loadPlugin/g);
+  if (!match || match.length === 0) {
+    loadPluginCountError(0);
+
+    return process.exit(1);
+  }
+  if (match.length > 1) {
+    loadPluginCountError(match.length);
+
+    return process.exit(1);
+  }
+};
+
+/**
  * Runs pre-start/build checks
  */
 const checkStart = async () => {
@@ -135,6 +176,7 @@ const checkStart = async () => {
   _checkCracoConfig();
   _checkPublicDirSync(allowSkip);
   _checkExternalDepsVersions(allowSkip, allowReact);
+  _checkPluginCount();
 };
 
 run(checkStart);
