@@ -2,7 +2,7 @@ const { flags } = require('@oclif/command');
 const { TwilioClientCommand } = require('@twilio/cli-core').baseCommands;
 const CreateFlexPlugin = require('create-flex-plugin').default;
 
-const createDescription = require('../../../utils/general').createDescription;
+const { createDescription } = require('../../../utils/general');
 
 /**
  * Creates a new Flex plugin
@@ -15,20 +15,19 @@ class FlexPluginsCreate extends TwilioClientCommand {
    * @returns the OClif args
    */
   static parseYargs(yargs) {
-    return Object.keys(yargs)
-      .reduce((result, key) => {
-        const arg = yargs[key];
-        const flagType = arg.type || 'string';
+    return Object.keys(yargs).reduce((result, key) => {
+      const arg = yargs[key];
+      const flagType = arg.type || 'string';
 
-        result[key] = flags[flagType]({
-          char: arg.alias,
-          description: arg.describe,
-          default: arg.default,
-          required: false,
-        });
+      result[key] = flags[flagType]({
+        char: arg.alias,
+        description: arg.describe,
+        default: arg.default,
+        required: false,
+      });
 
-        return result;
-      }, {});
+      return result;
+    }, {});
   }
 
   /**
@@ -38,12 +37,11 @@ class FlexPluginsCreate extends TwilioClientCommand {
    * @returns {Array}
    */
   static toArgv(args) {
-    return Object.keys(args)
-      .reduce((result, key) => {
-        result.push(`--${key}`, args[key]);
+    return Object.keys(args).reduce((result, key) => {
+      result.push(`--${key}`, args[key]);
 
-        return result;
-      }, []);
+      return result;
+    }, []);
   }
 
   constructor(argv, config, secureStorage) {

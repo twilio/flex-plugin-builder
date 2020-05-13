@@ -34,22 +34,22 @@
     }
   },
   "dependencies": {
-    "@oclif/command": "^1.5.19",
-    "@oclif/config": "^1.13.3",
-    "@twilio/cli-core": "^4.2.1",
+    "@oclif/command": "^1.6.1",
+    "@oclif/config": "^1.15.1",
+    "@twilio/cli-core": "5.1.0",
     "clear": "^0.1.0",
-    "create-flex-plugin": "^3.1.0",
-    "flex-plugin-scripts": "^3.1.0"
+    "create-flex-plugin": "^3.11.0",
+    "flex-plugin-scripts": "^3.11.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
     "@oclif/test": "^1.2.5",
-    "@twilio/cli-test": "^2.0.2",
-    "eslint": "^6.6.0",
-    "eslint-config-twilio": "^1.11.1",
-    "globby": "^10.0.1",
-    "husky": "^3.0.9",
-    "keytar": "^4.13.0"
+    "@twilio/cli-test": "^2.1.0",
+    "eslint": "^7.0.0",
+    "eslint-config-twilio": "^1.23.0",
+    "globby": "^11.0.0",
+    "husky": "^4.2.5",
+    "keytar": "^5.6.0"
   },
   "engines": {
     "node": ">=8.0.0"

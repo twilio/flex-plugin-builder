@@ -1,7 +1,8 @@
-const { TwilioClientCommand } = require('@twilio/cli-core').baseCommands;
-const scripts = require('flex-plugin-scripts').default;
 const path = require('path');
 const fs = require('fs');
+
+const { TwilioClientCommand } = require('@twilio/cli-core').baseCommands;
+const scripts = require('flex-plugin-scripts').default;
 const clear = require('clear');
 
 /**

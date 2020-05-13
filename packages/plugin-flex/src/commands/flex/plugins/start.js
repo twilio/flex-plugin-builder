@@ -1,5 +1,5 @@
 const FlexPluginScripts = require('../../../sub-commands/flex-plugin-scripts');
-const createDescription = require('../../../utils/general').createDescription;
+const { createDescription } = require('../../../utils/general');
 
 /**
  * Starts the dev-server for building and iterating on a flex-plugin

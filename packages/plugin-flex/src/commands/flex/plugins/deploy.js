@@ -1,5 +1,5 @@
 const FlexPluginScripts = require('../../../sub-commands/flex-plugin-scripts');
-const createDescription = require('../../../utils/general').createDescription;
+const { createDescription } = require('../../../utils/general');
 
 /**
  * Builds and then deploys the Flex plugin
@@ -9,7 +9,7 @@ class FlexPluginsDeploy extends FlexPluginScripts {
     super(argv, config, secureStorage, { strict: false });
 
     this.exit = process.exit;
-    process.exit = exitCode => {
+    process.exit = (exitCode) => {
       if (exitCode === 0) {
         return;
       }

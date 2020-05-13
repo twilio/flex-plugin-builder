@@ -1,5 +1,5 @@
 const FlexPluginScripts = require('../../../sub-commands/flex-plugin-scripts');
-const createDescription = require('../../../utils/general').createDescription;
+const { createDescription } = require('../../../utils/general');
 
 /**
  * Deletes the flex-plugin

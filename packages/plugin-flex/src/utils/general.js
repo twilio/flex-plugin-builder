@@ -2,7 +2,7 @@ const runInformation = 'This command needs to be invoked inside a plugin directo
 
 /**
  * Creates the description for the command
- * 
+ *
  * @param {string} description  the main description
  * @param {string} inDirectory  whether this command should be invoked inside a plugin directory or not
  * @returns {string} the updated command
