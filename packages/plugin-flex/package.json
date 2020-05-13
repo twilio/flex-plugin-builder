@@ -6,7 +6,7 @@
     "oclif-plugin"
   ],
   "homepage": "https://github.com/twilio-labs/plugin-flex",
-  "bugs": "https://github.com/twilio/twilio-cli/issues",
+  "bugs": "https://github.com/twilio-labs/plugin-flex/issues",
   "repository": {
     "type": "git",
     "url": "https://github.com/twilio-labs/plugin-flex.git"
