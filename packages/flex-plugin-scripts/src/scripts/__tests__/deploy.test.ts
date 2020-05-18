@@ -13,6 +13,7 @@ jest.mock('../../clients/configurations');
 jest.mock('../../clients/environments');
 jest.mock('../../clients/builds');
 jest.mock('../../clients/deployments');
+jest.mock('../../prints/deploySuccessful');
 jest.mock('inquirer');
 jest.mock('flex-dev-utils/dist/fs');
 jest.mock('flex-dev-utils/dist/logger');
@@ -273,13 +274,12 @@ describe('DeployScript', () => {
       };
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
       const verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(true);
-      const deploySuccessful = jest.spyOn(prints, 'deploySuccessful');
 
       await deployScript._doDeploy('1.0.0', options);
 
       expect(AssetClient).toHaveBeenCalledTimes(1);
       expect(getAccount).toHaveBeenCalledTimes(1);
-      expect(deploySuccessful).toHaveBeenCalledTimes(1);
+      expect(prints.deploySuccessful).toHaveBeenCalledTimes(1);
 
       checkFilesExist.mockRestore();
       verifyPath.mockRestore();
