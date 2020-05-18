@@ -5,8 +5,8 @@ describe('HttpClient', () => {
   const CONFIG: HttpConfig = {
     baseURL: 'https://test.com',
     auth: {
-      accountSid: 'AC00000000000000000000000000000000',
-      authToken: 'abc123',
+      username: 'AC00000000000000000000000000000000',
+      password: 'abc123',
     },
     userAgent: '007',
   };

@@ -25,6 +25,20 @@ describe('validators', () => {
     });
   });
 
+  describe('validateApiSid', () => {
+    it('should return false', async () => {
+      expect(await validators.validateApiKey('')).toBeFalsy();
+      expect(await validators.validateApiKey('SK0000000000000000000000000000000'))
+        .toEqual(expect.any(String));
+      expect(await validators.validateApiKey('SA0000000000000000000000000000000'))
+        .toEqual(expect.any(String));
+    });
+
+    it('should return true', async () => {
+      expect(await validators.validateApiKey('SK00000000000000000000000000000000')).toBeTruthy();
+    });
+  });
+
   describe('validateConfirmation', () => {
     it('should valid false if no default and no answer provided', async () => {
       expect(await validators.validateConfirmation()('')).toEqual(expect.any(String));

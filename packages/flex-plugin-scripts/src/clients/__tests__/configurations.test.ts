@@ -7,8 +7,8 @@ describe('ConfigurationClient', () => {
   const anotherSid = 'ZS00000000000000000000000000000001';
   const accountSid = 'AC00000000000000000000000000000000';
   const auth: AuthConfig = {
-    accountSid,
-    authToken: 'abc',
+    username: accountSid,
+    password: 'abc',
   };
 
   const OLD_ENV = process.env;
