@@ -13,6 +13,7 @@ jest.mock('../../clients/configurations');
 jest.mock('../../clients/environments');
 jest.mock('../../clients/builds');
 jest.mock('../../clients/deployments');
+jest.mock('../../prints/deploySuccessful');
 jest.mock('inquirer');
 jest.mock('flex-dev-utils/dist/fs');
 jest.mock('flex-dev-utils/dist/logger');
