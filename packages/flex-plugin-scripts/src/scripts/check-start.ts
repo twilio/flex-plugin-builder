@@ -129,7 +129,7 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, al
 };
 
 /**
- * Returns the content of src/index.{js/ts}
+ * Returns the content of src/index
  * @private
  */
 /* istanbul ignore next */
