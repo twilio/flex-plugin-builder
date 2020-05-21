@@ -20,7 +20,6 @@ export interface FlexPluginArguments extends CLIArguments {
   targetDirectory: string;
   flexSdkVersion: string;
   flexPluginVersion: string;
-  cracoConfigVersion: string;
   pluginScriptsVersion: string;
   pluginJsonContent: string;
   pluginClassName: string;
@@ -82,7 +81,7 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
   let dirObject: TmpDirResult;
 
   const promise = progress<boolean>('Creating project directory', async () => {
-    // This copies the core such as public/ and craco config.
+    // This copies the core such as public/
     await copyTemplateDir(
       templateCorePath,
       config.targetDirectory,

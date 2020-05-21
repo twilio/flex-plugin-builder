@@ -19,13 +19,10 @@
     "test": "flex-plugin test --env=jsdom"
   },
   "dependencies": {
-    "craco-config-flex-plugin": "{{cracoConfigVersion}}",
     "flex-plugin": "{{flexPluginVersion}}",
     "flex-plugin-scripts": "{{pluginScriptsVersion}}",
     "react": "16.5.2",
-    "react-dom": "16.5.2",
-    "react-scripts": "3.4.1",
-    "typescript": "^3.6.4"
+    "react-dom": "16.5.2"
   },
   "devDependencies": {
     "@twilio/flex-ui": "{{flexSdkVersion}}",
@@ -38,7 +35,8 @@
     "babel-polyfill": "^6.26.0",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
-    "rimraf": "^3.0.0"
+    "rimraf": "^3.0.0",
+    "typescript": "^3.6.4"
   },
   "browserslist": {
     "production": [

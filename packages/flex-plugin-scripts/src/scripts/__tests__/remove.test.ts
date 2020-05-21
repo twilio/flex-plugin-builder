@@ -10,8 +10,10 @@ jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/credentials', () => ({
   getCredential: jest.fn(),
 }));
-jest.mock('../../utils/paths', () => ({
-  packageName: 'plugin-test',
+jest.mock('flex-dev-utils/dist/paths', () => ({
+  app: {
+    name: 'plugin-test',
+  },
 }));
 
 // tslint:disable

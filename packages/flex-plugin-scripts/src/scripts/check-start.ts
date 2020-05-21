@@ -1,27 +1,21 @@
-import { logger } from 'flex-dev-utils';
+import { env, logger } from 'flex-dev-utils';
+import paths from 'flex-dev-utils/dist/paths';
+import { checkFilesExist, findGlobs, resolveRelative } from 'flex-dev-utils/dist/fs';
+import { addCWDNodeModule, resolveModulePath } from 'flex-dev-utils/dist/require';
 import { existsSync, copyFileSync } from 'fs';
 import semver from 'semver';
-import { join } from 'path';
 
 import {
   appConfigMissing,
-  publicDirCopyFailed,
+  publicDirCopyFailed, typescriptNotInstalled,
   versionMismatch,
 } from '../prints';
-import cracoConfigMissing from '../prints/cracoConfigMissing';
 import expectedDependencyNotFound from '../prints/expectedDependencyNotFound';
-import run from '../utils/run';
+import run, { exit } from '../utils/run';
 
 interface Package {
   dependencies: object;
 }
-
-const nodeModulesPath = join(process.cwd(), 'node_modules');
-const flexUIPkgPath = join(nodeModulesPath, '@twilio/flex-ui/package.json');
-const appConfigPath = join(process.cwd(), 'public', 'appConfig.js');
-const cracoConfigPath = join(process.cwd(), 'craco.config.js');
-const indexSourcePath = join(__dirname, '..', '..', 'dev_assets', 'index.html');
-const indexTargetPath = join(process.cwd(), 'public', 'index.html');
 
 const PackagesToVerify = [
   'react',
@@ -29,27 +23,47 @@ const PackagesToVerify = [
 ];
 
 /**
+ * Returns true if there are any .d.ts/.ts/.tsx files
+ */
+/* istanbul ignore next */
+export const _hasTypescriptFiles = () => findGlobs('**/*.(ts|tsx)', '!**/node_modules', '!**/*.d.ts').length !== 0;
+
+/**
+ * Validates the TypeScript project
+ * @private
+ */
+export const _validateTypescriptProject = () => {
+  if (!_hasTypescriptFiles()) {
+    return;
+  }
+
+  if (!resolveModulePath('typescript')) {
+    typescriptNotInstalled();
+    exit(1);
+
+    return;
+  }
+
+  if (checkFilesExist(paths.app.tsConfigPath)) {
+    return;
+  }
+
+  logger.clearTerminal();
+  env.persistTerminal();
+  logger.warning('No tsconfig.json was found, creating a default one.');
+  copyFileSync(paths.scripts.tsConfigPath, paths.app.tsConfigPath);
+};
+
+/**
  * Checks appConfig exists
  *
  * @private
  */
 export const _checkAppConfig = () => {
-  if (!existsSync(appConfigPath)) {
+  if (!existsSync(paths.app.appConfig)) {
     appConfigMissing();
 
-    return process.exit(1);
-  }
-};
-
-/**
- * Checks that craco-config path exists
- * @private
- */
-export const _checkCracoConfig = () => {
-  if (!existsSync(cracoConfigPath)) {
-    cracoConfigMissing();
-
-    return process.exit(1);
+    return exit(1);
   }
 };
 
@@ -61,11 +75,11 @@ export const _checkCracoConfig = () => {
  */
 export const _checkPublicDirSync = (allowSkip: boolean) => {
   try {
-    copyFileSync(indexSourcePath, indexTargetPath);
+    copyFileSync(paths.scripts.indexHTMLPath, paths.app.indexHtmlPath);
   } catch (e) {
     publicDirCopyFailed(e, allowSkip);
 
-    return process.exit(1);
+    return exit(1);
   }
 };
 
@@ -77,7 +91,7 @@ export const _checkPublicDirSync = (allowSkip: boolean) => {
  */
 /* istanbul ignore next */
 export const _checkExternalDepsVersions = (allowSkip: boolean) => {
-  const flexUIPkg = require(flexUIPkgPath);
+  const flexUIPkg = require(paths.app.flexUIPkgPath);
 
   PackagesToVerify.forEach((name) => _verifyPackageVersion(flexUIPkg, allowSkip, name));
 };
@@ -95,20 +109,20 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, na
   if (!expectedDependency) {
     expectedDependencyNotFound(name);
 
-    return process.exit(1);
+    return exit(1);
   }
 
   // @ts-ignore
   const requiredVersion = semver.coerce(expectedDependency).version;
 
-  const installedPath = join(nodeModulesPath, name, 'package.json');
+  const installedPath = resolveRelative(paths.app.nodeModulesDir, name, 'package.json');
   const installedVersion = require(installedPath).version;
 
   if (requiredVersion !== installedVersion) {
     versionMismatch(name, installedVersion, requiredVersion, allowSkip);
 
     if (!allowSkip) {
-      return process.exit(1);
+      return exit(1);
     }
   }
 };
@@ -118,12 +132,13 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, na
  */
 const checkStart = async () => {
   logger.debug('Checking Flex plugin project directory');
-  const allowSkip = process.env.SKIP_PREFLIGHT_CHECK === 'true';
+
+  addCWDNodeModule();
 
   _checkAppConfig();
-  _checkCracoConfig();
-  _checkPublicDirSync(allowSkip);
-  _checkExternalDepsVersions(allowSkip);
+  _checkPublicDirSync(env.skipPreflightCheck());
+  _checkExternalDepsVersions(env.skipPreflightCheck());
+  _validateTypescriptProject();
 };
 
 run(checkStart);

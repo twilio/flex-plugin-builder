@@ -1,9 +1,9 @@
 import fs from 'fs';
-import { join } from 'path';
 import * as path from 'path';
+import globby from 'globby';
 import os from 'os';
 import mkdirp from 'mkdirp';
-import tmp, { DirResult as TmpDirResult } from 'tmp';
+import tmp from 'tmp';
 import copyTempDir from 'copy-template-dir';
 import { promisify } from 'util';
 import rimRaf from 'rimraf';
@@ -14,11 +14,13 @@ export interface PackageJson {
   dependencies: {
     'flex-plugin': string;
     'flex-plugin-scripts': string;
-    'craco-config-flex-plugin': string;
   };
 }
 
 export default fs;
+
+// Working directory
+const cwd = fs.realpathSync(process.cwd());
 
 // The OS root directory
 const rootDir = os.platform() === 'win32' ? process.cwd().split(path.sep)[0] : '/';
@@ -27,7 +29,7 @@ const rootDir = os.platform() === 'win32' ? process.cwd().split(path.sep)[0] : '
 const promiseCopyTempDir = promisify(copyTempDir);
 
 // Node directory
-const nodeModulesPath = join(process.cwd(), 'node_modules');
+const nodeModulesPath = path.join(process.cwd(), 'node_modules');
 
 /**
  * Checks the provided array of files exist
@@ -128,7 +130,57 @@ export const rmRfSync = rimRaf.sync;
  */
 /* istanbul ignore next */
 export const getDependencyVersion = (pkgName: string) => {
-  return require(join(nodeModulesPath, pkgName, 'package.json')).version;
+  return require(path.join(nodeModulesPath, pkgName, 'package.json')).version;
+};
+
+/**
+ * Builds path relative to cwd
+ * @param paths  the paths
+ */
+export const resolveCwd = (...paths: string[]) => resolveRelative(cwd, ...paths);
+
+/**
+ * Builds path relative to the given dir
+ * @param dir   the dir
+ * @param paths the paths
+ */
+export const resolveRelative = (dir: string, ...paths: string[]) => {
+  if (paths.length === 0) {
+    return dir;
+  }
+
+  const lastElement = paths[paths.length - 1];
+  // Check if last element is an extension
+  if (lastElement.charAt(0) !== '.') {
+    return path.join(dir, ...paths);
+  }
+
+  // Only one entry as extension
+  if (paths.length === 1) {
+    return path.join(`${dir}${lastElement}`);
+  }
+  const secondLastElement = paths[paths.length - 2];
+  const remainder = paths.slice(0, paths.length - 2);
+
+  return path.join(dir, ...[...remainder, `${secondLastElement}${lastElement}`]);
+};
+
+/**
+ * Finds globs in the src directory
+ * @param patterns the patterns
+ */
+export const findGlobs = (...patterns: string[]) => {
+  // TODO: move paths from flex-plugin-scripts into here and use it here too
+  return findGlobsIn(path.join(process.cwd(), 'src'), ...patterns);
+};
+
+/**
+ * Finds globs in any cwd directory
+ * @param dir     the cwd to check for patterns
+ * @param patterns the patterns
+ */
+export const findGlobsIn = (dir: string, ...patterns: string[]) => {
+  return globby.sync(patterns, { cwd: dir });
 };
 
 export { DirResult as TmpDirResult } from 'tmp';

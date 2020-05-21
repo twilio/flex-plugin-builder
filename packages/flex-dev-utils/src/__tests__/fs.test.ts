@@ -1,5 +1,8 @@
 import { PackageJson } from '../fs';
 import * as fs from '../fs';
+import * as globby from 'globby';
+
+jest.mock('globby');
 
 describe('fs', () => {
   beforeEach(() => {
@@ -71,7 +74,6 @@ describe('fs', () => {
         dependencies: {
           'flex-plugin-scripts': '1',
           'flex-plugin': '2',
-          'craco-config-flex-plugin': '3',
         },
       };
       const pkgAfter: PackageJson = Object.assign({}, pkgBefore, {version: '2'});
@@ -128,6 +130,61 @@ describe('fs', () => {
       }
 
       existsSync.mockRestore();
+    });
+  });
+
+  describe('resolveCwd', () => {
+    it('should call resolveRelative', () => {
+      const resolveRelative = jest.spyOn(fs, 'resolveRelative').mockReturnValue('foo');
+
+      expect(fs.resolveCwd('some-path')).toEqual('foo');
+      expect(resolveRelative).toHaveBeenCalledTimes(1);
+      expect(resolveRelative).toHaveBeenCalledWith(expect.any(String), 'some-path');
+
+      resolveRelative.mockRestore();
+    });
+  });
+
+  describe('resolveRelative', () => {
+    it('should return dir if no paths passed', () => {
+      expect(fs.resolveRelative('the-dir')).toEqual('the-dir');
+    });
+
+    it('should build path with single item and no extension', () => {
+      expect(fs.resolveRelative('the-dir', 'the-sub')).toEqual('the-dir/the-sub');
+    });
+
+    it('should build path with single item that is extension', () => {
+      expect(fs.resolveRelative('the-file', '.extension')).toEqual('the-file.extension');
+    });
+
+    it('should build path with two items and no extension', () => {
+      expect(fs.resolveRelative('foo', 'bar', 'baz')).toEqual('foo/bar/baz');
+    });
+
+    it('should build path with two items and an extension', () => {
+      expect(fs.resolveRelative('foo', 'bar', '.baz')).toEqual('foo/bar.baz');
+    });
+
+    it('should build path with multiple items and no extension', () => {
+      expect(fs.resolveRelative('foo', 'bar', 'baz', 'test', 'it')).toEqual('foo/bar/baz/test/it');
+    });
+
+    it('should build path with multiple items and an extension', () => {
+      expect(fs.resolveRelative('foo', 'bar', 'baz', 'test', '.it')).toEqual('foo/bar/baz/test.it');
+    });
+  });
+
+  describe('findGlobsIn', () => {
+    it('should call globby', () => {
+      const dirs = ['path1', 'path2'];
+      const sync = jest.spyOn(globby, 'sync').mockReturnValue(dirs);
+      const patterns = ['pattern1', 'pattern2'];
+      const result = fs.findGlobsIn('the-dir', ...patterns);
+
+      expect(result).toEqual(dirs);
+      expect(sync).toHaveBeenCalledTimes(1);
+      expect(sync).toHaveBeenCalledWith(patterns, { cwd: 'the-dir' });
     });
   });
 });

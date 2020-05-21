@@ -1,4 +1,5 @@
 import { logger } from 'flex-dev-utils';
+import paths from 'flex-dev-utils/dist/paths';
 import { progress } from 'flex-dev-utils/dist/ora';
 import { checkFilesExist, updatePackageVersion, readPackageJson } from 'flex-dev-utils/dist/fs';
 import { getCredential } from 'flex-dev-utils/dist/credentials';
@@ -10,7 +11,6 @@ import { deploySuccessful, pluginsApiWarning } from '../prints';
 import run from '../utils/run';
 import { BuildData } from '../clients/builds';
 import { Build, Version } from '../clients/serverless-types';
-import paths from '../utils/paths';
 import { AssetClient, BuildClient, DeploymentClient, ConfigurationClient, PluginsApiClient } from '../clients';
 import getRuntime from '../utils/runtime';
 
@@ -60,7 +60,7 @@ export const _verifyPath = (baseUrl: string, build: Build) => {
  * @param options       options for this deploy
  */
 export const _doDeploy = async (nextVersion: string, options: Options) => {
-  if (!checkFilesExist(paths.localBundlePath)) {
+  if (!checkFilesExist(paths.app.bundlePath)) {
     throw new FlexPluginError('Could not find build file. Did you run `npm run build` first?');
   }
 
@@ -115,9 +115,9 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
   const buildData = await progress<BuildData>('Uploading your plugin bundle', async () => {
     // Upload bundle and sourcemap
     const bundleVersion = await assetClient
-      .upload(paths.packageName, bundleUri, paths.localBundlePath, !options.isPublic);
+      .upload(paths.app.name, bundleUri, paths.app.bundlePath, !options.isPublic);
     const sourceMapVersion = await assetClient
-      .upload(paths.packageName, sourceMapUri, paths.localSourceMapPath, !options.isPublic);
+      .upload(paths.app.name, sourceMapUri, paths.app.sourceMapPath, !options.isPublic);
 
     const existingAssets = routeCollision && options.overwrite
       ?  buildAssets.filter((v) => v.path !== bundleUri && v.path !== sourceMapUri)
@@ -181,7 +181,7 @@ const deploy = async (...argv: string[]) => {
       opts.overwrite = true;
       nextVersion = readPackageJson().version;
     } else if (bump !== 'version') {
-      nextVersion = semver.inc(paths.version, bump as ReleaseType) as any;
+      nextVersion = semver.inc(paths.app.version, bump as ReleaseType) as any;
     }
   } else {
     nextVersion = '0.0.0';

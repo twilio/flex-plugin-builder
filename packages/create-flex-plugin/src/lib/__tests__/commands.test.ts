@@ -1,5 +1,3 @@
-import { join } from 'path';
-
 import { GitHubInfo } from '../../utils/github';
 import * as commands from '../commands';
 import { FlexPluginArguments } from '../create-flex-plugin';
@@ -8,7 +6,6 @@ import * as github from '../../utils/github';
 jest.mock('flex-dev-utils/dist/spawn');
 
 // tslint:disable
-const pkg = require(join(process.cwd(), 'packages/create-flex-plugin/package.json'));
 const spawn = require('flex-dev-utils').spawn;
 // tslint:enable
 

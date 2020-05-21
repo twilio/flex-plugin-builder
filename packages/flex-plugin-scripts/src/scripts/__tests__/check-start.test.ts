@@ -1,15 +1,17 @@
 import fs from 'fs';
 import { join } from 'path';
 
+import * as requireScripts from 'flex-dev-utils/dist/require';
+import * as fsScripts from 'flex-dev-utils/dist/fs';
 import * as prints from '../../prints';
 import * as checkStartScript from '../check-start';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('../../prints/versionMismatch');
 jest.mock('../../prints/appConfigMissing');
-jest.mock('../../prints/cracoConfigMissing');
 jest.mock('../../prints/publicDirCopyFailed');
 jest.mock('../../prints/expectedDependencyNotFound');
+jest.mock('../../prints/typescriptNotInstalled');
 
 // tslint:disable-next-line
 const lernaVersion = require(join(process.cwd(), 'node_modules/lerna/package.json')).version;
@@ -29,36 +31,36 @@ describe('check-start', () => {
   describe('main', () => {
     const _checkAppConfig = jest
       .spyOn(checkStartScript, '_checkAppConfig')
-      .mockReturnValue(undefined);
-    const _checkCracoConfig = jest
-      .spyOn(checkStartScript, '_checkCracoConfig')
-      .mockReturnValue(undefined);
+      .mockReturnThis();
     const _checkPublicDirSync = jest
       .spyOn(checkStartScript, '_checkPublicDirSync')
-      .mockReturnValue(undefined);
+      .mockReturnThis();
     const _checkExternalDepsVersions = jest
       .spyOn(checkStartScript, '_checkExternalDepsVersions')
-      .mockReturnValue(undefined);
+      .mockReturnThis();
+    const _validateTypescriptProject = jest
+      .spyOn(checkStartScript, '_validateTypescriptProject')
+      .mockReturnThis();
 
     beforeEach(() => {
       _checkAppConfig.mockReset();
-      _checkCracoConfig.mockReset();
       _checkPublicDirSync.mockReset();
       _checkExternalDepsVersions.mockReset();
+      _validateTypescriptProject.mockReset();
     });
 
     afterAll(() => {
       _checkAppConfig.mockRestore();
-      _checkCracoConfig.mockRestore();
       _checkPublicDirSync.mockRestore();
       _checkExternalDepsVersions.mockRestore();
+      _validateTypescriptProject.mockRestore();
     });
 
     const expectCalled = (allowSkip: boolean) => {
       expect(_checkAppConfig).toHaveBeenCalledTimes(1);
-      expect(_checkCracoConfig).toHaveBeenCalledTimes(1);
       expect(_checkPublicDirSync).toHaveBeenCalledTimes(1);
       expect(_checkExternalDepsVersions).toHaveBeenCalledTimes(1);
+      expect(_validateTypescriptProject).toHaveBeenCalledTimes(1);
       expect(_checkExternalDepsVersions).toHaveBeenCalledWith(allowSkip);
     };
 
@@ -103,39 +105,6 @@ describe('check-start', () => {
       expect(existSync).toHaveBeenCalledTimes(1);
       expect(existSync).toHaveBeenCalledWith(expect.stringContaining('appConfig.js'));
       expect(prints.appConfigMissing).not.toHaveBeenCalled();
-      expect(exit).not.toHaveBeenCalled();
-
-      existSync.mockRestore();
-    });
-  });
-
-  describe('_checkCracoConfig', () => {
-    it('quit if no cracoConfig is found', () => {
-      const existSync = jest
-        .spyOn(fs, 'existsSync')
-        .mockReturnValue(false);
-
-      checkStartScript._checkCracoConfig();
-
-      expect(existSync).toHaveBeenCalledTimes(1);
-      expect(existSync).toHaveBeenCalledWith(expect.stringContaining('craco.config.js'));
-      expect(prints.cracoConfigMissing).toHaveBeenCalledTimes(1);
-      expect(exit).toHaveBeenCalledTimes(1);
-      expect(exit).toHaveBeenCalledWith(1);
-
-      existSync.mockRestore();
-    });
-
-    it('not quit if appConfig is found', () => {
-      const existSync = jest
-        .spyOn(fs, 'existsSync')
-        .mockReturnValue(true);
-
-      checkStartScript._checkCracoConfig();
-
-      expect(existSync).toHaveBeenCalledTimes(1);
-      expect(existSync).toHaveBeenCalledWith(expect.stringContaining('craco.config.js'));
-      expect(prints.cracoConfigMissing).not.toHaveBeenCalled();
       expect(exit).not.toHaveBeenCalled();
 
       existSync.mockRestore();
@@ -229,6 +198,98 @@ describe('check-start', () => {
       checkStartScript._verifyPackageVersion(pkg, false, 'lerna');
 
       expect(exit).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('_validateTypescriptProject', () => {
+    const _hasTypescriptFiles = jest
+      .spyOn(checkStartScript, '_hasTypescriptFiles')
+      .mockReturnThis();
+    const resolveModulePath = jest
+      .spyOn(requireScripts, 'resolveModulePath')
+      .mockReturnThis();
+    const checkFilesExist = jest
+      .spyOn(fsScripts, 'checkFilesExist')
+      .mockReturnThis();
+    const copyFileSync = jest
+      .spyOn(fs, 'copyFileSync')
+      .mockReturnValue(undefined);
+
+    beforeEach(() => {
+      _hasTypescriptFiles.mockReset();
+      resolveModulePath.mockReset();
+      checkFilesExist.mockReset();
+      copyFileSync.mockReset();
+    });
+
+    afterAll(() => {
+      _hasTypescriptFiles.mockRestore();
+      resolveModulePath.mockRestore();
+      checkFilesExist.mockRestore();
+      copyFileSync.mockRestore();
+    });
+
+    it('should not do anything if not a typescript project', () => {
+      _hasTypescriptFiles.mockReturnValue(false);
+
+      checkStartScript._validateTypescriptProject();
+
+      expect(_hasTypescriptFiles).toHaveBeenCalledTimes(1);
+      expect(resolveModulePath).not.toHaveBeenCalled();
+      expect(exit).not.toHaveBeenCalled();
+    });
+
+    it('should fail if typescript project and typescript module not installed', () => {
+      _hasTypescriptFiles.mockReturnValue(true);
+      resolveModulePath.mockReturnValue(false);
+
+      checkStartScript._validateTypescriptProject();
+
+      expect(_hasTypescriptFiles).toHaveBeenCalledTimes(1);
+      expect(resolveModulePath).toHaveBeenCalledTimes(1);
+      expect(resolveModulePath).toHaveBeenCalledWith('typescript');
+      expect(exit).toHaveBeenCalledTimes(1);
+      expect(exit).toHaveBeenCalledWith(1);
+      expect(prints.typescriptNotInstalled).toHaveBeenCalledTimes(1);
+      expect(checkFilesExist).not.toHaveBeenCalled();
+    });
+
+    it('should continue if typescript project and has tsconfig', () => {
+      _hasTypescriptFiles.mockReturnValue(true);
+      resolveModulePath.mockReturnValue('some-path');
+      checkFilesExist.mockReturnValue(true);
+
+      checkStartScript._validateTypescriptProject();
+
+      expect(_hasTypescriptFiles).toHaveBeenCalledTimes(1);
+      expect(resolveModulePath).toHaveBeenCalledTimes(1);
+      expect(resolveModulePath).toHaveBeenCalledWith('typescript');
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+
+      expect(copyFileSync).not.toHaveBeenCalled();
+      expect(exit).not.toHaveBeenCalled();
+      expect(prints.typescriptNotInstalled).not.toHaveBeenCalled();
+    });
+
+    it('should create default tsconfig.json', () => {
+      _hasTypescriptFiles.mockReturnValue(true);
+      resolveModulePath.mockReturnValue('some-path');
+      checkFilesExist.mockReturnValue(false);
+      const _copyFileSync = jest
+        .spyOn(fs, 'copyFileSync')
+        .mockReturnValue(undefined);
+
+      checkStartScript._validateTypescriptProject();
+
+      expect(_hasTypescriptFiles).toHaveBeenCalledTimes(1);
+      expect(resolveModulePath).toHaveBeenCalledTimes(1);
+      expect(resolveModulePath).toHaveBeenCalledWith('typescript');
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(_copyFileSync).toHaveBeenCalledTimes(1);
+
+      expect(exit).not.toHaveBeenCalled();
+      expect(prints.typescriptNotInstalled).not.toHaveBeenCalled();
+      _copyFileSync.mockRestore();
     });
   });
 });

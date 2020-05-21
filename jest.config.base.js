@@ -1,5 +1,5 @@
 module.exports = {
-  collectCoverage: true,
+  collectCoverage: false,
   setupFiles: [
     '<rootDir>/jest.setup.js'
   ],
@@ -12,6 +12,7 @@ module.exports = {
     '!<rootDir>/packages/**/src/index.ts',
     '!<rootDir>/packages/**/templates/**/*.ts',
     '!<rootDir>/packages/**/prints/**/*.ts',
+    '!<rootDir>/packages/flex-plugin-scripts/src/config/**/*.ts',
   ],
   testMatch: [
     '<rootDir>/packages/**/*.test.ts'

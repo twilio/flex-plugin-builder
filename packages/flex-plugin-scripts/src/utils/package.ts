@@ -1,4 +1,4 @@
-import { resolve } from './require';
+import { resolveModulePath } from 'flex-dev-utils/dist/require';
 import { join } from 'path';
 
 export const FLEX_PACKAGES: string[] = [
@@ -6,14 +6,11 @@ export const FLEX_PACKAGES: string[] = [
   'flex-plugin-scripts',
   'flex-plugin',
   'flex-dev-utils',
-  'craco-config-flex-plugin',
 ];
 
 /* istanbul ignore next */
 export const LIST_OF_PACKAGES: string[] = [
   ...FLEX_PACKAGES,
-  '@craco/craco',
-  'react-scripts',
   'react',
   'react-dom',
   'redux',
@@ -43,7 +40,7 @@ export const getPackageDetails = (packages: string[]): PackageDetail[] => {
             };
 
             try {
-                const resolvedPath = resolve(join(name, 'package.json'));
+                const resolvedPath = resolveModulePath(join(name, 'package.json'));
                 if (resolvedPath) {
                     detail.package = require(resolvedPath);
                     detail.found = true;

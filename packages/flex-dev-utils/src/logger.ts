@@ -1,9 +1,10 @@
 import { format } from 'util';
 import chalk from 'chalk';
 import wrapAnsi from 'wrap-ansi';
+import env from './env';
 
 type Level = 'info' | 'error' | 'warn';
-type Color = 'red' | 'yellow' | 'green' | 'blue';
+type Color = 'red' | 'yellow' | 'green' | 'blue' | 'cyan';
 
 // LogLevels
 export type LogLevels = 'debug'
@@ -27,7 +28,7 @@ const DefaultWrapOptions = { hard: true };
  * @param args
  */
 export const debug = (...args: any[]) => {
-  if (process.env.DEBUG || process.env.TRACE) {
+  if (env.isDebug()) {
     _log({level: 'info', args});
   }
 };
@@ -37,7 +38,7 @@ export const debug = (...args: any[]) => {
  * @param args
  */
 export const trace = (...args: any[]) => {
-  if (process.env.TRACE) {
+  if (env.isTrace()) {
     _log({level: 'info', args});
   }
 };
@@ -75,6 +76,14 @@ export const warning = (...args: any[]) => {
 };
 
 /**
+ * Notice log is info level with a cyan color
+ * @param args
+ */
+export const notice = (...args: any[]) => {
+  _log({level: 'info', color: 'cyan', args});
+};
+
+/**
  * Appends new line
  * @param lines the number of lines to append
  */
@@ -82,6 +91,15 @@ export const newline = (lines: number = 1) => {
   for (let i = 0; i < lines; i++) {
     info();
   }
+};
+
+/**
+ * A wrapper for showing bash command information such as `npm install foo`
+ * @param command the bash command
+ * @param args  the remaining arguments
+ */
+export const installInfo = (command: string, ...args: string[]) => {
+  info('\t', chalk.cyan(command), ...args);
 };
 
 /**
@@ -93,6 +111,16 @@ export const newline = (lines: number = 1) => {
  */
 export const wrap = (input: string, columns: number, options = DefaultWrapOptions) => {
   return wrapAnsi(input, columns, options);
+};
+
+/**
+ * Clears the terminal either if forced is provided, or if persist_terminal env is not set
+ */
+/* istanbul ignore next */
+export const clearTerminal = (forced = false) => {
+  if (forced || !env.isTerminalPersisted()) {
+    process.stdout.write(env.isWin32() ? '\x1B[2J\x1B[0f' : '\x1B[2J\x1B[3J\x1B[H');
+  }
 };
 
 /**
@@ -115,6 +143,9 @@ export default {
   success,
   newline,
   wrap,
+  clearTerminal,
+  notice,
+  installInfo,
   colors: chalk,
   coloredStrings: {
     link: (str: string) => chalk.blue(str),
