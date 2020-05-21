@@ -1,5 +1,6 @@
 import { logger, env, paths } from 'flex-dev-utils';
 import webpackFormatMessages from '@k88/format-webpack-messages';
+import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import { SyncHook } from 'tapable';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
@@ -123,11 +124,6 @@ export default (config: Configuration, devServer = false): Compiler => {
 
     return compiler;
   } catch (err) {
-    logger.error('Failed to create a webpack compiler.');
-    logger.newline();
-    logger.info(err.message || err);
-    logger.newline();
-
-    process.exit(1);
+    throw new FlexPluginError('Failed to create a webpack compiler: ' + err.message);
   }
 };

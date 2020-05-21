@@ -30,7 +30,7 @@ const rootDir = os.platform() === 'win32' ? process.cwd().split(path.sep)[0] : '
 
 // Promise version of {@link copyTempDir}
 // tslint:disable-next-line
-const promiseCopyTempDir = promisify(require('copy-template-dir'));
+const promiseCopyTempDir = src/utils/compiler.ts(require('copy-template-dir'));
 
 // Node directory
 const nodeModulesPath = path.join(process.cwd(), 'node_modules');

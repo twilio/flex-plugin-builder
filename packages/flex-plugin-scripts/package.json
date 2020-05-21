@@ -86,5 +86,6 @@
   },
   "peerDependencies": {
     "flex-plugin": "*"
-  }
+  },
+  "gitHead": "cb92593ce13da010d82f488d974d7f372d973af8"
 }
