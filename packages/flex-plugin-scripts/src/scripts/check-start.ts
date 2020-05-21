@@ -1,21 +1,29 @@
-import { env, logger } from 'flex-dev-utils';
+import { env, logger, semver } from 'flex-dev-utils';
 import paths from 'flex-dev-utils/dist/paths';
 import { checkFilesExist, findGlobs, resolveRelative } from 'flex-dev-utils/dist/fs';
 import { addCWDNodeModule, resolveModulePath } from 'flex-dev-utils/dist/require';
-import { existsSync, copyFileSync } from 'fs';
-import semver from 'semver';
-
+import { FlexPluginError } from 'flex-dev-utils/dist/errors';
+import { existsSync, copyFileSync, readFileSync } from 'fs';
+import { join } from 'path';
 import {
   appConfigMissing,
-  publicDirCopyFailed, typescriptNotInstalled,
+  publicDirCopyFailed,
+  unbundledReactMismatch,
   versionMismatch,
+  expectedDependencyNotFound,
+  loadPluginCountError,
+  typescriptNotInstalled,
 } from '../prints';
-import expectedDependencyNotFound from '../prints/expectedDependencyNotFound';
 import run, { exit } from '../utils/run';
 
 interface Package {
+  version: string;
   dependencies: object;
 }
+
+
+const srcIndexPath = join(process.cwd(), 'src', 'index');
+const extensions = ['js', 'jsx', 'ts', 'tsx'];
 
 const PackagesToVerify = [
   'react',
@@ -87,13 +95,14 @@ export const _checkPublicDirSync = (allowSkip: boolean) => {
  * Checks the version of external libraries and exists if customer is using another version
  *
  * allowSkip  whether to allow skip
+ * allowReact whether to allow reacts
  * @private
  */
 /* istanbul ignore next */
-export const _checkExternalDepsVersions = (allowSkip: boolean) => {
+export const _checkExternalDepsVersions = (allowSkip: boolean, allowReact: boolean) => {
   const flexUIPkg = require(paths.app.flexUIPkgPath);
 
-  PackagesToVerify.forEach((name) => _verifyPackageVersion(flexUIPkg, allowSkip, name));
+  PackagesToVerify.forEach((name) => _verifyPackageVersion(flexUIPkg, allowSkip, allowReact, name));
 };
 
 /**
@@ -101,11 +110,13 @@ export const _checkExternalDepsVersions = (allowSkip: boolean) => {
  *
  * @param flexUIPkg   the flex-ui package.json
  * @param allowSkip   whether to allow skip
+ * @param allowReact  whether to allow unbundled react
  * @param name        the package to check
  * @private
  */
-export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, name: string) => {
+export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, allowReact: boolean, name: string) => {
   const expectedDependency = flexUIPkg.dependencies[name];
+  const supportsUnbundled = semver.satisfies(flexUIPkg.version, '>=1.19.0');
   if (!expectedDependency) {
     expectedDependencyNotFound(name);
 
@@ -113,17 +124,62 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, na
   }
 
   // @ts-ignore
-  const requiredVersion = semver.coerce(expectedDependency).version;
 
+  const requiredVersion = semver.coerce(expectedDependency).version;
   const installedPath = resolveRelative(paths.app.nodeModulesDir, name, 'package.json');
   const installedVersion = require(installedPath).version;
 
   if (requiredVersion !== installedVersion) {
-    versionMismatch(name, installedVersion, requiredVersion, allowSkip);
+    if (allowReact) {
+      if (supportsUnbundled) {
+        return;
+      }
+
+      unbundledReactMismatch(flexUIPkg.version, name, installedVersion, allowSkip);
+    } else {
+      versionMismatch(name, installedVersion, requiredVersion, allowSkip);
+    }
+
 
     if (!allowSkip) {
       return exit(1);
     }
+  }
+};
+
+/**
+ * Returns the content of src/index
+ * @private
+ */
+/* istanbul ignore next */
+export const _readIndexPage = (): string => {
+  const match = extensions
+    .map(ext => `${srcIndexPath}.${ext}`)
+    .find(file => checkFilesExist(file));
+  if (match) {
+    return readFileSync(match, 'utf8');
+  }
+
+  throw new FlexPluginError('No index file was found in your src directory');
+}
+
+/**
+ * Checks how many plugins this single JS bundle is exporting
+ * You can only have one plugin per JS bundle
+ * @private
+ */
+export const _checkPluginCount = () => {
+  const content = _readIndexPage();
+  const match = content.match(/loadPlugin/g);
+  if (!match || match.length === 0) {
+    loadPluginCountError(0);
+
+    return process.exit(1);
+  }
+  if (match.length > 1) {
+    loadPluginCountError(match.length);
+
+    return process.exit(1);
   }
 };
 
@@ -137,7 +193,8 @@ const checkStart = async () => {
 
   _checkAppConfig();
   _checkPublicDirSync(env.skipPreflightCheck());
-  _checkExternalDepsVersions(env.skipPreflightCheck());
+  _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
+  _checkPluginCount();
   _validateTypescriptProject();
 };
 

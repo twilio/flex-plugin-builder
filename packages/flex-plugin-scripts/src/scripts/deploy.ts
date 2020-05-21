@@ -1,12 +1,15 @@
-import { logger } from 'flex-dev-utils';
 import paths from 'flex-dev-utils/dist/paths';
+import { logger, semver } from 'flex-dev-utils';
+import { ReleaseType } from 'flex-dev-utils/dist/semver';
 import { progress } from 'flex-dev-utils/dist/ora';
-import { checkFilesExist, updatePackageVersion, readPackageJson } from 'flex-dev-utils/dist/fs';
+import { confirm } from 'flex-dev-utils/dist/inquirer';
+import { checkFilesExist, updateAppVersion, getPackageVersion } from 'flex-dev-utils/dist/fs';
 import { getCredential } from 'flex-dev-utils/dist/credentials';
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import semver, { ReleaseType } from 'semver';
+import { FlexPluginError, UserActionError } from 'flex-dev-utils/dist/errors';
+import { singleLineString } from 'flex-dev-utils/dist/strings';
 import AccountsClient from '../clients/accounts';
 import { deploySuccessful, pluginsApiWarning } from '../prints';
+import { UIDependencies } from '../clients/configuration-types';
 
 import run from '../utils/run';
 import { BuildData } from '../clients/builds';
@@ -44,6 +47,50 @@ export const _verifyPath = (baseUrl: string, build: Build) => {
   const checkPathIsUnused = (v: Version) => v.path !== bundlePath && v.path !== sourceMapPath;
 
   return existingAssets.every(checkPathIsUnused) && existingFunctions.every(checkPathIsUnused);
+};
+
+/**
+ * Validates Flex UI version requirement
+ * @param flexUI      the flex ui version
+ * @param allowReact  whether this deploy supports unbundled React
+ * @private
+ */
+export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: UIDependencies, allowReact: boolean) => {
+  const coerced = semver.coerce(flexUI);
+  if (!allowReact) {
+    return;
+  }
+  const UISupports = semver.satisfies('1.19.0', flexUI) || (coerced && semver.satisfies(coerced, '>=1.19.0'));
+  if (!UISupports) {
+    throw new FlexPluginError(singleLineString(
+      `We detected that your account is using Flex UI version ${flexUI} which is incompatible`,
+      `with unbundled React. Please visit https://flex.twilio.com/admin/versioning and update to`,
+      `version 1.19 or above.`,
+    ));
+  }
+
+  if (!dependencies.react || !dependencies['react-dom']) {
+    throw new FlexPluginError('To use unbundled React, you need to set the React version from the Developer page');
+  }
+
+  const reactSupported = semver.satisfies(getPackageVersion('react'), `${dependencies.react}`);
+  const reactDOMSupported = semver.satisfies(getPackageVersion('react-dom'), `${dependencies['react-dom']}`);
+  if (!reactSupported || !reactDOMSupported) {
+    logger.newline();
+    logger.warning(singleLineString(
+      `The React version ${getPackageVersion('react')} installed locally`,
+      `is incompatible with the React version ${dependencies.react} installed on your Flex project.`,
+    ));
+    logger.info(singleLineString(
+      'Change your local React version or visit https://flex.twilio.com/admin/developers to',
+      `change the React version installed on your Flex project.`,
+    ));
+    const answer = await confirm('Do you still want to continue deploying?', 'N');
+    if (!answer) {
+      logger.newline();
+      throw new UserActionError('User rejected confirmation to deploy with mismatched React version.');
+    }
+  }
 };
 
 /**
@@ -88,6 +135,12 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
   const buildClient = new BuildClient(credentials, runtime.service.sid);
   const assetClient = new AssetClient(credentials, runtime.service.sid);
   const deploymentClient = new DeploymentClient(credentials, runtime.service.sid, runtime.environment.sid);
+
+  // Validate Flex UI version
+  const allowReact = process.env.UNBUNDLED_REACT === 'true';
+  const uiVersion = await configurationClient.getFlexUIVersion();
+  const uiDependencies = await configurationClient.getUIDependencies();
+  await _verifyFlexUIConfiguration(uiVersion, uiDependencies, allowReact);
 
   // Check duplicate routes
   const routeCollision = await progress<Build>('Validating the new plugin bundle', async () => {
@@ -145,7 +198,7 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
     const newBuild = await buildClient.create(buildData);
     const deployment = await deploymentClient.create(newBuild.sid);
 
-    updatePackageVersion(nextVersion);
+    updateAppVersion(nextVersion);
 
     return deployment;
   });
@@ -179,7 +232,7 @@ const deploy = async (...argv: string[]) => {
 
     if (bump === 'overwrite') {
       opts.overwrite = true;
-      nextVersion = readPackageJson().version;
+      nextVersion = paths.app.version;
     } else if (bump !== 'version') {
       nextVersion = semver.inc(paths.app.version, bump as ReleaseType) as any;
     }

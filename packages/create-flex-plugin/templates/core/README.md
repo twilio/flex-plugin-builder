@@ -23,24 +23,28 @@ In order to develop locally, you can use the Webpack Dev Server by running:
 npm start
 ```
 
-This will automatically start up the Webpack Dev Server and open the browser for you. Your app will run on `http://localhost:8080`. If you want to change that you can do this by setting the `PORT` environment variable:
+This will automatically start up the Webpack Dev Server and open the browser for you. Your app will run on `http://localhost:3000`. If you want to change that you can do this by setting the `PORT` environment variable:
 
 ```bash
-PORT=3000 npm start
+PORT=3001 npm start
 ```
 
 When you make changes to your code, the browser window will be automatically refreshed.
 
 ## Deploy
 
-Once you are happy with your plugin, you have to bundle it in order to deploy it to Twilio Flex.
-
-Run the following command to start the bundling:
+When you are ready to deploy your plugin, in your terminal run:
 
 ```bash
-npm run build
+npm run deploy
 ```
 
-Afterwards, you'll find in your project a `build/` folder that contains a file with the name of your plugin project. For example, `plugin-example.js`. Take this file and upload it into the Assets part of your Twilio Runtime.
+This will publish your plugin as a Private Asset that is accessible by the Functions & Assets API. If you want to deploy your plugin as a Public Asset, you may pass --public to your deploy command:
+
+```bash
+npm run deploy --public
+```
+
+For more details on deploying your plugin, refer to the [deploying your plugin guide](https://www.twilio.com/docs/flex/plugins#deploying-your-plugin).
 
 Note: Common packages like `React`, `ReactDOM`, `Redux` and `ReactRedux` are not bundled with the build because they are treated as external dependencies so the plugin will depend on Flex to provide them globally.

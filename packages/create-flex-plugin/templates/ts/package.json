@@ -22,7 +22,14 @@
     "flex-plugin": "{{flexPluginVersion}}",
     "flex-plugin-scripts": "{{pluginScriptsVersion}}",
     "react": "16.5.2",
+<<<<<<< HEAD
     "react-dom": "16.5.2"
+=======
+    "react-dom": "16.5.2",
+    "react-emotion": "9.2.6",
+    "react-scripts": "3.4.1",
+    "typescript": "^3.6.4"
+>>>>>>> master
   },
   "devDependencies": {
     "@twilio/flex-ui": "{{flexSdkVersion}}",

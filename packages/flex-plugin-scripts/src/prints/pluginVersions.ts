@@ -1,6 +1,5 @@
-import { logger } from 'flex-dev-utils';
+import { logger, semver } from 'flex-dev-utils';
 import { printObjectArray } from 'flex-dev-utils/dist/table';
-import semver from 'semver';
 
 import { AssetVersion, Visibility } from '../clients/serverless-types';
 import { Order } from '../scripts/list';

@@ -1,7 +1,7 @@
 import {
   checkFilesExist,
   PackageJson,
-  readPackageJson,
+  readAppPackageJson,
   resolveCwd,
   resolveRelative,
 } from './fs';
@@ -20,7 +20,7 @@ let pkgName = '';
 let pkgVersion = '';
 // This file can be required in locations that don't have package.json
 try {
-  const pkg: PackageJson = readPackageJson();
+  const pkg: PackageJson = readAppPackageJson();
   pkgName = pkg.name;
   pkgVersion = pkg.version;
 } catch (e) {

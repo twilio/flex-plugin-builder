@@ -1,7 +1,11 @@
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 
 import BaseClient from './baseClient';
-import { Configuration } from './configuration-types';
+import { Configuration, UIDependencies } from './configuration-types';
+
+interface UpdateConfigurationPayload extends Partial<Configuration> {
+  account_sid: string;
+}
 
 export default class ConfigurationClient extends BaseClient {
   public static BaseUrl = 'Configuration';
@@ -22,7 +26,7 @@ export default class ConfigurationClient extends BaseClient {
   /**
    * Returns the {@link Configuration}
    */
-  public get = (): Promise<Configuration> => {
+  public get = async (): Promise<Configuration> => {
     return this.http
       .get<Configuration>(ConfigurationClient.BaseUrl);
   }
@@ -32,7 +36,7 @@ export default class ConfigurationClient extends BaseClient {
    *
    * @param payload the payload to update
    */
-  public update = (payload: object): Promise<Configuration> => {
+  public update = async (payload: UpdateConfigurationPayload): Promise<Configuration> => {
     return this.http
       .post<Configuration>(ConfigurationClient.BaseUrl, payload);
   }
@@ -40,7 +44,7 @@ export default class ConfigurationClient extends BaseClient {
   /**
    * Returns the registered Serverless Sids
    */
-  public getServiceSids = (): Promise<string[]> => {
+  public getServiceSids = async (): Promise<string[]> => {
     return this.get()
       .then((resp) => resp.serverless_service_sids || []);
   }
@@ -49,7 +53,7 @@ export default class ConfigurationClient extends BaseClient {
    * Registers a new sid
    * @param serviceSid
    */
-  public registerSid = (serviceSid: string): Promise<Configuration> => {
+  public registerSid = async (serviceSid: string): Promise<Configuration> => {
     return this.get()
       .then((config) => {
         const serviceSids = config.serverless_service_sids || [];
@@ -65,5 +69,23 @@ export default class ConfigurationClient extends BaseClient {
 
         return this.update(payload);
       });
+  }
+
+  /**
+   * Returns the Flex UI version stored on Configuration service
+   */
+  public getFlexUIVersion = async (): Promise<string> => {
+    const config = await this.get();
+
+    return config.ui_version;
+  };
+
+  /**
+   * Returns the Flex UI dependencies stored on the Configuration service
+   */
+  public getUIDependencies = async (): Promise<UIDependencies> => {
+    const config = await this.get();
+
+    return config.ui_dependencies || {};
   }
 }

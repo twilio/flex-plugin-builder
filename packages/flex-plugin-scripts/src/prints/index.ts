@@ -12,3 +12,5 @@ export { default as buildFailure } from './buildFailure';
 export { default as devServerSuccessful } from './devServerSuccessful';
 export { default as typescriptNotInstalled } from './typescriptNotInstalled';
 export { default as jestNotInstalled } from './jestNotInstalled';
+export { default as unbundledReactMismatch } from './unbundledReactMismatch';
+export { default as loadPluginCountError } from './loadPluginCountError';

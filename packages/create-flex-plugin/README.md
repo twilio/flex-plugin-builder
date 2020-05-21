@@ -32,7 +32,21 @@ npm install -g create-flex-plugin
 create-flex-plugin plugin-demo
 ```
 
-We do not support `yarn` at the moment.
+#### Using `yarn`:
+
+```bash
+# Via npm init
+npm init flex-plugin plugin-demo --yarn
+
+# Via npx
+npx create-flex-plugin plugin-demo --yarn
+
+# Install globally
+npm install -g create-flex-plugin
+create-flex-plugin plugin-demo --yarn
+```
+
+_Note_: Support for `yarn` only exists for `@twilio/flex-ui > 1.18.0`. If you are upgrading from an older version of the plugin-builder, you'll need to add add `react-emotion` and pin it to `9.2.6`.
 
 ### Command line arguments:
 
@@ -50,6 +64,7 @@ Options:
   --template, -t    A GitHub URL that contains your template
   --typescript, -s  Create a typescript project
   --install         Auto-install dependencies                   [boolean] [default: false]
+  --yarn, -y        Use yarn 
   -h, --help        Show help                                   [boolean] [default: false]
   -v, --version     Show version number                         [boolean] [default: false]
 ```

@@ -93,7 +93,7 @@ export const _hasTemplateDir = async (info: GitHubInfo) => {
 
   return axios.get<GitHubContent[]>(url)
     .then((resp) => resp.data)
-    .then(contents => contents.some(content => content.name === 'template' && content.type === 'dir'));
+    .then((contents) => contents.some((content) => content.name === 'template' && content.type === 'dir'));
 };
 
 /**
