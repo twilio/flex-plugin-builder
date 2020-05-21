@@ -4,6 +4,11 @@
     "packages/*"
   ],
   "command": {
+    "bootstrap": {
+      "npmClientArgs": [
+        "--no-package-lock"
+      ]
+    },
     "publish": {
       "ignoreChanges": [
         "packages/create-flex-plugin/package-lock.json",

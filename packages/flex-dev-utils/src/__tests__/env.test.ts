@@ -29,6 +29,17 @@ describe('env', () => {
     })
   });
 
+  describe('allowUnbundledReact', () => {
+    it('should return true', () => {
+      process.env.UNBUNDLED_REACT = 'true';
+      expect(env.allowUnbundledReact()).toEqual(true);
+    });
+
+    it('should return false', () => {
+      expect(env.allowUnbundledReact()).toEqual(false);
+    })
+  });
+
   describe('CI', () => {
     it('should return true', () => {
       process.env.CI = 'true';

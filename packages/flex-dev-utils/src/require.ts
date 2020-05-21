@@ -17,7 +17,7 @@ export const addCWDNodeModule = () => appModule.addPath(paths.app.nodeModulesDir
 export const resolveModulePath = (pkg: string) => {
   try {
     return require.resolve(pkg);
-  } catch (e) {
+  } catch (e1) {
     // Now try to specifically set the node_modules path
     const requirePaths: string[] = require.main && require.main.paths || [];
     if (!requirePaths.includes(paths.app.nodeModulesDir)) {
@@ -26,7 +26,7 @@ export const resolveModulePath = (pkg: string) => {
 
     try {
       return require.resolve(pkg, { paths: requirePaths });
-    } catch (e) {
+    } catch (e2) {
       return false;
     }
   }

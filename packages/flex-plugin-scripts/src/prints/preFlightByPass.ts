@@ -14,7 +14,7 @@ export default (skip: boolean) => {
   } else {
     logger.warning(multilineString(
       'If you like to skip this and proceed anyway, use SKIP_PREFLIGHT_CHECK=true environment variable.',
-      'This will disable checks and allow you to run your application anyway.',
+      'This will disable checks and allow you to run your application.',
     ));
   }
 };

@@ -111,10 +111,10 @@ describe('github', () => {
   describe('_hasTemplateDir', () => {
     it('should return true if there is a template dir', async () => {
       const resp = [{
-        name: 'foo'
+        name: 'foo',
       }, {
         name: 'template',
-        type: 'dir'
+        type: 'dir',
       }];
 
       mockAxios.onGet().reply(() => Promise.resolve([200, resp]));
@@ -124,10 +124,10 @@ describe('github', () => {
 
     it('should return false if there is a template file', async () => {
       const resp = [{
-        name: 'foo'
+        name: 'foo',
       }, {
         name: 'template',
-        type: 'file'
+        type: 'file',
       }];
 
       mockAxios.onGet().reply(() => Promise.resolve([200, resp]));
@@ -137,10 +137,10 @@ describe('github', () => {
 
     it('should return false if there is no template dir', async () => {
       const resp = [{
-        name: 'foo'
+        name: 'foo',
       }, {
         name: 'something-else',
-        type: 'dir'
+        type: 'dir',
       }];
 
       mockAxios.onGet().reply(() => Promise.resolve([200, resp]));

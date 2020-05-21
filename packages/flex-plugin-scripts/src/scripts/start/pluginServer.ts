@@ -1,8 +1,7 @@
 import { logger } from 'flex-dev-utils';
-import fs, { readFileSync, readPackageJson } from 'flex-dev-utils/dist/fs';
+import fs, { readFileSync } from 'flex-dev-utils/dist/fs';
 import paths from 'flex-dev-utils/dist/paths';
 import { multilineString } from 'flex-dev-utils/dist/strings';
-import { join } from 'path';
 import http, { IncomingMessage, ServerResponse } from 'http';
 import https from 'https';
 
@@ -18,7 +17,7 @@ export interface Plugin {
  * @private
  */
 /* istanbul ignore next */
-export const _getLocalPlugins = () => JSON.parse(readFileSync(paths.app.pkgPath)) as Plugin[];
+export const _getLocalPlugins = () => JSON.parse(readFileSync(paths.app.pluginsJsonPath)) as Plugin[];
 
 /**
  * Generates the response headers
@@ -76,12 +75,10 @@ export const _getRemotePlugins = async (token: string, version: string): Promise
  * @private
  */
 export const _rebasePlugins = (remotePlugins: Plugin[]) => {
-  const pkg = readPackageJson();
-
   return _getLocalPlugins()
     .map((plugin) => {
       // Local main (plugin) we are running
-      if (plugin.name === pkg.name) {
+      if (plugin.name === paths.app.name) {
         return plugin;
       }
 

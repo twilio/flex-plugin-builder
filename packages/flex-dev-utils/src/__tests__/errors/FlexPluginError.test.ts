@@ -25,7 +25,7 @@ describe('FlexPluginError', () => {
   });
 
   it('should print details', () => {
-    jest.spyOn(fs, 'readPackageJson')
+    jest.spyOn(fs, 'readAppPackageJson')
       .mockReturnValue({
         name: 'plugin-test',
         version: '1.2.3',

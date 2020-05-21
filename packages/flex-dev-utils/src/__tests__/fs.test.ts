@@ -1,10 +1,19 @@
-import { PackageJson } from '../fs';
+import { AppPackageJson, PackageJson } from '../fs';
 import * as fs from '../fs';
 import * as globby from 'globby';
 
 jest.mock('globby');
 
 describe('fs', () => {
+  const appPackage: AppPackageJson = {
+    version: '1',
+    name: 'plugin-test',
+    dependencies: {
+      'flex-plugin-scripts': '1',
+      'flex-plugin': '2',
+    },
+  };
+
   beforeEach(() => {
     jest.resetAllMocks();
     jest.resetModules();
@@ -13,18 +22,32 @@ describe('fs', () => {
   describe('readPackageJson', () => {
     it('should read package.json', () => {
       const str = '{"version":1}';
-      const cwd = jest.spyOn(process, 'cwd').mockImplementation(() => 'test');
       const readFileSync = jest.spyOn(fs.default, 'readFileSync').mockImplementation(() => str);
 
-      const pkg = fs.readPackageJson();
+      const pkg = fs.readPackageJson('filePath');
 
       expect(pkg).toEqual({version: 1});
-      expect(cwd).toHaveBeenCalledTimes(1);
       expect(readFileSync).toHaveBeenCalledTimes(1);
-      expect(readFileSync).toHaveBeenCalledWith('test/package.json', 'utf8');
+      expect(readFileSync).toHaveBeenCalledWith('filePath', 'utf8');
 
-      cwd.mockRestore();
       readFileSync.mockRestore();
+    });
+  });
+
+  describe('readAppPackageJson', () => {
+    it('should read app package', () => {
+      const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockReturnValue(appPackage);
+      const getPackageJsonPath = jest.spyOn(fs, 'getPackageJsonPath').mockReturnValue('path');
+
+      const pkg = fs.readAppPackageJson();
+
+      expect(pkg).toEqual(appPackage);
+      expect(readPackageJson).toHaveBeenCalledTimes(1);
+      expect(readPackageJson).toHaveBeenCalledWith('path');
+      expect(getPackageJsonPath).toHaveBeenCalledTimes(1);
+
+      readPackageJson.mockRestore();
+      getPackageJsonPath.mockRestore();
     });
   });
 
@@ -66,16 +89,9 @@ describe('fs', () => {
     });
   });
 
-  describe('updatePackageVersion', () => {
+  describe('updateAppVersion', () => {
     it('should update version', () => {
-      const pkgBefore: PackageJson = {
-        version: '1',
-        name: 'plugin-test',
-        dependencies: {
-          'flex-plugin-scripts': '1',
-          'flex-plugin': '2',
-        },
-      };
+      const pkgBefore = {...appPackage};
       const pkgAfter: PackageJson = Object.assign({}, pkgBefore, {version: '2'});
 
       // @ts-ignore
@@ -84,7 +100,7 @@ describe('fs', () => {
       const getPackageJsonPath = jest.spyOn(fs, 'getPackageJsonPath').mockReturnValue('package.json');
       const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockReturnValue(pkgBefore);
 
-      fs.updatePackageVersion('2');
+      fs.updateAppVersion('2');
       expect(writeFileSync).toHaveBeenCalledTimes(1);
       expect(writeFileSync).toHaveBeenCalledWith('package.json', JSON.stringify(pkgAfter, null, 2));
 

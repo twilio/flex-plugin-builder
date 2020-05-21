@@ -24,6 +24,7 @@ export const isWin32 = () => process.platform === 'win32';
 export const persistTerminal = () => process.env.PERSIST_TERMINAL = 'true';
 export const skipPreflightCheck = () => process.env.SKIP_PREFLIGHT_CHECK === 'true';
 export const isTerminalPersisted = () => process.env.PERSIST_TERMINAL === 'true';
+export const allowUnbundledReact = () => process.env.UNBUNDLED_REACT === 'true';
 export const isCI = () => process.env.CI === 'true';
 export const isTrace = () => process.env.TRACE === 'true';
 export const isDebug = () => process.env.DEBUG === 'true' || isTrace();
@@ -53,6 +54,7 @@ export default {
   isWin32,
   persistTerminal,
   skipPreflightCheck,
+  allowUnbundledReact,
   isTerminalPersisted,
   isCI,
   isDebug,

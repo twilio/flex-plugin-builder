@@ -4,13 +4,16 @@ import globby from 'globby';
 import os from 'os';
 import mkdirp from 'mkdirp';
 import tmp from 'tmp';
-import copyTempDir from 'copy-template-dir';
 import { promisify } from 'util';
 import rimRaf from 'rimraf';
 
 export interface PackageJson {
   name: string;
   version: string;
+  dependencies: Record<string, string>;
+}
+
+export interface AppPackageJson extends PackageJson {
   dependencies: {
     'flex-plugin': string;
     'flex-plugin-scripts': string;
@@ -26,7 +29,8 @@ const cwd = fs.realpathSync(process.cwd());
 const rootDir = os.platform() === 'win32' ? process.cwd().split(path.sep)[0] : '/';
 
 // Promise version of {@link copyTempDir}
-const promiseCopyTempDir = promisify(copyTempDir);
+// tslint:disable-next-line
+const promiseCopyTempDir = promisify(require('copy-template-dir'));
 
 // Node directory
 const nodeModulesPath = path.join(process.cwd(), 'node_modules');
@@ -52,23 +56,40 @@ export const getPackageJsonPath = (forModule: boolean = false) => path.join(proc
  *
  * @param version the new version
  */
-export const updatePackageVersion = (version: string) => {
-  const packageJson = readPackageJson();
+export const updateAppVersion = (version: string) => {
+  const packageJson = readAppPackageJson();
   packageJson.version = version;
 
   fs.writeFileSync(getPackageJsonPath(), JSON.stringify(packageJson, null, 2));
 };
 
 /**
- * Reads package.json from the rootDir. This is the package.json of the service running the script.
- * For example, if a plugin is using a method of flex-plugin-scripts which is calling this, then
- * the plugin's package.json is returned
- *
- * @param pkgPath   the package.json to read
+ * Reads app package.json from the rootDir.
  */
-export const readPackageJson = (pkgPath: string = getPackageJsonPath()): PackageJson => {
-  return JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+export const readAppPackageJson = (): AppPackageJson => {
+  return readPackageJson(getPackageJsonPath()) as AppPackageJson;
+}
+
+/**
+ * Reads a JSON file
+ *
+ * @param filePath   the file path to read
+ */
+export const readPackageJson = (filePath: string): PackageJson => {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 };
+
+/**
+ * Returns the package.json version field of the package
+ * @param name  the package
+ */
+/* istanbul ignore next */
+export const getPackageVersion = (name: string) => {
+  const installedPath = resolveRelative(nodeModulesPath, name, 'package.json');
+
+  return readPackageJson(installedPath).version;
+}
+
 
 /**
  * Finds the closest up file relative to dir

@@ -6,13 +6,18 @@ import * as fs from 'flex-dev-utils/dist/fs';
 import * as pluginServerScript from '../../start/pluginServer';
 
 jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/paths', () => ({
+  app: {
+    name: 'default-plugin'
+  },
+}));
 
 describe('pluginServer', () => {
-  const pkg = {
+  const pkg: PackageJson = {
     name: 'default-plugin',
     version: '1.2.3',
     dependencies: {},
-  } as PackageJson;
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -99,10 +104,9 @@ describe('pluginServer', () => {
       expect(plugins[1]).toBe(pluginOne);
     });
 
-    it('should return remote plugin', () => {
+    it.only('should return remote plugin', () => {
       const defaultPlugin = { name: 'default-plugin' } as Plugin;
       const pluginOne = { name: 'plugin-remote-1', enabled: true, remote: true } as Plugin;
-
       jest
         .spyOn(pluginServerScript, '_getLocalPlugins')
         .mockReturnValue([ defaultPlugin, pluginOne ]);

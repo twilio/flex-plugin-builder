@@ -4,6 +4,7 @@ import * as infoScript from '../info';
 import * as prints from '../../prints';
 
 jest.mock('flex-dev-utils/dist/logger');
+jest.mock('../../prints/packagesVersions');
 
 describe('info', () => {
   beforeEach(() => {
