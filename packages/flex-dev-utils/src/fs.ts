@@ -4,7 +4,6 @@ import * as path from 'path';
 import os from 'os';
 import mkdirp from 'mkdirp';
 import tmp, { DirResult as TmpDirResult } from 'tmp';
-import copyTempDir from 'copy-template-dir';
 import { promisify } from 'util';
 import rimRaf from 'rimraf';
 
@@ -24,7 +23,8 @@ export default fs;
 const rootDir = os.platform() === 'win32' ? process.cwd().split(path.sep)[0] : '/';
 
 // Promise version of {@link copyTempDir}
-const promiseCopyTempDir = promisify(copyTempDir);
+// tslint:disable-next-line
+const promiseCopyTempDir = promisify(require('copy-template-dir'));
 
 // Node directory
 const nodeModulesPath = join(process.cwd(), 'node_modules');
@@ -107,6 +107,7 @@ export const mkdirpSync = mkdirp.sync;
  * @param target    the target
  * @param variables the variables
  */
+/* istanbul ignore next */
 export const copyTemplateDir = (source: string, target: string, variables: object) => {
   return promiseCopyTempDir(source, target, variables);
 };

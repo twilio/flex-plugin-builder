@@ -1,7 +1,7 @@
 export { default as fs } from './fs';
 export { default as lodash } from './lodash';
 export { default as updateNotifier } from './updateNotifier';
-export { default as ora } from './ora';
+export { default as progress } from './progress';
 export { default as logger } from './logger';
 export { default as boxen } from './boxen';
 export { default as strings } from './strings';

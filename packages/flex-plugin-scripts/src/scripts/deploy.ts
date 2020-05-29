@@ -1,6 +1,5 @@
-import { logger, semver } from 'flex-dev-utils';
+import { logger, semver, progress } from 'flex-dev-utils';
 import { ReleaseType } from 'flex-dev-utils/dist/semver';
-import { progress } from 'flex-dev-utils/dist/ora';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { checkFilesExist, updatePackageVersion, readPackageJson } from 'flex-dev-utils/dist/fs';
 import { AuthConfig, getCredential } from 'flex-dev-utils/dist/credentials';

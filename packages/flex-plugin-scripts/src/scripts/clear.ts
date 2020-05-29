@@ -1,6 +1,5 @@
-import { logger } from 'flex-dev-utils';
+import { logger, progress } from 'flex-dev-utils';
 import { clearCredentials } from 'flex-dev-utils/dist/credentials';
-import { progress } from 'flex-dev-utils/dist/ora';
 
 import run from '../utils/run';
 

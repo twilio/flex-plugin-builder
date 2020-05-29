@@ -1,6 +1,7 @@
 {
   "extends": ["tslint:recommended"],
   "rules": {
+    "no-reference": false,
     "indent": [true, "spaces", 4],
     "quotemark": [true, "single", "avoid-escape"],
     "object-literal-sort-keys": false,
