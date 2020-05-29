@@ -5,8 +5,8 @@ import { BuildStatus } from '../serverless-types';
 
 describe('BuildClient', () => {
   const auth: AuthConfig = {
-    accountSid: 'ACxxx',
-    authToken: 'abc',
+    username: 'ACxxx',
+    password: 'abc',
   };
 
   const deployedBuild = {
