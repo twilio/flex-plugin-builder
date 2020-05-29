@@ -1,3 +1,5 @@
+/// <reference path="../module.d.ts" />
+
 import Flex from '@twilio/flex-ui';
 
 export type FlexGlobal = typeof Flex;

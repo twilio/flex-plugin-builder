@@ -1,7 +1,6 @@
-import { logger } from 'flex-dev-utils';
+import { logger, progress } from 'flex-dev-utils';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
-import { AuthConfig, getCredential } from 'flex-dev-utils/dist/credentials';
-import { progress } from 'flex-dev-utils/dist/ora';
+import { AuthConfig, getCredential } from 'flex-dev-utils/dist/credentials'; ;
 import { EnvironmentClient } from '../clients';
 import { Runtime } from '../clients/serverless-types';
 

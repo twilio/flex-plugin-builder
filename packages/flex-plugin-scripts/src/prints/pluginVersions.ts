@@ -1,5 +1,4 @@
-import { logger, semver } from 'flex-dev-utils';
-import { printObjectArray } from 'flex-dev-utils/dist/table';
+import { logger, semver, table } from 'flex-dev-utils';
 
 import { AssetVersion, Visibility } from '../clients/serverless-types';
 import { Order } from '../scripts/list';
@@ -45,6 +44,6 @@ export default (domainName: string, versions: AssetVersion[], order: Order) => {
   }
 
   logger.newline();
-  printObjectArray(rows);
+  table.printObjectArray(rows);
   logger.newline();
 };

@@ -1,4 +1,4 @@
-import { progress } from 'flex-dev-utils/dist/ora';
+import { progress } from 'flex-dev-utils';
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 
 import { BuildClient, ConfigurationClient, EnvironmentClient, ServiceClient } from '../clients';
