@@ -2,6 +2,7 @@ import * as prints from '../prints';
 import * as strings from '../strings';
 
 jest.mock('../logger');
+jest.mock('../strings');
 
 describe('prints', () => {
   beforeEach(() => {
