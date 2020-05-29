@@ -73,11 +73,15 @@ describe('DeployScript', () => {
   const getFlexUIVersion = jest.fn().mockResolvedValue(config);
   const getUIDependencies = jest.fn().mockResolvedValue(config);
 
-  Runtime.mockImplementation(() => ({
-    service: {sid: serviceSid},
-    environment: {sid: environmentSid, build_sid: buildSid, domain_name: 'test.twil.io'},
+  const runtime = {
+    service: {
+      sid: serviceSid,
+      accountSid,
+    },
+    environment: { sid: environmentSid, build_sid: buildSid, domain_name: 'test.twil.io' },
     build: existingBuild,
-  }));
+  };
+  Runtime.mockImplementation(() => runtime);
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -258,12 +262,14 @@ describe('DeployScript', () => {
         disallowVersioning: false,
       };
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
-      const verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(false);
+      const _getAccount = jest.spyOn(deployScript, '_getAccount').mockReturnThis();
+      const _verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(true);
 
       await deployScript._doDeploy('1.0.0', options);
 
       checkFilesExist.mockRestore();
-      verifyPath.mockRestore();
+      _verifyPath.mockRestore();
+      _getAccount.mockRestore();
     });
 
     it('should deploy and write a success message', async () => {
@@ -273,16 +279,17 @@ describe('DeployScript', () => {
         disallowVersioning: false,
       };
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
-      const verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(true);
+      const _getAccount = jest.spyOn(deployScript, '_getAccount').mockReturnThis();
+      const _verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(true);
 
       await deployScript._doDeploy('1.0.0', options);
 
       expect(AssetClient).toHaveBeenCalledTimes(1);
-      expect(getAccount).toHaveBeenCalledTimes(1);
       expect(prints.deploySuccessful).toHaveBeenCalledTimes(1);
 
       checkFilesExist.mockRestore();
-      verifyPath.mockRestore();
+      _verifyPath.mockRestore();
+      _getAccount.mockRestore();
     });
   });
 
@@ -390,6 +397,24 @@ describe('DeployScript', () => {
       await deployScript._verifyFlexUIConfiguration('1.19.0', dependencies, true);
       await deployScript._verifyFlexUIConfiguration('1.19.1', dependencies, true);
       await deployScript._verifyFlexUIConfiguration('1.20.0', dependencies, true);
+    });
+  });
+
+  describe('_getAccount', () => {
+    it('should call api', async () => {
+      // @ts-ignore
+      await deployScript._getAccount(runtime, { username: accountSid });
+
+      expect(AccountClient).toHaveBeenCalledTimes(1);
+      expect(getAccount).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return fake account', async () => {
+      // @ts-ignore
+      await deployScript._getAccount(runtime, { username: 'not-a-sid' });
+
+      expect(AccountClient).toHaveBeenCalledTimes(1);
+      expect(getAccount).not.toHaveBeenCalled();
     });
   });
 });
