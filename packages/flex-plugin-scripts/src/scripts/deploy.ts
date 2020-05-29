@@ -4,16 +4,16 @@ import { ReleaseType } from 'flex-dev-utils/dist/semver';
 import { progress } from 'flex-dev-utils/dist/ora';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { checkFilesExist, updateAppVersion, getPackageVersion } from 'flex-dev-utils/dist/fs';
-import { getCredential } from 'flex-dev-utils/dist/credentials';
+import { AuthConfig, getCredential } from 'flex-dev-utils/dist/credentials';
 import { FlexPluginError, UserActionError } from 'flex-dev-utils/dist/errors';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
-import AccountsClient from '../clients/accounts';
+import AccountsClient, { Account } from '../clients/accounts';
 import { deploySuccessful, pluginsApiWarning } from '../prints';
 import { UIDependencies } from '../clients/configuration-types';
 
 import run from '../utils/run';
 import { BuildData } from '../clients/builds';
-import { Build, Version } from '../clients/serverless-types';
+import { Build, Runtime, Version } from '../clients/serverless-types';
 import { AssetClient, BuildClient, DeploymentClient, ConfigurationClient, PluginsApiClient } from '../clients';
 import getRuntime from '../utils/runtime';
 
@@ -92,6 +92,25 @@ export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: U
     }
   }
 };
+
+/**
+ * Returns the Account object only if credentials provided is AccountSid/AuthToken, otherwise returns a dummy data
+ * @param runtime     the {@link Runtime}
+ * @param credentials the {@link AuthConfig}
+ * @private
+ */
+export const _getAccount = async (runtime: Runtime, credentials: AuthConfig) => {
+  const accountClient = new AccountsClient(credentials);
+
+  if (credentials.accountSid.startsWith('AC')) {
+    return accountClient.get(runtime.service.account_sid)
+  }
+
+  return {
+    auth_token: credentials.authToken,
+    sid: runtime.service.account_sid,
+  }
+}
 
 /**
  * The main deploy script. This script performs the following in order:
@@ -203,9 +222,16 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
     return deployment;
   });
 
-  const accountClient = new AccountsClient(credentials);
-  const account = await accountClient.get(runtime.service.account_sid);
-  deploySuccessful(pluginUrl, options.isPublic, account);
+  deploySuccessful(pluginUrl, options.isPublic, await _getAccount(runtime, credentials));
+
+  return {
+    serviceSid: runtime.service.sid,
+    accountSid: runtime.service.account_sid,
+    environmentSid: runtime.environment.sid,
+    domainName: runtime.environment.domain_name,
+    nextVersion,
+    pluginUrl,
+  };
 };
 
 const deploy = async (...argv: string[]) => {
@@ -240,7 +266,7 @@ const deploy = async (...argv: string[]) => {
     nextVersion = '0.0.0';
   }
 
-  await _doDeploy(nextVersion, opts);
+  return await _doDeploy(nextVersion, opts);
 };
 
 run(deploy);

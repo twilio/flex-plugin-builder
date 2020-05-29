@@ -3,7 +3,12 @@
   "compilerOptions": {
     "outDir": "dist",
     "baseUrl": ".",
+    "allowJs": false,
     "rootDir": "src",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "src"
+    ]
   }
 }

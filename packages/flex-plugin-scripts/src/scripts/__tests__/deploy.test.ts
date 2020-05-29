@@ -77,11 +77,15 @@ describe('DeployScript', () => {
   const getFlexUIVersion = jest.fn().mockResolvedValue(config);
   const getUIDependencies = jest.fn().mockResolvedValue(config);
 
-  Runtime.mockImplementation(() => ({
-    service: {sid: serviceSid},
+  const runtime = {
+    service: {
+      sid: serviceSid,
+      accountSid,
+    },
     environment: {sid: environmentSid, build_sid: buildSid, domain_name: 'test.twil.io'},
     build: existingBuild,
-  }));
+  };
+  Runtime.mockImplementation(() => runtime);
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -94,7 +98,7 @@ describe('DeployScript', () => {
   });
 
   describe('default', () => {
-    const doDeploy = jest.spyOn(deployScript, '_doDeploy').mockResolvedValue(undefined);
+    const doDeploy = jest.spyOn(deployScript, '_doDeploy').mockReturnThis();
     const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockReturnValue({
       version: '1.0.0',
       name: 'plugin-test',
@@ -253,11 +257,13 @@ describe('DeployScript', () => {
       };
 
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
+      const _getAccount = jest.spyOn(deployScript, '_getAccount').mockReturnThis();
       const hasFlag = jest.fn().mockResolvedValue(true);
       PluginsApiClient.mockImplementation(() => ({ hasFlag }));
 
       await deployScript._doDeploy('1.0.0', options);
       checkFilesExist.mockRestore();
+      _getAccount.mockRestore();
     });
 
     it('should quit if build does not exist', async (done) => {
@@ -310,17 +316,18 @@ describe('DeployScript', () => {
         disallowVersioning: false,
       };
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
-      const verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(true);
+      const _getAccount = jest.spyOn(deployScript, '_getAccount').mockReturnThis();
+      const _verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(true);
       const deploySuccessful = jest.spyOn(prints, 'deploySuccessful');
 
       await deployScript._doDeploy('1.0.0', options);
 
-      expect(AssetClient).toHaveBeenCalledTimes(1);
-      expect(getAccount).toHaveBeenCalledTimes(1);
+      expect(_getAccount).toHaveBeenCalledTimes(1);
       expect(deploySuccessful).toHaveBeenCalledTimes(1);
 
       checkFilesExist.mockRestore();
-      verifyPath.mockRestore();
+      _verifyPath.mockRestore();
+      _getAccount.mockRestore();
     });
   });
 
@@ -428,6 +435,24 @@ describe('DeployScript', () => {
       await deployScript._verifyFlexUIConfiguration('1.19.0', dependencies, true);
       await deployScript._verifyFlexUIConfiguration('1.19.1', dependencies, true);
       await deployScript._verifyFlexUIConfiguration('1.20.0', dependencies, true);
+    });
+  });
+
+  describe('_getAccount', () => {
+    it('should call api', async () => {
+      // @ts-ignore
+       await deployScript._getAccount(runtime, { accountSid });
+
+      expect(AccountClient).toHaveBeenCalledTimes(1);
+      expect(getAccount).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return fake account', async () => {
+      // @ts-ignore
+      await deployScript._getAccount(runtime, { accountSid: 'not-a-sid' });
+
+      expect(AccountClient).toHaveBeenCalledTimes(1);
+      expect(getAccount).not.toHaveBeenCalled();
     });
   });
 });
