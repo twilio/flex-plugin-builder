@@ -11,8 +11,8 @@ jest.mock('flex-dev-utils/dist/paths', () => ({
 
 describe('EnvironmentClient', () => {
   const auth: AuthConfig = {
-    accountSid: 'ACxxx',
-    authToken: 'abc',
+    username: 'ACxxx',
+    password: 'abc',
   };
   const environmentMatch = {
     sid: 'ZE00000000000000000000000000000000',

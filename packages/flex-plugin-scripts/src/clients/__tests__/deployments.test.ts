@@ -4,8 +4,8 @@ import DeploymentClient from '../deployments';
 
 describe('DeploymentClient', () => {
   const auth: AuthConfig = {
-    accountSid: 'ACxxx',
-    authToken: 'abc',
+    username: 'ACxxx',
+    password: 'abc',
   };
 
   describe('constructor', () => {

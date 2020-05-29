@@ -22,6 +22,7 @@ export const isSidOfType = (sid: string | Null, prefix: string | Null) => {
  */
 export const SidPrefix = {
   AccountSid: 'AC',
+  ApiKey: 'SK',
   ServiceSid: 'ZS',
   EnvironmentSid: 'ZE',
   BuildSid: 'ZB',

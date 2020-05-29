@@ -2,7 +2,7 @@ import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 import BaseClient from './baseClient';
 
 export interface Account {
-  auth_token: string;
+  auth_token?: string;
   friendly_name?: string;
   sid: string;
 }

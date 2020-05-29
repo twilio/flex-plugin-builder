@@ -9,7 +9,7 @@ export default class PluginsApiClient extends BaseClient {
   }
 
   constructor(auth: AuthConfig) {
-    super(auth,  PluginsApiClient.getBaseUrl());
+    super(auth, PluginsApiClient.getBaseUrl());
   }
 
   /**

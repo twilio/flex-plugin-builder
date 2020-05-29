@@ -43,8 +43,8 @@ export default class Http {
     this.client = axios.create({
       baseURL: config.baseURL,
       auth: {
-        username: config.auth.accountSid,
-        password: config.auth.authToken,
+        username: config.auth.username,
+        password: config.auth.password,
       },
       headers: {
         'Content-Type': config.contentType ? config.contentType : 'application/x-www-form-urlencoded',
@@ -120,8 +120,8 @@ export default class Http {
       .post(url, formData, {
         headers: formData.getHeaders(),
         auth: {
-          username: this.config.auth.accountSid,
-          password: this.config.auth.authToken,
+          username: this.config.auth.username,
+          password: this.config.auth.password,
         },
       })
       .then((resp) => resp.data)

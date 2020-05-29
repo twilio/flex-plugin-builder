@@ -82,7 +82,8 @@
     "@types/webpack": "^4.41.10",
     "@types/webpack-dev-server": "^3.10.1",
     "babel-jest": "^25.3.0",
-    "jest": "^25.3.0"
+    "jest": "^25.3.0",
+    "react-test-renderer": "^16.10.2"
   },
   "peerDependencies": {
     "flex-plugin": "*"

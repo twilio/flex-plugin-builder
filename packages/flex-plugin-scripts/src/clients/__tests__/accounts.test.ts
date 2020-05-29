@@ -5,8 +5,8 @@ import ConfigurationClient from '../configurations';
 
 describe('AccountClient', () => {
   const auth: AuthConfig = {
-    accountSid: 'AC00000000000000000000000000000000',
-    authToken: 'abc',
+    username: 'AC00000000000000000000000000000000',
+    password: 'abc',
   };
 
   describe('getBaseUrl', () => {
@@ -24,13 +24,13 @@ describe('AccountClient', () => {
     it('should get configuration', async () => {
       const client = new AccountClient(auth);
       const account = {
-        account_sid: auth.accountSid,
+        account_sid: auth.username,
         friendly_name: 'test-account',
       };
       // @ts-ignore
       const get = jest.spyOn(client.http, 'get').mockResolvedValue(account);
 
-      const result = await client.get(auth.accountSid);
+      const result = await client.get(auth.username);
 
       expect(get).toHaveBeenCalledTimes(1);
       expect(get).toHaveBeenCalledWith(expect.stringContaining(AccountClient.BaseUrl));

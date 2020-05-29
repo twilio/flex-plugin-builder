@@ -441,7 +441,7 @@ describe('DeployScript', () => {
   describe('_getAccount', () => {
     it('should call api', async () => {
       // @ts-ignore
-       await deployScript._getAccount(runtime, { accountSid });
+      await deployScript._getAccount(runtime, { username: accountSid });
 
       expect(AccountClient).toHaveBeenCalledTimes(1);
       expect(getAccount).toHaveBeenCalledTimes(1);
@@ -449,7 +449,7 @@ describe('DeployScript', () => {
 
     it('should return fake account', async () => {
       // @ts-ignore
-      await deployScript._getAccount(runtime, { accountSid: 'not-a-sid' });
+      await deployScript._getAccount(runtime, { username: 'not-a-sid' });
 
       expect(AccountClient).toHaveBeenCalledTimes(1);
       expect(getAccount).not.toHaveBeenCalled();

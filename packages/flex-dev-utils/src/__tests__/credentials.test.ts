@@ -15,8 +15,10 @@ const validators = require('../validators');
 describe('credentials', () => {
   const accountSid = 'AC00000000000000000000000000000000';
   const authToken = 'abc123';
+  const apiKey = 'SK00000000000000000000000000000000';
+  const apiSecret = 'abc123';
   const credential = {
-    account: accountSid,
+    username: accountSid,
     password: authToken,
   };
 
@@ -50,9 +52,8 @@ describe('credentials', () => {
   });
 
   describe('getCredential', () => {
-    it('should quit if CI=true and accountSid and authToken are not provided', async () => {
+    it('should quit if CI=true and accountSid and authToken or api key and secret are not provided', async () => {
       process.env.CI = 'true';
-      process.env.TWILIO_ACCOUNT_SID = 'ACxxx';
 
       try {
         await credentials.getCredential();
@@ -80,7 +81,26 @@ describe('credentials', () => {
       expect(_findCredential).not.toHaveBeenCalled();
     });
 
-    it('should use env variables', async () => {
+    it('should quit if invalid apiKey env var is provided', async () => {
+      process.env.TWILIO_API_KEY = 'SA00000000000000000000000000000000';
+      process.env.TWILIO_API_SECRET = authToken;
+
+      const validateApiKey = jest
+        .spyOn(validators, 'validateApiKey')
+        .mockResolvedValue(false);
+      const _findCredential = jest.spyOn(credentials, '_findCredential');
+
+      try {
+        await credentials.getCredential();
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+      }
+
+      expect(validateApiKey).toHaveBeenCalledTimes(1);
+      expect(_findCredential).not.toHaveBeenCalled();
+    });
+
+    it('should use env variables (accountSid and authToken)', async () => {
       process.env.TWILIO_ACCOUNT_SID = accountSid;
       process.env.TWILIO_AUTH_TOKEN = authToken;
 
@@ -93,7 +113,29 @@ describe('credentials', () => {
 
       expect(validateAccountSid).toHaveBeenCalledTimes(1);
       expect(_findCredential).not.toHaveBeenCalled();
-      expect(creds).toEqual({ accountSid, authToken });
+      expect(creds).toEqual({
+        username: accountSid,
+        password: authToken
+      });
+    });
+
+    it('should use env variables (api key and secret)', async () => {
+      process.env.TWILIO_API_KEY = apiKey;
+      process.env.TWILIO_API_SECRET = apiSecret;
+
+      const validateApiKey = jest
+        .spyOn(validators, 'validateApiKey')
+        .mockResolvedValue(true);
+      const _findCredential = jest.spyOn(credentials, '_findCredential');
+
+      const creds = await credentials.getCredential();
+
+      expect(validateApiKey).toHaveBeenCalledTimes(1);
+      expect(_findCredential).not.toHaveBeenCalled();
+      expect(creds).toEqual({
+        username: apiKey,
+        password: apiSecret
+      });
     });
 
     it('should not ask for API key or password if credentials exist', async () => {
@@ -104,7 +146,10 @@ describe('credentials', () => {
       const creds = await credentials.getCredential();
 
       expect(inquirer.prompt).not.toHaveBeenCalled();
-      expect(creds).toEqual({accountSid, authToken});
+      expect(creds).toEqual({
+        username: accountSid,
+        password: authToken
+      });
     });
 
     it('should ask for credentials if nothing exists', async () => {
@@ -126,8 +171,8 @@ describe('credentials', () => {
 
       expect(inquirer.prompt).toHaveBeenCalledTimes(2);
       expect(creds).toEqual({
-        accountSid: 'promptAccountSid',
-        authToken: 'promptAuthToken',
+        username: 'promptAccountSid',
+        password: 'promptAuthToken',
       });
     });
   });
@@ -135,11 +180,11 @@ describe('credentials', () => {
   describe('_findCredential', () => {
     const accountSid1 = 'AC00000000000000000000000000000001';
     const credential1 = {
-      account: accountSid1,
+      username: accountSid1,
       password: 'authToken1',
     };
     const badCreds = {
-      account: 'foo',
+      username: 'foo',
       password: 'pass',
     };
 

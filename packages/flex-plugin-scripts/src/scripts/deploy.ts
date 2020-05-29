@@ -102,12 +102,11 @@ export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: U
 export const _getAccount = async (runtime: Runtime, credentials: AuthConfig) => {
   const accountClient = new AccountsClient(credentials);
 
-  if (credentials.accountSid.startsWith('AC')) {
+  if (credentials.username.startsWith('AC')) {
     return accountClient.get(runtime.service.account_sid)
   }
 
   return {
-    auth_token: credentials.authToken,
     sid: runtime.service.account_sid,
   }
 }

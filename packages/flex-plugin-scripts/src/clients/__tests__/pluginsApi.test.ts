@@ -3,11 +3,11 @@ import ConfigurationClient from '../configurations';
 
 import PluginsApiClient from '../pluginsApi';
 
-describe('ConfigurationClient', () => {
+describe('PluginsApiClient', () => {
   const accountSid = 'AC00000000000000000000000000000000';
   const auth: AuthConfig = {
-    accountSid,
-    authToken: 'abc',
+    username: accountSid,
+    password: 'abc',
   };
 
   const OLD_ENV = process.env;

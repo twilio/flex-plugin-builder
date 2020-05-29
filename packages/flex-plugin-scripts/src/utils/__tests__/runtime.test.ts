@@ -30,8 +30,8 @@ describe('runtime', () => {
   const build = {sid: buildSid};
 
   const auth: AuthConfig = {
-    accountSid: 'AC00000000000000000000000000000000',
-    authToken: 'abc123',
+    username: 'AC00000000000000000000000000000000',
+    password: 'abc123',
   };
 
   const serviceGet = jest.fn();
