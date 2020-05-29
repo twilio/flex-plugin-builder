@@ -1,7 +1,7 @@
 import { FlexPluginError } from './errors';
 import { logger } from './index';
 import { prompt, choose, Question } from './inquirer';
-import { isInputNotEmpty, validateAccountSid } from './validators';
+import { isInputNotEmpty, validateAccountSid, validateApiKey } from './validators';
 
 // Keytar is installed as an optional dependency
 // Try to load it here but do not fail if it fails to be required
@@ -18,12 +18,12 @@ try {
 const SERVICE_NAME = 'com.twilio.flex.plugins.builder';
 
 export interface AuthConfig {
-  accountSid: string;
-  authToken: string;
+  username: string;
+  password: string;
 }
 
 interface Credential {
-  account: string;
+  username: string;
   password: string;
 }
 
@@ -52,12 +52,12 @@ const chooseAccount: Question = {
  * If no credentials exists, then prompts the user to enter the credentials
  */
 export const getCredential = async (): Promise<AuthConfig> => {
-  let accountSid;
-  let authToken;
+  let username;
+  let password;
 
-  const missingCredentials = !process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN;
+  const missingCredentials = !((process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) || (process.env.TWILIO_API_KEY && !process.env.TWILIO_API_SECRET));
   if (process.env.CI && missingCredentials) {
-    throw new FlexPluginError('❌  Running script in CI, but no AccountSid and/or AuthToken was provided');
+    throw new FlexPluginError('❌.  Running script in CI, but no AccountSid/AuthToken or API Key/Secret was provided');
   }
 
   // If both accountSid/authToken provided, then use that
@@ -66,30 +66,35 @@ export const getCredential = async (): Promise<AuthConfig> => {
       throw new FlexPluginError('AccountSid is not valid.');
     }
 
-    accountSid = process.env.TWILIO_ACCOUNT_SID;
-    authToken = process.env.TWILIO_AUTH_TOKEN;
+    username = process.env.TWILIO_ACCOUNT_SID;
+    password = process.env.TWILIO_AUTH_TOKEN;
+  // If both apiKey/secret provided, then use that
+  } else if (process.env.TWILIO_API_KEY && process.env.TWILIO_API_SECRET) {
+    if (!await validateApiKey(process.env.TWILIO_API_KEY)) {
+      throw new FlexPluginError('API Key is not valid.');
+    }
+
+    username = process.env.TWILIO_API_KEY;
+    password = process.env.TWILIO_API_SECRET;
   } else {
     // Find credential
     const credential = await _findCredential(process.env.TWILIO_ACCOUNT_SID);
     if (credential) {
-      accountSid = credential.account;
-      authToken = credential.password;
+      username = credential.username;
+      password = credential.password;
     }
   }
 
   // No credentials were found; prompt for it
-  if (!accountSid || !authToken) {
-    accountSid = await prompt(accountSidQuestion);
-    authToken = await prompt(authTokenQuestion);
+  if (!username || !password) {
+    username = await prompt(accountSidQuestion);
+    password = await prompt(authTokenQuestion);
   }
 
-  process.env.TWILIO_ACCOUNT_SID = accountSid;
-  process.env.TWILIO_AUTH_TOKEN = authToken;
-
   // Save the credential
-  await _saveCredential(accountSid, authToken);
+  await _saveCredential(username, password);
 
-  return { accountSid, authToken };
+  return { username, password };
 };
 
 /**
@@ -101,7 +106,7 @@ export const clearCredentials = async (): Promise<void> => {
   }
 
   const credentials = await _getService();
-  const promises = credentials.map((cred) => _getKeytar().deletePassword(SERVICE_NAME, cred.account));
+  const promises = credentials.map((cred) => _getKeytar().deletePassword(SERVICE_NAME, cred.username));
 
   await Promise.all(promises);
 };
@@ -116,14 +121,14 @@ export const _findCredential = async (accountSid?: string): Promise<Credential |
   const credentials = await _getService();
 
   if (accountSid) {
-    const match = credentials.find((cred) => cred.account === accountSid);
+    const match = credentials.find((cred) => cred.username === accountSid);
     if (match) {
       return match as Credential;
     }
   }
 
   const accounts = credentials
-    .map((cred) => cred.account)
+    .map((cred) => cred.username)
     .filter((acc) => acc.substr(0, 2).toLowerCase() === 'ac' && acc.length === 34);
 
   if (credentials.length === 0) {
@@ -137,12 +142,12 @@ export const _findCredential = async (accountSid?: string): Promise<Credential |
   }
   /* istanbul ignore next */
   if (accounts.length === 1) {
-    return credentials.find((cred) => cred.account === accounts[0]) as Credential;
+    return credentials.find((cred) => cred.username === accounts[0]) as Credential;
   }
 
   const selectedAccount = await choose(chooseAccount, accounts);
 
-  return credentials.find((cred) => cred.account === selectedAccount) as Credential;
+  return credentials.find((cred) => cred.username === selectedAccount) as Credential;
 };
 
 /**
@@ -160,14 +165,14 @@ export const _getService = async (): Promise<Credential[]> => {
 /**
  * Saves the credential
  *
- * @param account   the account name
+ * @param username   the username
  * @param password  the password
  * @private
  */
-export const _saveCredential = async (account: string, password: string) => {
+export const _saveCredential = async (username: string, password: string) => {
   // Do not store password on CI builds
   if (!process.env.CI && !process.env.SKIP_CREDENTIALS_SAVING) {
-    await _getKeytar().setPassword(SERVICE_NAME, account, password);
+    await _getKeytar().setPassword(SERVICE_NAME, username, password);
   }
 };
 

@@ -4,8 +4,8 @@ import ServiceClient from '../services';
 
 describe('ServiceClient', () => {
   const auth: AuthConfig = {
-    accountSid: 'AC00000000000000000000000000000000',
-    authToken: 'abc',
+    username: 'AC00000000000000000000000000000000',
+    password: 'abc',
   };
   const service = {
     sid: 'ZS00000000000000000000000000000000',

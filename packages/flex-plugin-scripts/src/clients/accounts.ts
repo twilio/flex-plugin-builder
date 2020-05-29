@@ -1,6 +1,12 @@
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
-import { Account } from './account-types';
 import BaseClient from './baseClient';
+
+export interface Account {
+  auth_token?: string;
+  friendly_name?: string;
+  sid: string;
+}
+
 
 export default class AccountClient extends BaseClient {
   public static BaseUrl = 'Accounts';

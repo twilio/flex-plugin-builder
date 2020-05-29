@@ -25,8 +25,8 @@ describe('remove', () => {
   logger.colors.blue = jest.fn();
 
   const credential = {
-    accountSid: 'AC00000000000000000000000000000000',
-    authToken: 'abc',
+    username: 'AC00000000000000000000000000000000',
+    password: 'abc',
   };
 
   const service = { sid: 'ZSxxx' };

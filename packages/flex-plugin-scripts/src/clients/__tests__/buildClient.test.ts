@@ -4,8 +4,8 @@ import * as packageUtil from '../../utils/package';
 
 describe('BaseClient', () => {
   const credential = {
-    accountSid: 'AC00000000000000000000000000000000',
-    authToken: 'abc',
+    username: 'AC00000000000000000000000000000000',
+    password: 'abc',
   };
   const testBaseUrl = 'testBaseUrl';
 

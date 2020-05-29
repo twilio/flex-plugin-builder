@@ -3,6 +3,8 @@ import * as packageUtil from '../../utils/package';
 import * as infoScript from '../info';
 import * as prints from '../../prints';
 
+jest.mock('../../prints/packagesVersions');
+
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('../../prints/packagesVersions');
 
@@ -33,15 +35,11 @@ describe('info', () => {
         .spyOn(packageUtil, 'getPackageDetails')
         .mockReturnValue([foundPackage, notFoundPackage]);
 
-      const packagesVersions = jest
-        .spyOn(prints, 'packagesVersions')
-        .mockReturnThis();
-
       await infoScript.default();
 
       expect(getPackageDetails).toHaveBeenCalledTimes(1);
-      expect(packagesVersions).toHaveBeenCalledTimes(1);
-      expect(packagesVersions).toHaveBeenCalledWith([foundPackage], [notFoundPackage]);
+      expect(prints.packagesVersions).toHaveBeenCalledTimes(1);
+      expect(prints.packagesVersions).toHaveBeenCalledWith([foundPackage], [notFoundPackage]);
     });
   });
 });

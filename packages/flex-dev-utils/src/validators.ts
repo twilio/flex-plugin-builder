@@ -30,6 +30,23 @@ export const validateAccountSid = (str: string) => {
 };
 
 /**
+ * Validates that the apiKey is valid
+ *
+ * @param str the apiKey
+ */
+export const validateApiKey = (str: string) => {
+  if (!isInputNotEmpty(str)) {
+    return false;
+  }
+
+  if (!isSidOfType(str, SidPrefix.ApiKey)) {
+    return 'Invalid Account Sid was provided';
+  }
+
+  return true;
+};
+
+/**
  * Validates that the URL is a GitHub URL
  *
  * @param url the URL to validate
