@@ -130,6 +130,7 @@ export const mkdirpSync = mkdirp.sync;
  * @param target    the target
  * @param variables the variables
  */
+/* istanbul ignore next */
 export const copyTemplateDir = (source: string, target: string, variables: object) => {
   return promiseCopyTempDir(source, target, variables);
 };

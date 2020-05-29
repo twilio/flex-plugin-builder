@@ -3,7 +3,7 @@ import TerminalRenderer from 'marked-terminal';
 import { pipe } from '@k88/pipe-compose';
 
 import { readFileSync } from './fs';
-import * as logger from './logger';
+import logger from './logger';
 
 marked.setOptions({
   renderer: new TerminalRenderer(),

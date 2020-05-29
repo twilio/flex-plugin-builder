@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import marked from 'marked';
-import * as logger from '../logger';
+import logger from '../logger';
 import { render } from '../marked';
 
 jest.mock('fs');

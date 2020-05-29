@@ -1,13 +1,12 @@
 import paths from 'flex-dev-utils/dist/paths';
-import { logger, semver } from 'flex-dev-utils';
+import { logger, semver, progress } from 'flex-dev-utils';
 import { ReleaseType } from 'flex-dev-utils/dist/semver';
-import { progress } from 'flex-dev-utils/dist/ora';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { checkFilesExist, updateAppVersion, getPackageVersion } from 'flex-dev-utils/dist/fs';
 import { AuthConfig, getCredential } from 'flex-dev-utils/dist/credentials';
 import { FlexPluginError, UserActionError } from 'flex-dev-utils/dist/errors';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
-import AccountsClient, { Account } from '../clients/accounts';
+import AccountsClient from '../clients/accounts';
 import { deploySuccessful, pluginsApiWarning } from '../prints';
 import { UIDependencies } from '../clients/configuration-types';
 

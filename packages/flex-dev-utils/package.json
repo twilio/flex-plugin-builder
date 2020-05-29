@@ -38,28 +38,23 @@
     "app-module-path": "^2.2.0",
     "axios": "^0.19.0",
     "axios-mock-adapter": "^1.17.0",
-    "boxen": "^4.1.0",
-    "chalk": "^2.4.2",
     "copy-template-dir": "^1.4.0",
     "execa": "^2.1.0",
     "globby": "^11.0.0",
+    "flex-plugins-utils-logger": "^0.2.1",
     "inquirer": "7.0.0",
     "lodash": "^4.17.15",
-    "log-symbols": "^3.0.0",
     "marked": "^0.7.0",
     "marked-terminal": "^3.3.0",
     "mkdirp": "^0.5.1",
     "net": "^1.0.2",
     "open": "^6.4.0",
-    "ora": "^4.0.2",
     "rimraf": "^3.0.0",
     "semver": "^7.3.2",
-    "table": "^5.4.6",
     "tmp": "^0.1.0",
     "update-notifier": "^3.0.1",
     "url": "^0.11.0",
-    "util": "^0.12.1",
-    "wrap-ansi": "^4.0.0"
+    "util": "^0.12.1"
   },
   "devDependencies": {
     "@types/app-module-path": "^2.2.0",
@@ -69,10 +64,8 @@
     "@types/mkdirp": "^0.5.2",
     "@types/rimraf": "^2.0.2",
     "@types/semver": "^7.1.0",
-    "@types/table": "^4.0.7",
     "@types/tmp": "^0.1.0",
-    "@types/update-notifier": "^2.5.0",
-    "@types/wrap-ansi": "^3.0.0"
+    "@types/update-notifier": "^2.5.0"
   },
   "optionalDependencies": {
     "keytar": "^4.13.0"

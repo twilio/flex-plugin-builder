@@ -1,7 +1,6 @@
 import { FlexPluginError } from '../errors';
 import * as fs from '../fs';
 import runner from '../runner';
-import * as logger from '../logger';
 
 jest.mock('../logger');
 

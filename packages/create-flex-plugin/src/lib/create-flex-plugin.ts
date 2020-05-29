@@ -1,6 +1,5 @@
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import { progress } from 'flex-dev-utils/dist/ora';
-import { logger } from 'flex-dev-utils';
+import { logger, progress } from 'flex-dev-utils';
 import { copyTemplateDir, tmpDirSync, TmpDirResult } from 'flex-dev-utils/dist/fs';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
 import fs from 'fs';
