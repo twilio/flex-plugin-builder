@@ -1,11 +1,10 @@
 import * as fs from 'fs';
 import marked from 'marked';
-import * as logger from '../logger';
+import { logger } from '..';
 import { render } from '../marked';
 
 jest.mock('fs');
 jest.mock('marked');
-jest.mock('../logger');
 
 describe('marked', () => {
   beforeEach(() => {

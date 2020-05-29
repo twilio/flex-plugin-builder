@@ -1,8 +1,8 @@
-import { warning } from 'flex-dev-utils/dist/boxen';
+import { boxen } from 'flex-dev-utils';
 
 /**
  * Prints a warning message about the availability of the release script
  */
 export default () => {
-  warning('Release script is currently in pilot and is limited in availability');
+  boxen.warning('Release script is currently in pilot and is limited in availability');
 };

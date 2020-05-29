@@ -1,5 +1,4 @@
 import { logger } from 'flex-dev-utils';
-import { singleLineString } from 'flex-dev-utils/dist/strings';
 
 /**
  * Error about cracoConfig.js missing

@@ -5,7 +5,7 @@ import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { checkFilesExist, updatePackageVersion, readPackageJson } from 'flex-dev-utils/dist/fs';
 import { AuthConfig, getCredential } from 'flex-dev-utils/dist/credentials';
 import { FlexPluginError, UserActionError } from 'flex-dev-utils/dist/errors';
-import { singleLineString } from 'flex-dev-utils/dist/strings';
+import { singleLineString } from 'flex-dev-utils';
 import AccountsClient from '../clients/accounts';
 import { UIDependencies } from '../clients/configuration-types';
 import { deploySuccessful } from '../prints';

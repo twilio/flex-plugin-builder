@@ -1,6 +1,6 @@
 import { logger } from 'flex-dev-utils';
 import fs, { readFileSync, readPackageJson } from 'flex-dev-utils/dist/fs';
-import { multilineString } from 'flex-dev-utils/dist/strings';
+import { multilineString } from 'flex-dev-utils';
 import { join } from 'path';
 import http, { IncomingMessage, ServerResponse } from 'http';
 import https from 'https';

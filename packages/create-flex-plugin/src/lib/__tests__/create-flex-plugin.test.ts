@@ -7,8 +7,6 @@ import { FlexPluginArguments } from '../create-flex-plugin';
 import * as createFlexPluginScripts from '../create-flex-plugin';
 import * as commands from '../commands';
 
-jest.mock('flex-dev-utils/dist/logger');
-
 describe('create-flex-plugin', () => {
   const accountSid = 'AC00000000000000000000000000000000';
   const pluginName = 'plugin-test';

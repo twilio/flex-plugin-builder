@@ -5,8 +5,6 @@ import * as fs from 'flex-dev-utils/dist/fs';
 
 import * as pluginServerScript from '../../start/pluginServer';
 
-jest.mock('flex-dev-utils/dist/logger');
-
 describe('pluginServer', () => {
   const pkg = {
     name: 'default-plugin',

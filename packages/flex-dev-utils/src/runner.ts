@@ -1,4 +1,4 @@
-import logger from './logger';
+import { logger } from '.';
 import { FlexPluginError } from './errors';
 
 export type Callback = (...argv: string[]) => void;

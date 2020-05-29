@@ -1,5 +1,5 @@
 import { logger } from 'flex-dev-utils';
-import { singleLineString } from 'flex-dev-utils/dist/strings';
+import { singleLineString } from 'flex-dev-utils';
 import { Account } from '../clients/accounts';
 
 /**

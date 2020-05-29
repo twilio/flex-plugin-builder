@@ -1,5 +1,4 @@
-import logger from './logger';
-import { multilineString } from './strings';
+import { logger, multilineString } from '.';
 
 /**
  * Prints the lines in a numbered list:

@@ -1,5 +1,4 @@
-import { logger } from 'flex-dev-utils';
-import { multilineString } from 'flex-dev-utils/dist/strings';
+import { logger, multilineString } from 'flex-dev-utils';
 
 /**
  * Prints the SKIP_PREFLIGHT_CHECK message

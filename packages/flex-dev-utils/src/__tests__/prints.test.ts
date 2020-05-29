@@ -1,7 +1,5 @@
 import * as prints from '../prints';
-import * as strings from '../strings';
-
-jest.mock('../logger');
+import * as strings from 'flex-plugins-utils-logger/dist/lib/strings';
 
 describe('prints', () => {
   beforeEach(() => {

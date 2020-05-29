@@ -1,7 +1,6 @@
 import execa from 'execa';
 
-import logger from './logger';
-import { singleLineString } from './strings';
+import { singleLineString, logger } from '.';
 
 const DefaultOptions = { stdio: 'inherit' };
 type ShellCmd = 'node' | 'yarn' | 'npm';

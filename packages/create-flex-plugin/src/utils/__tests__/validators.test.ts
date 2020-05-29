@@ -4,7 +4,6 @@ import { logger } from 'flex-dev-utils';
 
 import * as validators from '../validators';
 
-jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/inquirer');
 
 describe('validators', () => {

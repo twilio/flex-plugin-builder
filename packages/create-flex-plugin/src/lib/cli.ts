@@ -1,5 +1,5 @@
 import yargs, { Argv, Options } from 'yargs';
-import { multilineString } from 'flex-dev-utils/dist/strings';
+import { multilineString } from 'flex-dev-utils';
 import { runner } from 'flex-dev-utils';
 
 import createFlexPlugin, { FlexPluginArguments } from './create-flex-plugin';

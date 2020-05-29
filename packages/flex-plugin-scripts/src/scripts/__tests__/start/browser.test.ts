@@ -5,7 +5,6 @@ import { _getPortAndUrl, _replacePlugins, _requirePackages } from '../../start/b
 import * as browserScript from '../../start/browser';
 import * as pluginServerScript from '../../start/pluginServer';
 
-jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/open');
 
 describe('sub/browser', () => {

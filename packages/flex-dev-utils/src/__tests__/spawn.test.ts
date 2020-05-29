@@ -1,7 +1,7 @@
 import spawn from '../spawn';
-import logger from '../logger';
+import { logger } from '..';
 
-jest.mock('../logger');
+// jest.mock('flex-plugin');
 jest.mock('execa');
 
 // tslint:disable

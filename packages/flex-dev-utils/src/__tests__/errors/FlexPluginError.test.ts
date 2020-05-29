@@ -1,8 +1,8 @@
 import FlexPluginError from '../../errors/FlexPluginError';
-import * as logger from '../../logger';
+import { logger } from '../..';
 import * as fs from '../../fs';
 
-jest.mock('../../logger');
+// jest.mock('../../logger');
 
 describe('FlexPluginError', () => {
   beforeEach(() => {

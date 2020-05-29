@@ -1,5 +1,4 @@
-import { logger } from 'flex-dev-utils';
-import { singleLineString } from 'flex-dev-utils/dist/strings';
+import { logger, singleLineString } from 'flex-dev-utils';
 
 export default (count: number) => {
   const bold = logger.colors.bold;

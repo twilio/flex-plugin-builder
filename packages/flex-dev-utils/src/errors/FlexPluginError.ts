@@ -1,5 +1,5 @@
 import { PackageJson, readPackageJson } from '../fs';
-import logger from '../logger';
+import { logger } from '..';
 
 export default class FlexPluginError extends Error {
   private readonly pkg: PackageJson | null;

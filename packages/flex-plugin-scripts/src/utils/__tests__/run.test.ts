@@ -2,8 +2,6 @@ import { logger } from 'flex-dev-utils';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import * as run from '../run';
 
-jest.mock('flex-dev-utils/dist/logger');
-
 describe('run', () => {
   // @ts-ignore
   const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });

@@ -1,7 +1,5 @@
 import * as fs from 'flex-dev-utils/dist/fs';
 
-jest.mock('flex-dev-utils/dist/logger');
-
 describe('paths', () => {
   // @ts-ignore
   const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });

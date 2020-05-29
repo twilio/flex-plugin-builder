@@ -16,7 +16,6 @@ jest.mock('../../clients/deployments');
 jest.mock('../../prints/deploySuccessful');
 jest.mock('inquirer');
 jest.mock('flex-dev-utils/dist/fs');
-jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/credentials', () => ({
   getCredential: jest.fn(),
 }));

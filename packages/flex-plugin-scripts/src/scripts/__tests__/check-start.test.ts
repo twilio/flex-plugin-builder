@@ -4,7 +4,6 @@ import { join } from 'path';
 import * as prints from '../../prints';
 import * as checkStartScript from '../check-start';
 
-jest.mock('flex-dev-utils/dist/logger');
 jest.mock('../../prints/versionMismatch');
 jest.mock('../../prints/unbundledReactMismatch');
 jest.mock('../../prints/appConfigMissing');

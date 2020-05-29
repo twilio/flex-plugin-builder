@@ -2,7 +2,6 @@ import * as credentials from '../credentials';
 import { FlexPluginError } from '../errors';
 
 jest.mock('keytar');
-jest.mock('../logger');
 jest.mock('../inquirer');
 jest.mock('../validators');
 

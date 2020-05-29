@@ -4,7 +4,6 @@ import * as run from '../utils/run';
 import { render as markedRender } from 'flex-dev-utils/dist/marked';
 
 jest.mock('flex-dev-utils/dist/spawn');
-jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/marked');
 
 // tslint:disable

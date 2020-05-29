@@ -1,6 +1,4 @@
-import { logger } from 'flex-dev-utils';
-import { info as boxedInfo } from 'flex-dev-utils/dist/boxen';
-import { multilineString } from 'flex-dev-utils/dist/strings';
+import { logger, boxen, multilineString } from 'flex-dev-utils';
 
 import { FlexPluginArguments } from '../lib/create-flex-plugin';
 
@@ -54,5 +52,5 @@ export default (config: FlexPluginArguments) => {
   const columns = (process.stdout.columns || 100) - 14;
   message = logger.wrap(message, columns, { hard: true });
 
-  boxedInfo(message, false);
+  boxen.info(message, false);
 };
