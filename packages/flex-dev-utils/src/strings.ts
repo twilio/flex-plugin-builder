@@ -2,7 +2,7 @@ import { multilineString, singleLineString } from 'flex-plugins-utils-logger';
 
 export {
   singleLineString,
-  multilineString
+  multilineString,
 };
 
 export default {
