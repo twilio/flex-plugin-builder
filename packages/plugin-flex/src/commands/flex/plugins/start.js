@@ -6,6 +6,8 @@ const { createDescription } = require('../../../utils/general');
  */
 class FlexPluginsStart extends FlexPluginScripts {
   async run() {
+    await super.run();
+
     await this.runScript('start');
   }
 

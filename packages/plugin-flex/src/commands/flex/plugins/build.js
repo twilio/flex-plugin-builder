@@ -1,3 +1,5 @@
+const buildScript = require('flex-plugin-scripts/dist/scripts/build');
+
 const FlexPluginScripts = require('../../../sub-commands/flex-plugin-scripts');
 const { createDescription } = require('../../../utils/general');
 
@@ -6,6 +8,7 @@ const { createDescription } = require('../../../utils/general');
  */
 class FlexPluginsBuild extends FlexPluginScripts {
   async run() {
+    await super.run();
     await this.runScript('build');
   }
 

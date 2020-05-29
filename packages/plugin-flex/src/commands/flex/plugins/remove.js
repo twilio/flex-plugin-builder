@@ -6,6 +6,8 @@ const { createDescription } = require('../../../utils/general');
  */
 class FlexPluginsRemove extends FlexPluginScripts {
   async run() {
+    await super.run();
+
     await this.runScript('remove');
   }
 

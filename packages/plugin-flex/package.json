@@ -36,16 +36,19 @@
   "dependencies": {
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
-    "@twilio/cli-core": "5.1.0",
+    "@twilio/cli-core": "5.2.0",
     "clear": "^0.1.0",
-    "create-flex-plugin": "^3.11.0",
-    "flex-plugin-scripts": "^3.11.0"
+    "create-flex-plugin": "^4.1.2-alpha.0",
+    "flex-plugin-scripts": "/Users/ktalebian/Projects/github/twilio/flex-plugin-builder/packages/flex-plugin-scripts",
+    "flex-plugins-api-client": "^0.4.1",
+    "flex-plugins-api-toolkit": "^0.4.1",
+    "semver": "^7.3.2"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
-    "@oclif/test": "^1.2.5",
+    "@oclif/test": "^1.2.6",
     "@twilio/cli-test": "^2.1.0",
-    "eslint": "^7.0.0",
+    "eslint": "^7.1.0",
     "eslint-config-twilio": "^1.23.0",
     "globby": "^11.0.0",
     "husky": "^4.2.5",
