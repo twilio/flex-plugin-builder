@@ -6,6 +6,7 @@ import * as prints from '../../prints';
 jest.mock('../../prints/packagesVersions');
 
 jest.mock('flex-dev-utils/dist/logger');
+jest.mock('../../prints/packagesVersions');
 
 describe('info', () => {
   beforeEach(() => {

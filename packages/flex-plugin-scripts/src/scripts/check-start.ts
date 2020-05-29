@@ -1,5 +1,6 @@
 import { logger, semver } from 'flex-dev-utils';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
+import { checkFilesExist } from 'flex-dev-utils/dist/fs';
 import { existsSync, copyFileSync, readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -26,6 +27,7 @@ const appConfigPath = join(process.cwd(), 'public', 'appConfig.js');
 const cracoConfigPath = join(process.cwd(), 'craco.config.js');
 const indexSourcePath = join(__dirname, '..', '..', 'dev_assets', 'index.html');
 const indexTargetPath = join(process.cwd(), 'public', 'index.html');
+const extensions = ['js', 'jsx', 'ts', 'tsx'];
 
 const PackagesToVerify = [
   'react',
@@ -127,21 +129,19 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, al
 };
 
 /**
- * Returns the content of src/index.{js/ts}
+ * Returns the content of src/index
  * @private
  */
 /* istanbul ignore next */
 export const _readIndexPage = (): string => {
-  try {
-    return readFileSync(`${srcIndexPath}.js`, 'utf8');
-  } catch (e1) {
-    try {
-      return readFileSync(`${srcIndexPath}.ts`, 'utf8');
-    } catch (e2) {
-      // This should never happen
-      throw new FlexPluginError('No index.js or index.ts was found in your src directory');
-    }
+  const match = extensions
+    .map(ext => `${srcIndexPath}.${ext}`)
+    .find(file => checkFilesExist(file));
+  if (match) {
+    return readFileSync(match, 'utf8');
   }
+
+  throw new FlexPluginError('No index file was found in your src directory');
 }
 
 /**
