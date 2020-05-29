@@ -1,6 +1,6 @@
 import { logger } from 'flex-dev-utils';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
-import { Account } from '../clients/account-types';
+import { Account } from '../clients/accounts';
 
 /**
  * Successful message to print after a deploy
@@ -12,11 +12,13 @@ import { Account } from '../clients/account-types';
 export default (url: string, isPublic: boolean, account: Account) => {
   const availability = isPublic ? 'publicly' : 'privately';
   const nameLogger = logger.coloredStrings.name;
+  const friendlyName = account.friendly_name || account.sid;
+  const accountSid = (friendlyName !== account.sid && ` (${nameLogger(account.sid)})`) || '';
 
   logger.newline();
   logger.success(singleLineString(
     '🚀  Your plugin has been successfully deployed to your Flex project',
-    `${nameLogger(account.friendly_name)} (${nameLogger(account.sid)}).`,
+    `${nameLogger(friendlyName)}${accountSid}.`,
     `It is hosted (${availability}) as a Twilio Asset on ${logger.coloredStrings.link(url)}.`,
   ));
   logger.newline();

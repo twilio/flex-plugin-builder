@@ -1,3 +1,5 @@
+/// <reference path="../module.d.ts" />
+
 import { paths } from 'flex-dev-utils';
 import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
 import ModuleScopePlugin from '@k88/module-scope-plugin';
