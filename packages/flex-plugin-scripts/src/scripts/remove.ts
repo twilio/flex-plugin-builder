@@ -1,4 +1,5 @@
 import { logger, progress } from 'flex-dev-utils';
+import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import paths from 'flex-dev-utils/dist/paths';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { AuthConfig, getCredential } from 'flex-dev-utils/dist/credentials';
@@ -43,10 +44,14 @@ export const _doRemove = async () => {
   const pluginName = logger.colors.blue(paths.app.name);
   const credentials = await getCredential();
   const runtime = await _getRuntime(credentials);
+  if (!runtime.environment) {
+    throw new FlexPluginError('No Runtime environment was found');
+  }
+  const environment = runtime.environment;
 
   await progress(`Deleting plugin ${pluginName}`, async () => {
     const environmentClient = new EnvironmentClient(credentials, runtime.service.sid);
-    await environmentClient.remove(runtime.environment.sid);
+    await environmentClient.remove(environment.sid);
   });
 
   logger.newline();

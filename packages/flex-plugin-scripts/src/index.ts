@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { spawn } from 'flex-dev-utils';
+import { env, spawn } from 'flex-dev-utils';
 import { logger } from 'flex-dev-utils';
 import { checkForUpdate } from 'flex-dev-utils/dist/updateNotifier';
 import { readdirSync, existsSync } from 'fs';
@@ -61,6 +61,20 @@ const spawnScript = async (...argv: string[]) => {
 
   const { exitCode } = await spawn('node', processArgs);
   exit(exitCode, argv);
+};
+
+/**
+ * Sets the environment variables from the argv command line
+ * @param argv
+ */
+export const setEnvironment = (...argv: string[]) => {
+  if (argv.includes('--quiet')) {
+    env.setQuiet();
+  }
+
+  if (argv.includes('--persist-terminal')) {
+    env.persistTerminal();
+  }
 };
 
 export default spawnScript;

@@ -11,7 +11,7 @@ import { Runtime } from '../clients/serverless-types';
  */
 const getRuntime = async (credentials: AuthConfig, serviceOnly = false): Promise<Runtime> => {
   // Fetch the runtime service instance
-  return await progress<Runtime>('Fetching Twilio Runtime service', async () => {
+  return await progress('Fetching Twilio Runtime service', async () => {
     const serverlessClient = new ServiceClient(credentials);
     const configurationClient = new ConfigurationClient(credentials);
 

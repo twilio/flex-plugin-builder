@@ -38,6 +38,9 @@ export const _doList = async (visibilities: Visibility[], order: Order = 'asc') 
 
     return process.exit(0);
   }
+  if (!runtime.environment) {
+    throw new FlexPluginError('No Runtime environment was found');
+  }
 
   pluginVersions(runtime.environment.domain_name, versions, order);
 };
