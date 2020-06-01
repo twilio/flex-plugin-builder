@@ -1,5 +1,4 @@
-import { logger } from 'flex-dev-utils';
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
+import { logger, FlexPluginError } from 'flex-dev-utils';
 import * as run from '../run';
 
 jest.mock('flex-dev-utils/dist/logger');

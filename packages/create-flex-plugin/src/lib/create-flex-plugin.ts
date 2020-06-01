@@ -1,5 +1,4 @@
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import { logger, progress } from 'flex-dev-utils';
+import { logger, progress, FlexPluginError } from 'flex-dev-utils';
 import { copyTemplateDir, tmpDirSync, TmpDirResult } from 'flex-dev-utils/dist/fs';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
 import fs from 'fs';

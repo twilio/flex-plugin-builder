@@ -1,6 +1,5 @@
-import { logger } from 'flex-dev-utils';
+import { logger, FlexPluginError } from 'flex-dev-utils';
 import { getCredential } from 'flex-dev-utils/dist/credentials';
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 
 import run from '../utils/run';
 import { Visibility } from '../clients/serverless-types';

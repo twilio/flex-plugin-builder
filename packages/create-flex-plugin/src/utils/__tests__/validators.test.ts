@@ -1,6 +1,5 @@
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
+import { FlexPluginError } from 'flex-dev-utils';
 import * as inquirer from 'flex-dev-utils/dist/inquirer';
-import { logger } from 'flex-dev-utils';
 
 import * as validators from '../validators';
 

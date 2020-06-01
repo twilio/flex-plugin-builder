@@ -1,5 +1,4 @@
-import { logger, semver } from 'flex-dev-utils';
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
+import { logger, semver, FlexPluginError } from 'flex-dev-utils';
 import { checkFilesExist } from 'flex-dev-utils/dist/fs';
 import { existsSync, copyFileSync, readFileSync } from 'fs';
 import { join } from 'path';

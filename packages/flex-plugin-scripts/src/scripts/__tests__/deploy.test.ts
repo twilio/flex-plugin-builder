@@ -1,5 +1,4 @@
-import { logger } from 'flex-dev-utils';
-import { FlexPluginError, UserActionError } from 'flex-dev-utils/dist/errors';
+import { logger,  FlexPluginError, UserActionError } from 'flex-dev-utils';
 import * as inquirer from 'flex-dev-utils/dist/inquirer';
 
 import * as requireScript from '../../utils/require';

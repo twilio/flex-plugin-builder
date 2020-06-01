@@ -1,5 +1,5 @@
 module.exports = {
-  collectCoverage: true,
+  collectCoverage: false,
   setupFiles: [
     '<rootDir>/jest.setup.js'
   ],
