@@ -1,5 +1,4 @@
-import { fs } from 'flex-dev-utils';
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
+import { fs, FlexPluginError } from 'flex-dev-utils';
 
 import { _getPortAndUrl, _replacePlugins, _requirePackages } from '../../start/browser';
 import * as browserScript from '../../start/browser';

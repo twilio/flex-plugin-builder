@@ -1,5 +1,4 @@
-import { fs, open } from 'flex-dev-utils';
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
+import { fs, open, FlexPluginError } from 'flex-dev-utils';
 import { join } from 'path';
 import run from '../../utils/run';
 import pluginServer, { Plugin } from '../start/pluginServer';

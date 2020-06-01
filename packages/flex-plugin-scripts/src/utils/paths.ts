@@ -1,5 +1,4 @@
-import { logger } from 'flex-dev-utils';
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
+import { FlexPluginError } from 'flex-dev-utils';
 import { join } from 'path';
 import { readPackageJson } from 'flex-dev-utils/dist/fs';
 

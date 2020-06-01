@@ -1,9 +1,8 @@
-import { logger, semver, progress } from 'flex-dev-utils';
+import { logger, semver, progress, FlexPluginError, UserActionError } from 'flex-dev-utils';
 import { ReleaseType } from 'flex-dev-utils/dist/semver';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { checkFilesExist, updatePackageVersion, readPackageJson } from 'flex-dev-utils/dist/fs';
 import { AuthConfig, getCredential } from 'flex-dev-utils/dist/credentials';
-import { FlexPluginError, UserActionError } from 'flex-dev-utils/dist/errors';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
 import AccountsClient from '../clients/accounts';
 import { UIDependencies } from '../clients/configuration-types';
