@@ -25,6 +25,7 @@ export const persistTerminal = () => process.env.PERSIST_TERMINAL = 'true';
 export const skipPreflightCheck = () => process.env.SKIP_PREFLIGHT_CHECK === 'true';
 export const isTerminalPersisted = () => process.env.PERSIST_TERMINAL === 'true';
 export const allowUnbundledReact = () => process.env.UNBUNDLED_REACT === 'true';
+export const setQuiet = () => process.env.QUIET = 'true';
 export const isCI = () => process.env.CI === 'true';
 export const isTrace = () => process.env.TRACE === 'true';
 export const isDebug = () => process.env.DEBUG === 'true' || isTrace();
@@ -56,6 +57,7 @@ export default {
   skipPreflightCheck,
   allowUnbundledReact,
   isTerminalPersisted,
+  setQuiet,
   isCI,
   isDebug,
   isTrace,

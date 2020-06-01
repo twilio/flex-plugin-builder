@@ -63,7 +63,7 @@ export const createFlexPlugin = async (config: FlexPluginArguments) => {
  * @private
  */
 export const _install = async (config: FlexPluginArguments): Promise<boolean> => {
-  return progress<boolean>('Installing dependencies', async () => {
+  return progress('Installing dependencies', async () => {
     await installDependencies(config);
 
     return true;
@@ -79,7 +79,7 @@ export const _install = async (config: FlexPluginArguments): Promise<boolean> =>
 export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> => {
   let dirObject: TmpDirResult;
 
-  const promise = progress<boolean>('Creating project directory', async () => {
+  const promise = progress('Creating project directory', async () => {
     // This copies the core such as public/
     await copyTemplateDir(
       templateCorePath,

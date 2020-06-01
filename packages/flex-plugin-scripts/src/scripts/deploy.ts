@@ -7,6 +7,7 @@ import { AuthConfig, getCredential } from 'flex-dev-utils/dist/credentials';
 import { FlexPluginError, UserActionError } from 'flex-dev-utils/dist/errors';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
 import AccountsClient from '../clients/accounts';
+import { setEnvironment } from '../index';
 import { deploySuccessful, pluginsApiWarning } from '../prints';
 import { UIDependencies } from '../clients/configuration-types';
 
@@ -146,6 +147,9 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
   logger.info('Uploading your Flex plugin to Twilio Assets\n');
 
   const runtime = await getRuntime(credentials);
+  if (!runtime.environment) {
+    throw new FlexPluginError('No Runtime environment was found');
+  }
   const pluginUrl = `https://${runtime.environment.domain_name}${bundleUri}`;
 
   const configurationClient = new ConfigurationClient(credentials);
@@ -160,7 +164,7 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
   await _verifyFlexUIConfiguration(uiVersion, uiDependencies, allowReact);
 
   // Check duplicate routes
-  const routeCollision = await progress<Build>('Validating the new plugin bundle', async () => {
+  const routeCollision = await progress('Validating the new plugin bundle', async () => {
     const collision = runtime.build ? !_verifyPath(pluginBaseUrl, runtime.build) : false;
 
     if (collision) {
@@ -182,7 +186,7 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
   const buildDependencies = runtime.build ? runtime.build.dependencies : [];
 
   // Upload plugin bundle and source map to S3
-  const buildData = await progress<BuildData>('Uploading your plugin bundle', async () => {
+  const buildData = await progress('Uploading your plugin bundle', async () => {
     // Upload bundle and sourcemap
     const bundleVersion = await assetClient
       .upload(paths.app.name, bundleUri, paths.app.bundlePath, !options.isPublic);
@@ -211,7 +215,7 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
   });
 
   // Create a build, and poll regularly until build is complete
-  await progress<Build>('Deploying a new build of your Twilio Runtime', async () => {
+  await progress('Deploying a new build of your Twilio Runtime', async () => {
     const newBuild = await buildClient.create(buildData);
     const deployment = await deploymentClient.create(newBuild.sid);
 
@@ -227,12 +231,14 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
     accountSid: runtime.service.account_sid,
     environmentSid: runtime.environment.sid,
     domainName: runtime.environment.domain_name,
+    isPublic: options.isPublic,
     nextVersion,
     pluginUrl,
   };
 };
 
 const deploy = async (...argv: string[]) => {
+  setEnvironment(...argv);
   logger.debug('Deploying Flex plugin');
 
   const disallowVersioning = argv.includes('--disallow-versioning');

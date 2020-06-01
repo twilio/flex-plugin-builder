@@ -4,6 +4,7 @@ import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
 import webpack, { Compiler } from 'webpack';
 
 import getConfiguration, { ConfigurationType } from '../config';
+import { setEnvironment } from '../index';
 import { buildFailure, buildSuccessful } from '../prints';
 import { Callback } from '../types';
 import run, { exit } from '../utils/run';
@@ -57,7 +58,8 @@ export const _runWebpack = async (): Promise<BuildBundle> => {
 /**
  * Builds the bundle
  */
-const build = async (...args: string[]) => {
+const build = async (...argv: string[]) => {
+  setEnvironment(...argv);
   logger.debug('Building Flex plugin bundle');
 
   addCWDNodeModule();
@@ -74,7 +76,7 @@ const build = async (...args: string[]) => {
     buildSuccessful(bundles, warnings);
   } catch (e) {
     buildFailure(e);
-    exit(1, args);
+    exit(1, argv);
   }
 };
 
