@@ -1,6 +1,6 @@
 export { default as FlexPluginError } from './FlexPluginError';
-export { ValidationError } from 'flex-plugins-utils-exception';
-export { UserActionError } from 'flex-plugins-utils-exception';
+export { default as ValidationError } from  './ValidationError';
+export { default as UserActionError } from './UserActionError';
 export { TwilioError } from 'flex-plugins-utils-exception';
 
 export default {};

@@ -39,7 +39,7 @@
     "axios-mock-adapter": "^1.17.0",
     "copy-template-dir": "^1.4.0",
     "execa": "^2.1.0",
-    "flex-plugins-utils-exception": "^0.4.0",
+    "flex-plugins-utils-exception": "^0.4.1",
     "flex-plugins-utils-logger": "^0.2.1",
     "inquirer": "7.0.0",
     "lodash": "^4.17.15",

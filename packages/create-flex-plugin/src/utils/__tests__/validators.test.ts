@@ -1,4 +1,4 @@
-import { TwilioError } from 'flex-dev-utils';
+import { FlexPluginError } from 'flex-dev-utils';
 import * as inquirer from 'flex-dev-utils/dist/inquirer';
 
 import * as validators from '../validators';
@@ -39,7 +39,7 @@ describe('validators', () => {
             try {
                 await validators.default({} as any);
             } catch (e) {
-                expect(e).toBeInstanceOf(TwilioError);
+                expect(e).toBeInstanceOf(FlexPluginError);
                 expect(e.message).toContain('Invalid plugin name');
                 expect(e.message).toContain('start with plugin-');
             }
