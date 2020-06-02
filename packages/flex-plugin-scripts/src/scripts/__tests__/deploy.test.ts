@@ -115,7 +115,7 @@ describe('DeployScript', () => {
       readPackageJson.mockRestore();
     });
 
-    it.('should thrown an exception if no command is provided', async (done) => {
+    it('should thrown an exception if no command is provided', async (done) => {
       try {
         await deployScript.default();
       } catch (e) {
