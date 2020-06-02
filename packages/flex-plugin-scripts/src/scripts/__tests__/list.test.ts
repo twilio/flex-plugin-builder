@@ -1,4 +1,4 @@
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
+import { FlexPluginError } from 'flex-dev-utils';
 import { Visibility } from '../../clients/serverless-types';
 import * as listScript from '../list';
 

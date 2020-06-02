@@ -1,10 +1,9 @@
 import paths from 'flex-dev-utils/dist/paths';
-import { logger, semver, progress } from 'flex-dev-utils';
+import { logger, semver, progress, FlexPluginError, UserActionError } from 'flex-dev-utils';
 import { ReleaseType } from 'flex-dev-utils/dist/semver';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { checkFilesExist, updateAppVersion, getPackageVersion } from 'flex-dev-utils/dist/fs';
 import { AuthConfig, getCredential } from 'flex-dev-utils/dist/credentials';
-import { FlexPluginError, UserActionError } from 'flex-dev-utils/dist/errors';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
 import AccountsClient from '../clients/accounts';
 import { setEnvironment } from '../index';
@@ -12,7 +11,6 @@ import { deploySuccessful, pluginsApiWarning } from '../prints';
 import { UIDependencies } from '../clients/configuration-types';
 
 import run from '../utils/run';
-import { BuildData } from '../clients/builds';
 import { Build, Runtime, Version } from '../clients/serverless-types';
 import { AssetClient, BuildClient, DeploymentClient, ConfigurationClient, PluginsApiClient } from '../clients';
 import getRuntime from '../utils/runtime';

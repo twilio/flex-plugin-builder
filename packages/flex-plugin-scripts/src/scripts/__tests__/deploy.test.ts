@@ -1,6 +1,5 @@
-import { logger } from 'flex-dev-utils';
+import { logger,  FlexPluginError, UserActionError } from 'flex-dev-utils';
 import * as fsScript from 'flex-dev-utils/dist/fs';
-import { FlexPluginError, UserActionError } from 'flex-dev-utils/dist/errors';
 import * as inquirer from 'flex-dev-utils/dist/inquirer';
 
 import * as prints from '../../prints';
@@ -19,6 +18,7 @@ jest.mock('../../prints/pluginsApiWarning');
 jest.mock('inquirer');
 jest.mock('flex-dev-utils/dist/fs');
 jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/updateNotifier');
 jest.mock('flex-dev-utils/dist/credentials', () => ({
   getCredential: jest.fn(),
 }));
@@ -115,7 +115,7 @@ describe('DeployScript', () => {
       readPackageJson.mockRestore();
     });
 
-    it('should thrown an exception if no command is provided', async (done) => {
+    it.only('should thrown an exception if no command is provided', async (done) => {
       try {
         await deployScript.default();
       } catch (e) {

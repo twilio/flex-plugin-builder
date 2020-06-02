@@ -5,7 +5,6 @@ import { Bundle } from '../build';
 import * as buildScript from '../build';
 import * as prints from '../../prints';
 
-// jest.mock('webpack');
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/env');
 jest.mock('flex-dev-utils/dist/require');

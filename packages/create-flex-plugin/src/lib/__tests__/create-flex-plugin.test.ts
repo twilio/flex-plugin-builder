@@ -1,6 +1,5 @@
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import fs from 'fs';
-import { logger } from 'flex-dev-utils';
+import { logger, FlexPluginError } from 'flex-dev-utils';
 import { rmRfSync } from 'flex-dev-utils/dist/fs';
 
 import { FlexPluginArguments } from '../create-flex-plugin';

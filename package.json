@@ -25,7 +25,7 @@
     "lint": "tslint --project tsconfig.lint.json",
     "lint:fix": "tslint --project tsconfig.lint.json --fix",
     "test": "jest --color",
-    "test:coverage": "jest --coverage --color --watchAll=false",
+    "test:ci": "jest --coverage --color --watchAll=false",
     "test:watch": "jest --watchAll --color",
     "publish:next": "bin/publish",
     "publish:public": "bin/publish public"
@@ -53,7 +53,7 @@
     "glob": "^7.1.6",
     "husky": "^4.2.3",
     "jest": "^25.2.4",
-    "lerna": "3.20.2",
+    "lerna": "3.22.0",
     "ts-jest": "^25.3.0",
     "tslint": "^6.1.0",
     "tslint-react": "^4.2.0",

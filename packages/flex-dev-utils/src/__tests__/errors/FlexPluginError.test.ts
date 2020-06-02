@@ -1,3 +1,4 @@
+import { TwilioError } from 'flex-plugins-utils-exception';
 import FlexPluginError from '../../errors/FlexPluginError';
 import logger from '../../logger';
 import * as fs from '../../fs';
@@ -9,11 +10,12 @@ describe('FlexPluginError', () => {
     jest.resetAllMocks();
   });
 
-  it('should create a new instance', () => {
-    const err = new FlexPluginError();
+  it('should extend TwilioError', () => {
+    expect(new FlexPluginError('')).toBeInstanceOf(TwilioError);
+  });
 
-    expect(err).toBeInstanceOf(FlexPluginError);
-    expect(err instanceof FlexPluginError).toEqual(true);
+  it('should be of its instance', () => {
+    expect(new FlexPluginError('')).toBeInstanceOf(FlexPluginError);
   });
 
   it('should print message', () => {

@@ -1,7 +1,8 @@
+import { TwilioError } from 'flex-plugins-utils-exception';
 import { AppPackageJson, readAppPackageJson } from '../fs';
 import logger from '../logger';
 
-export default class FlexPluginError extends Error {
+export default class FlexPluginError extends TwilioError {
   private readonly pkg: AppPackageJson | null;
 
   constructor(msg?: string) {

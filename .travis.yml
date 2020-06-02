@@ -12,7 +12,7 @@ before_script:
 
 script:
   - npm run lint
-  - CI= npm run test:coverage
+  - CI= npm run test:ci
 
 after_success:
   - codecov --token="$CODECOV_TOKEN"

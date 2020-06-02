@@ -1,6 +1,5 @@
-import { ValidationError } from 'flex-dev-utils/dist/errors';
 import { prompt } from 'flex-dev-utils/dist/inquirer';
-import { logger } from 'flex-dev-utils';
+import { logger, ValidationError } from 'flex-dev-utils';
 import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
 import {
   isValidPluginName,

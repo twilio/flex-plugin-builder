@@ -1,8 +1,7 @@
-import { env, logger, semver } from 'flex-dev-utils';
+import { env, logger, semver, FlexPluginError } from 'flex-dev-utils';
 import paths from 'flex-dev-utils/dist/paths';
 import { checkFilesExist, findGlobs, resolveRelative } from 'flex-dev-utils/dist/fs';
 import { addCWDNodeModule, resolveModulePath } from 'flex-dev-utils/dist/require';
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { existsSync, copyFileSync, readFileSync } from 'fs';
 import { join } from 'path';
 import {
