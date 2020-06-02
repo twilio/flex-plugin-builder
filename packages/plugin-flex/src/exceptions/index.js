@@ -1,3 +1,3 @@
-const TwilioError = require('./TwilioError');
+const TwilioCliError = require('./TwilioCliError');
 
-module.exports.TwilioError = TwilioError;
+module.exports.TwilioCliError = TwilioCliError;

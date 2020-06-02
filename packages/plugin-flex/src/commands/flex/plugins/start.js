@@ -1,10 +1,10 @@
-const FlexPluginScripts = require('../../../sub-commands/flex-plugin-scripts');
+const FlexPlugin = require('../../../sub-commands/flex-plugin');
 const { createDescription } = require('../../../utils/general');
 
 /**
  * Starts the dev-server for building and iterating on a flex-plugin
  */
-class FlexPluginsStart extends FlexPluginScripts {
+class FlexPluginsStart extends FlexPlugin {
   async run() {
     await super.run();
 

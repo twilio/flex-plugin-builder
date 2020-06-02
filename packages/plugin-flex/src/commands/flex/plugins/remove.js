@@ -1,10 +1,10 @@
-const FlexPluginScripts = require('../../../sub-commands/flex-plugin-scripts');
+const FlexPlugin = require('../../../sub-commands/flex-plugin');
 const { createDescription } = require('../../../utils/general');
 
 /**
  * Deletes the flex-plugin
  */
-class FlexPluginsRemove extends FlexPluginScripts {
+class FlexPluginsRemove extends FlexPlugin {
   async run() {
     await super.run();
 

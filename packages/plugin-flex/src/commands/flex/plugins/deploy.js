@@ -1,74 +1,113 @@
 const { flags } = require('@oclif/command');
 const semver = require('semver');
+const { progress, logger } = require('flex-plugins-utils-logger');
 
-const FlexPluginScripts = require('../../../sub-commands/flex-plugin-scripts');
+const FlexPlugin = require('../../../sub-commands/flex-plugin');
 const { createDescription } = require('../../../utils/general');
-const { TwilioError } = require('../../../exceptions');
+const { TwilioCliError } = require('../../../exceptions');
 
 /**
  * Builds and then deploys the Flex plugin
  */
-class FlexPluginsDeploy extends FlexPluginScripts {
+class FlexPluginsDeploy extends FlexPlugin {
   constructor(argv, config, secureStorage) {
     super(argv, config, secureStorage, { strict: false });
-
-    this.exit = process.exit;
-    process.exit = (exitCode) => {
-      if (exitCode === 0) {
-        return;
-      }
-
-      this.exit(exitCode);
-    };
 
     this.scriptArgs = [];
   }
 
+  /**
+   * Main method
+   */
   async doRun() {
-    // Register plugin
-    await this.registerPlugin();
+    const args = ['--quiet', '--persist-terminal'];
 
-    // await this.runScript('build', []);
-    const deployedData = await this.runScript('deploy');
+    await progress('Validating plugin deployment', async () => this.validateVersion(), false);
+    await progress(
+      `Compiling a production build of plugin **${this.pkg.name}**`,
+      async () => this.runScript('build', args),
+      false,
+    );
+    const deployedData = await progress(
+      `Uploading **${this.pkg.name}**`,
+      async () => this.runScript('deploy', [...this.scriptArgs, ...args]),
+      false,
+    );
+    await progress(
+      `Registering plugin **${this.pkg.name}** with Plugins API`,
+      async () => this.registerPlugin(),
+      false,
+    );
+    const pluginVersion = await progress(
+      `Registering version **${deployedData.nextVersion}** with Plugins API`,
+      () => this.registerPluginVersion(deployedData),
+      false,
+    );
+    const availability = pluginVersion.private ? 'private' : 'public';
 
-    // Register version
-    const pluginVersion = await this.registerPluginVersion(deployedData);
+    this._logger.newline();
+    this._logger.success(
+      `🚀 Your plugin (${availability}) **${this.pkg.name}**@**${deployedData.nextVersion}** was successfully deployed to Plugins API`,
+    );
+    this._logger.newline();
 
-    this.logger.info(`Successfully registered a new plugin version ${pluginVersion.version} (${pluginVersion.sid}).`);
+    this._logger.info('**Next Steps:**');
+    this._logger.info(
+      `Run {{$ twilio flex:plugins:release --plugin ${this.pkg.name}@${deployedData.nextVersion}}} to enable your plugin on your flex instance`,
+    );
+    this._logger.newline();
   }
 
+  /**
+   * Validates that the provided next plugin version is valid
+   * @returns {Promise<void>}
+   */
+  async validateVersion() {
+    const pluginVersion = await this.pluginVersionsClient.latest(this.pkg.name);
+    const currentVersion = (pluginVersion && pluginVersion.version) || '0.0.0';
+    const nextVersion = this.flags.version || semver.inc(currentVersion, this.bumpLevel);
+    if (!semver.valid(nextVersion)) {
+      throw new TwilioCliError(`${nextVersion} is not a valid semver`);
+    }
+    if (!semver.gt(nextVersion, currentVersion)) {
+      throw new TwilioCliError(`The provided version ${nextVersion} must be greater than ${currentVersion}`);
+    }
+
+    // Set the plugin version
+    this.scriptArgs.push('version', nextVersion);
+    this.scriptArgs.push('--pilot-plugins-api');
+  }
+
+  /**
+   * Registers a plugin with Plugins API
+   * @returns {Promise}
+   */
   async registerPlugin() {
-    // Upsert plugin and get current latest version
-    this.logger.info('Registering plugin with Plugins API...');
-    const plugin = await this.pluginsClient.upsert({
+    return this.pluginsClient.upsert({
       UniqueName: this.pkg.name,
       FriendlyName: this.pkg.name,
       Description: this.pkg.description || '',
     });
-
-    const pluginVersion = await this.pluginVersionsClient.latest(plugin.sid);
-    const currentVersion = (pluginVersion && pluginVersion.version) || '0.0.0';
-    const nextVersion = this.flags.version || semver.inc(currentVersion, this.bumpLevel);
-    if (!semver.valid(nextVersion)) {
-      throw new TwilioError(`${nextVersion} is not a valid semver`);
-    }
-    if (!semver.gt(nextVersion, currentVersion)) {
-      throw new TwilioError(`The provided versiocn ${nextVersion} must be greater than ${currentVersion}`);
-    }
-
-    // Set the plugin version
-    this.scriptArgs.push('version', semver.inc(currentVersion, this.bumpLevel));
-    this.scriptArgs.push('--pilot-plugins-api');
   }
 
+  /**
+   * Registers a Plugin Version
+   * @param deployedData
+   * @returns {Promise}
+   */
   async registerPluginVersion(deployedData) {
     return this.pluginVersionsClient.create(this.pkg.name, {
       Version: deployedData.nextVersion,
       PluginUrl: deployedData.pluginUrl,
       Private: !this.argv.includes('--public'),
+      Changelog: this.flags.changelog,
     });
   }
 
+  /**
+   * Finds the version bump level
+   * @returns {string}
+   */
   get bumpLevel() {
     if (this.flags.major) {
       return 'major';
@@ -96,6 +135,7 @@ FlexPluginsDeploy.flags = {
   version: flags.string({
     exclusive: ['patch', 'minor', 'major'],
   }),
+  changelog: flags.string(),
 };
 
 module.exports = FlexPluginsDeploy;
