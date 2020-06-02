@@ -104,7 +104,7 @@ describe('pluginServer', () => {
       expect(plugins[1]).toBe(pluginOne);
     });
 
-    it.only('should return remote plugin', () => {
+    it('should return remote plugin', () => {
       const defaultPlugin = { name: 'default-plugin' } as Plugin;
       const pluginOne = { name: 'plugin-remote-1', enabled: true, remote: true } as Plugin;
       jest
