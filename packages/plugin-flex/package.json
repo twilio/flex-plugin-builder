@@ -43,8 +43,8 @@
     "flex-plugin-scripts": "^4.2.0-alpha.0",
     "flex-plugins-api-client": "^0.7.0",
     "flex-plugins-api-toolkit": "^0.7.0",
-    "flex-plugins-utils-exception": "^0.5.0",
-    "flex-plugins-utils-logger": "^0.5.0",
+    "flex-plugins-utils-exception": "^0.6.0",
+    "flex-plugins-utils-logger": "^0.6.0",
     "semver": "^7.3.2"
   },
   "devDependencies": {

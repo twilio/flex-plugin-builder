@@ -30,7 +30,7 @@ class FlexPluginsRelease extends FlexPluginsCreateConfiguration {
     await progress(`Enabling configuration **v${version}**`, async () => this.createRelease(version), false);
 
     this._logger.newline();
-    this._logger.success(`🚀 Your configuration **v${version}** was successfully enabled`);
+    this._logger.success(`🚀 Configuration **v${version}** was successfully enabled`);
     this._logger.newline();
   }
 
@@ -49,7 +49,8 @@ FlexPluginsRelease.flags = {
   plugin: flags.string({
     multiple: true,
     required: false,
-    description: 'The plugin to install formatted as pluginName@version',
+    description:
+      'The plugin to install, formatted as pluginName@version. Use additional --plugin to provide other plugins to install',
   }),
   description: flags.string({
     description: 'The configuration description',

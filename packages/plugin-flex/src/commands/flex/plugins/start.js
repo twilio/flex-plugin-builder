@@ -5,9 +5,7 @@ const { createDescription } = require('../../../utils/general');
  * Starts the dev-server for building and iterating on a flex-plugin
  */
 class FlexPluginsStart extends FlexPlugin {
-  async run() {
-    await super.run();
-
+  async doRun() {
     await this.runScript('start');
   }
 

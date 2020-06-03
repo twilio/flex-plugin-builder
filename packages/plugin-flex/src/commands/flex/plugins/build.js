@@ -7,8 +7,7 @@ const { createDescription } = require('../../../utils/general');
  * Builds the flex-plugin
  */
 class FlexPluginsBuild extends FlexPlugin {
-  async run() {
-    await super.run();
+  async doRun() {
     await this.runScript('build');
   }
 
@@ -18,7 +17,7 @@ class FlexPluginsBuild extends FlexPlugin {
 }
 
 FlexPluginsBuild.description = createDescription(
-  'Builds your Flex plugin and creates a JavaScript and sourcemap bundle',
+  'Builds Flex plugin and creates a JavaScript and sourcemap bundle',
   true,
 );
 

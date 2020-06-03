@@ -16,6 +16,6 @@ class FlexPluginsRemove extends FlexPlugin {
   }
 }
 
-FlexPluginsRemove.description = createDescription('Removes your Flex plugin', true);
+FlexPluginsRemove.description = createDescription('Removes the Flex plugin', true);
 
 module.exports = FlexPluginsRemove;

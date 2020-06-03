@@ -24,7 +24,7 @@ class FlexPluginsDeploy extends FlexPlugin {
 
     await progress('Validating plugin deployment', async () => this.validateVersion(), false);
     await progress(
-      `Compiling a production build of plugin **${this.pkg.name}**`,
+      `Compiling a production build of **${this.pkg.name}**`,
       async () => this.runScript('build', args),
       false,
     );
@@ -47,13 +47,13 @@ class FlexPluginsDeploy extends FlexPlugin {
 
     this._logger.newline();
     this._logger.success(
-      `🚀 Your plugin (${availability}) **${this.pkg.name}**@**${deployedData.nextVersion}** was successfully deployed to Plugins API`,
+      `🚀 Plugin (${availability}) **${this.pkg.name}**@**${deployedData.nextVersion}** was successfully deployed to Plugins API`,
     );
     this._logger.newline();
 
     this._logger.info('**Next Steps:**');
     this._logger.info(
-      `Run {{$ twilio flex:plugins:release --plugin ${this.pkg.name}@${deployedData.nextVersion}}} to enable your plugin on your flex instance`,
+      `Run {{$ twilio flex:plugins:release --plugin ${this.pkg.name}@${deployedData.nextVersion}}} to enable this plugin on your flex instance`,
     );
     this._logger.newline();
   }
@@ -121,7 +121,7 @@ class FlexPluginsDeploy extends FlexPlugin {
   }
 }
 
-FlexPluginsDeploy.description = createDescription('Builds and deploys your Flex plugin to Twilio Assets', true);
+FlexPluginsDeploy.description = createDescription('Builds and deploys Flex plugin to Twilio Assets', true);
 FlexPluginsDeploy.flags = {
   patch: flags.boolean({
     exclusive: ['minor', 'major', 'version'],

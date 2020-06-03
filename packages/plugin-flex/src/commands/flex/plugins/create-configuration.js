@@ -23,12 +23,12 @@ class FlexPluginsCreateConfiguration extends FlexPlugin {
     const config = await this.doCreateConfiguration();
 
     this._logger.newline();
-    this._logger.success(`🚀 Your configuration **v${config.version}** was successfully created`);
+    this._logger.success(`🚀 Configuration **v${config.version}** was successfully created`);
     this._logger.newline();
 
     this._logger.info('**Next Steps:**');
     this._logger.info(
-      `Run {{$ twilio flex:plugins:release --version ${config.version}}} to enable your configuration on your flex instance`,
+      `Run {{$ twilio flex:plugins:release --version ${config.version}}} to enable this configuration on your Flex instance`,
     );
     this._logger.newline();
   }
@@ -112,7 +112,8 @@ FlexPluginsCreateConfiguration.flags = {
   plugin: flags.string({
     multiple: true,
     required: true,
-    description: 'The plugin to install formatted as pluginName@version',
+    description:
+      'The plugin to install, formatted as pluginName@version. Use additional --plugin to provide other plugins to install',
   }),
   description: flags.string({
     description: 'The configuration description',

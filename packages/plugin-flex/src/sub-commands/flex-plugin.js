@@ -86,6 +86,9 @@ class FlexPlugin extends TwilioClientCommand {
     }
 
     try {
+      this._logger.notice(`Using profile **${this.currentProfile.id}** (${this.currentProfile.accountSid})`);
+      this._logger.newline();
+
       await this.doRun();
     } catch (e) {
       if (e instanceof TwilioError) {
