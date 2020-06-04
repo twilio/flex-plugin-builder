@@ -39,13 +39,7 @@ class FlexPluginsCreateConfiguration extends FlexPlugin {
    */
   async doCreateConfiguration() {
     const version = await progress('Validating configuration', async () => this.validateVersion(), false);
-    const config = await progress(
-      `Creating configuration **${version}**`,
-      async () => this.createConfiguration(version),
-      false,
-    );
-
-    return config;
+    return progress(`Creating configuration **v${version}**`, async () => this.createConfiguration(version), false);
   }
 
   /**

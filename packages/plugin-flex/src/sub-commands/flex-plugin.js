@@ -4,14 +4,13 @@ const fs = require('fs');
 const { logger } = require('flex-plugins-utils-logger');
 const PluginsApiToolkit = require('flex-plugins-api-toolkit').default;
 const { TwilioClientCommand } = require('@twilio/cli-core').baseCommands;
-const clear = require('clear');
 const {
   PluginServiceHTTPClient,
   PluginsClient,
   PluginVersionsClient,
   ConfigurationsClient,
 } = require('flex-plugins-api-client');
-const { TwilioError, TwilioApiError } = require('flex-plugins-utils-exception');
+const { TwilioError } = require('flex-plugins-utils-exception');
 
 /**
  * Base class for all flex-plugin * scripts.
@@ -27,8 +26,6 @@ class FlexPlugin extends TwilioClientCommand {
     this.scriptArgs = process.argv.slice(3);
     this.skipEnvironmentalSetup = false;
     this._logger = new logger.Logger({ isQuiet: false, markdown: true });
-    this.clear = clear;
-    this.clear();
 
     if (this.opts.strict === false) {
       this.constructor.strict = false;

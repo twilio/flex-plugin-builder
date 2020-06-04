@@ -39,7 +39,7 @@ class FlexPluginsDeploy extends FlexPlugin {
       false,
     );
     const pluginVersion = await progress(
-      `Registering version **${deployedData.nextVersion}** with Plugins API`,
+      `Registering version **v${deployedData.nextVersion}** with Plugins API`,
       () => this.registerPluginVersion(deployedData),
       false,
     );

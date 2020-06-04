@@ -55,7 +55,7 @@ class FlexPluginsCreate extends TwilioClientCommand {
    *
    * @returns {Promise<void>}
    */
-  async doRun() {
+  async run() {
     const { flags: instanceFlags, args } = this.parse(FlexPluginsCreate);
     const createFlexPlugin = new CreateFlexPlugin();
     const scriptArgs = FlexPluginsCreate.toArgv(instanceFlags);
