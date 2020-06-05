@@ -36,12 +36,12 @@
   "dependencies": {
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
-    "@twilio/cli-core": "5.3.0",
+    "@twilio/cli-core": "5.4.0",
     "create-flex-plugin": "^4.2.0-alpha.0",
     "dotenv": "^8.2.0",
     "flex-plugin-scripts": "^4.2.0-alpha.0",
-    "flex-plugins-api-client": "^0.7.0",
-    "flex-plugins-api-toolkit": "^0.7.0",
+    "flex-plugins-api-client": "^0.8.0",
+    "flex-plugins-api-toolkit": "^0.8.0",
     "flex-plugins-utils-exception": "^0.6.0",
     "flex-plugins-utils-logger": "^0.6.0",
     "semver": "^7.3.2"

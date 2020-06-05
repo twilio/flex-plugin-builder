@@ -45,16 +45,10 @@ class FlexPluginsRelease extends FlexPluginsCreateConfiguration {
 
 FlexPluginsRelease.description = createDescription('Creates a Flex Plugin Release', true);
 FlexPluginsRelease.flags = {
-  version: flags.string(),
-  plugin: flags.string({
-    multiple: true,
-    required: false,
-    description:
-      'The plugin to install, formatted as pluginName@version. Use additional --plugin to provide other plugins to install',
-  }),
-  description: flags.string({
-    description: 'The configuration description',
-  }),
+  version: FlexPluginsCreateConfiguration.flags.version,
+  new: FlexPluginsCreateConfiguration.flags.new,
+  plugin: FlexPluginsCreateConfiguration.flags.plugin,
+  description: FlexPluginsCreateConfiguration.flags.description,
 };
 
 module.exports = FlexPluginsRelease;

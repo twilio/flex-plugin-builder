@@ -65,11 +65,16 @@ class FlexPluginsCreateConfiguration extends FlexPlugin {
    * @returns {Promise}
    */
   async createConfiguration(version) {
-    return this.pluginsApiToolkit.createConfiguration({
+    const option = {
       version,
-      plugins: this.flags.plugin,
+      addPlugins: this.flags.plugin,
       description: this.flags.description || '',
-    });
+    };
+    if (!this.flags.new) {
+      option.fromConfiguration = 'active';
+    }
+
+    return this.pluginsApiToolkit.createConfiguration(option);
   }
 
   /**
@@ -103,6 +108,7 @@ FlexPluginsCreateConfiguration.flags = {
   version: flags.string({
     exclusive: ['patch', 'minor', 'major'],
   }),
+  new: flags.boolean(),
   plugin: flags.string({
     multiple: true,
     required: true,
