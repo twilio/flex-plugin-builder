@@ -250,7 +250,7 @@ export const _getPlugins = (env: Environment): Plugin[] => {
       template: paths.app.indexHtmlPath,
     }));
     plugins.push(new InterpolateHtmlPlugin({
-      FPM_JS_SCRIPTS: _getJSScripts(flexUIVersion, reactVersion, reactDOMVersion).join('\n'),
+      __FPB_JS_SCRIPTS: _getJSScripts(flexUIVersion, reactVersion, reactDOMVersion).join('\n'),
     }));
   }
   const hasPnp = 'pnp' in process.versions;
