@@ -89,7 +89,7 @@ export interface Deployment extends ServerlessEntity {
 
 export interface Runtime {
   service: Service;
-  environment: Environment;
+  environment?: Environment;
   build?: Build;
 }
 

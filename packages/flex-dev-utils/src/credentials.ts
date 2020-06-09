@@ -27,6 +27,11 @@ interface Credential {
   password: string;
 }
 
+interface KeytarCredential {
+  account: string;
+  password: string;
+}
+
 const accountSidQuestion: Question = {
   type: 'input',
   name: 'accountSid',
@@ -106,7 +111,7 @@ export const clearCredentials = async (): Promise<void> => {
   }
 
   const credentials = await _getService();
-  const promises = credentials.map((cred) => _getKeytar().deletePassword(SERVICE_NAME, cred.username));
+  const promises = credentials.map((cred) => _getKeytar().deletePassword(SERVICE_NAME, cred.account));
 
   await Promise.all(promises);
 };
@@ -118,43 +123,47 @@ export const clearCredentials = async (): Promise<void> => {
  * @private
  */
 export const _findCredential = async (accountSid?: string): Promise<Credential | null> => {
+  const convertCredential = (credential: KeytarCredential): Credential => ({
+    username: credential.account,
+    password: credential.password,
+  });
+
   const credentials = await _getService();
 
   if (accountSid) {
-    const match = credentials.find((cred) => cred.username === accountSid);
+    const match = credentials.find((cred) => cred.account === accountSid);
     if (match) {
-      return match as Credential;
+      return convertCredential(match);
     }
   }
 
   const accounts = credentials
-    .map((cred) => cred.username)
-    .filter((acc) => acc.substr(0, 2).toLowerCase() === 'ac' && acc.length === 34);
+    .map((cred) => cred.account);
 
   if (credentials.length === 0) {
     return null;
   }
   if (credentials.length === 1) {
-    return credentials[0];
+    return convertCredential(credentials[0]);
   }
   if (accounts.length === 0) {
     return null;
   }
   /* istanbul ignore next */
   if (accounts.length === 1) {
-    return credentials.find((cred) => cred.username === accounts[0]) as Credential;
+    return convertCredential(credentials.find((cred) => cred.account === accounts[0]) as KeytarCredential);
   }
 
   const selectedAccount = await choose(chooseAccount, accounts);
 
-  return credentials.find((cred) => cred.username === selectedAccount) as Credential;
+  return convertCredential(credentials.find((cred) => cred.account === selectedAccount) as KeytarCredential);
 };
 
 /**
  * Gets the credential service
  * @private
  */
-export const _getService = async (): Promise<Credential[]> => {
+export const _getService = async (): Promise<KeytarCredential[]> => {
   if (process.env.CI) {
     return [];
   }
