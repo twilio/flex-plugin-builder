@@ -8,7 +8,7 @@
 
 ## Installation
 
-`craco-config-flex-plugin` dependency is added to your `package.json` when you create a new plugin with [create-flex-plugin](https://github.com/twilio/flex-plugin-builder/tree/master/packages/create-flex-plugin).
+`craco-config-flex-plugin` dependency is automatically added to your `package.json` when you create a new plugin with [create-flex-plugin](https://github.com/twilio/flex-plugin-builder/tree/master/packages/create-flex-plugin).
 
 ## Usage
 
