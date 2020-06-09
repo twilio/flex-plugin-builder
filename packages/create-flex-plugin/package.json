@@ -1,6 +1,6 @@
 {
   "name": "create-flex-plugin",
-  "version": "3.13.3",
+  "version": "3.13.4",
   "description": "Toolkit to create a new Twilio Flex plugin",
   "keywords": [
     "flex",
@@ -47,7 +47,7 @@
   "devDependencies": {
     "@twilio/flex-ui": "^1",
     "@types/yargs": "^13.0.3",
-    "craco-config-flex-plugin": "^3.13.3",
+    "craco-config-flex-plugin": "^3.13.4",
     "flex-plugin": "^3.13.2",
     "flex-plugin-scripts": "^3.13.3"
   },
