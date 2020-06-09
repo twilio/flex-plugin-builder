@@ -138,7 +138,8 @@ export const _findCredential = async (accountSid?: string): Promise<Credential |
   }
 
   const accounts = credentials
-    .map((cred) => cred.account);
+    .map((cred) => cred.account)
+    .filter((acc) => acc.length === 34 && (acc.substr(0, 2) === 'AC' || acc.substr(0, 2) === 'SK'));
 
   if (credentials.length === 0) {
     return null;

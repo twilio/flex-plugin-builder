@@ -17,11 +17,14 @@ describe('credentials', () => {
   const authToken = 'abc123';
   const apiKey = 'SK00000000000000000000000000000000';
   const apiSecret = 'abc123';
+  const keyCredential = {
+    account: accountSid,
+    password: authToken,
+  };
   const credential = {
     username: accountSid,
     password: authToken,
   };
-
   const OLD_ENV = process.env;
 
   beforeEach(() => {
@@ -179,12 +182,25 @@ describe('credentials', () => {
 
   describe('_findCredential', () => {
     const accountSid1 = 'AC00000000000000000000000000000001';
+    const apiKey = 'SK00000000000000000000000000000001';
+    const keytarCredential1 = {
+      account: accountSid1,
+      password: 'authToken1',
+    };
+    const keytarCredential2 = {
+      account: apiKey,
+      password: 'authToken1',
+    };
     const credential1 = {
       username: accountSid1,
       password: 'authToken1',
     };
+    const credential2 = {
+      username: apiKey,
+      password: 'authToken1',
+    };
     const badCreds = {
-      username: 'foo',
+      account: 'foo',
       password: 'pass',
     };
 
@@ -192,10 +208,21 @@ describe('credentials', () => {
       (credentials._findCredential as any).mockRestore();
     });
 
+    it('should return the passed apiKey if match found', async () => {
+      jest
+        .spyOn(credentials, '_getService')
+        .mockImplementation(() => Promise.resolve([keytarCredential1, keytarCredential2]));
+
+      const cred = await credentials._findCredential(apiKey);
+
+      expect(cred).toEqual(credential2);
+      expect(inquirer.prompt).not.toHaveBeenCalled();
+    });
+
     it('should return the passed accountSid if match found', async () => {
       jest
         .spyOn(credentials, '_getService')
-        .mockImplementation(() => Promise.resolve([credential, credential1]));
+        .mockImplementation(() => Promise.resolve([keytarCredential1, keytarCredential1]));
 
       const cred = await credentials._findCredential(accountSid1);
 
@@ -217,7 +244,7 @@ describe('credentials', () => {
     it('should return single credential if only one exists', async () => {
       jest
         .spyOn(credentials, '_getService')
-        .mockImplementation(() => Promise.resolve([credential]));
+        .mockImplementation(() => Promise.resolve([keyCredential]));
 
       const cred = await credentials._findCredential();
 
@@ -239,7 +266,7 @@ describe('credentials', () => {
     it('should ask for you to choose if multiple credentials found', async () => {
       jest
         .spyOn(credentials, '_getService')
-        .mockImplementation(() => Promise.resolve([credential, credential1]));
+        .mockImplementation(() => Promise.resolve([keyCredential, keyCredential]));
 
       const choose = jest.spyOn(inquirer, 'choose').mockResolvedValue(accountSid);
 
@@ -294,7 +321,7 @@ describe('credentials', () => {
     it('should clear credentials', async () => {
       const _getService = jest
         .spyOn(credentials, '_getService')
-        .mockImplementation(() => Promise.resolve([credential, credential]));
+        .mockImplementation(() => Promise.resolve([keyCredential, keyCredential]));
       const deletePassword = jest
         .spyOn(keytar, 'deletePassword')
         .mockResolvedValue(true);
