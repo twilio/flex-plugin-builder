@@ -137,6 +137,9 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
   const credentials = await getCredential();
 
   const runtime = await getRuntime(credentials);
+  if (!runtime.environment) {
+    throw new FlexPluginError('No Runtime environment was found');
+  }
   const pluginUrl = `https://${runtime.environment.domain_name}${bundleUri}`;
 
   const configurationClient = new ConfigurationClient(credentials);
@@ -151,7 +154,7 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
   await _verifyFlexUIConfiguration(uiVersion, uiDependencies, allowReact);
 
   // Check duplicate routes
-  const routeCollision = await progress<Build>('Validating the new plugin bundle', async () => {
+  const routeCollision = await progress('Validating the new plugin bundle', async () => {
     const collision = runtime.build ? !_verifyPath(pluginBaseUrl, runtime.build) : false;
 
     if (collision) {
@@ -202,7 +205,7 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
   });
 
   // Create a build, and poll regularly until build is complete
-  await progress<Build>('Deploying a new build of your Twilio Runtime', async () => {
+  await progress('Deploying a new build of your Twilio Runtime', async () => {
     const newBuild = await buildClient.create(buildData);
     const deployment = await deploymentClient.create(newBuild.sid);
 
