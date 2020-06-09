@@ -181,8 +181,7 @@ describe('credentials', () => {
   });
 
   describe('_findCredential', () => {
-    const accountSid1 = 'AC00000000000000000000000000000001';
-    const apiKey = 'SK00000000000000000000000000000001';
+    const accountSid1 = 'AC00000000000000000000000000000001';}
     const keytarCredential1 = {
       account: accountSid1,
       password: 'authToken1',

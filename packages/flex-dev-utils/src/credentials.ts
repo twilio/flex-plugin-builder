@@ -10,6 +10,7 @@ try {
   // tslint:disable-next-line
   keytar = require('keytar');
 } catch (e) {
+  /* istanbul ignore next */
   if (!process.env.CI) {
     logger.debug('Failed to require keytar', e);
   }
