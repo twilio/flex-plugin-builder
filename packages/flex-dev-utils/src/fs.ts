@@ -79,6 +79,10 @@ export const readPackageJson = (filePath: string): PackageJson => {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 };
 
+export const readJsonFile = <T> (filePath: string): T => {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
 /**
  * Returns the package.json version field of the package
  * @param name  the package

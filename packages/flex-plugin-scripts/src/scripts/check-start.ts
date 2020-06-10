@@ -1,8 +1,8 @@
 import { env, logger, semver, FlexPluginError } from 'flex-dev-utils';
 import paths from 'flex-dev-utils/dist/paths';
-import { checkFilesExist, findGlobs, resolveRelative } from 'flex-dev-utils/dist/fs';
+import { checkFilesExist, findGlobs, resolveRelative, readJsonFile, mkdirpSync } from 'flex-dev-utils/dist/fs';
 import { addCWDNodeModule, resolveModulePath } from 'flex-dev-utils/dist/require';
-import { existsSync, copyFileSync, readFileSync } from 'fs';
+import { existsSync, copyFileSync, readFileSync, appendFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import {
   appConfigMissing,
@@ -14,10 +14,21 @@ import {
   typescriptNotInstalled,
 } from '../prints';
 import run, { exit } from '../utils/run';
+import { confirm } from 'flex-dev-utils/dist/inquirer';
+import { homedir } from 'os';
+import { stringify } from 'querystring';
 
 interface Package {
   version: string;
   dependencies: object;
+}
+
+interface CLIFlexConfiguration {
+  plugins: {
+    name: string;
+    dir: string;
+    port: number;
+  }[];
 }
 
 
@@ -183,6 +194,47 @@ export const _checkPluginCount = () => {
 };
 
 /**
+ * First, touch ~/.twilio-cli/flex/plugins.json if it does not exist
+ * Next, checks if this plugin is in this config file. If not, add it.
+ * @private
+ */
+export const _checkPluginConfigurationExists = async() => {
+  // check if plugin.json exists
+  if (!checkFilesExist(paths.cli.pluginsJsonPath)) {
+      mkdirpSync(paths.cli.flex);
+      appendFileSync(paths.cli.pluginsJsonPath, JSON.stringify({plugins: []}, null, 2));
+  }
+
+  // templated read of package.json
+  const config = readJsonFile<CLIFlexConfiguration>(paths.cli.pluginsJsonPath);
+  const newPlugin = config.plugins.find((plugin) => plugin.name === paths.app.name);
+
+  // If plugin not found, add it
+  if (newPlugin === undefined) {
+    config.plugins.push({name: paths.app.name, dir: paths.app.dir, port: 0});
+    writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify(config));
+    return;
+  }
+
+  // Plugin found with same directory
+  if (newPlugin.dir === paths.app.dir) {
+    return;
+  }
+
+  // Plugin found but with different directory
+  else {
+    const answer =  await confirm(`You already have a plugin called ${newPlugin.name} in the local Flex configuration file, but it is located at ${newPlugin.dir}. Do you want to update the directory path to ${paths.app.dir}?`, 'Y');
+    if (answer) {
+      newPlugin.dir = paths.app.dir;
+      writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify(config));
+    }
+    return;
+  }
+
+};
+
+
+/**
  * Runs pre-start/build checks
  */
 const checkStart = async () => {
@@ -195,6 +247,7 @@ const checkStart = async () => {
   _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
   _checkPluginCount();
   _validateTypescriptProject();
+  _checkPluginConfigurationExists();
 };
 
 run(checkStart);

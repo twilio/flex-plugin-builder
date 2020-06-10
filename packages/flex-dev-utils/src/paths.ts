@@ -6,6 +6,8 @@ import {
   resolveRelative,
 } from './fs';
 
+import { homedir } from 'os';
+
 // All directories
 const nodeModulesDir = resolveCwd('node_modules');
 const scriptsDir = resolveRelative(nodeModulesDir, 'flex-plugin-scripts');
@@ -14,6 +16,9 @@ const publicDir = resolveCwd('public');
 const buildDir = resolveCwd('build');
 const srcDir = resolveCwd('src');
 const flexUIDir = resolveRelative(nodeModulesDir, '@twilio/flex-ui');
+const homeDir = homedir();
+const cliDir = resolveRelative(homeDir, 'twilio-cli');
+const flexDir = resolveRelative(cliDir, 'flex');
 
 // package.json information
 let pkgName = '';
@@ -39,6 +44,12 @@ export default {
     devAssetsDir,
     indexHTMLPath: resolveRelative(devAssetsDir, 'index.html'),
     tsConfigPath: resolveRelative(devAssetsDir, 'tsconfig.json'),
+  },
+
+  cli: {
+    dir: cliDir,
+    flex: resolveRelative(cliDir, 'flex'),
+    pluginsJsonPath: resolveRelative(flexDir, 'plugins.json'),
   },
 
   // plugin-app (the customer app)
