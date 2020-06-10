@@ -36,21 +36,21 @@
   "dependencies": {
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
-    "@twilio/cli-core": "5.4.0",
+    "@twilio/cli-core": "5.5.0",
     "create-flex-plugin": "^4.2.0-alpha.0",
     "dotenv": "^8.2.0",
     "flex-plugin-scripts": "^4.2.0-alpha.0",
-    "flex-plugins-api-client": "^0.8.0",
-    "flex-plugins-api-toolkit": "^0.8.0",
-    "flex-plugins-utils-exception": "^0.6.0",
-    "flex-plugins-utils-logger": "^0.6.0",
+    "flex-plugins-api-client": "^0.10.3",
+    "flex-plugins-api-toolkit": "^0.10.3",
+    "flex-plugins-utils-exception": "^0.7.0",
+    "flex-plugins-utils-logger": "^0.7.3",
     "semver": "^7.3.2"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
     "@oclif/test": "^1.2.6",
     "@twilio/cli-test": "^2.1.0",
-    "eslint": "^7.1.0",
+    "eslint": "^7.2.0",
     "eslint-config-twilio": "^1.23.0",
     "globby": "^11.0.1",
     "husky": "^4.2.5"

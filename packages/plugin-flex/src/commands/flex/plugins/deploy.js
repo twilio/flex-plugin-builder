@@ -63,8 +63,17 @@ class FlexPluginsDeploy extends FlexPlugin {
    * @returns {Promise<void>}
    */
   async validateVersion() {
-    const pluginVersion = await this.pluginVersionsClient.latest(this.pkg.name);
-    const currentVersion = (pluginVersion && pluginVersion.version) || '0.0.0';
+    let currentVersion = '0.0.0';
+
+    try {
+      // Plugin may not exist yet
+      await this.pluginsClient.get(this.pkg.name);
+      const pluginVersion = await this.pluginVersionsClient.latest(this.pkg.name);
+      currentVersion = (pluginVersion && pluginVersion.version) || '0.0.0';
+    } catch (e) {
+      // No-ops
+    }
+
     const nextVersion = this.flags.version || semver.inc(currentVersion, this.bumpLevel);
     if (!semver.valid(nextVersion)) {
       throw new TwilioCliError(`${nextVersion} is not a valid semver`);
