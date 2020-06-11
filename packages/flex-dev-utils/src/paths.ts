@@ -5,7 +5,6 @@ import {
   resolveCwd,
   resolveRelative,
 } from './fs';
-
 import { homedir } from 'os';
 
 // All directories
@@ -46,9 +45,10 @@ export default {
     tsConfigPath: resolveRelative(devAssetsDir, 'tsconfig.json'),
   },
 
+  // twilio-cli/flex/plugins.json paths
   cli: {
     dir: cliDir,
-    flex: resolveRelative(cliDir, 'flex'),
+    flexDir: resolveRelative(cliDir, 'flex'),
     pluginsJsonPath: resolveRelative(flexDir, 'plugins.json'),
   },
 

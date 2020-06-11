@@ -3,20 +3,16 @@ import { Environment } from 'flex-dev-utils/dist/env';
 import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
 import webpack, { Compiler } from 'webpack';
 
-
-
 import getConfiguration, { ConfigurationType } from '../config';
 import { setEnvironment } from '../index';
 import { buildFailure, buildSuccessful } from '../prints';
 import { Callback } from '../types';
 import run, { exit } from '../utils/run';
 
-
 interface BuildBundle {
   warnings?: string[];
   bundles: Bundle[];
 }
-
 
 export interface Bundle {
   chunks?: (number | string)[];
@@ -26,7 +22,6 @@ export interface Bundle {
   name: string;
   size: number;
 }
-
 
 /**
  * Builds the JS and Sourcemap bundles
@@ -83,9 +78,7 @@ const build = async (...argv: string[]) => {
     buildFailure(e);
     exit(1, argv);
   }
-
 };
-
 
 run(build);
 

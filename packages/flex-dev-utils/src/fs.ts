@@ -79,6 +79,11 @@ export const readPackageJson = (filePath: string): PackageJson => {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 };
 
+/**
+ * Reads a JSON file (Templated)
+ * 
+ * @param filePath  the file path to read
+ */
 export const readJsonFile = <T> (filePath: string): T => {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }

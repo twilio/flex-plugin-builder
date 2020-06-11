@@ -15,8 +15,6 @@ import {
 } from '../prints';
 import run, { exit } from '../utils/run';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
-import { homedir } from 'os';
-import { stringify } from 'querystring';
 
 interface Package {
   version: string;
@@ -30,7 +28,6 @@ interface CLIFlexConfiguration {
     port: number;
   }[];
 }
-
 
 const srcIndexPath = join(process.cwd(), 'src', 'index');
 const extensions = ['js', 'jsx', 'ts', 'tsx'];
@@ -194,45 +191,40 @@ export const _checkPluginCount = () => {
 };
 
 /**
- * First, touch ~/.twilio-cli/flex/plugins.json if it does not exist
- * Next, checks if this plugin is in this config file. If not, add it.
+ * Touch ~/.twilio-cli/flex/plugins.json if it does not exist
+ * Check if this plugin is in this config file. If not, add it.
  * @private
  */
 export const _checkPluginConfigurationExists = async() => {
   // check if plugin.json exists
   if (!checkFilesExist(paths.cli.pluginsJsonPath)) {
-      mkdirpSync(paths.cli.flex);
+      mkdirpSync(paths.cli.flexDir);
       appendFileSync(paths.cli.pluginsJsonPath, JSON.stringify({plugins: []}, null, 2));
   }
 
   // templated read of package.json
   const config = readJsonFile<CLIFlexConfiguration>(paths.cli.pluginsJsonPath);
-  const newPlugin = config.plugins.find((plugin) => plugin.name === paths.app.name);
+  const plugin = config.plugins.find((p) => p.name === paths.app.name);
 
   // If plugin not found, add it
-  if (newPlugin === undefined) {
+  if (!plugin) {
     config.plugins.push({name: paths.app.name, dir: paths.app.dir, port: 0});
     writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify(config));
     return;
   }
 
   // Plugin found with same directory
-  if (newPlugin.dir === paths.app.dir) {
+  if (plugin.dir === paths.app.dir) {
     return;
   }
 
   // Plugin found but with different directory
-  else {
-    const answer =  await confirm(`You already have a plugin called ${newPlugin.name} in the local Flex configuration file, but it is located at ${newPlugin.dir}. Do you want to update the directory path to ${paths.app.dir}?`, 'Y');
-    if (answer) {
-      newPlugin.dir = paths.app.dir;
-      writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify(config));
-    }
-    return;
+  const answer =  await confirm(`You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${paths.app.dir}?`, 'Y');
+  if (answer) {
+    plugin.dir = paths.app.dir;
+    writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify(config));
   }
-
 };
-
 
 /**
  * Runs pre-start/build checks
