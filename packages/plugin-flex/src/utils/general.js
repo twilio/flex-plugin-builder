@@ -1,4 +1,4 @@
-const runInformation = 'This command needs to be invoked inside a plugin directory.';
+module.exports._runInformation = 'This command needs to be invoked inside a plugin directory.';
 
 /**
  * Creates the description for the command
@@ -13,5 +13,5 @@ module.exports.createDescription = (description, inDirectory) => {
     return description;
   }
 
-  return `${description} ${runInformation}`;
+  return `${description} ${module.exports._runInformation}`;
 };

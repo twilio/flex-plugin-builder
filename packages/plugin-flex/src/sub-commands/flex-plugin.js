@@ -1,5 +1,4 @@
 const path = require('path');
-const fs = require('fs');
 
 const { logger } = require('flex-plugins-utils-logger');
 const PluginsApiToolkit = require('flex-plugins-api-toolkit').default;
@@ -11,6 +10,8 @@ const {
   ConfigurationsClient,
 } = require('flex-plugins-api-client');
 const { TwilioError } = require('flex-plugins-utils-exception');
+
+const fs = require('../utils/fs');
 
 /**
  * Base class for all flex-plugin * scripts.
@@ -39,10 +40,6 @@ class FlexPlugin extends TwilioClientCommand {
 
       this.exit(exitCode);
     };
-
-    if (!this.isPluginFolder()) {
-      throw new Error(`${this.cwd} directory is not a flex plugin directory`);
-    }
   }
 
   /**
@@ -50,9 +47,7 @@ class FlexPlugin extends TwilioClientCommand {
    * @returns {boolean}
    */
   isPluginFolder() {
-    const appConfigPath = path.join(this.cwd, 'public', 'appConfig.js');
-
-    return fs.existsSync(appConfigPath);
+    return fs.filesExist(path.join(this.cwd, 'public', 'appConfig.js'));
   }
 
   /**
@@ -60,9 +55,7 @@ class FlexPlugin extends TwilioClientCommand {
    * @returns {object}
    */
   get pkg() {
-    const pkgPath = path.join(this.cwd, 'package.json');
-
-    return JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+    return fs.readJSONFile(this.cwd, 'package.json');
   }
 
   /**
@@ -71,6 +64,10 @@ class FlexPlugin extends TwilioClientCommand {
    */
   async run() {
     await super.run();
+
+    if (!this.isPluginFolder()) {
+      throw new Error(`${this.cwd} directory is not a flex plugin directory`);
+    }
 
     const httpClient = new PluginServiceHTTPClient(this.twilioClient.username, this.twilioApiClient.password);
     this.pluginsApiToolkit = new PluginsApiToolkit(this.twilioClient.username, this.twilioApiClient.password);
@@ -103,6 +100,7 @@ class FlexPlugin extends TwilioClientCommand {
   /**
    * OClif alias for run command
    */
+  /* istanbul ignore next */
   async runCommand() {
     return this.run();
   }
@@ -112,13 +110,14 @@ class FlexPlugin extends TwilioClientCommand {
    * @param scriptName  the script name
    * @param argv        arguments to pass to the script
    */
+  /* istanbul ignore next */
   async runScript(scriptName, argv = this.scriptArgs) {
     // eslint-disable-next-line global-require
     return require(`flex-plugin-scripts/dist/scripts/${scriptName}`).default(...argv);
   }
 
   /**
-   * Setups the environment
+   * Setups the environment. This must run after run command
    */
   setupEnvironment() {
     process.env.SKIP_CREDENTIALS_SAVING = 'true';

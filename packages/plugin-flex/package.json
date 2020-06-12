@@ -21,16 +21,18 @@
     "README.md"
   ],
   "scripts": {
-    "lint": "eslint --ext .js src/",
+    "lint": "eslint --ext .js src/ test/",
     "lint:fix": "npm run lint -- --fix",
     "prepack": "oclif-dev manifest && oclif-dev readme",
     "postpack": "rm -f oclif.manifest.json",
-    "posttest": "eslint --ignore-path .gitignore . && npm audit",
+    "test:ci": "nyc mocha --forbid-only \"test/**/*.test.js\"",
+    "test": "mocha \"test/**/*.test.js\"",
     "version": "oclif-dev readme && git add README.md"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint"
+      "pre-commit": "npm run lint",
+      "pre-push": "npm run test"
     }
   },
   "dependencies": {
@@ -50,10 +52,16 @@
     "@oclif/dev-cli": "^1.22.2",
     "@oclif/test": "^1.2.6",
     "@twilio/cli-test": "^2.1.0",
+    "chai": "^4.2.0",
     "eslint": "^7.2.0",
-    "eslint-config-twilio": "^1.23.0",
+    "eslint-config-twilio": "^1.24.0",
+    "eslint-config-twilio-mocha": "^1.24.1",
     "globby": "^11.0.1",
-    "husky": "^4.2.5"
+    "husky": "^4.2.5",
+    "mocha": "^8.0.1",
+    "nyc": "^15.1.0",
+    "sinon": "^9.0.2",
+    "sinon-chai": "^3.5.0"
   },
   "engines": {
     "node": ">=8.0.0"
