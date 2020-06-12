@@ -158,7 +158,7 @@ describe('CheckStartScript', () => {
     });
   });
 
-  describe.only('_verifyPackageVersion', () => {
+  describe('_verifyPackageVersion', () => {
     const _require = jest.spyOn(requireScripts, '_require');
 
     it('should quit if expected dependency is not found', () => {
