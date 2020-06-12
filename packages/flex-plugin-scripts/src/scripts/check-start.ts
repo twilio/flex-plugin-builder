@@ -2,7 +2,7 @@ import { env, logger, semver, FlexPluginError } from 'flex-dev-utils';
 import paths from 'flex-dev-utils/dist/paths';
 import { checkFilesExist, findGlobs, resolveRelative, readJsonFile, mkdirpSync } from 'flex-dev-utils/dist/fs';
 import { addCWDNodeModule, resolveModulePath } from 'flex-dev-utils/dist/require';
-import { existsSync, copyFileSync, readFileSync, appendFileSync, writeFileSync } from 'fs';
+import { existsSync, copyFileSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import {
   appConfigMissing,
