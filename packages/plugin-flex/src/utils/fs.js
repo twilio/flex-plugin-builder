@@ -13,7 +13,7 @@ const filesExist = (...files) => files.map(fs.existsSync).every(Boolean);
  * @param paths
  * @returns {any}
  */
-const readJSONFile = (...paths) => JSON.parse(fs.readFileSync(path.join(...paths), 'UTF'));
+const readJSONFile = (...paths) => JSON.parse(fs.readFileSync(path.join(...paths), 'UTF8'));
 
 module.exports = {
   filesExist,
