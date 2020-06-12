@@ -31,3 +31,11 @@ export const resolveModulePath = (pkg: string) => {
     }
   }
 };
+
+/**
+ * This is an alias for require. Useful for mocking out in tests
+ * @param filePath  the file to require
+ * @private
+ */
+/* istanbul ignore next */
+export const _require = (filePath: string) => require(filePath);

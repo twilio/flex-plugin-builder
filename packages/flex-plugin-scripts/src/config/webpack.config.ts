@@ -1,6 +1,6 @@
 /// <reference path="../module.d.ts" />
 
-import { paths } from 'flex-dev-utils';
+import { paths, semver } from 'flex-dev-utils';
 import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
 import ModuleScopePlugin from '@k88/module-scope-plugin';
 import typescriptFormatter from '@k88/typescript-compile-error-formatter';
@@ -31,6 +31,26 @@ const EXTERNALS = {
   'react-dom': 'ReactDOM',
   'redux': 'Redux',
   'react-redux': 'ReactRedux',
+};
+
+/**
+ * Returns the JS scripts to inject into the index.html file
+ * @param flexUIVersion   the flex-ui version
+ * @param reactVersion    the react version
+ * @param reactDOMVersion the react-dom version
+ */
+export const _getJSScripts = (flexUIVersion: string, reactVersion: string, reactDOMVersion: string): string[] => {
+  if (!semver.satisfies(flexUIVersion, '>=1.19.0')) {
+    return [
+      `<script src="https://assets.flex.twilio.com/releases/flex-ui/${flexUIVersion}/twilio-flex.min.js"></script>`,
+    ];
+  }
+
+  return [
+    `<script crossorigin src="https://unpkg.com/react@${reactVersion}/umd/react.development.js"></script>`,
+    `<script crossorigin src="https://unpkg.com/react-dom@${reactDOMVersion}/umd/react-dom.development.js"></script>`,
+    `<script src="https://assets.flex.twilio.com/releases/flex-ui/${flexUIVersion}/twilio-flex.unbundled-react.min.js"></script>`,
+  ];
 };
 
 /**
@@ -202,14 +222,18 @@ export const _getPlugins = (env: Environment): Plugin[] => {
   const isDev = env === Environment.Development;
   const isProd = env === Environment.Production;
 
+  const flexUIVersion = getDependencyVersion('@twilio/flex-ui');
+  const reactVersion = getDependencyVersion('react');
+  const reactDOMVersion = getDependencyVersion('react-dom');
+
   plugins.push(new DefinePlugin({
     __FPB_PLUGIN_UNIQUE_NAME: `'${paths.app.name}'`,
     __FPB_PLUGIN_VERSION: `'${paths.app.version}'`,
     __FPB_FLEX_PLUGIN_SCRIPTS_VERSION: `'${getDependencyVersion('flex-plugin-scripts')}'`,
     __FPB_FLEX_PLUGIN_VERSION: `'${getDependencyVersion('flex-plugin')}'`,
-    __FPB_FLEX_UI_VERSION: `'${getDependencyVersion('@twilio/flex-ui')}'`,
-    __FPB_REACT_VERSION: `'${getDependencyVersion('react')}'`,
-    __FPB_REACT_DOM_VERSION: `'${getDependencyVersion('react-dom')}'`,
+    __FPB_FLEX_UI_VERSION: `'${flexUIVersion}'`,
+    __FPB_REACT_VERSION: `'${reactVersion}'`,
+    __FPB_REACT_DOM_VERSION: `'${reactDOMVersion}'`,
   }));
 
   if (env === Environment.Production) {
@@ -220,15 +244,13 @@ export const _getPlugins = (env: Environment): Plugin[] => {
 
   if (env === Environment.Development) {
     plugins.push(new HotModuleReplacementPlugin());
-
-    const pkg = require(paths.app.flexUIPkgPath);
     plugins.push(new HtmlWebpackPlugin({
       inject: false,
       hash: false,
       template: paths.app.indexHtmlPath,
     }));
     plugins.push(new InterpolateHtmlPlugin({
-      TWILIO_FLEX_VERSION: pkg.version,
+      __FPB_JS_SCRIPTS: _getJSScripts(flexUIVersion, reactVersion, reactDOMVersion).join('\n'),
     }));
   }
   const hasPnp = 'pnp' in process.versions;

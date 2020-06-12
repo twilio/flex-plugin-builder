@@ -6,6 +6,7 @@ export default class FlexPluginError extends TwilioError {
   private readonly pkg: AppPackageJson | null;
 
   constructor(msg?: string) {
+    /* istanbul ignore next */
     super(msg);
 
     try {

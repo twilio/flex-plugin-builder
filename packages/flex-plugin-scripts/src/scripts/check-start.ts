@@ -107,7 +107,7 @@ export const _checkPublicDirSync = (allowSkip: boolean) => {
  */
 /* istanbul ignore next */
 export const _checkExternalDepsVersions = (allowSkip: boolean, allowReact: boolean) => {
-  const flexUIPkg = require(paths.app.flexUIPkgPath);
+  const flexUIPkg = _require(paths.app.flexUIPkgPath);
 
   PackagesToVerify.forEach((name) => _verifyPackageVersion(flexUIPkg, allowSkip, allowReact, name));
 };
@@ -131,10 +131,9 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, al
   }
 
   // @ts-ignore
-
   const requiredVersion = semver.coerce(expectedDependency).version;
   const installedPath = resolveRelative(paths.app.nodeModulesDir, name, 'package.json');
-  const installedVersion = require(installedPath).version;
+  const installedVersion = _require(installedPath).version;
 
   if (requiredVersion !== installedVersion) {
     if (allowReact) {
