@@ -81,7 +81,7 @@ export const readPackageJson = (filePath: string): PackageJson => {
 
 /**
  * Reads a JSON file (Templated)
- * 
+ *
  * @param filePath  the file path to read
  */
 export const readJsonFile = <T> (filePath: string): T => {

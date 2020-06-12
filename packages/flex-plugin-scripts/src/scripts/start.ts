@@ -114,7 +114,7 @@ export const _requirePackages = (pluginsPath: string, pkgPath: string) => {
  */
 export const _updatePluginsUrl = (port: number) => {
   const { plugins, pkg } = _requirePackages(paths.app.pluginsJsonPath, paths.app.pkgPath);
-  
+
   const pluginIndex = plugins.findIndex((p) => p.src.indexOf(pkg.name) !== -1);
   if (pluginIndex === -1) {
     throw new FlexPluginError(`Could not find plugin ${pkg.name}`);

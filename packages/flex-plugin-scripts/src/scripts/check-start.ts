@@ -198,8 +198,8 @@ export const _checkPluginCount = () => {
 export const _checkPluginConfigurationExists = async() => {
   // check if plugin.json exists
   if (!checkFilesExist(paths.cli.pluginsJsonPath)) {
-      mkdirpSync(paths.cli.flexDir);
-      appendFileSync(paths.cli.pluginsJsonPath, JSON.stringify({plugins: []}, null, 2));
+      mkdirpSync(paths.cli.flex);
+      writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify({plugins: []}, null, 2));
   }
 
   // templated read of package.json
@@ -209,7 +209,7 @@ export const _checkPluginConfigurationExists = async() => {
   // If plugin not found, add it
   if (!plugin) {
     config.plugins.push({name: paths.app.name, dir: paths.app.dir, port: 0});
-    writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify(config));
+    writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify(config, null, 2));
     return;
   }
 
@@ -222,7 +222,7 @@ export const _checkPluginConfigurationExists = async() => {
   const answer =  await confirm(`You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${paths.app.dir}?`, 'Y');
   if (answer) {
     plugin.dir = paths.app.dir;
-    writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify(config));
+    writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify(config, null, 2));
   }
 };
 
