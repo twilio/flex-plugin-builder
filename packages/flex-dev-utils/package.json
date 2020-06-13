@@ -32,16 +32,16 @@
     "test:watch": "cd ../.. && jest packages/flex-dev-utils --watch"
   },
   "dependencies": {
-    "@k88/pipe-compose": "^2.1.1",
+    "@k88/pipe-compose": "^2.2.0",
     "@types/inquirer": "^6.5.0",
     "address": "^1.1.2",
     "app-module-path": "^2.2.0",
-    "axios": "^0.19.0",
-    "axios-mock-adapter": "^1.17.0",
+    "axios": "^0.19.2",
+    "axios-mock-adapter": "^1.18.1",
     "copy-template-dir": "^1.4.0",
     "execa": "^2.1.0",
-    "flex-plugins-utils-exception": "^0.7.0",
-    "flex-plugins-utils-logger": "^0.7.3",
+    "flex-plugins-utils-exception": "^0.8.0",
+    "flex-plugins-utils-logger": "^0.8.1",
     "inquirer": "7.0.0",
     "lodash": "^4.17.15",
     "marked": "^0.7.0",
@@ -54,16 +54,16 @@
     "tmp": "^0.1.0",
     "update-notifier": "^3.0.1",
     "url": "^0.11.0",
-    "util": "^0.12.1"
+    "util": "^0.12.3"
   },
   "devDependencies": {
     "@types/app-module-path": "^2.2.0",
-    "@types/lodash": "^4.14.144",
+    "@types/lodash": "^4.14.155",
     "@types/marked": "^0.6.5",
     "@types/marked-terminal": "^3.1.1",
     "@types/mkdirp": "^0.5.2",
     "@types/rimraf": "^2.0.2",
-    "@types/semver": "^7.1.0",
+    "@types/semver": "^7.2.0",
     "@types/tmp": "^0.1.0",
     "@types/update-notifier": "^2.5.0"
   },
