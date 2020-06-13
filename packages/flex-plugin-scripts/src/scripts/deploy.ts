@@ -29,7 +29,7 @@ interface Options {
   isPluginsPilot: boolean;
 }
 
-interface Deploy {
+export interface DeployResult {
   serviceSid: string;
   accountSid: string;
   environmentSid: string;
@@ -37,7 +37,7 @@ interface Deploy {
   isPublic: boolean;
   nextVersion: string;
   pluginUrl: string;
-};
+}
 
 /**
  * Verifies the new plugin path does not have collision with existing paths of the deployed Runtime service.
@@ -133,7 +133,7 @@ export const _getAccount = async (runtime: Runtime, credentials: AuthConfig) => 
  * @param nextVersion   the next version of the bundle
  * @param options       options for this deploy
  */
-export const _doDeploy = async (nextVersion: string, options: Options): Promise<Deploy> => {
+export const _doDeploy = async (nextVersion: string, options: Options): Promise<DeployResult> => {
   if (!checkFilesExist(paths.app.bundlePath)) {
     throw new FlexPluginError('Could not find build file. Did you run `npm run build` first?');
   }
