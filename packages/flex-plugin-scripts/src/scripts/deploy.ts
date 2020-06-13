@@ -29,6 +29,16 @@ interface Options {
   isPluginsPilot: boolean;
 }
 
+interface Deploy {
+  serviceSid: string;
+  accountSid: string;
+  environmentSid: string;
+  domainName: string;
+  isPublic: boolean;
+  nextVersion: string;
+  pluginUrl: string;
+};
+
 /**
  * Verifies the new plugin path does not have collision with existing paths of the deployed Runtime service.
  *
@@ -49,8 +59,9 @@ export const _verifyPath = (baseUrl: string, build: Build) => {
 
 /**
  * Validates Flex UI version requirement
- * @param flexUI      the flex ui version
- * @param allowReact  whether this deploy supports unbundled React
+ * @param flexUI        the flex ui version
+ * @param dependencies  the package.json dependencie
+ * @param allowReact    whether this deploy supports unbundled React
  * @private
  */
 export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: UIDependencies, allowReact: boolean) => {
@@ -122,7 +133,7 @@ export const _getAccount = async (runtime: Runtime, credentials: AuthConfig) => 
  * @param nextVersion   the next version of the bundle
  * @param options       options for this deploy
  */
-export const _doDeploy = async (nextVersion: string, options: Options) => {
+export const _doDeploy = async (nextVersion: string, options: Options): Promise<Deploy> => {
   if (!checkFilesExist(paths.app.bundlePath)) {
     throw new FlexPluginError('Could not find build file. Did you run `npm run build` first?');
   }
