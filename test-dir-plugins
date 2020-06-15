@@ -1,9 +1,0 @@
-{
-  "plugins": [
-    {
-      "name": "plugin-test",
-      "dir": "test-dir",
-      "port": 0
-    }
-  ]
-}

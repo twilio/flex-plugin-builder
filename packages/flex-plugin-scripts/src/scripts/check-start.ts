@@ -1,7 +1,7 @@
 import { env, logger, semver, FlexPluginError } from 'flex-dev-utils';
 import paths from 'flex-dev-utils/dist/paths';
 import { checkFilesExist, findGlobs, resolveRelative, readJsonFile, mkdirpSync } from 'flex-dev-utils/dist/fs';
-import { addCWDNodeModule, resolveModulePath } from 'flex-dev-utils/dist/require';
+import { addCWDNodeModule, resolveModulePath, _require } from 'flex-dev-utils/dist/require';
 import { existsSync, copyFileSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import {
@@ -195,7 +195,6 @@ export const _checkPluginCount = () => {
  * @private
  */
 export const _checkPluginConfigurationExists = async() => {
-  // check if plugin.json exists
   if (!checkFilesExist(paths.cli.pluginsJsonPath)) {
       mkdirpSync(paths.cli.flex);
       writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify({plugins: []}, null, 2));

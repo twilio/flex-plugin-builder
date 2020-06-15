@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs, { write } from 'fs';
 import { join } from 'path';
 
 import * as requireScripts from 'flex-dev-utils/dist/require';
@@ -425,54 +425,61 @@ describe('CheckStartScript', () => {
 
 
   describe('_checkPluginConfigurationExists', () => {
-    it ('make directories if not found', () => {
-      const checkFilesExist = jest
-        .spyOn(fsScripts, 'checkFilesExist')
-        .mockReturnValue(false);
-      const mkdirpSync = jest
-        .spyOn(fsScripts, 'mkdirpSync')
-        .mockReturnValue('blah');
+    const checkFilesExist = jest
+        .spyOn(fsScripts, 'checkFilesExist');
+    const mkdirpSync = jest
+      .spyOn(fsScripts, 'mkdirpSync')
+      .mockReturnThis();
+    const writeFileSync = jest
+      .spyOn(fs, 'writeFileSync')
+      .mockReturnThis();
+    const readJsonFile = jest
+      .spyOn(fsScripts, 'readJsonFile')
+      .mockReturnValue({'plugins': []});
+    const confirm = jest
+      .spyOn(inquirer, 'confirm');
 
-        checkStartScript._checkPluginConfigurationExists();
-
-        expect(checkFilesExist).toHaveBeenCalledTimes(1);
-        expect(checkFilesExist).toHaveBeenCalledWith('test-dir-plugins');
-        expect(mkdirpSync).toHaveBeenCalledTimes(1);
-        expect(mkdirpSync).toHaveBeenCalledWith('test-dir-flex');
-
-        checkFilesExist.mockRestore();
-        mkdirpSync.mockRestore();
+    beforeEach(() => {
+      checkFilesExist.mockReset();
+      mkdirpSync.mockReset();
+      writeFileSync.mockReset();
+      readJsonFile.mockReset();
+      confirm.mockReset();
     });
 
-    it ('do nothing if directories are found', () => {
-      const checkFilesExist = jest
-        .spyOn(fsScripts, 'checkFilesExist')
-        .mockReturnValue(true);
-      const mkdirpSync = jest
-        .spyOn(fsScripts, 'mkdirpSync')
-        .mockReturnValue('test');
-
-        checkStartScript._checkPluginConfigurationExists();
-
-        expect(checkFilesExist).toHaveBeenCalledTimes(1);
-        expect(checkFilesExist).toHaveBeenCalledWith('test-dir-plugins');
-        expect(mkdirpSync).not.toHaveBeenCalled();
-
-        checkFilesExist.mockRestore();
-        mkdirpSync.mockRestore();
+    afterAll(() => {
+      checkFilesExist.mockRestore();
+      mkdirpSync.mockRestore();
+      writeFileSync.mockRestore();
+      readJsonFile.mockRestore();
+      confirm.mockRestore();
     });
 
+    it ('make directories if not found', async() => {
+      checkFilesExist.mockReturnValue(false);
+
+      await checkStartScript._checkPluginConfigurationExists();
+
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(checkFilesExist).toHaveBeenCalledWith('test-dir-plugins');
+      expect(mkdirpSync).toHaveBeenCalledTimes(1);
+      expect(mkdirpSync).toHaveBeenCalledWith('test-dir-flex');
+    });
+
+    it ('do nothing if directories are found', async() => {
+      checkFilesExist.mockReturnValue(true);
+
+      await checkStartScript._checkPluginConfigurationExists();
+
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(checkFilesExist).toHaveBeenCalledWith('test-dir-plugins');
+      expect(mkdirpSync).not.toHaveBeenCalled();
+    });
 
     it ('should add the plugin to plugins.json if not found', async() => {
-      const checkFilesExist = jest
-        .spyOn(fsScripts, 'checkFilesExist')
-        .mockReturnValue(true);
-      const readJsonFile = jest
-        .spyOn(fsScripts, 'readJsonFile')
-        .mockReturnValue({'plugins': []});
-      const writeFileSync = jest
-        .spyOn(fs , 'writeFileSync')
-        .mockReturnThis();
+      checkFilesExist.mockReturnValue(true);
+      readJsonFile.mockReturnValue({'plugins': []});
+      writeFileSync.mockReturnThis();
 
       await checkStartScript._checkPluginConfigurationExists();
 
@@ -480,44 +487,25 @@ describe('CheckStartScript', () => {
       expect(readJsonFile).toHaveBeenCalledTimes(1);
       expect(writeFileSync).toHaveBeenCalledTimes(1);
       expect(writeFileSync).toHaveBeenCalledWith('test-dir-plugins', JSON.stringify({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]}, null, 2))
-
-      writeFileSync.mockRestore();
     });
 
-
-    it('do nothing if plugin has same directory as an existing one', async() => {
-      const checkFilesExist = jest
-        .spyOn(fsScripts, 'checkFilesExist')
-        .mockReturnValue(true);
-      const readJsonFile = jest
-        .spyOn(fsScripts, 'readJsonFile')
-        .mockReturnValue({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]});
-      const writeFileSync = jest
-        .spyOn(fs , 'writeFileSync')
-        .mockReturnThis();
+    it ('do nothing if plugin has same directory as an existing one', async() => {
+      checkFilesExist.mockReturnValue(true);
+      readJsonFile.mockReturnValue({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]});
+      writeFileSync.mockReturnThis();
 
       await checkStartScript._checkPluginConfigurationExists();
 
       expect(checkFilesExist).toHaveBeenCalledTimes(1);
       expect(readJsonFile).toHaveBeenCalledTimes(1);
       expect(writeFileSync).not.toHaveBeenCalled();
-
-      writeFileSync.mockRestore();
     });
 
     it('change file path if user confirms', async() => {
-      const checkFilesExist = jest
-        .spyOn(fsScripts, 'checkFilesExist')
-        .mockReturnValue(true);
-      const readJsonFile = jest
-        .spyOn(fsScripts, 'readJsonFile')
-        .mockReturnValue({'plugins': [{name: 'plugin-test', dir: 'test-dirr', port: 0}]});
-      const writeFileSync = jest
-        .spyOn(fs , 'writeFileSync')
-        .mockReturnThis();
-      const confirm = jest
-        .spyOn(inquirer, 'confirm')
-        .mockResolvedValue(true);
+      checkFilesExist.mockReturnValue(true);
+      readJsonFile.mockReturnValue({'plugins': [{name: 'plugin-test', dir: 'test-dirr', port: 0}]});
+      writeFileSync.mockReturnThis();
+      confirm.mockResolvedValue(true);
 
       await checkStartScript._checkPluginConfigurationExists();
 
@@ -530,18 +518,10 @@ describe('CheckStartScript', () => {
     });
 
     it('do not change file path, user did not confirm', async() => {
-      const checkFilesExist = jest
-        .spyOn(fsScripts, 'checkFilesExist')
-        .mockReturnValue(true);
-      const readJsonFile = jest
-        .spyOn(fsScripts, 'readJsonFile')
-        .mockReturnValue({'plugins': [{name: 'plugin-test', dir: 'test-dirr', port: 0}]});
-      const writeFileSync = jest
-        .spyOn(fs , 'writeFileSync')
-        .mockReturnThis();
-      const confirm = jest
-        .spyOn(inquirer, 'confirm')
-        .mockResolvedValue(false);
+      checkFilesExist.mockReturnValue(true);
+      readJsonFile.mockReturnValue({'plugins': [{name: 'plugin-test', dir: 'test-dirr', port: 0}]});
+      writeFileSync.mockReturnThis();
+      confirm.mockResolvedValue(false);
 
       await checkStartScript._checkPluginConfigurationExists();
 
@@ -550,6 +530,5 @@ describe('CheckStartScript', () => {
       expect(confirm).toHaveBeenCalledTimes(1);
       expect(writeFileSync).not.toHaveBeenCalled();
     });
-
   });
 });
