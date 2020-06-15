@@ -1,5 +1,4 @@
-import fs, { write } from 'fs';
-import { join } from 'path';
+import fs from 'fs';
 
 import * as requireScripts from 'flex-dev-utils/dist/require';
 import * as fsScripts from 'flex-dev-utils/dist/fs';
@@ -63,6 +62,9 @@ describe('CheckStartScript', () => {
     const _checkPluginCount = jest
       .spyOn(checkStartScript, '_checkPluginCount')
       .mockReturnValue(undefined);
+    const _checkPluginConfigurationExists = jest
+      .spyOn(checkStartScript, '_checkPluginConfigurationExists')
+      .mockReturnThis();
 
     beforeEach(() => {
       _checkAppConfig.mockReset();
@@ -70,6 +72,7 @@ describe('CheckStartScript', () => {
       _checkExternalDepsVersions.mockReset();
       _validateTypescriptProject.mockReset();
       _checkPluginCount.mockReset();
+      _checkPluginConfigurationExists.mockReset();
     });
 
     afterAll(() => {
@@ -78,6 +81,7 @@ describe('CheckStartScript', () => {
       _checkExternalDepsVersions.mockRestore();
       _validateTypescriptProject.mockRestore();
       _checkPluginCount.mockRestore();
+      _checkPluginConfigurationExists.mockRestore();
     });
 
     const expectCalled = (allowSkip: boolean, allowReact: boolean) => {
@@ -87,6 +91,7 @@ describe('CheckStartScript', () => {
       expect(_validateTypescriptProject).toHaveBeenCalledTimes(1);
       expect(_checkExternalDepsVersions).toHaveBeenCalledWith(allowSkip, allowReact);
       expect(_checkPluginCount).toHaveBeenCalledTimes(1);
+      expect(_checkPluginConfigurationExists).toHaveBeenCalledTimes(1);
     };
 
     it('should call all methods', async () => {
@@ -425,19 +430,24 @@ describe('CheckStartScript', () => {
 
 
   describe('_checkPluginConfigurationExists', () => {
-    const checkFilesExist = jest
-        .spyOn(fsScripts, 'checkFilesExist');
-    const mkdirpSync = jest
-      .spyOn(fsScripts, 'mkdirpSync')
-      .mockReturnThis();
-    const writeFileSync = jest
-      .spyOn(fs, 'writeFileSync')
-      .mockReturnThis();
-    const readJsonFile = jest
-      .spyOn(fsScripts, 'readJsonFile')
-      .mockReturnValue({'plugins': []});
-    const confirm = jest
+    let checkFilesExist = jest
+      .spyOn(fsScripts, 'checkFilesExist');
+    let mkdirpSync = jest
+      .spyOn(fsScripts, 'mkdirpSync');
+    let writeFileSync = jest
+      .spyOn(fs, 'writeFileSync');
+    let readJsonFile = jest
+      .spyOn(fsScripts, 'readJsonFile');
+    let confirm = jest
       .spyOn(inquirer, 'confirm');
+
+    beforeAll(() => {
+      checkFilesExist = jest.spyOn(fsScripts, 'checkFilesExist');
+      mkdirpSync = jest.spyOn(fsScripts, 'mkdirpSync');
+      writeFileSync = jest.spyOn(fs, 'writeFileSync');
+      readJsonFile = jest.spyOn(fsScripts, 'readJsonFile');
+      confirm = jest.spyOn(inquirer, 'confirm');
+    });
 
     beforeEach(() => {
       checkFilesExist.mockReset();
@@ -445,6 +455,10 @@ describe('CheckStartScript', () => {
       writeFileSync.mockReset();
       readJsonFile.mockReset();
       confirm.mockReset();
+
+      mkdirpSync.mockReturnThis();
+      writeFileSync.mockReturnThis();
+      readJsonFile.mockReturnValue({'plugins': []});
     });
 
     afterAll(() => {
@@ -455,7 +469,7 @@ describe('CheckStartScript', () => {
       confirm.mockRestore();
     });
 
-    it ('make directories if not found', async() => {
+    it('make directories if not found', async () => {
       checkFilesExist.mockReturnValue(false);
 
       await checkStartScript._checkPluginConfigurationExists();
@@ -466,7 +480,7 @@ describe('CheckStartScript', () => {
       expect(mkdirpSync).toHaveBeenCalledWith('test-dir-flex');
     });
 
-    it ('do nothing if directories are found', async() => {
+    it('do nothing if directories are found', async () => {
       checkFilesExist.mockReturnValue(true);
 
       await checkStartScript._checkPluginConfigurationExists();
@@ -476,7 +490,7 @@ describe('CheckStartScript', () => {
       expect(mkdirpSync).not.toHaveBeenCalled();
     });
 
-    it ('should add the plugin to plugins.json if not found', async() => {
+    it('should add the plugin to plugins.json if not found', async () => {
       checkFilesExist.mockReturnValue(true);
       readJsonFile.mockReturnValue({'plugins': []});
       writeFileSync.mockReturnThis();
@@ -486,10 +500,10 @@ describe('CheckStartScript', () => {
       expect(checkFilesExist).toHaveBeenCalledTimes(1);
       expect(readJsonFile).toHaveBeenCalledTimes(1);
       expect(writeFileSync).toHaveBeenCalledTimes(1);
-      expect(writeFileSync).toHaveBeenCalledWith('test-dir-plugins', JSON.stringify({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]}, null, 2))
+      expect(writeFileSync).toHaveBeenCalledWith('test-dir-plugins', JSON.stringify({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]}, null, 2));
     });
 
-    it ('do nothing if plugin has same directory as an existing one', async() => {
+    it('do nothing if plugin has same directory as an existing one', async () => {
       checkFilesExist.mockReturnValue(true);
       readJsonFile.mockReturnValue({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]});
       writeFileSync.mockReturnThis();
@@ -501,7 +515,7 @@ describe('CheckStartScript', () => {
       expect(writeFileSync).not.toHaveBeenCalled();
     });
 
-    it('change file path if user confirms', async() => {
+    it('change file path if user confirms', async () => {
       checkFilesExist.mockReturnValue(true);
       readJsonFile.mockReturnValue({'plugins': [{name: 'plugin-test', dir: 'test-dirr', port: 0}]});
       writeFileSync.mockReturnThis();
@@ -517,7 +531,7 @@ describe('CheckStartScript', () => {
       expect(writeFileSync).toHaveBeenCalledWith('test-dir-plugins', JSON.stringify({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]}, null, 2));
     });
 
-    it('do not change file path, user did not confirm', async() => {
+    it('do not change file path, user did not confirm', async () => {
       checkFilesExist.mockReturnValue(true);
       readJsonFile.mockReturnValue({'plugins': [{name: 'plugin-test', dir: 'test-dirr', port: 0}]});
       writeFileSync.mockReturnThis();

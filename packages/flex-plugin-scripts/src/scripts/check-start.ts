@@ -195,12 +195,13 @@ export const _checkPluginCount = () => {
  * @private
  */
 export const _checkPluginConfigurationExists = async() => {
+  // Check to see if the directory exists & if not, create it
   if (!checkFilesExist(paths.cli.pluginsJsonPath)) {
       mkdirpSync(paths.cli.flex);
       writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify({plugins: []}, null, 2));
   }
 
-  // templated read of package.json
+  // Templated read of package.json
   const config = readJsonFile<CLIFlexConfiguration>(paths.cli.pluginsJsonPath);
   const plugin = config.plugins.find((p) => p.name === paths.app.name);
 
@@ -237,7 +238,7 @@ const checkStart = async () => {
   _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
   _checkPluginCount();
   _validateTypescriptProject();
-  _checkPluginConfigurationExists();
+  await _checkPluginConfigurationExists();
 };
 
 run(checkStart);
