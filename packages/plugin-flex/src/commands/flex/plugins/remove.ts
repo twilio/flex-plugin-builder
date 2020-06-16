@@ -1,10 +1,10 @@
-const FlexPlugin = require('../../../sub-commands/flex-plugin');
-const { createDescription } = require('../../../utils/general');
+import { createDescription } from '../../../utils/general';
+import FlexPlugin from '../../../sub-commands/flex-plugin';
 
 /**
  * Deletes the flex-plugin
  */
-class FlexPluginsRemove extends FlexPlugin {
+export default class FlexPluginsRemove extends FlexPlugin {
   async run() {
     await super.run();
 
@@ -17,5 +17,3 @@ class FlexPluginsRemove extends FlexPlugin {
 }
 
 FlexPluginsRemove.description = createDescription('Removes the Flex plugin', true);
-
-module.exports = FlexPluginsRemove;

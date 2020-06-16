@@ -1,16 +1,36 @@
-const { flags } = require('@oclif/command');
-const semver = require('semver');
-const { progress, logger } = require('flex-plugins-utils-logger');
+import { PluginVersionResource } from 'flex-plugins-api-client/dist/clients/pluginVersions';
+import { flags } from '@oclif/command';
+import { progress } from 'flex-plugins-utils-logger';
+import semver from 'semver';
+import { DeployResult } from 'flex-plugin-scripts/dist/scripts/deploy';
 
-const FlexPlugin = require('../../../sub-commands/flex-plugin');
-const { createDescription } = require('../../../utils/general');
-const { TwilioCliError } = require('../../../exceptions');
+import { TwilioCliError } from '../../../exceptions';
+import { createDescription } from '../../../utils/general';
+import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 
 /**
  * Builds and then deploys the Flex plugin
  */
-class FlexPluginsDeploy extends FlexPlugin {
-  constructor(argv, config, secureStorage) {
+export default class FlexPluginsDeploy extends FlexPlugin {
+  static description = createDescription('Builds and deploys Flex plugin to Twilio Assets', true);
+
+  static flags = {
+    patch: flags.boolean({
+      exclusive: ['minor', 'major', 'version'],
+    }),
+    minor: flags.boolean({
+      exclusive: ['patch', 'major', 'version'],
+    }),
+    major: flags.boolean({
+      exclusive: ['patch', 'minor', 'version'],
+    }),
+    version: flags.string({
+      exclusive: ['patch', 'minor', 'major'],
+    }),
+    changelog: flags.string(),
+  };
+
+  constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, { strict: false });
 
     this.scriptArgs = [];
@@ -28,7 +48,7 @@ class FlexPluginsDeploy extends FlexPlugin {
       async () => this.runScript('build', args),
       false,
     );
-    const deployedData = await progress(
+    const deployedData: DeployResult = await progress(
       `Uploading **${this.pkg.name}**`,
       async () => this.runScript('deploy', [...this.scriptArgs, ...args]),
       false,
@@ -38,9 +58,9 @@ class FlexPluginsDeploy extends FlexPlugin {
       async () => this.registerPlugin(),
       false,
     );
-    const pluginVersion = await progress(
+    const pluginVersion: PluginVersionResource = await progress(
       `Registering version **v${deployedData.nextVersion}** with Plugins API`,
-      () => this.registerPluginVersion(deployedData),
+      async () => this.registerPluginVersion(deployedData),
       false,
     );
     const availability = pluginVersion.private ? 'private' : 'public';
@@ -74,7 +94,7 @@ class FlexPluginsDeploy extends FlexPlugin {
       // No-ops
     }
 
-    const nextVersion = this.flags.version || semver.inc(currentVersion, this.bumpLevel);
+    const nextVersion = this._flags.version || (semver.inc(currentVersion, this.bumpLevel) as string);
     if (!semver.valid(nextVersion)) {
       throw new TwilioCliError(`${nextVersion} is not a valid semver`);
     }
@@ -101,15 +121,15 @@ class FlexPluginsDeploy extends FlexPlugin {
 
   /**
    * Registers a Plugin Version
-   * @param deployedData
+   * @param deployResult
    * @returns {Promise}
    */
-  async registerPluginVersion(deployedData) {
+  async registerPluginVersion(deployResult: DeployResult) {
     return this.pluginVersionsClient.create(this.pkg.name, {
-      Version: deployedData.nextVersion,
-      PluginUrl: deployedData.pluginUrl,
+      Version: deployResult.nextVersion,
+      PluginUrl: deployResult.pluginUrl,
       Private: !this.argv.includes('--public'),
-      Changelog: this.flags.changelog,
+      Changelog: this._flags.changelog || '',
     });
   }
 
@@ -118,33 +138,20 @@ class FlexPluginsDeploy extends FlexPlugin {
    * @returns {string}
    */
   get bumpLevel() {
-    if (this.flags.major) {
+    if (this._flags.major) {
       return 'major';
     }
 
-    if (this.flags.minor) {
+    if (this._flags.minor) {
       return 'minor';
     }
 
     return 'patch';
   }
+
+  get _flags() {
+    return this.parse(FlexPluginsDeploy).flags;
+  }
 }
 
-FlexPluginsDeploy.description = createDescription('Builds and deploys Flex plugin to Twilio Assets', true);
-FlexPluginsDeploy.flags = {
-  patch: flags.boolean({
-    exclusive: ['minor', 'major', 'version'],
-  }),
-  minor: flags.boolean({
-    exclusive: ['patch', 'major', 'version'],
-  }),
-  major: flags.boolean({
-    exclusive: ['patch', 'minor', 'version'],
-  }),
-  version: flags.string({
-    exclusive: ['patch', 'minor', 'major'],
-  }),
-  changelog: flags.string(),
-};
-
-module.exports = FlexPluginsDeploy;
+FlexPluginsDeploy.strict = false;

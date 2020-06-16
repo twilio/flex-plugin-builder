@@ -1,8 +1,16 @@
 {
   "extends": [
+    "twilio-ts",
     "twilio-mocha"
   ],
   "parserOptions": {
     "ecmaVersion": 2018
+  },
+  "ignorePatterns": [
+    "*.d.ts"
+  ],
+  "rules": {
+    "import/no-unused-modules": "off",
+    "@typescript-eslint/ban-ts-ignore": "off"
   }
 }

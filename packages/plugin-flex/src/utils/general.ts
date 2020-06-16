@@ -1,4 +1,4 @@
-module.exports._runInformation = 'This command needs to be invoked inside a plugin directory.';
+export const _runInformation = 'This command needs to be invoked inside a plugin directory.';
 
 /**
  * Creates the description for the command
@@ -7,11 +7,11 @@ module.exports._runInformation = 'This command needs to be invoked inside a plug
  * @param {boolean} inDirectory  whether this command should be invoked inside a plugin directory or not
  * @returns {string} the updated command
  */
-module.exports.createDescription = (description, inDirectory) => {
+export const createDescription = (description: string, inDirectory: boolean = true) => {
   description = `${description.trim().replace(/\.$/, '')}.`;
   if (!inDirectory) {
     return description;
   }
 
-  return `${description} ${module.exports._runInformation}`;
+  return `${description} ${_runInformation}`;
 };

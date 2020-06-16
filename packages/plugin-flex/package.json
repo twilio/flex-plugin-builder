@@ -15,13 +15,15 @@
   "author": "Twilio @twilio",
   "files": [
     "/oclif.manifest.json",
-    "/src",
+    "/dist",
     "/package-lock.json",
     "LICENSE",
     "README.md"
   ],
   "scripts": {
-    "lint": "eslint --ext .js src/ test/",
+    "prebuild": "rm -rf dist",
+    "build": "tsc",
+    "lint": "eslint --ext .ts src/",
     "lint:fix": "npm run lint -- --fix",
     "prepack": "oclif-dev manifest && oclif-dev readme",
     "postpack": "rm -f oclif.manifest.json",
@@ -38,30 +40,34 @@
   "dependencies": {
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
+    "@oclif/parser": "^3.8.5",
     "@twilio/cli-core": "5.5.0",
-    "create-flex-plugin": "^4.2.0-alpha.0",
-    "dotenv": "^8.2.0",
-    "flex-plugin-scripts": "^4.2.0-alpha.0",
+    "create-flex-plugin": "4.3.1-alpha.0",
+    "flex-plugin-scripts": "4.3.1-alpha.0",
     "flex-plugins-api-client": "^0.10.3",
     "flex-plugins-api-toolkit": "^0.10.3",
-    "flex-plugins-utils-exception": "^0.7.0",
-    "flex-plugins-utils-logger": "^0.7.3",
-    "semver": "^7.3.2"
+    "flex-plugins-utils-exception": "^0.8.0",
+    "flex-plugins-utils-logger": "^0.8.1",
+    "semver": "^7.3.2",
+    "yargs": "^15.3.1"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
     "@oclif/test": "^1.2.6",
     "@twilio/cli-test": "^2.1.0",
+    "@types/node": "^14.0.13",
+    "@types/semver": "^7.2.0",
     "chai": "^4.2.0",
     "eslint": "^7.2.0",
-    "eslint-config-twilio": "^1.24.0",
-    "eslint-config-twilio-mocha": "^1.24.1",
+    "eslint-config-twilio-mocha": "^1.26.0",
+    "eslint-config-twilio-ts": "^1.26.0",
     "globby": "^11.0.1",
     "husky": "^4.2.5",
     "mocha": "^8.0.1",
     "nyc": "^15.1.0",
     "sinon": "^9.0.2",
-    "sinon-chai": "^3.5.0"
+    "sinon-chai": "^3.5.0",
+    "typescript": "^3.9.5"
   },
   "engines": {
     "node": ">=8.0.0"
