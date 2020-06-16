@@ -21,7 +21,7 @@ jest.mock('flex-dev-utils/dist/paths', () => ({
   },
   cli: {
     dir: 'test-dir',
-    flex: 'test-dir-flex',
+    flexDir: 'test-dir-flex',
     pluginsJsonPath: 'test-dir-plugins',
   },
   app: {
