@@ -80,6 +80,15 @@ export const readPackageJson = (filePath: string): PackageJson => {
 };
 
 /**
+ * Reads a JSON file (Templated)
+ *
+ * @param filePath  the file path to read
+ */
+export const readJsonFile = <T> (filePath: string): T => {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+/**
  * Returns the package.json version field of the package
  * @param name  the package
  */

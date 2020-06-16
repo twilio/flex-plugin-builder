@@ -1,8 +1,8 @@
 import { env, logger, semver, FlexPluginError } from 'flex-dev-utils';
 import paths from 'flex-dev-utils/dist/paths';
-import { checkFilesExist, findGlobs, resolveRelative } from 'flex-dev-utils/dist/fs';
+import { checkFilesExist, findGlobs, resolveRelative, readJsonFile, mkdirpSync } from 'flex-dev-utils/dist/fs';
 import { addCWDNodeModule, resolveModulePath, _require } from 'flex-dev-utils/dist/require';
-import { existsSync, copyFileSync, readFileSync } from 'fs';
+import { existsSync, copyFileSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import {
   appConfigMissing,
@@ -14,12 +14,20 @@ import {
   typescriptNotInstalled,
 } from '../prints';
 import run, { exit } from '../utils/run';
+import { confirm } from 'flex-dev-utils/dist/inquirer';
 
 interface Package {
   version: string;
   dependencies: object;
 }
 
+interface CLIFlexConfiguration {
+  plugins: {
+    name: string;
+    dir: string;
+    port: number;
+  }[];
+}
 
 const srcIndexPath = join(process.cwd(), 'src', 'index');
 const extensions = ['js', 'jsx', 'ts', 'tsx'];
@@ -182,6 +190,37 @@ export const _checkPluginCount = () => {
 };
 
 /**
+ * Touch ~/.twilio-cli/flex/plugins.json if it does not exist
+ * Check if this plugin is in this config file. If not, add it.
+ * @private
+ */
+export const _checkPluginConfigurationExists = async () => {
+  if (!checkFilesExist(paths.cli.pluginsJsonPath)) {
+      mkdirpSync(paths.cli.flexDir);
+      writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify({plugins: []}, null, 2));
+  }
+
+  const config = readJsonFile<CLIFlexConfiguration>(paths.cli.pluginsJsonPath);
+  const plugin = config.plugins.find((p) => p.name === paths.app.name);
+
+  if (!plugin) {
+    config.plugins.push({name: paths.app.name, dir: paths.app.dir, port: 0});
+    writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify(config, null, 2));
+    return;
+  }
+
+  if (plugin.dir === paths.app.dir) {
+    return;
+  }
+
+  const answer = await confirm(`You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${paths.app.dir}?`, 'N');
+  if (answer) {
+    plugin.dir = paths.app.dir;
+    writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify(config, null, 2));
+  }
+};
+
+/**
  * Runs pre-start/build checks
  */
 const checkStart = async () => {
@@ -194,6 +233,7 @@ const checkStart = async () => {
   _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
   _checkPluginCount();
   _validateTypescriptProject();
+  await _checkPluginConfigurationExists();
 };
 
 run(checkStart);

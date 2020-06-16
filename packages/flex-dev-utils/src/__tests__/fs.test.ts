@@ -21,10 +21,23 @@ describe('fs', () => {
 
   describe('readPackageJson', () => {
     it('should read package.json', () => {
-      const str = '{"version":1}';
-      const readFileSync = jest.spyOn(fs.default, 'readFileSync').mockImplementation(() => str);
+      const readFileSync = jest.spyOn(fs.default, 'readFileSync').mockReturnValue('{"version":1}');
 
       const pkg = fs.readPackageJson('filePath');
+
+      expect(pkg).toEqual({version: 1});
+      expect(readFileSync).toHaveBeenCalledTimes(1);
+      expect(readFileSync).toHaveBeenCalledWith('filePath', 'utf8');
+
+      readFileSync.mockRestore();
+    });
+  });
+
+  describe('readJsonFile', () => {
+    it('should read package.json', () => {
+      const readFileSync = jest.spyOn(fs.default, 'readFileSync').mockReturnValue('{"version":1}');
+
+      const pkg = fs.readJsonFile('filePath');
 
       expect(pkg).toEqual({version: 1});
       expect(readFileSync).toHaveBeenCalledTimes(1);

@@ -1,10 +1,10 @@
 import fs from 'fs';
-import { join } from 'path';
 
 import * as requireScripts from 'flex-dev-utils/dist/require';
 import * as fsScripts from 'flex-dev-utils/dist/fs';
 import * as prints from '../../prints';
 import * as checkStartScript from '../check-start';
+import * as inquirer from 'flex-dev-utils/dist/inquirer';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('../../prints/versionMismatch');
@@ -14,6 +14,25 @@ jest.mock('../../prints/publicDirCopyFailed');
 jest.mock('../../prints/expectedDependencyNotFound');
 jest.mock('../../prints/typescriptNotInstalled');
 jest.mock('../../prints/loadPluginCountError');
+jest.mock('flex-dev-utils/dist/paths', () => ({
+  scripts: {
+    tsConfigPath: 'test-ts-config-path',
+    dir: 'test-scripts-dir',
+  },
+  cli: {
+    dir: 'test-dir',
+    flexDir: 'test-dir-flex',
+    pluginsJsonPath: 'test-dir-plugins',
+  },
+  app: {
+    version: '1.0.0',
+    name: 'plugin-test',
+    dir: 'test-dir',
+    nodeModulesDir: 'test-node-modules',
+    appConfig: 'appConfig.js',
+  },
+  assetBaseUrlTemplate: 'template',
+}));
 
 describe('CheckStartScript', () => {
   // @ts-ignore
@@ -43,6 +62,9 @@ describe('CheckStartScript', () => {
     const _checkPluginCount = jest
       .spyOn(checkStartScript, '_checkPluginCount')
       .mockReturnValue(undefined);
+    const _checkPluginConfigurationExists = jest
+      .spyOn(checkStartScript, '_checkPluginConfigurationExists')
+      .mockReturnThis();
 
     beforeEach(() => {
       _checkAppConfig.mockReset();
@@ -50,6 +72,7 @@ describe('CheckStartScript', () => {
       _checkExternalDepsVersions.mockReset();
       _validateTypescriptProject.mockReset();
       _checkPluginCount.mockReset();
+      _checkPluginConfigurationExists.mockReset();
     });
 
     afterAll(() => {
@@ -58,6 +81,7 @@ describe('CheckStartScript', () => {
       _checkExternalDepsVersions.mockRestore();
       _validateTypescriptProject.mockRestore();
       _checkPluginCount.mockRestore();
+      _checkPluginConfigurationExists.mockRestore();
     });
 
     const expectCalled = (allowSkip: boolean, allowReact: boolean) => {
@@ -67,6 +91,7 @@ describe('CheckStartScript', () => {
       expect(_validateTypescriptProject).toHaveBeenCalledTimes(1);
       expect(_checkExternalDepsVersions).toHaveBeenCalledWith(allowSkip, allowReact);
       expect(_checkPluginCount).toHaveBeenCalledTimes(1);
+      expect(_checkPluginConfigurationExists).toHaveBeenCalledTimes(1);
     };
 
     it('should call all methods', async () => {
@@ -399,6 +424,123 @@ describe('CheckStartScript', () => {
       expect(exit).not.toHaveBeenCalled();
       expect(prints.typescriptNotInstalled).not.toHaveBeenCalled();
       _copyFileSync.mockRestore();
+    });
+  });
+
+  describe('_checkPluginConfigurationExists', () => {
+    let checkFilesExist = jest
+      .spyOn(fsScripts, 'checkFilesExist');
+    let mkdirpSync = jest
+      .spyOn(fsScripts, 'mkdirpSync');
+    let writeFileSync = jest
+      .spyOn(fs, 'writeFileSync');
+    let readJsonFile = jest
+      .spyOn(fsScripts, 'readJsonFile');
+    let confirm = jest
+      .spyOn(inquirer, 'confirm');
+
+    beforeAll(() => {
+      checkFilesExist = jest.spyOn(fsScripts, 'checkFilesExist');
+      mkdirpSync = jest.spyOn(fsScripts, 'mkdirpSync');
+      writeFileSync = jest.spyOn(fs, 'writeFileSync');
+      readJsonFile = jest.spyOn(fsScripts, 'readJsonFile');
+      confirm = jest.spyOn(inquirer, 'confirm');
+    });
+
+    beforeEach(() => {
+      checkFilesExist.mockReset();
+      mkdirpSync.mockReset();
+      writeFileSync.mockReset();
+      readJsonFile.mockReset();
+      confirm.mockReset();
+
+      mkdirpSync.mockReturnThis();
+      writeFileSync.mockReturnThis();
+      readJsonFile.mockReturnValue({'plugins': []});
+    });
+
+    afterAll(() => {
+      checkFilesExist.mockRestore();
+      mkdirpSync.mockRestore();
+      writeFileSync.mockRestore();
+      readJsonFile.mockRestore();
+      confirm.mockRestore();
+    });
+
+    it('make directories if not found', async () => {
+      checkFilesExist.mockReturnValue(false);
+
+      await checkStartScript._checkPluginConfigurationExists();
+
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(checkFilesExist).toHaveBeenCalledWith('test-dir-plugins');
+      expect(mkdirpSync).toHaveBeenCalledTimes(1);
+      expect(mkdirpSync).toHaveBeenCalledWith('test-dir-flex');
+    });
+
+    it('do nothing if directories are found', async () => {
+      checkFilesExist.mockReturnValue(true);
+
+      await checkStartScript._checkPluginConfigurationExists();
+
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(checkFilesExist).toHaveBeenCalledWith('test-dir-plugins');
+      expect(mkdirpSync).not.toHaveBeenCalled();
+    });
+
+    it('should add the plugin to plugins.json if not found', async () => {
+      checkFilesExist.mockReturnValue(true);
+      readJsonFile.mockReturnValue({'plugins': []});
+      writeFileSync.mockReturnThis();
+
+      await checkStartScript._checkPluginConfigurationExists();
+
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(readJsonFile).toHaveBeenCalledTimes(1);
+      expect(writeFileSync).toHaveBeenCalledTimes(1);
+      expect(writeFileSync).toHaveBeenCalledWith('test-dir-plugins', JSON.stringify({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]}, null, 2));
+    });
+
+    it('do nothing if plugin has same directory as an existing one', async () => {
+      checkFilesExist.mockReturnValue(true);
+      readJsonFile.mockReturnValue({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]});
+      writeFileSync.mockReturnThis();
+
+      await checkStartScript._checkPluginConfigurationExists();
+
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(readJsonFile).toHaveBeenCalledTimes(1);
+      expect(writeFileSync).not.toHaveBeenCalled();
+    });
+
+    it('change file path if user confirms', async () => {
+      checkFilesExist.mockReturnValue(true);
+      readJsonFile.mockReturnValue({'plugins': [{name: 'plugin-test', dir: 'test-dirr', port: 0}]});
+      writeFileSync.mockReturnThis();
+      confirm.mockResolvedValue(true);
+
+      await checkStartScript._checkPluginConfigurationExists();
+
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(readJsonFile).toHaveBeenCalledTimes(1);
+      expect(confirm).toHaveBeenCalledTimes(1);
+      expect(readJsonFile).toHaveBeenCalledTimes(1);
+      expect(writeFileSync).toHaveBeenCalledTimes(1);
+      expect(writeFileSync).toHaveBeenCalledWith('test-dir-plugins', JSON.stringify({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]}, null, 2));
+    });
+
+    it('do not change file path, user did not confirm', async () => {
+      checkFilesExist.mockReturnValue(true);
+      readJsonFile.mockReturnValue({'plugins': [{name: 'plugin-test', dir: 'test-dirr', port: 0}]});
+      writeFileSync.mockReturnThis();
+      confirm.mockResolvedValue(false);
+
+      await checkStartScript._checkPluginConfigurationExists();
+
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(readJsonFile).toHaveBeenCalledTimes(1);
+      expect(confirm).toHaveBeenCalledTimes(1);
+      expect(writeFileSync).not.toHaveBeenCalled();
     });
   });
 });
