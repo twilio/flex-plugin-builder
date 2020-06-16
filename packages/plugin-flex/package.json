@@ -15,13 +15,13 @@
   "author": "Twilio @twilio",
   "files": [
     "/oclif.manifest.json",
-    "/dist",
+    "/lib",
     "/package-lock.json",
     "LICENSE",
     "README.md"
   ],
   "scripts": {
-    "prebuild": "rm -rf dist",
+    "prebuild": "rm -rf lib",
     "build": "tsc",
     "lint": "eslint --ext .ts src/",
     "lint:fix": "npm run lint -- --fix",
@@ -74,7 +74,7 @@
   },
   "oclif": {
     "name": "flex",
-    "commands": "./src/commands",
+    "commands": "./lib/commands",
     "bin": "twilio",
     "devPlugins": [
       "@oclif/plugin-help"

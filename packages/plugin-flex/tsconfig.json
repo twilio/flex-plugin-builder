@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
+    "outDir": "lib",
     "baseUrl": ".",
     "rootDir": "src",
     "module": "commonjs",
@@ -25,7 +25,7 @@
     "test/",
     "**/*.test.ts",
     "**/*.spec.ts",
-    "dist",
+    "lib",
     "coverage"
   ]
 }
