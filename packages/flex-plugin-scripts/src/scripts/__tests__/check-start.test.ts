@@ -427,8 +427,6 @@ describe('CheckStartScript', () => {
     });
   });
 
-
-
   describe('_checkPluginConfigurationExists', () => {
     let checkFilesExist = jest
       .spyOn(fsScripts, 'checkFilesExist');

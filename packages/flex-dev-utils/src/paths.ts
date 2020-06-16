@@ -48,7 +48,7 @@ export default {
   // twilio-cli/flex/plugins.json paths
   cli: {
     dir: cliDir,
-    flex: flexDir,
+    flexDir,
     pluginsJsonPath: resolveRelative(flexDir, 'plugins.json'),
   },
 

@@ -34,6 +34,21 @@ describe('fs', () => {
     });
   });
 
+  describe('readJsonFile', () => {
+    it('should read package.json', () => {
+      const str = '{"version":1}';
+      const readFileSync = jest.spyOn(fs.default, 'readFileSync').mockImplementation(() => str);
+
+      const pkg = fs.readJsonFile('filePath');
+
+      expect(pkg).toEqual({version: 1});
+      expect(readFileSync).toHaveBeenCalledTimes(1);
+      expect(readFileSync).toHaveBeenCalledWith('filePath', 'utf8');
+
+      readFileSync.mockRestore();
+    });
+  });
+
   describe('readAppPackageJson', () => {
     it('should read app package', () => {
       const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockReturnValue(appPackage);

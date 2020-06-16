@@ -195,30 +195,25 @@ export const _checkPluginCount = () => {
  * @private
  */
 export const _checkPluginConfigurationExists = async() => {
-  // Check to see if the directory exists & if not, create it
   if (!checkFilesExist(paths.cli.pluginsJsonPath)) {
-      mkdirpSync(paths.cli.flex);
+      mkdirpSync(paths.cli.flexDir);
       writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify({plugins: []}, null, 2));
   }
 
-  // Templated read of package.json
   const config = readJsonFile<CLIFlexConfiguration>(paths.cli.pluginsJsonPath);
   const plugin = config.plugins.find((p) => p.name === paths.app.name);
 
-  // If plugin not found, add it
   if (!plugin) {
     config.plugins.push({name: paths.app.name, dir: paths.app.dir, port: 0});
     writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify(config, null, 2));
     return;
   }
 
-  // Plugin found with same directory
   if (plugin.dir === paths.app.dir) {
     return;
   }
 
-  // Plugin found but with different directory
-  const answer =  await confirm(`You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${paths.app.dir}?`, 'Y');
+  const answer =  await confirm(`You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${paths.app.dir}?`, 'N');
   if (answer) {
     plugin.dir = paths.app.dir;
     writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify(config, null, 2));
