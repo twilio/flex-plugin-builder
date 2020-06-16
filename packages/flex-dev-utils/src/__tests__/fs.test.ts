@@ -21,8 +21,7 @@ describe('fs', () => {
 
   describe('readPackageJson', () => {
     it('should read package.json', () => {
-      const str = '{"version":1}';
-      const readFileSync = jest.spyOn(fs.default, 'readFileSync').mockImplementation(() => str);
+      const readFileSync = jest.spyOn(fs.default, 'readFileSync').mockReturnValue('{"version":1}');
 
       const pkg = fs.readPackageJson('filePath');
 
