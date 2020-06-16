@@ -194,7 +194,7 @@ export const _checkPluginCount = () => {
  * Check if this plugin is in this config file. If not, add it.
  * @private
  */
-export const _checkPluginConfigurationExists = async() => {
+export const _checkPluginConfigurationExists = async () => {
   if (!checkFilesExist(paths.cli.pluginsJsonPath)) {
       mkdirpSync(paths.cli.flexDir);
       writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify({plugins: []}, null, 2));
@@ -213,7 +213,7 @@ export const _checkPluginConfigurationExists = async() => {
     return;
   }
 
-  const answer =  await confirm(`You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${paths.app.dir}?`, 'N');
+  const answer = await confirm(`You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${paths.app.dir}?`, 'N');
   if (answer) {
     plugin.dir = paths.app.dir;
     writeFileSync(paths.cli.pluginsJsonPath, JSON.stringify(config, null, 2));
