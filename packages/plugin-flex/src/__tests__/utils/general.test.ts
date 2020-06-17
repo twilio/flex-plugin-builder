@@ -1,6 +1,6 @@
-const { expect } = require('chai');
+import { expect } from 'chai';
 
-const generalUtils = require('../../src/utils/general');
+import * as generalUtils from '../../utils/general';
 
 describe('Utils/General', () => {
   it('should create description that is not in directory', () => {

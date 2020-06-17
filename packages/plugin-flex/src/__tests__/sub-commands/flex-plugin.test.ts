@@ -1,6 +1,6 @@
-const { expect, createTest } = require('../helper');
-const fs = require('../../src/utils/fs');
-const FlexPlugin = require('../../src/sub-commands/flex-plugin');
+import { expect, createTest } from '../helper';
+import FlexPlugin from '../../sub-commands/flex-plugin';
+import * as fs from '../../utils/fs';
 
 describe('SubCommands/FlexPlugin', () => {
   const { env } = process;
@@ -15,7 +15,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   start()
-    .setup(async () => {
+    .setup(() => {
       sinon.stub(fs, 'filesExist').returns(true);
     })
     .test((cmd) => {

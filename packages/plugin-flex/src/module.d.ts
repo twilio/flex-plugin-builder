@@ -34,3 +34,74 @@ declare module '@twilio/cli-core' {
 
   export { baseCommands, services };
 }
+
+declare module '@twilio/cli-test' {
+  import { baseCommands } from '@twilio/cli-core';
+  import { Logger } from 'flex-plugins-utils-logger';
+  import {Context, Plugins} from "fancy-test/lib/types";
+  import { ConfigData, Config } from '@twilio/cli-core/src/services/config';
+  import { expect } from 'chai';
+  import { FancyTypes } from 'fancy-test';
+  import { test } from '@oclif/test';
+  import { Command } from '@oclif/command';
+
+  type TestCmd = {
+    testCmd?: typeof baseCommands.TwilioClientCommand & {
+      _logger: Logger;
+    };
+  };
+
+  type TwilioCliTest<C extends TwilioClientCommand> = FancyTypes.Base<FancyTypes.Context & TestCmd, {
+    twilioFakeProfile: {
+      output: {
+        userConfig: typeof ConfigData;
+      };
+      args: [typeof ConfigData];
+    };
+  } & {
+    twilioCliEnv: {
+      output: {
+        config: typeof Config;
+      };
+      args: [typeof Config];
+    };
+  } & {
+    twilioCreateCommand: {
+      output: {
+        testCmd: C;
+      };
+      args: [C, string[]];
+    };
+  }> & typeof test;
+
+  declare const twilioCliTest: FancyTypes.Base<FancyTypes.Context & TestCmd, {
+    twilioFakeProfile: {
+      output: {
+        configData: typeof ConfigData;
+      };
+      args: [typeof ConfigData];
+    };
+  } & {
+    twilioCliEnv: {
+      output: {
+        config: typeof Config;
+      };
+      args: [typeof Config];
+    };
+  } & {
+    twilioCreateCommand: {
+      output: {
+        testCmd: typeof baseCommands.TwilioClientCommand;
+      };
+      args: [baseCommands.TwilioClientCommand, string[]];
+    };
+  }> & typeof test;
+
+  export { expect, twilioCliTest as test  };
+}
+
+declare module '@twilio/cli-core/src/services/config' {
+  import { ConfigData, Config, ConfigDataProfile } from '@twilio/cli-core/src/services/config';
+
+  export { Config, ConfigData, ConfigDataProfile }
+}
