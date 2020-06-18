@@ -9,8 +9,4 @@ export default class FlexPluginsStart extends FlexPlugin {
   async doRun() {
     await this.runScript('start');
   }
-
-  async runCommand() {
-    return this.run();
-  }
 }

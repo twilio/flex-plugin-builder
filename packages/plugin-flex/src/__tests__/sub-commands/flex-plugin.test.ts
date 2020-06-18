@@ -1,4 +1,4 @@
-import { expect, createTest } from '../helper';
+import { expect, createTest } from '../framework';
 import FlexPlugin from '../../sub-commands/flex-plugin';
 import * as fs from '../../utils/fs';
 

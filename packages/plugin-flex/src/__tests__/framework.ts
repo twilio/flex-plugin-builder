@@ -99,7 +99,7 @@ export const pluginTest = test
 export const createTest = <C>(command: new (...args: any[]) => C) => {
   return {
     sinon: sinon.createSandbox(),
-    start: (args = []) => {
+    start: (args: string[] = []) => {
       // @ts-ignore
       return pluginTest
         .twilioFakeProfile(ConfigData)

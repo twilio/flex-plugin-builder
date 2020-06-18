@@ -42,7 +42,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
   async doRun() {
     const args = ['--quiet', '--persist-terminal'];
 
-    await progress('Validating plugin deployment', async () => this.validateVersion(), false);
+    await progress('Validating plugin deployment', async () => this.validatePlugin(), false);
     await progress(
       `Compiling a production build of **${this.pkg.name}**`,
       async () => this.runScript('build', args),
@@ -82,7 +82,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
    * Validates that the provided next plugin version is valid
    * @returns {Promise<void>}
    */
-  async validateVersion() {
+  async validatePlugin() {
     let currentVersion = '0.0.0';
 
     try {
@@ -91,7 +91,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       const pluginVersion = await this.pluginVersionsClient.latest(this.pkg.name);
       currentVersion = (pluginVersion && pluginVersion.version) || '0.0.0';
     } catch (e) {
-      // No-ops
+      // No-op - no plugin exists yet; we'll create it later.
     }
 
     const nextVersion = this._flags.version || (semver.inc(currentVersion, this.bumpLevel) as string);
@@ -128,7 +128,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     return this.pluginVersionsClient.create(this.pkg.name, {
       Version: deployResult.nextVersion,
       PluginUrl: deployResult.pluginUrl,
-      Private: !this.argv.includes('--public'),
+      Private: !deployResult.isPublic,
       Changelog: this._flags.changelog || '',
     });
   }
@@ -149,6 +149,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     return 'patch';
   }
 
+  /* istanbul ignore next */
   get _flags() {
     return this.parse(FlexPluginsDeploy).flags;
   }

@@ -10,8 +10,4 @@ export default class FlexPluginsBuild extends FlexPlugin {
   async doRun() {
     await this.runScript('build');
   }
-
-  async runCommand() {
-    return this.run();
-  }
 }

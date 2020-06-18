@@ -5,15 +5,9 @@ import FlexPlugin from '../../../sub-commands/flex-plugin';
  * Deletes the flex-plugin
  */
 export default class FlexPluginsRemove extends FlexPlugin {
-  async run() {
-    await super.run();
+  static description = createDescription('Removes the Flex plugin', true);
 
+  async doRun() {
     await this.runScript('remove');
   }
-
-  async runCommand() {
-    return this.run();
-  }
 }
-
-FlexPluginsRemove.description = createDescription('Removes the Flex plugin', true);
