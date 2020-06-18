@@ -48,6 +48,9 @@ run_script npm run test
 # Build
 run_script npm run build
 
+# Remove package-lock file
+find . -type f -regex "\.\/packages\/[a-zA-z-]*\/package-lock\.json" -delete -o -regex "\.\/package-lock.json" -delete
+
 # Publish
 if [ "$1" == "public" ] ; then
   echo -e "\n------------------------------------"
