@@ -27,7 +27,7 @@
     "lint:fix": "npm run lint -- --fix",
     "prepack": "oclif-dev manifest && oclif-dev readme",
     "postpack": "rm -f oclif.manifest.json",
-    "test:ci": "nyc mocha --forbid-only \"test/**/*.test.js\"",
+    "test:ci": "nyc npm run test",
     "test": "mocha -r ts-node/register \"src/__tests__/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md"
   },
