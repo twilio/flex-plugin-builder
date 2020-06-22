@@ -329,19 +329,18 @@ export default (env: Environment) => {
   const isProd = env === Environment.Production;
   const config = webpackBaseFactory(env);
 
-  config.plugins = config.plugins ? config.plugins : [];
-  config.plugins.push(..._getPlugins(env));
   config.entry = _getEntries(env);
   config.output = {
-    path: paths.app.buildDir, // the output directories absolute path
+    path: paths.app.buildDir,
     pathinfo: !isProd,
     futureEmitAssets: true,
     filename: `${paths.app.name}.js`,
-    publicPath: paths.app.publicDir, // the link itself for the host
+    publicPath: paths.app.publicDir,
     globalObject: 'this',
   };
   config.bail = isProd;
   config.devtool = 'hidden-source-map';
+  config.optimization = _getOptimization(env);
   config.node = {
     module: 'empty',
     dgram: 'empty',
@@ -371,6 +370,8 @@ export default (env: Environment) => {
       },
     ]
   };
+  config.plugins = config.plugins ? config.plugins : [];
+  config.plugins.push(..._getPlugins(env));
 
   return config;
 };
