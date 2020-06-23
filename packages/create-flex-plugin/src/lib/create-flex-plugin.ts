@@ -88,7 +88,7 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
     );
 
     // Rename plugins
-    if (!dirObject) {
+    if (dirObject) {
       const ext = config.typescript ? 'tsx' : 'js';
 
       fs.renameSync(
