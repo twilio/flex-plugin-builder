@@ -1,4 +1,3 @@
-import webpackPlugins from '../config/webpack.plugin';
 import paths from 'flex-dev-utils/dist/paths';
 import fs from 'flex-dev-utils/dist/fs';
 import { Environment } from 'flex-dev-utils/dist/env';
@@ -7,9 +6,15 @@ import { findPorts, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-util
 import WebpackDevServer from 'webpack-dev-server';
 import getConfiguration, { ConfigurationType } from '../config';
 import compiler from '../utils/compiler';
-import run from '../utils/run';
-import { Plugin } from './start/pluginServer';
-import { env } from 'flex-dev-utils';
+import run, { exit } from '../utils/run';
+import pluginServer, { Plugin } from './start/pluginServer';
+import { env, logger, open } from 'flex-dev-utils';
+import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
+import webpackPlugin from '../config/webpack.plugin';
+import { ADDRCONFIG } from 'dns';
+import { argv } from 'process';
+
+const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
 
 /**
  * Replaces the port in plugins.json and re-writes ito the file
@@ -60,16 +65,48 @@ export const _requirePackages = (pluginsPath: string, pkgPath: string) => {
  */
 /* istanbul ignore next */
 export const _startDevServer = (port: number) => {
-    const config = webpackPlugins(Environment.Development);
-    const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development);
-    const devCompiler = compiler(config, true);
-    const devServer = new WebpackDevServer(devCompiler, devConfig);
-    const { local } = getLocalAndNetworkUrls(port);
+  const config = webpackPlugin(Environment.Development);
+  const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development);
+  const devCompiler = compiler(config, true);
+  const devServer = new WebpackDevServer(devCompiler, devConfig);
+  const { local } = getLocalAndNetworkUrls(port);
 
-    // Start the dev-server
-    devServer.listen(local.port, local.host, async (err) => {
-      _updatePluginsUrl(port);
-    });
+  // Show TS errors on browser
+  devCompiler.hooks.tsCompiled.tap('afterTSCompile', (warnings, errors) => {
+    if (warnings.length) {
+      devServer.sockWrite(devServer.sockets, 'warnings', warnings);
+    }
+    if (errors.length) {
+      devServer.sockWrite(devServer.sockets, 'errors', errors);
+    }
+  });
+
+  // Start the dev-server
+  devServer.listen(local.port, local.host, async (err) => {
+    if (err) {
+      logger.error(err);
+      return;
+    }
+
+    logger.clearTerminal();
+    logger.notice('Starting development server...');
+
+    _updatePluginsUrl(port);
+    await pluginServer(port);
+    await open(local.url);
+  });
+
+  // Close server and exit
+  const cleanUp = () => {
+    devServer.close();
+    exit(0);
+  };
+
+  termSignals.forEach((sig) => process.on(sig, cleanUp));
+  if (!env.isCI()) {
+    process.stdin.on('end', cleanUp);
+    process.stdin.resume();
+  }
 };
 
 /**
@@ -77,11 +114,22 @@ export const _startDevServer = (port: number) => {
  * @param args
  */
 const startPlugins = async (...args: string[]) => {
-  env.setBabelEnv(Environment.Development);
-  env.setNodeEnv(Environment.Development);
+  logger.debug('Starting local development environment');
+
+  addCWDNodeModule();
+
+  // Finds the first available free port where two consecutive ports are free
   const port = await findPorts(getDefaultPort(process.env.PORT));
 
-    _startDevServer(port)
+  env.setBabelEnv(Environment.Development);
+  env.setNodeEnv(Environment.Development);
+  env.setHost('0.0.0.0');
+  env.setPort(port);
+
+  // Future  node version will silently consume unhandled exception
+  process.on('unhandledRejection', err => { throw err; });
+
+  _startDevServer(port);
 };
 
 run(startPlugins);

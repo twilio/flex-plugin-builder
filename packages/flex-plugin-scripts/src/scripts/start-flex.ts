@@ -1,5 +1,8 @@
 import { env, logger, open } from 'flex-dev-utils';
+import paths from 'flex-dev-utils/dist/paths';
+import fs from 'flex-dev-utils/dist/fs';
 import { Environment } from 'flex-dev-utils/dist/env';
+import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
 import { findPorts, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import WebpackDevServer from 'webpack-dev-server';
@@ -16,7 +19,7 @@ const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
 /**
  * Starts the dev-server
  */
-const startFlex = async (...args: string[]) => {
+const start = async (...args: string[]) => {
   logger.debug('Starting local development environment');
 
   addCWDNodeModule();
@@ -48,6 +51,16 @@ export const _startDevServer = (port: number) => {
   const devServer = new WebpackDevServer(devCompiler, devConfig);
   const { local } = getLocalAndNetworkUrls(port);
 
+  // Show TS errors on browser
+  devCompiler.hooks.tsCompiled.tap('afterTSCompile', (warnings, errors) => {
+    if (warnings.length) {
+      devServer.sockWrite(devServer.sockets, 'warnings', warnings);
+    }
+    if (errors.length) {
+      devServer.sockWrite(devServer.sockets, 'errors', errors);
+    }
+  });
+
   // Start the dev-server
   devServer.listen(local.port, local.host, async (err) => {
     if (err) {
@@ -58,6 +71,7 @@ export const _startDevServer = (port: number) => {
     logger.clearTerminal();
     logger.notice('Starting development server...');
 
+    _updatePluginsUrl(port);
     await pluginServer(port);
     await open(local.url);
   });
@@ -75,6 +89,48 @@ export const _startDevServer = (port: number) => {
   }
 };
 
-run(startFlex);
+/**
+ * requires packages
+ *
+ * @param pluginsPath   the plugins path
+ * @param pkgPath       the package path
+ * @private
+ */
+/* istanbul ignore next */
+export const _requirePackages = (pluginsPath: string, pkgPath: string) => {
+  const plugins = require(pluginsPath) as Plugin[];
+  const pkg = require(pkgPath);
 
-export default startFlex;
+  return {
+    plugins,
+    pkg,
+  };
+};
+
+/**
+ * Replaces the port in plugins.json and re-writes ito the file
+ *
+ * @param port  the port to update to
+ * @private
+ */
+export const _updatePluginsUrl = (port: number) => {
+  const { plugins, pkg } = _requirePackages(paths.app.pluginsJsonPath, paths.app.pkgPath);
+
+  const pluginIndex = plugins.findIndex((p) => p.src.indexOf(pkg.name) !== -1);
+  if (pluginIndex === -1) {
+    throw new FlexPluginError(`Could not find plugin ${pkg.name}`);
+  }
+  const url = plugins[pluginIndex].src;
+  const matches = url.match(/localhost:(\d*)/);
+  if (!matches) {
+    throw new FlexPluginError(`Could not find a local port on url ${url}`);
+  }
+
+  // Replace port and re-write to file
+  plugins[pluginIndex].src = plugins[pluginIndex].src.replace(matches[1], port.toString());
+  fs.writeFileSync(paths.app.pluginsJsonPath, JSON.stringify(plugins, null, 2));
+};
+
+run(start);
+
+export default start;
