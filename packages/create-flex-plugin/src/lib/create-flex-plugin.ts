@@ -70,6 +70,7 @@ export const _install = async (config: FlexPluginArguments): Promise<boolean> =>
  * @param config {FlexPluginArguments}  the configuration
  * @private
  */
+/* istanbul ignore next */
 export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> => {
   let dirObject: TmpDirResult;
 
