@@ -42,11 +42,11 @@
   "dependencies": {
     "esm": "^3.2.25",
     "flex-dev-utils": "^3.13.5",
-    "yargs": "^14.2.0"
+    "yargs": "^15.3.1"
   },
   "devDependencies": {
     "@twilio/flex-ui": "^1",
-    "@types/yargs": "^13.0.3",
+    "@types/yargs": "^15.0.5",
     "craco-config-flex-plugin": "^3.13.5",
     "flex-plugin": "^3.13.2",
     "flex-plugin-scripts": "^3.13.5"

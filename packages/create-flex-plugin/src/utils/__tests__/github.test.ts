@@ -2,8 +2,9 @@ import axios, { MockAdapter } from 'flex-dev-utils/dist/axios';
 import * as fs from 'flex-dev-utils/dist/fs';
 
 import * as github from '../github';
+import get = Reflect.get;
 
-describe('github', () => {
+describe('CreateFlexPlugin/Github', () => {
   let mockAxios: MockAdapter;
   const gitHubUrl = 'https://github.com/twilio/flex-plugin-builder';
   const apiGithubUrlTemplated = 'https://api.github.com/repos/twilio/flex-plugin-builder/contents/template?ref=master';
@@ -12,6 +13,7 @@ describe('github', () => {
     ref: 'master',
     owner: 'twilio',
     repo: 'flex-plugin-builder',
+    isFlex: false,
   };
 
   beforeEach(() => {
@@ -23,6 +25,17 @@ describe('github', () => {
 
   afterAll(() => {
     jest.restoreAllMocks();
+  });
+
+  describe('getTags', () => {
+    it('should get tags', async () => {
+      const resp = [{ref: 'refs/tags/v3.0.0'}, {ref: 'refs/tags/v3.1.1'}, {ref: 'refs/tags/broken'}, {ref: 'refs/tags/v4.3.2-alpha.0'}];
+
+      mockAxios.onGet().reply(() => Promise.resolve([200, resp]));
+
+      const tags = await github.getTags(githubInfo);
+      expect(tags).toEqual(['3.0.0', '3.1.1', '4.3.2-alpha.0'])
+    });
   });
 
   describe('parseGitHubUrl', () => {

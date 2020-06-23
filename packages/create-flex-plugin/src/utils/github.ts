@@ -7,6 +7,7 @@ export interface GitHubInfo {
   owner: string;
   repo: string;
   ref: string;
+  isFlex: boolean;
 }
 
 export enum GitHubContentType {
@@ -31,6 +32,32 @@ export interface GitHubContent {
   };
 }
 
+export interface RefTag {
+  ref: string;
+  node_id: string;
+  url: string;
+  object: {
+    sha: string;
+    type: 'commit',
+    url: string;
+  }
+}
+
+const OFFICIAL_REPOS = ['flex-plugin-js', 'flex-plugin-ts'];
+const TAG_REGX = /^refs\/tags\/v((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/;
+
+/**
+ * Returns a full list of tag versions
+ * @param info
+ */
+export const getTags = async (info: GitHubInfo) => {
+  const url = `https://api.github.com/repos/${info.owner}/${info.repo}/git/refs/tags`;
+
+  return axios.get<RefTag[]>(url)
+    .then((resp) => resp.data)
+    .then(tags => tags.map(tag => tag.ref).filter(tag => TAG_REGX.test(tag)).map(tag => tag.substr(11).trim()));
+};
+
 /**
  * Parses the GitHub URL to extract owner and repo information
  *
@@ -48,6 +75,7 @@ export const parseGitHubUrl = (url: string): GitHubInfo => {
     owner: matches[1],
     repo: matches[2],
     ref: matches[4] || 'master',
+    isFlex: matches[1] === 'twilio' && OFFICIAL_REPOS.includes(matches[2]),
   };
 };
 

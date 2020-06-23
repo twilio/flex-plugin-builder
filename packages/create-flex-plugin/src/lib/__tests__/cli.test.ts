@@ -1,10 +1,9 @@
-import * as run from 'flex-plugin-scripts/dist/utils/run';
-import cli from '../cli';
+import CLI from '../cli';
 import createFlexPlugin from '../create-flex-plugin';
 
 jest.mock('../create-flex-plugin');
 
-describe('cli', () => {
+describe('CreateFlexPlugin/cli', () => {
   const exit = jest.spyOn(process, 'exit').mockReturnThis();
 
   beforeEach(() => {
@@ -12,27 +11,49 @@ describe('cli', () => {
     jest.resetModules();
   });
 
-  it('should call createFlexPlugin', async () => {
-    await new cli().parse();
+  it('should call createFlexPlugin with a JS template', async () => {
+    await new CLI().parse('plugin-test');
 
     expect(createFlexPlugin).toHaveBeenCalledTimes(1);
+    expect(createFlexPlugin).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'plugin-test',
+        typescript: false,
+        template: CLI.JSTemplate,
+      })
+    );
+    expect(exit).toHaveBeenCalledTimes(1);
+    expect(exit).toHaveBeenCalledWith(0);
+  });
+
+  it('should call createFlexPlugin with a TS template', async () => {
+    await new CLI().parse('plugin-test', '--typescript');
+
+    expect(createFlexPlugin).toHaveBeenCalledTimes(1);
+    expect(createFlexPlugin).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'plugin-test',
+        typescript: true,
+        template: CLI.TSTemplate,
+      })
+    );
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(0);
   });
 
   it('should have static description', () => {
-    expect(cli).toHaveProperty('description');
-    expect(cli.description).toContain('new Twilio Flex Plugin');
+    expect(CLI).toHaveProperty('description');
+    expect(CLI.description).toContain('new Twilio Flex Plugin');
   });
 
   it('should have static flag', () => {
-    expect(cli).toHaveProperty('flags');
-    expect(cli.flags).toHaveProperty('typescript');
+    expect(CLI).toHaveProperty('flags');
+    expect(CLI.flags).toHaveProperty('typescript');
   });
 
   it('should have accountSid as optional', () => {
-    expect(cli).toHaveProperty('flags');
-    expect(cli.flags).toHaveProperty('accountSid');
-    expect(cli.flags.accountSid).not.toHaveProperty('demandOption');
+    expect(CLI).toHaveProperty('flags');
+    expect(CLI.flags).toHaveProperty('accountSid');
+    expect(CLI.flags.accountSid).not.toHaveProperty('demandOption');
   });
 });

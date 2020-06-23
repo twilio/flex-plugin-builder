@@ -1,9 +1,10 @@
 import { findUp } from 'flex-dev-utils/dist/fs';
-import { spawn } from 'flex-dev-utils';
+import { spawn, semver } from 'flex-dev-utils';
 import { camelCase, upperFirst } from 'flex-dev-utils/dist/lodash';
 import { join } from 'path';
 
 import * as github from '../utils/github';
+import { CLIArguments } from './cli';
 import { FlexPluginArguments } from './create-flex-plugin';
 
 // tslint:disable-next-line
@@ -35,11 +36,12 @@ export const installDependencies = async (config: FlexPluginArguments): Promise<
 /**
  * Appends className to the configuration
  *
- * @param config {FlexPluginArguments}  the plugin configuration
+ * @param args {CLIArguments}  the plugin configuration
  * @return {FlexPluginArguments} the updated configuration
  */
-export const setupConfiguration = (config: FlexPluginArguments): FlexPluginArguments => {
-  const name = config.name || '';
+export const setupConfiguration = (args: CLIArguments): FlexPluginArguments => {
+  const name = args.name || '';
+  const config: Partial<FlexPluginArguments> = {...args};
 
   config.pluginClassName = upperFirst(camelCase(name)).replace('Plugin', '') + 'Plugin';
   config.pluginNamespace = name.toLowerCase().replace('plugin-', '');
@@ -49,9 +51,9 @@ export const setupConfiguration = (config: FlexPluginArguments): FlexPluginArgum
   config.flexPluginVersion = pkg.devDependencies['flex-plugin'];
   config.cracoConfigVersion = pkg.devDependencies['craco-config-flex-plugin'];
   config.pluginScriptsVersion = pkg.devDependencies['flex-plugin-scripts'];
-  config.pluginJsonContent = JSON.stringify(_getPluginJsonContent(config), null, 2);
+  config.pluginJsonContent = JSON.stringify(_getPluginJsonContent(config as FlexPluginArguments), null, 2);
 
-  return config;
+  return config as FlexPluginArguments;
 };
 
 /**
@@ -62,6 +64,16 @@ export const setupConfiguration = (config: FlexPluginArguments): FlexPluginArgum
  */
 export const downloadFromGitHub = async (url: string, dir: string) => {
   const info = github.parseGitHubUrl(url);
+
+  if (info.isFlex && info.ref === 'master') {
+    // @ts-ignore
+    const major = semver.parse(pkg.version).major;
+    const tags = await github.getTags(info);
+    const match = semver.sort(tags).reverse().find(t => semver.satisfies(t, `>=${major} <${major + 1}`))
+    if (match) {
+      info.ref = `v${match}`;
+    }
+  }
 
   return await github.downloadRepo(info, dir);
 };

@@ -12,7 +12,7 @@ const pkg = require(join(process.cwd(), 'packages/create-flex-plugin/package.jso
 const spawn = require('flex-dev-utils').spawn;
 // tslint:enable
 
-describe('commands', () => {
+describe('CreateFlexPlugin/commands', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -91,7 +91,6 @@ describe('commands', () => {
       expect(result.pluginNamespace).toEqual('name');
       expect(result.targetDirectory).toEqual(expect.stringContaining('plugin-name'));
       expect(_getPluginJsonContent).toHaveBeenCalledTimes(1);
-      expect(_getPluginJsonContent).toHaveBeenCalledWith(config);
 
       _getPluginJsonContent.mockRestore();
     });
@@ -110,23 +109,56 @@ describe('commands', () => {
         owner: 'twilio',
         repo: 'twilio-repo',
         ref: 'ref',
+        isFlex: false,
       };
+      const getTags = jest
+        .spyOn(github, 'getTags');
       const parseGitHubUrl = jest
         .spyOn(github, 'parseGitHubUrl')
-        .mockReturnValue(info);
+        .mockReturnValue({...info});
       const downloadRepo = jest
         .spyOn(github, 'downloadRepo')
         .mockResolvedValue(null);
 
       await commands.downloadFromGitHub('the-url', 'the-dir');
 
+      expect(getTags).not.toHaveBeenCalled();
       expect(parseGitHubUrl).toHaveBeenCalledTimes(1);
       expect(parseGitHubUrl).toHaveBeenCalledWith('the-url');
       expect(downloadRepo).toHaveBeenCalledTimes(1);
       expect(downloadRepo).toHaveBeenCalledWith(info, 'the-dir');
+    });
 
-      parseGitHubUrl.mockRestore();
-      downloadRepo.mockRestore();
+    it('should download an official template', async () => {
+      const info: GitHubInfo = {
+        owner: 'twilio',
+        repo: 'twilio-repo',
+        ref: 'master',
+        isFlex: true,
+      };
+      const infoCalled = {
+        ...info,
+        ref: 'v3.6.7',
+      }
+
+      const getTags = jest
+        .spyOn(github, 'getTags')
+        .mockResolvedValue(['1.2.3', '1.2.4', '2.3.4', '3.4.5', '3.6.7', '4.2.0']);
+      const parseGitHubUrl = jest
+        .spyOn(github, 'parseGitHubUrl')
+        .mockReturnValue({...info});
+      const downloadRepo = jest
+        .spyOn(github, 'downloadRepo')
+        .mockResolvedValue(null);
+
+      await commands.downloadFromGitHub('the-url', 'the-dir');
+
+      expect(getTags).toHaveBeenCalledTimes(1);
+      expect(getTags).toHaveBeenCalledWith(infoCalled);
+      expect(parseGitHubUrl).toHaveBeenCalledTimes(1);
+      expect(parseGitHubUrl).toHaveBeenCalledWith('the-url');
+      expect(downloadRepo).toHaveBeenCalledTimes(1);
+      expect(downloadRepo).toHaveBeenCalledWith(infoCalled, 'the-dir');
     });
   });
 

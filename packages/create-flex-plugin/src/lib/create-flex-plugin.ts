@@ -2,17 +2,12 @@ import { logger, progress, FlexPluginError } from 'flex-dev-utils';
 import { copyTemplateDir, tmpDirSync, TmpDirResult } from 'flex-dev-utils/dist/fs';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
 import fs from 'fs';
-import { resolve, join } from 'path';
+import { join } from 'path';
 
 import { setupConfiguration, installDependencies, downloadFromGitHub } from './commands';
 import { CLIArguments } from './cli';
 import finalMessage from '../prints/finalMessage';
-import validate from '../utils/validators';
-
-const templatesRootDir = resolve(__dirname, '../../templates');
-const templateCorePath = resolve(templatesRootDir, 'core');
-const templateJsPath = resolve(templatesRootDir, 'js');
-const templateTsPath = resolve(templatesRootDir, 'ts');
+import { validate } from '../utils/validators';
 
 export interface FlexPluginArguments extends CLIArguments {
   targetDirectory: string;
@@ -26,12 +21,11 @@ export interface FlexPluginArguments extends CLIArguments {
 }
 
 /**
- * Creates a Flex Plugin from the {@link FlexPluginArguments}
- * @param config {FlexPluginArguments} the configuration
+ * Creates a Flex Plugin from the {@link CLIArguments}
+ * @param args {CLIArguments} the configuration
  */
-export const createFlexPlugin = async (config: FlexPluginArguments) => {
-  config = await validate(config);
-  config = setupConfiguration(config);
+export const createFlexPlugin = async (args: CLIArguments) => {
+  const config = setupConfiguration(await validate(args));
 
   // Check folder does not exist
   if (fs.existsSync(config.targetDirectory)) {
@@ -80,23 +74,10 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
   let dirObject: TmpDirResult;
 
   const promise = progress<boolean>('Creating project directory', async () => {
-    // This copies the core such as public/ and craco config.
-    await copyTemplateDir(
-      templateCorePath,
-      config.targetDirectory,
-      config,
-    );
-
-    // Get src directory from template URL if provided
-    let srcPath = templateJsPath;
-    if (config.typescript) {
-      srcPath = templateTsPath;
-    }
-    if (config.template) {
-      dirObject = tmpDirSync();
-      await downloadFromGitHub(config.template, dirObject.name);
-      srcPath = dirObject.name;
-    }
+    dirObject = tmpDirSync();
+    // @ts-ignore
+    await downloadFromGitHub(config.template, dirObject.name);
+    const srcPath = dirObject.name;
 
     // This copies the src/ directory
     await copyTemplateDir(

@@ -37,7 +37,7 @@ describe('validators', () => {
     describe('validate', () => {
         it('should error out if plugin name is not valid', async () => {
             try {
-                await validators.default({} as any);
+                await validators.validate({} as any);
             } catch (e) {
                 expect(e).toBeInstanceOf(FlexPluginError);
                 expect(e.message).toContain('Invalid plugin name');
@@ -48,7 +48,7 @@ describe('validators', () => {
         it('should not ask for an accountSid if already specified', async () => {
             const prompt = jest.spyOn(inquirer, 'prompt');
 
-            await validators.default({
+            await validators.validate({
                 name: 'plugin-test',
                 accountSid,
             } as any);
@@ -59,7 +59,7 @@ describe('validators', () => {
         it('should not ask for an accountSid if no sid is provided', async () => {
             const prompt = jest.spyOn(inquirer, 'prompt');
 
-            const config = await validators.default({
+            const config = await validators.validate({
                 name: 'plugin-test',
             } as any);
 
@@ -69,7 +69,7 @@ describe('validators', () => {
         it('should ask for an accountSid if incorrect accountSid', async () => {
             const prompt = jest.spyOn(inquirer, 'prompt').mockResolvedValue(accountSid);
 
-            const config = await validators.default({
+            const config = await validators.validate({
                 name: 'plugin-test',
                 accountSid: 'abcd',
             } as any);
@@ -81,7 +81,7 @@ describe('validators', () => {
         it('should not ask for a template url if already specified', async () => {
             const prompt = jest.spyOn(inquirer, 'prompt');
 
-            await validators.default({
+            await validators.validate({
                 name: 'plugin-test',
                 accountSid,
                 template: 'github.com/twilio/flex-plugin',
@@ -93,7 +93,7 @@ describe('validators', () => {
         it('should ask for template url if invalid url is provided', async () => {
             const prompt = jest.spyOn(inquirer, 'prompt').mockResolvedValue(url);
 
-            const config = await validators.default({
+            const config = await validators.validate({
                 name: 'plugin-test',
                 accountSid,
                 template: 'incorrect-url',

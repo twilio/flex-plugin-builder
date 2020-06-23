@@ -1,15 +1,8 @@
-import yargs, { Argv, Options } from 'yargs';
+import yargs, { Arguments, Options } from 'yargs';
 import { multilineString } from 'flex-dev-utils/dist/strings';
 import { runner } from 'flex-dev-utils';
 
-import createFlexPlugin, { FlexPluginArguments } from './create-flex-plugin';
-
-const usage = multilineString(
-  'Creates a new Twilio Flex Plugin project',
-  '',
-  'Arguments:',
-  'name\tName of your plugin. Needs to start with plugin-',
-);
+import createFlexPlugin from './create-flex-plugin';
 
 export interface CLIArguments {
   accountSid?: string;
@@ -28,7 +21,15 @@ export interface CLIArguments {
 }
 
 export default class CLI {
-  public static description = usage;
+  public static TSTemplate = 'https://github.com/twilio/flex-plugin-ts';
+  public static JSTemplate = 'https://github.com/twilio/flex-plugin-js';
+  public static description = multilineString(
+    'Creates a new Twilio Flex Plugin project',
+    '',
+    'Arguments:',
+    'name\tName of your plugin. Needs to start with plugin-',
+  );
+
   public static flags: { [key: string]: Options; } = {
     typescript: {
       alias: 's',
@@ -68,29 +69,23 @@ export default class CLI {
     },
     help: {
       alias: 'h',
-      description: usage,
+      description: CLI.description,
     },
     version: {
       alias: 'v',
     },
   };
-  private readonly parser: Argv<CLIArguments>;
-
-  constructor(cwd?: string) {
-    this.parser = yargs([], cwd) as Argv<CLIArguments>;
-
-    this.init();
-  }
 
   public parse = async (...args: string[]) => {
-    const argv: CLIArguments = this.parser.parse(args);
+    const argv = yargs
+      .options(CLI.flags)
+      .usage('$0 <name>', CLI.description, CLI.flags)
+      .parse(args) as Arguments<CLIArguments>;
+    if (!argv.template) {
+      argv.template = argv.typescript ? CLI.TSTemplate : CLI.JSTemplate;
+    }
 
-    await runner(async () => await createFlexPlugin(argv as FlexPluginArguments));
+    await runner(async () => await createFlexPlugin(argv));
     return process.exit(0);
-  }
-
-  private init = () => {
-    this.parser
-      .usage<any>('$0 <name>', usage, CLI.flags);
   }
 }

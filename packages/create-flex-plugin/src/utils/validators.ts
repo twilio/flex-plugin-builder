@@ -7,8 +7,7 @@ import {
   validateAccountSid,
   validateGitHubUrl,
 } from 'flex-dev-utils/dist/validators';
-
-import { FlexPluginArguments } from '../lib/create-flex-plugin';
+import { CLIArguments } from '../lib/cli';
 
 /**
  * Prompts the user to enter AccountSid
@@ -39,10 +38,10 @@ export const _promptForTemplateUrl = async (): Promise<string> => {
 /**
  * Further validates the configuration
  *
- * @param config {FlexPluginArguments}  the configuration
- * @return {Promise<FlexPluginArguments>}
+ * @param config {CLIArguments}  the configuration
+ * @return {Promise<CLIArguments>}
  */
-const validate = async (config: FlexPluginArguments): Promise<FlexPluginArguments> => {
+export const validate = async (config: CLIArguments): Promise<CLIArguments> => {
   config.name = config.name || '';
 
   if (!isValidPluginName(config.name)) {
@@ -61,5 +60,3 @@ const validate = async (config: FlexPluginArguments): Promise<FlexPluginArgument
 
   return config;
 };
-
-export default validate;
