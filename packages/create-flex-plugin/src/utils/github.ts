@@ -44,7 +44,7 @@ export interface RefTag {
 }
 
 const OFFICIAL_REPOS = ['flex-plugin-js', 'flex-plugin-ts'];
-const TAG_REGX = /^refs\/tags\/v((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/;
+const TAG_REGEX = /^refs\/tags\/v((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/;
 
 /**
  * Returns a full list of tag versions
@@ -55,7 +55,7 @@ export const getTags = async (info: GitHubInfo) => {
 
   return axios.get<RefTag[]>(url)
     .then((resp) => resp.data)
-    .then(tags => tags.map(tag => tag.ref).filter(tag => TAG_REGX.test(tag)).map(tag => tag.substr(11).trim()));
+    .then(tags => tags.map(tag => tag.ref).filter(tag => TAG_REGEX.test(tag)).map(tag => tag.substr(11).trim()));
 };
 
 /**
