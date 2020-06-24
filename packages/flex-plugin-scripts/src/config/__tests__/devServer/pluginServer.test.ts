@@ -1,9 +1,9 @@
 import { PackageJson, readPackageJson } from 'flex-dev-utils/dist/fs';
-import { IncomingMessage, ServerResponse } from 'http';
-import { Plugin } from '../../start/pluginServer';
+import { Request, Response } from 'express-serve-static-core';
+import { Plugin } from '../../devServer/pluginServer';
 import * as fs from 'flex-dev-utils/dist/fs';
 
-import * as pluginServerScript from '../../start/pluginServer';
+import * as pluginServerScript from '../../devServer/pluginServer';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/paths', () => ({
@@ -120,54 +120,42 @@ describe('pluginServer', () => {
     });
   });
 
-  describe('_server', () => {
+  describe('default', () => {
+    const options = { port: 9000 };
     const jweHeaders = { 'x-flex-jwe': 'jweToken' };
-    const getReqResp = (method: string, headers: object, url: string) => {
+    const getReqResp = (method: string, headers: object) => {
       // @ts-ignore
       const resp = {
         writeHead: jest.fn(),
         end: jest.fn(),
-      } as ServerResponse;
-      const req = { method, headers, url } as IncomingMessage;
+      } as Response;
+      const req = { method, headers } as Request;
 
       return { req, resp };
     };
 
     it('should return 200 for OPTIONS request', async () => {
-      const { req, resp } = getReqResp('OPTIONS', {}, '');
+      const { req, resp } = getReqResp('OPTIONS', {});
       const _getHeaders = jest
         .spyOn(pluginServerScript, '_getHeaders')
         .mockReturnValue({ header: 'true' } as any);
 
-      await pluginServerScript._server(9000)(req , resp);
+      await pluginServerScript.default(options)(req , resp);
 
       expect(_getHeaders).toHaveBeenCalledTimes(1);
-      expect(_getHeaders).toHaveBeenCalledWith(9000);
+      expect(_getHeaders).toHaveBeenCalledWith(options.port);
       expect(resp.writeHead).toHaveBeenCalledTimes(1);
       expect(resp.writeHead).toHaveBeenCalledWith(200, { header: 'true' });
       expect(resp.end).toHaveBeenCalledTimes(1);
     });
 
     it('should 404 for non GET requests', async () => {
-      const { req, resp } = getReqResp('POST', {}, '');
+      const { req, resp } = getReqResp('POST', {});
       jest
         .spyOn(pluginServerScript, '_getHeaders')
         .mockReturnValue({ header: 'true' } as any);
 
-      await pluginServerScript._server(9000)(req , resp);
-
-      expect(resp.writeHead).toHaveBeenCalledTimes(1);
-      expect(resp.writeHead).toHaveBeenCalledWith(404, { header: 'true' });
-      expect(resp.end).toHaveBeenCalledTimes(1);
-    });
-
-    it('should 404 for url', async () => {
-      const { req, resp } = getReqResp('GET', {}, '/pluginss');
-      jest
-        .spyOn(pluginServerScript, '_getHeaders')
-        .mockReturnValue({ header: 'true' } as any);
-
-      await pluginServerScript._server(9000)(req , resp);
+      await pluginServerScript.default(options)(req , resp);
 
       expect(resp.writeHead).toHaveBeenCalledTimes(1);
       expect(resp.writeHead).toHaveBeenCalledWith(404, { header: 'true' });
@@ -175,12 +163,12 @@ describe('pluginServer', () => {
     });
 
     it('should 400 if no jwe token is provided', () => {
-      const { req, resp } = getReqResp('GET', {}, '/plugins');
+      const { req, resp } = getReqResp('GET', {});
       jest
         .spyOn(pluginServerScript, '_getHeaders')
         .mockReturnValue({ header: 'true' } as any);
 
-      pluginServerScript._server(9000)(req , resp);
+      pluginServerScript.default(options)(req , resp);
 
       expect(resp.writeHead).toHaveBeenCalledTimes(1);
       expect(resp.writeHead).toHaveBeenCalledWith(400, { header: 'true' });
@@ -188,7 +176,7 @@ describe('pluginServer', () => {
     });
 
     it('should getPlugins and rebase', async (done) => {
-      const { req, resp } = getReqResp('GET', jweHeaders, '/plugins');
+      const { req, resp } = getReqResp('GET', jweHeaders);
 
       jest
         .spyOn(pluginServerScript, '_getHeaders')
@@ -200,7 +188,7 @@ describe('pluginServer', () => {
         .spyOn(pluginServerScript, '_rebasePlugins')
         .mockReturnValue([{name: 'plugin-1'}] as Plugin[]);
 
-      await pluginServerScript._server(9000)(req , resp);
+      await pluginServerScript.default(options)(req , resp);
 
       expect(resp.writeHead).toHaveBeenCalledTimes(1);
       expect(resp.writeHead).toHaveBeenCalledWith(200, { header: 'true' });
@@ -213,8 +201,8 @@ describe('pluginServer', () => {
       done();
     });
 
-    it('should fail', async (done) => {
-      const { req, resp } = getReqResp('GET', jweHeaders, '/plugins');
+    it.only('should fail', async (done) => {
+      const { req, resp } = getReqResp('GET', jweHeaders);
 
       jest
         .spyOn(pluginServerScript, '_getHeaders')
@@ -225,7 +213,7 @@ describe('pluginServer', () => {
       const _rebasePlugins = jest
         .spyOn(pluginServerScript, '_rebasePlugins');
 
-      await pluginServerScript._server(9000)(req , resp);
+      await pluginServerScript.default(options)(req , resp);
 
       expect(resp.writeHead).toHaveBeenCalledTimes(1);
       expect(resp.writeHead).toHaveBeenCalledWith(500, { header: 'true' });
@@ -236,24 +224,6 @@ describe('pluginServer', () => {
       expect(resp.end).toHaveBeenCalledWith('failed-message');
 
       done();
-    });
-  });
-
-  describe('_generatePluginServiceConfig', () => {
-    it('should include port in the url', () => {
-      const writeFileSync = jest
-        .spyOn(fs.default, 'writeFileSync')
-        .mockReturnThis();
-
-      pluginServerScript._generatePluginServiceConfig(1234);
-
-      expect(writeFileSync).toHaveBeenCalledTimes(1);
-      expect(writeFileSync).toHaveBeenCalledWith(
-        expect.stringContaining('pluginsService.js'),
-        expect.stringContaining('localhost:1234'),
-      );
-
-      writeFileSync.mockRestore();
     });
   });
 });

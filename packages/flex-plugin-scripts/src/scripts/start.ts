@@ -11,7 +11,7 @@ import getConfiguration, { ConfigurationType, WebpackType } from '../config';
 import compiler from '../utils/compiler';
 
 import run, { exit } from '../utils/run';
-import pluginServer, { Plugin } from './start/pluginServer';
+import { Plugin } from '../config/devServer/pluginServer';
 
 const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
 
@@ -83,7 +83,6 @@ export const _startDevServer = (port: number, type: WebpackType) => {
 
     if (!isStatic) {
       _updatePluginsUrl(port);
-      await pluginServer(port);
     }
 
     if (isStatic) {

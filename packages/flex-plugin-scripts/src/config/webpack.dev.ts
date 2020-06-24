@@ -2,6 +2,7 @@ import { env, paths } from 'flex-dev-utils';
 import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import { Configuration } from 'webpack-dev-server';
 import { WebpackType } from './index';
+import pluginServer from './devServer/pluginServer';
 
 export const _getStaticConfiguration = (config: Configuration) => {
   config.contentBase =  [
@@ -9,6 +10,9 @@ export const _getStaticConfiguration = (config: Configuration) => {
     paths.scripts.devAssetsDir,
   ];
   config.contentBasePublicPath = '/';
+
+  // @ts-ignore
+  config.before = (app, server) => app.use('/plugins', pluginServer(server.options));
 
   return config;
 }
