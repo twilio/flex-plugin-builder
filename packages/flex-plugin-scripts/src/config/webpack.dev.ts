@@ -1,12 +1,36 @@
 import { env, paths } from 'flex-dev-utils';
 import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import { Configuration } from 'webpack-dev-server';
+import { WebpackType } from './index';
+
+export const _getStaticConfiguration = (config: Configuration) => {
+  config.contentBase =  [
+    paths.app.publicDir,
+    paths.scripts.devAssetsDir,
+  ];
+  config.contentBasePublicPath = '/';
+
+  return config;
+}
+
+export const _getJavaScriptConfiguration = (config: Configuration) => {
+  const socket = env.getWSSocket();
+  config.injectClient = false;
+
+  // We're using native sockjs-node
+  config.transportMode = 'ws';
+  config.sockHost = socket.host;
+  config.sockPath = socket.path;
+  config.sockPort = socket.port;
+
+  return config;
+}
 
 /**
  * Generates a webpack-dev configuration
  */
 /* istanbul ignore next */
-export default (isInternal: boolean) => {
+export default (type: WebpackType) => {
   const { local } = getLocalAndNetworkUrls(env.getPort());
   const socket = env.getWSSocket();
 
@@ -21,33 +45,18 @@ export default (isInternal: boolean) => {
       disableDotRule: true,
       index: '/',
     },
-
-    // this is used to optimize cpu
-    // watchOptions: {
-    // //  ignored: ignoredFiles(paths.appSrc),
-    // },
-
+    quiet: true,
     host: env.getHost(),
     port: env.getPort(),
     public: local.url,
   };
 
-  if (isInternal) {
-    config.contentBase =  [
-      paths.app.publicDir,
-      paths.scripts.devAssetsDir,
-    ];
-    config.contentBasePublicPath = '/';
-  } else {
-    config.quiet = true;
-    config.injectClient = false;
-
-    // We're using native sockjs-node
-    config.transportMode = 'ws';
-    config.sockHost = socket.host;
-    config.sockPath = socket.path;
-    config.sockPort = socket.port;
+  if (type === WebpackType.Static) {
+    return _getStaticConfiguration(config);
+  }
+  if (type === WebpackType.JavaScript) {
+    return _getJavaScriptConfiguration(config);
   }
 
-  return config;
+  return _getJavaScriptConfiguration(_getStaticConfiguration(config));
 }

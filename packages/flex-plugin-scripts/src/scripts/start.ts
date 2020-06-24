@@ -1,13 +1,13 @@
 import { env, logger, open } from 'flex-dev-utils';
-import paths from 'flex-dev-utils/dist/paths';
-import fs from 'flex-dev-utils/dist/fs';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
+import fs from 'flex-dev-utils/dist/fs';
+import paths from 'flex-dev-utils/dist/paths';
 import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
 import { findPorts, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import WebpackDevServer from 'webpack-dev-server';
 
-import getConfiguration, { ConfigurationType } from '../config';
+import getConfiguration, { ConfigurationType, WebpackType } from '../config';
 import compiler from '../utils/compiler';
 
 import run, { exit } from '../utils/run';
@@ -34,16 +34,15 @@ const start = async (...args: string[]) => {
   // Future  node version will silently consume unhandled exception
   process.on('unhandledRejection', err => { throw err; });
 
-  let isInternal = false;
-  // I feel like this is probably wrong
-  // Also the logic feels backwards to me
-  if (process.argv.includes('flex')) { // This is redundant
-    isInternal = false;
-  } else if (process.argv.includes('plugin')) {
-    isInternal = true;
+  let type = WebpackType.Complete;
+  if (args[0] === 'flex') {
+    type = WebpackType.Static;
+  }
+  if (args[1] === 'plugin') {
+    type = WebpackType.JavaScript;
   }
 
-  _startDevServer(port, isInternal);
+  _startDevServer(port, type);
 };
 
 /**
@@ -52,29 +51,25 @@ const start = async (...args: string[]) => {
  * @private
  */
 /* istanbul ignore next */
-export const _startDevServer = (port: number, isInternal: boolean) => {
-  let config;
-  let devConfig;
-  if (isInternal) {
-    config = getConfiguration(ConfigurationType.WebpackInternal, Environment.Development);
-    devConfig = getConfiguration(ConfigurationType.DevServerInternal, Environment.Development);
-  } else {
-    config = getConfiguration(ConfigurationType.Webpack, Environment.Development);
-    devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development);
-  }
-  const devCompiler = compiler(config, true);
+export const _startDevServer = (port: number, type: WebpackType) => {
+  const isStatic = type === WebpackType.Static
+  const config = getConfiguration(ConfigurationType.Webpack, Environment.Development, type);
+  const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development, type);
+  const devCompiler = compiler(config, !isStatic);
   const devServer = new WebpackDevServer(devCompiler, devConfig);
   const { local } = getLocalAndNetworkUrls(port);
 
-  // Show TS errors on browser
-  devCompiler.hooks.tsCompiled.tap('afterTSCompile', (warnings, errors) => {
-    if (warnings.length) {
-      devServer.sockWrite(devServer.sockets, 'warnings', warnings);
-    }
-    if (errors.length) {
-      devServer.sockWrite(devServer.sockets, 'errors', errors);
-    }
-  });
+  if (!isStatic) {
+    // Show TS errors on browser
+    devCompiler.hooks.tsCompiled.tap('afterTSCompile', (warnings, errors) => {
+      if (warnings.length) {
+        devServer.sockWrite(devServer.sockets, 'warnings', warnings);
+      }
+      if (errors.length) {
+        devServer.sockWrite(devServer.sockets, 'errors', errors);
+      }
+    });
+  }
 
   // Start the dev-server
   devServer.listen(local.port, local.host, async (err) => {
@@ -86,9 +81,14 @@ export const _startDevServer = (port: number, isInternal: boolean) => {
     logger.clearTerminal();
     logger.notice('Starting development server...');
 
-    _updatePluginsUrl(port);
-    await pluginServer(port);
-    await open(local.url);
+    if (!isStatic) {
+      _updatePluginsUrl(port);
+      await pluginServer(port);
+    }
+
+    if (isStatic) {
+      await open(local.url);
+    }
   });
 
   // Close server and exit

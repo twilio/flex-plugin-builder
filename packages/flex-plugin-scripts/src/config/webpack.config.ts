@@ -1,9 +1,9 @@
 /// <reference path="../module.d.ts" />
 
-import { paths, semver } from 'flex-dev-utils';
 import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
 import ModuleScopePlugin from '@k88/module-scope-plugin';
 import typescriptFormatter from '@k88/typescript-compile-error-formatter';
+import { paths, semver } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { getDependencyVersion } from 'flex-dev-utils/dist/fs';
 import { resolveModulePath } from 'flex-dev-utils/dist/require';
@@ -14,12 +14,13 @@ import TerserPlugin from 'terser-webpack-plugin';
 import webpack, {
   Configuration,
   DefinePlugin,
-  HotModuleReplacementPlugin, Loader,
+  HotModuleReplacementPlugin,
+  Loader,
   Plugin,
   Resolve,
   SourceMapDevToolPlugin,
 } from 'webpack';
-
+import { WebpackType } from './index';
 import Optimization = webpack.Options.Optimization;
 
 interface LoaderOption { [name: string]: any }
@@ -429,44 +430,60 @@ export const base = (env: Environment) => {
   return config;
 };
 
+export const _getStaticConfiguration = (config: Configuration, env: Environment) => {
+  config.plugins = config.plugins ? config.plugins : [];
+  config.plugins.push(..._getFlexPlugins(env));
+
+  return config;
+}
+
+export const _getJavaScriptConfiguration = (config: Configuration, env: Environment) => {
+  const isProd = env === Environment.Production;
+
+  config.plugins = config.plugins ? config.plugins : [];
+  config.entry = _getEntries(env);
+  config.output = {
+    path: paths.app.buildDir,
+    pathinfo: !isProd,
+    futureEmitAssets: true,
+    filename: `${paths.app.name}.js`,
+    publicPath: paths.app.publicDir,
+    globalObject: 'this',
+  };
+  config.bail = isProd;
+  config.devtool = 'hidden-source-map';
+  config.optimization = _getOptimization(env);
+  config.node = {
+    module: 'empty',
+    dgram: 'empty',
+    dns: 'mock',
+    fs: 'empty',
+    http2: 'empty',
+    net: 'empty',
+    tls: 'empty',
+    child_process: 'empty',
+  };
+  config.plugins.push(..._getPluginPlugins(env));
+
+  return config;
+}
+
 /**
  * Main method for generating a webpack configuration
  * @param env
+ * @param type
  */
-export default (env: Environment, isInternal: boolean) => {
+export default (env: Environment, type: WebpackType) => {
   const config = base(env);
   const isProd = env === Environment.Production;
-
-  if (isInternal) {
-    config.plugins = config.plugins ? config.plugins : [];
-    config.plugins.push(..._getFlexPlugins(env));
-  } else {
-    config.entry = _getEntries(env);
-    config.output = {
-      path: paths.app.buildDir,
-      pathinfo: !isProd,
-      futureEmitAssets: true,
-      filename: `${paths.app.name}.js`,
-      publicPath: paths.app.publicDir,
-      globalObject: 'this',
-    };
-    config.bail = isProd;
-    config.devtool = 'hidden-source-map';
-    config.optimization = _getOptimization(env);
-    config.node = {
-      module: 'empty',
-      dgram: 'empty',
-      dns: 'mock',
-      fs: 'empty',
-      http2: 'empty',
-      net: 'empty',
-      tls: 'empty',
-      child_process: 'empty',
-    };
-    config.plugins = config.plugins ? config.plugins : [];
-    config.plugins.push(..._getPluginPlugins(env));
-  };
   config.mode = isProd ? Environment.Production : Environment.Development;
 
-  return config;
+  if (type === WebpackType.Static) {
+    return _getStaticConfiguration(config, env);
+  }
+  if (type === WebpackType.JavaScript) {
+    return _getJavaScriptConfiguration(config, env);
+  }
+
+  return _getJavaScriptConfiguration(_getStaticConfiguration(config, env), env);
 };
