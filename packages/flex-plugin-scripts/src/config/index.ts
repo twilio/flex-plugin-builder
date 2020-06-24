@@ -9,11 +9,15 @@ import devFactory from './webpack.dev';
 import jestFactory, { JestConfigurations } from './jest.config';
 
 export enum ConfigurationType {
+  WebpackInternal = 'webpackInternal',
+  DevServerInternal = 'devServerInternal',
   Webpack = 'webpack',
   DevServer = 'devServer',
   Jest = 'jest',
 }
 interface Configurations {
+  webpackInternal: WebpackConfigurations;
+  devServerInternal: WebpackDevConfigurations;
   webpack: WebpackConfigurations;
   devServer: WebpackDevConfigurations;
   jest: JestConfigurations;
@@ -32,8 +36,16 @@ const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment
     isTest: env === Environment.Test,
   };
 
+  if (name === ConfigurationType.WebpackInternal) {
+    return webpackFactory(env, true) as Configurations[T];
+  }
+
+  if (name === ConfigurationType.DevServerInternal) {
+    return devFactory(true) as Configurations[T];
+  }
+
   if (name === ConfigurationType.Webpack) {
-    const config = webpackFactory(env);
+    const config = webpackFactory(env, false);
     if (checkFilesExist(paths.app.webpackConfigPath)) {
       return require(paths.app.webpackConfigPath)(config, args);
     }
@@ -42,7 +54,7 @@ const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment
   }
 
   if (name === ConfigurationType.DevServer) {
-    const config = devFactory();
+    const config = devFactory(false);
     if (checkFilesExist(paths.app.devServerConfigPath)) {
       return require(paths.app.devServerConfigPath)(config, args);
     }

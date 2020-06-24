@@ -6,29 +6,17 @@ import { Configuration } from 'webpack-dev-server';
  * Generates a webpack-dev configuration
  */
 /* istanbul ignore next */
-export default () => {
+export default (isInternal: boolean) => {
   const { local } = getLocalAndNetworkUrls(env.getPort());
   const socket = env.getWSSocket();
 
   const config: Configuration = {
     compress: true,
     clientLogLevel: 'none',
-    contentBase: [
-      paths.app.publicDir,
-      paths.scripts.devAssetsDir,
-    ],
     publicPath: '/',
-    contentBasePublicPath: '/',
     watchContentBase: true,
     hot: true,
-
-    // We're using native sockjs-node
-    transportMode: 'ws',
-    sockHost: socket.host,
-    sockPath: socket.path,
-    sockPort: socket.port,
-
-    // If path not found, load homepage, and let flex-ui handle the navigation
+    // If path not found, load homepage, and let flex-ui handle the navigation -- NOT SURE ABT THIS ONE
     historyApiFallback: {
       disableDotRule: true,
       index: '/',
@@ -39,12 +27,27 @@ export default () => {
     // //  ignored: ignoredFiles(paths.appSrc),
     // },
 
-    quiet: true,
-    injectClient: false,
     host: env.getHost(),
     port: env.getPort(),
     public: local.url,
   };
+
+  if (isInternal) {
+    config.contentBase =  [
+      paths.app.publicDir,
+      paths.scripts.devAssetsDir,
+    ];
+    config.contentBasePublicPath = '/';
+  } else {
+    config.quiet = true;
+    config.injectClient = false;
+
+    // We're using native sockjs-node
+    config.transportMode = 'ws';
+    config.sockHost = socket.host;
+    config.sockPath = socket.path;
+    config.sockPort = socket.port;
+  }
 
   return config;
 }

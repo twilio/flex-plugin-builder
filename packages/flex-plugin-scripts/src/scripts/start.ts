@@ -34,7 +34,16 @@ const start = async (...args: string[]) => {
   // Future  node version will silently consume unhandled exception
   process.on('unhandledRejection', err => { throw err; });
 
-  _startDevServer(port);
+  let isInternal = false;
+  // I feel like this is probably wrong
+  // Also the logic feels backwards to me
+  if (process.argv.includes('flex')) { // This is redundant
+    isInternal = false;
+  } else if (process.argv.includes('plugin')) {
+    isInternal = true;
+  }
+
+  _startDevServer(port, isInternal);
 };
 
 /**
@@ -43,9 +52,16 @@ const start = async (...args: string[]) => {
  * @private
  */
 /* istanbul ignore next */
-export const _startDevServer = (port: number) => {
-  const config = getConfiguration(ConfigurationType.Webpack, Environment.Development);
-  const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development);
+export const _startDevServer = (port: number, isInternal: boolean) => {
+  let config;
+  let devConfig;
+  if (isInternal) {
+    config = getConfiguration(ConfigurationType.WebpackInternal, Environment.Development);
+    devConfig = getConfiguration(ConfigurationType.DevServerInternal, Environment.Development);
+  } else {
+    config = getConfiguration(ConfigurationType.Webpack, Environment.Development);
+    devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development);
+  }
   const devCompiler = compiler(config, true);
   const devServer = new WebpackDevServer(devCompiler, devConfig);
   const { local } = getLocalAndNetworkUrls(port);

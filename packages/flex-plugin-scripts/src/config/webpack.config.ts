@@ -217,10 +217,8 @@ export const _getStyleLoaders = (isProd: boolean) => {
  * @param env the environment
  * @private
  */
-export const _getPlugins = (env: Environment): Plugin[] => {
+export const _getBasePlugins = (env: Environment): Plugin[] => {
   const plugins: Plugin[] = [];
-  const isDev = env === Environment.Development;
-  const isProd = env === Environment.Production;
 
   const flexUIVersion = getDependencyVersion('@twilio/flex-ui');
   const reactVersion = getDependencyVersion('react');
@@ -236,12 +234,17 @@ export const _getPlugins = (env: Environment): Plugin[] => {
     __FPB_REACT_DOM_VERSION: `'${reactDOMVersion}'`,
   }));
 
-  if (env === Environment.Production) {
-    plugins.push(new SourceMapDevToolPlugin({
-      append: '\n//# sourceMappingURL=bundle.js.map',
-    }));
-  }
+  return plugins;
+};
 
+export const _getFlexPlugins = (env: Environment): Plugin[] => {
+  const plugins: Plugin[] = [];
+
+  const flexUIVersion = getDependencyVersion('@twilio/flex-ui');
+  const reactVersion = getDependencyVersion('react');
+  const reactDOMVersion = getDependencyVersion('react-dom');
+
+  // index.html entry point
   if (env === Environment.Development) {
     plugins.push(new HotModuleReplacementPlugin());
     plugins.push(new HtmlWebpackPlugin({
@@ -251,6 +254,20 @@ export const _getPlugins = (env: Environment): Plugin[] => {
     }));
     plugins.push(new InterpolateHtmlPlugin({
       __FPB_JS_SCRIPTS: _getJSScripts(flexUIVersion, reactVersion, reactDOMVersion).join('\n'),
+    }));
+  }
+
+  return plugins;
+};
+
+export const _getPluginPlugins = (env: Environment): Plugin[] => {
+  const plugins: Plugin[] = [];
+  const isDev = env === Environment.Development;
+  const isProd = env === Environment.Production;
+
+  if (env === Environment.Production) {
+    plugins.push(new SourceMapDevToolPlugin({
+      append: '\n//# sourceMappingURL=bundle.js.map',
     }));
   }
   const hasPnp = 'pnp' in process.versions;
@@ -379,35 +396,12 @@ export const _getResolve = (env: Environment): Resolve => {
 };
 
 /**
- * Main method for generating a webpack configuration
+ * The base method for webpack
  * @param env
  */
-export default (env: Environment) => {
+export const base = (env: Environment) => {
   const isProd = env === Environment.Production;
-
   const config: Configuration = {
-    entry: _getEntries(env),
-    output: {
-      path: paths.app.buildDir,
-      pathinfo: !isProd,
-      futureEmitAssets: true,
-      filename: `${paths.app.name}.js`,
-      publicPath: paths.app.publicDir,
-      globalObject: 'this',
-    },
-    bail: isProd,
-    devtool: 'hidden-source-map',
-    optimization: _getOptimization(env),
-    node: {
-      module: 'empty',
-      dgram: 'empty',
-      dns: 'mock',
-      fs: 'empty',
-      http2: 'empty',
-      net: 'empty',
-      tls: 'empty',
-      child_process: 'empty',
-    },
     resolve: _getResolve(env),
     resolveLoader: {
       plugins: [
@@ -428,7 +422,49 @@ export default (env: Environment) => {
         },
       ]
     },
-    plugins: _getPlugins(env),
+    plugins: _getBasePlugins(env),
+  };
+  config.mode = isProd ? Environment.Production : Environment.Development;
+
+  return config;
+};
+
+/**
+ * Main method for generating a webpack configuration
+ * @param env
+ */
+export default (env: Environment, isInternal: boolean) => {
+  const config = base(env);
+  const isProd = env === Environment.Production;
+
+  if (isInternal) {
+    config.plugins = config.plugins ? config.plugins : [];
+    config.plugins.push(..._getFlexPlugins(env));
+  } else {
+    config.entry = _getEntries(env);
+    config.output = {
+      path: paths.app.buildDir,
+      pathinfo: !isProd,
+      futureEmitAssets: true,
+      filename: `${paths.app.name}.js`,
+      publicPath: paths.app.publicDir,
+      globalObject: 'this',
+    };
+    config.bail = isProd;
+    config.devtool = 'hidden-source-map';
+    config.optimization = _getOptimization(env);
+    config.node = {
+      module: 'empty',
+      dgram: 'empty',
+      dns: 'mock',
+      fs: 'empty',
+      http2: 'empty',
+      net: 'empty',
+      tls: 'empty',
+      child_process: 'empty',
+    };
+    config.plugins = config.plugins ? config.plugins : [];
+    config.plugins.push(..._getPluginPlugins(env));
   };
   config.mode = isProd ? Environment.Production : Environment.Development;
 
