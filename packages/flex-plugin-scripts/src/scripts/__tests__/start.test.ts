@@ -2,7 +2,7 @@ import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import * as fs from 'flex-dev-utils/dist/fs';
 import * as urlScripts from 'flex-dev-utils/dist/urls';
 import * as startScripts from '../start';
-import * as compilerScripts from '../../utils/compiler';
+import { WebpackType } from '../../config';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/fs');
@@ -17,27 +17,46 @@ describe('StartScript', () => {
   });
 
   describe('default', () => {
-    it('should start dev-server', async () => {
-      const port = 1234;
-      const findPorts = jest
-        .spyOn(urlScripts, 'findPorts')
-        .mockResolvedValue(port);
-      const getDefaultPort = jest
-        .spyOn(urlScripts, 'getDefaultPort')
-        .mockReturnValue(port);
-      const _startDevServer = jest
-        .spyOn(startScripts, '_startDevServer')
-        .mockReturnThis();
+    const port = 1234;
+    const findPort = jest
+      .spyOn(urlScripts, 'findPort');
+    const getDefaultPort = jest
+      .spyOn(urlScripts, 'getDefaultPort');
+    const _startDevServer = jest
+      .spyOn(startScripts, '_startDevServer');
 
-      process.env.PORT = '2345';
+    const assertTest = (type: WebpackType) => {
+      expect(findPort).toHaveBeenCalledTimes(1);
+      expect(findPort).toHaveBeenCalledWith(port);
+      expect(getDefaultPort).toHaveBeenCalledTimes(1);
+      expect(getDefaultPort).toHaveBeenCalledWith(port.toString());
+      expect(_startDevServer).toHaveBeenCalledTimes(1);
+      expect(_startDevServer).toHaveBeenCalledWith(port, type);
+    }
+
+    beforeEach(() => {
+      findPort.mockResolvedValue(port);
+      getDefaultPort.mockReturnValue(port);
+      _startDevServer.mockReturnThis();
+      process.env.PORT = port.toString();
+    });
+
+    it('should start dev-server', async () => {
       await startScripts.default();
 
-      expect(findPorts).toHaveBeenCalledTimes(1);
-      expect(findPorts).toHaveBeenCalledWith(port);
-      expect(getDefaultPort).toHaveBeenCalledTimes(1);
-      expect(getDefaultPort).toHaveBeenCalledWith('2345');
-      expect(_startDevServer).toHaveBeenCalledTimes(1);
-      expect(_startDevServer).toHaveBeenCalledWith(port);
+      assertTest(WebpackType.Complete);
+    });
+
+    it('should start static html page', async () => {
+      await startScripts.default('flex');
+
+      assertTest(WebpackType.Static);
+    });
+
+    it('should start plugin', async () => {
+      await startScripts.default('plugin');
+
+      assertTest(WebpackType.JavaScript);
     });
   });
 

@@ -1,17 +1,17 @@
 import { env, logger, open } from 'flex-dev-utils';
-import paths from 'flex-dev-utils/dist/paths';
-import fs from 'flex-dev-utils/dist/fs';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
+import fs from 'flex-dev-utils/dist/fs';
+import paths from 'flex-dev-utils/dist/paths';
 import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
-import { findPorts, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
+import { findPort, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import WebpackDevServer from 'webpack-dev-server';
 
-import getConfiguration, { ConfigurationType } from '../config';
+import getConfiguration, { ConfigurationType, WebpackType } from '../config';
 import compiler from '../utils/compiler';
 
 import run, { exit } from '../utils/run';
-import pluginServer, { Plugin } from './start/pluginServer';
+import { Plugin } from '../config/devServer/pluginServer';
 
 const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
 
@@ -24,7 +24,7 @@ const start = async (...args: string[]) => {
   addCWDNodeModule();
 
   // Finds the first available free port where two consecutive ports are free
-  const port = await findPorts(getDefaultPort(process.env.PORT));
+  const port = await findPort(getDefaultPort(process.env.PORT));
 
   env.setBabelEnv(Environment.Development);
   env.setNodeEnv(Environment.Development);
@@ -34,7 +34,26 @@ const start = async (...args: string[]) => {
   // Future  node version will silently consume unhandled exception
   process.on('unhandledRejection', err => { throw err; });
 
-  _startDevServer(port);
+  let type = WebpackType.Complete;
+  if (args[0] === 'flex') {
+    type = WebpackType.Static;
+
+    // For some reason start flex sometimes throws this exception
+    // I haven't been able to figure why but it doesn't look like it is crashing the server
+    process.on('uncaughtException', (err) => {
+      // @ts-ignore
+      if (err.errno === 'ECONNRESET') {
+        // do nothing
+        return;
+      }
+      throw err;
+    });
+  }
+  if (args[0] === 'plugin') {
+    type = WebpackType.JavaScript;
+  }
+
+  _startDevServer(port, type);
 };
 
 /**
@@ -43,22 +62,24 @@ const start = async (...args: string[]) => {
  * @private
  */
 /* istanbul ignore next */
-export const _startDevServer = (port: number) => {
-  const config = getConfiguration(ConfigurationType.Webpack, Environment.Development);
-  const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development);
-  const devCompiler = compiler(config, true);
+export const _startDevServer = (port: number, type: WebpackType) => {
+  const config = getConfiguration(ConfigurationType.Webpack, Environment.Development, type);
+  const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development, type);
+  const devCompiler = compiler(config, true, type);
   const devServer = new WebpackDevServer(devCompiler, devConfig);
   const { local } = getLocalAndNetworkUrls(port);
 
-  // Show TS errors on browser
-  devCompiler.hooks.tsCompiled.tap('afterTSCompile', (warnings, errors) => {
-    if (warnings.length) {
-      devServer.sockWrite(devServer.sockets, 'warnings', warnings);
-    }
-    if (errors.length) {
-      devServer.sockWrite(devServer.sockets, 'errors', errors);
-    }
-  });
+  if (type !== WebpackType.Static) {
+    // Show TS errors on browser
+    devCompiler.hooks.tsCompiled.tap('afterTSCompile', (warnings, errors) => {
+      if (warnings.length) {
+        devServer.sockWrite(devServer.sockets, 'warnings', warnings);
+      }
+      if (errors.length) {
+        devServer.sockWrite(devServer.sockets, 'errors', errors);
+      }
+    });
+  }
 
   // Start the dev-server
   devServer.listen(local.port, local.host, async (err) => {
@@ -68,11 +89,16 @@ export const _startDevServer = (port: number) => {
     }
 
     logger.clearTerminal();
-    logger.notice('Starting development server...');
+    const serverType = type === WebpackType.Complete ? '' : `(${type})`;
+    logger.notice('Starting development server %s...', serverType);
 
-    _updatePluginsUrl(port);
-    await pluginServer(port);
-    await open(local.url);
+    if (type !== WebpackType.Static) {
+      _updatePluginsUrl(port);
+    }
+
+    if (type !== WebpackType.JavaScript) {
+      await open(local.url);
+    }
   });
 
   // Close server and exit

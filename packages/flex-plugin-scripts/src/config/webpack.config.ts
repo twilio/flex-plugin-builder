@@ -1,9 +1,9 @@
 /// <reference path="../module.d.ts" />
 
-import { paths, semver } from 'flex-dev-utils';
 import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
 import ModuleScopePlugin from '@k88/module-scope-plugin';
 import typescriptFormatter from '@k88/typescript-compile-error-formatter';
+import { paths, semver } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { getDependencyVersion } from 'flex-dev-utils/dist/fs';
 import { resolveModulePath } from 'flex-dev-utils/dist/require';
@@ -14,12 +14,13 @@ import TerserPlugin from 'terser-webpack-plugin';
 import webpack, {
   Configuration,
   DefinePlugin,
-  HotModuleReplacementPlugin, Loader,
+  HotModuleReplacementPlugin,
+  Loader,
   Plugin,
   Resolve,
   SourceMapDevToolPlugin,
 } from 'webpack';
-
+import { WebpackType } from './index';
 import Optimization = webpack.Options.Optimization;
 
 interface LoaderOption { [name: string]: any }
@@ -217,10 +218,8 @@ export const _getStyleLoaders = (isProd: boolean) => {
  * @param env the environment
  * @private
  */
-export const _getPlugins = (env: Environment): Plugin[] => {
+export const _getBasePlugins = (env: Environment): Plugin[] => {
   const plugins: Plugin[] = [];
-  const isDev = env === Environment.Development;
-  const isProd = env === Environment.Production;
 
   const flexUIVersion = getDependencyVersion('@twilio/flex-ui');
   const reactVersion = getDependencyVersion('react');
@@ -236,12 +235,21 @@ export const _getPlugins = (env: Environment): Plugin[] => {
     __FPB_REACT_DOM_VERSION: `'${reactDOMVersion}'`,
   }));
 
-  if (env === Environment.Production) {
-    plugins.push(new SourceMapDevToolPlugin({
-      append: '\n//# sourceMappingURL=bundle.js.map',
-    }));
-  }
+  return plugins;
+};
 
+/**
+ * Returns an array of {@link Plugin} for Webpack Static
+ * @param env
+ */
+export const _getStaticPlugins = (env: Environment): Plugin[] => {
+  const plugins: Plugin[] = [];
+
+  const flexUIVersion = getDependencyVersion('@twilio/flex-ui');
+  const reactVersion = getDependencyVersion('react');
+  const reactDOMVersion = getDependencyVersion('react-dom');
+
+  // index.html entry point
   if (env === Environment.Development) {
     plugins.push(new HotModuleReplacementPlugin());
     plugins.push(new HtmlWebpackPlugin({
@@ -251,6 +259,24 @@ export const _getPlugins = (env: Environment): Plugin[] => {
     }));
     plugins.push(new InterpolateHtmlPlugin({
       __FPB_JS_SCRIPTS: _getJSScripts(flexUIVersion, reactVersion, reactDOMVersion).join('\n'),
+    }));
+  }
+
+  return plugins;
+};
+
+/**
+ * Returns an array of {@link Plugin} for Webpack Javascript
+ * @param env
+ */
+export const _getJSPlugins = (env: Environment): Plugin[] => {
+  const plugins: Plugin[] = [];
+  const isDev = env === Environment.Development;
+  const isProd = env === Environment.Production;
+
+  if (env === Environment.Production) {
+    plugins.push(new SourceMapDevToolPlugin({
+      append: '\n//# sourceMappingURL=bundle.js.map',
     }));
   }
   const hasPnp = 'pnp' in process.versions;
@@ -379,35 +405,12 @@ export const _getResolve = (env: Environment): Resolve => {
 };
 
 /**
- * Main method for generating a webpack configuration
+ * The base method for webpack
  * @param env
  */
-export default (env: Environment) => {
+export const _getBase = (env: Environment) => {
   const isProd = env === Environment.Production;
-
   const config: Configuration = {
-    entry: _getEntries(env),
-    output: {
-      path: paths.app.buildDir,
-      pathinfo: !isProd,
-      futureEmitAssets: true,
-      filename: `${paths.app.name}.js`,
-      publicPath: paths.app.publicDir,
-      globalObject: 'this',
-    },
-    bail: isProd,
-    devtool: 'hidden-source-map',
-    optimization: _getOptimization(env),
-    node: {
-      module: 'empty',
-      dgram: 'empty',
-      dns: 'mock',
-      fs: 'empty',
-      http2: 'empty',
-      net: 'empty',
-      tls: 'empty',
-      child_process: 'empty',
-    },
     resolve: _getResolve(env),
     resolveLoader: {
       plugins: [
@@ -428,9 +431,65 @@ export default (env: Environment) => {
         },
       ]
     },
-    plugins: _getPlugins(env),
+    plugins: _getBasePlugins(env),
   };
   config.mode = isProd ? Environment.Production : Environment.Development;
 
   return config;
+};
+
+export const _getStaticConfiguration = (config: Configuration, env: Environment) => {
+  config.plugins = config.plugins ? config.plugins : [];
+  config.plugins.push(..._getStaticPlugins(env));
+
+  return config;
+}
+
+export const _getJavaScriptConfiguration = (config: Configuration, env: Environment) => {
+  const isProd = env === Environment.Production;
+
+  config.plugins = config.plugins ? config.plugins : [];
+  config.entry = _getEntries(env);
+  config.output = {
+    path: paths.app.buildDir,
+    pathinfo: !isProd,
+    futureEmitAssets: true,
+    filename: `${paths.app.name}.js`,
+    publicPath: paths.app.publicDir,
+    globalObject: 'this',
+  };
+  config.bail = isProd;
+  config.devtool = 'hidden-source-map';
+  config.optimization = _getOptimization(env);
+  config.node = {
+    module: 'empty',
+    dgram: 'empty',
+    dns: 'mock',
+    fs: 'empty',
+    http2: 'empty',
+    net: 'empty',
+    tls: 'empty',
+    child_process: 'empty',
+  };
+  config.plugins.push(..._getJSPlugins(env));
+
+  return config;
+}
+
+/**
+ * Main method for generating a webpack configuration
+ * @param env
+ * @param type
+ */
+export default (env: Environment, type: WebpackType) => {
+  const config = _getBase(env);
+
+  if (type === WebpackType.Static) {
+    return _getStaticConfiguration(config, env);
+  }
+  if (type === WebpackType.JavaScript) {
+    return _getJavaScriptConfiguration(config, env);
+  }
+
+  return _getJavaScriptConfiguration(_getStaticConfiguration(config, env), env);
 };

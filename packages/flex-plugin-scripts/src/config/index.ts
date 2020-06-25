@@ -8,12 +8,19 @@ import webpackFactory from './webpack.config';
 import devFactory from './webpack.dev';
 import jestFactory, { JestConfigurations } from './jest.config';
 
+export enum WebpackType {
+  Static = 'static',
+  JavaScript = 'javascript',
+  Complete = 'complete',
+}
 export enum ConfigurationType {
   Webpack = 'webpack',
   DevServer = 'devServer',
   Jest = 'jest',
 }
 interface Configurations {
+  webpackInternal: WebpackConfigurations;
+  devServerInternal: WebpackDevConfigurations;
   webpack: WebpackConfigurations;
   devServer: WebpackDevConfigurations;
   jest: JestConfigurations;
@@ -24,8 +31,9 @@ interface Configurations {
  * config is passed to their Function for modification
  * @param name  the configuration name
  * @param env   the environment
+ * @param type  the webpack type
  */
-const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment): Configurations[T] => {
+const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment, type: WebpackType = WebpackType.Complete): Configurations[T] => {
   const args = {
     isProd: env === Environment.Production,
     isDev: env === Environment.Development,
@@ -33,7 +41,11 @@ const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment
   };
 
   if (name === ConfigurationType.Webpack) {
-    const config = webpackFactory(env);
+    const config = webpackFactory(env, type);
+    if (type === WebpackType.Static) {
+      return config as Configurations[T];
+    }
+
     if (checkFilesExist(paths.app.webpackConfigPath)) {
       return require(paths.app.webpackConfigPath)(config, args);
     }
@@ -42,7 +54,11 @@ const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment
   }
 
   if (name === ConfigurationType.DevServer) {
-    const config = devFactory();
+    const config = devFactory(type);
+    if (type === WebpackType.Static) {
+      return config as Configurations[T];
+    }
+
     if (checkFilesExist(paths.app.devServerConfigPath)) {
       return require(paths.app.devServerConfigPath)(config, args);
     }
