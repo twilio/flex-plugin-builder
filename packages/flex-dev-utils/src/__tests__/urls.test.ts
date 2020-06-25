@@ -1,4 +1,3 @@
-import inquirer from '../inquirer';
 import * as urls from '../urls';
 import address from 'address';
 

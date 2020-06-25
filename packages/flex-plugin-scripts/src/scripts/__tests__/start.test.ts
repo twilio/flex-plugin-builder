@@ -2,7 +2,6 @@ import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import * as fs from 'flex-dev-utils/dist/fs';
 import * as urlScripts from 'flex-dev-utils/dist/urls';
 import * as startScripts from '../start';
-import * as compilerScripts from '../../utils/compiler';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/fs');
@@ -19,8 +18,8 @@ describe('StartScript', () => {
   describe('default', () => {
     it('should start dev-server', async () => {
       const port = 1234;
-      const findPorts = jest
-        .spyOn(urlScripts, 'findPorts')
+      const findPort = jest
+        .spyOn(urlScripts, 'findPort')
         .mockResolvedValue(port);
       const getDefaultPort = jest
         .spyOn(urlScripts, 'getDefaultPort')
@@ -32,8 +31,8 @@ describe('StartScript', () => {
       process.env.PORT = '2345';
       await startScripts.default();
 
-      expect(findPorts).toHaveBeenCalledTimes(1);
-      expect(findPorts).toHaveBeenCalledWith(port);
+      expect(findPort).toHaveBeenCalledTimes(1);
+      expect(findPort).toHaveBeenCalledWith(port);
       expect(getDefaultPort).toHaveBeenCalledTimes(1);
       expect(getDefaultPort).toHaveBeenCalledWith('2345');
       expect(_startDevServer).toHaveBeenCalledTimes(1);
