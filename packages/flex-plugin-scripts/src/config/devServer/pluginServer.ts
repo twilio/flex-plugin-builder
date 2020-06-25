@@ -1,8 +1,8 @@
 import { logger } from 'flex-dev-utils';
-import fs, { readFileSync } from 'flex-dev-utils/dist/fs';
+import { Request, Response } from 'express-serve-static-core';
+import { readFileSync } from 'flex-dev-utils/dist/fs';
 import paths from 'flex-dev-utils/dist/paths';
-import { multilineString } from 'flex-dev-utils/dist/strings';
-import http, { IncomingMessage, ServerResponse } from 'http';
+import { Configuration } from 'webpack-dev-server';
 import https from 'https';
 
 export interface Plugin {
@@ -40,7 +40,7 @@ export const _getHeaders = (port: number) => ({
  * @param version   the Flex version
  */
 /* istanbul ignore next */
-export const _getRemotePlugins = async (token: string, version: string): Promise<Plugin[]> => {
+export const _getRemotePlugins = (token: string, version: string): Promise<Plugin[]> => {
   return new Promise((resolve, reject) => {
     const headers = {
       'X-Flex-JWE': token,
@@ -107,72 +107,40 @@ export const _rebasePlugins = (remotePlugins: Plugin[]) => {
  * @param browserPort  the port of browser
  * @private
  */
-export const _server = (browserPort: number ) => async (req: IncomingMessage, res: ServerResponse) => {
-  const responseHeaders = _getHeaders(browserPort);
-  const { headers, method, url } = req;
+export default (options: Configuration) => {
+  const responseHeaders = _getHeaders(options.port || 3000);
 
-  if (method === 'OPTIONS') {
-    res.writeHead(200, responseHeaders);
-    return res.end();
-  }
-  if (method !== 'GET' || url !== '/plugins') {
-    res.writeHead(404, responseHeaders);
-    return res.end('Route not found');
-  }
+  return async (req: Request, res: Response) => {
+    const { headers, method } = req;
 
-  const jweToken = headers['x-flex-jwe'] as string;
-  const flexVersion = headers['x-flex-version'] as string;
-  if (!jweToken) {
-    res.writeHead(400, responseHeaders);
-    return res.end('No X-Flex-JWE was provided');
-  }
+    if (method === 'OPTIONS') {
+      res.writeHead(200, responseHeaders);
+      return res.end();
+    }
+    if (method !== 'GET') {
+      res.writeHead(404, responseHeaders);
+      return res.end('Route not found');
+    }
+    logger.debug('GET /plugins')
 
-  try {
-    const remotePlugins = await _getRemotePlugins(jweToken, flexVersion);
-    const plugins = _rebasePlugins(remotePlugins);
+    const jweToken = headers['x-flex-jwe'] as string;
+    const flexVersion = headers['x-flex-version'] as string;
+    if (!jweToken) {
+      res.writeHead(400, responseHeaders);
+      return res.end('No X-Flex-JWE was provided');
+    }
 
-    res.writeHead(200, responseHeaders);
-    res.end(JSON.stringify(plugins));
-  } catch (err) {
-    res.writeHead(500, responseHeaders);
-    res.end(err);
-  }
-};
+    return _getRemotePlugins(jweToken, flexVersion)
+      .then(remotePlugins => {
+        logger.trace('Got remote plugins', remotePlugins);
+        const plugins = _rebasePlugins(remotePlugins);
 
-/**
- * Generates the pluginsService.js
- *
- * @param port  the port the local dev-server is running
- * @private
- */
-export const _generatePluginServiceConfig = (port: number) => {
-  const url = `'http://localhost:${port}/plugins';`;
-  const str = multilineString(
-    '// This file is auto-generated',
-    'if (appConfig.pluginService.url === null) {',
-    `  appConfig.pluginService.url = ${url}`,
-    '}',
-  );
-
-  fs.writeFileSync(paths.app.pluginsServicePath, str);
-};
-
-/**
- * Runs a local dev-server to proxy requests to Flex plugin service
- * @param browserPort   the port the browser is running
- */
-/* istanbul ignore next */
-const pluginServer = async (browserPort: string | number) => {
-  const port = Number(browserPort);
-  _generatePluginServiceConfig(port + 1);
-
-  const server = http
-    .createServer(_server(port))
-    .listen(port + 1, '127.0.0.1', () => {
-      logger.debug(`Local plugin server running on port ${port + 1}`);
-    });
-
-  process.on('exit', () => server.close());
-};
-
-export default pluginServer;
+        res.writeHead(200, responseHeaders);
+        res.end(JSON.stringify(plugins));
+      })
+      .catch(err => {
+        res.writeHead(500, responseHeaders);
+        res.end(err);
+      });
+  };
+}

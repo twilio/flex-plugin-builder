@@ -4,14 +4,14 @@ import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import fs from 'flex-dev-utils/dist/fs';
 import paths from 'flex-dev-utils/dist/paths';
 import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
-import { findPorts, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
+import { findPort, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import WebpackDevServer from 'webpack-dev-server';
 
 import getConfiguration, { ConfigurationType, WebpackType } from '../config';
 import compiler from '../utils/compiler';
 
 import run, { exit } from '../utils/run';
-import pluginServer, { Plugin } from './start/pluginServer';
+import { Plugin } from '../config/devServer/pluginServer';
 
 const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
 
@@ -24,21 +24,29 @@ const start = async (...args: string[]) => {
   addCWDNodeModule();
 
   // Finds the first available free port where two consecutive ports are free
-  const port = await findPorts(getDefaultPort(process.env.PORT));
+  const port = await findPort(getDefaultPort(process.env.PORT));
 
   env.setBabelEnv(Environment.Development);
   env.setNodeEnv(Environment.Development);
   env.setHost('0.0.0.0');
   env.setPort(port);
 
-  // Future  node version will silently consume unhandled exception
-  process.on('unhandledRejection', err => { throw err; });
-
   let type = WebpackType.Complete;
   if (args[0] === 'flex') {
     type = WebpackType.Static;
+
+    // For some reason start flex sometimes throws this exception
+    // I haven't been able to figure why but it doesn't look like it is crashing the server
+    process.on('uncaughtException', (err) => {
+      // @ts-ignore
+      if (err.errno === 'ECONNRESET') {
+        // do nothing
+        return;
+      }
+      throw err;
+    });
   }
-  if (args[1] === 'plugin') {
+  if (args[0] === 'plugin') {
     type = WebpackType.JavaScript;
   }
 
@@ -52,14 +60,13 @@ const start = async (...args: string[]) => {
  */
 /* istanbul ignore next */
 export const _startDevServer = (port: number, type: WebpackType) => {
-  const isStatic = type === WebpackType.Static
   const config = getConfiguration(ConfigurationType.Webpack, Environment.Development, type);
   const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development, type);
-  const devCompiler = compiler(config, !isStatic);
+  const devCompiler = compiler(config, true, type);
   const devServer = new WebpackDevServer(devCompiler, devConfig);
   const { local } = getLocalAndNetworkUrls(port);
 
-  if (!isStatic) {
+  if (type !== WebpackType.Static) {
     // Show TS errors on browser
     devCompiler.hooks.tsCompiled.tap('afterTSCompile', (warnings, errors) => {
       if (warnings.length) {
@@ -79,14 +86,14 @@ export const _startDevServer = (port: number, type: WebpackType) => {
     }
 
     logger.clearTerminal();
-    logger.notice('Starting development server...');
+    const serverType = type === WebpackType.Complete ? '' : `(${type})`;
+    logger.notice('Starting development server %s...', serverType);
 
-    if (!isStatic) {
+    if (type !== WebpackType.Static) {
       _updatePluginsUrl(port);
-      await pluginServer(port);
     }
 
-    if (isStatic) {
+    if (type !== WebpackType.JavaScript) {
       await open(local.url);
     }
   });

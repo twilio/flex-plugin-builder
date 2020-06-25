@@ -34,17 +34,17 @@ export const getDefaultPort = (port?: string): number => {
 };
 
 /**
- * Finds the first available two consecutive ports
+ * Finds the first available
  *
  * @param startPort
  */
 /* istanbul ignore next */
-export const findPorts = async (startPort: number = 3000): Promise<number> => {
+export const findPort = async (startPort: number = 3000): Promise<number> => {
   try {
-    await Promise.all([_findPort(startPort), _findPort(startPort + 1)]);
+    await Promise.all([_findPort(startPort)]);
     return startPort;
   } catch (e) {
-    return await findPorts(startPort + 1);
+    return await findPort(startPort + 1);
   }
 };
 

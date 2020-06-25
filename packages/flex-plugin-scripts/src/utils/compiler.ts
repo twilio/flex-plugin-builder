@@ -6,6 +6,7 @@ import { SyncHook } from 'tapable';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import typescriptFormatter, { Issue } from '@k88/typescript-compile-error-formatter';
 import webpack, { Compiler as WebpackCompiler, Configuration } from 'webpack';
+import { WebpackType } from '../config';
 import { devServerSuccessful } from '../prints';
 import { FunctionalCallback } from '../types';
 import CompilerHooks = webpack.compilation.CompilerHooks;
@@ -28,8 +29,8 @@ export interface Compiler extends WebpackCompiler {
  * @param devServer
  */
 /* istanbul ignore next */
-export default (config: Configuration, devServer = false): Compiler => {
-  logger.debug('Creating a webpack compiler using ', JSON.stringify(config));
+export default (config: Configuration, devServer = false, type = WebpackType.Complete): Compiler => {
+  logger.debug('Creating webpack compiler');
 
   try {
     const compiler = webpack(config) as Compiler;
@@ -95,7 +96,7 @@ export default (config: Configuration, devServer = false): Compiler => {
 
       const isSuccessful = result.errors.length === 0 && result.warnings.length === 0;
       if (isSuccessful) {
-        devServerSuccessful(local, network);
+        devServerSuccessful(local, network, type);
         return;
       }
 
