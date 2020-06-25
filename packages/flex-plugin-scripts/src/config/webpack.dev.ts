@@ -29,7 +29,6 @@ export const _getStaticConfiguration = (config: Configuration) => {
   };
   config.publicPath = '/';
   config.watchContentBase = true;
-  config.hot = true;
 
   // @ts-ignore
   config.before = (app, server) => app.use('/plugins', pluginServer(server.options));

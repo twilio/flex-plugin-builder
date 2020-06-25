@@ -31,6 +31,9 @@ const start = async (...args: string[]) => {
   env.setHost('0.0.0.0');
   env.setPort(port);
 
+  // Future  node version will silently consume unhandled exception
+  process.on('unhandledRejection', err => { throw err; });
+
   let type = WebpackType.Complete;
   if (args[0] === 'flex') {
     type = WebpackType.Static;
