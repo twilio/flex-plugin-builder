@@ -50,7 +50,6 @@ export const _getJavaScriptConfiguration = (config: Configuration) => {
   // Hot reload
   config.hot = true;
 
-
   return config;
 }
 

@@ -17,73 +17,46 @@ describe('StartScript', () => {
   });
 
   describe('default', () => {
-    it('should start dev-server', async () => {
-      const port = 1234;
-      const findPort = jest
-        .spyOn(urlScripts, 'findPort')
-        .mockResolvedValue(port);
-      const getDefaultPort = jest
-        .spyOn(urlScripts, 'getDefaultPort')
-        .mockReturnValue(port);
-      const _startDevServer = jest
-        .spyOn(startScripts, '_startDevServer')
-        .mockReturnThis();
+    const port = 1234;
+    const findPort = jest
+      .spyOn(urlScripts, 'findPort');
+    const getDefaultPort = jest
+      .spyOn(urlScripts, 'getDefaultPort');
+    const _startDevServer = jest
+      .spyOn(startScripts, '_startDevServer');
 
-      process.env.PORT = '2345';
-      await startScripts.default();
-
+    const assertTest = (type: WebpackType) => {
       expect(findPort).toHaveBeenCalledTimes(1);
       expect(findPort).toHaveBeenCalledWith(port);
       expect(getDefaultPort).toHaveBeenCalledTimes(1);
-      expect(getDefaultPort).toHaveBeenCalledWith('2345');
+      expect(getDefaultPort).toHaveBeenCalledWith(port.toString());
       expect(_startDevServer).toHaveBeenCalledTimes(1);
-      expect(_startDevServer).toHaveBeenCalledWith(port, WebpackType.Complete);
+      expect(_startDevServer).toHaveBeenCalledWith(port, type);
+    }
+
+    beforeEach(() => {
+      findPort.mockResolvedValue(port);
+      getDefaultPort.mockReturnValue(port);
+      _startDevServer.mockReturnThis();
+      process.env.PORT = port.toString();
+    });
+
+    it('should start dev-server', async () => {
+      await startScripts.default();
+
+      assertTest(WebpackType.Complete);
     });
 
     it('should start static html page', async () => {
-      const port = 1234;
-      const findPort = jest
-        .spyOn(urlScripts, 'findPort')
-        .mockResolvedValue(port);
-      const getDefaultPort = jest
-        .spyOn(urlScripts, 'getDefaultPort')
-        .mockReturnValue(port);
-      const _startDevServer = jest
-        .spyOn(startScripts, '_startDevServer')
-        .mockReturnThis();
-
-      process.env.PORT = '2345';
       await startScripts.default('flex');
 
-      expect(findPort).toHaveBeenCalledTimes(1);
-      expect(findPort).toHaveBeenCalledWith(port);
-      expect(getDefaultPort).toHaveBeenCalledTimes(1);
-      expect(getDefaultPort).toHaveBeenCalledWith('2345');
-      expect(_startDevServer).toHaveBeenCalledTimes(1);
-      expect(_startDevServer).toHaveBeenCalledWith(port, WebpackType.Static);
+      assertTest(WebpackType.Static);
     });
 
     it('should start plugin', async () => {
-      const port = 1234;
-      const findPort = jest
-        .spyOn(urlScripts, 'findPort')
-        .mockResolvedValue(port);
-      const getDefaultPort = jest
-        .spyOn(urlScripts, 'getDefaultPort')
-        .mockReturnValue(port);
-      const _startDevServer = jest
-        .spyOn(startScripts, '_startDevServer')
-        .mockReturnThis();
-
-      process.env.PORT = '2345';
       await startScripts.default('plugin');
 
-      expect(findPort).toHaveBeenCalledTimes(1);
-      expect(findPort).toHaveBeenCalledWith(port);
-      expect(getDefaultPort).toHaveBeenCalledTimes(1);
-      expect(getDefaultPort).toHaveBeenCalledWith('2345');
-      expect(_startDevServer).toHaveBeenCalledTimes(1);
-      expect(_startDevServer).toHaveBeenCalledWith(port, WebpackType.JavaScript);
+      assertTest(WebpackType.JavaScript);
     });
   });
 

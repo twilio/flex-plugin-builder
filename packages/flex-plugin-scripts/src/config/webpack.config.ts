@@ -238,7 +238,11 @@ export const _getBasePlugins = (env: Environment): Plugin[] => {
   return plugins;
 };
 
-export const _getFlexPlugins = (env: Environment): Plugin[] => {
+/**
+ * Returns an array of {@link Plugin} for Webpack Static
+ * @param env
+ */
+export const _getStaticPlugins = (env: Environment): Plugin[] => {
   const plugins: Plugin[] = [];
 
   const flexUIVersion = getDependencyVersion('@twilio/flex-ui');
@@ -261,7 +265,11 @@ export const _getFlexPlugins = (env: Environment): Plugin[] => {
   return plugins;
 };
 
-export const _getPluginPlugins = (env: Environment): Plugin[] => {
+/**
+ * Returns an array of {@link Plugin} for Webpack Javascript
+ * @param env
+ */
+export const _getJSPlugins = (env: Environment): Plugin[] => {
   const plugins: Plugin[] = [];
   const isDev = env === Environment.Development;
   const isProd = env === Environment.Production;
@@ -400,7 +408,7 @@ export const _getResolve = (env: Environment): Resolve => {
  * The base method for webpack
  * @param env
  */
-export const base = (env: Environment) => {
+export const _getBase = (env: Environment) => {
   const isProd = env === Environment.Production;
   const config: Configuration = {
     resolve: _getResolve(env),
@@ -432,7 +440,7 @@ export const base = (env: Environment) => {
 
 export const _getStaticConfiguration = (config: Configuration, env: Environment) => {
   config.plugins = config.plugins ? config.plugins : [];
-  config.plugins.push(..._getFlexPlugins(env));
+  config.plugins.push(..._getStaticPlugins(env));
 
   return config;
 }
@@ -463,7 +471,7 @@ export const _getJavaScriptConfiguration = (config: Configuration, env: Environm
     tls: 'empty',
     child_process: 'empty',
   };
-  config.plugins.push(..._getPluginPlugins(env));
+  config.plugins.push(..._getJSPlugins(env));
 
   return config;
 }
@@ -474,9 +482,7 @@ export const _getJavaScriptConfiguration = (config: Configuration, env: Environm
  * @param type
  */
 export default (env: Environment, type: WebpackType) => {
-  const config = base(env);
-  const isProd = env === Environment.Production;
-  config.mode = isProd ? Environment.Production : Environment.Development;
+  const config = _getBase(env);
 
   if (type === WebpackType.Static) {
     return _getStaticConfiguration(config, env);
