@@ -1,14 +1,12 @@
 import { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { createDescription } from '../../../utils/general';
-import CreateConfiguration, { CreateConfigurationFlags } from '../../../sub-commands/create-configuration';
+import CreateConfiguration from '../../../sub-commands/create-configuration';
 
 /**
  * Creates a Configuration
  */
-export default class FlexPluginsCreateConfiguration extends CreateConfiguration<CreateConfigurationFlags> {
+export default class FlexPluginsCreateConfiguration extends CreateConfiguration {
   static description = createDescription('Creates a Flex Plugin Configuration', true);
-
-  static flags = { ...CreateConfigurationFlags };
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, { strict: false });
@@ -31,9 +29,5 @@ export default class FlexPluginsCreateConfiguration extends CreateConfiguration<
       `Run {{$ twilio flex:plugins:release --version ${config.version}}} to enable this configuration on your Flex instance`,
     );
     this._logger.newline();
-  }
-
-  get _flags() {
-    return this.parse(FlexPluginsCreateConfiguration).flags;
   }
 }

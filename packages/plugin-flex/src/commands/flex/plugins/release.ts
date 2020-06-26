@@ -2,15 +2,13 @@ import { progress } from 'flex-plugins-utils-logger';
 
 import { createDescription } from '../../../utils/general';
 import { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
-import CreateConfiguration, { CreateConfigurationFlags } from '../../../sub-commands/create-configuration';
+import CreateConfiguration from '../../../sub-commands/create-configuration';
 
 /**
  * Creates a Configuration
  */
-export default class FlexPluginsRelease extends CreateConfiguration<CreateConfigurationFlags> {
+export default class FlexPluginsRelease extends CreateConfiguration {
   static description = createDescription('Creates a Flex Plugin Release', true);
-
-  public static flags = { ...CreateConfigurationFlags };
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, { strict: false });
@@ -44,9 +42,5 @@ export default class FlexPluginsRelease extends CreateConfiguration<CreateConfig
    */
   async createRelease(version: string) {
     return this.pluginsApiToolkit.release({ version });
-  }
-
-  get _flags() {
-    return this.parse(FlexPluginsRelease).flags;
   }
 }

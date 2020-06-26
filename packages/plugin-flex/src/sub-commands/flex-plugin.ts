@@ -10,22 +10,38 @@ import {
   ConfigurationsClient,
 } from 'flex-plugins-api-client';
 import { TwilioError } from 'flex-plugins-utils-exception';
+import dayjs from 'dayjs';
+import { flags } from '@oclif/parser';
 
 import { filesExist, readJSONFile } from '../utils/fs';
 import { TwilioCliError } from '../exceptions';
 
 interface FlexPluginOption {
   strict: boolean;
+  runInDirectory: boolean;
 }
 
 export type ConfigData = typeof services.config.ConfigData;
 export type SecureStorage = typeof services.secureStorage.SecureStorage;
+
+export interface FlexPluginFlags {
+  json: boolean;
+}
 
 /**
  * Base class for all flex-plugin * scripts.
  * This will ensure the script is running on a Flex-plugin project, otherwise will throw an error
  */
 export default class FlexPlugin extends baseCommands.TwilioClientCommand {
+  static flags = {
+    json: flags.boolean(),
+  };
+
+  private static defaultOptions: FlexPluginOption = {
+    strict: false,
+    runInDirectory: true,
+  };
+
   protected readonly opts: FlexPluginOption;
 
   protected readonly cwd: string;
@@ -44,10 +60,10 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
   private _configurationsClient?: ConfigurationsClient;
 
-  constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage, opts: FlexPluginOption) {
+  constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage, opts: Partial<FlexPluginOption>) {
     super(argv, config, secureStorage);
 
-    this.opts = opts || {};
+    this.opts = { ...FlexPlugin.defaultOptions, ...opts };
     this.showHeaders = true;
     this.cwd = process.cwd();
     this.scriptArgs = process.argv.slice(3);
@@ -75,6 +91,10 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @returns {boolean}
    */
   isPluginFolder() {
+    if (!this.opts.runInDirectory) {
+      return true;
+    }
+
     return filesExist(join(this.cwd, 'public', 'appConfig.js'));
   }
 
@@ -126,6 +146,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     await super.run();
 
     if (!this.isPluginFolder()) {
+      this._logger.error(`${this.cwd} directory is not a flex plugin directory`);
       throw new Error(`${this.cwd} directory is not a flex plugin directory`);
     }
 
@@ -140,10 +161,15 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     }
 
     try {
-      this._logger.notice(`Using profile **${this.currentProfile.id}** (${this.currentProfile.accountSid})`);
-      this._logger.newline();
+      if (!this.isJson) {
+        this._logger.notice(`Using profile **${this.currentProfile.id}** (${this.currentProfile.accountSid})`);
+        this._logger.newline();
+      }
 
-      await this.doRun();
+      const result = await this.doRun();
+      if (result && this.isJson && typeof result === 'object') {
+        this._logger.info(JSON.stringify(result));
+      }
     } catch (e) {
       if (e instanceof TwilioError) {
         this._logger.error(e.message);
@@ -186,11 +212,37 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   }
 
   /**
+   * Parses the timestamp
+   * @param timestamp
+   */
+  /* istanbul ignore next */
+  parseDate(timestamp: string) {
+    return dayjs(timestamp).format('MMM DD, YYYY H:mm:ssA');
+  }
+
+  /**
    * Abstract class method that each command should extend; this is the actual command that runs once initialization is
    * complete
    * @returns {Promise<void>}
    */
-  async doRun() {
-    throw new Error('Abstract class method must be implemented');
+  /* istanbul ignore next */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async doRun(): Promise<any | void> {
+    throw new Error('Abstract method must be implemented');
+  }
+
+  /**
+   * Abstract method for getting the flags
+   * @private
+   */
+  get _flags(): FlexPluginFlags {
+    return this.parse(FlexPlugin).flags;
+  }
+
+  /**
+   * Whether this is a JSON response
+   */
+  get isJson() {
+    return this._flags.json;
   }
 }

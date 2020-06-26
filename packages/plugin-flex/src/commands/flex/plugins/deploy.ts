@@ -15,6 +15,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
   static description = createDescription('Builds and deploys Flex plugin to Twilio Assets', true);
 
   static flags = {
+    ...FlexPlugin.flags,
     patch: flags.boolean({
       exclusive: ['minor', 'major', 'version'],
     }),
@@ -28,6 +29,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       exclusive: ['patch', 'minor', 'major'],
     }),
     changelog: flags.string(),
+    public: flags.boolean(),
   };
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
@@ -105,6 +107,9 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     // Set the plugin version
     this.scriptArgs.push('version', nextVersion);
     this.scriptArgs.push('--pilot-plugins-api');
+    if (this._flags.public) {
+      this.scriptArgs.push('--public');
+    }
   }
 
   /**

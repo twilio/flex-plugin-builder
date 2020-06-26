@@ -2,13 +2,11 @@ import { flags } from '@oclif/command';
 import { progress } from 'flex-plugins-utils-logger';
 import semver from 'semver';
 import { CreateConfigurationOption } from 'flex-plugins-api-toolkit';
-import { OutputFlags } from '@oclif/parser';
-import { ParserInput } from '@oclif/parser/lib/parse';
 
 import { TwilioCliError } from '../exceptions';
-import FlexPlugin from './flex-plugin';
+import FlexPlugin, { FlexPluginFlags } from './flex-plugin';
 
-export interface CreateConfigurationFlags {
+export interface CreateConfigurationFlags extends FlexPluginFlags {
   patch: boolean;
   minor: boolean;
   major: boolean;
@@ -18,37 +16,34 @@ export interface CreateConfigurationFlags {
   description?: string;
 }
 
-export const CreateConfigurationFlags = {
-  patch: flags.boolean({
-    exclusive: ['minor', 'major', 'version'],
-  }),
-  minor: flags.boolean({
-    exclusive: ['patch', 'major', 'version'],
-  }),
-  major: flags.boolean({
-    exclusive: ['patch', 'minor', 'version'],
-  }),
-  version: flags.string({
-    exclusive: ['patch', 'minor', 'major'],
-  }),
-  new: flags.boolean(),
-  plugin: flags.string({
-    multiple: true,
-    required: true,
-    description:
-      'The plugin to install, formatted as pluginName@version. Use additional --plugin to provide other plugins to install',
-  }),
-  description: flags.string({
-    description: 'The configuration description',
-  }),
-};
-
 /**
  * Creates a Configuration
  */
-export default abstract class CreateConfiguration<TFlags extends OutputFlags<ParserInput['flags']>> extends FlexPlugin {
+export default abstract class CreateConfiguration extends FlexPlugin {
   public static flags = {
-    ...CreateConfigurationFlags,
+    ...FlexPlugin.flags,
+    patch: flags.boolean({
+      exclusive: ['minor', 'major', 'version'],
+    }),
+    minor: flags.boolean({
+      exclusive: ['patch', 'major', 'version'],
+    }),
+    major: flags.boolean({
+      exclusive: ['patch', 'minor', 'version'],
+    }),
+    version: flags.string({
+      exclusive: ['patch', 'minor', 'major'],
+    }),
+    new: flags.boolean(),
+    plugin: flags.string({
+      multiple: true,
+      required: true,
+      description:
+        'The plugin to install, formatted as pluginName@version. Use additional --plugin to provide other plugins to install',
+    }),
+    description: flags.string({
+      description: 'The configuration description',
+    }),
   };
 
   /**
@@ -111,5 +106,7 @@ export default abstract class CreateConfiguration<TFlags extends OutputFlags<Par
     return 'patch';
   }
 
-  abstract get _flags(): TFlags;
+  get _flags(): CreateConfigurationFlags {
+    return this.parse(CreateConfiguration).flags;
+  }
 }

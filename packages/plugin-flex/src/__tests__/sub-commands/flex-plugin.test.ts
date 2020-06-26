@@ -84,4 +84,32 @@ describe('SubCommands/FlexPlugin', () => {
       expect(cmd.doRun).to.have.been.calledOnce;
     })
     .it('should run the main command successfully');
+
+  start(['--json'])
+    .setup(async (cmd) => {
+      sinon.stub(cmd, 'isPluginFolder').returns(true);
+      sinon.stub(cmd, 'setupEnvironment');
+      sinon.stub(cmd, 'doRun').resolves({ object: 'result' });
+
+      await cmd.run();
+    })
+    .test((cmd) => {
+      // @ts-ignore
+      expect(cmd._logger.info).to.have.been.calledWith('{"object":"result"}');
+    })
+    .it('should return raw format');
+
+  start([])
+    .setup(async (cmd) => {
+      sinon.stub(cmd, 'isPluginFolder').returns(true);
+      sinon.stub(cmd, 'setupEnvironment');
+      sinon.stub(cmd, 'doRun').resolves({ object: 'result' });
+
+      await cmd.run();
+    })
+    .test((cmd) => {
+      // @ts-ignore
+      expect(cmd._logger.info).not.to.have.been.calledWith('{"object":"result"}');
+    })
+    .it('should not return raw format');
 });
