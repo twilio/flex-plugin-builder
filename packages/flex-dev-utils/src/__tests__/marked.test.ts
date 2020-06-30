@@ -1,20 +1,27 @@
-import * as fs from 'fs';
 import marked from 'marked';
 import logger from '../logger';
-import { render } from '../marked';
 
-jest.mock('fs');
+const readFileSync = jest.fn();
 jest.mock('marked');
 jest.mock('../logger');
+jest.mock('../fs', () => ({
+  getCwd: () => 'the-dir',
+  readFileSync,
+}));
+
+// tslint:disable
+const markedScript = require('../marked');
+// tslint:enable
 
 describe('marked', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   it('should pipe content in correct order', () => {
-    render('foo');
-    expect(fs.readFileSync).toHaveBeenCalledTimes(1);
+    readFileSync.mockReturnValue('fileContent');
+    markedScript.render('foo');
+    expect(readFileSync).toHaveBeenCalledTimes(1);
     expect(logger.info).toHaveBeenCalledTimes(1);
     expect(marked).toHaveBeenCalledTimes(1);
   });
