@@ -56,7 +56,7 @@ const start = async (...args: string[]) => {
 
   const index = args.indexOf('--name');
 
-  if (index > -1) {
+  if (index !== -1) {
     const config = readJsonFile<CLIFlexConfiguration>(paths().cli.pluginsJsonPath);
     const plugin = config.plugins.find((p) => p.name === args[index + 1]);
 
