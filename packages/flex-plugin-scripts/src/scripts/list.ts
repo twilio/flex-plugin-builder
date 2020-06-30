@@ -19,11 +19,11 @@ export type Order = 'desc' | 'asc';
  * @private
  */
 export const _doList = async (visibilities: Visibility[], order: Order = 'asc') => {
-  logger.info('Fetching all available versions of plugin %s', paths.app.name);
+  logger.info('Fetching all available versions of plugin %s', paths().app.name);
 
   const credentials = await getCredential();
   const runtime = await getRuntime(credentials);
-  const regex = new RegExp(PLUGIN_REGEX_STR.replace('%PLUGIN_NAME%', paths.app.name));
+  const regex = new RegExp(PLUGIN_REGEX_STR.replace('%PLUGIN_NAME%', paths().app.name));
 
   const assets = runtime.build && runtime.build.asset_versions || [];
   const versions = assets
@@ -32,7 +32,7 @@ export const _doList = async (visibilities: Visibility[], order: Order = 'asc') 
 
   if (versions.length === 0) {
     logger.newline();
-    logger.info('No versions of plugin %s have been deployed', paths.app.name);
+    logger.info('No versions of plugin %s have been deployed', paths().app.name);
     logger.newline();
 
     return process.exit(0);

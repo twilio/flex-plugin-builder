@@ -23,17 +23,23 @@ export interface AppPackageJson extends PackageJson {
 export default fs;
 
 // Working directory
-const cwd = fs.realpathSync(process.cwd());
+let cwd = fs.realpathSync(process.cwd());
+
+// Set working directory
+export const setCwd = (p: string) => cwd = p;
+
+// Get working directory
+export const getCwd = () => cwd;
 
 // The OS root directory
-const rootDir = os.platform() === 'win32' ? process.cwd().split(path.sep)[0] : '/';
+const rootDir = os.platform() === 'win32' ? getCwd().split(path.sep)[0] : '/';
 
 // Promise version of {@link copyTempDir}
 // tslint:disable-next-line
 const promiseCopyTempDir = promisify(require('copy-template-dir'));
 
 // Node directory
-const nodeModulesPath = path.join(process.cwd(), 'node_modules');
+const nodeModulesPath = path.join(getCwd(), 'node_modules');
 
 /**
  * Checks the provided array of files exist
@@ -49,7 +55,7 @@ export const checkFilesExist = (...files: string[]) => {
 /**
  * Gets package.json path
  */
-export const getPackageJsonPath = (forModule: boolean = false) => path.join(process.cwd(), 'package.json');
+export const getPackageJsonPath = (forModule: boolean = false) => path.join(getCwd(), 'package.json');
 
 /**
  * Updates the package.json version field
@@ -202,7 +208,7 @@ export const resolveRelative = (dir: string, ...paths: string[]) => {
  */
 export const findGlobs = (...patterns: string[]) => {
   // TODO: move paths from flex-plugin-scripts into here and use it here too
-  return findGlobsIn(path.join(process.cwd(), 'src'), ...patterns);
+  return findGlobsIn(path.join(getCwd(), 'src'), ...patterns);
 };
 
 /**

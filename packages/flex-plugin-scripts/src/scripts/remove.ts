@@ -27,7 +27,7 @@ export const _getRuntime = async (credentials: AuthConfig): Promise<Runtime> => 
       service: runtime.service,
     };
   } catch (e) {
-    const pluginName = logger.colors.blue(paths.app.name);
+    const pluginName = logger.colors.blue(paths().app.name);
 
     logger.newline();
     logger.info(`⚠️  Plugin ${pluginName} was not found or was already removed.`);
@@ -41,7 +41,7 @@ export const _getRuntime = async (credentials: AuthConfig): Promise<Runtime> => 
  * @private
  */
 export const _doRemove = async () => {
-  const pluginName = logger.colors.blue(paths.app.name);
+  const pluginName = logger.colors.blue(paths().app.name);
   const credentials = await getCredential();
   const runtime = await _getRuntime(credentials);
   if (!runtime.environment) {
@@ -66,7 +66,7 @@ export const _doRemove = async () => {
 const remove = async () => {
   logger.debug('Removing plugin');
 
-  const pluginName = logger.colors.blue(paths.app.name);
+  const pluginName = logger.colors.blue(paths().app.name);
   const question = `Are you sure you want to permanently remove plugin ${pluginName}?`;
   const answer = await confirm(question, 'N');
 

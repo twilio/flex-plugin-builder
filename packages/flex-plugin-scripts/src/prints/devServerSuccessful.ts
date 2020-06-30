@@ -7,9 +7,9 @@ import { WebpackType } from '../config';
  */
 export default (local: ServiceUrl, network: ServiceUrl, type: WebpackType) => {
   logger.success('Compiled successfully!');
-  const pkgName = logger.colors.bold(paths.app.name);
+  const pkgName = logger.colors.bold(paths().app.name);
   const hasIndex = type === WebpackType.Complete || type === WebpackType.Static;
-  const jsUrl = type === WebpackType.JavaScript ? `${paths.app.name}.js` : '';
+  const jsUrl = type === WebpackType.JavaScript ? `${paths().app.name}.js` : '';
   const appType = hasIndex  ? 'app' : 'JavaScript bundle';
 
   logger.newline();

@@ -14,7 +14,7 @@ jest.mock('../../prints/publicDirCopyFailed');
 jest.mock('../../prints/expectedDependencyNotFound');
 jest.mock('../../prints/typescriptNotInstalled');
 jest.mock('../../prints/loadPluginCountError');
-jest.mock('flex-dev-utils/dist/paths', () => ({
+jest.mock('flex-dev-utils/dist/paths', () => () => ({
   scripts: {
     tsConfigPath: 'test-ts-config-path',
     dir: 'test-scripts-dir',

@@ -6,7 +6,7 @@ jest.mock('../../prints/pluginVersions');
 jest.mock('../../utils/runtime');
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/credentials');
-jest.mock('flex-dev-utils/dist/paths', () => ({
+jest.mock('flex-dev-utils/dist/paths', () => () => ({
   app: {
     name: 'plugin-test',
   },

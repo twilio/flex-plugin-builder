@@ -1,6 +1,6 @@
 import jestFactory from '../jest.config';
 
-jest.mock('flex-dev-utils/dist/paths', () => ({
+jest.mock('flex-dev-utils/dist/paths', () => () => ({
   cwd: 'the/working/dir',
   app: {
     setupTestsPaths: [],

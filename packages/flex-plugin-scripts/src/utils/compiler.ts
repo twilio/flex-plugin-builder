@@ -44,7 +44,7 @@ export default (config: Configuration, devServer = false, type = WebpackType.Com
     let tsMessagesPromise: Promise<ErrorsAndWarnings>;
     let tsMessagesResolver: FunctionalCallback<ErrorsAndWarnings, void>;
 
-    if (paths.app.isTSProject()) {
+    if (paths().app.isTSProject()) {
       compiler.hooks.beforeCompile.tap('beforeCompile', () => {
         tsMessagesPromise = new Promise(resolve => {
           tsMessagesResolver = (msgs: ErrorsAndWarnings) => resolve(msgs);
@@ -78,7 +78,7 @@ export default (config: Configuration, devServer = false, type = WebpackType.Com
       logger.clearTerminal();
       const result = stats.toJson({ all: false, errors: true, warnings: true });
 
-      if (paths.app.isTSProject() && !stats.hasErrors()) {
+      if (paths().app.isTSProject() && !stats.hasErrors()) {
         const delayedMsg = setTimeout(() => {
           logger.notice('Waiting for Typescript check results...');
         }, 100);
@@ -111,14 +111,14 @@ export default (config: Configuration, devServer = false, type = WebpackType.Com
         // So only show the first error
         formatted.errors.length = 1;
 
-        logger.error(`Failed to compile plugin ${logger.colors.red.bold(paths.app.name)}.`);
+        logger.error(`Failed to compile plugin ${logger.colors.red.bold(paths().app.name)}.`);
         logger.info(formatted.errors.join('\n'));
         logger.newline();
         return;
       }
 
       // Show warning messages
-      logger.warning(`Compiled plugin ${logger.colors.yellow.bold(paths.app.name)} with warning(s).`);
+      logger.warning(`Compiled plugin ${logger.colors.yellow.bold(paths().app.name)} with warning(s).`);
       logger.info(formatted.warnings.join('\n'));
       logger.newline();
     });

@@ -134,11 +134,11 @@ export const _getAccount = async (runtime: Runtime, credentials: AuthConfig) => 
  * @param options       options for this deploy
  */
 export const _doDeploy = async (nextVersion: string, options: Options): Promise<DeployResult> => {
-  if (!checkFilesExist(paths.app.bundlePath)) {
+  if (!checkFilesExist(paths().app.bundlePath)) {
     throw new FlexPluginError('Could not find build file. Did you run `npm run build` first?');
   }
 
-  const pluginBaseUrl = paths.assetBaseUrlTemplate.replace('%PLUGIN_VERSION%', nextVersion);
+  const pluginBaseUrl = paths().assetBaseUrlTemplate.replace('%PLUGIN_VERSION%', nextVersion);
   const bundleUri = `${pluginBaseUrl}/bundle.js`;
   const sourceMapUri = `${pluginBaseUrl}/bundle.js.map`;
 
@@ -198,9 +198,9 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
   const buildData = await progress('Uploading your plugin bundle', async () => {
     // Upload bundle and sourcemap
     const bundleVersion = await assetClient
-      .upload(paths.app.name, bundleUri, paths.app.bundlePath, !options.isPublic);
+      .upload(paths().app.name, bundleUri, paths().app.bundlePath, !options.isPublic);
     const sourceMapVersion = await assetClient
-      .upload(paths.app.name, sourceMapUri, paths.app.sourceMapPath, !options.isPublic);
+      .upload(paths().app.name, sourceMapUri, paths().app.sourceMapPath, !options.isPublic);
 
     const existingAssets = routeCollision && options.overwrite
       ?  buildAssets.filter((v) => v.path !== bundleUri && v.path !== sourceMapUri)
@@ -271,9 +271,9 @@ const deploy = async (...argv: string[]) => {
 
     if (bump === 'overwrite') {
       opts.overwrite = true;
-      nextVersion = paths.app.version;
+      nextVersion = paths().app.version;
     } else if (bump !== 'version') {
-      nextVersion = semver.inc(paths.app.version, bump as ReleaseType) as any;
+      nextVersion = semver.inc(paths().app.version, bump as ReleaseType) as any;
     }
   } else {
     nextVersion = '0.0.0';

@@ -19,8 +19,8 @@ export const _getBase = (): Configuration => {
 
 export const _getStaticConfiguration = (config: Configuration) => {
   config.contentBase =  [
-    paths.app.publicDir,
-    paths.scripts.devAssetsDir,
+    paths().app.publicDir,
+    paths().scripts.devAssetsDir,
   ];
   config.contentBasePublicPath = '/';
   config.historyApiFallback = {

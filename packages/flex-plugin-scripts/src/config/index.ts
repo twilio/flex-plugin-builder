@@ -46,8 +46,8 @@ const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment
       return config as Configurations[T];
     }
 
-    if (checkFilesExist(paths.app.webpackConfigPath)) {
-      return require(paths.app.webpackConfigPath)(config, args);
+    if (checkFilesExist(paths().app.webpackConfigPath)) {
+      return require(paths().app.webpackConfigPath)(config, args);
     }
 
     return config as Configurations[T];
@@ -59,8 +59,8 @@ const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment
       return config as Configurations[T];
     }
 
-    if (checkFilesExist(paths.app.devServerConfigPath)) {
-      return require(paths.app.devServerConfigPath)(config, args);
+    if (checkFilesExist(paths().app.devServerConfigPath)) {
+      return require(paths().app.devServerConfigPath)(config, args);
     }
 
     return config as Configurations[T];
@@ -68,8 +68,8 @@ const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment
 
   if (name === ConfigurationType.Jest) {
     const config = jestFactory();
-    if (checkFilesExist(paths.app.jestConfigPath)) {
-      return require(paths.app.jestConfigPath)(config, args);
+    if (checkFilesExist(paths().app.jestConfigPath)) {
+      return require(paths().app.jestConfigPath)(config, args);
     }
 
     return config as Configurations[T];

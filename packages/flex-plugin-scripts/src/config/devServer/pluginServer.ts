@@ -17,7 +17,7 @@ export interface Plugin {
  * @private
  */
 /* istanbul ignore next */
-export const _getLocalPlugins = () => JSON.parse(readFileSync(paths.app.pluginsJsonPath)) as Plugin[];
+export const _getLocalPlugins = () => JSON.parse(readFileSync(paths().app.pluginsJsonPath)) as Plugin[];
 
 /**
  * Generates the response headers
@@ -78,7 +78,7 @@ export const _rebasePlugins = (remotePlugins: Plugin[]) => {
   return _getLocalPlugins()
     .map((plugin) => {
       // Local main (plugin) we are running
-      if (plugin.name === paths.app.name) {
+      if (plugin.name === paths().app.name) {
         return plugin;
       }
 

@@ -36,7 +36,9 @@
       "pre-push": "npm run test"
     }
   },
-  "dependencies": {},
+  "dependencies": {
+    "keytar": "^6.0.1"
+  },
   "devDependencies": {
     "@babel/cli": "^7.10.1",
     "@babel/core": "^7.10.2",

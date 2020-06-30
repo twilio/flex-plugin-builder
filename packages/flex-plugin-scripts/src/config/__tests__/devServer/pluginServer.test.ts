@@ -6,7 +6,7 @@ import * as fs from 'flex-dev-utils/dist/fs';
 import * as pluginServerScript from '../../devServer/pluginServer';
 
 jest.mock('flex-dev-utils/dist/logger');
-jest.mock('flex-dev-utils/dist/paths', () => ({
+jest.mock('flex-dev-utils/dist/paths', () => () => ({
   app: {
     name: 'default-plugin',
     pluginsServicePath: 'pluginsService.js',

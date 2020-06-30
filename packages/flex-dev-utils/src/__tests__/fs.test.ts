@@ -66,7 +66,7 @@ describe('fs', () => {
 
   describe('getPackageJsonPath', () => {
     it('should return the right path', () => {
-      const cwd = jest.spyOn(process, 'cwd').mockImplementation(() => 'test');
+      const cwd = jest.spyOn(fs, 'getCwd').mockImplementation(() => 'test');
 
       const path = fs.getPackageJsonPath();
 
