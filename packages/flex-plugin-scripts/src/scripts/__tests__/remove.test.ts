@@ -10,7 +10,7 @@ jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/credentials', () => ({
   getCredential: jest.fn(),
 }));
-jest.mock('flex-dev-utils/dist/paths', () => ({
+jest.mock('flex-dev-utils/dist/paths', () => () => ({
   app: {
     name: 'plugin-test',
   },

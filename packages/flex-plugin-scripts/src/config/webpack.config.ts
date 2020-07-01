@@ -59,8 +59,8 @@ export const _getJSScripts = (flexUIVersion: string, reactVersion: string, react
  * @param isProd  whether this is a production build
  */
 const _getBabelLoader = (isProd: boolean) => ({
-  test: new RegExp('\.(' + paths.extensions.join('|') + ')$'),
-  include: paths.app.srcDir,
+  test: new RegExp('\.(' + paths().extensions.join('|') + ')$'),
+  include: paths().app.srcDir,
   loader: require.resolve('babel-loader'),
   options: {
     customize: require.resolve('babel-preset-react-app/webpack-overrides'),
@@ -226,8 +226,8 @@ export const _getBasePlugins = (env: Environment): Plugin[] => {
   const reactDOMVersion = getDependencyVersion('react-dom');
 
   plugins.push(new DefinePlugin({
-    __FPB_PLUGIN_UNIQUE_NAME: `'${paths.app.name}'`,
-    __FPB_PLUGIN_VERSION: `'${paths.app.version}'`,
+    __FPB_PLUGIN_UNIQUE_NAME: `'${paths().app.name}'`,
+    __FPB_PLUGIN_VERSION: `'${paths().app.version}'`,
     __FPB_FLEX_PLUGIN_SCRIPTS_VERSION: `'${getDependencyVersion('flex-plugin-scripts')}'`,
     __FPB_FLEX_PLUGIN_VERSION: `'${getDependencyVersion('flex-plugin')}'`,
     __FPB_FLEX_UI_VERSION: `'${flexUIVersion}'`,
@@ -255,7 +255,7 @@ export const _getStaticPlugins = (env: Environment): Plugin[] => {
     plugins.push(new HtmlWebpackPlugin({
       inject: false,
       hash: false,
-      template: paths.app.indexHtmlPath,
+      template: paths().app.indexHtmlPath,
     }));
     plugins.push(new InterpolateHtmlPlugin({
       __FPB_JS_SCRIPTS: _getJSScripts(flexUIVersion, reactVersion, reactDOMVersion).join('\n'),
@@ -281,7 +281,7 @@ export const _getJSPlugins = (env: Environment): Plugin[] => {
   }
   const hasPnp = 'pnp' in process.versions;
 
-  if (paths.app.isTSProject()) {
+  if (paths().app.isTSProject()) {
     const typescriptPath = resolveModulePath('typescript');
     const config: Partial<ForkTsCheckerWebpackPlugin.Options> = {
       typescript: typescriptPath || undefined,
@@ -294,7 +294,7 @@ export const _getJSPlugins = (env: Environment): Plugin[] => {
       resolveTypeReferenceDirectiveModule: hasPnp
         ? `${__dirname}/webpack/pnpTs.js`
         : undefined,
-      tsconfig: paths.app.tsConfigPath,
+      tsconfig: paths().app.tsConfigPath,
       reportFiles: [
         '**',
         '!**/__tests__/**',
@@ -329,7 +329,7 @@ export const _getEntries = (env: Environment): string[] => {
     );
   }
 
-  entry.push(paths.app.entryPath);
+  entry.push(paths().app.entryPath);
 
   return entry;
 };
@@ -381,19 +381,19 @@ export const _getOptimization = (env: Environment): Optimization => {
  */
 export const _getResolve = (env: Environment): Resolve => {
   const isProd = env === Environment.Production;
-  const extensions = !paths.app.isTSProject()
-    ? paths.extensions.filter(e => !e.includes('ts'))
-    : paths.extensions;
+  const extensions = !paths().app.isTSProject()
+    ? paths().extensions.filter(e => !e.includes('ts'))
+    : paths().extensions;
 
   const resolve: Resolve = {
-    modules: ['node_modules', paths.app.nodeModulesDir],
+    modules: ['node_modules', paths().app.nodeModulesDir],
     extensions: extensions.map(e => `.${e}`),
     alias: {
       '@twilio/flex-ui': FLEX_SHIM,
     },
     plugins: [
       PnpWebpackPlugin,
-      new ModuleScopePlugin(paths.app.srcDir, [paths.app.pkgPath]),
+      new ModuleScopePlugin(paths().app.srcDir, [paths().app.pkgPath]),
     ]
   };
 
@@ -451,11 +451,11 @@ export const _getJavaScriptConfiguration = (config: Configuration, env: Environm
   config.plugins = config.plugins ? config.plugins : [];
   config.entry = _getEntries(env);
   config.output = {
-    path: paths.app.buildDir,
+    path: paths().app.buildDir,
     pathinfo: !isProd,
     futureEmitAssets: true,
-    filename: `${paths.app.name}.js`,
-    publicPath: paths.app.publicDir,
+    filename: `${paths().app.name}.js`,
+    publicPath: paths().app.publicDir,
     globalObject: 'this',
   };
   config.bail = isProd;

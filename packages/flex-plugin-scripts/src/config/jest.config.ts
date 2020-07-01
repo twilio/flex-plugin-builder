@@ -24,10 +24,10 @@ export interface JestConfigurations extends Partial<InitialOptions> {
  * Main method for generating a default Jest configuration
  */
 export default (): JestConfigurations => {
-  const setupTestsFile = paths.app.setupTestsPaths.find(x => checkFilesExist(x));
+  const setupTestsFile = paths().app.setupTestsPaths.find(x => checkFilesExist(x));
 
   return {
-    rootDir: paths.cwd,
+    rootDir: paths().cwd,
     roots: ['<rootDir>/src'],
     collectCoverageFrom: ['src/**/*.{js,jsx,ts,tsx}', '!src/**/*.d.ts'],
     setupFiles: [
@@ -49,7 +49,7 @@ export default (): JestConfigurations => {
     moduleNameMapper: {
       '^src/(.*)$': '<rootDir>/src/$1',
     },
-    moduleFileExtensions: [...paths.extensions, 'node'].filter(e => !e.includes('mjs')),
+    moduleFileExtensions: [...paths().extensions, 'node'].filter(e => !e.includes('mjs')),
     watchPlugins: [
       'jest-watch-typeahead/filename',
       'jest-watch-typeahead/testname',

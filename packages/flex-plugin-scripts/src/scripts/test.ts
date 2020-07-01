@@ -14,7 +14,7 @@ export const DEFAULT_JEST_ENV = 'jsdom';
  * @private
  */
 export const _validateJest = () => {
-  if (!checkFilesExist(paths.app.jestConfigPath)) {
+  if (!checkFilesExist(paths().app.jestConfigPath)) {
     return;
   }
 

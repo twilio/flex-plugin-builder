@@ -23,7 +23,7 @@ jest.mock('flex-dev-utils/dist/credentials', () => ({
   getCredential: jest.fn(),
 }));
 jest.mock('../../utils/runtime');
-jest.mock('flex-dev-utils/dist/paths', () => ({
+jest.mock('flex-dev-utils/dist/paths', () => () => ({
   app: {
     version: '1.0.0',
   },

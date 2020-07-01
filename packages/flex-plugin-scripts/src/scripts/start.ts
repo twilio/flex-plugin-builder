@@ -1,8 +1,8 @@
 import { env, logger, open } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import fs from 'flex-dev-utils/dist/fs';
-import paths from 'flex-dev-utils/dist/paths';
+import fs, { readJsonFile } from 'flex-dev-utils/dist/fs';
+import paths, { setWorkingDirectory } from 'flex-dev-utils/dist/paths';
 import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
 import { findPort, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import WebpackDevServer from 'webpack-dev-server';
@@ -12,6 +12,7 @@ import compiler from '../utils/compiler';
 
 import run, { exit } from '../utils/run';
 import { Plugin } from '../config/devServer/pluginServer';
+import { CLIFlexConfiguration } from './check-start';
 
 const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
 
@@ -51,6 +52,18 @@ const start = async (...args: string[]) => {
   }
   if (args[0] === 'plugin') {
     type = WebpackType.JavaScript;
+  }
+
+  const index = args.indexOf('--name');
+
+  if (index !== -1) {
+    const config = readJsonFile<CLIFlexConfiguration>(paths().cli.pluginsJsonPath);
+    const plugin = config.plugins.find((p) => p.name === args[index + 1]);
+
+    if (!plugin) {
+      throw new FlexPluginError('No plugin file was found with the given name');
+    }
+    setWorkingDirectory(plugin.dir);
   }
 
   _startDevServer(port, type);
@@ -139,7 +152,7 @@ export const _requirePackages = (pluginsPath: string, pkgPath: string) => {
  * @private
  */
 export const _updatePluginsUrl = (port: number) => {
-  const { plugins, pkg } = _requirePackages(paths.app.pluginsJsonPath, paths.app.pkgPath);
+  const { plugins, pkg } = _requirePackages(paths().app.pluginsJsonPath, paths().app.pkgPath);
 
   const pluginIndex = plugins.findIndex((p) => p.src.indexOf(pkg.name) !== -1);
   if (pluginIndex === -1) {
@@ -153,7 +166,7 @@ export const _updatePluginsUrl = (port: number) => {
 
   // Replace port and re-write to file
   plugins[pluginIndex].src = plugins[pluginIndex].src.replace(matches[1], port.toString());
-  fs.writeFileSync(paths.app.pluginsJsonPath, JSON.stringify(plugins, null, 2));
+  fs.writeFileSync(paths().app.pluginsJsonPath, JSON.stringify(plugins, null, 2));
 };
 
 run(start);

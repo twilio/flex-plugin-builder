@@ -3,7 +3,7 @@ import * as fs from 'flex-dev-utils/dist/fs';
 
 import * as github from '../github';
 
-jest.mock('flex-dev-utils/dist/paths', () => ({
+jest.mock('flex-dev-utils/dist/paths', () => () => ({
   app: {
     name: 'plugin-test',
   },

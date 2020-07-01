@@ -11,7 +11,7 @@ export default (errors: any[]) => {
     errors = [errors];
   }
 
-  const pkgName = logger.colors.red.bold(paths.app.name);
+  const pkgName = logger.colors.red.bold(paths().app.name);
   logger.error(`Failed to compile plugin ${pkgName}.`);
   logger.newline();
 
