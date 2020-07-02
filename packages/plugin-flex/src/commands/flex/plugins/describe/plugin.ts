@@ -19,14 +19,23 @@ export default class FlexPluginsDescribePlugin extends InformationFlexPlugin<Des
     }),
   };
 
+  /**
+   * @override
+   */
   async getResource() {
     return this.pluginsApiToolkit.describePlugin({ name: this._flags.name });
   }
 
-  notFound(): void {
+  /**
+   * @override
+   */
+  notFound() {
     this._logger.info(`!!Plugin **${this._flags.name}** was not found.!!`);
   }
 
+  /**
+   * @override
+   */
   print(plugin: DescribePlugin) {
     this.printHeader('SID', plugin.sid);
     this.printHeader('Name', plugin.name);
@@ -46,6 +55,9 @@ export default class FlexPluginsDescribePlugin extends InformationFlexPlugin<Des
     });
   }
 
+  /**
+   * Parses the flags passed to this command
+   */
   get _flags() {
     return this.parse(FlexPluginsDescribePlugin).flags;
   }

@@ -6,14 +6,23 @@ import InformationFlexPlugin from '../../../../sub-commands/information-flex-plu
 export default class FlexPluginsListPlugins extends InformationFlexPlugin<ListReleases[]> {
   static description = createDescription('Lists the releases on the account', false);
 
+  /**
+   * @override
+   */
   async getResource() {
     return this.pluginsApiToolkit.listReleases({});
   }
 
+  /**
+   * @override
+   */
   notFound() {
     this._logger.info(`!!No releases where not found.!!`);
   }
 
+  /**
+   * @override
+   */
   print(releases: ListReleases[]) {
     releases.forEach((release) => {
       this.printVersion(release.sid);

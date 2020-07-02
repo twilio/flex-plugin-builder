@@ -16,14 +16,23 @@ export default class FlexPluginsListPluginVersions extends InformationFlexPlugin
     }),
   };
 
+  /**
+   * @override
+   */
   async getResource() {
     return this.pluginsApiToolkit.listPluginVersions({ name: this._flags.name });
   }
 
+  /**
+   * @override
+   */
   notFound() {
     this._logger.info(`!!Plugin **${this._flags.name}** was not found.!!`);
   }
 
+  /**
+   * @override
+   */
   print(versions: ListPluginVersions[]) {
     const list = this.sortByActive(versions);
 
@@ -41,6 +50,9 @@ export default class FlexPluginsListPluginVersions extends InformationFlexPlugin
     });
   }
 
+  /**
+   * Parses the flags passed to this command
+   */
   get _flags() {
     return this.parse(FlexPluginsListPluginVersions).flags;
   }

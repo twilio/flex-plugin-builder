@@ -23,6 +23,9 @@ export default class FlexPluginsDescribeRelease extends InformationFlexPlugin<De
     }),
   };
 
+  /**
+   * @override
+   */
   async getResource() {
     if (this._flags.active) {
       const release = await this.releasesClient.active();
@@ -36,19 +39,16 @@ export default class FlexPluginsDescribeRelease extends InformationFlexPlugin<De
     return this.pluginsApiToolkit.describeRelease({ sid: this._flags.sid as string });
   }
 
-  notFound(): void {
-    this._logger.info(`!!Release **${this.releaseId}** was not found.!!`);
+  /**
+   * @override
+   */
+  notFound() {
+    this._logger.info(`!!Release **${this._flags.sid || 'active'}** was not found.!!`);
   }
 
-  get releaseId() {
-    const { sid } = this._flags;
-    return sid ? sid : 'active';
-  }
-
-  get _flags() {
-    return this.parse(FlexPluginsDescribeRelease).flags;
-  }
-
+  /**
+   * @override
+   */
   print(release: DescribeRelease) {
     this.printHeader('Sid', release.sid);
     this.printHeader('Status', release.isActive);
@@ -65,5 +65,12 @@ export default class FlexPluginsDescribeRelease extends InformationFlexPlugin<De
       this.printPretty(plugin);
       this._logger.newline();
     });
+  }
+
+  /**
+   * Parses the flags passed to this command
+   */
+  get _flags() {
+    return this.parse(FlexPluginsDescribeRelease).flags;
   }
 }

@@ -55,6 +55,9 @@ export default abstract class InformationFlexPlugin<T> extends FlexPlugin {
     return value as string;
   }
 
+  /**
+   * @override
+   */
   async doRun() {
     try {
       const resource = await this.getResource();
@@ -79,18 +82,18 @@ export default abstract class InformationFlexPlugin<T> extends FlexPlugin {
   }
 
   /**
-   * Sorts an array by it's isActive property
-   * @param resource
+   * Sorts an array of resource by its isActive property
+   * @param list  the list to sort
    */
-  sortByActive<A extends IsActive>(resource: A[]) {
-    const active = resource.find((R) => R.isActive);
-    const inactive = resource.filter((R) => !R.isActive);
-    const list = [...inactive];
+  sortByActive<A extends IsActive>(list: A[]) {
+    const active = list.find((r) => r.isActive);
+    const inactive = list.filter((r) => !r.isActive);
+    const sorted = [...inactive];
     if (active) {
-      list.unshift(active);
+      sorted.unshift(active);
     }
 
-    return list;
+    return sorted;
   }
 
   /**
@@ -140,16 +143,19 @@ export default abstract class InformationFlexPlugin<T> extends FlexPlugin {
 
   /**
    * Print when the resource is not found
+   * @abstract
    */
   abstract notFound(): void;
 
   /**
    * Fetches the resource
+   * @abstract
    */
   abstract async getResource(): Promise<T>;
 
   /**
    * Prints the information on the resource
+   * @abstract
    * @param resource
    */
   abstract print(resource: T): void;

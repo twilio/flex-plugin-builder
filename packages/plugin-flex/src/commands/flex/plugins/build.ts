@@ -11,6 +11,9 @@ export default class FlexPluginsBuild extends FlexPlugin {
     ...FlexPlugin.flags,
   };
 
+  /**
+   * @override
+   */
   async doRun() {
     await this.runScript('build');
   }

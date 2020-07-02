@@ -109,6 +109,10 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     return readJSONFile(this.cwd, 'package.json');
   }
 
+  /**
+   * Gets an instantiated {@link PluginsApiToolkit}
+   * @returns {PluginsApiToolkit}
+   */
   get pluginsApiToolkit() {
     if (!this._pluginsApiToolkit) {
       throw new TwilioCliError('PluginsApiToolkit is not initialized yet');
@@ -117,6 +121,10 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     return this._pluginsApiToolkit;
   }
 
+  /**
+   * Gets an instantiated {@link PluginsClient}
+   * @returns {PluginsClient}
+   */
   get pluginsClient() {
     if (!this._pluginsClient) {
       throw new TwilioCliError('PluginsClient is not initialized yet');
@@ -125,6 +133,10 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     return this._pluginsClient;
   }
 
+  /**
+   * Gets an instantiated {@link PluginsClient}
+   * @returns {PluginsClient}
+   */
   get pluginVersionsClient() {
     if (!this._pluginVersionsClient) {
       throw new TwilioCliError('PluginVersionsClient is not initialized yet');
@@ -133,6 +145,10 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     return this._pluginVersionsClient;
   }
 
+  /**
+   * Gets an instantiated {@link ConfigurationsClient}
+   * @returns {ConfigurationsClient}
+   */
   get configurationsClient() {
     if (!this._configurationsClient) {
       throw new TwilioCliError('ConfigurationsClient is not initialized yet');
@@ -141,6 +157,10 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     return this._configurationsClient;
   }
 
+  /**
+   * Gets an instantiated {@link ReleasesClient}
+   * @returns {ReleasesClient}
+   */
   get releasesClient() {
     if (!this._releasesClient) {
       throw new TwilioCliError('ReleasesClient is not initialized yet');
@@ -151,7 +171,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
   /**
    * The main run command
-   * @returns {Promise<void>}
+   * @override
    */
   async run() {
     await super.run();
@@ -183,7 +203,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
         this._logger.info(JSON.stringify(result));
       }
     } catch (e) {
-      if (e instanceof TwilioError) {
+      if (e.instanceOf && e.instanceOf(TwilioError)) {
         this._logger.error(e.message);
         this.logger.error(e.message);
       } else {
@@ -197,6 +217,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
   /**
    * OClif alias for run command
+   * @alias for run
    */
   /* istanbul ignore next */
   async runCommand() {
@@ -235,6 +256,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   /**
    * Abstract class method that each command should extend; this is the actual command that runs once initialization is
    * complete
+   * @abstract
    * @returns {Promise<void>}
    */
   /* istanbul ignore next */
@@ -245,7 +267,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
   /**
    * Abstract method for getting the flags
-   * @private
+   * @protected
    */
   get _flags(): FlexPluginFlags {
     return this.parse(FlexPlugin).flags;

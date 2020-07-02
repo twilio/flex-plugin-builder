@@ -6,14 +6,23 @@ import InformationFlexPlugin from '../../../../sub-commands/information-flex-plu
 export default class FlexPluginsListConfigurations extends InformationFlexPlugin<ListConfigurations[]> {
   static description = createDescription('Lists the configurations on the account', false);
 
+  /**
+   * @override
+   */
   async getResource() {
     return this.pluginsApiToolkit.listConfigurations({});
   }
 
+  /**
+   * @override
+   */
   notFound() {
     this._logger.info(`!!No configurations where not found.!!`);
   }
 
+  /**
+   * @override
+   */
   print(configurations: ListConfigurations[]) {
     const list = this.sortByActive(configurations);
 

@@ -39,7 +39,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
   }
 
   /**
-   * Main method
+   * @override
    */
   async doRun() {
     const args = ['--quiet', '--persist-terminal'];

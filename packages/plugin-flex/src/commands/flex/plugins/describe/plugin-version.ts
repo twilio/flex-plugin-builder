@@ -23,16 +23,25 @@ export default class FlexPluginsDescribePluginVersion extends InformationFlexPlu
     }),
   };
 
+  /**
+   * @override
+   */
   async getResource() {
     const { name, version } = this._flags;
     return this.pluginsApiToolkit.describePluginVersion({ name, version });
   }
 
+  /**
+   * @override
+   */
   notFound() {
     const { name, version } = this._flags;
     this._logger.info(`!!Plugin **${name}@${version}** was not found.!!`);
   }
 
+  /**
+   * @override
+   */
   print(version: DescribePluginVersion) {
     this.printHeader('SID', version.sid);
     this.printHeader('Plugin SID', version.plugin.sid);
@@ -47,6 +56,9 @@ export default class FlexPluginsDescribePluginVersion extends InformationFlexPlu
     this.printHeader('Created', this.parseDate(version.dateCreated));
   }
 
+  /**
+   * Parses the flags passed to this command
+   */
   get _flags() {
     return this.parse(FlexPluginsDescribePluginVersion).flags;
   }

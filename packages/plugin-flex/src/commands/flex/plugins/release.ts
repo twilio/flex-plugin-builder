@@ -17,7 +17,7 @@ export default class FlexPluginsRelease extends CreateConfiguration {
   }
 
   /**
-   * Main method
+   * @override
    */
   async doRun() {
     if (this._flags.version && !this._flags.plugin) {
