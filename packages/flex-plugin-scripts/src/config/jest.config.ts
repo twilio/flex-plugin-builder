@@ -1,5 +1,5 @@
 import { InitialOptions } from '@jest/types/build/Config';
-import paths from 'flex-dev-utils/dist/paths';
+import { paths } from 'flex-dev-utils';
 import { checkFilesExist } from 'flex-dev-utils/dist/fs';
 
 interface RegexObject {

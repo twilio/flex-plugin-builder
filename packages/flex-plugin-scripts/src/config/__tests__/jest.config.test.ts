@@ -1,14 +1,23 @@
+import * as fsScript from 'flex-dev-utils/dist/fs';
 import jestFactory from '../jest.config';
 
-jest.mock('flex-dev-utils/dist/paths', () => () => ({
-  cwd: 'the/working/dir',
-  app: {
-    setupTestsPaths: [],
-  },
-  extensions: ['js', 'jsx', 'ts', 'tsx'],
-}));
-
 describe('JestConfiguration', () => {
+  const paths = {
+    cwd: 'the/working/dir',
+    app: {
+      setupTestsPaths: [],
+    },
+    extensions: ['js', 'jsx', 'ts', 'tsx'],
+  }
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+
+    // @ts-ignore
+    jest.spyOn(fsScript, 'getPaths').mockReturnValue(paths);
+  });
+
+
   it('should test the basic configs', () => {
     const config = jestFactory();
 

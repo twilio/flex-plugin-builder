@@ -2,7 +2,7 @@ import { env, logger, open } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import fs, { readJsonFile, CLIFlexConfiguration, FlexConfigurationPlugin } from 'flex-dev-utils/dist/fs';
-import paths, { setWorkingDirectory } from 'flex-dev-utils/dist/paths';
+import { setWorkingDirectory } from 'flex-dev-utils/dist/paths';
 import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
 import { findPort, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import WebpackDevServer from 'webpack-dev-server';
@@ -80,6 +80,10 @@ const start = async (...args: string[]) => {
       setWorkingDirectory(plugin.dir);
       _updatePluginPort(port, plugin.name);
     }
+<<<<<<< HEAD
+=======
+    setCwd(plugin.dir);
+>>>>>>> next
   }
 
   _startDevServer(port, plugins, type);

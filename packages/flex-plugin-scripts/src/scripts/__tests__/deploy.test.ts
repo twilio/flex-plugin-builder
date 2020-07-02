@@ -23,12 +23,6 @@ jest.mock('flex-dev-utils/dist/credentials', () => ({
   getCredential: jest.fn(),
 }));
 jest.mock('../../utils/runtime');
-jest.mock('flex-dev-utils/dist/paths', () => () => ({
-  app: {
-    version: '1.0.0',
-  },
-  assetBaseUrlTemplate: 'template',
-}));
 
 // tslint:disable
 const Runtime = require('../../utils/runtime').default;
@@ -42,6 +36,12 @@ const fs = require('flex-dev-utils/dist/fs');
 // tslint:enable
 
 describe('DeployScript', () => {
+  const paths = {
+    app: {
+      version: '1.0.0',
+    },
+    assetBaseUrlTemplate: 'template',
+  };
   const accountSid = 'AC00000000000000000000000000000000';
   const serviceSid = 'ZS00000000000000000000000000000000';
   const environmentSid = 'ZE00000000000000000000000000000000';
@@ -90,6 +90,9 @@ describe('DeployScript', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // @ts-ignore
+    jest.spyOn(fsScript, 'getPaths').mockReturnValue(paths);
 
     AccountClient.mockImplementation(() => ({ get: getAccount }));
     AssetClient.mockImplementation(() => ({ upload }));

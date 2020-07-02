@@ -1,7 +1,6 @@
 import { logger, FlexPluginError } from 'flex-dev-utils';
 import { Request, Response } from 'express-serve-static-core';
 import { readFileSync, readJsonFile, CLIFlexConfiguration } from 'flex-dev-utils/dist/fs';
-import paths from 'flex-dev-utils/dist/paths';
 import { Configuration } from 'webpack-dev-server';
 import https from 'https';
 

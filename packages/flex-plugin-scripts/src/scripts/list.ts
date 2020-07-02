@@ -1,5 +1,4 @@
-import { logger, FlexPluginError } from 'flex-dev-utils';
-import paths from 'flex-dev-utils/dist/paths';
+import { logger, FlexPluginError, paths } from 'flex-dev-utils';
 import { getCredential } from 'flex-dev-utils/dist/credentials';
 
 import run from '../utils/run';
