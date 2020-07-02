@@ -1,13 +1,9 @@
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import * as fsScripts from 'flex-dev-utils/dist/fs';
+import * as fsScript from 'flex-dev-utils/dist/fs';
 import * as random from 'flex-dev-utils/dist/random';
 
 import EnvironmentClient from '../environments';
-
-jest.mock('flex-dev-utils/dist/paths', () => () => ({
-  app: {
-    name: 'plugin-test',
-  },
-}));
 
 describe('EnvironmentClient', () => {
   const auth: AuthConfig = {
@@ -30,6 +26,17 @@ describe('EnvironmentClient', () => {
   const resourceWithNoMatch = {
     environments: [ environmentAnother ],
   };
+
+  const paths = {
+    app: { name: 'plugin-test' },
+  }
+
+  beforeEach(() => {
+    jest.restoreAllMocks();
+
+    // @ts-ignore
+    jest.spyOn(fsScripts, 'getPaths').mockReturnValue(paths);
+  })
 
   describe('constructor', () => {
     it('should fail if incorrect serviceSid is provided', (done) => {

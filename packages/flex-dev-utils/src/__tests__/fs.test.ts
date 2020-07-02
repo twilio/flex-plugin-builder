@@ -216,4 +216,71 @@ describe('fs', () => {
       expect(sync).toHaveBeenCalledWith(patterns, { cwd: 'the-dir' });
     });
   });
+
+  describe('getPaths', () => {
+    const validPackage = {
+      name: 'plugin-test',
+      version: '1.2.3',
+      dependencies: {
+        'flex-plugin-scripts': '1',
+        'flex-plugin': '2'
+      },
+    };
+
+    it('should give you the paths', () => {
+      const readPackageJson = jest
+        .spyOn(fs, 'readPackageJson')
+        .mockReturnValue(validPackage);
+
+      // build/ directory
+      expect(fs.getPaths().app.buildDir).toEqual(expect.stringMatching('build$'));
+      expect(fs.getPaths().app.bundlePath).toContain('build');
+      expect(fs.getPaths().app.bundlePath).toContain(validPackage.name);
+      expect(fs.getPaths().app.bundlePath).toEqual(expect.stringMatching('\.js$'));
+      expect(fs.getPaths().app.sourceMapPath).toContain('build');
+      expect(fs.getPaths().app.sourceMapPath).toContain(validPackage.name);
+      expect(fs.getPaths().app.sourceMapPath).toEqual(expect.stringMatching('\.js\.map$'));
+
+      // src/ directory
+      expect(fs.getPaths().app.srcDir).toEqual(expect.stringMatching('src$'));
+      expect(fs.getPaths().app.entryPath).toContain('src');
+      expect(fs.getPaths().app.entryPath).toEqual(expect.stringMatching('index$'));
+
+      // node_modules/ directory
+      expect(fs.getPaths().app.nodeModulesDir).toEqual(expect.stringMatching('node_modules$'));
+      expect(fs.getPaths().app.flexUIDir).toContain('node_modules');
+      expect(fs.getPaths().app.flexUIDir).toContain('@twilio/flex-ui');
+      expect(fs.getPaths().app.flexUIPkgPath).toContain('@twilio/flex-ui');
+      expect(fs.getPaths().app.flexUIPkgPath).toEqual(expect.stringMatching('package\.json$'));
+
+      // scripts
+      expect(fs.getPaths().scripts.devAssetsDir).toContain('flex-plugin-scripts');
+
+      // public/ directory
+      expect(fs.getPaths().app.publicDir).toEqual(expect.stringMatching('public$'));
+      expect(fs.getPaths().app.indexHtmlPath).toEqual(expect.stringMatching('index\.html$'));
+      expect(fs.getPaths().app.appConfig).toEqual(expect.stringMatching('appConfig\.js$'));
+      expect(fs.getPaths().app.pluginsJsonPath).toEqual(expect.stringMatching('plugins\.json$'));
+
+      // package.json
+      expect(fs.getPaths().app.name).toEqual('plugin-test');
+      expect(fs.getPaths().app.version).toEqual('1.2.3');
+
+      // typescript
+      expect(fs.getPaths().app.tsConfigPath).toContain('tsconfig.json');
+      expect(fs.getPaths().app.isTSProject()).toEqual(true);
+
+      // setup tests
+      expect(fs.getPaths().app.setupTestsPaths).toHaveLength(2);
+      expect(fs.getPaths().app.setupTestsPaths[0]).toContain('setupTests.js');
+      expect(fs.getPaths().app.setupTestsPaths[0]).not.toContain('src');
+      expect(fs.getPaths().app.setupTestsPaths[1]).toContain('setupTests.js');
+      expect(fs.getPaths().app.setupTestsPaths[1]).toContain('src');
+
+      // others
+      expect(fs.getPaths().assetBaseUrlTemplate).toContain('plugin-test/%PLUGIN_VERSION%');
+
+      readPackageJson.mockRestore();
+    });
+  });
 });

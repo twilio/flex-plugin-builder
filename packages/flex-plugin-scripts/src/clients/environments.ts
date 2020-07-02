@@ -1,4 +1,4 @@
-import paths from 'flex-dev-utils/dist/paths';
+import { paths } from 'flex-dev-utils';
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
 import { randomString } from 'flex-dev-utils/dist/random';

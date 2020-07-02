@@ -1,5 +1,4 @@
-import paths from 'flex-dev-utils/dist/paths';
-import { logger, semver, progress, FlexPluginError, UserActionError } from 'flex-dev-utils';
+import { logger, semver, progress, FlexPluginError, UserActionError, paths } from 'flex-dev-utils';
 import { ReleaseType } from 'flex-dev-utils/dist/semver';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { checkFilesExist, updateAppVersion, getPackageVersion } from 'flex-dev-utils/dist/fs';

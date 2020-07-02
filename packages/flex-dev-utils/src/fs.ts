@@ -1,7 +1,7 @@
 import fs from 'fs';
 import * as path from 'path';
 import globby from 'globby';
-import os from 'os';
+import os, { homedir } from 'os';
 import mkdirp from 'mkdirp';
 import tmp from 'tmp';
 import { promisify } from 'util';
@@ -23,13 +23,13 @@ export interface AppPackageJson extends PackageJson {
 export default fs;
 
 // Working directory
-let cwd = fs.realpathSync(process.cwd());
+let internalCwd = fs.realpathSync(process.cwd());
 
 // Set working directory
-export const setCwd = (p: string) => cwd = p;
+export const setCwd = (p: string) => internalCwd = p;
 
 // Get working directory
-export const getCwd = () => cwd;
+export const getCwd = () => internalCwd;
 
 // The OS root directory
 const rootDir = os.platform() === 'win32' ? getCwd().split(path.sep)[0] : '/';
@@ -174,7 +174,7 @@ export const getDependencyVersion = (pkgName: string) => {
  * Builds path relative to cwd
  * @param paths  the paths
  */
-export const resolveCwd = (...paths: string[]) => resolveRelative(cwd, ...paths);
+export const resolveCwd = (...paths: string[]) => resolveRelative(getCwd(), ...paths);
 
 /**
  * Builds path relative to the given dir
@@ -221,3 +221,92 @@ export const findGlobsIn = (dir: string, ...patterns: string[]) => {
 };
 
 export { DirResult as TmpDirResult } from 'tmp';
+
+export const getPaths = () => {
+  const cwd = getCwd();
+  const nodeModulesDir = resolveCwd('node_modules');
+  const scriptsDir = resolveRelative(nodeModulesDir, 'flex-plugin-scripts');
+  const devAssetsDir = resolveRelative(scriptsDir, 'dev_assets');
+  const publicDir = resolveCwd('public');
+  const buildDir = resolveCwd('build');
+  const srcDir = resolveCwd('src');
+  const flexUIDir = resolveRelative(nodeModulesDir, '@twilio/flex-ui');
+  const homeDir = homedir();
+  const cliDir = resolveRelative(homeDir, 'twilio-cli');
+  const flexDir = resolveRelative(cliDir, 'flex');
+  const tsConfigPath = resolveCwd('tsconfig.json');
+
+  // package.json information
+  let pkgName = '';
+  let pkgVersion = '';
+  // This file can be required in locations that don't have package.json
+
+  try {
+    const pkg: PackageJson = readAppPackageJson();
+    pkgName = pkg.name;
+    pkgVersion = pkg.version;
+  } catch (e) {
+    // no-op
+  }
+
+  return {
+    cwd,
+
+    // flex-plugin-scripts paths
+    scripts: {
+      dir: scriptsDir,
+      devAssetsDir,
+      indexHTMLPath: resolveRelative(devAssetsDir, 'index.html'),
+      tsConfigPath: resolveRelative(devAssetsDir, 'tsconfig.json'),
+    },
+
+    // twilio-cli/flex/plugins.json paths
+    cli: {
+      dir: cliDir,
+      flexDir,
+      pluginsJsonPath: resolveRelative(flexDir, 'plugins.json'),
+    },
+
+    // plugin-app (the customer app)
+    app: {
+      dir: cwd,
+      name: pkgName,
+      version: pkgVersion,
+      pkgPath: resolveCwd('package.json'),
+      jestConfigPath: resolveCwd('jest.config.js'),
+      webpackConfigPath: resolveCwd('webpack.config.js'),
+      devServerConfigPath: resolveCwd('webpack.dev.js'),
+      tsConfigPath,
+      isTSProject: () => checkFilesExist(tsConfigPath),
+      setupTestsPaths: [
+        resolveCwd('setupTests.js'),
+        resolveRelative(srcDir, 'setupTests.js'),
+      ],
+
+      // build/*
+      buildDir,
+      bundlePath: resolveRelative(buildDir, pkgName, '.js'),
+      sourceMapPath: resolveRelative(buildDir, pkgName, '.js.map'),
+
+      // src/*
+      srcDir,
+      entryPath: resolveRelative(srcDir, 'index'),
+
+      // node_modules/*,
+      nodeModulesDir,
+      flexUIDir,
+      flexUIPkgPath: resolveRelative(flexUIDir, 'package.json'),
+
+      // public/*
+      publicDir,
+      indexHtmlPath: resolveRelative(publicDir, 'index.html'),
+      appConfig: resolveRelative(publicDir, 'appConfig.js'),
+      pluginsJsonPath: resolveRelative(publicDir, 'plugins.json'),
+      pluginsServicePath: resolveRelative(publicDir, 'pluginsService.js'),
+    },
+
+    // others
+    assetBaseUrlTemplate: `/plugins/${pkgName}/%PLUGIN_VERSION%`,
+    extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
+  };
+}

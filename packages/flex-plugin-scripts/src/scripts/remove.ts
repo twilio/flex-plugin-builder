@@ -1,6 +1,5 @@
-import { logger, progress } from 'flex-dev-utils';
+import { logger, progress, paths } from 'flex-dev-utils';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import paths from 'flex-dev-utils/dist/paths';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { AuthConfig, getCredential } from 'flex-dev-utils/dist/credentials';
 import { EnvironmentClient } from '../clients';

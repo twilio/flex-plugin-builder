@@ -1,20 +1,20 @@
-import { PackageJson, readPackageJson } from 'flex-dev-utils/dist/fs';
+import * as fsScript from 'flex-dev-utils/dist/fs';
 import { Request, Response } from 'express-serve-static-core';
 import { Plugin } from '../../devServer/pluginServer';
-import * as fs from 'flex-dev-utils/dist/fs';
 
 import * as pluginServerScript from '../../devServer/pluginServer';
 
 jest.mock('flex-dev-utils/dist/logger');
-jest.mock('flex-dev-utils/dist/paths', () => () => ({
-  app: {
-    name: 'default-plugin',
-    pluginsServicePath: 'pluginsService.js',
-  },
-}));
 
 describe('pluginServer', () => {
-  const pkg: PackageJson = {
+  const paths = {
+    app: {
+      name: 'default-plugin',
+      pluginsServicePath: 'pluginsService.js',
+    },
+  };
+
+  const pkg: fsScript.PackageJson = {
     name: 'default-plugin',
     version: '1.2.3',
     dependencies: {},
@@ -22,6 +22,9 @@ describe('pluginServer', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // @ts-ignore
+    jest.spyOn(fsScript, 'getPaths').mockReturnValue(paths);
   });
 
   describe('_rebasePlugins', () => {
@@ -49,7 +52,7 @@ describe('pluginServer', () => {
         .mockReturnValue([defaultPlugin]);
 
       jest
-        .spyOn(fs, 'readPackageJson')
+        .spyOn(fsScript, 'readPackageJson')
         .mockReturnValue(pkg);
 
       const plugins = pluginServerScript._rebasePlugins([remotePluginOne, remotePluginTwo]);

@@ -1,4 +1,5 @@
 import { FlexPluginError } from 'flex-dev-utils';
+import * as fsScript from 'flex-dev-utils/dist/fs';
 import { Visibility } from '../../clients/serverless-types';
 import * as listScript from '../list';
 
@@ -6,11 +7,6 @@ jest.mock('../../prints/pluginVersions');
 jest.mock('../../utils/runtime');
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/credentials');
-jest.mock('flex-dev-utils/dist/paths', () => () => ({
-  app: {
-    name: 'plugin-test',
-  },
-}));
 
 // tslint:disable
 const getRuntime = require('../../utils/runtime').default;
@@ -18,11 +14,20 @@ const pluginVersions = require('../../prints/pluginVersions').default;
 // tslint:enable
 
 describe('list', () => {
+  const paths = {
+    app: {
+      name: 'plugin-test',
+    },
+  };
+
   process.env.TWILIO_API_KEY = 'SK00000000000000000000000000000000';
   process.env.TWILIO_API_SECRET = 'abc123';
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // @ts-ignore
+    jest.spyOn(fsScript, 'getPaths').mockReturnValue(paths);
   });
 
   describe('main script', () => {

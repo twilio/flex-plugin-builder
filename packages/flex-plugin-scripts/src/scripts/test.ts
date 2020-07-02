@@ -1,7 +1,6 @@
-import { env, logger } from 'flex-dev-utils';
+import { env, logger, paths } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { checkFilesExist } from 'flex-dev-utils/dist/fs';
-import paths from 'flex-dev-utils/dist/paths';
 import { addCWDNodeModule, resolveModulePath } from 'flex-dev-utils/dist/require';
 import { jestNotInstalled } from '../prints';
 

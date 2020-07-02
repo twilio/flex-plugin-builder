@@ -24,5 +24,5 @@ export { default as runner } from './runner';
 export { default as urls } from './urls';
 export { default as env } from './env';
 export { default as appModule } from './require';
-export { default as paths } from './paths';
+export { getPaths as paths } from './fs';
 export { default as semver } from './semver';

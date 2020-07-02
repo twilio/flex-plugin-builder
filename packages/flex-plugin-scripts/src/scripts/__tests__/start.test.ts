@@ -11,9 +11,19 @@ jest.mock('flex-dev-utils/dist/env');
 jest.mock('flex-dev-utils/dist/require');
 
 describe('StartScript', () => {
+  const paths = {
+    app: {
+      pluginsJsonPath: '/plugins/json/path',
+      pkgPath: '/plugins/pkg/path',
+    },
+  };
+
   beforeEach(() => {
     jest.resetAllMocks();
     jest.resetModules();
+
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
   });
 
   describe('default', () => {
