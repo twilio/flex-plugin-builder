@@ -1,15 +1,14 @@
-import { logger } from 'flex-dev-utils';
+import { logger, FlexPluginError } from 'flex-dev-utils';
 import { Request, Response } from 'express-serve-static-core';
-import { readFileSync } from 'flex-dev-utils/dist/fs';
+import { readFileSync, readJsonFile, CLIFlexConfiguration } from 'flex-dev-utils/dist/fs';
 import paths from 'flex-dev-utils/dist/paths';
 import { Configuration } from 'webpack-dev-server';
 import https from 'https';
 
 export interface Plugin {
-  src: string;
+  phase: number;
   name: string;
-  enabled: boolean;
-  remote?: boolean;
+  src: string;
 }
 
 /**
@@ -17,7 +16,8 @@ export interface Plugin {
  * @private
  */
 /* istanbul ignore next */
-export const _getLocalPlugins = () => JSON.parse(readFileSync(paths().app.pluginsJsonPath)) as Plugin[];
+export const _getLocalPlugins = () => JSON.parse(readFileSync(paths().cli.pluginsJsonPath)) as Plugin[];
+// export const _getLocalPlugins = () => JSON.parse(readFileSync(paths().app.pluginsJsonPath)) as Plugin[];
 
 /**
  * Generates the response headers
@@ -63,6 +63,7 @@ export const _getRemotePlugins = (token: string, version: string): Promise<Plugi
 
         res.on('data', (chunk) => data.push(chunk));
         res.on('end', () => resolve(JSON.parse(Buffer.concat(data).toString())));
+        // res.on('end', () => resolve(JSON.parse(Buffer.concat(data).toString()).filter((plugin: { phase: number; }) => plugin.phase >= 3)));
       })
       .on('error', reject)
       .end();
@@ -82,18 +83,12 @@ export const _rebasePlugins = (remotePlugins: Plugin[]) => {
         return plugin;
       }
 
-      // Plugin is disabled - do not load it
-      if (!plugin.enabled) {
-        return null;
-      }
-
-      // Load remote plugin from Flex
-      if (plugin.remote === true) {
-        return remotePlugins.find((p) => p.name === plugin.name);
-      }
-
       // Backward compatibility / current way of running multiple local plugins
       if (plugin.src) {
+        return plugin;
+      }
+
+      if (plugin.phase >= 0) {
         return plugin;
       }
 
@@ -107,7 +102,7 @@ export const _rebasePlugins = (remotePlugins: Plugin[]) => {
  * @param browserPort  the port of browser
  * @private
  */
-export default (options: Configuration) => {
+export default (options: Configuration, names: string[]) => {
   const responseHeaders = _getHeaders(options.port || 3000);
 
   return async (req: Request, res: Response) => {
@@ -124,23 +119,40 @@ export default (options: Configuration) => {
     logger.debug('GET /plugins')
 
     const jweToken = headers['x-flex-jwe'] as string;
-    const flexVersion = headers['x-flex-version'] as string;
     if (!jweToken) {
       res.writeHead(400, responseHeaders);
       return res.end('No X-Flex-JWE was provided');
     }
 
-    return _getRemotePlugins(jweToken, flexVersion)
-      .then(remotePlugins => {
-        logger.trace('Got remote plugins', remotePlugins);
-        const plugins = _rebasePlugins(remotePlugins);
+    const plugins: Plugin[] = [];
+    const config = readJsonFile<CLIFlexConfiguration>(paths().cli.pluginsJsonPath);
 
-        res.writeHead(200, responseHeaders);
-        res.end(JSON.stringify(plugins));
-      })
-      .catch(err => {
-        res.writeHead(500, responseHeaders);
-        res.end(err);
-      });
-  };
+    names.map(n => {
+      const plugin = config.plugins.find((p) => p.name === n);
+      if (!plugin) {
+        throw new FlexPluginError (`the plugin ${n} was not found`)
+      }
+      const newPlugin: Plugin = {phase: 3, name: n, src: `localhost:${plugin.port}/${n}`};
+      plugins.push(newPlugin);
+    })
+
+    res.writeHead(200, responseHeaders);
+    res.end(JSON.stringify(plugins));
+
+    return plugins;
+
+  //   return _getRemotePlugins(jweToken, flexVersion)
+  //     // rebase will eventually get both local and remote plugins
+  //     .then(remotePlugins => {
+  //       logger.trace('Got remote plugins', remotePlugins);
+  //       const plugins = _rebasePlugins(remotePlugins);
+
+  //       res.writeHead(200, responseHeaders);
+  //       res.end(JSON.stringify(plugins));
+  //     })
+  //     .catch(err => {
+  //       res.writeHead(500, responseHeaders);
+  //       res.end(err);
+  //     });
+    };
 }

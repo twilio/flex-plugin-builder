@@ -1,7 +1,7 @@
 import { env, logger, open } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import fs, { readJsonFile } from 'flex-dev-utils/dist/fs';
+import fs, { readJsonFile, CLIFlexConfiguration, FlexConfigurationPlugin } from 'flex-dev-utils/dist/fs';
 import paths, { setWorkingDirectory } from 'flex-dev-utils/dist/paths';
 import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
 import { findPort, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
@@ -12,9 +12,30 @@ import compiler from '../utils/compiler';
 
 import run, { exit } from '../utils/run';
 import { Plugin } from '../config/devServer/pluginServer';
-import { CLIFlexConfiguration } from './check-start';
+import { writeFileSync } from 'fs';
 
 const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
+
+const _getPlugins = (...args: string[]): FlexConfigurationPlugin[] => {
+  const plugins: FlexConfigurationPlugin[] = [];
+  let nameIndex = args.indexOf('--name');
+
+  while (nameIndex !== -1 && nameIndex <= args.length) {
+    if (nameIndex === args.length) {
+      throw new FlexPluginError('You must put a plugin name after calling --name');
+    }
+    const config = readJsonFile<CLIFlexConfiguration>(paths().cli.pluginsJsonPath);
+    const plugin = config.plugins.find((p) => p.name === args[nameIndex + 1]);
+
+    if (!plugin) {
+      throw new FlexPluginError('No plugin file was found with the given name');
+    }
+    plugins.push(plugin);
+    nameIndex = args.indexOf('--name', nameIndex + 1);
+  }
+
+  return plugins;
+}
 
 /**
  * Starts the dev-server
@@ -34,6 +55,7 @@ const start = async (...args: string[]) => {
 
   // Future  node version will silently consume unhandled exception
   process.on('unhandledRejection', err => { throw err; });
+  const plugins = _getPlugins(...args);
 
   let type = WebpackType.Complete;
   if (args[0] === 'flex') {
@@ -52,21 +74,15 @@ const start = async (...args: string[]) => {
   }
   if (args[0] === 'plugin') {
     type = WebpackType.JavaScript;
-  }
 
-  const index = args.indexOf('--name');
-
-  if (index !== -1) {
-    const config = readJsonFile<CLIFlexConfiguration>(paths().cli.pluginsJsonPath);
-    const plugin = config.plugins.find((p) => p.name === args[index + 1]);
-
-    if (!plugin) {
-      throw new FlexPluginError('No plugin file was found with the given name');
+    const plugin = plugins[0];
+    if (plugin) {
+      setWorkingDirectory(plugin.dir);
+      _updatePluginPort(port, plugin.name);
     }
-    setWorkingDirectory(plugin.dir);
   }
 
-  _startDevServer(port, type);
+  _startDevServer(port, plugins, type);
 };
 
 /**
@@ -75,9 +91,10 @@ const start = async (...args: string[]) => {
  * @private
  */
 /* istanbul ignore next */
-export const _startDevServer = (port: number, type: WebpackType) => {
-  const config = getConfiguration(ConfigurationType.Webpack, Environment.Development, type);
-  const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development, type);
+export const _startDevServer = (port: number, plugins: FlexConfigurationPlugin[], type: WebpackType) => {
+  const pluginNames: string[] = plugins.map((p) => p.name);
+  const config = getConfiguration(ConfigurationType.Webpack, Environment.Development, type, pluginNames);
+  const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development, type, pluginNames);
   const devCompiler = compiler(config, true, type);
   const devServer = new WebpackDevServer(devCompiler, devConfig);
   const { local } = getLocalAndNetworkUrls(port);
@@ -167,6 +184,26 @@ export const _updatePluginsUrl = (port: number) => {
   // Replace port and re-write to file
   plugins[pluginIndex].src = plugins[pluginIndex].src.replace(matches[1], port.toString());
   fs.writeFileSync(paths().app.pluginsJsonPath, JSON.stringify(plugins, null, 2));
+};
+
+/**
+ * Update port of a plugin
+ * @param port
+ * @param names
+ */
+export const _updatePluginPort = (port: number, names: string) => {
+  const config = readJsonFile<CLIFlexConfiguration>(paths().cli.pluginsJsonPath);
+  config.plugins = config
+  .plugins
+  .map((plugin) => {
+    if (names.includes(plugin.name)) {
+      plugin.port = port;
+    }
+
+    return plugin;
+  });
+
+  writeFileSync(paths().cli.pluginsJsonPath, JSON.stringify(config, null, 2));
 };
 
 run(start);

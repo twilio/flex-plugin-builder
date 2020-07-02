@@ -3,6 +3,7 @@ import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import { Configuration } from 'webpack-dev-server';
 import { WebpackType } from './index';
 import pluginServer from './devServer/pluginServer';
+import { pluginsApiWarning } from 'src/prints';
 
 export const _getBase = (): Configuration => {
   const { local } = getLocalAndNetworkUrls(env.getPort());
@@ -17,7 +18,7 @@ export const _getBase = (): Configuration => {
   };
 };
 
-export const _getStaticConfiguration = (config: Configuration) => {
+export const _getStaticConfiguration = (config: Configuration, pluginNames: string[]) => {
   config.contentBase =  [
     paths().app.publicDir,
     paths().scripts.devAssetsDir,
@@ -31,7 +32,7 @@ export const _getStaticConfiguration = (config: Configuration) => {
   config.watchContentBase = true;
 
   // @ts-ignore
-  config.before = (app, server) => app.use('/plugins', pluginServer(server.options));
+  config.before = (app, server) => app.use('/plugins', pluginServer(server.options, pluginNames));
 
   return config;
 }
@@ -57,15 +58,15 @@ export const _getJavaScriptConfiguration = (config: Configuration) => {
  * Generates a webpack-dev configuration
  */
 /* istanbul ignore next */
-export default (type: WebpackType) => {
+export default (type: WebpackType, pluginNames: string[]) => {
   const config = _getBase();
 
   if (type === WebpackType.Static) {
-    return _getStaticConfiguration(config);
+    return _getStaticConfiguration(config, pluginNames);
   }
   if (type === WebpackType.JavaScript) {
     return _getJavaScriptConfiguration(config);
   }
 
-  return _getJavaScriptConfiguration(_getStaticConfiguration(config));
+  return _getJavaScriptConfiguration(_getStaticConfiguration(config, pluginNames));
 }

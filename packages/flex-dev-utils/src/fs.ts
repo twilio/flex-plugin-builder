@@ -20,6 +20,20 @@ export interface AppPackageJson extends PackageJson {
   };
 }
 
+export interface FlexConfigurationPlugin {
+  name: string;
+  dir: string;
+  port: number;
+}
+
+export interface CLIFlexConfiguration {
+  plugins: {
+    name: string;
+    dir: string;
+    port: number;
+  }[];
+}
+
 export default fs;
 
 // Working directory

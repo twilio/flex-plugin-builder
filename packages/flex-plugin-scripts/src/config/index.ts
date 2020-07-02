@@ -1,7 +1,7 @@
 import { Environment } from 'flex-dev-utils/dist/env';
 import paths from 'flex-dev-utils/dist/paths';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import { checkFilesExist } from 'flex-dev-utils/dist/fs';
+import { checkFilesExist, CLIFlexConfiguration, FlexConfigurationPlugin } from 'flex-dev-utils/dist/fs';
 import { Configuration as WebpackConfigurations } from 'webpack';
 import { Configuration as WebpackDevConfigurations } from 'webpack-dev-server';
 import webpackFactory from './webpack.config';
@@ -33,7 +33,7 @@ interface Configurations {
  * @param env   the environment
  * @param type  the webpack type
  */
-const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment, type: WebpackType = WebpackType.Complete): Configurations[T] => {
+const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment, type: WebpackType = WebpackType.Complete, pluginNames: string[] = []): Configurations[T] => {
   const args = {
     isProd: env === Environment.Production,
     isDev: env === Environment.Development,
@@ -54,7 +54,7 @@ const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment
   }
 
   if (name === ConfigurationType.DevServer) {
-    const config = devFactory(type);
+    const config = devFactory(type, pluginNames);
     if (type === WebpackType.Static) {
       return config as Configurations[T];
     }

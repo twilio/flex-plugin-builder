@@ -1,6 +1,6 @@
 import { env, logger, semver, FlexPluginError } from 'flex-dev-utils';
 import paths from 'flex-dev-utils/dist/paths';
-import { checkFilesExist, findGlobs, resolveRelative, readJsonFile, mkdirpSync } from 'flex-dev-utils/dist/fs';
+import { checkFilesExist, findGlobs, resolveRelative, mkdirpSync, CLIFlexConfiguration, readJsonFile } from 'flex-dev-utils/dist/fs';
 import { addCWDNodeModule, resolveModulePath, _require } from 'flex-dev-utils/dist/require';
 import { existsSync, copyFileSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
@@ -19,14 +19,6 @@ import { confirm } from 'flex-dev-utils/dist/inquirer';
 interface Package {
   version: string;
   dependencies: object;
-}
-
-export interface CLIFlexConfiguration {
-  plugins: {
-    name: string;
-    dir: string;
-    port: number;
-  }[];
 }
 
 const srcIndexPath = join(process.cwd(), 'src', 'index');
