@@ -78,15 +78,19 @@ export const pluginTest = test
   .register('test', (fn) => {
     return {
       async run(ctx) {
-        return new Promise(async (resolve) => {
+        return new Promise(async (resolve, reject) => {
           if (!ctx.testCmd) {
-            throw new Error("'test' must run after command has been created");
+            return reject(new Error("'test' must run after command has been created"));
           }
 
-          if (fn.length < 3) {
-            resolve();
+          try {
+            await fn(ctx.testCmd, ctx, resolve);
+            if (fn.length < 3) {
+              resolve();
+            }
+          } catch (e) {
+            reject(e);
           }
-          await fn(ctx.testCmd, ctx, resolve);
         });
       },
     };
