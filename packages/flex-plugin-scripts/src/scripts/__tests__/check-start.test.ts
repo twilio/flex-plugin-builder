@@ -14,27 +14,28 @@ jest.mock('../../prints/publicDirCopyFailed');
 jest.mock('../../prints/expectedDependencyNotFound');
 jest.mock('../../prints/typescriptNotInstalled');
 jest.mock('../../prints/loadPluginCountError');
-jest.mock('flex-dev-utils/dist/paths', () => () => ({
-  scripts: {
-    tsConfigPath: 'test-ts-config-path',
-    dir: 'test-scripts-dir',
-  },
-  cli: {
-    dir: 'test-dir',
-    flexDir: 'test-dir-flex',
-    pluginsJsonPath: 'test-dir-plugins',
-  },
-  app: {
-    version: '1.0.0',
-    name: 'plugin-test',
-    dir: 'test-dir',
-    nodeModulesDir: 'test-node-modules',
-    appConfig: 'appConfig.js',
-  },
-  assetBaseUrlTemplate: 'template',
-}));
 
 describe('CheckStartScript', () => {
+  const paths = {
+    scripts: {
+      tsConfigPath: 'test-ts-config-path',
+      dir: 'test-scripts-dir',
+    },
+    cli: {
+      dir: 'test-dir',
+      flexDir: 'test-dir-flex',
+      pluginsJsonPath: 'test-dir-plugins',
+    },
+    app: {
+      version: '1.0.0',
+      name: 'plugin-test',
+      dir: 'test-dir',
+      nodeModulesDir: 'test-node-modules',
+      appConfig: 'appConfig.js',
+    },
+    assetBaseUrlTemplate: 'template',
+  }
+
   // @ts-ignore
   const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
   const OLD_ENV = process.env;
@@ -43,6 +44,8 @@ describe('CheckStartScript', () => {
     jest.resetAllMocks();
     jest.resetModules();
 
+    // @ts-ignore
+    jest.spyOn(fsScripts, 'getPaths').mockReturnValue(paths);
     process.env = { ...OLD_ENV };
   });
 

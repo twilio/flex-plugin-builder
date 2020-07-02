@@ -1,14 +1,8 @@
 import axios, { MockAdapter } from 'flex-dev-utils/dist/axios';
-import * as fs from 'flex-dev-utils/dist/fs';
+import * as fsScripts from 'flex-dev-utils/dist/fs';
+import * as fsScript from 'flex-dev-utils/dist/fs';
 
 import * as github from '../github';
-
-jest.mock('flex-dev-utils/dist/paths', () => () => ({
-  app: {
-    name: 'plugin-test',
-  },
-}));
-
 
 describe('github', () => {
   let mockAxios: MockAdapter;
@@ -21,9 +15,16 @@ describe('github', () => {
     repo: 'flex-plugin-builder',
   };
 
+  const paths = {
+    app: { name: 'plugin-test' },
+  }
+
   beforeEach(() => {
     jest.resetAllMocks();
     jest.resetModules();
+
+    // @ts-ignore
+    jest.spyOn(fsScripts, 'getPaths').mockReturnValue(paths);
 
     mockAxios = new MockAdapter(axios);
   });
@@ -246,10 +247,10 @@ describe('github', () => {
     it('should call request', async () => {
       const result = { data: 'the-data' };
       const writeFileSync = jest
-        .spyOn(fs.default, 'writeFileSync')
+        .spyOn(fsScript.default, 'writeFileSync')
         .mockReturnValue(undefined);
       const mkdirpSync = jest
-        .spyOn(fs, 'mkdirpSync')
+        .spyOn(fsScript, 'mkdirpSync')
         .mockReturnValue(null);
       const request = jest
         .spyOn(axios, 'request')

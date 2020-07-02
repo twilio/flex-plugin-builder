@@ -1,8 +1,7 @@
-import { env, logger, open } from 'flex-dev-utils';
+import { env, logger, open, paths } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import fs, { readJsonFile } from 'flex-dev-utils/dist/fs';
-import paths, { setWorkingDirectory } from 'flex-dev-utils/dist/paths';
+import fs, { readJsonFile, setCwd } from 'flex-dev-utils/dist/fs';
 import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
 import { findPort, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import WebpackDevServer from 'webpack-dev-server';
@@ -63,7 +62,7 @@ const start = async (...args: string[]) => {
     if (!plugin) {
       throw new FlexPluginError('No plugin file was found with the given name');
     }
-    setWorkingDirectory(plugin.dir);
+    setCwd(plugin.dir);
   }
 
   _startDevServer(port, type);

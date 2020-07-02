@@ -1,5 +1,5 @@
 import { Environment } from 'flex-dev-utils/dist/env';
-import paths from 'flex-dev-utils/dist/paths';
+import { paths } from 'flex-dev-utils';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { checkFilesExist } from 'flex-dev-utils/dist/fs';
 import { Configuration as WebpackConfigurations } from 'webpack';

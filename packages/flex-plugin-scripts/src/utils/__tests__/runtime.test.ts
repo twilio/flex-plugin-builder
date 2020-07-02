@@ -1,4 +1,5 @@
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import * as fsScript from 'flex-dev-utils/dist/fs';
 
 import getRuntime from '../runtime';
 
@@ -7,11 +8,6 @@ jest.mock('../../clients/configurations');
 jest.mock('../../clients/environments');
 jest.mock('../../clients/services');
 jest.mock('flex-dev-utils/dist/credentials');
-jest.mock('flex-dev-utils/dist/paths', () => () => ({
-  app: {
-    name: 'plugin-test',
-  },
-}));
 
 // tslint:disable
 const ServiceClient: jest.Mock = require('../../clients/services').default;
@@ -21,6 +17,12 @@ const ConfigurationClient: jest.Mock = require('../../clients/configurations').d
 // tslint:enable
 
 describe('runtime', () => {
+  const paths = {
+    app: {
+      name: 'plugin-test',
+    },
+  }
+
   const serviceSid = 'ZS00000000000000000000000000000000';
   const environmentSid = 'ZE00000000000000000000000000000000';
   const buildSid = 'ZB00000000000000000000000000000000';
@@ -42,6 +44,9 @@ describe('runtime', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // @ts-ignore
+    jest.spyOn(fsScript, 'getPaths').mockReturnValue(paths);
   });
 
   const expectConfigurationClientCalled = () => {

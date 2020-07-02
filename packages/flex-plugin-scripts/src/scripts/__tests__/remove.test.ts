@@ -1,5 +1,6 @@
 import * as removeScript from '../remove';
 import * as runtimeScripts from '../../utils/runtime';
+import * as fsScript from 'flex-dev-utils/dist/fs';
 
 import { logger } from 'flex-dev-utils';
 import * as inquirer from 'flex-dev-utils/dist/inquirer';
@@ -10,17 +11,17 @@ jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/credentials', () => ({
   getCredential: jest.fn(),
 }));
-jest.mock('flex-dev-utils/dist/paths', () => () => ({
-  app: {
-    name: 'plugin-test',
-  },
-}));
-
 // tslint:disable
 const EnvironmentClient = require('../../clients/environments').default;
 // tslint:enable
 
 describe('remove', () => {
+  const paths = {
+    app: {
+      name: 'plugin-test',
+    },
+  }
+
   // @ts-ignore
   const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
   // @ts-ignore
@@ -38,6 +39,9 @@ describe('remove', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     jest.resetModules();
+
+    // @ts-ignore
+    jest.spyOn(fsScript, 'getPaths').mockReturnValue(paths);
   });
 
   describe('default', () => {
