@@ -12,6 +12,7 @@ import {
 import { TwilioError } from 'flex-plugins-utils-exception';
 import dayjs from 'dayjs';
 import { flags } from '@oclif/parser';
+import ReleasesClient from 'flex-plugins-api-client/dist/clients/releases';
 
 import { filesExist, readJSONFile } from '../utils/fs';
 import { TwilioCliError } from '../exceptions';
@@ -59,6 +60,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   private _pluginVersionsClient?: PluginVersionsClient;
 
   private _configurationsClient?: ConfigurationsClient;
+
+  private _releasesClient?: ReleasesClient;
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage, opts: Partial<FlexPluginOption>) {
     super(argv, config, secureStorage);
@@ -138,6 +141,14 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     return this._configurationsClient;
   }
 
+  get releasesClient() {
+    if (!this._releasesClient) {
+      throw new TwilioCliError('ReleasesClient is not initialized yet');
+    }
+
+    return this._releasesClient;
+  }
+
   /**
    * The main run command
    * @returns {Promise<void>}
@@ -155,6 +166,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     this._pluginsClient = new PluginsClient(httpClient);
     this._pluginVersionsClient = new PluginVersionsClient(httpClient);
     this._configurationsClient = new ConfigurationsClient(httpClient);
+    this._releasesClient = new ReleasesClient(httpClient);
 
     if (!this.skipEnvironmentalSetup) {
       this.setupEnvironment();

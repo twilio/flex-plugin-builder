@@ -28,8 +28,8 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     version: flags.string({
       exclusive: ['patch', 'minor', 'major'],
     }),
-    changelog: flags.string(),
     public: flags.boolean(),
+    changelog: flags.string(),
   };
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {

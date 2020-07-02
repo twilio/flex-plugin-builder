@@ -193,3 +193,154 @@ OPTIONS
 
 _See code: [src/commands/flex/plugins/start.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.0-next.0/src/commands/flex/plugins/start.ts)_
 <!-- commandsstop -->
+* [`twilio flex:plugins:build`](#twilio-flexpluginsbuild)
+* [`twilio flex:plugins:create NAME`](#twilio-flexpluginscreate-name)
+* [`twilio flex:plugins:create-configuration`](#twilio-flexpluginscreate-configuration)
+* [`twilio flex:plugins:deploy`](#twilio-flexpluginsdeploy)
+* [`twilio flex:plugins:release`](#twilio-flexpluginsrelease)
+* [`twilio flex:plugins:remove`](#twilio-flexpluginsremove)
+* [`twilio flex:plugins:start`](#twilio-flexpluginsstart)
+
+## `twilio flex:plugins:build`
+
+Builds Flex plugin and creates a JavaScript and sourcemap bundle. This command needs to be invoked inside a plugin directory.
+
+```
+USAGE
+  $ twilio flex:plugins:build
+
+OPTIONS
+  -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv)            [default: columns] Format of command output.
+  -p, --profile=profile            Shorthand identifier for your profile.
+```
+
+_See code: [src/commands/flex/plugins/build.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.0-next.0/src/commands/flex/plugins/build.ts)_
+
+## `twilio flex:plugins:create NAME`
+
+Creates a new Twilio Flex Plugin project
+
+```
+USAGE
+  $ twilio flex:plugins:create NAME
+
+ARGUMENTS
+  NAME  Creates a new Twilio Flex Plugin project
+
+        Arguments:
+        name	Name of your plugin. Needs to start with plugin-
+
+OPTIONS
+  -a, --accountSid=accountSid  The Account SID for your Flex Project
+  -h, --help=help
+  -i, --install                Auto-install dependencies
+  -r, --runtimeUrl             Auto-install dependencies
+  -s, --typescript             Create a TypeScript project
+  -t, --template=template      A URL to a template directory
+  -v, --version=version
+  -y, --yarn                   Use yarn as your dependency manager
+
+DESCRIPTION
+  Arguments:
+  name	Name of your plugin. Needs to start with plugin-. This command needs to be invoked inside a plugin directory.
+```
+
+_See code: [src/commands/flex/plugins/create.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.0-next.0/src/commands/flex/plugins/create.ts)_
+
+## `twilio flex:plugins:create-configuration`
+
+Creates a Flex Plugin Configuration. This command needs to be invoked inside a plugin directory.
+
+```
+USAGE
+  $ twilio flex:plugins:create-configuration
+
+OPTIONS
+  --description=description  The configuration description
+  --major
+  --minor
+  --new
+  --patch
+
+  --plugin=plugin            (required) The plugin to install, formatted as pluginName@version. Use additional --plugin
+                             to provide other plugins to install
+
+  --version=version
+```
+
+_See code: [src/commands/flex/plugins/create-configuration.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.0-next.0/src/commands/flex/plugins/create-configuration.ts)_
+
+## `twilio flex:plugins:deploy`
+
+Builds and deploys Flex plugin to Twilio Assets. This command needs to be invoked inside a plugin directory.
+
+```
+USAGE
+  $ twilio flex:plugins:deploy
+
+OPTIONS
+  --changelog=changelog
+  --major
+  --minor
+  --patch
+  --version=version
+```
+
+_See code: [src/commands/flex/plugins/deploy.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.0-next.0/src/commands/flex/plugins/deploy.ts)_
+
+## `twilio flex:plugins:release`
+
+Creates a Flex Plugin Release. This command needs to be invoked inside a plugin directory.
+
+```
+USAGE
+  $ twilio flex:plugins:release
+
+OPTIONS
+  --description=description  The configuration description
+  --major
+  --minor
+  --new
+  --patch
+
+  --plugin=plugin            (required) The plugin to install, formatted as pluginName@version. Use additional --plugin
+                             to provide other plugins to install
+
+  --version=version
+```
+
+_See code: [src/commands/flex/plugins/release.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.0-next.0/src/commands/flex/plugins/release.ts)_
+
+## `twilio flex:plugins:remove`
+
+Removes the Flex plugin. This command needs to be invoked inside a plugin directory.
+
+```
+USAGE
+  $ twilio flex:plugins:remove
+
+OPTIONS
+  -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv)            [default: columns] Format of command output.
+  -p, --profile=profile            Shorthand identifier for your profile.
+```
+
+_See code: [src/commands/flex/plugins/remove.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.0-next.0/src/commands/flex/plugins/remove.ts)_
+
+## `twilio flex:plugins:start`
+
+Starts a dev-server to build your Flex plugin locally. This command needs to be invoked inside a plugin directory.
+
+```
+USAGE
+  $ twilio flex:plugins:start
+
+OPTIONS
+  -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv)            [default: columns] Format of command output.
+  -p, --profile=profile            Shorthand identifier for your profile.
+```
+
+_See code: [src/commands/flex/plugins/start.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.0-next.0/src/commands/flex/plugins/start.ts)_
+<!-- commandsstop -->
