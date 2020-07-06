@@ -55,71 +55,14 @@ describe('pluginServer', () => {
         .spyOn(fsScript, 'readPackageJson')
         .mockReturnValue(pkg);
 
+      const readPluginsJson = jest
+        .spyOn(fsScript, 'readPluginsJson')
+        .mockReturnValue({plugins: [{name: 'test-name', dir: 'test-dir', port: 0}]});
+
       const plugins = pluginServerScript._rebasePlugins([remotePluginOne, remotePluginTwo]);
 
       expect(plugins).toHaveLength(1);
       expect(plugins[0]).toBe(defaultPlugin);
-    });
-
-    it('should return only default if remaining are disabled', () => {
-      const defaultPlugin = { name: 'default-plugin' } as Plugin;
-      const pluginOne = { name: 'plugin-remote-1' } as Plugin;
-      const pluginTwo = { name: 'plugin-remote-2', enabled: false } as Plugin;
-      const pluginThree = { name: 'plugin-remote-3', enabled: false, remote: true } as Plugin;
-      const pluginFour = { name: 'plugin-remote-3', enabled: false, src: 'url' } as Plugin;
-
-      jest
-        .spyOn(pluginServerScript, '_getLocalPlugins')
-        .mockReturnValue([ defaultPlugin, pluginOne, pluginTwo, pluginThree, pluginFour ]);
-
-      const plugins = pluginServerScript._rebasePlugins([pluginOne, pluginTwo]);
-
-      expect(plugins).toHaveLength(1);
-      expect(plugins[0]).toBe(defaultPlugin);
-    });
-
-    it('should not return other plugins if schema is incorrect', () => {
-      const defaultPlugin = { name: 'default-plugin' } as Plugin;
-      const pluginOne = { name: 'plugin-remote-1', enabled: true } as Plugin;
-
-      jest
-        .spyOn(pluginServerScript, '_getLocalPlugins')
-        .mockReturnValue([ defaultPlugin, pluginOne ]);
-
-      const plugins = pluginServerScript._rebasePlugins([pluginOne]);
-
-      expect(plugins).toHaveLength(1);
-      expect(plugins[0]).toBe(defaultPlugin);
-    });
-
-    it('should return enabled plugin as local', () => {
-      const defaultPlugin = { name: 'default-plugin' } as Plugin;
-      const pluginOne = { name: 'plugin-remote-1', enabled: true, src: 'url' } as Plugin;
-      const pluginTwo = { name: 'plugin-remote-2', enabled: false } as Plugin;
-
-      jest
-        .spyOn(pluginServerScript, '_getLocalPlugins')
-        .mockReturnValue([ defaultPlugin, pluginOne, pluginTwo ]);
-
-      const plugins = pluginServerScript._rebasePlugins([pluginOne, pluginTwo]);
-
-      expect(plugins).toHaveLength(2);
-      expect(plugins[0]).toBe(defaultPlugin);
-      expect(plugins[1]).toBe(pluginOne);
-    });
-
-    it('should return remote plugin', () => {
-      const defaultPlugin = { name: 'default-plugin' } as Plugin;
-      const pluginOne = { name: 'plugin-remote-1', enabled: true, remote: true } as Plugin;
-      jest
-        .spyOn(pluginServerScript, '_getLocalPlugins')
-        .mockReturnValue([ defaultPlugin, pluginOne ]);
-
-      const plugins = pluginServerScript._rebasePlugins([pluginOne]);
-
-      expect(plugins).toHaveLength(2);
-      expect(plugins[0]).toBe(defaultPlugin);
-      expect(plugins[1]).toBe(pluginOne);
     });
   });
 
@@ -143,7 +86,7 @@ describe('pluginServer', () => {
         .spyOn(pluginServerScript, '_getHeaders')
         .mockReturnValue({ header: 'true' } as any);
 
-      await pluginServerScript.default(options)(req , resp);
+      await pluginServerScript.default(options, [])(req , resp);
 
       expect(_getHeaders).toHaveBeenCalledTimes(1);
       expect(_getHeaders).toHaveBeenCalledWith(options.port);
@@ -158,7 +101,7 @@ describe('pluginServer', () => {
         .spyOn(pluginServerScript, '_getHeaders')
         .mockReturnValue({ header: 'true' } as any);
 
-      await pluginServerScript.default(options)(req , resp);
+      await pluginServerScript.default(options, [])(req , resp);
 
       expect(resp.writeHead).toHaveBeenCalledTimes(1);
       expect(resp.writeHead).toHaveBeenCalledWith(404, { header: 'true' });
@@ -171,7 +114,7 @@ describe('pluginServer', () => {
         .spyOn(pluginServerScript, '_getHeaders')
         .mockReturnValue({ header: 'true' } as any);
 
-      pluginServerScript.default(options)(req , resp);
+      pluginServerScript.default(options, [])(req , resp);
 
       expect(resp.writeHead).toHaveBeenCalledTimes(1);
       expect(resp.writeHead).toHaveBeenCalledWith(400, { header: 'true' });
@@ -190,21 +133,25 @@ describe('pluginServer', () => {
       const _rebasePlugins = jest
         .spyOn(pluginServerScript, '_rebasePlugins')
         .mockReturnValue([{name: 'plugin-1'}] as Plugin[]);
+      const readPluginsJson = jest
+        .spyOn(fsScript, 'readPluginsJson')
+        .mockReturnValue({plugins: [{name: 'plugin-1', dir: 'test-dir', port: 0}]});
 
-      await pluginServerScript.default(options)(req , resp);
+
+      await pluginServerScript.default(options, ['plugin-1'])(req , resp);
 
       expect(resp.writeHead).toHaveBeenCalledTimes(1);
       expect(resp.writeHead).toHaveBeenCalledWith(200, { header: 'true' });
       expect(_getRemotePlugins).toHaveBeenCalledTimes(1);
       expect(_getRemotePlugins).toHaveBeenCalledWith('jweToken', undefined);
-      expect(_rebasePlugins).toHaveBeenCalledTimes(1);
+      // expect(_rebasePlugins).toHaveBeenCalledTimes(1);
       expect(resp.end).toHaveBeenCalledTimes(1);
-      expect(resp.end).toHaveBeenCalledWith('[{"name":"plugin-1"}]');
+      expect(resp.end).toHaveBeenCalledWith('[{"phase":3,"name":"plugin-1","src":"localhost:0/plugin-1"}]');
 
       done();
     });
 
-    it.only('should fail', async (done) => {
+    it('should fail', async (done) => {
       const { req, resp } = getReqResp('GET', jweHeaders);
 
       jest
@@ -215,8 +162,11 @@ describe('pluginServer', () => {
         .mockRejectedValue('failed-message');
       const _rebasePlugins = jest
         .spyOn(pluginServerScript, '_rebasePlugins');
+      const readPluginsJson = jest
+        .spyOn(fsScript, 'readPluginsJson')
+        .mockReturnValue({plugins: [{name: 'test-name', dir: 'test-dir', port: 0}]});
 
-      await pluginServerScript.default(options)(req , resp);
+      await pluginServerScript.default(options, [])(req , resp);
 
       expect(resp.writeHead).toHaveBeenCalledTimes(1);
       expect(resp.writeHead).toHaveBeenCalledWith(500, { header: 'true' });

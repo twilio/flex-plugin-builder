@@ -1,9 +1,10 @@
-import { logger, progress, paths } from 'flex-dev-utils';
+import { logger, progress } from 'flex-dev-utils';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { AuthConfig, getCredential } from 'flex-dev-utils/dist/credentials';
 import { EnvironmentClient } from '../clients';
 import { Runtime } from '../clients/serverless-types';
+import { getPaths } from 'flex-dev-utils/dist/fs';
 
 import run from '../utils/run';
 import getRuntime from '../utils/runtime';
@@ -26,7 +27,7 @@ export const _getRuntime = async (credentials: AuthConfig): Promise<Runtime> => 
       service: runtime.service,
     };
   } catch (e) {
-    const pluginName = logger.colors.blue(paths().app.name);
+    const pluginName = logger.colors.blue(getPaths().app.name);
 
     logger.newline();
     logger.info(`⚠️  Plugin ${pluginName} was not found or was already removed.`);
@@ -40,7 +41,7 @@ export const _getRuntime = async (credentials: AuthConfig): Promise<Runtime> => 
  * @private
  */
 export const _doRemove = async () => {
-  const pluginName = logger.colors.blue(paths().app.name);
+  const pluginName = logger.colors.blue(getPaths().app.name);
   const credentials = await getCredential();
   const runtime = await _getRuntime(credentials);
   if (!runtime.environment) {
@@ -65,7 +66,7 @@ export const _doRemove = async () => {
 const remove = async () => {
   logger.debug('Removing plugin');
 
-  const pluginName = logger.colors.blue(paths().app.name);
+  const pluginName = logger.colors.blue(getPaths().app.name);
   const question = `Are you sure you want to permanently remove plugin ${pluginName}?`;
   const answer = await confirm(question, 'N');
 

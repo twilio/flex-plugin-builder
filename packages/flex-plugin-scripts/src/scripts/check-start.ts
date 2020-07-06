@@ -1,5 +1,5 @@
 import { env, logger, semver, FlexPluginError } from 'flex-dev-utils';
-import { checkFilesExist, findGlobs, resolveRelative, mkdirpSync, CLIFlexConfiguration, readJsonFile } from 'flex-dev-utils/dist/fs';
+import { checkFilesExist, findGlobs, resolveRelative, mkdirpSync, getPaths, readPluginsJson } from 'flex-dev-utils/dist/fs';
 import { addCWDNodeModule, resolveModulePath, _require } from 'flex-dev-utils/dist/require';
 import { existsSync, copyFileSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
@@ -50,14 +50,14 @@ export const _validateTypescriptProject = () => {
     return;
   }
 
-  if (checkFilesExist(paths().app.tsConfigPath)) {
+  if (checkFilesExist(getPaths().app.tsConfigPath)) {
     return;
   }
 
   logger.clearTerminal();
   env.persistTerminal();
   logger.warning('No tsconfig.json was found, creating a default one.');
-  copyFileSync(paths().scripts.tsConfigPath, paths().app.tsConfigPath);
+  copyFileSync(getPaths().scripts.tsConfigPath, getPaths().app.tsConfigPath);
 };
 
 /**
@@ -66,7 +66,7 @@ export const _validateTypescriptProject = () => {
  * @private
  */
 export const _checkAppConfig = () => {
-  if (!existsSync(paths().app.appConfig)) {
+  if (!existsSync(getPaths().app.appConfig)) {
     appConfigMissing();
 
     return exit(1);
@@ -81,7 +81,7 @@ export const _checkAppConfig = () => {
  */
 export const _checkPublicDirSync = (allowSkip: boolean) => {
   try {
-    copyFileSync(paths().scripts.indexHTMLPath, paths().app.indexHtmlPath);
+    copyFileSync(getPaths().scripts.indexHTMLPath, getPaths().app.indexHtmlPath);
   } catch (e) {
     publicDirCopyFailed(e, allowSkip);
 
@@ -98,7 +98,7 @@ export const _checkPublicDirSync = (allowSkip: boolean) => {
  */
 /* istanbul ignore next */
 export const _checkExternalDepsVersions = (allowSkip: boolean, allowReact: boolean) => {
-  const flexUIPkg = _require(paths().app.flexUIPkgPath);
+  const flexUIPkg = _require(getPaths().app.flexUIPkgPath);
 
   PackagesToVerify.forEach((name) => _verifyPackageVersion(flexUIPkg, allowSkip, allowReact, name));
 };
@@ -123,7 +123,7 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, al
 
   // @ts-ignore
   const requiredVersion = semver.coerce(expectedDependency).version;
-  const installedPath = resolveRelative(paths().app.nodeModulesDir, name, 'package.json');
+  const installedPath = resolveRelative(getPaths().app.nodeModulesDir, name, 'package.json');
   const installedVersion = _require(installedPath).version;
 
   if (requiredVersion !== installedVersion) {
@@ -186,28 +186,28 @@ export const _checkPluginCount = () => {
  * @private
  */
 export const _checkPluginConfigurationExists = async () => {
-  if (!checkFilesExist(paths().cli.pluginsJsonPath)) {
-      mkdirpSync(paths().cli.flexDir);
-      writeFileSync(paths().cli.pluginsJsonPath, JSON.stringify({plugins: []}, null, 2));
+  if (!checkFilesExist(getPaths().cli.pluginsJsonPath)) {
+      mkdirpSync(getPaths().cli.flexDir);
+      writeFileSync(getPaths().cli.pluginsJsonPath, JSON.stringify({plugins: []}, null, 2));
   }
 
-  const config = readJsonFile<CLIFlexConfiguration>(paths().cli.pluginsJsonPath);
-  const plugin = config.plugins.find((p) => p.name === paths().app.name);
+  const config = readPluginsJson();
+  const plugin = config.plugins.find((p) => p.name === getPaths().app.name);
 
   if (!plugin) {
-    config.plugins.push({name: paths().app.name, dir: paths().app.dir, port: 0});
-    writeFileSync(paths().cli.pluginsJsonPath, JSON.stringify(config, null, 2));
+    config.plugins.push({name: getPaths().app.name, dir: getPaths().app.dir, port: 0});
+    writeFileSync(getPaths().cli.pluginsJsonPath, JSON.stringify(config, null, 2));
     return;
   }
 
-  if (plugin.dir === paths().app.dir) {
+  if (plugin.dir === getPaths().app.dir) {
     return;
   }
 
-  const answer = await confirm(`You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${paths().app.dir}?`, 'N');
+  const answer = await confirm(`You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${getPaths().app.dir}?`, 'N');
   if (answer) {
-    plugin.dir = paths().app.dir;
-    writeFileSync(paths().cli.pluginsJsonPath, JSON.stringify(config, null, 2));
+    plugin.dir = getPaths().app.dir;
+    writeFileSync(getPaths().cli.pluginsJsonPath, JSON.stringify(config, null, 2));
   }
 };
 

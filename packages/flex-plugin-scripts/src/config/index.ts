@@ -1,7 +1,6 @@
 import { Environment } from 'flex-dev-utils/dist/env';
-import { paths } from 'flex-dev-utils';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import { checkFilesExist, CLIFlexConfiguration, FlexConfigurationPlugin } from 'flex-dev-utils/dist/fs';
+import { checkFilesExist, getPaths, CLIFlexConfiguration, FlexConfigurationPlugin } from 'flex-dev-utils/dist/fs';
 import { Configuration as WebpackConfigurations } from 'webpack';
 import { Configuration as WebpackDevConfigurations } from 'webpack-dev-server';
 import webpackFactory from './webpack.config';
@@ -33,7 +32,7 @@ interface Configurations {
  * @param env   the environment
  * @param type  the webpack type
  */
-const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment, type: WebpackType = WebpackType.Complete, pluginNames: string[] = []): Configurations[T] => {
+const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment, type: WebpackType = WebpackType.Complete): Configurations[T] => {
   const args = {
     isProd: env === Environment.Production,
     isDev: env === Environment.Development,
@@ -46,21 +45,21 @@ const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment
       return config as Configurations[T];
     }
 
-    if (checkFilesExist(paths().app.webpackConfigPath)) {
-      return require(paths().app.webpackConfigPath)(config, args);
+    if (checkFilesExist(getPaths().app.webpackConfigPath)) {
+      return require(getPaths().app.webpackConfigPath)(config, args);
     }
 
     return config as Configurations[T];
   }
 
   if (name === ConfigurationType.DevServer) {
-    const config = devFactory(type, pluginNames);
+    const config = devFactory(type);
     if (type === WebpackType.Static) {
       return config as Configurations[T];
     }
 
-    if (checkFilesExist(paths().app.devServerConfigPath)) {
-      return require(paths().app.devServerConfigPath)(config, args);
+    if (checkFilesExist(getPaths().app.devServerConfigPath)) {
+      return require(getPaths().app.devServerConfigPath)(config, args);
     }
 
     return config as Configurations[T];
@@ -68,8 +67,8 @@ const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment
 
   if (name === ConfigurationType.Jest) {
     const config = jestFactory();
-    if (checkFilesExist(paths().app.jestConfigPath)) {
-      return require(paths().app.jestConfigPath)(config, args);
+    if (checkFilesExist(getPaths().app.jestConfigPath)) {
+      return require(getPaths().app.jestConfigPath)(config, args);
     }
 
     return config as Configurations[T];

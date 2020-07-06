@@ -1,15 +1,16 @@
-import { logger, paths } from 'flex-dev-utils';
+import { logger } from 'flex-dev-utils';
 import { ServiceUrl } from 'flex-dev-utils/dist/urls';
 import { WebpackType } from '../config';
+import { getPaths } from 'flex-dev-utils/dist/fs';
 
 /**
  * Prints the message when dev-server has successfully compiled
  */
 export default (local: ServiceUrl, network: ServiceUrl, type: WebpackType) => {
   logger.success('Compiled successfully!');
-  const pkgName = logger.colors.bold(paths().app.name);
+  const pkgName = logger.colors.bold(getPaths().app.name);
   const hasIndex = type === WebpackType.Complete || type === WebpackType.Static;
-  const jsUrl = type === WebpackType.JavaScript ? `${paths().app.name}.js` : '';
+  const jsUrl = type === WebpackType.JavaScript ? `${getPaths().app.name}.js` : '';
   const appType = hasIndex  ? 'app' : 'JavaScript bundle';
 
   logger.newline();

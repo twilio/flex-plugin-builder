@@ -45,6 +45,11 @@ export const setCwd = (p: string) => internalCwd = p;
 // Get working directory
 export const getCwd = () => internalCwd;
 
+// Read plugins.json from Twilio CLI
+export const readPluginsJson = () => {
+  return readJsonFile<CLIFlexConfiguration>(getPaths().cli.pluginsJsonPath);
+};
+
 // The OS root directory
 const rootDir = os.platform() === 'win32' ? getCwd().split(path.sep)[0] : '/';
 

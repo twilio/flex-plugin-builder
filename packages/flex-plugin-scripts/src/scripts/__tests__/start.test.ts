@@ -41,7 +41,7 @@ describe('StartScript', () => {
       expect(getDefaultPort).toHaveBeenCalledTimes(1);
       expect(getDefaultPort).toHaveBeenCalledWith(port.toString());
       expect(_startDevServer).toHaveBeenCalledTimes(1);
-      expect(_startDevServer).toHaveBeenCalledWith(port, type);
+      expect(_startDevServer).toHaveBeenCalledWith(port, [], type);
     }
 
     beforeEach(() => {
@@ -76,9 +76,9 @@ describe('StartScript', () => {
 
     it('should throw an error if plugin not found', (done) => {
       const plugins = [{
-        src: 'broken url',
+        phase: 3,
         name: 'plugin-test',
-        enabled: true,
+        src: 'broken url',
       }];
 
       const requirePackages = jest
@@ -97,9 +97,9 @@ describe('StartScript', () => {
 
     it('should throw an error if it fails to find local port', (done) => {
       const plugins = [{
-        src: 'http://twilio.com/plugin-test.js',
+        phase: 3,
         name: 'plugin-test',
-        enabled: true,
+        src: 'http://twilio.com/plugin-test.js',
       }];
 
       const requirePackages = jest
@@ -118,9 +118,9 @@ describe('StartScript', () => {
 
     it('should update plugins URL', () => {
       const plugins = [{
-        src: 'http://localhost:1234/plugin-test.js',
+        phase: 3,
         name: 'plugin-test',
-        enabled: true,
+        src: 'http://localhost:1234/plugin-test.js',
       }];
 
       const requirePackages = jest

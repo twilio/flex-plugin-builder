@@ -1,6 +1,6 @@
 import { logger, FlexPluginError } from 'flex-dev-utils';
 import { Request, Response } from 'express-serve-static-core';
-import { readFileSync, readJsonFile, CLIFlexConfiguration } from 'flex-dev-utils/dist/fs';
+import { readFileSync, readJsonFile, CLIFlexConfiguration, getPaths, readPluginsJson } from 'flex-dev-utils/dist/fs';
 import { Configuration } from 'webpack-dev-server';
 import https from 'https';
 
@@ -15,8 +15,8 @@ export interface Plugin {
  * @private
  */
 /* istanbul ignore next */
-export const _getLocalPlugins = () => JSON.parse(readFileSync(paths().cli.pluginsJsonPath)) as Plugin[];
-// export const _getLocalPlugins = () => JSON.parse(readFileSync(paths().app.pluginsJsonPath)) as Plugin[];
+export const _getLocalPlugins = () => JSON.parse(readFileSync(getPaths().cli.pluginsJsonPath)) as Plugin[];
+// export const _getLocalPlugins = () => JSON.parse(readFileSync(getPaths().app.pluginsJsonPath)) as Plugin[];
 
 /**
  * Generates the response headers
@@ -78,7 +78,7 @@ export const _rebasePlugins = (remotePlugins: Plugin[]) => {
   return _getLocalPlugins()
     .map((plugin) => {
       // Local main (plugin) we are running
-      if (plugin.name === paths().app.name) {
+      if (plugin.name === getPaths().app.name) {
         return plugin;
       }
 
@@ -87,7 +87,7 @@ export const _rebasePlugins = (remotePlugins: Plugin[]) => {
         return plugin;
       }
 
-      if (plugin.phase >= 0) {
+      if (plugin.phase >= 3) {
         return plugin;
       }
 
@@ -118,40 +118,33 @@ export default (options: Configuration, names: string[]) => {
     logger.debug('GET /plugins')
 
     const jweToken = headers['x-flex-jwe'] as string;
+    const flexVersion = headers['x-flex-version'] as string;
     if (!jweToken) {
       res.writeHead(400, responseHeaders);
       return res.end('No X-Flex-JWE was provided');
     }
+    const config = readPluginsJson();
 
-    const plugins: Plugin[] = [];
-    const config = readJsonFile<CLIFlexConfiguration>(paths().cli.pluginsJsonPath);
-
-    names.map(n => {
+    const localPlugins: Plugin[] = names.map(n => {
       const plugin = config.plugins.find((p) => p.name === n);
       if (!plugin) {
         throw new FlexPluginError (`the plugin ${n} was not found`)
       }
-      const newPlugin: Plugin = {phase: 3, name: n, src: `localhost:${plugin.port}/${n}`};
-      plugins.push(newPlugin);
+      return {phase: 3, name: n, src: `localhost:${plugin.port}/${n}`};
     })
 
-    res.writeHead(200, responseHeaders);
-    res.end(JSON.stringify(plugins));
+     return _getRemotePlugins(jweToken, flexVersion)
+      // rebase will eventually get both local and remote plugins
+      .then(remotePlugins => {
+        logger.trace('Got remote plugins', remotePlugins);
+        // const plugins = _rebasePlugins(remotePlugins);
 
-    return plugins;
-
-  //   return _getRemotePlugins(jweToken, flexVersion)
-  //     // rebase will eventually get both local and remote plugins
-  //     .then(remotePlugins => {
-  //       logger.trace('Got remote plugins', remotePlugins);
-  //       const plugins = _rebasePlugins(remotePlugins);
-
-  //       res.writeHead(200, responseHeaders);
-  //       res.end(JSON.stringify(plugins));
-  //     })
-  //     .catch(err => {
-  //       res.writeHead(500, responseHeaders);
-  //       res.end(err);
-  //     });
+        res.writeHead(200, responseHeaders);
+        res.end(JSON.stringify(localPlugins));
+      })
+      .catch(err => {
+        res.writeHead(500, responseHeaders);
+        res.end(err);
+      });
     };
 }

@@ -1,8 +1,7 @@
 import { env, logger, open } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import fs, { readJsonFile, CLIFlexConfiguration, FlexConfigurationPlugin } from 'flex-dev-utils/dist/fs';
-import { setWorkingDirectory } from 'flex-dev-utils/dist/paths';
+import fs, { getPaths, FlexConfigurationPlugin, setCwd, readPluginsJson } from 'flex-dev-utils/dist/fs';
 import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
 import { findPort, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import WebpackDevServer from 'webpack-dev-server';
@@ -11,7 +10,7 @@ import getConfiguration, { ConfigurationType, WebpackType } from '../config';
 import compiler from '../utils/compiler';
 
 import run, { exit } from '../utils/run';
-import { Plugin } from '../config/devServer/pluginServer';
+import pluginServer, { Plugin } from '../config/devServer/pluginServer';
 import { writeFileSync } from 'fs';
 
 const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
@@ -24,7 +23,7 @@ const _getPlugins = (...args: string[]): FlexConfigurationPlugin[] => {
     if (nameIndex === args.length) {
       throw new FlexPluginError('You must put a plugin name after calling --name');
     }
-    const config = readJsonFile<CLIFlexConfiguration>(paths().cli.pluginsJsonPath);
+    const config = readPluginsJson();
     const plugin = config.plugins.find((p) => p.name === args[nameIndex + 1]);
 
     if (!plugin) {
@@ -77,13 +76,9 @@ const start = async (...args: string[]) => {
 
     const plugin = plugins[0];
     if (plugin) {
-      setWorkingDirectory(plugin.dir);
       _updatePluginPort(port, plugin.name);
+      setCwd(plugin.dir);
     }
-<<<<<<< HEAD
-=======
-    setCwd(plugin.dir);
->>>>>>> next
   }
 
   _startDevServer(port, plugins, type);
@@ -97,8 +92,12 @@ const start = async (...args: string[]) => {
 /* istanbul ignore next */
 export const _startDevServer = (port: number, plugins: FlexConfigurationPlugin[], type: WebpackType) => {
   const pluginNames: string[] = plugins.map((p) => p.name);
-  const config = getConfiguration(ConfigurationType.Webpack, Environment.Development, type, pluginNames);
-  const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development, type, pluginNames);
+  const config = getConfiguration(ConfigurationType.Webpack, Environment.Development, type);
+  const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development, type);
+  if (type !== WebpackType.JavaScript) {
+    // @ts-ignore
+    devConfig.before = (app, server) => app.use('/plugins', pluginServer(server.options, pluginNames));
+  }
   const devCompiler = compiler(config, true, type);
   const devServer = new WebpackDevServer(devCompiler, devConfig);
   const { local } = getLocalAndNetworkUrls(port);
@@ -173,7 +172,7 @@ export const _requirePackages = (pluginsPath: string, pkgPath: string) => {
  * @private
  */
 export const _updatePluginsUrl = (port: number) => {
-  const { plugins, pkg } = _requirePackages(paths().app.pluginsJsonPath, paths().app.pkgPath);
+  const { plugins, pkg } = _requirePackages(getPaths().app.pluginsJsonPath, getPaths().app.pkgPath);
 
   const pluginIndex = plugins.findIndex((p) => p.src.indexOf(pkg.name) !== -1);
   if (pluginIndex === -1) {
@@ -187,7 +186,7 @@ export const _updatePluginsUrl = (port: number) => {
 
   // Replace port and re-write to file
   plugins[pluginIndex].src = plugins[pluginIndex].src.replace(matches[1], port.toString());
-  fs.writeFileSync(paths().app.pluginsJsonPath, JSON.stringify(plugins, null, 2));
+  fs.writeFileSync(getPaths().app.pluginsJsonPath, JSON.stringify(plugins, null, 2));
 };
 
 /**
@@ -196,7 +195,7 @@ export const _updatePluginsUrl = (port: number) => {
  * @param names
  */
 export const _updatePluginPort = (port: number, names: string) => {
-  const config = readJsonFile<CLIFlexConfiguration>(paths().cli.pluginsJsonPath);
+  const config = readPluginsJson();
   config.plugins = config
   .plugins
   .map((plugin) => {
@@ -207,7 +206,7 @@ export const _updatePluginPort = (port: number, names: string) => {
     return plugin;
   });
 
-  writeFileSync(paths().cli.pluginsJsonPath, JSON.stringify(config, null, 2));
+  writeFileSync(getPaths().cli.pluginsJsonPath, JSON.stringify(config, null, 2));
 };
 
 run(start);
