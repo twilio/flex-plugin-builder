@@ -81,7 +81,13 @@ const start = async (...args: string[]) => {
     }
   }
 
-  _startDevServer(port, plugins, type);
+  let includeRemote = false;
+
+  if (args.includes('--include-remote')) {
+    includeRemote = true;
+  }
+
+  _startDevServer(port, plugins, type, includeRemote);
 };
 
 /**
@@ -90,13 +96,13 @@ const start = async (...args: string[]) => {
  * @private
  */
 /* istanbul ignore next */
-export const _startDevServer = (port: number, plugins: FlexConfigurationPlugin[], type: WebpackType) => {
+export const _startDevServer = (port: number, plugins: FlexConfigurationPlugin[], type: WebpackType, includeRemote: boolean) => {
   const pluginNames: string[] = plugins.map((p) => p.name);
   const config = getConfiguration(ConfigurationType.Webpack, Environment.Development, type);
   const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development, type);
   if (type !== WebpackType.JavaScript) {
     // @ts-ignore
-    devConfig.before = (app, server) => app.use('/plugins', pluginServer(server.options, pluginNames));
+    devConfig.before = (app, server) => app.use('/plugins', pluginServer(server.options, includeRemote, pluginNames));
   }
   const devCompiler = compiler(config, true, type);
   const devServer = new WebpackDevServer(devCompiler, devConfig);
