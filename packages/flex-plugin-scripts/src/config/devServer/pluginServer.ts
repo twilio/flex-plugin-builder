@@ -83,7 +83,7 @@ export const _getRemotePlugins = (token: string, version: string): Promise<Plugi
  * @param remotePlugins   the plugins returned from Flex
  * @private
  */
-export const _mergePlugins = (remotePlugins: Plugin[], localPlugins: Plugin[]) => {
+export const _mergePlugins = (remotePlugins: Plugin[], localPlugins: Plugin[], remoteNames: string[]) => {
   localPlugins
     .map((plugin) => {
       // Local main (plugin) we are running
@@ -100,6 +100,10 @@ export const _mergePlugins = (remotePlugins: Plugin[], localPlugins: Plugin[]) =
     })
     .filter(Boolean);
 
+    if (remoteNames.length > 0) {
+      return [...localPlugins, ...remotePlugins.filter(p => p.phase >= 3).filter(n => remoteNames.includes(n.name))];
+    }
+
     return [...localPlugins, ...remotePlugins.filter(p => p.phase >= 3)];
 };
 
@@ -108,7 +112,7 @@ export const _mergePlugins = (remotePlugins: Plugin[], localPlugins: Plugin[]) =
  * @param browserPort  the port of browser
  * @private
  */
-export default (options: Configuration, includeRemote: boolean, names: string[]) => {
+export default (options: Configuration, includeRemote: boolean, names: string[], remoteNames: string[]) => {
   const responseHeaders = _getHeaders(options.port || 3000);
 
   return async (req: Request, res: Response) => {
@@ -139,7 +143,7 @@ export default (options: Configuration, includeRemote: boolean, names: string[])
       // rebase will eventually get both local and remote plugins
       .then(remotePlugins => {
         logger.trace('Got remote plugins', remotePlugins);
-        const plugins = _mergePlugins(remotePlugins, localPlugins);
+        const plugins = _mergePlugins(remotePlugins, localPlugins, remoteNames);
 
         res.writeHead(200, responseHeaders);
         res.end(JSON.stringify(plugins));

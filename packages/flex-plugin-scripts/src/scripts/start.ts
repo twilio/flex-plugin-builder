@@ -15,25 +15,28 @@ import { writeFileSync } from 'fs';
 
 const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
 
-const _getPlugins = (...args: string[]): FlexConfigurationPlugin[] => {
-  const plugins: FlexConfigurationPlugin[] = [];
+const _getPlugins = (...args: string[]) => {
+  const localPlugins: FlexConfigurationPlugin[] = [];
+  const remotePlugins: string[] = [];
+  const config = readPluginsJson();
   let nameIndex = args.indexOf('--name');
 
   while (nameIndex !== -1 && nameIndex <= args.length) {
     if (nameIndex === args.length) {
       throw new FlexPluginError('You must put a plugin name after calling --name');
+    } if (args[nameIndex + 1].includes('@remote')) {
+      remotePlugins.push(args[nameIndex + 1].slice(0, args[nameIndex + 1].indexOf('@')));
+    } else {
+      const plugin = config.plugins.find((p) => p.name === args[nameIndex + 1]);
+      if (!plugin) {
+        throw new FlexPluginError('No plugin file was found with the given name');
+      }
+      localPlugins.push(plugin);
     }
-    const config = readPluginsJson();
-    const plugin = config.plugins.find((p) => p.name === args[nameIndex + 1]);
-
-    if (!plugin) {
-      throw new FlexPluginError('No plugin file was found with the given name');
-    }
-    plugins.push(plugin);
     nameIndex = args.indexOf('--name', nameIndex + 1);
   }
 
-  return plugins;
+  return {local: localPlugins, remote: remotePlugins};
 }
 
 /**
@@ -55,6 +58,8 @@ const start = async (...args: string[]) => {
   // Future  node version will silently consume unhandled exception
   process.on('unhandledRejection', err => { throw err; });
   const plugins = _getPlugins(...args);
+  const localPlugins = plugins.local;
+  const remotePlugins = plugins.remote;
 
   let type = WebpackType.Complete;
   if (args[0] === 'flex') {
@@ -74,7 +79,7 @@ const start = async (...args: string[]) => {
   if (args[0] === 'plugin') {
     type = WebpackType.JavaScript;
 
-    const plugin = plugins[0];
+    const plugin = localPlugins[0];
     if (plugin) {
       _updatePluginPort(port, plugin.name);
       setCwd(plugin.dir);
@@ -83,26 +88,26 @@ const start = async (...args: string[]) => {
 
   let includeRemote = false;
 
-  if (args.includes('--include-remote')) {
+  if (args.includes('--include-remote') || remotePlugins.length > 0) {
     includeRemote = true;
   }
 
-  _startDevServer(port, plugins, type, includeRemote);
+  _startDevServer(port, localPlugins, remotePlugins, type, includeRemote);
 };
 
 /**
  * Starts the webpack dev-server
  * @param port  the port the server is running on
- * @private
+ * @privateAl
  */
 /* istanbul ignore next */
-export const _startDevServer = (port: number, plugins: FlexConfigurationPlugin[], type: WebpackType, includeRemote: boolean) => {
-  const pluginNames: string[] = plugins.map((p) => p.name);
+export const _startDevServer = (port: number, localPlugins: FlexConfigurationPlugin[], remotePlugins: string[], type: WebpackType, includeRemote: boolean) => {
+  const pluginNames: string[] = localPlugins.map((p) => p.name);
   const config = getConfiguration(ConfigurationType.Webpack, Environment.Development, type);
   const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development, type);
   if (type !== WebpackType.JavaScript) {
     // @ts-ignore
-    devConfig.before = (app, server) => app.use('/plugins', pluginServer(server.options, includeRemote, pluginNames));
+    devConfig.before = (app, server) => app.use('/plugins', pluginServer(server.options, includeRemote, pluginNames, remotePlugins));
   }
   const devCompiler = compiler(config, true, type);
   const devServer = new WebpackDevServer(devCompiler, devConfig);
