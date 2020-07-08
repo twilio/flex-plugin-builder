@@ -10,7 +10,9 @@ export default class FlexPluginsListConfigurations extends InformationFlexPlugin
    * @override
    */
   async getResource() {
-    return this.pluginsApiToolkit.listConfigurations({});
+    const result = await this.pluginsApiToolkit.listConfigurations({});
+
+    return result.configurations;
   }
 
   /**

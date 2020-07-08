@@ -10,7 +10,9 @@ export default class FlexPluginsListPlugins extends InformationFlexPlugin<ListRe
    * @override
    */
   async getResource() {
-    return this.pluginsApiToolkit.listReleases({});
+    const result = await this.pluginsApiToolkit.listReleases({});
+
+    return result.releases;
   }
 
   /**

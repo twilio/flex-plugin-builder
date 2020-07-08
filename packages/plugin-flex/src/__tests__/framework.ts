@@ -80,7 +80,8 @@ export const pluginTest = test
       async run(ctx) {
         return new Promise(async (resolve, reject) => {
           if (!ctx.testCmd) {
-            return reject(new Error("'test' must run after command has been created"));
+            reject(new Error("'test' must run after command has been created"));
+            return;
           }
 
           try {

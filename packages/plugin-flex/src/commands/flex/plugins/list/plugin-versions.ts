@@ -20,7 +20,9 @@ export default class FlexPluginsListPluginVersions extends InformationFlexPlugin
    * @override
    */
   async getResource() {
-    return this.pluginsApiToolkit.listPluginVersions({ name: this._flags.name });
+    const result = await this.pluginsApiToolkit.listPluginVersions({ name: this._flags.name });
+
+    return result.plugin_versions;
   }
 
   /**
