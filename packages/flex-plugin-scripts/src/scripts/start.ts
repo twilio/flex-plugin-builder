@@ -11,13 +11,17 @@ import compiler from '../utils/compiler';
 
 import run, { exit } from '../utils/run';
 import pluginServer, { Plugin } from '../config/devServer/pluginServer';
-import { writeFileSync } from 'fs';
 
 const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
 
-const _getPlugins = (...args: string[]) => {
-  const localPlugins: FlexConfigurationPlugin[] = [];
-  const remotePlugins: string[] = [];
+export interface UserInputPlugin {
+  name: string;
+  remote: boolean;
+  version?: string;
+}
+
+export const _parseUserInputPlugins = (...args: string[]): UserInputPlugin[] => {
+  const userInputPlugins: UserInputPlugin[] = [];
   const config = readPluginsJson();
   let nameIndex = args.indexOf('--name');
 
@@ -25,19 +29,19 @@ const _getPlugins = (...args: string[]) => {
     if (nameIndex === args.length) {
       throw new FlexPluginError('You must put a plugin name after calling --name');
     } if (args[nameIndex + 1].includes('@remote')) {
-      remotePlugins.push(args[nameIndex + 1].slice(0, args[nameIndex + 1].indexOf('@')));
+      userInputPlugins.push({name: args[nameIndex + 1].slice(0, args[nameIndex + 1].indexOf('@')), remote: true});
     } else {
       const plugin = config.plugins.find((p) => p.name === args[nameIndex + 1]);
       if (!plugin) {
         throw new FlexPluginError('No plugin file was found with the given name');
       }
-      localPlugins.push(plugin);
+      userInputPlugins.push({name: plugin.name, remote: false});
     }
     nameIndex = args.indexOf('--name', nameIndex + 1);
   }
 
-  return {local: localPlugins, remote: remotePlugins};
-}
+  return userInputPlugins;
+};
 
 /**
  * Starts the dev-server
@@ -57,9 +61,7 @@ const start = async (...args: string[]) => {
 
   // Future  node version will silently consume unhandled exception
   process.on('unhandledRejection', err => { throw err; });
-  const plugins = _getPlugins(...args);
-  const localPlugins = plugins.local;
-  const remotePlugins = plugins.remote;
+  const userInputPlugins = _parseUserInputPlugins(...args);
 
   let type = WebpackType.Complete;
   if (args[0] === 'flex') {
@@ -75,24 +77,25 @@ const start = async (...args: string[]) => {
       }
       throw err;
     });
-  }
-  if (args[0] === 'plugin') {
+  } if (args[0] === 'plugin') {
     type = WebpackType.JavaScript;
+    const pluginInput = userInputPlugins.filter(p => !p.remote)[0];
+    const config = readPluginsJson();
+    const pluginFind = config.plugins.find((p) => p.name === pluginInput.name);
 
-    const plugin = localPlugins[0];
-    if (plugin) {
-      _updatePluginPort(port, plugin.name);
-      setCwd(plugin.dir);
+    if (pluginFind) {
+      _updatePluginPort(port, pluginFind.name);
+      setCwd(pluginFind.dir);
     }
   }
 
-  let includeRemote = false;
+  let includeAllRemote = false;
 
-  if (args.includes('--include-remote') || remotePlugins.length > 0) {
-    includeRemote = true;
+  if (args.includes('--include-remote')) {
+    includeAllRemote = true;
   }
 
-  _startDevServer(port, localPlugins, remotePlugins, type, includeRemote);
+  _startDevServer(port, userInputPlugins, type, includeAllRemote);
 };
 
 /**
@@ -101,13 +104,12 @@ const start = async (...args: string[]) => {
  * @privateAl
  */
 /* istanbul ignore next */
-export const _startDevServer = (port: number, localPlugins: FlexConfigurationPlugin[], remotePlugins: string[], type: WebpackType, includeRemote: boolean) => {
-  const pluginNames: string[] = localPlugins.map((p) => p.name);
+export const _startDevServer = (port: number, userInputPlugins: UserInputPlugin[], type: WebpackType, includeAllRemote: boolean) => {
   const config = getConfiguration(ConfigurationType.Webpack, Environment.Development, type);
   const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development, type);
   if (type !== WebpackType.JavaScript) {
     // @ts-ignore
-    devConfig.before = (app, server) => app.use('/plugins', pluginServer(server.options, includeRemote, pluginNames, remotePlugins));
+    devConfig.before = (app, server) => app.use('/plugins', pluginServer(server.options, userInputPlugins, includeAllRemote)); // removin type from parameters
   }
   const devCompiler = compiler(config, true, type);
   const devServer = new WebpackDevServer(devCompiler, devConfig);
@@ -203,21 +205,21 @@ export const _updatePluginsUrl = (port: number) => {
 /**
  * Update port of a plugin
  * @param port
- * @param names
+ * @param name
  */
-export const _updatePluginPort = (port: number, names: string) => {
+export const _updatePluginPort = (port: number, name: string) => {
   const config = readPluginsJson();
   config.plugins = config
   .plugins
   .map((plugin) => {
-    if (names.includes(plugin.name)) {
+    if (plugin.name === name) {
       plugin.port = port;
     }
 
     return plugin;
   });
 
-  writeFileSync(getPaths().cli.pluginsJsonPath, JSON.stringify(config, null, 2));
+  fs.writeFileSync(getPaths().cli.pluginsJsonPath, JSON.stringify(config, null, 2));
 };
 
 run(start);

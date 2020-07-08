@@ -1,8 +1,9 @@
 import { logger, FlexPluginError } from 'flex-dev-utils';
 import { Request, Response } from 'express-serve-static-core';
-import { readFileSync, CLIFlexConfiguration, getPaths, readPluginsJson } from 'flex-dev-utils/dist/fs';
+import { getPaths, readPluginsJson } from 'flex-dev-utils/dist/fs';
 import { Configuration } from 'webpack-dev-server';
 import https from 'https';
+import { UserInputPlugin } from '../../scripts/start';
 
 export interface Plugin {
   phase: number;
@@ -11,19 +12,19 @@ export interface Plugin {
 }
 
 /**
- * Returns local plugins from  public/plugins.json
+ * Returns local plugins from  cli/plugins.json
  * @private
  */
 /* istanbul ignore next */
-export const _getLocalPlugins = (names: string[]) => {
+export const _getLocalPlugins = (inputPlugins: UserInputPlugin[]) => {
   const config = readPluginsJson();
 
-  return names.map((pluginName) => {
-    const plugin = config.plugins.find((p) => p.name === pluginName);
-    if (plugin) {
-      return {phase: 3, name: plugin.name, src: `localhost:${plugin.port}/${plugin.name}`} as Plugin;
+  return inputPlugins.map((plugin) => {
+    const findPlugin = config.plugins.find((p) => p.name === plugin.name);
+    if (findPlugin) {
+      return {phase: 3, name: plugin.name, src: `localhost:${findPlugin.port}/${plugin.name}`} as Plugin;
     }
-    throw new FlexPluginError (`The plugin ${pluginName} was not locally found: `);
+    throw new FlexPluginError (`The plugin ${plugin.name} was not locally found: `);
   });
 };
 
@@ -71,7 +72,6 @@ export const _getRemotePlugins = (token: string, version: string): Promise<Plugi
 
         res.on('data', (chunk) => data.push(chunk));
         res.on('end', () => resolve(JSON.parse(Buffer.concat(data).toString())));
-        // res.on('end', () => resolve(JSON.parse(Buffer.concat(data).toString()).filter((plugin: { phase: number; }) => plugin.phase >= 3)));
       })
       .on('error', reject)
       .end();
@@ -83,7 +83,7 @@ export const _getRemotePlugins = (token: string, version: string): Promise<Plugi
  * @param remotePlugins   the plugins returned from Flex
  * @private
  */
-export const _mergePlugins = (remotePlugins: Plugin[], localPlugins: Plugin[], remoteNames: string[]) => {
+export const _mergePlugins = (localPlugins: Plugin[], remotePlugins: Plugin[]) => {
   localPlugins
     .map((plugin) => {
       // Local main (plugin) we are running
@@ -100,10 +100,6 @@ export const _mergePlugins = (remotePlugins: Plugin[], localPlugins: Plugin[], r
     })
     .filter(Boolean);
 
-    if (remoteNames.length > 0) {
-      return [...localPlugins, ...remotePlugins.filter(p => p.phase >= 3).filter(n => remoteNames.includes(n.name))];
-    }
-
     return [...localPlugins, ...remotePlugins.filter(p => p.phase >= 3)];
 };
 
@@ -112,7 +108,7 @@ export const _mergePlugins = (remotePlugins: Plugin[], localPlugins: Plugin[], r
  * @param browserPort  the port of browser
  * @private
  */
-export default (options: Configuration, includeRemote: boolean, names: string[], remoteNames: string[]) => {
+export default (options: Configuration, userInputPlugins: UserInputPlugin[], includeAllRemote: boolean) => {
   const responseHeaders = _getHeaders(options.port || 3000);
 
   return async (req: Request, res: Response) => {
@@ -135,15 +131,27 @@ export default (options: Configuration, includeRemote: boolean, names: string[],
       return res.end('No X-Flex-JWE was provided');
     }
 
-    const localPlugins = _getLocalPlugins(names);
-    const promise: Promise<Plugin[]> = includeRemote ? _getRemotePlugins(jweToken, flexVersion) : Promise.resolve([]);
+    const localInputPlugins = userInputPlugins.filter(p => !p.remote);
+    const remoteInputPlugins = userInputPlugins.filter(p => p.remote);
+
+    const hasRemotePlugin = includeAllRemote || userInputPlugins.some(p => p.remote);
+    const localPlugins = _getLocalPlugins(localInputPlugins);
+    const promise: Promise<Plugin[]> = hasRemotePlugin ? _getRemotePlugins(jweToken, flexVersion) : Promise.resolve([]);
 
     // unnessary w/o --include-remote
     return promise
+      .then(plugins => {
+        if (includeAllRemote) {
+          return plugins;
+        }
+
+        // Filter and only return the ones that are in remoteInputPlugins
+        return plugins.filter(r => remoteInputPlugins.some(i => i.name === r.name));
+      })
       // rebase will eventually get both local and remote plugins
       .then(remotePlugins => {
         logger.trace('Got remote plugins', remotePlugins);
-        const plugins = _mergePlugins(remotePlugins, localPlugins, remoteNames);
+        const plugins = _mergePlugins(localPlugins, remotePlugins);
 
         res.writeHead(200, responseHeaders);
         res.end(JSON.stringify(plugins));

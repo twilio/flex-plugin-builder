@@ -27,29 +27,29 @@ describe('pluginServer', () => {
     jest.spyOn(fsScript, 'getPaths').mockReturnValue(paths);
   });
 
-  describe('_rebasePlugins', () => {
-    it('should return empty array of localPlugin is empty', () => {
-      const remotePluginOne = { name: 'plugin-remote-1' } as Plugin;
-      const remotePluginTwo = { name: 'plugin-remote-2' } as Plugin;
+  describe('_mergePlugins', () => {
+    it('should return plugins w phase >=3', () => {
+      const remotePluginOne = { name: 'plugin-remote-1', phase: 3 } as Plugin;
+      const remotePluginTwo = { name: 'plugin-remote-2', phase: 2 } as Plugin;
 
       const _getLocalPlugins = jest
         .spyOn(pluginServerScript, '_getLocalPlugins')
         .mockReturnValue([]);
 
-      const plugins = pluginServerScript._rebasePlugins([remotePluginOne, remotePluginTwo]);
+      const plugins = pluginServerScript._mergePlugins([], [remotePluginOne, remotePluginTwo]);
 
-      expect(plugins).toHaveLength(0);
-      expect(_getLocalPlugins).toHaveBeenCalledTimes(1);
+      expect(plugins).toHaveLength(1);
+      expect(_getLocalPlugins).not.toHaveBeenCalled();
     });
 
-    it('should return only local plugins', () => {
-      const defaultPlugin = { name: 'default-plugin' } as Plugin;
-      const remotePluginOne = { name: 'plugin-remote-1' } as Plugin;
-      const remotePluginTwo = { name: 'plugin-remote-2' } as Plugin;
+    it('should return both remote and local plugins', () => {
+      const localPlugin = { name: 'default-plugin', phase: 3 } as Plugin;
+      const remotePluginOne = { name: 'plugin-remote-1', phase: 3 } as Plugin;
+      const remotePluginTwo = { name: 'plugin-remote-2', phase: 3 } as Plugin;
 
       jest
         .spyOn(pluginServerScript, '_getLocalPlugins')
-        .mockReturnValue([defaultPlugin]);
+        .mockReturnValue([localPlugin]);
 
       jest
         .spyOn(fsScript, 'readPackageJson')
@@ -59,10 +59,9 @@ describe('pluginServer', () => {
         .spyOn(fsScript, 'readPluginsJson')
         .mockReturnValue({plugins: [{name: 'test-name', dir: 'test-dir', port: 0}]});
 
-      const plugins = pluginServerScript._rebasePlugins([remotePluginOne, remotePluginTwo]);
+      const plugins = pluginServerScript._mergePlugins([localPlugin], [remotePluginOne, remotePluginTwo]);
 
-      expect(plugins).toHaveLength(1);
-      expect(plugins[0]).toBe(defaultPlugin);
+      expect(plugins).toHaveLength(3);
     });
   });
 
@@ -86,7 +85,7 @@ describe('pluginServer', () => {
         .spyOn(pluginServerScript, '_getHeaders')
         .mockReturnValue({ header: 'true' } as any);
 
-      await pluginServerScript.default(options, [])(req , resp);
+      await pluginServerScript.default(options, [], false)(req , resp);
 
       expect(_getHeaders).toHaveBeenCalledTimes(1);
       expect(_getHeaders).toHaveBeenCalledWith(options.port);
@@ -101,7 +100,7 @@ describe('pluginServer', () => {
         .spyOn(pluginServerScript, '_getHeaders')
         .mockReturnValue({ header: 'true' } as any);
 
-      await pluginServerScript.default(options, [])(req , resp);
+      await pluginServerScript.default(options, [], false)(req , resp);
 
       expect(resp.writeHead).toHaveBeenCalledTimes(1);
       expect(resp.writeHead).toHaveBeenCalledWith(404, { header: 'true' });
@@ -114,7 +113,7 @@ describe('pluginServer', () => {
         .spyOn(pluginServerScript, '_getHeaders')
         .mockReturnValue({ header: 'true' } as any);
 
-      pluginServerScript.default(options, [])(req , resp);
+      pluginServerScript.default(options, [], false)(req , resp);
 
       expect(resp.writeHead).toHaveBeenCalledTimes(1);
       expect(resp.writeHead).toHaveBeenCalledWith(400, { header: 'true' });
@@ -129,24 +128,23 @@ describe('pluginServer', () => {
         .mockReturnValue({ header: 'true' } as any);
       const _getRemotePlugins = jest
         .spyOn(pluginServerScript, '_getRemotePlugins')
-        .mockResolvedValue([{ name: 'plugin-2' }] as Plugin[]);
-      const _rebasePlugins = jest
-        .spyOn(pluginServerScript, '_rebasePlugins')
-        .mockReturnValue([{name: 'plugin-1'}] as Plugin[]);
+        .mockResolvedValue([{ name: 'plugin-2'}] as Plugin[]);
+      const _mergePlugins = jest
+        .spyOn(pluginServerScript, '_mergePlugins')
+        .mockReturnValue([{name: 'plugin-1'}, {name: 'plugin-2'}] as Plugin[]);
       const readPluginsJson = jest
         .spyOn(fsScript, 'readPluginsJson')
         .mockReturnValue({plugins: [{name: 'plugin-1', dir: 'test-dir', port: 0}]});
 
-
-      await pluginServerScript.default(options, ['plugin-1'])(req , resp);
+      await pluginServerScript.default(options, [{name: 'plugin-1', remote: false}, {name: 'plugin-2', remote: true}], false)(req , resp);
 
       expect(resp.writeHead).toHaveBeenCalledTimes(1);
       expect(resp.writeHead).toHaveBeenCalledWith(200, { header: 'true' });
       expect(_getRemotePlugins).toHaveBeenCalledTimes(1);
       expect(_getRemotePlugins).toHaveBeenCalledWith('jweToken', undefined);
-      // expect(_rebasePlugins).toHaveBeenCalledTimes(1);
+      expect(_mergePlugins).toHaveBeenCalledTimes(1);
       expect(resp.end).toHaveBeenCalledTimes(1);
-      expect(resp.end).toHaveBeenCalledWith('[{"phase":3,"name":"plugin-1","src":"localhost:0/plugin-1"}]');
+      expect(resp.end).toHaveBeenCalledWith('[{\"name\":\"plugin-1\"},{\"name\":\"plugin-2\"}]');
 
       done();
     });
@@ -160,19 +158,19 @@ describe('pluginServer', () => {
       const _getRemotePlugins = jest
         .spyOn(pluginServerScript, '_getRemotePlugins')
         .mockRejectedValue('failed-message');
-      const _rebasePlugins = jest
-        .spyOn(pluginServerScript, '_rebasePlugins');
+      const _mergePlugins = jest
+        .spyOn(pluginServerScript, '_mergePlugins');
       const readPluginsJson = jest
         .spyOn(fsScript, 'readPluginsJson')
         .mockReturnValue({plugins: [{name: 'test-name', dir: 'test-dir', port: 0}]});
 
-      await pluginServerScript.default(options, [])(req , resp);
+      await pluginServerScript.default(options, [{name: 'test-name', remote: true}], true)(req , resp);
 
       expect(resp.writeHead).toHaveBeenCalledTimes(1);
       expect(resp.writeHead).toHaveBeenCalledWith(500, { header: 'true' });
       expect(_getRemotePlugins).toHaveBeenCalledTimes(1);
       expect(_getRemotePlugins).toHaveBeenCalledWith('jweToken', undefined);
-      expect(_rebasePlugins).not.toHaveBeenCalled();
+      expect(_mergePlugins).not.toHaveBeenCalled();
       expect(resp.end).toHaveBeenCalledTimes(1);
       expect(resp.end).toHaveBeenCalledWith('failed-message');
 
