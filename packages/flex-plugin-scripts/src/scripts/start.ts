@@ -1,7 +1,7 @@
 import { env, logger, open } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import fs, { getPaths, FlexConfigurationPlugin, setCwd, readPluginsJson } from 'flex-dev-utils/dist/fs';
+import { getPaths, setCwd, readPluginsJson, writeJSONFile } from 'flex-dev-utils/dist/fs';
 import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
 import { findPort, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import WebpackDevServer from 'webpack-dev-server';
@@ -13,6 +13,7 @@ import run, { exit } from '../utils/run';
 import pluginServer, { Plugin } from '../config/devServer/pluginServer';
 
 const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
+const PLUGIN_INPUT_PARSER_REGEX = /([\w-]+)(?:@(\S+))?/;
 
 export interface UserInputPlugin {
   name: string;
@@ -20,22 +21,37 @@ export interface UserInputPlugin {
   version?: string;
 }
 
+/**
+ * Reads user input to returns the --name plugins
+ * @param args
+ */
 export const _parseUserInputPlugins = (...args: string[]): UserInputPlugin[] => {
   const userInputPlugins: UserInputPlugin[] = [];
   const config = readPluginsJson();
 
   for (let i = 0; i < args.length - 1; i++) {
-    if (args[i] === '--name') {
-      if (args[i + 1].includes('@remote')) {
-        userInputPlugins.push({name: args[i + 1].slice(0, args[i + 1].indexOf('@')), remote: true});
-      } else {
-        const plugin = config.plugins.find((p) => p.name === args[i + 1]);
-        if (!plugin) {
-          throw new FlexPluginError('No plugin file was found with the given name');
-        }
-        userInputPlugins.push({name: plugin.name, remote: false});
-      }
+    if (args[i] !== '--name') {
+      continue;
     }
+    const groups = args[i + 1].match(PLUGIN_INPUT_PARSER_REGEX);
+    if (!groups) {
+      throw new Error('Unexpected plugin name format was provided');
+    }
+
+    const name = groups[1];
+    const version = groups[2]; // later we'll use this for the @1.2.3 use case as well
+
+    if (version === 'remote') {
+      userInputPlugins.push({name: args[i + 1].slice(0, args[i + 1].indexOf('@')), remote: true});
+      continue;
+    }
+
+    const plugin = config.plugins.find((p) => p.name === args[i + 1]);
+    if (!plugin) {
+      throw new FlexPluginError('No plugin file was found with the given name');
+    }
+    // Should we use name here instead of plugin.name?
+    userInputPlugins.push({name: plugin.name, remote: false});
   }
 
   return userInputPlugins;
@@ -75,21 +91,22 @@ const start = async (...args: string[]) => {
       }
       throw err;
     });
-  } if (args[0] === 'plugin') {
+  }
+  if (args[0] === 'plugin') {
     type = WebpackType.JavaScript;
-    const plugin = userInputPlugins.filter(p => !p.remote)[0];
-    const config = readPluginsJson();
-    const pluginFind = config.plugins.find((p) => p.name === plugin.name);
+    const localPlugin = userInputPlugins.find(p => !p.remote);
+    if (localPlugin) {
+      const config = readPluginsJson();
+      const plugin = config.plugins.find((p) => p.name === localPlugin.name);
 
-    if (pluginFind) {
-      _updatePluginPort(port, pluginFind.name);
-      setCwd(pluginFind.dir);
+      if (plugin) {
+        _updatePluginPort(port, plugin.name);
+        setCwd(plugin.dir);
+      }
     }
   }
 
-  const includeAllRemote = args.includes('--include-remote');
-
-  _startDevServer(port, userInputPlugins, type, includeAllRemote);
+  _startDevServer(port, userInputPlugins, type, args.includes('--include-remote'));
 };
 
 /**
@@ -193,7 +210,7 @@ export const _updatePluginsUrl = (port: number) => {
 
   // Replace port and re-write to file
   plugins[pluginIndex].src = plugins[pluginIndex].src.replace(matches[1], port.toString());
-  fs.writeFileSync(getPaths().app.pluginsJsonPath, JSON.stringify(plugins, null, 2));
+  writeJSONFile(getPaths().app.pluginsJsonPath, plugins);
 };
 
 /**
@@ -209,7 +226,7 @@ export const _updatePluginPort = (port: number, name: string) => {
     }
   });
 
-  fs.writeFileSync(getPaths().cli.pluginsJsonPath, JSON.stringify(config, null, 2));
+  writeJSONFile(getPaths().cli.pluginsJsonPath, config);
 };
 
 run(start);

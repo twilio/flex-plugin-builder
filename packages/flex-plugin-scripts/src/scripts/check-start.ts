@@ -1,7 +1,7 @@
 import { env, logger, semver, FlexPluginError } from 'flex-dev-utils';
-import { checkFilesExist, findGlobs, resolveRelative, mkdirpSync, getPaths, readPluginsJson } from 'flex-dev-utils/dist/fs';
+import { checkFilesExist, findGlobs, resolveRelative, mkdirpSync, getPaths, readPluginsJson, writeJSONFile } from 'flex-dev-utils/dist/fs';
 import { addCWDNodeModule, resolveModulePath, _require } from 'flex-dev-utils/dist/require';
-import { existsSync, copyFileSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, copyFileSync, readFileSync } from 'fs';
 import { join } from 'path';
 import {
   appConfigMissing,
@@ -188,7 +188,7 @@ export const _checkPluginCount = () => {
 export const _checkPluginConfigurationExists = async () => {
   if (!checkFilesExist(getPaths().cli.pluginsJsonPath)) {
       mkdirpSync(getPaths().cli.flexDir);
-      writeFileSync(getPaths().cli.pluginsJsonPath, JSON.stringify({plugins: []}, null, 2));
+      writeJSONFile(getPaths().cli.pluginsJsonPath, {plugins: []});
   }
 
   const config = readPluginsJson();
@@ -196,7 +196,7 @@ export const _checkPluginConfigurationExists = async () => {
 
   if (!plugin) {
     config.plugins.push({name: getPaths().app.name, dir: getPaths().app.dir, port: 0});
-    writeFileSync(getPaths().cli.pluginsJsonPath, JSON.stringify(config, null, 2));
+    writeJSONFile(getPaths().cli.pluginsJsonPath, config);
     return;
   }
 
@@ -207,7 +207,7 @@ export const _checkPluginConfigurationExists = async () => {
   const answer = await confirm(`You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${getPaths().app.dir}?`, 'N');
   if (answer) {
     plugin.dir = getPaths().app.dir;
-    writeFileSync(getPaths().cli.pluginsJsonPath, JSON.stringify(config, null, 2));
+    writeJSONFile(getPaths().cli.pluginsJsonPath, config);
   }
 };
 

@@ -28,20 +28,6 @@ describe('pluginServer', () => {
   });
 
   describe('_mergePlugins', () => {
-    it('should return plugins w phase >=3', () => {
-      const remotePluginOne = { name: 'plugin-remote-1', phase: 3 } as Plugin;
-      const remotePluginTwo = { name: 'plugin-remote-2', phase: 2 } as Plugin;
-
-      const _getLocalPlugins = jest
-        .spyOn(pluginServerScript, '_getLocalPlugins')
-        .mockReturnValue([]);
-
-      const plugins = pluginServerScript._mergePlugins([], [remotePluginOne, remotePluginTwo]);
-
-      expect(plugins).toHaveLength(1);
-      expect(_getLocalPlugins).not.toHaveBeenCalled();
-    });
-
     it('should return both remote and local plugins', () => {
       const localPlugin = { name: 'default-plugin', phase: 3 } as Plugin;
       const remotePluginOne = { name: 'plugin-remote-1', phase: 3 } as Plugin;
@@ -63,6 +49,29 @@ describe('pluginServer', () => {
 
       expect(plugins).toHaveLength(3);
     });
+
+    it('should return remote plugins that are not being run locally', () => {
+      const localPlugin = { name: 'plugin-1', phase: 3 } as Plugin;
+      const remotePluginOne = { name: 'plugin-1', phase: 3 } as Plugin;
+      const remotePluginTwo = { name: 'plugin-2', phase: 3 } as Plugin;
+
+      jest
+        .spyOn(pluginServerScript, '_getLocalPlugins')
+        .mockReturnValue([localPlugin]);
+
+      jest
+        .spyOn(fsScript, 'readPackageJson')
+        .mockReturnValue(pkg);
+
+      const readPluginsJson = jest
+        .spyOn(fsScript, 'readPluginsJson')
+        .mockReturnValue({plugins: [{name: 'test-name', dir: 'test-dir', port: 0}]});
+
+      const plugins = pluginServerScript._mergePlugins([localPlugin], [remotePluginOne, remotePluginTwo]);
+
+      expect(plugins).toHaveLength(2);
+    });
+
   });
 
   describe('default', () => {

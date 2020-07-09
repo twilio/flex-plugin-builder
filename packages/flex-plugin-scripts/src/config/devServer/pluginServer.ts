@@ -1,6 +1,6 @@
 import { logger, FlexPluginError } from 'flex-dev-utils';
 import { Request, Response } from 'express-serve-static-core';
-import { getPaths, readPluginsJson } from 'flex-dev-utils/dist/fs';
+import { readPluginsJson } from 'flex-dev-utils/dist/fs';
 import { Configuration } from 'webpack-dev-server';
 import https from 'https';
 import { UserInputPlugin } from '../../scripts/start';
@@ -71,7 +71,7 @@ export const _getRemotePlugins = (token: string, version: string): Promise<Plugi
         const data: Buffer[] = [];
 
         res.on('data', (chunk) => data.push(chunk));
-        res.on('end', () => resolve(JSON.parse(Buffer.concat(data).toString())));
+        res.on('end', () => resolve(JSON.parse(Buffer.concat(data).toString()).filter((p: Plugin) => p.phase >= 3)));
       })
       .on('error', reject)
       .end();
@@ -79,12 +79,12 @@ export const _getRemotePlugins = (token: string, version: string): Promise<Plugi
 };
 
 /**
- * Rebase plugins with local plugins
+ * Merge local and remote plugins
  * @param remotePlugins   the plugins returned from Flex
  * @private
  */
 export const _mergePlugins = (localPlugins: Plugin[], remotePlugins: Plugin[]) => {
-  const deduped = remotePlugins.filter(p => p.phase >= 3);
+  const deduped = remotePlugins.filter(r => !localPlugins.some(l => l.name === r.name));
   return [... localPlugins, ...deduped];
 };
 
@@ -123,7 +123,6 @@ export default (options: Configuration, userInputPlugins: UserInputPlugin[], inc
     const localPlugins = _getLocalPlugins(localInputPlugins);
     const promise: Promise<Plugin[]> = hasRemotePlugin ? _getRemotePlugins(jweToken, flexVersion) : Promise.resolve([]);
 
-    // unnessary w/o --include-remote
     return promise
       .then(plugins => {
         if (includeAllRemote) {

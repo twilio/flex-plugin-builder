@@ -42,8 +42,8 @@ describe('StartScript', () => {
       .spyOn(fs, 'readPluginsJson');
     const _parseUserInputPlugins = jest
       .spyOn(startScripts, '_parseUserInputPlugins');
-    const writeFileSync = jest
-      .spyOn(fs.default, 'writeFileSync');
+    const writeJSONFile = jest
+      .spyOn(fs, 'writeJSONFile');
     const _updatePluginPort = jest
       .spyOn(startScripts, '_updatePluginPort');
     const setCwd = jest
@@ -64,7 +64,7 @@ describe('StartScript', () => {
       getDefaultPort.mockReturnValue(port);
       _startDevServer.mockReturnThis();
       readPluginsJson.mockReturnValue({plugins: [{name: 'plugin-test', dir: 'test-dir', port: 0}]});
-      writeFileSync.mockReturnThis();
+      writeJSONFile.mockReturnThis();
       _updatePluginPort.mockReturnThis();
       setCwd.mockReturnThis();
       process.env.PORT = port.toString();
@@ -75,7 +75,7 @@ describe('StartScript', () => {
       getDefaultPort.mockRestore();
       _startDevServer.mockRestore();
       readPluginsJson.mockRestore();
-      writeFileSync.mockRestore();
+      writeJSONFile.mockRestore();
       _updatePluginPort.mockRestore();
       setCwd.mockRestore();
     });
@@ -175,26 +175,26 @@ describe('StartScript', () => {
       const requirePackages = jest
         .spyOn(startScripts, '_requirePackages')
         .mockReturnValue({ plugins, pkg });
-      const writeFileSync = jest
-        .spyOn(fs.default, 'writeFileSync')
+      const writeJSONFile = jest
+        .spyOn(fs, 'writeJSONFile')
         .mockReturnThis();
 
       startScripts._updatePluginsUrl(port);
 
       expect(requirePackages).toHaveBeenCalledTimes(1);
-      expect(writeFileSync).toHaveBeenCalledTimes(1);
+      expect(writeJSONFile).toHaveBeenCalledTimes(1);
       expect(plugins[0].src.indexOf(port.toString()) !== -1).toBeTruthy();
 
       requirePackages.mockRestore();
-      writeFileSync.mockRestore();
+      writeJSONFile.mockRestore();
     });
   });
 
   describe('updatePluginsPort', () => {
     const readPluginsJson = jest
       .spyOn(fs, 'readPluginsJson');
-    const writeFileSync = jest
-      .spyOn(fs.default, 'writeFileSync');
+    const writeJSONFile = jest
+      .spyOn(fs, 'writeJSONFile');
     const _parseUserInputPlugins = jest
       .spyOn(startScripts, '_parseUserInputPlugins');
     const port = 1234;
@@ -202,21 +202,21 @@ describe('StartScript', () => {
     beforeEach(() => {
       _parseUserInputPlugins.mockReturnValue([{name: 'plugin-test', remote: false}]);
       readPluginsJson.mockReturnValue({plugins: [{name: 'plugin-test', dir: 'test-dir', port: 0}]});
-      writeFileSync.mockReturnThis();
+      writeJSONFile.mockReturnThis();
     });
 
     it('should update the plugin port', () => {
       startScripts._updatePluginPort(port, 'plugin-test');
 
-      expect(writeFileSync).toHaveBeenCalledTimes(1);
-      expect(writeFileSync).toHaveBeenCalledWith('/cli/plugins/path', JSON.stringify({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 1234}]}, null, 2));
+      expect(writeJSONFile).toHaveBeenCalledTimes(1);
+      expect(writeJSONFile).toHaveBeenCalledWith('/cli/plugins/path', {'plugins': [{'name': 'plugin-test', 'dir': 'test-dir', 'port': 1234}]});
     });
 
     it('should not update the plugin port', () => {
       startScripts._updatePluginPort(port, 'plugin-bad-test');
 
-      expect(writeFileSync).toHaveBeenCalledTimes(1);
-      expect(writeFileSync).toHaveBeenCalledWith('/cli/plugins/path', JSON.stringify({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]}, null, 2));
+      expect(writeJSONFile).toHaveBeenCalledTimes(1);
+      expect(writeJSONFile).toHaveBeenCalledWith('/cli/plugins/path', {'plugins': [{'name': 'plugin-test', 'dir': 'test-dir', 'port': 0}]});
     });
   });
 });

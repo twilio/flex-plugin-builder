@@ -46,6 +46,9 @@ export const readPluginsJson = () => {
   return readJsonFile<CLIFlexConfiguration>(getPaths().cli.pluginsJsonPath);
 };
 
+// Write to json file
+export const writeJSONFile = (pth: string, obj: object) => fs.writeFileSync(pth, JSON.stringify(obj, null, 2));
+
 // The OS root directory
 const rootDir = os.platform() === 'win32' ? getCwd().split(path.sep)[0] : '/';
 
