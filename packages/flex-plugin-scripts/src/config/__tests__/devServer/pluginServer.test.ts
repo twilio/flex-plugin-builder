@@ -3,6 +3,7 @@ import { Request, Response } from 'express-serve-static-core';
 import { Plugin } from '../../devServer/pluginServer';
 
 import * as pluginServerScript from '../../devServer/pluginServer';
+import { FlexPluginError } from 'flex-dev-utils';
 
 jest.mock('flex-dev-utils/dist/logger');
 
@@ -25,6 +26,32 @@ describe('pluginServer', () => {
 
     // @ts-ignore
     jest.spyOn(fsScript, 'getPaths').mockReturnValue(paths);
+  });
+
+  describe (' _getLocalPlugins', () => {
+    const readPluginsJson = jest
+        .spyOn(fsScript, 'readPluginsJson')
+        .mockReturnValue({plugins: [{name: 'plugin-test', dir: 'test-dir', port: 0}]});
+
+    it('should return the plugin if found', () => {
+      const plugins = [{name: 'plugin-test', remote: false}];
+      const result = pluginServerScript._getLocalPlugins(plugins);
+
+      expect(result).toEqual([{'phase': 3, 'name': 'plugin-test', 'src': 'localhost:0/plugin-test'}]);
+    });
+
+    it('should throw error', (done) => {
+      const plugins = [{name: 'plugin-bad', remote: false}];
+
+      try {
+        pluginServerScript._getLocalPlugins(plugins);
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+        expect(readPluginsJson).toHaveBeenCalledTimes(1);
+        expect(e.message).toContain('was not locally found');
+        done();
+      }
+    });
   });
 
   describe('_mergePlugins', () => {

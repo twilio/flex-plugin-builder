@@ -11,14 +11,18 @@ jest.mock('flex-dev-utils/dist/urls');
 jest.mock('flex-dev-utils/dist/env');
 jest.mock('flex-dev-utils/dist/require');
 
+const CliPath = '/cli/plugins/path';
+const AppPluginsJsonPath = '/plugins/json/path';
+const AppPkgPath = '/plugins/pkg/path';
+
 describe('StartScript', () => {
   const paths = {
     cli: {
-      pluginsJsonPath: '/cli/plugins/path',
+      pluginsJsonPath: CliPath,
     },
     app: {
-      pluginsJsonPath: '/plugins/json/path',
-      pkgPath: '/plugins/pkg/path',
+      pluginsJsonPath: AppPluginsJsonPath,
+      pkgPath: AppPkgPath,
     },
   };
 
@@ -191,32 +195,78 @@ describe('StartScript', () => {
   });
 
   describe('updatePluginsPort', () => {
+    const port = 1234;
+    const plugin = { name: 'plugin-test', dir: 'test-dir', port: 0 };
     const readPluginsJson = jest
       .spyOn(fs, 'readPluginsJson');
     const writeJSONFile = jest
       .spyOn(fs, 'writeJSONFile');
     const _parseUserInputPlugins = jest
       .spyOn(startScripts, '_parseUserInputPlugins');
-    const port = 1234;
 
     beforeEach(() => {
       _parseUserInputPlugins.mockReturnValue([{name: 'plugin-test', remote: false}]);
-      readPluginsJson.mockReturnValue({plugins: [{name: 'plugin-test', dir: 'test-dir', port: 0}]});
+      readPluginsJson.mockReturnValue({plugins: [plugin]});
       writeJSONFile.mockReturnThis();
     });
 
+    afterAll(() => {
+      readPluginsJson.mockRestore();
+      _parseUserInputPlugins.mockRestore();
+      writeJSONFile.mockRestore();
+    });
+
     it('should update the plugin port', () => {
-      startScripts._updatePluginPort(port, 'plugin-test');
+      startScripts._updatePluginPort(port, plugin.name);
 
       expect(writeJSONFile).toHaveBeenCalledTimes(1);
-      expect(writeJSONFile).toHaveBeenCalledWith('/cli/plugins/path', {'plugins': [{'name': 'plugin-test', 'dir': 'test-dir', 'port': 1234}]});
+      expect(writeJSONFile).toHaveBeenCalledWith(CliPath, {'plugins': [ {...plugin, port}]});
     });
 
     it('should not update the plugin port', () => {
-      startScripts._updatePluginPort(port, 'plugin-bad-test');
+      startScripts._updatePluginPort(port, 'unknown-plugin');
 
       expect(writeJSONFile).toHaveBeenCalledTimes(1);
-      expect(writeJSONFile).toHaveBeenCalledWith('/cli/plugins/path', {'plugins': [{'name': 'plugin-test', 'dir': 'test-dir', 'port': 0}]});
+      expect(writeJSONFile).toHaveBeenCalledWith(CliPath, {'plugins': [ {...plugin}]});
+    });
+  });
+
+  describe('_parseUserInputPlugins', () => {
+    const plugin = { name: 'plugin-test', dir: 'test-dir', port: 0 };
+    const readPluginsJson = jest
+      .spyOn(fs, 'readPluginsJson');
+
+    beforeEach(() => {
+      readPluginsJson.mockReturnValue({plugins: [plugin]});
+    });
+
+    afterEach(() => {
+      readPluginsJson.mockRestore();
+    });
+
+    it('should return the local plugins only if found', () => {
+      const result = startScripts._parseUserInputPlugins(...['--name', 'plugin-test']);
+
+      expect(readPluginsJson).toHaveBeenCalledTimes(1);
+      expect(result).toEqual([{'name': 'plugin-test', 'remote': false}]);
+    });
+
+    it('should always return the remote plugins', () => {
+      const result = startScripts._parseUserInputPlugins(...['--name', 'plugin-test@remote']);
+
+      expect(readPluginsJson).toHaveBeenCalledTimes(1);
+      expect(result).toEqual([{'name': 'plugin-test', 'remote': true}]);
+    });
+
+    it('should throw an error if local plugin is not found', (done) => {
+      try {
+        startScripts._parseUserInputPlugins(...['--name', 'plugin-unknown']);
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+        expect(readPluginsJson).toHaveBeenCalledTimes(1);
+        expect(e.message).toContain('No plugin file');
+        done();
+      }
     });
   });
 });

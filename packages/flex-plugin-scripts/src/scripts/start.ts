@@ -22,42 +22,6 @@ export interface UserInputPlugin {
 }
 
 /**
- * Reads user input to returns the --name plugins
- * @param args
- */
-export const _parseUserInputPlugins = (...args: string[]): UserInputPlugin[] => {
-  const userInputPlugins: UserInputPlugin[] = [];
-  const config = readPluginsJson();
-
-  for (let i = 0; i < args.length - 1; i++) {
-    if (args[i] !== '--name') {
-      continue;
-    }
-    const groups = args[i + 1].match(PLUGIN_INPUT_PARSER_REGEX);
-    if (!groups) {
-      throw new Error('Unexpected plugin name format was provided');
-    }
-
-    const name = groups[1];
-    const version = groups[2]; // later we'll use this for the @1.2.3 use case as well
-
-    if (version === 'remote') {
-      userInputPlugins.push({name: args[i + 1].slice(0, args[i + 1].indexOf('@')), remote: true});
-      continue;
-    }
-
-    const plugin = config.plugins.find((p) => p.name === args[i + 1]);
-    if (!plugin) {
-      throw new FlexPluginError('No plugin file was found with the given name');
-    }
-    // Should we use name here instead of plugin.name?
-    userInputPlugins.push({name: plugin.name, remote: false});
-  }
-
-  return userInputPlugins;
-};
-
-/**
  * Starts the dev-server
  */
 const start = async (...args: string[]) => {
@@ -227,6 +191,41 @@ export const _updatePluginPort = (port: number, name: string) => {
   });
 
   writeJSONFile(getPaths().cli.pluginsJsonPath, config);
+};
+
+/**
+ * Reads user input to returns the --name plugins
+ * @param args
+ */
+export const _parseUserInputPlugins = (...args: string[]): UserInputPlugin[] => {
+  const userInputPlugins: UserInputPlugin[] = [];
+  const config = readPluginsJson();
+
+  for (let i = 0; i < args.length - 1; i++) {
+    if (args[i] !== '--name') {
+      continue;
+    }
+    const groups = args[i + 1].match(PLUGIN_INPUT_PARSER_REGEX);
+    if (!groups) {
+      throw new Error('Unexpected plugin name format was provided');
+    }
+
+    const name = groups[1];
+    const version = groups[2]; // later we'll use this for the @1.2.3 use case as well
+
+    if (version === 'remote') {
+      userInputPlugins.push({name: args[i + 1].slice(0, args[i + 1].indexOf('@')), remote: true});
+      continue;
+    }
+
+    const plugin = config.plugins.find((p) => p.name === args[i + 1]);
+    if (!plugin) {
+      throw new FlexPluginError('No plugin file was found with the given name');
+    }
+    userInputPlugins.push({name: plugin.name, remote: false});
+  }
+
+  return userInputPlugins;
 };
 
 run(start);
