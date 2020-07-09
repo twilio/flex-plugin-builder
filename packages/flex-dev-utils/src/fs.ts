@@ -27,11 +27,7 @@ export interface FlexConfigurationPlugin {
 }
 
 export interface CLIFlexConfiguration {
-  plugins: {
-    name: string;
-    dir: string;
-    port: number;
-  }[];
+  plugins: FlexConfigurationPlugin[]
 }
 
 export default fs;

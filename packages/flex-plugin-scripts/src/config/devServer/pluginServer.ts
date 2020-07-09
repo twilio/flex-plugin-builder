@@ -22,9 +22,9 @@ export const _getLocalPlugins = (inputPlugins: UserInputPlugin[]) => {
   return inputPlugins.map((plugin) => {
     const findPlugin = config.plugins.find((p) => p.name === plugin.name);
     if (findPlugin) {
-      return {phase: 3, name: plugin.name, src: `localhost:${findPlugin.port}/${plugin.name}`} as Plugin;
+      return {phase: 3, name: plugin.name, src: `localhost:${findPlugin.port}/${plugin.name}`};
     }
-    throw new FlexPluginError (`The plugin ${plugin.name} was not locally found: `);
+    throw new FlexPluginError (`The plugin ${plugin.name} was not locally found. Try running \`npm install\` once in the plugin directory and try again.`);
   });
 };
 
@@ -84,23 +84,8 @@ export const _getRemotePlugins = (token: string, version: string): Promise<Plugi
  * @private
  */
 export const _mergePlugins = (localPlugins: Plugin[], remotePlugins: Plugin[]) => {
-  localPlugins
-    .map((plugin) => {
-      // Local main (plugin) we are running
-      if (plugin.name === getPaths().app.name) {
-        return plugin;
-      }
-
-      // Backward compatibility / current way of running multiple local plugins
-      if (plugin.src && plugin.phase >= 3) {
-        return plugin;
-      }
-
-      return null;
-    })
-    .filter(Boolean);
-
-    return [...localPlugins, ...remotePlugins.filter(p => p.phase >= 3)];
+  const deduped = remotePlugins.filter(p => p.phase >= 3);
+  return [... localPlugins, ...deduped];
 };
 
 /**
@@ -151,10 +136,9 @@ export default (options: Configuration, userInputPlugins: UserInputPlugin[], inc
       // rebase will eventually get both local and remote plugins
       .then(remotePlugins => {
         logger.trace('Got remote plugins', remotePlugins);
-        const plugins = _mergePlugins(localPlugins, remotePlugins);
 
         res.writeHead(200, responseHeaders);
-        res.end(JSON.stringify(plugins));
+        res.end(JSON.stringify(_mergePlugins(localPlugins, remotePlugins)))
       })
       .catch(err => {
         res.writeHead(500, responseHeaders);
