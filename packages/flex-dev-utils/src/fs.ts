@@ -56,9 +56,6 @@ const rootDir = os.platform() === 'win32' ? getCwd().split(path.sep)[0] : '/';
 // tslint:disable-next-line
 const promiseCopyTempDir = promisify(require('copy-template-dir'));
 
-// Node directory
-const nodeModulesPath = path.join(getCwd(), 'node_modules');
-
 /**
  * Checks the provided array of files exist
  *
@@ -118,7 +115,7 @@ export const readJsonFile = <T> (filePath: string): T => {
  */
 /* istanbul ignore next */
 export const getPackageVersion = (name: string) => {
-  const installedPath = resolveRelative(nodeModulesPath, name, 'package.json');
+  const installedPath = resolveRelative(getPaths().app.nodeModulesDir, name, 'package.json');
 
   return readPackageJson(installedPath).version;
 }
@@ -185,7 +182,7 @@ export const rmRfSync = rimRaf.sync;
  */
 /* istanbul ignore next */
 export const getDependencyVersion = (pkgName: string) => {
-  return require(path.join(nodeModulesPath, pkgName, 'package.json')).version;
+  return require(resolveRelative(getPaths().app.nodeModulesDir, pkgName, 'package.json')).version;
 };
 
 /**

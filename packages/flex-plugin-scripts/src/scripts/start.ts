@@ -1,7 +1,7 @@
 import { env, logger, open } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import { getPaths, setCwd, readPluginsJson, writeJSONFile } from 'flex-dev-utils/dist/fs';
+import { getPaths, setCwd, readPluginsJson, writeJSONFile, FlexConfigurationPlugin } from 'flex-dev-utils/dist/fs';
 import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
 import { findPort, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import WebpackDevServer from 'webpack-dev-server';
@@ -39,11 +39,22 @@ const start = async (...args: string[]) => {
 
   // Future  node version will silently consume unhandled exception
   process.on('unhandledRejection', err => { throw err; });
+
   const userInputPlugins = _parseUserInputPlugins(...args);
+  const localPlugin = userInputPlugins.find(p => !p.remote);
+  let plugin: FlexConfigurationPlugin | undefined;
+
+  if (localPlugin) {
+    plugin = readPluginsJson().plugins.find((p) => p.name === localPlugin.name);
+  }
 
   let type = WebpackType.Complete;
   if (args[0] === 'flex') {
     type = WebpackType.Static;
+
+    if (plugin) {
+      setCwd(plugin.dir);
+    }
 
     // For some reason start flex sometimes throws this exception
     // I haven't been able to figure why but it doesn't look like it is crashing the server
@@ -58,17 +69,13 @@ const start = async (...args: string[]) => {
   }
   if (args[0] === 'plugin') {
     type = WebpackType.JavaScript;
-    const localPlugin = userInputPlugins.find(p => !p.remote);
-    if (localPlugin) {
-      const config = readPluginsJson();
-      const plugin = config.plugins.find((p) => p.name === localPlugin.name);
 
-      if (plugin) {
-        _updatePluginPort(port, plugin.name);
-        setCwd(plugin.dir);
-      }
+    if (plugin) {
+      _updatePluginPort(port, plugin.name);
+      setCwd(plugin.dir);
     }
   }
+
 
   _startDevServer(port, userInputPlugins, type, args.includes('--include-remote'));
 };
@@ -214,11 +221,11 @@ export const _parseUserInputPlugins = (...args: string[]): UserInputPlugin[] => 
     const version = groups[2]; // later we'll use this for the @1.2.3 use case as well
 
     if (version === 'remote') {
-      userInputPlugins.push({name: args[i + 1].slice(0, args[i + 1].indexOf('@')), remote: true});
+      userInputPlugins.push({name, remote: true});
       continue;
     }
 
-    const plugin = config.plugins.find((p) => p.name === args[i + 1]);
+    const plugin = config.plugins.find((p) => p.name === name);
     if (!plugin) {
       throw new FlexPluginError('No plugin file was found with the given name');
     }
