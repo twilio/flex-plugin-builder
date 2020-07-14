@@ -15,7 +15,8 @@ describe('Commands/FlexPluginsStart', () => {
     .test(async (instance) => {
       await instance.doRun();
 
-      expect(instance.runScript).to.have.been.calledOnce;
+      expect(instance.runScript).to.have.been.calledTwice;
+      expect(instance.runScript).to.have.been.calledWith('check-start');
       expect(instance.runScript).to.have.been.calledWith('start');
     })
     .it('should run start script');

@@ -10,6 +10,7 @@ export default class FlexPluginsStart extends FlexPlugin {
    * @override
    */
   async doRun() {
+    await this.runScript('check-start');
     await this.runScript('start');
   }
 }
