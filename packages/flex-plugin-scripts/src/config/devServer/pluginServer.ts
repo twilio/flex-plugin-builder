@@ -118,7 +118,6 @@ export default (options: Configuration, userInputPlugins: UserInputPlugin[], inc
 
     const localInputPlugins = userInputPlugins.filter(p => !p.remote);
     const remoteInputPlugins = userInputPlugins.filter(p => p.remote);
-
     const hasRemotePlugin = includeAllRemote || userInputPlugins.some(p => p.remote);
     const localPlugins = _getLocalPlugins(localInputPlugins);
     const promise: Promise<Plugin[]> = hasRemotePlugin ? _getRemotePlugins(jweToken, flexVersion) : Promise.resolve([]);
@@ -143,5 +142,5 @@ export default (options: Configuration, userInputPlugins: UserInputPlugin[], inc
         res.writeHead(500, responseHeaders);
         res.end(err);
       });
-    };
+  };
 }

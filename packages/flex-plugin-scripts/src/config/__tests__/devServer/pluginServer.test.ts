@@ -98,7 +98,6 @@ describe('pluginServer', () => {
 
       expect(plugins).toHaveLength(2);
     });
-
   });
 
   describe('default', () => {
