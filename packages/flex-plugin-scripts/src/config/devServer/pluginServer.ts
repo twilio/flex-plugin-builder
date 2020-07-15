@@ -1,9 +1,10 @@
-import { logger, FlexPluginError } from 'flex-dev-utils';
+import { env, logger, FlexPluginError } from 'flex-dev-utils';
 import { Request, Response } from 'express-serve-static-core';
 import { readPluginsJson } from 'flex-dev-utils/dist/fs';
 import { Configuration } from 'webpack-dev-server';
 import https from 'https';
 import { UserInputPlugin } from '../../scripts/start';
+import { isHTTPS } from 'flex-dev-utils/dist/env';
 
 export interface Plugin {
   phase: number;
@@ -22,8 +23,15 @@ export const _getLocalPlugins = (inputPlugins: UserInputPlugin[]) => {
   return inputPlugins.map((plugin) => {
     const findPlugin = config.plugins.find((p) => p.name === plugin.name);
     if (findPlugin) {
-      return {phase: 3, name: plugin.name, src: `localhost:${findPlugin.port}/${plugin.name}`};
+      const protocol = 'http' + (env.isHTTPS() ? 's' : '') + '://';
+
+      return {
+        phase: 3,
+        name: plugin.name,
+        src: `${protocol}localhost:${findPlugin.port}/${plugin.name}.js`,
+      };
     }
+
     throw new FlexPluginError (`The plugin ${plugin.name} was not locally found. Try running \`npm install\` once in the plugin directory and try again.`);
   });
 };

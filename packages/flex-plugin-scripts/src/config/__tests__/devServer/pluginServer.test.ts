@@ -37,7 +37,7 @@ describe('pluginServer', () => {
       const plugins = [{name: 'plugin-test', remote: false}];
       const result = pluginServerScript._getLocalPlugins(plugins);
 
-      expect(result).toEqual([{'phase': 3, 'name': 'plugin-test', 'src': 'localhost:0/plugin-test'}]);
+      expect(result).toEqual([{'phase': 3, 'name': 'plugin-test', 'src': 'http://localhost:0/plugin-test.js'}]);
     });
 
     it('should throw error', (done) => {
