@@ -258,7 +258,6 @@ describe('fs', () => {
 
       // public/ directory
       expect(fs.getPaths().app.publicDir).toEqual(expect.stringMatching('public$'));
-      expect(fs.getPaths().app.indexHtmlPath).toEqual(expect.stringMatching('index\.html$'));
       expect(fs.getPaths().app.appConfig).toEqual(expect.stringMatching('appConfig\.js$'));
       expect(fs.getPaths().app.pluginsJsonPath).toEqual(expect.stringMatching('plugins\.json$'));
 
@@ -281,6 +280,30 @@ describe('fs', () => {
       expect(fs.getPaths().assetBaseUrlTemplate).toContain('plugin-test/%PLUGIN_VERSION%');
 
       readPackageJson.mockRestore();
+    });
+  });
+
+  describe('setCoreCwd', () => {
+    it('should set the core cwd', () => {
+      const cwd = '/new/path';
+      const before = fs.getCoreCwd();
+      fs.setCoreCwd(cwd);
+      const after = fs.getCoreCwd();
+
+      expect(after).toEqual(cwd);
+      expect(before).not.toEqual(after);
+    });
+  });
+
+  describe('setCwd', () => {
+    it('should set the cwd', () => {
+      const cwd = '/new/path';
+      const before = fs.getCwd();
+      fs.setCwd(cwd);
+      const after = fs.getCwd();
+
+      expect(after).toEqual(cwd);
+      expect(before).not.toEqual(after);
     });
   });
 });

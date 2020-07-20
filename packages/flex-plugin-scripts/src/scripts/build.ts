@@ -62,7 +62,7 @@ const build = async (...argv: string[]) => {
   setEnvironment(...argv);
   logger.debug('Building Flex plugin bundle');
 
-  addCWDNodeModule();
+  addCWDNodeModule(...argv);
 
   env.setBabelEnv(Environment.Production);
   env.setNodeEnv(Environment.Production);

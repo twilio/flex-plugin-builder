@@ -82,22 +82,6 @@ export const _checkAppConfig = () => {
 };
 
 /**
- * Syncs required files in public/ dir
- *
- * @param allowSkip whether to allow skip
- * @private
- */
-export const _checkPublicDirSync = (allowSkip: boolean) => {
-  try {
-    copyFileSync(paths().scripts.indexHTMLPath, paths().app.indexHtmlPath);
-  } catch (e) {
-    publicDirCopyFailed(e, allowSkip);
-
-    return exit(1);
-  }
-};
-
-/**
  * Checks the version of external libraries and exists if customer is using another version
  *
  * allowSkip  whether to allow skip
@@ -222,13 +206,12 @@ export const _checkPluginConfigurationExists = async () => {
 /**
  * Runs pre-start/build checks
  */
-const checkStart = async () => {
+const checkStart = async (...args: string[]) => {
   logger.debug('Checking Flex plugin project directory');
 
-  addCWDNodeModule();
+  addCWDNodeModule(...args);
 
   _checkAppConfig();
-  _checkPublicDirSync(env.skipPreflightCheck());
   _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
   _checkPluginCount();
   _validateTypescriptProject();
