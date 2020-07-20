@@ -1,6 +1,6 @@
 {
   "name": "@twilio-labs/plugin-flex",
-  "version": "1.2.0-next.0",
+  "version": "1.3.1-next.0",
   "description": "Create, develop and deploy Flex plugins using the Twilio CLI",
   "keywords": [
     "oclif-plugin"
@@ -46,7 +46,7 @@
     "dayjs": "^1.8.29",
     "fancy-test": "^1.4.9",
     "flex-plugin": "4.2.0-alpha.0",
-    "flex-plugin-scripts": "4.4.0-alpha.0",
+    "flex-plugin-scripts": "4.2.0-alpha.0",
     "flex-plugins-api-client": "^0.13.0",
     "flex-plugins-api-toolkit": "^0.13.0",
     "flex-plugins-utils-exception": "^0.11.0",

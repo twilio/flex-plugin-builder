@@ -47,6 +47,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
   protected readonly cwd: string;
 
+  protected readonly pluginRootDir: string;
+
   protected readonly skipEnvironmentalSetup: boolean;
 
   protected readonly _logger: Logger;
@@ -69,6 +71,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     this.opts = { ...FlexPlugin.defaultOptions, ...opts };
     this.showHeaders = true;
     this.cwd = process.cwd();
+    this.pluginRootDir = join(__dirname, '../../');
     this.scriptArgs = process.argv.slice(3);
     this.skipEnvironmentalSetup = false;
     this._logger = new Logger({ isQuiet: false, markdown: true });
@@ -81,10 +84,6 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     this.exit = process.exit;
     // @ts-ignore
     process.exit = (exitCode) => {
-      if (exitCode === 0) {
-        return;
-      }
-
       this.exit(exitCode);
     };
   }
@@ -232,7 +231,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   /* istanbul ignore next */
   async runScript(scriptName: string, argv = this.scriptArgs) {
     // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
-    return require(`flex-plugin-scripts/dist/scripts/${scriptName}`).default(...argv);
+    return require(`flex-plugin-scripts/dist/scripts/${scriptName}`).default(...argv, '--core-cwd', this.pluginRootDir);
   }
 
   /**
