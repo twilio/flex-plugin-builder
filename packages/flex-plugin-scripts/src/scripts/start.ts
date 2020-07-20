@@ -21,7 +21,7 @@ const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
 const start = async (...args: string[]) => {
   logger.debug('Starting local development environment');
 
-  addCWDNodeModule();
+  addCWDNodeModule(...args);
 
   // Finds the first available free port where two consecutive ports are free
   const port = await findPort(getDefaultPort(process.env.PORT));

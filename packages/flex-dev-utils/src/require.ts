@@ -1,5 +1,5 @@
 import appModule from 'app-module-path';
-import { getPaths } from './fs';
+import { getPaths, setCoreCwd } from './fs';
 
 export default appModule;
 
@@ -8,7 +8,17 @@ export default appModule;
  * This is needed because we spawn different scripts when running start/build/test and so we lose
  * the original cwd directory
  */
-export const addCWDNodeModule = () => appModule.addPath(getPaths().app.nodeModulesDir);
+export const addCWDNodeModule = (...args: string[]) => {
+  const index = args.indexOf('--core-cwd');
+  if (index !== -1) {
+    const coreCwd = args[index + 1];
+    if (coreCwd) {
+      setCoreCwd(coreCwd);
+    }
+  }
+
+  appModule.addPath(getPaths().app.nodeModulesDir);
+}
 
 /**
  * Returns the absolute path to the pkg if found

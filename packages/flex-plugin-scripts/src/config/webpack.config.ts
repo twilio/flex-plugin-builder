@@ -255,7 +255,7 @@ export const _getStaticPlugins = (env: Environment): Plugin[] => {
     plugins.push(new HtmlWebpackPlugin({
       inject: false,
       hash: false,
-      template: paths().app.indexHtmlPath,
+      template: paths().scripts.indexHTMLPath,
     }));
     plugins.push(new InterpolateHtmlPlugin({
       __FPB_JS_SCRIPTS: _getJSScripts(flexUIVersion, reactVersion, reactDOMVersion).join('\n'),

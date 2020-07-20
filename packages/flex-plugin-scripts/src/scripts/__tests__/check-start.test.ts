@@ -53,9 +53,6 @@ describe('CheckStartScript', () => {
     const _checkAppConfig = jest
       .spyOn(checkStartScript, '_checkAppConfig')
       .mockReturnThis();
-    const _checkPublicDirSync = jest
-      .spyOn(checkStartScript, '_checkPublicDirSync')
-      .mockReturnThis();
     const _checkExternalDepsVersions = jest
       .spyOn(checkStartScript, '_checkExternalDepsVersions')
       .mockReturnThis();
@@ -71,7 +68,6 @@ describe('CheckStartScript', () => {
 
     beforeEach(() => {
       _checkAppConfig.mockReset();
-      _checkPublicDirSync.mockReset();
       _checkExternalDepsVersions.mockReset();
       _validateTypescriptProject.mockReset();
       _checkPluginCount.mockReset();
@@ -80,7 +76,6 @@ describe('CheckStartScript', () => {
 
     afterAll(() => {
       _checkAppConfig.mockRestore();
-      _checkPublicDirSync.mockRestore();
       _checkExternalDepsVersions.mockRestore();
       _validateTypescriptProject.mockRestore();
       _checkPluginCount.mockRestore();
@@ -89,7 +84,6 @@ describe('CheckStartScript', () => {
 
     const expectCalled = (allowSkip: boolean, allowReact: boolean) => {
       expect(_checkAppConfig).toHaveBeenCalledTimes(1);
-      expect(_checkPublicDirSync).toHaveBeenCalledTimes(1);
       expect(_checkExternalDepsVersions).toHaveBeenCalledTimes(1);
       expect(_validateTypescriptProject).toHaveBeenCalledTimes(1);
       expect(_checkExternalDepsVersions).toHaveBeenCalledWith(allowSkip, allowReact);
@@ -148,41 +142,6 @@ describe('CheckStartScript', () => {
       expect(exit).not.toHaveBeenCalled();
 
       existSync.mockRestore();
-    });
-  });
-
-  describe('_checkPublicDirSync', () => {
-    it('quit if copying file fails', () => {
-      const err = new Error('asd');
-      const copyFileSync = jest
-        .spyOn(fs, 'copyFileSync')
-        .mockImplementation(() => {
-          throw err;
-        });
-
-      checkStartScript._checkPublicDirSync(true);
-
-      expect(copyFileSync).toHaveBeenCalledTimes(1);
-      expect(prints.publicDirCopyFailed).toHaveBeenCalledTimes(1);
-      expect(prints.publicDirCopyFailed).toHaveBeenCalledWith(err, true);
-      expect(exit).toHaveBeenCalledTimes(1);
-      expect(exit).toHaveBeenCalledWith(1);
-
-      copyFileSync.mockRestore();
-    });
-
-    it('not quit if copying file pass', () => {
-      const copyFileSync = jest
-        .spyOn(fs, 'copyFileSync')
-        .mockReturnValue(undefined);
-
-      checkStartScript._checkPublicDirSync(true);
-
-      expect(copyFileSync).toHaveBeenCalledTimes(1);
-      expect(prints.publicDirCopyFailed).not.toHaveBeenCalled();
-      expect(exit).not.toHaveBeenCalled();
-
-      copyFileSync.mockRestore();
     });
   });
 
