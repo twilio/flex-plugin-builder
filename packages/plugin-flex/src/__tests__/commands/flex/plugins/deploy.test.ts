@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/camelcase, camelcase */
+/* eslint-disable camelcase */
 import { expect, createTest } from '../../../framework';
 import FlexPluginsDeploy from '../../../../commands/flex/plugins/deploy';
 import { TwilioCliError } from '../../../../exceptions';

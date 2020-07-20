@@ -6,7 +6,7 @@ import { join } from 'path';
  * @param files the path to files to check
  * @returns {boolean}
  */
-export const filesExist = (...files: string[]) => files.map(existsSync).every(Boolean);
+export const filesExist = (...files: string[]): boolean => files.map(existsSync).every(Boolean);
 
 /**
  * Reads and parses a JSON file

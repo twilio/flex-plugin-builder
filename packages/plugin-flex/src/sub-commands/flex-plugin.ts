@@ -230,7 +230,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    */
   /* istanbul ignore next */
   async runScript(scriptName: string, argv = this.scriptArgs) {
-    // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
+    // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
     return require(`flex-plugin-scripts/dist/scripts/${scriptName}`).default(...argv, '--core-cwd', this.pluginRootDir);
   }
 
