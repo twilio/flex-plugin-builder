@@ -268,5 +268,16 @@ describe('StartScript', () => {
         done();
       }
     });
+
+    it ('should throw an error if input is incorrect format', (done) => {
+      try {
+        startScripts._parseUserInputPlugins(...['--name', '!']);
+      } catch (e) {
+        expect(e).toBeInstanceOf(Error);
+        expect(readPluginsJson).toHaveBeenCalledTimes(1);
+        expect(e.message).toContain('Unexpected plugin name format');
+        done();
+      }
+    });
   });
 });

@@ -36,7 +36,9 @@
       "pre-push": "npm run test"
     }
   },
-  "dependencies": {},
+  "dependencies": {
+    "keytar": "^6.0.1"
+  },
   "devDependencies": {
     "@babel/cli": "^7.10.1",
     "@babel/core": "^7.10.2",
@@ -57,6 +59,7 @@
     "ts-jest": "^26.1.0",
     "tslint": "^6.1.2",
     "tslint-react": "^5.0.0",
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.5",
+    "webpack-hot-middleware": "^2.25.0"
   }
 }

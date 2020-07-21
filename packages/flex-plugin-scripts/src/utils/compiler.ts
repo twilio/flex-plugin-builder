@@ -11,6 +11,7 @@ import { devServerSuccessful } from '../prints';
 import { FunctionalCallback } from '../types';
 import { getPaths } from 'flex-dev-utils/dist/fs';
 import CompilerHooks = webpack.compilation.CompilerHooks;
+import { UserInputPlugin } from 'src/scripts/start';
 
 export interface ErrorsAndWarnings {
   errors: string[];
@@ -30,7 +31,7 @@ export interface Compiler extends WebpackCompiler {
  * @param devServer
  */
 /* istanbul ignore next */
-export default (config: Configuration, devServer = false, type = WebpackType.Complete): Compiler => {
+export default (config: Configuration, devServer = false, type = WebpackType.Complete, userInputPlugins: UserInputPlugin[]): Compiler => {
   logger.debug('Creating webpack compiler');
 
   try {
@@ -96,8 +97,9 @@ export default (config: Configuration, devServer = false, type = WebpackType.Com
       }
 
       const isSuccessful = result.errors.length === 0 && result.warnings.length === 0;
-      if (isSuccessful) {
-        devServerSuccessful(local, network, type);
+      if (isSuccessful && (type === WebpackType.Static || type === WebpackType.Complete)) {
+      // if (isSuccessful) {
+        devServerSuccessful(local, network, type, userInputPlugins);
         return;
       }
 

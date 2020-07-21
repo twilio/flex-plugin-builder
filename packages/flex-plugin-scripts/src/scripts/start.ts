@@ -1,7 +1,7 @@
 import { env, logger, open } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import { getPaths, setCwd, readPluginsJson, writeJSONFile, FlexConfigurationPlugin } from 'flex-dev-utils/dist/fs';
+import { getPaths, setCwd, readPluginsJson, writeJSONFile, FlexConfigurationPlugin, checkFilesExist, getCwd } from 'flex-dev-utils/dist/fs';
 import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
 import { findPort, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import WebpackDevServer from 'webpack-dev-server';
@@ -54,17 +54,19 @@ const start = async (...args: string[]) => {
 
     if (plugin) {
       setCwd(plugin.dir);
+    } else {
+      throw new FlexPluginError('You must run at least one local plugin.')
     }
 
     // For some reason start flex sometimes throws this exception
     // I haven't been able to figure why but it doesn't look like it is crashing the server
     process.on('uncaughtException', (err) => {
       // @ts-ignore
-      if (err.errno === 'ECONNRESET') {
+      if (err.code === 'ECONNRESET') {
         // do nothing
         return;
       }
-      throw err;
+        throw err;
     });
   }
   if (args[0] === 'plugin') {
@@ -75,7 +77,6 @@ const start = async (...args: string[]) => {
       setCwd(plugin.dir);
     }
   }
-
 
   _startDevServer(port, userInputPlugins, type, args.includes('--include-remote'));
 };
@@ -91,9 +92,9 @@ export const _startDevServer = (port: number, userInputPlugins: UserInputPlugin[
   const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development, type);
   if (type !== WebpackType.JavaScript) {
     // @ts-ignore
-    devConfig.before = (app, server) => app.use('/plugins', pluginServer(server.options, userInputPlugins, includeAllRemote)); // removin type from parameters
+    devConfig.before = (app, server) => app.use('/plugins', pluginServer(server.options, userInputPlugins, includeAllRemote));
   }
-  const devCompiler = compiler(config, true, type);
+  const devCompiler = compiler(config, true, type, userInputPlugins);
   const devServer = new WebpackDevServer(devCompiler, devConfig);
   const { local } = getLocalAndNetworkUrls(port);
 
@@ -202,6 +203,9 @@ export const _updatePluginPort = (port: number, name: string) => {
 
 /**
  * Reads user input to returns the --name plugins
+ * --name plugin-test will run plugin-test locally
+ * --name plugin-test@remote will run plugin-test remotely
+ * --include-remote will include all remote plugins
  * @param args
  */
 export const _parseUserInputPlugins = (...args: string[]): UserInputPlugin[] => {

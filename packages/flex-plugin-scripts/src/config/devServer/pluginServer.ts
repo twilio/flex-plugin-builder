@@ -22,9 +22,9 @@ export const _getLocalPlugins = (inputPlugins: UserInputPlugin[]) => {
 
   return inputPlugins.map((plugin) => {
     const findPlugin = config.plugins.find((p) => p.name === plugin.name);
-    if (findPlugin) {
-      const protocol = 'http' + (env.isHTTPS() ? 's' : '') + '://';
+    const protocol = 'http' + (isHTTPS() ? 's' : '') + '://';
 
+    if (findPlugin) {
       return {
         phase: 3,
         name: plugin.name,
@@ -115,7 +115,7 @@ export default (options: Configuration, userInputPlugins: UserInputPlugin[], inc
       res.writeHead(404, responseHeaders);
       return res.end('Route not found');
     }
-    logger.debug('GET /plugins')
+    logger.debug('GET /plugins');
 
     const jweToken = headers['x-flex-jwe'] as string;
     const flexVersion = headers['x-flex-version'] as string;
@@ -144,7 +144,7 @@ export default (options: Configuration, userInputPlugins: UserInputPlugin[], inc
         logger.trace('Got remote plugins', remotePlugins);
 
         res.writeHead(200, responseHeaders);
-        res.end(JSON.stringify(_mergePlugins(localPlugins, remotePlugins)))
+        res.end(JSON.stringify(_mergePlugins(localPlugins, remotePlugins)));
       })
       .catch(err => {
         res.writeHead(500, responseHeaders);

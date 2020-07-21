@@ -6,6 +6,8 @@ import { Configuration as WebpackDevConfigurations } from 'webpack-dev-server';
 import webpackFactory from './webpack.config';
 import devFactory from './webpack.dev';
 import jestFactory, { JestConfigurations } from './jest.config';
+import { Config } from '@jest/types';
+import AccountClient from 'src/clients/accounts';
 
 export enum WebpackType {
   Static = 'static',
@@ -54,6 +56,7 @@ const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment
 
   if (name === ConfigurationType.DevServer) {
     const config = devFactory(type);
+
     if (type === WebpackType.Static) {
       return config as Configurations[T];
     }
@@ -67,6 +70,7 @@ const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment
 
   if (name === ConfigurationType.Jest) {
     const config = jestFactory();
+
     if (checkFilesExist(getPaths().app.jestConfigPath)) {
       return require(getPaths().app.jestConfigPath)(config, args);
     }
@@ -76,5 +80,7 @@ const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment
 
   throw new FlexPluginError('Unsupported configuration name');
 };
+
+
 
 export default getConfiguration;
