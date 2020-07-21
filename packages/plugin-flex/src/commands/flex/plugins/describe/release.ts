@@ -60,6 +60,10 @@ export default class FlexPluginsDescribeRelease extends InformationFlexPlugin<De
     this._logger.newline();
 
     this.printHeader('Plugins');
+    if (release.configuration.plugins.length === 0) {
+      this._logger.info('There are no active plugins');
+    }
+
     release.configuration.plugins.forEach((plugin) => {
       this.printVersion(plugin.name);
       this.printPretty(plugin);

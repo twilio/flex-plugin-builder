@@ -30,6 +30,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     }),
     public: flags.boolean(),
     changelog: flags.string(),
+    description: flags.string(),
   };
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
@@ -69,7 +70,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
 
     this._logger.newline();
     this._logger.success(
-      `🚀 Plugin (${availability}) **${this.pkg.name}**@**${deployedData.nextVersion}** was successfully deployed to Plugins API`,
+      `🚀 Plugin (${availability}) **${this.pkg.name}**@**${deployedData.nextVersion}** was successfully deployed using Plugins API`,
     );
     this._logger.newline();
 
@@ -120,7 +121,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     return this.pluginsClient.upsert({
       UniqueName: this.pkg.name,
       FriendlyName: this.pkg.name,
-      Description: this.pkg.description || '',
+      Description: this._flags.description || '',
     });
   }
 

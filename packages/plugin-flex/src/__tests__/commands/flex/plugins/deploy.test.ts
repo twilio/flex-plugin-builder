@@ -127,10 +127,27 @@ describe('Commands/FlexPluginsDeploy', () => {
       expect(instance.pluginsClient.upsert).to.have.been.calledWith({
         UniqueName: pkg.name,
         FriendlyName: pkg.name,
-        Description: pkg.description,
+        Description: '',
       });
     })
     .it('should call registerPlugin');
+
+  start(['--description', 'some description'])
+    .setup(async (instance) => {
+      sinon.stub(instance.pluginsClient, 'upsert').resolves(pluginResource);
+    })
+    .test(async (instance) => {
+      const result = await instance.registerPlugin();
+
+      expect(result).to.equal(pluginResource);
+      expect(instance.pluginsClient.upsert).to.have.been.calledOnce;
+      expect(instance.pluginsClient.upsert).to.have.been.calledWith({
+        UniqueName: pkg.name,
+        FriendlyName: pkg.name,
+        Description: 'some description',
+      });
+    })
+    .it('should call registerPlugin with custom description');
 
   start()
     .setup((instance) => {

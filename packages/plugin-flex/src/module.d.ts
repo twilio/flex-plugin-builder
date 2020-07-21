@@ -12,6 +12,7 @@ declare module '@twilio/cli-core' {
     protected currentProfile: typeof ConfigDataProfile;
     protected logger: {
       error: (...messages: string[]) => void;
+      warning: (...messages: string[]) => void;
     };
 
     constructor(argv: string[], config: typeof ConfigData, secureStorage: typeof SecureStorage);

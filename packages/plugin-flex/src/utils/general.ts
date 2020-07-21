@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Constructable<T> = new (...args: any[]) => T;
+
 export const _runInformation = 'This command needs to be invoked inside a plugin directory.';
 
 /**
@@ -14,4 +17,27 @@ export const createDescription = (description: string, inDirectory: boolean = tr
   }
 
   return `${description} ${_runInformation}`;
+};
+
+/**
+ * Checks whether an object is instance of a given class
+ * @param instance  the instance to check
+ * @param klass     the class to check
+ */
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const instanceOf = <T>(instance: Object, klass: Constructable<T>): boolean => {
+  // eslint-disable-next-line consistent-this, @typescript-eslint/no-this-alias
+  while (instance && instance !== Object.prototype) {
+    if (!instance || !instance.constructor || !instance.constructor.name) {
+      return false;
+    }
+
+    if (klass.name === instance.constructor.name) {
+      return true;
+    }
+
+    instance = Object.getPrototypeOf(instance);
+  }
+
+  return false;
 };

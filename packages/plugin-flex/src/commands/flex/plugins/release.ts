@@ -11,7 +11,7 @@ export default class FlexPluginsRelease extends CreateConfiguration {
   static description = createDescription('Creates a Flex Plugin Release', true);
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
-    super(argv, config, secureStorage, { strict: false });
+    super(argv, config, secureStorage, { strict: false, runInDirectory: false });
 
     this.scriptArgs = [];
   }
