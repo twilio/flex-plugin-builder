@@ -52,9 +52,7 @@ const start = async (...args: string[]) => {
   if (args[0] === 'flex') {
     type = WebpackType.Static;
 
-    if (plugin) {
-      setCwd(plugin.dir);
-    } else {
+    if (!plugin) {
       throw new FlexPluginError('You must run at least one local plugin.')
     }
 
@@ -71,10 +69,12 @@ const start = async (...args: string[]) => {
   }
   if (args[0] === 'plugin') {
     type = WebpackType.JavaScript;
+  }
 
-    if (plugin) {
+  if (plugin) {
+    setCwd(plugin.dir);
+    if (type === WebpackType.Complete || type === WebpackType.JavaScript) {
       _updatePluginPort(port, plugin.name);
-      setCwd(plugin.dir);
     }
   }
 

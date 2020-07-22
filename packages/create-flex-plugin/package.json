@@ -42,7 +42,6 @@
   "dependencies": {
     "esm": "^3.2.25",
     "flex-dev-utils": "^4.4.0-alpha.0",
-    "globby": "^11.0.1",
     "yargs": "^14.2.0"
   },
   "devDependencies": {

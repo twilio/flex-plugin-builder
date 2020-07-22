@@ -42,9 +42,7 @@ export const setCwd = (p: string) => internalCwd = p;
 export const getCwd = () => internalCwd;
 
 // Read plugins.json from Twilio CLI
-export const readPluginsJson = () => {
-  return readJsonFile<CLIFlexConfiguration>(getPaths().cli.pluginsJsonPath);
-};
+export const readPluginsJson = () => readJsonFile<CLIFlexConfiguration>(getPaths().cli.pluginsJsonPath);
 
 // Write to json file
 export const writeJSONFile = (pth: string, obj: object) => fs.writeFileSync(pth, JSON.stringify(obj, null, 2));

@@ -64,10 +64,8 @@ const spawnScript = async (...argv: string[]) => {
 
   // Backwards Compatability 'npm run start'
   if (getCwd().includes('plugin-') && !processArgs.includes(getPaths().app.name)) {
-    const port = await findPort(getDefaultPort(process.env.PORT));
     processArgs.push('--name');
     processArgs.push(getPaths().app.name);
-    _updatePluginPort(port, getPaths().app.name);
   }
 
   const { exitCode } = await spawn('node', processArgs);

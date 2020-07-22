@@ -98,7 +98,6 @@ export default (config: Configuration, devServer = false, type = WebpackType.Com
 
       const isSuccessful = result.errors.length === 0 && result.warnings.length === 0;
       if (isSuccessful && (type === WebpackType.Static || type === WebpackType.Complete)) {
-      // if (isSuccessful) {
         devServerSuccessful(local, network, type, userInputPlugins);
         return;
       }

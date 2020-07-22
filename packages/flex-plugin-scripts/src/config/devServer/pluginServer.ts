@@ -19,16 +19,16 @@ export interface Plugin {
 /* istanbul ignore next */
 export const _getLocalPlugins = (inputPlugins: UserInputPlugin[]) => {
   const config = readPluginsJson();
+  const protocol = 'http' + (isHTTPS() ? 's' : '') + '://';
 
   return inputPlugins.map((plugin) => {
-    const findPlugin = config.plugins.find((p) => p.name === plugin.name);
-    const protocol = 'http' + (isHTTPS() ? 's' : '') + '://';
+    const match = config.plugins.find((p) => p.name === plugin.name);
 
-    if (findPlugin) {
+    if (match) {
       return {
         phase: 3,
         name: plugin.name,
-        src: `${protocol}localhost:${findPlugin.port}/${plugin.name}.js`,
+        src: `${protocol}localhost:${match.port}/${plugin.name}.js`,
       };
     }
 

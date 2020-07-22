@@ -10,22 +10,21 @@ import { UserInputPlugin } from 'src/scripts/start';
 export default ((local: ServiceUrl, network: ServiceUrl, type: WebpackType, userInputPlugins: UserInputPlugin[]) => {
   logger.success('Compiled successfully!');
 
-  for (const plugin of userInputPlugins) {
+  userInputPlugins.forEach(plugin => {
     const pkgName = logger.colors.bold(plugin.name);
     const jsUrl = type === WebpackType.Static || type === WebpackType.Complete ? `${plugin.name}.js` : '';
-    const pluginType = plugin.remote ? 'remote' : 'local';
 
-    logger.newline();
-    logger.info(`Your ${pluginType} plugin ${pkgName} Javascript bundle is running in the browser on:`);
-    logger.newline();
-    if (pluginType === 'local') {
-      const findPlugin = readPluginsJson().plugins.find((p) => p.name === plugin.name);
-      if (findPlugin) {
-        logger.info('\t', logger.colors.bold('Local:'), '\t', `localhost:${findPlugin.port}/${jsUrl}`);
+    if (!plugin.remote) {
+      logger.newline();
+      logger.info(`Your plugin ${pkgName} Javascript bundle is running in the browser on:`);
+      logger.newline();
+      const match = readPluginsJson().plugins.find((p) => p.name === plugin.name);
+      if (match) {
+        logger.info('\t', logger.colors.bold('Local:'), '\t', `localhost:${match.port}/${jsUrl}`);
+        logger.info('\t', logger.colors.bold('Network:'), '\t', `${network.url}${jsUrl}`);
       }
     }
-    logger.info('\t', logger.colors.bold('Network:'), '\t', `${network.url}${jsUrl}`);
-  }
+  });
 
   logger.newline();
   logger.info(`Your plugin app is running in the browser on:`)

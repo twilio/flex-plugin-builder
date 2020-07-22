@@ -30,7 +30,7 @@ export const _getStaticConfiguration = (config: Configuration) => {
   config.publicPath = '/';
   config.watchContentBase = true;
 
-   // @ts-ignore
+  // @ts-ignore
    config.before = (app, server) => app.use('/plugins', pluginServer(server.options));
 
   return config;
@@ -41,7 +41,7 @@ export const _getJavaScriptConfiguration = (config: Configuration) => {
   config.injectClient = false;
   config.serveIndex = false;
 
-  // // We're using native sockjs-node
+  // We're using native sockjs-node
   config.transportMode = 'ws';
   config.sockHost = socket.host;
   config.sockPath = socket.path;

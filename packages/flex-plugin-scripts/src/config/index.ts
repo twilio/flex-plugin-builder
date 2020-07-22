@@ -81,6 +81,4 @@ const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment
   throw new FlexPluginError('Unsupported configuration name');
 };
 
-
-
 export default getConfiguration;
