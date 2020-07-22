@@ -27,7 +27,7 @@ export interface UserInputPlugin {
 const start = async (...args: string[]) => {
   logger.debug('Starting local development environment');
 
-  addCWDNodeModule();
+  addCWDNodeModule(...args);
 
   // Finds the first available free port where two consecutive ports are free
   const port = await findPort(getDefaultPort(process.env.PORT));
@@ -42,19 +42,14 @@ const start = async (...args: string[]) => {
 
   const userInputPlugins = _parseUserInputPlugins(...args);
   const localPlugin = userInputPlugins.find(p => !p.remote);
-  let plugin: FlexConfigurationPlugin | undefined;
-
-  if (localPlugin) {
-    plugin = readPluginsJson().plugins.find((p) => p.name === localPlugin.name);
+  const plugin = localPlugin && readPluginsJson().plugins.find((p) => p.name === localPlugin.name);
+  if (!plugin) {
+    throw new FlexPluginError('You must run at least one local plugin.')
   }
 
   let type = WebpackType.Complete;
   if (args[0] === 'flex') {
     type = WebpackType.Static;
-
-    if (!plugin) {
-      throw new FlexPluginError('You must run at least one local plugin.')
-    }
 
     // For some reason start flex sometimes throws this exception
     // I haven't been able to figure why but it doesn't look like it is crashing the server
@@ -64,18 +59,15 @@ const start = async (...args: string[]) => {
         // do nothing
         return;
       }
-        throw err;
+      throw err;
     });
-  }
-  if (args[0] === 'plugin') {
+  } else if (args[0] === 'plugin') {
     type = WebpackType.JavaScript;
   }
 
-  if (plugin) {
-    setCwd(plugin.dir);
-    if (type === WebpackType.Complete || type === WebpackType.JavaScript) {
-      _updatePluginPort(port, plugin.name);
-    }
+  setCwd(plugin.dir);
+  if (type === WebpackType.Complete || type === WebpackType.JavaScript) {
+    _updatePluginPort(port, plugin.name);
   }
 
   _startDevServer(port, userInputPlugins, type, args.includes('--include-remote'));

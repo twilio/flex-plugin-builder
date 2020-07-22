@@ -5,7 +5,6 @@ import { existsSync, copyFileSync, readFileSync } from 'fs';
 import { join } from 'path';
 import {
   appConfigMissing,
-  publicDirCopyFailed,
   unbundledReactMismatch,
   versionMismatch,
   expectedDependencyNotFound,
@@ -68,22 +67,6 @@ export const _validateTypescriptProject = () => {
 export const _checkAppConfig = () => {
   if (!existsSync(getPaths().app.appConfig)) {
     appConfigMissing();
-
-    return exit(1);
-  }
-};
-
-/**
- * Syncs required files in public/ dir
- *
- * @param allowSkip whether to allow skip
- * @private
- */
-export const _checkPublicDirSync = (allowSkip: boolean) => {
-  try {
-    copyFileSync(getPaths().scripts.indexHTMLPath, getPaths().app.indexHtmlPath);
-  } catch (e) {
-    publicDirCopyFailed(e, allowSkip);
 
     return exit(1);
   }
@@ -214,10 +197,10 @@ export const _checkPluginConfigurationExists = async () => {
 /**
  * Runs pre-start/build checks
  */
-const checkStart = async () => {
+const checkStart = async (...args: string[]) => {
   logger.debug('Checking Flex plugin project directory');
 
-  addCWDNodeModule();
+  addCWDNodeModule(...args);
 
   _checkAppConfig();
   _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
