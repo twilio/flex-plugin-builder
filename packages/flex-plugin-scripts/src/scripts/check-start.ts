@@ -220,7 +220,6 @@ const checkStart = async () => {
   addCWDNodeModule();
 
   _checkAppConfig();
-  _checkPublicDirSync(env.skipPreflightCheck());
   _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
   _checkPluginCount();
   _validateTypescriptProject();

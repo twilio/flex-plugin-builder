@@ -34,9 +34,11 @@ export default fs;
 
 // Working directory
 let internalCwd = fs.realpathSync(process.cwd());
+let internalCoreCwd = fs.realpathSync(process.cwd());
 
 // Set working directory
 export const setCwd = (p: string) => internalCwd = p;
+export const setCoreCwd = (p: string) => internalCoreCwd = p;
 
 // Get working directory
 export const getCwd = () => internalCwd;
@@ -46,6 +48,9 @@ export const readPluginsJson = () => readJsonFile<CLIFlexConfiguration>(getPaths
 
 // Write to json file
 export const writeJSONFile = (pth: string, obj: object) => fs.writeFileSync(pth, JSON.stringify(obj, null, 2));
+
+// The core cwd is the working directory of core packages such as flex-plugin-scripts and flex-plugin
+export const getCoreCwd = () => internalCoreCwd;
 
 // The OS root directory
 const rootDir = os.platform() === 'win32' ? getCwd().split(path.sep)[0] : '/';
@@ -237,8 +242,10 @@ export { DirResult as TmpDirResult } from 'tmp';
 
 export const getPaths = () => {
   const cwd = getCwd();
+  const coreCwd = getCoreCwd();
   const nodeModulesDir = resolveCwd('node_modules');
-  const scriptsDir = resolveRelative(nodeModulesDir, 'flex-plugin-scripts');
+  const coreNodeModulesDir = resolveRelative(coreCwd, 'node_modules');
+  const scriptsDir = resolveRelative(coreNodeModulesDir, 'flex-plugin-scripts');
   const devAssetsDir = resolveRelative(scriptsDir, 'dev_assets');
   const publicDir = resolveCwd('public');
   const buildDir = resolveCwd('build');
@@ -312,7 +319,6 @@ export const getPaths = () => {
 
       // public/*
       publicDir,
-      indexHtmlPath: resolveRelative(publicDir, 'index.html'),
       appConfig: resolveRelative(publicDir, 'appConfig.js'),
       pluginsJsonPath: resolveRelative(publicDir, 'plugins.json'),
       pluginsServicePath: resolveRelative(publicDir, 'pluginsService.js'),
