@@ -1,6 +1,7 @@
 import { expect, createTest } from '../framework';
 import FlexPlugin from '../../sub-commands/flex-plugin';
 import * as fs from '../../utils/fs';
+import { TwilioCliError } from '../../exceptions';
 
 describe('SubCommands/FlexPlugin', () => {
   const { env } = process;
@@ -112,4 +113,20 @@ describe('SubCommands/FlexPlugin', () => {
       expect(cmd._logger.info).not.to.have.been.calledWith('{"object":"result"}');
     })
     .it('should not return raw format');
+
+  start()
+    .setup(async (cmd) => {
+      sinon.stub(cmd, 'isPluginFolder').returns(false);
+      sinon.stub(cmd, 'doRun').resolves();
+    })
+    .test(async (cmd, _, done) => {
+      try {
+        await cmd.run();
+      } catch (e) {
+        expect(e instanceof TwilioCliError).to.equal(true);
+        expect(e.message).to.contain('flex plugin directory');
+        done();
+      }
+    })
+    .it('should throw exception if script needs to run in plugin directory but is not');
 });

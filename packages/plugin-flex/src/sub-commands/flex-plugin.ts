@@ -95,10 +95,6 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @returns {boolean}
    */
   isPluginFolder() {
-    if (!this.opts.runInDirectory) {
-      return true;
-    }
-
     return filesExist(join(this.cwd, 'public', 'appConfig.js'));
   }
 
@@ -177,9 +173,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   async run() {
     await super.run();
 
-    if (!this.isPluginFolder()) {
-      this._logger.error(`${this.cwd} directory is not a flex plugin directory`);
-      throw new Error(`${this.cwd} directory is not a flex plugin directory`);
+    if (this.opts.runInDirectory && !this.isPluginFolder()) {
+      throw new TwilioCliError(`${this.cwd} directory is not a flex plugin directory.`);
     }
 
     const httpClient = new PluginServiceHTTPClient(this.twilioApiClient.username, this.twilioApiClient.password);
@@ -211,7 +206,6 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   async catch(error: Error) {
     if (instanceOf(error, TwilioError)) {
       this._logger.error(error.message);
-      this.logger.error(error.message);
     } else if (instanceOf(error, Errors.CLIError)) {
       Errors.error(error.message);
     } else {
@@ -266,7 +260,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   /* istanbul ignore next */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async doRun(): Promise<any | void> {
-    throw new Error('Abstract method must be implemented');
+    throw new TwilioCliError('Abstract method must be implemented');
   }
 
   /**
