@@ -1,5 +1,6 @@
 import index from '../index';
 import { logger } from 'flex-dev-utils';
+import * as fsScripts from 'flex-dev-utils/dist/fs';
 import * as run from '../utils/run';
 import { render as markedRender } from 'flex-dev-utils/dist/marked';
 
@@ -16,10 +17,14 @@ describe('index', () => {
   const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
   // @ts-ignore
   logger.colors.blue = jest.fn();
+  const pluginName = 'plugin-test';
 
   beforeEach(() => {
     jest.resetAllMocks();
     jest.resetModules();
+
+    // @ts-ignore
+    jest.spyOn(fsScripts, 'getPaths').mockReturnValue({ app: { name: pluginName }});
 
     delete require.cache[require.resolve('../index')];
   });
@@ -48,6 +53,8 @@ describe('index', () => {
     assertSpawn([
       expect.stringContaining('build'),
       expect.anything(),
+      '--name',
+      pluginName,
     ]);
   });
 
@@ -63,6 +70,8 @@ describe('index', () => {
       expect.stringContaining('build'),
       'foo',
       expect.anything(),
+      '--name',
+      pluginName,
     ]);
   });
 
@@ -77,6 +86,8 @@ describe('index', () => {
     assertSpawn([
       expect.anything(),
       '--disallow-versioning',
+      '--name',
+      pluginName,
     ]);
   });
 

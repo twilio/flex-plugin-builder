@@ -1,7 +1,7 @@
 import { env, logger, open } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import { getPaths, setCwd, readPluginsJson, writeJSONFile, FlexConfigurationPlugin, checkFilesExist, getCwd } from 'flex-dev-utils/dist/fs';
+import { getPaths, setCwd, readPluginsJson, writeJSONFile } from 'flex-dev-utils/dist/fs';
 import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
 import { findPort, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import WebpackDevServer from 'webpack-dev-server';
@@ -15,7 +15,7 @@ import pluginServer, { Plugin } from '../config/devServer/pluginServer';
 const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
 const PLUGIN_INPUT_PARSER_REGEX = /([\w-]+)(?:@(\S+))?/;
 
-export interface UserInputPlugin {
+interface UserInputPlugin {
   name: string;
   remote: boolean;
   version?: string;
@@ -63,6 +63,7 @@ const start = async (...args: string[]) => {
     });
   } else if (args[0] === 'plugin') {
     type = WebpackType.JavaScript;
+    env.setWDSSocketPort(port);
   }
 
   setCwd(plugin.dir);
@@ -75,18 +76,30 @@ const start = async (...args: string[]) => {
 
 /**
  * Starts the webpack dev-server
- * @param port  the port the server is running on
+ * @param port      the port the server is running on
+ * @param plugins   the list of plugins user has requested
+ * @param type      the webpack type
+ * @param remoteAll whether to request all plugins
  * @private
  */
 /* istanbul ignore next */
-export const _startDevServer = (port: number, userInputPlugins: UserInputPlugin[], type: WebpackType, includeAllRemote: boolean) => {
+export const _startDevServer = (port: number, plugins: UserInputPlugin[], type: WebpackType, remoteAll: boolean) => {
   const config = getConfiguration(ConfigurationType.Webpack, Environment.Development, type);
   const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development, type);
+
+  const localPlugins = plugins.filter(p => !p.remote);
+  const pluginRequest = {
+    local: localPlugins.map(p => p.name),
+    remote: plugins.filter(p => p.remote).map(p => p.name),
+  };
+
+  // Setup plugin's server
   if (type !== WebpackType.JavaScript) {
-    // @ts-ignore
-    devConfig.before = (app, server) => app.use('/plugins', pluginServer(server.options, userInputPlugins, includeAllRemote));
+    const pluginServerConfig = { port, remoteAll };
+    pluginServer(pluginRequest, devConfig, pluginServerConfig);
   }
-  const devCompiler = compiler(config, true, type, userInputPlugins);
+
+  const devCompiler = compiler(config, true, type, pluginRequest.local);
   const devServer = new WebpackDevServer(devCompiler, devConfig);
   const { local } = getLocalAndNetworkUrls(port);
 

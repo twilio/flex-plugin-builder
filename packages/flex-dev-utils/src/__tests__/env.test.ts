@@ -200,4 +200,55 @@ describe('env', () => {
       expect(env.isHTTPS()).toEqual(false);
     })
   });
+
+  describe('SocketHost', () => {
+    it('should set socket host', () => {
+      expect(env.getWDSSocketHost()).toEqual(undefined);
+      env.setWDSSocketHost('1.2.3.4.5');
+      expect(env.getWDSSocketHost()).toEqual('1.2.3.4.5');
+    });
+
+    it('should return nothing', () => {
+      expect(env.getWDSSocketHost()).toEqual(undefined);
+    });
+
+    it('should return host', () => {
+      process.env.WDS_SOCKET_HOST = '1.2.3.4.5';
+      expect(env.getWDSSocketHost()).toEqual('1.2.3.4.5');
+    });
+  });
+
+  describe('WDSSocketPath', () => {
+    it('should set socket path', () => {
+      expect(env.getWDSSocketPath()).toEqual(undefined);
+      env.setWDSSocketPath('/the-path');
+      expect(env.getWDSSocketPath()).toEqual('/the-path');
+    });
+
+    it('should return nothing', () => {
+      expect(env.getWDSSocketPath()).toEqual(undefined);
+    });
+
+    it('should return path', () => {
+      process.env.WDS_SOCKET_PATH = '/the-path';
+      expect(env.getWDSSocketPath()).toEqual('/the-path');
+    });
+  });
+
+  describe('WDSSocketPort', () => {
+    it('should set socket port', () => {
+      expect(env.getWDSSocketPort()).toEqual(NaN);
+      env.setWDSSocketPort(4000);
+      expect(env.getWDSSocketPort()).toEqual(4000);
+    });
+
+    it('should return nothing', () => {
+      expect(env.getWDSSocketPort()).toEqual(NaN);
+    });
+
+    it('should return port', () => {
+      process.env.WDS_SOCKET_PORT = '4000';
+      expect(env.getWDSSocketPort()).toEqual(4000);
+    });
+  });
 });

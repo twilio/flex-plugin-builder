@@ -30,9 +30,6 @@ export const _getStaticConfiguration = (config: Configuration) => {
   config.publicPath = '/';
   config.watchContentBase = true;
 
-  // @ts-ignore
-   config.before = (app, server) => app.use('/plugins', pluginServer(server.options));
-
   return config;
 }
 

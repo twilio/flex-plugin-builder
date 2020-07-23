@@ -1,4 +1,5 @@
 import { logger, FlexPluginError } from 'flex-dev-utils';
+import * as fsScripts from 'flex-dev-utils/dist/fs';
 import * as run from '../run';
 
 jest.mock('flex-dev-utils/dist/logger');
@@ -7,6 +8,14 @@ describe('run', () => {
   // @ts-ignore
   const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
   const OLD_ENV = process.env;
+  jest.spyOn(fsScripts, 'readAppPackageJson').mockReturnValue({
+    name: 'test-script',
+    version: '0.0.0',
+    dependencies: {
+      'flex-plugin': '1.2.3',
+      'flex-plugin-scripts': '4.5.6',
+    },
+  });
 
   beforeEach(() => {
     jest.resetAllMocks();

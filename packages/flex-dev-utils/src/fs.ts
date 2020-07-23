@@ -252,7 +252,7 @@ export const getPaths = () => {
   const srcDir = resolveCwd('src');
   const flexUIDir = resolveRelative(nodeModulesDir, '@twilio/flex-ui');
   const homeDir = homedir();
-  const cliDir = resolveRelative(homeDir, 'twilio-cli');
+  const cliDir = resolveRelative(homeDir, '/.twilio-cli');
   const flexDir = resolveRelative(cliDir, 'flex');
   const tsConfigPath = resolveCwd('tsconfig.json');
 

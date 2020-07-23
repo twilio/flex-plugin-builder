@@ -9,8 +9,6 @@ import { join, dirname } from 'path';
 
 import run, { exit } from './utils/run';
 import { getPaths, getCwd } from 'flex-dev-utils/dist/fs';
-import { _updatePluginPort } from './scripts/start';
-import { findPort, getDefaultPort } from 'flex-dev-utils/dist/urls';
 
 checkForUpdate();
 

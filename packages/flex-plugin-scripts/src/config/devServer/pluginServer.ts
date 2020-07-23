@@ -1,9 +1,8 @@
-import { env, logger, FlexPluginError } from 'flex-dev-utils';
+import { logger, FlexPluginError } from 'flex-dev-utils';
 import { Request, Response } from 'express-serve-static-core';
 import { readPluginsJson } from 'flex-dev-utils/dist/fs';
 import { Configuration } from 'webpack-dev-server';
 import https from 'https';
-import { UserInputPlugin } from '../../scripts/start';
 import { isHTTPS } from 'flex-dev-utils/dist/env';
 
 export interface Plugin {
@@ -12,27 +11,44 @@ export interface Plugin {
   src: string;
 }
 
+interface StartServerPlugins {
+  local: string[];
+  remote: string[];
+}
+
+interface StartServerConfig {
+  port: number;
+  remoteAll: boolean;
+}
+
+/**
+ * Returns the plugin from the local configuration file
+ * @param name  the plugin name
+ * @private
+ */
+export const _getLocalPlugin = (name: string) => {
+  return readPluginsJson().plugins.find((p) => p.name === name);
+}
+
 /**
  * Returns local plugins from  cli/plugins.json
  * @private
  */
-/* istanbul ignore next */
-export const _getLocalPlugins = (inputPlugins: UserInputPlugin[]) => {
-  const config = readPluginsJson();
+export const _getLocalPlugins = (port: number, names: string[]) => {
   const protocol = 'http' + (isHTTPS() ? 's' : '') + '://';
 
-  return inputPlugins.map((plugin) => {
-    const match = config.plugins.find((p) => p.name === plugin.name);
+  return names.map((name) => {
+    const match = _getLocalPlugin(name);
 
     if (match) {
       return {
         phase: 3,
-        name: plugin.name,
-        src: `${protocol}localhost:${match.port}/${plugin.name}.js`,
+        name,
+        src: `${protocol}localhost:${port}/plugins/${name}.js`,
       };
     }
 
-    throw new FlexPluginError (`The plugin ${plugin.name} was not locally found. Try running \`npm install\` once in the plugin directory and try again.`);
+    throw new FlexPluginError(`The plugin ${name} was not locally found. Try running \`npm install\` once in the plugin directory and try again.`);
   });
 };
 
@@ -88,21 +104,24 @@ export const _getRemotePlugins = (token: string, version: string): Promise<Plugi
 
 /**
  * Merge local and remote plugins
- * @param remotePlugins   the plugins returned from Flex
+ * @param localPlugins   the list of local plugins
+ * @param remotePlugins  the lost of remote plugins
  * @private
  */
 export const _mergePlugins = (localPlugins: Plugin[], remotePlugins: Plugin[]) => {
   const deduped = remotePlugins.filter(r => !localPlugins.some(l => l.name === r.name));
+
   return [... localPlugins, ...deduped];
 };
 
 /**
  * Basic server to fetch plugins from Flex and return to the local dev-server
- * @param browserPort  the port of browser
- * @private
+ * @param plugins
+ * @param config
  */
-export default (options: Configuration, userInputPlugins: UserInputPlugin[], includeAllRemote: boolean) => {
-  const responseHeaders = _getHeaders(options.port || 3000);
+export const _startServer = (plugins: StartServerPlugins, config: StartServerConfig) => {
+  const responseHeaders = _getHeaders(config.port);
+
 
   return async (req: Request, res: Response) => {
     const { headers, method } = req;
@@ -124,20 +143,18 @@ export default (options: Configuration, userInputPlugins: UserInputPlugin[], inc
       return res.end('No X-Flex-JWE was provided');
     }
 
-    const localInputPlugins = userInputPlugins.filter(p => !p.remote);
-    const remoteInputPlugins = userInputPlugins.filter(p => p.remote);
-    const hasRemotePlugin = includeAllRemote || userInputPlugins.some(p => p.remote);
-    const localPlugins = _getLocalPlugins(localInputPlugins);
+    const hasRemotePlugin = config.remoteAll || plugins.remote.length !== 0;
+    const localPlugins = _getLocalPlugins(config.port, plugins.local);
     const promise: Promise<Plugin[]> = hasRemotePlugin ? _getRemotePlugins(jweToken, flexVersion) : Promise.resolve([]);
 
     return promise
-      .then(plugins => {
-        if (includeAllRemote) {
-          return plugins;
+      .then(remotePlugins => {
+        if (config.remoteAll) {
+          return remotePlugins;
         }
 
         // Filter and only return the ones that are in remoteInputPlugins
-        return plugins.filter(r => remoteInputPlugins.some(i => i.name === r.name));
+        return remotePlugins.filter(r => plugins.remote.includes(r.name))
       })
       // rebase will eventually get both local and remote plugins
       .then(remotePlugins => {
@@ -150,5 +167,38 @@ export default (options: Configuration, userInputPlugins: UserInputPlugin[], inc
         res.writeHead(500, responseHeaders);
         res.end(err);
       });
+  };
+}
+
+/**
+ * Setups up the plugin servers
+ * @param plugins
+ * @param webpackConfig
+ * @param serverConfig
+ */
+/* istanbul ignore next */
+export default (plugins: StartServerPlugins, webpackConfig: Configuration, serverConfig: StartServerConfig) => {
+  serverConfig.port = webpackConfig.port || 3000;
+
+  webpackConfig.proxy = plugins.local.reduce((proxy, name) => {
+    proxy[`/plugins/${name}.js`] = {
+      target: `http://localhost:${serverConfig.port}`, // placeholder
+      router: () => {
+        const match = _getLocalPlugin(name);
+        if (!match) {
+          throw new Error();
+        }
+
+        return `http://localhost:${match.port}`;
+      }
+    }
+
+    return proxy;
+  }, {});
+
+  webpackConfig.before = (app, server) => {
+    // @ts-ignore
+    serverConfig.port = server.options.port || serverConfig.port;
+    app.use('^/plugins$', _startServer(plugins, serverConfig));
   };
 }

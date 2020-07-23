@@ -1,13 +1,11 @@
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import { checkFilesExist, getPaths, CLIFlexConfiguration, FlexConfigurationPlugin } from 'flex-dev-utils/dist/fs';
+import { checkFilesExist, getPaths } from 'flex-dev-utils/dist/fs';
 import { Configuration as WebpackConfigurations } from 'webpack';
 import { Configuration as WebpackDevConfigurations } from 'webpack-dev-server';
 import webpackFactory from './webpack.config';
 import devFactory from './webpack.dev';
 import jestFactory, { JestConfigurations } from './jest.config';
-import { Config } from '@jest/types';
-import AccountClient from 'src/clients/accounts';
 
 export enum WebpackType {
   Static = 'static',
