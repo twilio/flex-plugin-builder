@@ -3,7 +3,6 @@ import * as fs from 'flex-dev-utils/dist/fs';
 import * as urlScripts from 'flex-dev-utils/dist/urls';
 import * as startScripts from '../start';
 import { WebpackType } from '../../config';
-import { read } from 'fs';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/fs');
@@ -111,15 +110,15 @@ describe('StartScript', () => {
       expect(setCwd).toHaveBeenCalledTimes(1);
     });
 
-    it('should not update port or set cwd', async () => {
+    it('should throw exception if plugin is not found', async (done) => {
       _parseUserInputPlugins.mockReturnValue([{name: 'plugin-bad', remote: false}]);
 
-      await startScripts.default(...['plugin', '--name', 'plugin-bad']);
-
-      expect(_startDevServer).toHaveBeenCalledWith(port, [{name: 'plugin-bad', remote: false}], WebpackType.JavaScript, false);
-      expect(readPluginsJson).toHaveBeenCalledTimes(1);
-      expect(_updatePluginPort).not.toHaveBeenCalled();
-      expect(setCwd).not.toHaveBeenCalled();
+      try {
+        await startScripts.default(...['plugin', '--name', 'plugin-bad']);
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+        done();
+      }
     });
   });
 
