@@ -341,7 +341,7 @@ export const _getJavaScriptEntries = (environment: Environment): string[] => {
   entry.push(getPaths().app.entryPath);
 
   return entry;
-}
+};
 
 /**
  * Returns the `optimization` key of webpack
