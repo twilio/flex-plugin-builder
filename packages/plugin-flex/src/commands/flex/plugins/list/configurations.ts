@@ -29,8 +29,8 @@ export default class FlexPluginsListConfigurations extends InformationFlexPlugin
     const list = this.sortByActive(configurations);
 
     list.forEach((configuration) => {
-      this.printVersion(configuration.version, configuration.isActive ? '(Active)' : '');
-      this.printPretty(configuration, 'version', 'isActive');
+      this.printVersion(configuration.name, configuration.isActive ? '(Active)' : '');
+      this.printPretty(configuration, 'name', 'isActive');
       this._logger.newline();
     });
   }
