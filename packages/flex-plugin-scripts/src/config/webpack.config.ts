@@ -337,7 +337,6 @@ export const _getJSPlugins = (environment: Environment): Plugin[] => {
  */
 export const _getJavaScriptEntries = (environment: Environment): string[] => {
   const entry: string[] = [];
-
   entry.push(getPaths().app.entryPath);
 
   return entry;
