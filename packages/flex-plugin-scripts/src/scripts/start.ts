@@ -44,7 +44,7 @@ const start = async (...args: string[]) => {
   const localPlugin = userInputPlugins.find(p => !p.remote);
   const plugin = localPlugin && readPluginsJson().plugins.find((p) => p.name === localPlugin.name);
   if (!plugin) {
-    throw new FlexPluginError('You must run at least one local plugin.')
+    throw new FlexPluginError('You must run at least one plugin locally.');
   }
 
   let type = WebpackType.Complete;
@@ -236,7 +236,7 @@ export const _parseUserInputPlugins = (...args: string[]): UserInputPlugin[] => 
 
     const plugin = config.plugins.find((p) => p.name === name);
     if (!plugin) {
-      throw new FlexPluginError('No plugin file was found with the given name');
+      throw new FlexPluginError(`No plugin file was found with the name \'${name}\'`);
     }
     userInputPlugins.push({name: plugin.name, remote: false});
   }

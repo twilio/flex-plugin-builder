@@ -99,8 +99,10 @@ export default (config: Configuration, devServer: boolean, type = WebpackType.Co
       }
 
       const isSuccessful = result.errors.length === 0 && result.warnings.length === 0;
-      if (isSuccessful && (type === WebpackType.Static || type === WebpackType.Complete)) {
-        devServerSuccessful(local, network, localPlugins);
+      if (isSuccessful) {
+        if (type === WebpackType.Static || type === WebpackType.Complete) {
+          devServerSuccessful(local, network, localPlugins);
+        }
         return;
       }
 

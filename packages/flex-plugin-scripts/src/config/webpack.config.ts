@@ -332,22 +332,16 @@ export const _getJSPlugins = (environment: Environment): Plugin[] => {
 
 /**
  * Returns the `entry` key of the webpack
- * @param environment the environment
+ * @param environment
  * @private
  */
-export const _getEntries = (environment: Environment): string[] => {
+export const _getJavaScriptEntries = (environment: Environment): string[] => {
   const entry: string[] = [];
-
-  if (environment === Environment.Development) {
-    entry.push(
-      require.resolve('@k88/cra-webpack-hot-dev-client/build'),
-    );
-  }
 
   entry.push(getPaths().app.entryPath);
 
   return entry;
-};
+}
 
 /**
  * Returns the `optimization` key of webpack
@@ -450,6 +444,13 @@ export const _getBase = (environment: Environment) => {
   };
   config.mode = isProd ? Environment.Production : Environment.Development;
 
+  config.entry = [];
+  if (environment === Environment.Development) {
+    config.entry.push(
+      require.resolve('@k88/cra-webpack-hot-dev-client/build'),
+    );
+  }
+
   return config;
 };
 
@@ -466,7 +467,8 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
   const outputName = environment === Environment.Production ? filename : `plugins/${filename}`;
 
   config.plugins = config.plugins ? config.plugins : [];
-  config.entry = _getEntries(environment);
+  // @ts-ignore
+  config.entry.push(..._getJavaScriptEntries(environment));
   config.output = {
     path: getPaths().app.buildDir,
     pathinfo: !isProd,
