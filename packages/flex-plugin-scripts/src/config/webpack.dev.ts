@@ -1,8 +1,8 @@
-import { env, paths } from 'flex-dev-utils';
+import { env } from 'flex-dev-utils';
 import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import { Configuration } from 'webpack-dev-server';
 import { WebpackType } from './index';
-import pluginServer from './devServer/pluginServer';
+import { getPaths } from 'flex-dev-utils/dist/fs';
 
 export const _getBase = (): Configuration => {
   const { local } = getLocalAndNetworkUrls(env.getPort());
@@ -19,8 +19,8 @@ export const _getBase = (): Configuration => {
 
 export const _getStaticConfiguration = (config: Configuration) => {
   config.contentBase =  [
-    paths().app.publicDir,
-    paths().scripts.devAssetsDir,
+    getPaths().app.publicDir,
+    getPaths().scripts.devAssetsDir,
   ];
   config.contentBasePublicPath = '/';
   config.historyApiFallback = {
@@ -29,9 +29,6 @@ export const _getStaticConfiguration = (config: Configuration) => {
   };
   config.publicPath = '/';
   config.watchContentBase = true;
-
-  // @ts-ignore
-  config.before = (app, server) => app.use('/plugins', pluginServer(server.options));
 
   return config;
 }

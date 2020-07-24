@@ -20,6 +20,16 @@ export interface AppPackageJson extends PackageJson {
   };
 }
 
+export interface FlexConfigurationPlugin {
+  name: string;
+  dir: string;
+  port: number;
+}
+
+export interface CLIFlexConfiguration {
+  plugins: FlexConfigurationPlugin[]
+}
+
 export default fs;
 
 // Working directory
@@ -33,6 +43,12 @@ export const setCoreCwd = (p: string) => internalCoreCwd = p;
 // Get working directory
 export const getCwd = () => internalCwd;
 
+// Read plugins.json from Twilio CLI
+export const readPluginsJson = () => readJsonFile<CLIFlexConfiguration>(getPaths().cli.pluginsJsonPath);
+
+// Write to json file
+export const writeJSONFile = (pth: string, obj: object) => fs.writeFileSync(pth, JSON.stringify(obj, null, 2));
+
 // The core cwd is the working directory of core packages such as flex-plugin-scripts and flex-plugin
 export const getCoreCwd = () => internalCoreCwd;
 
@@ -42,9 +58,6 @@ const rootDir = os.platform() === 'win32' ? getCwd().split(path.sep)[0] : '/';
 // Promise version of {@link copyTempDir}
 // tslint:disable-next-line
 const promiseCopyTempDir = promisify(require('copy-template-dir'));
-
-// Node directory
-const nodeModulesPath = path.join(getCwd(), 'node_modules');
 
 /**
  * Checks the provided array of files exist
@@ -105,7 +118,7 @@ export const readJsonFile = <T> (filePath: string): T => {
  */
 /* istanbul ignore next */
 export const getPackageVersion = (name: string) => {
-  const installedPath = resolveRelative(nodeModulesPath, name, 'package.json');
+  const installedPath = resolveRelative(getPaths().app.nodeModulesDir, name, 'package.json');
 
   return readPackageJson(installedPath).version;
 }
@@ -172,7 +185,7 @@ export const rmRfSync = rimRaf.sync;
  */
 /* istanbul ignore next */
 export const getDependencyVersion = (pkgName: string) => {
-  return require(path.join(nodeModulesPath, pkgName, 'package.json')).version;
+  return require(resolveRelative(getPaths().app.nodeModulesDir, pkgName, 'package.json')).version;
 };
 
 /**
@@ -239,7 +252,7 @@ export const getPaths = () => {
   const srcDir = resolveCwd('src');
   const flexUIDir = resolveRelative(nodeModulesDir, '@twilio/flex-ui');
   const homeDir = homedir();
-  const cliDir = resolveRelative(homeDir, 'twilio-cli');
+  const cliDir = resolveRelative(homeDir, '/.twilio-cli');
   const flexDir = resolveRelative(cliDir, 'flex');
   const tsConfigPath = resolveCwd('tsconfig.json');
 

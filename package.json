@@ -36,7 +36,6 @@
       "pre-push": "npm run test"
     }
   },
-  "dependencies": {},
   "devDependencies": {
     "@babel/cli": "^7.10.1",
     "@babel/core": "^7.10.2",

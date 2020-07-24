@@ -241,6 +241,11 @@ describe('fs', () => {
       expect(fs.getPaths().app.sourceMapPath).toContain(validPackage.name);
       expect(fs.getPaths().app.sourceMapPath).toEqual(expect.stringMatching('\.js\.map$'));
 
+      // cli/ directory
+      expect(fs.getPaths().cli.dir).toEqual(expect.stringMatching('/.twilio-cli'));
+      expect(fs.getPaths().cli.flexDir).toContain('/.twilio-cli/flex');
+      expect(fs.getPaths().cli.pluginsJsonPath).toEqual(expect.stringMatching('plugins.json'));
+
       // src/ directory
       expect(fs.getPaths().app.srcDir).toEqual(expect.stringMatching('src$'));
       expect(fs.getPaths().app.entryPath).toContain('src');

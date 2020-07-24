@@ -1,6 +1,6 @@
-import { env, logger, paths } from 'flex-dev-utils';
+import { env, logger } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
-import { checkFilesExist } from 'flex-dev-utils/dist/fs';
+import { checkFilesExist, getPaths } from 'flex-dev-utils/dist/fs';
 import { addCWDNodeModule, resolveModulePath } from 'flex-dev-utils/dist/require';
 import { jestNotInstalled } from '../prints';
 
@@ -13,7 +13,7 @@ export const DEFAULT_JEST_ENV = 'jsdom';
  * @private
  */
 export const _validateJest = () => {
-  if (!checkFilesExist(paths().app.jestConfigPath)) {
+  if (!checkFilesExist(getPaths().app.jestConfigPath)) {
     return;
   }
 

@@ -45,6 +45,12 @@ export const setBabelEnv = (_env: Environment) => process.env.BABEL_ENV = _env;
 export const getLifecycle = () => process.env.npm_lifecycle_event;
 export const isLifecycle = (cycle: Lifecycle) => process.env.npm_lifecycle_event === cycle;
 export const isHTTPS = () => process.env.HTTPS === 'true';
+export const setWDSSocketHost = (host: string) => process.env.WDS_SOCKET_HOST = host;
+export const getWDSSocketHost = () => process.env.WDS_SOCKET_HOST;
+export const setWDSSocketPath = (path: string) => process.env.WDS_SOCKET_PATH = path;
+export const getWDSSocketPath = () => process.env.WDS_SOCKET_PATH;
+export const setWDSSocketPort = (port: number) => process.env.WDS_SOCKET_PORT = port.toString();
+export const getWDSSocketPort = () => Number(process.env.WDS_SOCKET_PORT);
 export const getWSSocket = () => ({
   host: process.env.WDS_SOCKET_HOST,
   path: process.env.WDS_SOCKET_PATH,
@@ -77,5 +83,11 @@ export default {
   getLifecycle,
   isLifecycle,
   isHTTPS,
+  getWDSSocketHost,
+  setWDSSocketHost,
+  getWDSSocketPath,
+  setWDSSocketPath,
+  setWDSSocketPort,
+  getWDSSocketPort,
   getWSSocket,
 };

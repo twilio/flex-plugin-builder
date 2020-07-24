@@ -8,6 +8,7 @@ import { render as markedRender } from 'flex-dev-utils/dist/marked';
 import { join, dirname } from 'path';
 
 import run, { exit } from './utils/run';
+import { getPaths, getCwd } from 'flex-dev-utils/dist/fs';
 
 checkForUpdate();
 
@@ -57,6 +58,12 @@ const spawnScript = async (...argv: string[]) => {
   // Temp disallow version while we figure this out
   if (script !== 'test' && !processArgs.includes('--pilot-plugins-api')) {
     processArgs.push('--disallow-versioning');
+  }
+
+  // Backwards Compatability 'npm run start'
+  if (getCwd().includes('plugin-') && !processArgs.includes(getPaths().app.name)) {
+    processArgs.push('--name');
+    processArgs.push(getPaths().app.name);
   }
 
   const { exitCode } = await spawn('node', processArgs);
