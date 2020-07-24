@@ -21,12 +21,12 @@ export default class FlexPluginsCreateConfiguration extends CreateConfiguration 
     const config = await this.doCreateConfiguration();
 
     this._logger.newline();
-    this._logger.success(`🚀 Configuration **v${config.version}** was successfully created`);
+    this._logger.success(`🚀 Configuration **${config.sid}** was successfully created`);
     this._logger.newline();
 
     this._logger.info('**Next Steps:**');
     this._logger.info(
-      `Run {{$ twilio flex:plugins:release --version ${config.version}}} to enable this configuration on your Flex instance`,
+      `Run {{$ twilio flex:plugins:release --configuration-sid ${config.sid}}} to enable this configuration on your Flex instance`,
     );
     this._logger.newline();
   }

@@ -13,9 +13,8 @@ export default class FlexPluginsDescribeConfiguration extends InformationFlexPlu
 
   static flags = {
     ...FlexPlugin.flags,
-    version: flags.string({
+    sid: flags.string({
       required: true,
-      description: 'The configuration version to describe',
     }),
   };
 
@@ -23,14 +22,14 @@ export default class FlexPluginsDescribeConfiguration extends InformationFlexPlu
    * @override
    */
   async getResource() {
-    return this.pluginsApiToolkit.describeConfiguration({ version: this._flags.version });
+    return this.pluginsApiToolkit.describeConfiguration({ sid: this._flags.sid });
   }
 
   /**
    * @override
    */
   notFound() {
-    this._logger.info(`!!Configuration **${this._flags.version}** was not found.!!`);
+    this._logger.info(`!!Configuration **${this._flags.sid}** was not found.!!`);
   }
 
   /**
@@ -38,7 +37,7 @@ export default class FlexPluginsDescribeConfiguration extends InformationFlexPlu
    */
   print(configuration: DescribeConfiguration): void {
     this.printHeader('SID', configuration.sid);
-    this.printHeader('Version', configuration.version);
+    this.printHeader('Name', configuration.name);
     this.printHeader('Status', configuration.isActive ? 'Active' : 'Inactive');
     this.printHeader('Description', configuration.description);
     this.printHeader('Created', this.parseDate(configuration.dateCreated));

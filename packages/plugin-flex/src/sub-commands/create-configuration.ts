@@ -1,17 +1,13 @@
 import { flags } from '@oclif/command';
 import { progress } from 'flex-plugins-utils-logger';
-import semver from 'semver';
 import { CreateConfigurationOption } from 'flex-plugins-api-toolkit';
+import dayjs from 'dayjs';
 
-import { TwilioCliError } from '../exceptions';
 import FlexPlugin, { FlexPluginFlags } from './flex-plugin';
 
 export interface CreateConfigurationFlags extends FlexPluginFlags {
-  patch: boolean;
-  minor: boolean;
-  major: boolean;
-  version?: string;
   new: boolean;
+  name: string;
   plugin: string[];
   description?: string;
 }
@@ -22,19 +18,10 @@ export interface CreateConfigurationFlags extends FlexPluginFlags {
 export default abstract class CreateConfiguration extends FlexPlugin {
   public static flags = {
     ...FlexPlugin.flags,
-    patch: flags.boolean({
-      exclusive: ['minor', 'major', 'version'],
-    }),
-    minor: flags.boolean({
-      exclusive: ['patch', 'major', 'version'],
-    }),
-    major: flags.boolean({
-      exclusive: ['patch', 'minor', 'version'],
-    }),
-    version: flags.string({
-      exclusive: ['patch', 'minor', 'major'],
-    }),
     new: flags.boolean(),
+    name: flags.string({
+      default: dayjs().format('MMM D, YYYY'),
+    }),
     plugin: flags.string({
       multiple: true,
       required: true,
@@ -51,35 +38,16 @@ export default abstract class CreateConfiguration extends FlexPlugin {
    * @returns {Promise<T>}
    */
   protected async doCreateConfiguration() {
-    const version = await progress('Validating configuration', async () => this.validateVersion(), false);
-    return progress(`Creating configuration **v${version}**`, async () => this.createConfiguration(version), false);
-  }
-
-  /**
-   * Validates that the provided next plugin version is valid
-   * @returns {Promise<void>}
-   */
-  private async validateVersion() {
-    const configuration = await this.configurationsClient.latest();
-    const currentVersion = (configuration && configuration.version) || '0.0.0';
-    const nextVersion = this._flags.version || (semver.inc(currentVersion, this.bumpLevel) as string);
-    if (!semver.valid(nextVersion)) {
-      throw new TwilioCliError(`${nextVersion} is not a valid semver`);
-    }
-    if (!semver.gt(nextVersion, currentVersion)) {
-      throw new TwilioCliError(`The provided version ${nextVersion} must be greater than ${currentVersion}`);
-    }
-
-    return nextVersion;
+    return progress(`Creating configuration`, async () => this.createConfiguration(), false);
   }
 
   /**
    * Registers a configuration with Plugins API
    * @returns {Promise}
    */
-  private async createConfiguration(version: string) {
+  private async createConfiguration() {
     const option: CreateConfigurationOption = {
-      version,
+      name: this._flags.name,
       addPlugins: this._flags.plugin,
       description: this._flags.description || '',
     };
@@ -88,22 +56,6 @@ export default abstract class CreateConfiguration extends FlexPlugin {
     }
 
     return this.pluginsApiToolkit.createConfiguration(option);
-  }
-
-  /**
-   * Finds the version bump level
-   * @returns {string}
-   */
-  get bumpLevel() {
-    if (this._flags.major) {
-      return 'major';
-    }
-
-    if (this._flags.minor) {
-      return 'minor';
-    }
-
-    return 'patch';
   }
 
   get _flags(): CreateConfigurationFlags {
