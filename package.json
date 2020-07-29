@@ -37,25 +37,25 @@
     }
   },
   "devDependencies": {
-    "@babel/cli": "^7.10.1",
-    "@babel/core": "^7.10.2",
-    "@babel/polyfill": "^7.10.1",
-    "@babel/preset-env": "^7.10.2",
-    "@babel/preset-typescript": "^7.10.1",
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.10.5",
+    "@babel/polyfill": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "@babel/preset-typescript": "^7.10.4",
     "@k88/pipe-compose": "^2.2.0",
-    "@types/jest": "^26.0.0",
-    "@types/node": "^14.0.13",
+    "@types/jest": "^26.0.7",
+    "@types/node": "^14.0.27",
     "babel-core": "7.0.0-bridge.0",
-    "babel-jest": "^26.0.1",
+    "babel-jest": "^26.1.0",
     "babel-register": "^6.26.0",
-    "codecov": "^3.7.0",
+    "codecov": "^3.7.2",
     "glob": "^7.1.6",
     "husky": "^4.2.5",
-    "jest": "^26.0.1",
+    "jest": "^26.1.0",
     "lerna": "3.22.1",
-    "ts-jest": "^26.1.0",
+    "ts-jest": "^26.1.4",
     "tslint": "^6.1.2",
     "tslint-react": "^5.0.0",
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.7"
   }
 }
