@@ -24,7 +24,6 @@ describe('SubCommands/FlexPlugin', () => {
 
       expect(result).to.equal(true);
       expect(fs.filesExist).to.have.been.calledOnce;
-      expect(fs.filesExist).to.have.been.calledWith(`${process.cwd()}/public/appConfig.js`);
     })
     .it('should test isPluginFolder to be true');
 
@@ -37,7 +36,6 @@ describe('SubCommands/FlexPlugin', () => {
 
       expect(result).to.equal(false);
       expect(fs.filesExist).to.have.been.calledOnce;
-      expect(fs.filesExist).to.have.been.calledWith(`${process.cwd()}/public/appConfig.js`);
     })
     .it('should test isPluginFolder to be false');
 

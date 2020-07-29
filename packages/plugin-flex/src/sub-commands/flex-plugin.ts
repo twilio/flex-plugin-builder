@@ -174,7 +174,9 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     await super.run();
 
     if (this.opts.runInDirectory && !this.isPluginFolder()) {
-      throw new TwilioCliError(`${this.cwd} directory is not a flex plugin directory.`);
+      throw new TwilioCliError(
+        `${this.cwd} directory is not a flex plugin directory. You must either run a plugin inside a directory or use the --name flag`,
+      );
     }
 
     const httpClient = new PluginServiceHTTPClient(this.twilioApiClient.username, this.twilioApiClient.password);
