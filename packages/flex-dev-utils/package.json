@@ -1,6 +1,6 @@
 {
   "name": "flex-dev-utils",
-  "version": "4.5.0-alpha.0",
+  "version": "4.5.3-alpha.0",
   "description": "Common development utility for creating a Flex plugin",
   "keywords": [
     "flex",
