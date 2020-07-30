@@ -1,5 +1,5 @@
 import { logger, progress, FlexPluginError } from 'flex-dev-utils';
-import { copyTemplateDir, tmpDirSync, TmpDirResult } from 'flex-dev-utils/dist/fs';
+import { copyTemplateDir, tmpDirSync, TmpDirResult, checkPluginConfigurationExists } from 'flex-dev-utils/dist/fs';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
 import fs from 'fs';
 import { resolve, join } from 'path';
@@ -15,6 +15,7 @@ const templateJsPath = resolve(templatesRootDir, 'js');
 const templateTsPath = resolve(templatesRootDir, 'ts');
 
 export interface FlexPluginArguments extends CLIArguments {
+  name: string;
   targetDirectory: string;
   flexSdkVersion: string;
   flexPluginVersion: string;
@@ -44,6 +45,9 @@ export const createFlexPlugin = async (config: FlexPluginArguments) => {
   if (!await _scaffold(config)) {
     throw new FlexPluginError('Failed to scaffold project');
   }
+
+  // Add new plugin to .twilio-cli/flex/plugins.json
+  await checkPluginConfigurationExists(config.name, config.targetDirectory);
 
   // Install NPM dependencies
   if (config.install) {

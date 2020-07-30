@@ -1,5 +1,5 @@
 import { env, logger, semver, FlexPluginError } from 'flex-dev-utils';
-import { checkFilesExist, findGlobs, resolveRelative, mkdirpSync, getPaths, readPluginsJson, writeJSONFile, getCwd } from 'flex-dev-utils/dist/fs';
+import { checkFilesExist, findGlobs, resolveRelative, getPaths, getCwd, checkPluginConfigurationExists } from 'flex-dev-utils/dist/fs';
 import { addCWDNodeModule, resolveModulePath, _require } from 'flex-dev-utils/dist/require';
 import { existsSync, copyFileSync, readFileSync } from 'fs';
 import { join } from 'path';
@@ -164,37 +164,6 @@ export const _checkPluginCount = () => {
 };
 
 /**
- * Touch ~/.twilio-cli/flex/plugins.json if it does not exist
- * Check if this plugin is in this config file. If not, add it.
- * @private
- */
-export const _checkPluginConfigurationExists = async () => {
-  if (!checkFilesExist(getPaths().cli.pluginsJsonPath)) {
-      mkdirpSync(getPaths().cli.flexDir);
-      writeJSONFile(getPaths().cli.pluginsJsonPath, {plugins: []});
-  }
-
-  const config = readPluginsJson();
-  const plugin = config.plugins.find((p) => p.name === getPaths().app.name);
-
-  if (!plugin) {
-    config.plugins.push({name: getPaths().app.name, dir: getPaths().app.dir, port: 0});
-    writeJSONFile(getPaths().cli.pluginsJsonPath, config);
-    return;
-  }
-
-  if (plugin.dir === getPaths().app.dir) {
-    return;
-  }
-
-  const answer = await confirm(`You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${getPaths().app.dir}?`, 'N');
-  if (answer) {
-    plugin.dir = getPaths().app.dir;
-    writeJSONFile(getPaths().cli.pluginsJsonPath, config);
-  }
-};
-
-/**
  * Runs pre-start/build checks
  */
 const checkStart = async (...args: string[]) => {
@@ -206,7 +175,7 @@ const checkStart = async (...args: string[]) => {
   _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
   _checkPluginCount();
   _validateTypescriptProject();
-  await _checkPluginConfigurationExists();
+  await checkPluginConfigurationExists(getPaths().app.name, getPaths().app.dir);
 };
 
 run(checkStart);
