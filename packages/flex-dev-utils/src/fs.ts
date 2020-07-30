@@ -6,6 +6,7 @@ import mkdirp from 'mkdirp';
 import tmp from 'tmp';
 import { promisify } from 'util';
 import rimRaf from 'rimraf';
+import { confirm } from './inquirer';
 
 export interface PackageJson {
   name: string;
@@ -227,6 +228,37 @@ export const resolveRelative = (dir: string, ...paths: string[]) => {
 export const findGlobs = (...patterns: string[]) => {
   // TODO: move paths from flex-plugin-scripts into here and use it here too
   return findGlobsIn(path.join(getCwd(), 'src'), ...patterns);
+};
+
+/**
+ * Touch ~/.twilio-cli/flex/plugins.json if it does not exist
+ * Check if this plugin is in this config file. If not, add it.
+ * @private
+ */
+export const checkPluginConfigurationExists = async (name: string, dir: string) => {
+  if (!checkFilesExist(getPaths().cli.pluginsJsonPath)) {
+      mkdirpSync(getPaths().cli.flexDir);
+      writeJSONFile(getPaths().cli.pluginsJsonPath, {plugins: []});
+  }
+
+  const config = readPluginsJson();
+  const plugin = config.plugins.find((p) => p.name === name);
+
+  if (!plugin) {
+    config.plugins.push({name, dir, port: 0});
+    writeJSONFile(getPaths().cli.pluginsJsonPath, config);
+    return;
+  }
+
+  if (plugin.dir === dir) {
+    return;
+  }
+
+  const answer = await confirm(`You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${dir}?`, 'N');
+  if (answer) {
+    plugin.dir = dir;
+    writeJSONFile(getPaths().cli.pluginsJsonPath, config);
+  }
 };
 
 /**
