@@ -18,6 +18,7 @@ describe('fs', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     jest.resetModules();
+    jest.restoreAllMocks();
   });
 
   describe('readPackageJson', () => {
@@ -241,25 +242,20 @@ describe('fs', () => {
       assetBaseUrlTemplate: 'template',
     }
 
-    const checkFilesExist = jest
-      .spyOn(fs, 'checkFilesExist');
-    const mkdirpSync = jest
-      .spyOn(fs, 'mkdirpSync');
-    const writeFileSync = jest
-      .spyOn(fs.default, 'writeFileSync');
-    const readJsonFile = jest
-      .spyOn(fs, 'readJsonFile');
-    const confirm = jest
-      .spyOn(inquirer, 'confirm');
-    const getPaths = jest
-      .spyOn(fs, 'getPaths');
+    let checkFilesExist = jest.spyOn(fs, 'checkFilesExist');
+    let mkdirpSync = jest.spyOn(fs, 'mkdirpSync');
+    let writeFileSync = jest.spyOn(fs.default, 'writeFileSync');
+    let readJsonFile = jest.spyOn(fs, 'readJsonFile');
+    let confirm = jest.spyOn(inquirer, 'confirm');
+    let getPaths = jest.spyOn(fs, 'getPaths');
 
     beforeEach(() => {
-      checkFilesExist.mockReset();
-      mkdirpSync.mockReset();
-      writeFileSync.mockReset();
-      readJsonFile.mockReset();
-      confirm.mockReset();
+      checkFilesExist = jest.spyOn(fs, 'checkFilesExist');
+      mkdirpSync = jest.spyOn(fs, 'mkdirpSync');
+      writeFileSync = jest.spyOn(fs.default, 'writeFileSync');
+      readJsonFile = jest.spyOn(fs, 'readJsonFile');
+      confirm = jest.spyOn(inquirer, 'confirm');
+      getPaths = jest.spyOn(fs, 'getPaths');
 
       mkdirpSync.mockReturnThis();
       writeFileSync.mockReturnThis();
@@ -267,15 +263,6 @@ describe('fs', () => {
 
        // @ts-ignore
       getPaths.mockReturnValue(paths);
-    });
-
-    afterAll(() => {
-      checkFilesExist.mockRestore();
-      mkdirpSync.mockRestore();
-      writeFileSync.mockRestore();
-      readJsonFile.mockRestore();
-      confirm.mockRestore();
-      getPaths.mockRestore();
     });
 
     it('make directories if not found', async () => {
