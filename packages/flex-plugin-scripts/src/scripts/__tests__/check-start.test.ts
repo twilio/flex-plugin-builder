@@ -4,7 +4,6 @@ import * as requireScripts from 'flex-dev-utils/dist/require';
 import * as fsScripts from 'flex-dev-utils/dist/fs';
 import * as prints from '../../prints';
 import * as checkStartScript from '../check-start';
-import * as inquirer from 'flex-dev-utils/dist/inquirer';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('../../prints/versionMismatch');
