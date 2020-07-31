@@ -55,6 +55,7 @@ describe('index', () => {
       expect.anything(),
       '--name',
       pluginName,
+      '--run-script',
     ]);
   });
 
@@ -72,6 +73,7 @@ describe('index', () => {
       expect.anything(),
       '--name',
       pluginName,
+      '--run-script',
     ]);
   });
 
@@ -88,6 +90,7 @@ describe('index', () => {
       '--disallow-versioning',
       '--name',
       pluginName,
+      '--run-script',
     ]);
   });
 
