@@ -7,15 +7,10 @@ import { Callback } from 'flex-dev-utils/dist/runner';
  * @param callback
  */
 export default async (callback: Callback) => {
-  if (isRequiredScript()) {
+  if (process.argv.includes('--run-script')) {
     await runner(callback, ...process.argv.splice(2));
   }
 };
-
-/**
- * Returns true if module is required (i.e. not spawned)
- */
-export const isRequiredScript = () => require.main === module.parent;
 
 /**
  * Exits unless --no-process-exit flag is provided

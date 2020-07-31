@@ -66,6 +66,7 @@ const spawnScript = async (...argv: string[]) => {
     processArgs.push(getPaths().app.name);
   }
 
+  processArgs.push('--run-script');
   const { exitCode } = await spawn('node', processArgs);
   exit(exitCode, argv);
 };
