@@ -7,14 +7,21 @@ import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/fle
  * Starts the dev-server for building and iterating on a flex-plugin
  */
 export default class FlexPluginsStart extends FlexPlugin {
-  static description = createDescription('Starts a dev-server to build the Flex plugin locally', false);
+  static description = createDescription(
+    'Starts a dev-server to build the Flex plugin locally. If the --name flag is used at least once, the command does not need to be invoked in a plugin directory. Else, it does.',
+    false,
+  );
 
   static flags = {
     ...FlexPlugin.flags,
     name: flags.string({
       multiple: true,
+      description:
+        'The name of the plugin(s) you would like to run, formatted as pluginName to run locally, or pluginName@remote to run remotely.',
     }),
-    'include-remote': flags.boolean(),
+    'include-remote': flags.boolean({
+      description: 'Use this flag to include all remote plugins in your build.',
+    }),
   };
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
