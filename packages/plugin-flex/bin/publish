@@ -23,15 +23,15 @@ echo -ne "Publishing as a \033[1m${tag}\033[0m release\033[0K\r"
 echo -ne "\r\n"
 
 # Cleanup
-# npm run clean
-# npm install
+npm run clean
+npm install
 
 # Test
-# npm run lint
-# npm run test
+npm run lint
+npm run test
 
 # Replace Readme
-# cp $DIR/../docs/README.md $DIR/../README.md
+cp $DIR/../docs/README.md $DIR/../README.md
 
 # Bump version
 bump="patch"
@@ -42,9 +42,9 @@ if [ "$1" == "major" ] ; then
   bump="major"
 fi
 if [ "$2" == "public" ] ; then
-  npm version "${bump}"
+  version=$(npm version "${bump}")
 else
-  npm version "pre${bump}" --preid=next
+  version=$(npm version "pre${bump}" --preid=next)
 fi
 
 # Publish
@@ -53,3 +53,8 @@ if [ "$2" == "public" ] ; then
 else
   npm publish --tag next
 fi
+
+# Push readme
+git add README.md
+git commit -m "Published ${version}" --no-verify
+git push --no-verify
