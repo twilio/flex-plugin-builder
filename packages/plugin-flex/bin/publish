@@ -1,0 +1,55 @@
+#!/bin/bash
+
+## Publish Script
+## Cleans up the node_modules, re-installs everything, runs test before publishing
+## It will generate the docs and pushes the changes up to main branch
+##    ./bin/publish public      publishes as a bump
+##    ./bin/publish             publishes as next-gen
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+# Show notification and a countdown before publishing
+secs=5
+while [ $secs -gt 0 ]; do
+  tag="beta (next)"
+  if [ "$2" == "public" ] ; then
+    tag="public"
+  fi
+  echo -ne "Publishing as a \033[1m${tag}\033[0m release in ${secs}sec\033[0K\r"
+  sleep 1
+  : $((secs--))
+done
+echo -ne "Publishing as a \033[1m${tag}\033[0m release\033[0K\r"
+echo -ne "\r\n"
+
+# Cleanup
+# npm run clean
+# npm install
+
+# Test
+# npm run lint
+# npm run test
+
+# Replace Readme
+# cp $DIR/../docs/README.md $DIR/../README.md
+
+# Bump version
+bump="patch"
+if [ "$1" == "minor" ] ; then
+  bump="minor"
+fi
+if [ "$1" == "major" ] ; then
+  bump="major"
+fi
+if [ "$2" == "public" ] ; then
+  npm version "${bump}"
+else
+  npm version "pre${bump}" --preid=next
+fi
+
+# Publish
+if [ "$2" == "public" ] ; then
+  npm publish
+else
+  npm publish --tag next
+fi

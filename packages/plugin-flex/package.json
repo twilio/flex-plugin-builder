@@ -23,13 +23,15 @@
   "scripts": {
     "prebuild": "rm -rf lib",
     "build": "tsc",
+    "clean": "rm -rf lib node_modules",
     "lint": "eslint --ext .ts src/",
     "lint:fix": "npm run lint -- --fix",
-    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "prepack": "oclif-dev manifest && oclif-dev readme && git add README.md",
     "postpack": "rm -f oclif.manifest.json",
-    "test:ci": "nyc npm run test",
+    "publish:next": "./bin/publish $1",
+    "publish:public": "./bin/publish $1 public",
     "test": "mocha -r ts-node/register \"src/__tests__/**/*.test.ts\"",
-    "version": "oclif-dev readme && git add README.md"
+    "test:ci": "nyc npm run test"
   },
   "husky": {
     "hooks": {
