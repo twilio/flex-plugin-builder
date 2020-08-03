@@ -32,6 +32,8 @@ echo "=== Linting ==="
 npm run lint
 echo "=== Testing ==="
 npm run test
+echo "=== Building ==="
+npm run build
 
 # Bump version
 bump="patch"
