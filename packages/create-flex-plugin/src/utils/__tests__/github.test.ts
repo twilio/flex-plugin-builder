@@ -1,6 +1,5 @@
 import axios, { MockAdapter } from 'flex-dev-utils/dist/axios';
 import * as fsScripts from 'flex-dev-utils/dist/fs';
-import * as fsScript from 'flex-dev-utils/dist/fs';
 
 import * as github from '../github';
 
@@ -247,10 +246,10 @@ describe('github', () => {
     it('should call request', async () => {
       const result = { data: 'the-data' };
       const writeFileSync = jest
-        .spyOn(fsScript.default, 'writeFileSync')
+        .spyOn(fsScripts.default, 'writeFileSync')
         .mockReturnValue(undefined);
       const mkdirpSync = jest
-        .spyOn(fsScript, 'mkdirpSync')
+        .spyOn(fsScripts, 'mkdirpSync')
         .mockReturnValue(null);
       const request = jest
         .spyOn(axios, 'request')

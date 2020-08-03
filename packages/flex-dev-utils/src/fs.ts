@@ -8,7 +8,6 @@ import { promisify } from 'util';
 import rimRaf from 'rimraf';
 import { confirm } from './inquirer';
 import { resolveModulePath } from './require';
-import { FlexPluginError } from './errors';
 
 export interface PackageJson {
   name: string;
@@ -279,7 +278,7 @@ export const getPaths = () => {
   const nodeModulesDir = resolveCwd('node_modules');
   const flexPluginScriptPath = resolveModulePath('flex-plugin-scripts');
   if (flexPluginScriptPath === false) {
-    throw new FlexPluginError('Could not resolve flex-plugin-scripts');
+    throw new Error('Could not resolve flex-plugin-scripts');
   }
   const scriptsDir = path.join(path.dirname(flexPluginScriptPath), '..');
   const devAssetsDir = resolveRelative(scriptsDir, 'dev_assets');

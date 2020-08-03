@@ -67,11 +67,21 @@ describe('TestScript', () => {
   });
 
   describe('_validateJest', () => {
+    const paths = {
+      app: {
+        jestConfigPath: 'jest/config/path',
+      },
+    };
     const checkFilesExist = jest.spyOn(fsScripts, 'checkFilesExist');
     const resolveModulePath = jest.spyOn(requireScripts, 'resolveModulePath');
 
     // @ts-ignore
     const exit = jest.spyOn(process, 'exit').mockReturnThis(() => { /* no-op */ });
+
+    beforeEach(() => {
+      // @ts-ignore
+      jest.spyOn(fsScripts, 'getPaths').mockReturnValue(paths);
+    });
 
     it('should not check anything if no jestConfig exists', () => {
       checkFilesExist.mockReturnValue(false);
