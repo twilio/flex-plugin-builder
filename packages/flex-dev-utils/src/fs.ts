@@ -7,6 +7,8 @@ import tmp from 'tmp';
 import { promisify } from 'util';
 import rimRaf from 'rimraf';
 import { confirm } from './inquirer';
+import { resolveModulePath } from './require';
+import { FlexPluginError } from './errors';
 
 export interface PackageJson {
   name: string;
@@ -274,10 +276,12 @@ export { DirResult as TmpDirResult } from 'tmp';
 
 export const getPaths = () => {
   const cwd = getCwd();
-  const coreCwd = getCoreCwd();
   const nodeModulesDir = resolveCwd('node_modules');
-  const coreNodeModulesDir = resolveRelative(coreCwd, 'node_modules');
-  const scriptsDir = resolveRelative(coreNodeModulesDir, 'flex-plugin-scripts');
+  const flexPluginScriptPath = resolveModulePath('flex-plugin-scripts');
+  if (flexPluginScriptPath === false) {
+    throw new FlexPluginError('Could not resolve flex-plugin-scripts');
+  }
+  const scriptsDir = path.join(path.dirname(flexPluginScriptPath), '..');
   const devAssetsDir = resolveRelative(scriptsDir, 'dev_assets');
   const publicDir = resolveCwd('public');
   const buildDir = resolveCwd('build');
