@@ -38,9 +38,9 @@ export default class FlexPluginsDescribeConfiguration extends InformationFlexPlu
   print(configuration: DescribeConfiguration): void {
     this.printHeader('SID', configuration.sid);
     this.printHeader('Name', configuration.name);
-    this.printHeader('Status', configuration.isActive ? 'Active' : 'Inactive');
+    this.printHeader('Status', configuration.isActive);
     this.printHeader('Description', configuration.description);
-    this.printHeader('Created', this.parseDate(configuration.dateCreated));
+    this.printHeader('Created', configuration.dateCreated);
     this._logger.newline();
 
     this.printHeader('Plugins');

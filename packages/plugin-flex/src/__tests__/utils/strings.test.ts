@@ -25,4 +25,20 @@ describe('Utils/Strings', () => {
       expect(stringsUtils.toSentenceCase('basicNameYoWithSid')).to.equal('Basic Name Yo With SID');
     });
   });
+
+  describe('isNullOrUndefined', () => {
+    it('should return true', () => {
+      expect(stringsUtils.isNullOrUndefined()).to.equal(true);
+      expect(stringsUtils.isNullOrUndefined(undefined)).to.equal(true);
+      expect(stringsUtils.isNullOrUndefined(null)).to.equal(true);
+    });
+
+    it('should return false', () => {
+      expect(stringsUtils.isNullOrUndefined(1)).to.equal(false);
+      expect(stringsUtils.isNullOrUndefined('')).to.equal(false);
+      expect(stringsUtils.isNullOrUndefined(' ')).to.equal(false);
+      expect(stringsUtils.isNullOrUndefined('a')).to.equal(false);
+      expect(stringsUtils.isNullOrUndefined(false)).to.equal(false);
+    });
+  });
 });

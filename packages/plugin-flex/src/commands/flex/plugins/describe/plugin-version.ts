@@ -53,7 +53,7 @@ export default class FlexPluginsDescribePluginVersion extends InformationFlexPlu
     this.printHeader('Url', version.url);
     this.printHeader('Changelog', version.changelog);
     this.printHeader('Private', version.isPrivate);
-    this.printHeader('Created', this.parseDate(version.dateCreated));
+    this.printHeader('Created', version.dateCreated);
   }
 
   /**

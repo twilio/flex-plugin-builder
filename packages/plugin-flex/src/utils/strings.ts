@@ -9,6 +9,10 @@ const KEY_CASE_OVERWRITE = {
   url: 'URL',
 };
 
+type NullUndefined = null | undefined | unknown;
+// eslint-disable-next-line @typescript-eslint/ban-types
+type Primitive = number | string | object;
+
 /**
  * Converts a string from camelCase to Sentence Case
  * @param key
@@ -25,3 +29,9 @@ export const toSentenceCase = (key: string): string => {
 
   return split.map(toSentenceCase).join(' ');
 };
+
+/**
+ * Returns true if value is null or undefined
+ * @param value the value to check
+ */
+export const isNullOrUndefined = (value?: NullUndefined | Primitive) => value === undefined || value === null;
