@@ -1,5 +1,5 @@
 import ipc from 'node-ipc';
-import { logger } from 'flex-dev-utils';
+import { env, logger } from 'flex-dev-utils';
 import webpack from 'webpack';
 import ToJsonOutput = webpack.Stats.ToJsonOutput;
 
@@ -26,7 +26,7 @@ type MessageCallbacks = { [key in IPCType]?: MessageCallback<key>[]; }
 
 ipc.config.id = 'twilio.flex.plugin-builder';
 ipc.config.retry = 1500;
-ipc.config.silent = true;
+ipc.config.silent = !env.isDebug();
 
 let _isServerRunning: boolean = false;
 let _isClientConnected: boolean = false;
