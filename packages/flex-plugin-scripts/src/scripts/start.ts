@@ -1,8 +1,7 @@
 import { env, logger, open } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import { getPaths, setCwd, readPluginsJson, writeJSONFile } from 'flex-dev-utils/dist/fs';
-import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
+import { getPaths, setCwd, readPluginsJson, writeJSONFile, addCWDNodeModule } from 'flex-dev-utils/dist/fs';
 import { findPort, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import WebpackDevServer from 'webpack-dev-server';
 

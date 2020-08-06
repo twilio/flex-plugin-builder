@@ -1,6 +1,5 @@
 import fs from 'fs';
 
-import * as requireScripts from 'flex-dev-utils/dist/require';
 import * as fsScripts from 'flex-dev-utils/dist/fs';
 import * as prints from '../../prints';
 import * as checkStartScript from '../check-start';
@@ -145,7 +144,7 @@ describe('CheckStartScript', () => {
   });
 
   describe('_verifyPackageVersion', () => {
-    const _require = jest.spyOn(requireScripts, '_require');
+    const _require = jest.spyOn(fsScripts, '_require');
 
     it('should quit if expected dependency is not found', () => {
       const pkg = {
@@ -301,7 +300,7 @@ describe('CheckStartScript', () => {
       .spyOn(checkStartScript, '_hasTypescriptFiles')
       .mockReturnThis();
     const resolveModulePath = jest
-      .spyOn(requireScripts, 'resolveModulePath')
+      .spyOn(fsScripts, 'resolveModulePath')
       .mockReturnThis();
     const checkFilesExist = jest
       .spyOn(fsScripts, 'checkFilesExist')

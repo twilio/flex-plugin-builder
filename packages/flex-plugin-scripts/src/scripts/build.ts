@@ -1,6 +1,6 @@
 import { env, logger } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
-import { addCWDNodeModule } from 'flex-dev-utils/dist/require';
+import { addCWDNodeModule } from 'flex-dev-utils/dist/fs';
 import webpack, { Compiler } from 'webpack';
 
 import getConfiguration, { ConfigurationType } from '../config';

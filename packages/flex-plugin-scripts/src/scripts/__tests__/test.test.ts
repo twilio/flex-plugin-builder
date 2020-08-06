@@ -1,12 +1,10 @@
 import * as fsScripts from 'flex-dev-utils/dist/fs';
-import * as requireScripts from 'flex-dev-utils/dist/require';
 import * as testScripts from '../test';
 import * as innerTestScript from '../test/test';
 import * as prints from '../../prints';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/env');
-jest.mock('flex-dev-utils/dist/require');
 jest.mock('../../prints/jestNotInstalled');
 
 describe('TestScript', () => {
@@ -73,7 +71,7 @@ describe('TestScript', () => {
       },
     };
     const checkFilesExist = jest.spyOn(fsScripts, 'checkFilesExist');
-    const resolveModulePath = jest.spyOn(requireScripts, 'resolveModulePath');
+    const resolveModulePath = jest.spyOn(fsScripts, 'resolveModulePath');
 
     // @ts-ignore
     const exit = jest.spyOn(process, 'exit').mockReturnThis(() => { /* no-op */ });
