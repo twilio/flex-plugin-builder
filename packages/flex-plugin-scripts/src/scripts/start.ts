@@ -6,7 +6,7 @@ import { findPort, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils
 import WebpackDevServer from 'webpack-dev-server';
 
 import getConfiguration, { ConfigurationType, WebpackType } from '../config';
-import compiler from '../utils/compiler';
+import compiler from '../config/compiler';
 
 import run, { exit } from '../utils/run';
 import pluginServer, { Plugin } from '../config/devServer/pluginServer';
@@ -20,16 +20,38 @@ interface UserInputPlugin {
   version?: string;
 }
 
+interface StartServerOptions {
+  port: number;
+  remoteAll: boolean;
+  type: WebpackType;
+}
+
+export interface StartScript {
+  port: number;
+}
+
+/**
+ * Finds the port
+ * @param args
+ */
+export const findPortAvailablePort = (...args: string[]) => {
+  const portIndex = args.indexOf('--port');
+  return portIndex !== -1
+      ? Promise.resolve(parseInt(args[portIndex + 1], 10))
+      : findPort(getDefaultPort(process.env.PORT));
+}
+
+
 /**
  * Starts the dev-server
  */
-const start = async (...args: string[]) => {
+export const start = async (...args: string[]): Promise<StartScript> => {
   logger.debug('Starting local development environment');
 
   addCWDNodeModule(...args);
 
   // Finds the first available free port where two consecutive ports are free
-  const port = await findPort(getDefaultPort(process.env.PORT));
+  const port = await findPortAvailablePort(...args);
 
   env.setBabelEnv(Environment.Development);
   env.setNodeEnv(Environment.Development);
@@ -70,7 +92,13 @@ const start = async (...args: string[]) => {
     _updatePluginPort(port, plugin.name);
   }
 
-  _startDevServer(port, userInputPlugins, type, args.includes('--include-remote'));
+  const options = {
+    port,
+    type,
+    remoteAll: args.includes('--include-remote'),
+  };
+
+  return _startDevServer(userInputPlugins, options);
 };
 
 /**
@@ -82,10 +110,12 @@ const start = async (...args: string[]) => {
  * @private
  */
 /* istanbul ignore next */
-export const _startDevServer = (port: number, plugins: UserInputPlugin[], type: WebpackType, remoteAll: boolean) => {
+export const _startDevServer = async (plugins: UserInputPlugin[], options: StartServerOptions): Promise<StartScript> => {
+  const { type, port, remoteAll } = options;
   const config = getConfiguration(ConfigurationType.Webpack, Environment.Development, type);
   const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development, type);
 
+  const { local } = getLocalAndNetworkUrls(port);
   const localPlugins = plugins.filter(p => !p.remote);
   const pluginRequest = {
     local: localPlugins.map(p => p.name),
@@ -98,9 +128,10 @@ export const _startDevServer = (port: number, plugins: UserInputPlugin[], type: 
     pluginServer(pluginRequest, devConfig, pluginServerConfig);
   }
 
+  // Setup IPC server for bundle update
+
   const devCompiler = compiler(config, true, type, pluginRequest.local);
   const devServer = new WebpackDevServer(devCompiler, devConfig);
-  const { local } = getLocalAndNetworkUrls(port);
 
   if (type !== WebpackType.Static) {
     // Show TS errors on browser
@@ -144,6 +175,10 @@ export const _startDevServer = (port: number, plugins: UserInputPlugin[], type: 
   if (!env.isCI()) {
     process.stdin.on('end', cleanUp);
     process.stdin.resume();
+  }
+
+  return {
+    port,
   }
 };
 

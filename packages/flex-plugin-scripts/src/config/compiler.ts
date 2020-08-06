@@ -6,7 +6,7 @@ import { SyncHook } from 'tapable';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import typescriptFormatter, { Issue } from '@k88/typescript-compile-error-formatter';
 import webpack, { Compiler as WebpackCompiler, Configuration } from 'webpack';
-import { WebpackType } from '../config';
+import { WebpackType } from './index';
 import { devServerSuccessful } from '../prints';
 import { FunctionalCallback } from '../types';
 import { getPaths } from 'flex-dev-utils/dist/fs';
