@@ -58,7 +58,7 @@ describe('StartScript', () => {
       expect(getDefaultPort).toHaveBeenCalledWith(port.toString());
       expect(_startDevServer).toHaveBeenCalledTimes(1);
       expect(_parseUserInputPlugins).toHaveBeenCalledTimes(1);
-      expect(_startDevServer).toHaveBeenCalledWith(port, [{name: 'plugin-test', remote: false}], type, false);
+      expect(_startDevServer).toHaveBeenCalledWith([{name: 'plugin-test', remote: false}], {port, type, remoteAll: false});
     }
 
     beforeEach(() => {
