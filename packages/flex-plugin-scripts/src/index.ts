@@ -8,7 +8,7 @@ import { render as markedRender } from 'flex-dev-utils/dist/marked';
 import { join, dirname } from 'path';
 
 import run, { exit } from './utils/run';
-import { getPaths, getCwd } from 'flex-dev-utils/dist/fs';
+import { getPaths, getCwd, addCWDNodeModule } from 'flex-dev-utils/dist/fs';
 
 checkForUpdate();
 
@@ -60,7 +60,9 @@ const spawnScript = async (...argv: string[]) => {
     processArgs.push('--disallow-versioning');
   }
 
-  // Backwards Compatability 'npm run start'
+  addCWDNodeModule(...processArgs);
+
+  // Backwards Compatibility 'npm run start'
   if (getCwd().includes('plugin-') && !processArgs.includes(getPaths().app.name)) {
     processArgs.push('--name');
     processArgs.push(getPaths().app.name);
