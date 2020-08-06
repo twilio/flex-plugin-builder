@@ -1,16 +1,17 @@
-import { logger, env } from 'flex-dev-utils';
-import webpackFormatMessages from '@k88/format-webpack-messages';
+import { logger } from 'flex-dev-utils';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import { SyncHook } from 'tapable';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import typescriptFormatter, { Issue } from '@k88/typescript-compile-error-formatter';
 import webpack, { Compiler as WebpackCompiler, Configuration } from 'webpack';
-import { WebpackType } from './index';
-import { devServerSuccessful } from '../prints';
 import { FunctionalCallback } from '../types';
 import { getPaths } from 'flex-dev-utils/dist/fs';
 import CompilerHooks = webpack.compilation.CompilerHooks;
+import ToJsonOutput = webpack.Stats.ToJsonOutput;
+import { OnCompileCompletePayload } from './devServer/ipcServer';
+import { devServerSuccessful } from '../prints';
+import webpackFormatMessages from '@k88/format-webpack-messages';
+import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 
 export interface ErrorsAndWarnings {
   errors: string[];
@@ -23,6 +24,13 @@ interface Hook extends CompilerHooks {
 export interface Compiler extends WebpackCompiler {
   hooks: Hook;
 }
+type OnCompile = (payload: OnCompileCompletePayload) => void;
+interface OnCompileResult {
+  [key: string]: ToJsonOutput;
+}
+
+// Holds all compilation errors
+const results: OnCompileResult = {};
 
 /**
  * Creates a webpack compiler
@@ -33,7 +41,7 @@ export interface Compiler extends WebpackCompiler {
  * @param localPlugins  the names of plugins to run locally
  */
 /* istanbul ignore next */
-export default (config: Configuration, devServer: boolean, type = WebpackType.Complete, localPlugins: string[]): Compiler => {
+export default (config: Configuration, devServer: boolean, onCompile: OnCompile): Compiler => {
   logger.debug('Creating webpack compiler');
 
   try {
@@ -44,7 +52,6 @@ export default (config: Configuration, devServer: boolean, type = WebpackType.Co
     if (!devServer) {
       return compiler;
     }
-    const { local, network } = getLocalAndNetworkUrls(env.getPort());
     let tsMessagesPromise: Promise<ErrorsAndWarnings>;
     let tsMessagesResolver: FunctionalCallback<ErrorsAndWarnings, void>;
 
@@ -75,11 +82,10 @@ export default (config: Configuration, devServer: boolean, type = WebpackType.Co
     // invalid is `bundle invalidated` and is invoked when files are modified in dev-server.
     compiler.hooks.invalid.tap('invalid', () => {
       logger.clearTerminal();
-      logger.info('Re-compiling...');
+      logger.info(`Re-compiling **${getPaths().app.name}**`);
     });
 
     compiler.hooks.done.tap('done', async stats => {
-      logger.clearTerminal();
       const result = stats.toJson({ all: false, errors: true, warnings: true });
 
       if (getPaths().app.isTSProject() && !stats.hasErrors()) {
@@ -98,35 +104,7 @@ export default (config: Configuration, devServer: boolean, type = WebpackType.Co
         compiler.hooks.tsCompiled.call(messages.warnings, messages.errors);
       }
 
-      const isSuccessful = result.errors.length === 0 && result.warnings.length === 0;
-      if (isSuccessful) {
-        if (type === WebpackType.Static || type === WebpackType.Complete) {
-          devServerSuccessful(local, network, localPlugins);
-        }
-        return;
-      }
-
-      const formatted = webpackFormatMessages({
-        errors: result.errors,
-        warnings: result.warnings,
-      });
-
-      // Only show errors if both exist
-      if (stats.hasErrors()) {
-        // Most errors are duplicate of the same error
-        // So only show the first error
-        formatted.errors.length = 1;
-
-        logger.error(`Failed to compile plugin ${logger.colors.red.bold(getPaths().app.name)}.`);
-        logger.info(formatted.errors.join('\n'));
-        logger.newline();
-        return;
-      }
-
-      // Show warning messages
-      logger.warning(`Compiled plugin ${logger.colors.yellow.bold(getPaths().app.name)} with warning(s).`);
-      logger.info(formatted.warnings.join('\n'));
-      logger.newline();
+      onCompile({result, appName: getPaths().app.name});
     });
 
     return compiler;
@@ -134,3 +112,54 @@ export default (config: Configuration, devServer: boolean, type = WebpackType.Co
     throw new FlexPluginError('Failed to create a webpack compiler: ' + err.message);
   }
 };
+
+/**
+ * Prints the errors and warnings or a successful message when compilation finishes
+ * @param port    the port the server is running on
+ * @param plugins the local plugins running
+ * @param showSuccessMsg    whether to show succecss message or not
+ */
+export const onCompileComplete = (port: number, plugins: string[], showSuccessMsg: boolean): OnCompile => {
+  const { local, network } = getLocalAndNetworkUrls(port);
+  return ({ result, appName}) => {
+    logger.clearTerminal();
+    results[appName] = result;
+
+    const isSuccessful = Object
+      .values(results)
+      .every(r => r.errors.length === 0 && r.warnings.length === 0);
+    if (isSuccessful) {
+      if (showSuccessMsg) {
+        devServerSuccessful(local, network, plugins);
+      }
+      return;
+    }
+
+    Object
+      .keys(results)
+      .forEach(name => {
+        const formatted = webpackFormatMessages({
+          errors: results[name].errors,
+          warnings: results[name].warnings,
+        });
+
+        // Only show errors if both exist
+        if (results[name].errors.length) {
+          // Most errors are duplicate of the same error
+          // So only show the first error
+          formatted.errors.length = 1;
+
+          logger.error(`Failed to compile plugin ${logger.colors.red.bold(name)}.`);
+          logger.info(formatted.errors.join('\n'));
+          logger.newline();
+          return;
+        }
+
+        if (results[name].warnings.length) {
+          logger.warning(`Compiled plugin ${logger.colors.yellow.bold(name)} with warning(s).`);
+          logger.info(formatted.warnings.join('\n'));
+          logger.newline();
+        }
+      });
+  }
+}

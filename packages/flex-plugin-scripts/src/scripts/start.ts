@@ -1,17 +1,23 @@
-import { env, logger, open } from 'flex-dev-utils';
+import { env, logger } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import { getPaths, setCwd, readPluginsJson, writeJSONFile, addCWDNodeModule } from 'flex-dev-utils/dist/fs';
-import { findPort, getDefaultPort, getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
-import WebpackDevServer from 'webpack-dev-server';
+import { addCWDNodeModule, getPaths, readPluginsJson, setCwd, writeJSONFile } from 'flex-dev-utils/dist/fs';
+import { findPort, getDefaultPort } from 'flex-dev-utils/dist/urls';
 
 import getConfiguration, { ConfigurationType, WebpackType } from '../config';
-import compiler from '../config/compiler';
+import compiler, { onCompileComplete } from '../config/compiler';
 
-import run, { exit } from '../utils/run';
+import run from '../utils/run';
 import pluginServer, { Plugin } from '../config/devServer/pluginServer';
+import {
+  emitCompileComplete,
+  IPCType,
+  onIPCServerMessage,
+  startIPCClient,
+  startIPCServer,
+} from '../config/devServer/ipcServer';
+import webpackDevServer from '../config/devServer/webpackDevServer';
 
-const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
 const PLUGIN_INPUT_PARSER_REGEX = /([\w-]+)(?:@(\S+))?/;
 
 interface UserInputPlugin {
@@ -112,10 +118,11 @@ export const start = async (...args: string[]): Promise<StartScript> => {
 /* istanbul ignore next */
 export const _startDevServer = async (plugins: UserInputPlugin[], options: StartServerOptions): Promise<StartScript> => {
   const { type, port, remoteAll } = options;
+  const isJavaScriptServer = type === WebpackType.JavaScript;
+  const isStaticServer = type === WebpackType.Static;
   const config = getConfiguration(ConfigurationType.Webpack, Environment.Development, type);
   const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development, type);
 
-  const { local } = getLocalAndNetworkUrls(port);
   const localPlugins = plugins.filter(p => !p.remote);
   const pluginRequest = {
     local: localPlugins.map(p => p.name),
@@ -123,59 +130,28 @@ export const _startDevServer = async (plugins: UserInputPlugin[], options: Start
   };
 
   // Setup plugin's server
-  if (type !== WebpackType.JavaScript) {
+  if (!isJavaScriptServer) {
     const pluginServerConfig = { port, remoteAll };
     pluginServer(pluginRequest, devConfig, pluginServerConfig);
   }
 
-  // Setup IPC server for bundle update
+  // onComplication complete callback
+  const onCompile = onCompileComplete(port, pluginRequest.local, !isJavaScriptServer);
 
-  const devCompiler = compiler(config, true, type, pluginRequest.local);
-  const devServer = new WebpackDevServer(devCompiler, devConfig);
-
-  if (type !== WebpackType.Static) {
-    // Show TS errors on browser
-    devCompiler.hooks.tsCompiled.tap('afterTSCompile', (warnings, errors) => {
-      if (warnings.length) {
-        devServer.sockWrite(devServer.sockets, 'warnings', warnings);
-      }
-      if (errors.length) {
-        devServer.sockWrite(devServer.sockets, 'errors', errors);
-      }
-    });
+  // Start IPC Server
+  if (isStaticServer) {
+    startIPCServer();
+    // start-flex will be listening to compilation errors emitted by start-plugin
+    onIPCServerMessage(IPCType.onCompileComplete, onCompile);
+  }
+  // Start IPC Client
+  if (isJavaScriptServer) {
+    startIPCClient();
   }
 
-  // Start the dev-server
-  devServer.listen(local.port, local.host, async (err) => {
-    if (err) {
-      logger.error(err);
-      return;
-    }
-
-    logger.clearTerminal();
-    const serverType = type === WebpackType.Complete ? '' : `(${type})`;
-    logger.notice('Starting development server %s...', serverType);
-
-    if (type !== WebpackType.Static) {
-      _updatePluginsUrl(port);
-    }
-
-    if (type !== WebpackType.JavaScript) {
-      await open(local.url);
-    }
-  });
-
-  // Close server and exit
-  const cleanUp = () => {
-    devServer.close();
-    exit(0);
-  };
-
-  termSignals.forEach((sig) => process.on(sig, cleanUp));
-  if (!env.isCI()) {
-    process.stdin.on('end', cleanUp);
-    process.stdin.resume();
-  }
+  // Pass either the default onCompile (for start-flex) or the event-emitter (for start-plugin)
+  const devCompiler = compiler(config, true, isJavaScriptServer ? emitCompileComplete : onCompile);
+  webpackDevServer(devCompiler, devConfig, type);
 
   return {
     port,
