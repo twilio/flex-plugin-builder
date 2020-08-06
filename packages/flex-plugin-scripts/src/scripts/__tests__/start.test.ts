@@ -8,7 +8,6 @@ jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/fs');
 jest.mock('flex-dev-utils/dist/urls');
 jest.mock('flex-dev-utils/dist/env');
-jest.mock('flex-dev-utils/dist/require');
 
 const CliPath = '/cli/plugins/path';
 const AppPluginsJsonPath = '/plugins/json/path';

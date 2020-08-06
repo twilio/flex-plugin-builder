@@ -1,9 +1,11 @@
 import { AppPackageJson, PackageJson } from '../fs';
+import appModule from 'app-module-path';
 import * as fs from '../fs';
 import * as globby from 'globby';
 import * as inquirer from '../inquirer';
 
 jest.mock('globby');
+jest.mock('app-module-path');
 
 describe('fs', () => {
   const appPackage: AppPackageJson = {
@@ -434,6 +436,46 @@ describe('fs', () => {
 
       expect(after).toEqual(cwd);
       expect(before).not.toEqual(after);
+    });
+  });
+
+  describe('addCWDNodeModule', () => {
+    it('should add path', () => {
+      const addPath = jest.spyOn(appModule, 'addPath').mockReturnThis();
+      const setCoreCwd = jest.spyOn(fs, 'setCoreCwd').mockReturnThis();
+
+      fs.addCWDNodeModule();
+      expect(setCoreCwd).not.toHaveBeenCalled();
+      expect(addPath).toHaveBeenCalledTimes(1);
+      expect(addPath).toHaveBeenCalledWith(expect.stringContaining('node_modules'));
+    });
+
+    it('should add core-cwd', () => {
+      const cwd = '/new/path';
+      jest.spyOn(appModule, 'addPath').mockReturnThis();
+      const setCoreCwd = jest.spyOn(fs, 'setCoreCwd').mockReturnThis();
+
+      fs.addCWDNodeModule('--core-cwd', cwd);
+      expect(setCoreCwd).toHaveBeenCalledTimes(1);
+      expect(setCoreCwd).toHaveBeenCalledWith(cwd);
+    });
+
+    it('should not add core-cwd if not provided', () => {
+      jest.spyOn(appModule, 'addPath').mockReturnThis();
+      const setCoreCwd = jest.spyOn(fs, 'setCoreCwd').mockReturnThis();
+
+      fs.addCWDNodeModule('--core-cwd');
+      expect(setCoreCwd).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('resolveModulePath', () => {
+    it('should find path', () => {
+      expect(fs.resolveModulePath('jest')).toContain('jest');
+    });
+
+    it('should not find path', () => {
+      expect(fs.resolveModulePath('random-unknown-package')).toEqual(false);
     });
   });
 });

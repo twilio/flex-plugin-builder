@@ -1,4 +1,4 @@
-import { resolveModulePath } from 'flex-dev-utils/dist/require';
+import { resolveModulePath } from 'flex-dev-utils/dist/fs';
 import { join } from 'path';
 
 export const FLEX_PACKAGES: string[] = [

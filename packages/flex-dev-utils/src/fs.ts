@@ -7,7 +7,7 @@ import tmp from 'tmp';
 import { promisify } from 'util';
 import rimRaf from 'rimraf';
 import { confirm } from './inquirer';
-import { resolveModulePath } from './require';
+import appModule from 'app-module-path';
 
 export interface PackageJson {
   name: string;
@@ -39,8 +39,23 @@ let internalCwd = fs.realpathSync(process.cwd());
 let internalCoreCwd = fs.realpathSync(process.cwd());
 
 // Set working directory
-export const setCwd = (p: string) => internalCwd = p;
-export const setCoreCwd = (p: string) => internalCoreCwd = p;
+export const _setRequirePaths = (requirePath: string) => {
+  appModule.addPath(requirePath);
+
+  // Now try to specifically set the node_modules path
+  const requirePaths: string[] = require.main && require.main.paths || [];
+  if (!requirePaths.includes(requirePath)) {
+    requirePaths.push(requirePath);
+  }
+}
+export const setCwd = (p: string) => {
+  internalCwd = p;
+  _setRequirePaths(path.join(internalCwd, 'node_modules'))
+}
+export const setCoreCwd = (p: string) => {
+  internalCoreCwd = p;
+  _setRequirePaths(path.join(internalCoreCwd, 'node_modules'))
+}
 
 // Get working directory
 export const getCwd = () => internalCwd;
@@ -271,11 +286,57 @@ export const findGlobsIn = (dir: string, ...patterns: string[]) => {
   return globby.sync(patterns, { cwd: dir });
 };
 
+/**
+ * Adds the node_modules to the app module.
+ * This is needed because we spawn different scripts when running start/build/test and so we lose
+ * the original cwd directory
+ */
+export const addCWDNodeModule = (...args: string[]) => {
+  const index = args.indexOf('--core-cwd');
+  if (index !== -1) {
+    const coreCwd = args[index + 1];
+    if (coreCwd) {
+      setCoreCwd(coreCwd);
+    }
+  }
+  // This is to setup the app environment
+  setCwd(getCwd());
+}
+
+/**
+ * Returns the absolute path to the pkg if found
+ * @param pkg the package to lookup
+ */
+/* istanbul ignore next */
+export const resolveModulePath = (pkg: string) => {
+  try {
+    return require.resolve(pkg);
+  } catch (e1) {
+    // Now try to specifically set the node_modules path
+    const requirePaths: string[] = require.main && require.main.paths || [];
+    try {
+      return require.resolve(pkg, { paths: requirePaths });
+    } catch (e2) {
+      return false;
+    }
+  }
+};
+
+/**
+ * This is an alias for require. Useful for mocking out in tests
+ * @param filePath  the file to require
+ * @private
+ */
+/* istanbul ignore next */
+export const _require = (filePath: string) => require(filePath);
+
 export { DirResult as TmpDirResult } from 'tmp';
 
 export const getPaths = () => {
   const cwd = getCwd();
+  const coreCwd = getCwd();
   const nodeModulesDir = resolveCwd('node_modules');
+  const coreNodeModulesDir = resolveRelative(coreCwd, 'node_modules');
   const flexPluginScriptPath = resolveModulePath('flex-plugin-scripts');
   if (flexPluginScriptPath === false) {
     throw new Error('Could not resolve flex-plugin-scripts');
@@ -318,6 +379,7 @@ export const getPaths = () => {
     // twilio-cli/flex/plugins.json paths
     cli: {
       dir: cliDir,
+      nodeModulesDir: coreNodeModulesDir,
       flexDir,
       pluginsJsonPath: resolveRelative(flexDir, 'plugins.json'),
     },

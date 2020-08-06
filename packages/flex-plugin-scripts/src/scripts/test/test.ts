@@ -1,6 +1,6 @@
 import { logger } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
-import { resolveModulePath } from 'flex-dev-utils/dist/require';
+import { resolveModulePath } from 'flex-dev-utils/dist/fs';
 import * as jest from 'jest';
 import getConfiguration, { ConfigurationType } from '../../config';
 
