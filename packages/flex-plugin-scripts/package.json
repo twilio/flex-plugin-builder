@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-scripts",
-  "version": "4.7.1-alpha.0",
+  "version": "4.7.2-alpha.0",
   "description": "Scripts to run, build and deploy Flex plugins",
   "keywords": [
     "flex",
