@@ -1,3 +1,5 @@
+import * as pluginBuilderStartScript from 'flex-plugin-scripts/dist/scripts/start';
+
 import { expect, createTest } from '../../../framework';
 import FlexPluginsStart from '../../../../commands/flex/plugins/start';
 import { TwilioCliError } from '../../../../exceptions';
@@ -8,30 +10,38 @@ describe('Commands/FlexPluginsStart', () => {
     name: 'plugin-test',
   };
 
+  let findPortAvailablePort = sinon.stub(pluginBuilderStartScript, 'findPortAvailablePort');
+
   afterEach(() => {
     sinon.restore();
+
+    findPortAvailablePort = sinon.stub(pluginBuilderStartScript, 'findPortAvailablePort');
   });
 
   start()
     .setup((instance) => {
       sinon.stub(instance, 'runScript').returnsThis();
+      sinon.stub(instance, 'spawnScript').returnsThis();
       sinon.stub(instance, 'isPluginFolder').returns(true);
       sinon.stub(instance, 'pkg').get(() => pkg);
+      findPortAvailablePort.returns(Promise.resolve(100));
     })
     .test(async (instance) => {
       await instance.doRun();
 
-      expect(instance.runScript).to.have.been.calledThrice;
+      expect(instance.runScript).to.have.been.calledTwice;
       expect(instance.runScript).to.have.been.calledWith('start', ['flex', '--name', pkg.name]);
-      expect(instance.runScript).to.have.been.calledWith('start', ['plugin', '--name', pkg.name]);
       expect(instance.runScript).to.have.been.calledWith('check-start', ['--name', pkg.name]);
+      expect(instance.spawnScript).to.have.been.calledWith('start', ['plugin', '--name', pkg.name, '--port', '100']);
     })
     .it('should run start script for the directory plugin');
 
   start(['--name', 'plugin-testOne', '--name', 'plugin-testTwo', '--include-remote'])
     .setup(async (instance) => {
       sinon.stub(instance, 'runScript').returnsThis();
+      sinon.stub(instance, 'spawnScript').returnsThis();
       sinon.stub(instance, 'isPluginFolder').returns(false);
+      findPortAvailablePort.returns(Promise.resolve(100));
     })
     .test(async (instance) => {
       await instance.run();
@@ -46,7 +56,9 @@ describe('Commands/FlexPluginsStart', () => {
   start(['--name', 'plugin-testOne'])
     .setup(async (instance) => {
       sinon.stub(instance, 'runScript').returnsThis();
+      sinon.stub(instance, 'spawnScript').returnsThis();
       sinon.stub(instance, 'isPluginFolder').returns(false);
+      findPortAvailablePort.returns(Promise.resolve(100));
     })
     .test(async (instance) => {
       await instance.run();
@@ -60,6 +72,7 @@ describe('Commands/FlexPluginsStart', () => {
   start([''])
     .setup(async (instance) => {
       sinon.stub(instance, 'runScript').returnsThis();
+      sinon.stub(instance, 'spawnScript').returnsThis();
       sinon.stub(instance, 'isPluginFolder').returns(false);
     })
     .test(async (instance) => {

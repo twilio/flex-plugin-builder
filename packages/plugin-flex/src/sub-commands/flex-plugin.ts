@@ -1,5 +1,6 @@
 import { join } from 'path';
 
+import spawn from 'flex-plugins-utils-spawn';
 import { Logger } from 'flex-plugins-utils-logger';
 import PluginsApiToolkit from 'flex-plugins-api-toolkit';
 import { baseCommands, services } from '@twilio/cli-core';
@@ -281,6 +282,17 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   async runScript(scriptName: string, argv = this.scriptArgs) {
     // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
     return require(`flex-plugin-scripts/dist/scripts/${scriptName}`).default(...argv, '--core-cwd', this.pluginRootDir);
+  }
+
+  /**
+   * Spawns a script
+   * @param scriptName  the script to spawn
+   * @param argv arguments to pass to the script
+   */
+  /* istanbul ignore next */
+  async spawnScript(scriptName: string, argv = this.scriptArgs) {
+    const scriptPath = require.resolve(`flex-plugin-scripts/dist/scripts/${scriptName}`);
+    return spawn('node', [scriptPath, ...argv, '--run-script', '--core-cwd', this.pluginRootDir]);
   }
 
   /**

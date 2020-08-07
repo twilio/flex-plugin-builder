@@ -1,4 +1,5 @@
 import { flags } from '@oclif/command';
+import { findPortAvailablePort, StartScript } from 'flex-plugin-scripts/dist/scripts/start';
 
 import { createDescription } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
@@ -58,11 +59,21 @@ export default class FlexPluginsStart extends FlexPlugin {
       pluginNames.push(this.pkg.name);
     }
 
+    let flexStartScript: StartScript = { port: 3000 };
     if (flexArgs.length && pluginNames.length) {
-      await this.runScript('start', ['flex', ...flexArgs]);
+      // Verify all plugins are correct
       for (let i = 0; pluginNames && i < pluginNames.length; i++) {
         await this.runScript('check-start', ['--name', pluginNames[i]]);
-        await this.runScript('start', ['plugin', '--name', pluginNames[i]]);
+      }
+
+      // Start flex start once
+      flexStartScript = await this.runScript('start', ['flex', ...flexArgs]);
+
+      // Now spawn each plugin as a separate process
+      for (let i = 0; pluginNames && i < pluginNames.length; i++) {
+        const port = await findPortAvailablePort('--port', (flexStartScript.port + (i + 1) * 100).toString());
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.spawnScript('start', ['plugin', '--name', pluginNames[i], '--port', port.toString()]);
       }
     }
   }
