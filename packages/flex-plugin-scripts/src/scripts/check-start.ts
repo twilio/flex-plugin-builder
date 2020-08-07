@@ -8,7 +8,7 @@ import {
   checkPluginConfigurationExists,
   addCWDNodeModule,
   resolveModulePath,
-  _require,
+  _require, setCwd,
 } from 'flex-dev-utils/dist/fs';
 import { existsSync, copyFileSync, readFileSync } from 'fs';
 import { join } from 'path';
@@ -21,14 +21,13 @@ import {
   typescriptNotInstalled,
 } from '../prints';
 import run, { exit } from '../utils/run';
-import { confirm } from 'flex-dev-utils/dist/inquirer';
+import { findFirstLocalPlugin, parseUserInputPlugins } from '../utils/parser';
 
 interface Package {
   version: string;
   dependencies: object;
 }
 
-const srcIndexPath = join(getCwd(), 'src', 'index');
 const extensions = ['js', 'jsx', 'ts', 'tsx'];
 
 const PackagesToVerify = [
@@ -142,6 +141,7 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, al
  */
 /* istanbul ignore next */
 export const _readIndexPage = (): string => {
+  const srcIndexPath = join(getCwd(), 'src', 'index');
   const match = extensions
     .map(ext => `${srcIndexPath}.${ext}`)
     .find(file => checkFilesExist(file));
@@ -179,6 +179,12 @@ const checkStart = async (...args: string[]) => {
   logger.debug('Checking Flex plugin project directory');
 
   addCWDNodeModule(...args);
+
+  const userInputPlugins = parseUserInputPlugins(...args);
+  const plugin = findFirstLocalPlugin(userInputPlugins);
+  if (plugin) {
+    setCwd(plugin.dir);
+  }
 
   _checkAppConfig();
   _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());

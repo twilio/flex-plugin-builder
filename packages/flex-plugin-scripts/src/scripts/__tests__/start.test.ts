@@ -1,6 +1,7 @@
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import * as fs from 'flex-dev-utils/dist/fs';
 import * as urlScripts from 'flex-dev-utils/dist/urls';
+import * as parserUtils from '../../utils/parser';
 import * as startScripts from '../start';
 import * as pluginServerScripts from '../../config/devServer/pluginServer';
 import * as devServerScripts from '../../config/devServer/webpackDevServer';
@@ -49,8 +50,8 @@ describe('StartScript', () => {
       .spyOn(startScripts, '_startDevServer');
     const readPluginsJson = jest
       .spyOn(fs, 'readPluginsJson');
-    const _parseUserInputPlugins = jest
-      .spyOn(startScripts, '_parseUserInputPlugins');
+    const parseUserInputPlugins = jest
+      .spyOn(parserUtils, 'parseUserInputPlugins');
     const writeJSONFile = jest
       .spyOn(fs, 'writeJSONFile');
     const _updatePluginPort = jest
@@ -64,7 +65,7 @@ describe('StartScript', () => {
       expect(getDefaultPort).toHaveBeenCalledTimes(1);
       expect(getDefaultPort).toHaveBeenCalledWith(port.toString());
       expect(_startDevServer).toHaveBeenCalledTimes(1);
-      expect(_parseUserInputPlugins).toHaveBeenCalledTimes(1);
+      expect(parseUserInputPlugins).toHaveBeenCalledTimes(1);
       expect(_startDevServer).toHaveBeenCalledWith([{name: 'plugin-test', remote: false}], {port, type, remoteAll: false});
     }
 
@@ -90,7 +91,7 @@ describe('StartScript', () => {
     });
 
     it('should start dev-server', async () => {
-      _parseUserInputPlugins.mockReturnValue([{name: 'plugin-test', remote: false}]);
+      parseUserInputPlugins.mockReturnValue([{name: 'plugin-test', remote: false}]);
 
       await startScripts.default();
 
@@ -98,7 +99,7 @@ describe('StartScript', () => {
     });
 
     it('should start static html page', async () => {
-      _parseUserInputPlugins.mockReturnValue([{name: 'plugin-test', remote: false}]);
+      parseUserInputPlugins.mockReturnValue([{name: 'plugin-test', remote: false}]);
 
       await startScripts.default(...['flex']);
 
@@ -106,7 +107,7 @@ describe('StartScript', () => {
     });
 
     it('should start plugin', async () => {
-      _parseUserInputPlugins.mockReturnValue([{name: 'plugin-test', remote: false}]);
+      parseUserInputPlugins.mockReturnValue([{name: 'plugin-test', remote: false}]);
 
       await startScripts.default(...['plugin', '--name', 'plugin-test']);
 
@@ -117,7 +118,7 @@ describe('StartScript', () => {
     });
 
     it('should throw exception if plugin is not found', async (done) => {
-      _parseUserInputPlugins.mockReturnValue([{name: 'plugin-bad', remote: false}]);
+      parseUserInputPlugins.mockReturnValue([{name: 'plugin-bad', remote: false}]);
 
       try {
         await startScripts.default(...['plugin', '--name', 'plugin-bad']);
@@ -206,18 +207,18 @@ describe('StartScript', () => {
       .spyOn(fs, 'readPluginsJson');
     const writeJSONFile = jest
       .spyOn(fs, 'writeJSONFile');
-    const _parseUserInputPlugins = jest
-      .spyOn(startScripts, '_parseUserInputPlugins');
+    const parseUserInputPlugins = jest
+      .spyOn(parserUtils, 'parseUserInputPlugins');
 
     beforeEach(() => {
-      _parseUserInputPlugins.mockReturnValue([{name: 'plugin-test', remote: false}]);
+      parseUserInputPlugins.mockReturnValue([{name: 'plugin-test', remote: false}]);
       readPluginsJson.mockReturnValue({plugins: [plugin]});
       writeJSONFile.mockReturnThis();
     });
 
     afterAll(() => {
       readPluginsJson.mockRestore();
-      _parseUserInputPlugins.mockRestore();
+      parseUserInputPlugins.mockRestore();
       writeJSONFile.mockRestore();
     });
 
@@ -233,56 +234,6 @@ describe('StartScript', () => {
 
       expect(writeJSONFile).toHaveBeenCalledTimes(1);
       expect(writeJSONFile).toHaveBeenCalledWith(CliPath, {'plugins': [ {...plugin}]});
-    });
-  });
-
-  describe('_parseUserInputPlugins', () => {
-    const plugin = { name: 'plugin-test', dir: 'test-dir', port: 0 };
-    const readPluginsJson = jest
-      .spyOn(fs, 'readPluginsJson');
-
-    beforeEach(() => {
-      readPluginsJson.mockReturnValue({plugins: [plugin]});
-    });
-
-    afterEach(() => {
-      readPluginsJson.mockRestore();
-    });
-
-    it('should return the local plugins only if found', () => {
-      const result = startScripts._parseUserInputPlugins(...['--name', 'plugin-test']);
-
-      expect(readPluginsJson).toHaveBeenCalledTimes(1);
-      expect(result).toEqual([{'name': 'plugin-test', 'remote': false}]);
-    });
-
-    it('should always return the remote plugins', () => {
-      const result = startScripts._parseUserInputPlugins(...['--name', 'plugin-test@remote']);
-
-      expect(readPluginsJson).toHaveBeenCalledTimes(1);
-      expect(result).toEqual([{'name': 'plugin-test', 'remote': true}]);
-    });
-
-    it('should throw an error if local plugin is not found', (done) => {
-      try {
-        startScripts._parseUserInputPlugins(...['--name', 'plugin-unknown']);
-      } catch (e) {
-        expect(e).toBeInstanceOf(FlexPluginError);
-        expect(readPluginsJson).toHaveBeenCalledTimes(1);
-        expect(e.message).toContain('No plugin file');
-        done();
-      }
-    });
-
-    it ('should throw an error if input is incorrect format', (done) => {
-      try {
-        startScripts._parseUserInputPlugins(...['--name', '!']);
-      } catch (e) {
-        expect(e).toBeInstanceOf(Error);
-        expect(readPluginsJson).toHaveBeenCalledTimes(1);
-        expect(e.message).toContain('Unexpected plugin name format');
-        done();
-      }
     });
   });
 
