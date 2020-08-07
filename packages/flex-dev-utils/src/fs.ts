@@ -61,7 +61,7 @@ export const setCoreCwd = (p: string) => {
 export const getCwd = () => internalCwd;
 
 // Read plugins.json from Twilio CLI
-export const readPluginsJson = () => readJsonFile<CLIFlexConfiguration>(getPaths().cli.pluginsJsonPath);
+export const readPluginsJson = () => readJsonFile<CLIFlexConfiguration>(getCliPaths().pluginsJsonPath);
 
 // Write to json file
 export const writeJSONFile = (pth: string, obj: object) => fs.writeFileSync(pth, JSON.stringify(obj, null, 2));
@@ -139,7 +139,6 @@ export const getPackageVersion = (name: string) => {
 
   return readPackageJson(installedPath).version;
 }
-
 
 /**
  * Finds the closest up file relative to dir
@@ -252,9 +251,10 @@ export const findGlobs = (...patterns: string[]) => {
  * @private
  */
 export const checkPluginConfigurationExists = async (name: string, dir: string) => {
-  if (!checkFilesExist(getPaths().cli.pluginsJsonPath)) {
-      mkdirpSync(getPaths().cli.flexDir);
-      writeJSONFile(getPaths().cli.pluginsJsonPath, {plugins: []});
+  const cliPaths = getCliPaths();
+  if (!checkFilesExist(cliPaths.pluginsJsonPath)) {
+      mkdirpSync(cliPaths.flexDir);
+      writeJSONFile(cliPaths.pluginsJsonPath, {plugins: []});
   }
 
   const config = readPluginsJson();
@@ -262,7 +262,7 @@ export const checkPluginConfigurationExists = async (name: string, dir: string) 
 
   if (!plugin) {
     config.plugins.push({name, dir, port: 0});
-    writeJSONFile(getPaths().cli.pluginsJsonPath, config);
+    writeJSONFile(cliPaths.pluginsJsonPath, config);
     return;
   }
 
@@ -273,7 +273,7 @@ export const checkPluginConfigurationExists = async (name: string, dir: string) 
   const answer = await confirm(`You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${dir}?`, 'N');
   if (answer) {
     plugin.dir = dir;
-    writeJSONFile(getPaths().cli.pluginsJsonPath, config);
+    writeJSONFile(cliPaths.pluginsJsonPath, config);
   }
 };
 
@@ -332,11 +332,28 @@ export const _require = (filePath: string) => require(filePath);
 
 export { DirResult as TmpDirResult } from 'tmp';
 
+/**
+ * Gets the CLI paths. This is separated out from getPaths because create-flex-plugin also needs to read it,
+ * but that script will not have flex-plugin-scripts installed which would cause an exception to be thrown.
+ */
+export const getCliPaths = () => {
+  const coreCwd = getCwd();
+  const coreNodeModulesDir = resolveRelative(coreCwd, 'node_modules');
+  const homeDir = homedir();
+  const cliDir = resolveRelative(homeDir, '/.twilio-cli');
+  const flexDir = resolveRelative(cliDir, 'flex');
+
+  return {
+    dir: cliDir,
+    nodeModulesDir: coreNodeModulesDir,
+    flexDir,
+    pluginsJsonPath: resolveRelative(flexDir, 'plugins.json'),
+  };
+}
+
 export const getPaths = () => {
   const cwd = getCwd();
-  const coreCwd = getCwd();
   const nodeModulesDir = resolveCwd('node_modules');
-  const coreNodeModulesDir = resolveRelative(coreCwd, 'node_modules');
   const flexPluginScriptPath = resolveModulePath('flex-plugin-scripts');
   if (flexPluginScriptPath === false) {
     throw new Error('Could not resolve flex-plugin-scripts');
@@ -347,9 +364,6 @@ export const getPaths = () => {
   const buildDir = resolveCwd('build');
   const srcDir = resolveCwd('src');
   const flexUIDir = resolveRelative(nodeModulesDir, '@twilio/flex-ui');
-  const homeDir = homedir();
-  const cliDir = resolveRelative(homeDir, '/.twilio-cli');
-  const flexDir = resolveRelative(cliDir, 'flex');
   const tsConfigPath = resolveCwd('tsconfig.json');
 
   // package.json information
@@ -377,12 +391,7 @@ export const getPaths = () => {
     },
 
     // twilio-cli/flex/plugins.json paths
-    cli: {
-      dir: cliDir,
-      nodeModulesDir: coreNodeModulesDir,
-      flexDir,
-      pluginsJsonPath: resolveRelative(flexDir, 'plugins.json'),
-    },
+    cli: getCliPaths(),
 
     // plugin-app (the customer app)
     app: {

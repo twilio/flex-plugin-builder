@@ -224,32 +224,18 @@ describe('fs', () => {
   describe('checkPluginConfigurationExists', () => {
     const name = 'plugin-test';
     const dir = 'test-dir';
-    const paths = {
-      scripts: {
-        tsConfigPath: 'test-ts-config-path',
-        dir: 'test-scripts-dir',
-      },
-      cli: {
-        dir: 'test-dir',
-        flexDir: 'test-dir-flex',
-        pluginsJsonPath: 'test-dir-plugins',
-      },
-      app: {
-        version: '1.0.0',
-        name: 'plugin-test',
-        dir: 'test-dir',
-        nodeModulesDir: 'test-node-modules',
-        appConfig: 'appConfig.js',
-      },
-      assetBaseUrlTemplate: 'template',
-    }
+    const cliPath = {
+      dir: 'test-dir',
+      flexDir: 'test-dir-flex',
+      pluginsJsonPath: 'test-dir-plugins',
+    };
 
     let checkFilesExist = jest.spyOn(fs, 'checkFilesExist');
     let mkdirpSync = jest.spyOn(fs, 'mkdirpSync');
     let writeFileSync = jest.spyOn(fs.default, 'writeFileSync');
     let readJsonFile = jest.spyOn(fs, 'readJsonFile');
     let confirm = jest.spyOn(inquirer, 'confirm');
-    let getPaths = jest.spyOn(fs, 'getPaths');
+    let getCliPaths = jest.spyOn(fs, 'getCliPaths');
 
     beforeEach(() => {
       checkFilesExist = jest.spyOn(fs, 'checkFilesExist');
@@ -257,14 +243,14 @@ describe('fs', () => {
       writeFileSync = jest.spyOn(fs.default, 'writeFileSync');
       readJsonFile = jest.spyOn(fs, 'readJsonFile');
       confirm = jest.spyOn(inquirer, 'confirm');
-      getPaths = jest.spyOn(fs, 'getPaths');
+      getCliPaths = jest.spyOn(fs, 'getCliPaths');
 
       mkdirpSync.mockReturnThis();
       writeFileSync.mockReturnThis();
       readJsonFile.mockReturnValue({'plugins': []});
 
-       // @ts-ignore
-      getPaths.mockReturnValue(paths);
+      // @ts-ignore
+      getCliPaths.mockReturnValue(cliPath);
     });
 
     it('make directories if not found', async () => {
@@ -353,6 +339,19 @@ describe('fs', () => {
         'flex-plugin': '2'
       },
     };
+
+    it('should give cli paths', () => {
+      const readPackageJson = jest
+        .spyOn(fs, 'readPackageJson')
+        .mockReturnValue(validPackage);
+
+      // cli/ directory
+      expect(fs.getCliPaths().dir).toEqual(expect.stringMatching('/.twilio-cli'));
+      expect(fs.getCliPaths().flexDir).toContain('/.twilio-cli/flex');
+      expect(fs.getCliPaths().pluginsJsonPath).toEqual(expect.stringMatching('plugins.json'));
+
+      readPackageJson.mockRestore();
+    });
 
     it('should give you the paths', () => {
       const readPackageJson = jest
