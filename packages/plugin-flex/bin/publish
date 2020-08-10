@@ -60,4 +60,5 @@ fi
 # Push readme
 git add README.md
 git commit -m "Published ${version}" --no-verify
+git push --no-verify
 git push --tags --no-verify
