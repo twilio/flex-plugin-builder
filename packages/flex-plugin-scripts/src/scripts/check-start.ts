@@ -180,6 +180,7 @@ const checkStart = async (...args: string[]) => {
 
   addCWDNodeModule(...args);
 
+  await checkPluginConfigurationExists(getPaths().app.name, getPaths().app.dir);
   const userInputPlugins = parseUserInputPlugins(...args);
   const plugin = findFirstLocalPlugin(userInputPlugins);
   if (plugin) {
@@ -190,7 +191,6 @@ const checkStart = async (...args: string[]) => {
   _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
   _checkPluginCount();
   _validateTypescriptProject();
-  await checkPluginConfigurationExists(getPaths().app.name, getPaths().app.dir);
 };
 
 run(checkStart);
