@@ -63,6 +63,7 @@ describe('CheckStartScript', () => {
     const checkPluginConfigurationExists = jest
       .spyOn(fsScripts, 'checkPluginConfigurationExists')
       .mockReturnThis();
+    const _setPluginDir = jest.spyOn(checkStartScript, '_setPluginDir');
 
     beforeEach(() => {
       _checkAppConfig.mockReset();
@@ -70,6 +71,14 @@ describe('CheckStartScript', () => {
       _validateTypescriptProject.mockReset();
       _checkPluginCount.mockReset();
       checkPluginConfigurationExists.mockReset();
+      _setPluginDir.mockReset();
+
+      _checkAppConfig.mockReturnThis();
+      _checkExternalDepsVersions.mockReturnThis();
+      _validateTypescriptProject.mockReturnValue(undefined);
+      _checkPluginCount.mockReturnValue(undefined);
+      checkPluginConfigurationExists.mockReturnThis();
+      _setPluginDir.mockReturnThis();
     });
 
     afterAll(() => {

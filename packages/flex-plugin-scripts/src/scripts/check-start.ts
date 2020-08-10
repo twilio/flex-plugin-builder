@@ -173,6 +173,19 @@ export const _checkPluginCount = () => {
 };
 
 /**
+ * Attempts to set the cwd of the plugin
+ * @param args  the CLI args
+ * @private
+ */
+export const _setPluginDir = (...args: string[]) => {
+  const userInputPlugins = parseUserInputPlugins(...args);
+  const plugin = findFirstLocalPlugin(userInputPlugins);
+  if (plugin) {
+    setCwd(plugin.dir);
+  }
+}
+
+/**
  * Runs pre-start/build checks
  */
 const checkStart = async (...args: string[]) => {
@@ -180,17 +193,12 @@ const checkStart = async (...args: string[]) => {
 
   addCWDNodeModule(...args);
 
-  const userInputPlugins = parseUserInputPlugins(...args);
-  const plugin = findFirstLocalPlugin(userInputPlugins);
-  if (plugin) {
-    setCwd(plugin.dir);
-  }
-
+  await checkPluginConfigurationExists(getPaths().app.name, getPaths().app.dir);
+  _setPluginDir(...args);
   _checkAppConfig();
   _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
   _checkPluginCount();
   _validateTypescriptProject();
-  await checkPluginConfigurationExists(getPaths().app.name, getPaths().app.dir);
 };
 
 run(checkStart);
