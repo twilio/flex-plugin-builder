@@ -1,4 +1,5 @@
 import { join } from 'path';
+import { homedir } from 'os';
 
 import spawn from 'flex-plugins-utils-spawn';
 import { Logger } from 'flex-plugins-utils-logger';
@@ -15,8 +16,9 @@ import { TwilioError } from 'flex-plugins-utils-exception';
 import dayjs from 'dayjs';
 import { flags } from '@oclif/parser';
 import * as Errors from '@oclif/errors';
+import mkdirp from 'mkdirp';
 
-import { filesExist, readJSONFile } from '../utils/fs';
+import { filesExist, readJSONFile, readJsonFile, writeJSONFile } from '../utils/fs';
 import { TwilioCliError } from '../exceptions';
 import { instanceOf } from '../utils/general';
 import { toSentenceCase } from '../utils/strings';
@@ -31,6 +33,16 @@ export type SecureStorage = typeof services.secureStorage.SecureStorage;
 
 export interface FlexPluginFlags {
   json: boolean;
+}
+
+export interface FlexConfigurationPlugin {
+  name: string;
+  dir: string;
+  port: number;
+}
+
+export interface CLIFlexConfiguration {
+  plugins: FlexConfigurationPlugin[];
 }
 
 /**
@@ -59,6 +71,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
   protected readonly pluginRootDir: string;
 
+  protected readonly cliRootDir: string;
+
   protected readonly skipEnvironmentalSetup: boolean;
 
   protected readonly _logger: Logger;
@@ -82,6 +96,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     this.showHeaders = true;
     this.cwd = process.cwd();
     this.pluginRootDir = join(__dirname, '../../');
+    this.cliRootDir = join(homedir(), '.twilio-cli');
     this.scriptArgs = process.argv.slice(3);
     this.skipEnvironmentalSetup = false;
     this._logger = new Logger({ isQuiet: false, markdown: true });
@@ -372,5 +387,16 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    */
   get isJson() {
     return this._flags.json;
+  }
+
+  /**
+   * Get the cli plugin configuartion
+   */
+  get pluginsConfig() {
+    mkdirp.sync(join(this.cliRootDir, 'flex'));
+    if (!filesExist(join(this.cliRootDir, 'flex', 'plugins.json'))) {
+      writeJSONFile({ plugins: [] }, this.cliRootDir, 'flex', 'plugins.json');
+    }
+    return readJsonFile<CLIFlexConfiguration>(this.cliRootDir, 'flex', 'plugins.json');
   }
 }
