@@ -47,7 +47,7 @@
     "@oclif/parser": "^3.8.5",
     "@twilio/cli-core": "5.8.1",
     "create-flex-plugin": "^4.7.3-alpha.0",
-    "dayjs": "^1.8.32",
+    "dayjs": "^1.8.33",
     "fancy-test": "^1.4.9",
     "flex-plugin": "^4.6.2-alpha.0",
     "flex-plugin-scripts": "^4.7.3-alpha.0",
@@ -82,7 +82,7 @@
     "husky": "^4.2.5",
     "mocha": "^8.1.1",
     "nyc": "^15.1.0",
-    "sinon": "^9.0.2",
+    "sinon": "^9.0.3",
     "sinon-chai": "^3.5.0",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
