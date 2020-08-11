@@ -146,6 +146,24 @@ describe('Commands/FlexPluginsStart', () => {
     })
     .it('should process the one plugin');
 
+  start(['--name', 'plugin-testOne@remote'])
+    .setup(async (instance) => {
+      sinon.stub(instance, 'runScript').returnsThis();
+      sinon.stub(instance, 'spawnScript').returnsThis();
+      sinon.stub(instance, 'isPluginFolder').returns(false);
+    })
+    .test(async (instance) => {
+      try {
+        await instance.run();
+      } catch (e) {
+        expect(e).to.be.instanceOf(TwilioCliError);
+        expect(e.message).to.contain('at least one local plugin');
+        expect(instance.runScript).not.to.have.been.called;
+        expect(instance.spawnScript).not.to.have.been.called;
+      }
+    })
+    .it('should throw an error for no local plugins');
+
   start([''])
     .setup(async (instance) => {
       sinon.stub(instance, 'runScript').returnsThis();

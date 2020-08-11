@@ -62,6 +62,12 @@ export default class FlexPluginsStart extends FlexPlugin {
       pluginNames.push(this.pkg.name);
     }
 
+    if (!pluginNames.length) {
+      throw new TwilioCliError(
+        'You must run at least one local plugin. To view all remote plugins, go to flex.twilio.com.',
+      );
+    }
+
     let flexStartScript: StartScript = { port: 3000 };
     if (flexArgs.length && pluginNames.length) {
       // Verify all plugins are correct
