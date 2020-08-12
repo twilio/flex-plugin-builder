@@ -3,6 +3,7 @@ import fs from 'fs';
 import * as fsScripts from 'flex-dev-utils/dist/fs';
 import * as prints from '../../prints';
 import * as checkStartScript from '../check-start';
+import 'jest-extended';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('../../prints/versionMismatch');
@@ -116,6 +117,12 @@ describe('CheckStartScript', () => {
       await checkStartScript.default();
 
       expectCalled(false, true);
+    });
+
+    it('should call methods in a specific order', async () => {
+      await checkStartScript.default();
+
+      expect(this._setPluginDir).toHaveBeenCalledBefore(this.checkPluginConfigurationExists);
     });
   });
 
