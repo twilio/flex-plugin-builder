@@ -3,7 +3,6 @@ import fs from 'fs';
 import * as fsScripts from 'flex-dev-utils/dist/fs';
 import * as prints from '../../prints';
 import * as checkStartScript from '../check-start';
-import 'jest-extended';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('../../prints/versionMismatch');
@@ -49,21 +48,11 @@ describe('CheckStartScript', () => {
   });
 
   describe('main', () => {
-    const _checkAppConfig = jest
-      .spyOn(checkStartScript, '_checkAppConfig')
-      .mockReturnThis();
-    const _checkExternalDepsVersions = jest
-      .spyOn(checkStartScript, '_checkExternalDepsVersions')
-      .mockReturnThis();
-    const _validateTypescriptProject = jest
-      .spyOn(checkStartScript, '_validateTypescriptProject')
-      .mockReturnValue(undefined);
-    const _checkPluginCount = jest
-      .spyOn(checkStartScript, '_checkPluginCount')
-      .mockReturnValue(undefined);
-    const checkPluginConfigurationExists = jest
-      .spyOn(fsScripts, 'checkPluginConfigurationExists')
-      .mockReturnThis();
+    const _checkAppConfig = jest.spyOn(checkStartScript, '_checkAppConfig');
+    const _checkExternalDepsVersions = jest.spyOn(checkStartScript, '_checkExternalDepsVersions');
+    const _validateTypescriptProject = jest.spyOn(checkStartScript, '_validateTypescriptProject');
+    const _checkPluginCount = jest.spyOn(checkStartScript, '_checkPluginCount');
+    const checkPluginConfigurationExists = jest.spyOn(fsScripts, 'checkPluginConfigurationExists');
     const _setPluginDir = jest.spyOn(checkStartScript, '_setPluginDir');
 
     beforeEach(() => {
@@ -122,7 +111,8 @@ describe('CheckStartScript', () => {
     it('should call methods in a specific order', async () => {
       await checkStartScript.default();
 
-      expect(this._setPluginDir).toHaveBeenCalledBefore(this.checkPluginConfigurationExists);
+      expect(_setPluginDir.mock.invocationCallOrder[0])
+        .toBeLessThan(checkPluginConfigurationExists.mock.invocationCallOrder[0]);
     });
   });
 
