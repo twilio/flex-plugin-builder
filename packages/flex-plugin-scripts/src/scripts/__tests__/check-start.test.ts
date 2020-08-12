@@ -48,21 +48,11 @@ describe('CheckStartScript', () => {
   });
 
   describe('main', () => {
-    const _checkAppConfig = jest
-      .spyOn(checkStartScript, '_checkAppConfig')
-      .mockReturnThis();
-    const _checkExternalDepsVersions = jest
-      .spyOn(checkStartScript, '_checkExternalDepsVersions')
-      .mockReturnThis();
-    const _validateTypescriptProject = jest
-      .spyOn(checkStartScript, '_validateTypescriptProject')
-      .mockReturnValue(undefined);
-    const _checkPluginCount = jest
-      .spyOn(checkStartScript, '_checkPluginCount')
-      .mockReturnValue(undefined);
-    const checkPluginConfigurationExists = jest
-      .spyOn(fsScripts, 'checkPluginConfigurationExists')
-      .mockReturnThis();
+    const _checkAppConfig = jest.spyOn(checkStartScript, '_checkAppConfig');
+    const _checkExternalDepsVersions = jest.spyOn(checkStartScript, '_checkExternalDepsVersions');
+    const _validateTypescriptProject = jest.spyOn(checkStartScript, '_validateTypescriptProject');
+    const _checkPluginCount = jest.spyOn(checkStartScript, '_checkPluginCount');
+    const checkPluginConfigurationExists = jest.spyOn(fsScripts, 'checkPluginConfigurationExists');
     const _setPluginDir = jest.spyOn(checkStartScript, '_setPluginDir');
 
     beforeEach(() => {
@@ -116,6 +106,13 @@ describe('CheckStartScript', () => {
       await checkStartScript.default();
 
       expectCalled(false, true);
+    });
+
+    it('should call methods in a specific order', async () => {
+      await checkStartScript.default();
+
+      expect(_setPluginDir.mock.invocationCallOrder[0])
+        .toBeLessThan(checkPluginConfigurationExists.mock.invocationCallOrder[0]);
     });
   });
 

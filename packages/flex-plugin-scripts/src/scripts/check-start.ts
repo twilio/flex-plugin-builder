@@ -193,8 +193,8 @@ const checkStart = async (...args: string[]) => {
 
   addCWDNodeModule(...args);
 
-  await checkPluginConfigurationExists(getPaths().app.name, getPaths().app.dir);
   _setPluginDir(...args);
+  await checkPluginConfigurationExists(getPaths().app.name, getPaths().app.dir);
   _checkAppConfig();
   _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
   _checkPluginCount();
