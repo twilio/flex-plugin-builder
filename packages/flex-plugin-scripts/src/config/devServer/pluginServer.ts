@@ -5,6 +5,7 @@ import { Configuration } from 'webpack-dev-server';
 import https from 'https';
 import { isHTTPS } from 'flex-dev-utils/dist/env';
 import remotePluginNotFound from '../../prints/remotePluginNotFound';
+import { exit } from '../../utils/run';
 
 export interface Plugin {
   phase: number;
@@ -155,11 +156,10 @@ export const _startServer = (plugins: StartServerPlugins, config: StartServerCon
         }
 
         // Check that all remote plugins inputted are valid
-        for (const plugin of plugins.remote) {
-          if (!remotePlugins.find(r => r.name === plugin)) {
-            const notFoundPlugins = plugins.remote.filter(plgin => !remotePlugins.find(r => r.name === plgin));
-            remotePluginNotFound(notFoundPlugins, remotePlugins);
-          }
+        const notFoundPlugins = plugins.remote.filter(plgin => !remotePlugins.find(r => r.name === plgin));
+        if (notFoundPlugins.length) {
+          remotePluginNotFound(notFoundPlugins, remotePlugins);
+          exit(1);
         }
 
         // Filter and only return the ones that are in remoteInputPlugins

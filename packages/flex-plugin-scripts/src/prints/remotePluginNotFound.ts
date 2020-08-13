@@ -1,6 +1,5 @@
 import { logger } from 'flex-dev-utils';
 import { Plugin } from '../config/devServer/pluginServer';
-import { exit } from '../utils/run';
 
 /**
  * Error message for when a remote plugin is not found
@@ -24,5 +23,4 @@ export default (notFoundPlugins: string[], remotePlugins: Plugin[]) => {
     }
 
     logger.newline();
-    exit(1);
 };
