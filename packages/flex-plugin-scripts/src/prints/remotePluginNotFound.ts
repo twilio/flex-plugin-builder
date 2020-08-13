@@ -8,9 +8,15 @@ import { exit } from '../utils/run';
  * @param name  name of the plugin
  * @param remotePlugins array of remote plugins
  */
-export default (name: string, remotePlugins: Plugin[]) => {
+export default (notFoundPlugins: string[], remotePlugins: Plugin[]) => {
     logger.clearTerminal();
-    logger.error('Server not loading because your plugin', logger.colors.bold(`${name}`), 'was not found remotely.');
+    logger.error('Server not loading because these plugins were not found remotely:');
+
+    for (const plugin of notFoundPlugins) {
+        logger.error('\t', logger.colors.bold(plugin));
+    }
+
+    logger.newline();
     logger.error('Your remote plugins are:');
 
     for (const plugin of remotePlugins) {

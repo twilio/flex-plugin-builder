@@ -157,7 +157,8 @@ export const _startServer = (plugins: StartServerPlugins, config: StartServerCon
         // Check that all remote plugins inputted are valid
         for (const plugin of plugins.remote) {
           if (!remotePlugins.find(r => r.name === plugin)) {
-            remotePluginNotFound(plugin, remotePlugins);
+            const notFoundPlugins = plugins.remote.filter(plgin => !remotePlugins.find(r => r.name === plgin));
+            remotePluginNotFound(notFoundPlugins, remotePlugins);
           }
         }
 
