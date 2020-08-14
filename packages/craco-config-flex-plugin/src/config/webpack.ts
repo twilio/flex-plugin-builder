@@ -118,7 +118,7 @@ const configureWebpack = (config: WebpackConfig): Configuration => {
   const pkg = readPackageJson();
   config.plugins.push(new DefinePlugin({
     __FPB_PLUGIN_UNIQUE_NAME: `'${pkg.name}'`,
-    __FBP_PLUGIN_VERSION: `'${pkg.version}'`,
+    __FPB_PLUGIN_VERSION: `'${pkg.version}'`,
     __FPB_FLEX_PLUGIN_SCRIPTS_VERSION: `'${getDependencyVersion('flex-plugin-scripts')}'`,
     __FPB_FLEX_PLUGIN_VERSION: `'${getDependencyVersion('flex-plugin')}'`,
     __FPB_CRACO_CONFIG_FLEX_PLUGIN_VERSION: `'${getDependencyVersion('craco-config-flex-plugin')}'`,
