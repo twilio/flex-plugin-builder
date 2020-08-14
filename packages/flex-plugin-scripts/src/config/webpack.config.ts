@@ -232,6 +232,8 @@ export const _getBasePlugins = (environment: Environment): Plugin[] => {
     __FPB_FLEX_UI_VERSION: `'${flexUIVersion}'`,
     __FPB_REACT_VERSION: `'${reactVersion}'`,
     __FPB_REACT_DOM_VERSION: `'${reactDOMVersion}'`,
+    // backward compatibility with v3
+    __FPB_CRACO_CONFIG_FLEX_PLUGIN_VERSION: 'N/A',
   };
 
   // The @k88/cra-webpack-hot-dev-client package requires these environment variables to be replaced
