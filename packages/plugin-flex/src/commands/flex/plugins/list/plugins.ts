@@ -2,9 +2,13 @@ import { ListPlugins } from 'flex-plugins-api-toolkit/dist/scripts';
 
 import { createDescription } from '../../../../utils/general';
 import InformationFlexPlugin from '../../../../sub-commands/information-flex-plugin';
+import { listPlugins as listPluginsDocs } from '../../../../commandDocs.json';
 
+/**
+ * Lists the Flex Plugins
+ */
 export default class FlexPluginsListPlugins extends InformationFlexPlugin<ListPlugins[]> {
-  static description = createDescription('Lists the plugins on the account', false);
+  static description = createDescription(listPluginsDocs.description, false);
 
   /**
    * @override

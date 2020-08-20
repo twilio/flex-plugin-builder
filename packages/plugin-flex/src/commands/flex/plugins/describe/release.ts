@@ -5,20 +5,22 @@ import { DescribeRelease } from 'flex-plugins-api-toolkit';
 import { createDescription } from '../../../../utils/general';
 import FlexPlugin from '../../../../sub-commands/flex-plugin';
 import InformationFlexPlugin from '../../../../sub-commands/information-flex-plugin';
+import { describeRelease as describeReleaseDocs } from '../../../../commandDocs.json';
 
 /**
- * Builds the flex-plugin
+ * Describes the Flex Plugin Release
  */
 export default class FlexPluginsDescribeRelease extends InformationFlexPlugin<DescribeRelease> {
-  static description = createDescription('Describes a release', false);
+  static description = createDescription(describeReleaseDocs.description, false);
 
   static flags = {
     ...FlexPlugin.flags,
     sid: flags.string({
-      description: 'The release sid to describe',
+      description: describeReleaseDocs.flags.sid,
       exclusive: ['active'],
     }),
     active: flags.boolean({
+      description: describeReleaseDocs.flags.active,
       exclusive: ['sid'],
     }),
   };

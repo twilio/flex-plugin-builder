@@ -7,30 +7,42 @@ import { DeployResult } from 'flex-plugin-scripts/dist/scripts/deploy';
 import { TwilioCliError } from '../../../exceptions';
 import { createDescription } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
+import { deploy as deployDocs } from '../../../commandDocs.json';
 
 /**
- * Builds and then deploys the Flex plugin
+ * Builds and then deploys the Flex Plugin
  */
 export default class FlexPluginsDeploy extends FlexPlugin {
-  static description = createDescription('Builds and deploys Flex plugin to Twilio Assets', true);
+  static description = createDescription(deployDocs.description, true);
 
   static flags = {
     ...FlexPlugin.flags,
     patch: flags.boolean({
+      description: deployDocs.flags.patch,
       exclusive: ['minor', 'major', 'version'],
     }),
     minor: flags.boolean({
+      description: deployDocs.flags.minor,
       exclusive: ['patch', 'major', 'version'],
     }),
     major: flags.boolean({
+      description: deployDocs.flags.major,
       exclusive: ['patch', 'minor', 'version'],
     }),
     version: flags.string({
+      description: deployDocs.flags.version,
       exclusive: ['patch', 'minor', 'major'],
     }),
-    public: flags.boolean(),
-    changelog: flags.string(),
-    description: flags.string(),
+    public: flags.boolean({
+      description: deployDocs.flags.public,
+      default: false,
+    }),
+    changelog: flags.string({
+      description: deployDocs.flags.changelog,
+    }),
+    description: flags.string({
+      description: deployDocs.flags.description,
+    }),
   };
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {

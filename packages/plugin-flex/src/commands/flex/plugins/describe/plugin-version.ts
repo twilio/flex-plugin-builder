@@ -4,22 +4,23 @@ import { DescribePluginVersion } from 'flex-plugins-api-toolkit';
 import { createDescription } from '../../../../utils/general';
 import FlexPlugin from '../../../../sub-commands/flex-plugin';
 import InformationFlexPlugin from '../../../../sub-commands/information-flex-plugin';
+import { describePluginVersion as describePluginVersionDocs } from '../../../../commandDocs.json';
 
 /**
- * Builds the flex-plugin
+ * Describes Flex Plugin Version
  */
 export default class FlexPluginsDescribePluginVersion extends InformationFlexPlugin<DescribePluginVersion> {
-  static description = createDescription('Describes a plugin version', false);
+  static description = createDescription(describePluginVersionDocs.description, false);
 
   static flags = {
     ...FlexPlugin.flags,
     name: flags.string({
+      description: describePluginVersionDocs.flags.name,
       required: true,
-      description: 'The plugin name to describe',
     }),
     version: flags.string({
+      description: describePluginVersionDocs.flags.version,
       required: true,
-      description: 'The plugin version to describe',
     }),
   };
 

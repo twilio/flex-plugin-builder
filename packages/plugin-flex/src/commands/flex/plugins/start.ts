@@ -6,25 +6,22 @@ import { createDescription } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { readJSONFile } from '../../../utils/fs';
 import { TwilioCliError } from '../../../exceptions';
+import { start as startDocs } from '../../../commandDocs.json';
 
 /**
- * Starts the dev-server for building and iterating on a flex-plugin
+ * Starts the dev-server for building and iterating on a plugin bundle
  */
 export default class FlexPluginsStart extends FlexPlugin {
-  static description = createDescription(
-    'Starts a dev-server to build the Flex plugin locally. If the --name flag is used at least once, the command does not need to be invoked in a plugin directory. Else, it does.',
-    false,
-  );
+  static description = createDescription(startDocs.description, false);
 
   static flags = {
     ...FlexPlugin.flags,
     name: flags.string({
+      description: startDocs.flags.name,
       multiple: true,
-      description:
-        'The name of the plugin(s) you would like to run, formatted as pluginName to run locally, or pluginName@remote to run remotely.',
     }),
     'include-remote': flags.boolean({
-      description: 'Use this flag to include all remote plugins in your build.',
+      description: startDocs.flags.includeRemote,
     }),
   };
 

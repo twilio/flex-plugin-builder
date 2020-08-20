@@ -4,6 +4,7 @@ import { createDescription } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { TwilioCliError } from '../../../exceptions';
 import { isNullOrUndefined } from '../../../utils/strings';
+import { diff as diffDocs } from '../../../commandDocs.json';
 
 /**
  * Configuration sid parser
@@ -22,20 +23,22 @@ export const parser = (input: string) => {
 };
 
 /**
- * Builds and then deploys the Flex plugin
+ * Finds the difference between two Flex Plugin Configuration
  */
 export default class FlexPluginsDiff extends FlexPlugin {
   static pluginDiffPrefix = '..│.. ';
 
-  static description = createDescription('Finds the diff between two configurations', false);
+  static description = createDescription(diffDocs.description, false);
 
   static args = [
     {
+      description: diffDocs.args.id1,
       name: 'id1',
       required: true,
       parse: parser,
     },
     {
+      description: diffDocs.args.id2,
       name: 'id2',
       arse: parser,
     },

@@ -4,22 +4,26 @@ import { flags } from '@oclif/command';
 import { createDescription } from '../../../utils/general';
 import { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import CreateConfiguration from '../../../sub-commands/create-configuration';
+import { createConfiguration as createConfigurationDocs, release as releaseDocs } from '../../../commandDocs.json';
 
 /**
- * Creates a Configuration
+ * Creates a Flex Plugin Configuration and releases and sets it to active
  */
 export default class FlexPluginsRelease extends CreateConfiguration {
+  static description = createDescription(releaseDocs.description, true);
+
   public static flags = {
     ...CreateConfiguration.flags,
-    'configuration-sid': flags.string(),
+    'configuration-sid': flags.string({
+      description: releaseDocs.flags.configurationSid,
+      exclusive: ['description', 'name', 'new', 'plugin'],
+    }),
+    // Duplicated to remove the required field
     plugin: flags.string({
+      description: createConfigurationDocs.flags.plugin,
       multiple: true,
-      description:
-        'The plugin to install, formatted as pluginName@version. Use additional --plugin to provide other plugins to install',
     }),
   };
-
-  static description = createDescription('Creates a Flex Plugin Release', true);
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, { strict: false, runInDirectory: false });

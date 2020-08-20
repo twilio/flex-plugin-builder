@@ -4,6 +4,7 @@ import { CreateConfigurationOption } from 'flex-plugins-api-toolkit';
 import dayjs from 'dayjs';
 
 import FlexPlugin, { FlexPluginFlags } from './flex-plugin';
+import { createConfiguration as createConfigurationDocs } from '../commandDocs.json';
 
 export interface CreateConfigurationFlags extends FlexPluginFlags {
   new: boolean;
@@ -18,18 +19,20 @@ export interface CreateConfigurationFlags extends FlexPluginFlags {
 export default abstract class CreateConfiguration extends FlexPlugin {
   public static flags = {
     ...FlexPlugin.flags,
-    new: flags.boolean(),
+    new: flags.boolean({
+      description: createConfigurationDocs.flags.name,
+    }),
     name: flags.string({
+      description: createConfigurationDocs.flags.name,
       default: dayjs().format('MMM D, YYYY'),
     }),
     plugin: flags.string({
+      description: createConfigurationDocs.flags.plugin,
       multiple: true,
       required: true,
-      description:
-        'The plugin to install, formatted as pluginName@version. Use additional --plugin to provide other plugins to install',
     }),
     description: flags.string({
-      description: 'The configuration description',
+      description: createConfigurationDocs.flags.description,
     }),
   };
 

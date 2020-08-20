@@ -1,12 +1,13 @@
 import { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { createDescription } from '../../../utils/general';
 import CreateConfiguration from '../../../sub-commands/create-configuration';
+import { createConfiguration as createConfigurationDocs } from '../../../commandDocs.json';
 
 /**
- * Creates a Configuration
+ * Creates a Flex Plugin Configuration
  */
 export default class FlexPluginsCreateConfiguration extends CreateConfiguration {
-  static description = createDescription('Creates a Flex Plugin Configuration', true);
+  static description = createDescription(createConfigurationDocs.description, true);
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, { strict: false, runInDirectory: false });

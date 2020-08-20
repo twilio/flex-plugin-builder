@@ -1,11 +1,12 @@
 import { createDescription } from '../../../utils/general';
 import FlexPlugin from '../../../sub-commands/flex-plugin';
+import { build as buildDocs } from '../../../commandDocs.json';
 
 /**
- * Builds the flex-plugin
+ * Builds the the plugin bundle
  */
 export default class FlexPluginsBuild extends FlexPlugin {
-  static description = createDescription('Builds Flex plugin and creates a JavaScript and sourcemap bundle', true);
+  static description = createDescription(buildDocs.description, true);
 
   static flags = {
     ...FlexPlugin.flags,

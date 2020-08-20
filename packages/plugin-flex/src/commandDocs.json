@@ -1,0 +1,92 @@
+{
+  "flexPlugin": {
+    "flags": {
+      "json": "Outputs the result of the command as json string"
+    }
+  },
+  "build": {
+    "description": "Builds Flex plugin and creates a JavaScript and sourcemap bundle"
+  },
+  "start": {
+    "description": "Starts a dev-server to build the Flex plugin locally. If the --name flag is used at least once, the command does not need to be invoked in a plugin directory. Else, it does.",
+    "flags": {
+      "name": "The name of the plugin(s) you would like to run, formatted as pluginName to run locally, or pluginName@remote to run remotely",
+      "includeRemote": "Use this flag to include all remote plugins in your build"
+    }
+  },
+  "deploy": {
+    "description": "Builds and deploys a new version of Flex plugin to your Flex application",
+    "flags": {
+      "patch": "Publishes the version as a patch (semver); this is the default",
+      "minor": "Publishes the version as a minor (semver)",
+      "major": "Publishes the version as a major (semver)",
+      "version": "The custom version to publish",
+      "public": "Publishes the plugin as a public Twilio Asset; default is private",
+      "changelog": "The changes (added/removed) made in this plugin version",
+      "description": "The description of this Flex plugin"
+    }
+  },
+  "createConfiguration": {
+    "description": "Creates a Flex Plugin Configuration",
+    "flags": {
+      "new": "Create a new Flex Plugin Configuration, otherwise will append to existing active Configuration",
+      "name": "The friendly name of the Flex Plugin Configuration",
+      "plugin": "The plugin to install, formatted as pluginName@version. Use additional --plugin to provide other plugins to install",
+      "description": "The description of this Flex Plugin Configuration"
+    }
+  },
+  "release": {
+    "description": "Creates a Flex Plugin Release",
+    "flags": {
+      "configurationSid": "The Flex Plugin Configuration SID to release; other options are not required when using this option"
+    }
+  },
+  "diff": {
+    "description": "Finds the diff between two configurations",
+    "args": {
+      "id1": "The first Flex Plugin Configuration SID",
+      "id2": "The second Flex Plugin Configuration SID"
+    }
+  },
+  "describeConfiguration": {
+    "description": "Describes a Flex Plugin Configuration and its associated Plugins",
+    "flags": {
+      "sid": "The Flex Plugin Configuration SID"
+    }
+  },
+  "describePlugin": {
+    "description": "Describes a Flex Plugin and its Flex Plugin Versions",
+    "flags": {
+      "name": "The Flex Plugin name to describe"
+    }
+  },
+  "describePluginVersion": {
+    "description": "Describes a Flex Plugin Version",
+    "flags": {
+      "name": "The Flex Plugin name of the Plugin Version to describe",
+      "version": "The Flex Plugin Version to describe"
+    }
+  },
+  "describeRelease": {
+    "description": "Describes a Flex Plugin Release and its Plugin Configuration",
+    "flags": {
+      "sid": "The Flex Plugin Release SID to describe",
+      "active": ""
+    }
+  },
+  "listConfigurations": {
+    "description": "Lists the Flex Plugin Configuration on the account"
+  },
+  "listPluginVersions": {
+    "description": "Lists the Flex Plugin Versions on the account",
+    "flags": {
+      "name": "The plugin name to list its versions"
+    }
+  },
+  "listPlugins": {
+    "description": "Lists the Flex Plugins on the account"
+  },
+  "listReleases": {
+    "description": "Lists the Flex Releases on the account"
+  }
+}

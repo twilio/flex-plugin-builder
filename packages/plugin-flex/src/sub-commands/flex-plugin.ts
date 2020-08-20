@@ -22,6 +22,7 @@ import { filesExist, readJSONFile, readJsonFile, writeJSONFile } from '../utils/
 import { TwilioCliError } from '../exceptions';
 import { instanceOf } from '../utils/general';
 import { toSentenceCase } from '../utils/strings';
+import { flexPlugin as flexPluginDocs } from '../commandDocs.json';
 
 interface FlexPluginOption {
   strict: boolean;
@@ -51,7 +52,9 @@ export interface CLIFlexConfiguration {
  */
 export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   static flags = {
-    json: flags.boolean(),
+    json: flags.boolean({
+      description: flexPluginDocs.flags.json,
+    }),
   };
 
   protected static DATE_FIELDS = ['datecreated', 'dateupdated', 'created', 'updated'];

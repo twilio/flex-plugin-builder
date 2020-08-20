@@ -4,15 +4,19 @@ import { flags } from '@oclif/command';
 import { createDescription } from '../../../../utils/general';
 import InformationFlexPlugin from '../../../../sub-commands/information-flex-plugin';
 import FlexPlugin from '../../../../sub-commands/flex-plugin';
+import { listPluginVersions as listPluginVersionsDocs } from '../../../../commandDocs.json';
 
+/**
+ * Lists the Flex Plugin Versions
+ */
 export default class FlexPluginsListPluginVersions extends InformationFlexPlugin<ListPluginVersions[]> {
-  static description = createDescription('Lists the plugin versions on the account', false);
+  static description = createDescription(listPluginVersionsDocs.description, false);
 
   static flags = {
     ...FlexPlugin.flags,
     name: flags.string({
+      description: listPluginVersionsDocs.flags.name,
       required: true,
-      description: 'The plugin name to list its versions',
     }),
   };
 
