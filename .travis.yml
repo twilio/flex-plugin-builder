@@ -22,4 +22,5 @@ branches:
   - /^v\d+\.\d+\.\d+$/
   only:
   - master
+  - main
   - dev
