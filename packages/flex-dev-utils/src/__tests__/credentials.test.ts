@@ -36,27 +36,70 @@ describe('credentials', () => {
 
   describe('_getService', () => {
     it('should not call findCredentials if CI is true', async () => {
+      const _findCredentials = jest.spyOn(keytar, 'findCredentials');
       process.env.CI = 'true';
       const result = await credentials._getService();
 
-      expect(keytar.findCredentials).not.toHaveBeenCalled();
+      expect(_findCredentials).not.toHaveBeenCalled();
       expect(result).toEqual([]);
+
+      _findCredentials.mockRestore();
     });
 
-    it('should findCredentials', async () => {
-      const findCredentials = jest.spyOn(keytar, 'findCredentials').mockResolvedValue([]);
+    it('should call findCredentials', async () => {
+      const _findCredentials = jest.spyOn(keytar, 'findCredentials');
       const result = await credentials._getService();
 
-      expect(findCredentials).toHaveBeenCalledTimes(1);
+      expect(_findCredentials).toHaveBeenCalledTimes(1);
       expect(result).toEqual([]);
 
-      findCredentials.mockRestore();
+      _findCredentials.mockRestore();
     });
   });
 
   describe('getCredential', () => {
     it('should quit if CI=true and accountSid and authToken or api key and secret are not provided', async () => {
       process.env.CI = 'true';
+
+      try {
+        await credentials.getCredential();
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+      }
+    });
+
+    it('should quit if CI=true and accountSid without authToken and the reverse', async () => {
+      process.env.CI = 'true';
+      process.env.TWILIO_ACCOUNT_SID = accountSid;
+
+      try {
+        await credentials.getCredential();
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+      }
+
+      process.env.TWILIO_ACCOUNT_SID = undefined;
+      process.env.TWILIO_AUTH_TOKEN = authToken;
+
+      try {
+        await credentials.getCredential();
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+      }
+    });
+
+    it('should quit if CI=true and api key without secret and the reverse', async () => {
+      process.env.CI = 'true';
+      process.env.TWILIO_API_KEY = apiKey;
+
+      try {
+        await credentials.getCredential();
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+      }
+
+      process.env.TWILIO_API_KEY = undefined;
+      process.env.TWILIO_API_SECRET = apiSecret;
 
       try {
         await credentials.getCredential();
@@ -123,6 +166,26 @@ describe('credentials', () => {
     });
 
     it('should use env variables (api key and secret)', async () => {
+      process.env.TWILIO_API_KEY = apiKey;
+      process.env.TWILIO_API_SECRET = apiSecret;
+
+      const validateApiKey = jest
+        .spyOn(validators, 'validateApiKey')
+        .mockResolvedValue(true);
+      const _findCredential = jest.spyOn(credentials, '_findCredential');
+
+      const creds = await credentials.getCredential();
+
+      expect(validateApiKey).toHaveBeenCalledTimes(1);
+      expect(_findCredential).not.toHaveBeenCalled();
+      expect(creds).toEqual({
+        username: apiKey,
+        password: apiSecret
+      });
+    });
+
+    it('should use env variables (api key and secret)', async () => {
+      process.env.CI = 'true';
       process.env.TWILIO_API_KEY = apiKey;
       process.env.TWILIO_API_SECRET = apiSecret;
 

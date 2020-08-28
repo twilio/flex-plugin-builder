@@ -61,7 +61,7 @@ export const getCredential = async (): Promise<AuthConfig> => {
   let username;
   let password;
 
-  const missingCredentials = !((process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) || (process.env.TWILIO_API_KEY && !process.env.TWILIO_API_SECRET));
+  const missingCredentials = !((process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) || (process.env.TWILIO_API_KEY && process.env.TWILIO_API_SECRET));
   if (process.env.CI && missingCredentials) {
     throw new FlexPluginError('❌.  Running script in CI, but no AccountSid/AuthToken or API Key/Secret was provided');
   }
