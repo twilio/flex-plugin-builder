@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-scripts",
-  "version": "3.13.9",
+  "version": "3.13.10",
   "description": "Scripts to run, build and deploy Flex plugins",
   "keywords": [
     "flex",
@@ -41,12 +41,13 @@
     "@craco/craco": "^5.6.3",
     "core-js": "^2.6.5",
     "esm": "^3.2.25",
-    "flex-dev-utils": "^3.13.9",
+    "flex-dev-utils": "^3.13.10",
     "form-data": "^2.5.1",
     "querystring": "^0.2.0",
     "react-test-renderer": "^16.10.2"
   },
   "peerDependencies": {
     "flex-plugin": "*"
-  }
+  },
+  "gitHead": "741e95edbfa78da5f862ec7cfe7d032e842606a4"
 }
