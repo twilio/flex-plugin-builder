@@ -117,6 +117,19 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   }
 
   /**
+   * Returns the version from the package.json if found, otherwise returns undefined
+   * @param pkg
+   */
+  public static getPackageVersion(pkg: string) {
+    try {
+      // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+      return require(`${pkg}/package.json`).version;
+    } catch (e) {
+      return 'undefined';
+    }
+  }
+
+  /**
    * Returns the formatted header field
    * @param key
    */
@@ -246,8 +259,26 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       );
     }
 
-    const httpClient = new PluginServiceHTTPClient(this.twilioApiClient.username, this.twilioApiClient.password);
-    this._pluginsApiToolkit = new PluginsApiToolkit(this.twilioApiClient.username, this.twilioApiClient.password);
+    const options = {
+      caller: 'twilio-cli',
+      packages: {
+        'flex-plugin-scripts': FlexPlugin.getPackageVersion('flex-plugin-scripts'),
+        'flex-plugins-api-utils': FlexPlugin.getPackageVersion('flex-plugins-api-utils'),
+        'flex-plugins-api-client': FlexPlugin.getPackageVersion('flex-plugins-api-client'),
+        'twilio-cli': FlexPlugin.getPackageVersion('@twilio/cli-core'),
+        'twilio-cli-flex-plugin': this.pkg.version,
+      },
+    };
+    const httpClient = new PluginServiceHTTPClient(
+      this.twilioApiClient.username,
+      this.twilioApiClient.password,
+      options,
+    );
+    this._pluginsApiToolkit = new PluginsApiToolkit(
+      this.twilioApiClient.username,
+      this.twilioApiClient.password,
+      options,
+    );
     this._pluginsClient = new PluginsClient(httpClient);
     this._pluginVersionsClient = new PluginVersionsClient(httpClient);
     this._configurationsClient = new ConfigurationsClient(httpClient);
