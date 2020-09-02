@@ -20,7 +20,6 @@
   },
   "dependencies": {
     "flex-plugin": "{{flexPluginVersion}}",
-    "flex-plugin-scripts": "{{pluginScriptsVersion}}",
     "react": "16.5.2",
     "react-dom": "16.5.2",
     "react-emotion": "9.2.6"
@@ -30,6 +29,7 @@
     "babel-polyfill": "^6.26.0",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
+    "flex-plugin-scripts": "{{pluginScriptsVersion}}",
     "rimraf": "^3.0.0"
   },
   "browserslist": {
