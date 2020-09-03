@@ -12,11 +12,13 @@ export interface UserInputPlugin {
 /**
  * Reads user input to returns the --name plugins
  * --name plugin-test will run plugin-test locally
- * --name plugin-test@remote will run plugin-test remotely
+ * --name p
+ * lugin-test@remote will run plugin-test remotely
  * --include-remote will include all remote plugins
+ * @param failIfNotFound
  * @param args
  */
-export const parseUserInputPlugins = (...args: string[]): UserInputPlugin[] => {
+export const parseUserInputPlugins = (failIfNotFound: boolean, ...args: string[]): UserInputPlugin[] => {
   const userInputPlugins: UserInputPlugin[] = [];
   const config = readPluginsJson();
 
@@ -38,10 +40,12 @@ export const parseUserInputPlugins = (...args: string[]): UserInputPlugin[] => {
     }
 
     const plugin = config.plugins.find((p) => p.name === name);
-    if (!plugin) {
+    if (!plugin && failIfNotFound) {
       throw new FlexPluginError(`No plugin file was found with the name \'${name}\'`);
     }
-    userInputPlugins.push({name: plugin.name, remote: false});
+    if (plugin) {
+      userInputPlugins.push({name: plugin.name, remote: false});
+    }
   }
 
   return userInputPlugins;

@@ -178,7 +178,7 @@ export const _checkPluginCount = () => {
  * @private
  */
 export const _setPluginDir = (...args: string[]) => {
-  const userInputPlugins = parseUserInputPlugins(...args);
+  const userInputPlugins = parseUserInputPlugins(false, ...args);
   const plugin = findFirstLocalPlugin(userInputPlugins);
   if (plugin) {
     setCwd(plugin.dir);

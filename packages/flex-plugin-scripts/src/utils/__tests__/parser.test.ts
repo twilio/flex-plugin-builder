@@ -18,14 +18,14 @@ describe('parser', () => {
     });
 
     it('should return the local plugins only if found', () => {
-      const result = parserScripts.parseUserInputPlugins(...['--name', 'plugin-test']);
+      const result = parserScripts.parseUserInputPlugins(true, ...['--name', 'plugin-test']);
 
       expect(readPluginsJson).toHaveBeenCalledTimes(1);
       expect(result).toEqual([{'name': 'plugin-test', 'remote': false}]);
     });
 
     it('should always return the remote plugins', () => {
-      const result = parserScripts.parseUserInputPlugins(...['--name', 'plugin-test@remote']);
+      const result = parserScripts.parseUserInputPlugins(true, ...['--name', 'plugin-test@remote']);
 
       expect(readPluginsJson).toHaveBeenCalledTimes(1);
       expect(result).toEqual([{'name': 'plugin-test', 'remote': true}]);
@@ -33,7 +33,7 @@ describe('parser', () => {
 
     it('should throw an error if local plugin is not found', (done) => {
       try {
-        parserScripts.parseUserInputPlugins(...['--name', 'plugin-unknown']);
+        parserScripts.parseUserInputPlugins(true, ...['--name', 'plugin-unknown']);
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(readPluginsJson).toHaveBeenCalledTimes(1);
@@ -44,7 +44,7 @@ describe('parser', () => {
 
     it ('should throw an error if input is incorrect format', (done) => {
       try {
-        parserScripts.parseUserInputPlugins(...['--name', '!']);
+        parserScripts.parseUserInputPlugins(true, ...['--name', '!']);
       } catch (e) {
         expect(e).toBeInstanceOf(Error);
         expect(readPluginsJson).toHaveBeenCalledTimes(1);

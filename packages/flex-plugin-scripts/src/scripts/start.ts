@@ -60,7 +60,7 @@ export const start = async (...args: string[]): Promise<StartScript> => {
   // Future  node version will silently consume unhandled exception
   process.on('unhandledRejection', err => { throw err; });
 
-  const userInputPlugins = parseUserInputPlugins(...args);
+  const userInputPlugins = parseUserInputPlugins(true, ...args);
   const plugin = findFirstLocalPlugin(userInputPlugins);
   if (!plugin) {
     throw new FlexPluginError('You must run at least one plugin locally.');
