@@ -123,7 +123,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   public static getPackageVersion(pkg: string) {
     try {
       // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
-      return require(`${pkg}/package.json`).version;
+      return require(join(pkg, 'package.json')).version;
     } catch (e) {
       return 'undefined';
     }
@@ -266,7 +266,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
         'flex-plugins-api-utils': FlexPlugin.getPackageVersion('flex-plugins-api-utils'),
         'flex-plugins-api-client': FlexPlugin.getPackageVersion('flex-plugins-api-client'),
         'twilio-cli': FlexPlugin.getPackageVersion('@twilio/cli-core'),
-        'twilio-cli-flex-plugin': this.pkg.version,
+        'twilio-cli-flex-plugin': FlexPlugin.getPackageVersion(this.pluginRootDir),
       },
     };
     const httpClient = new PluginServiceHTTPClient(
