@@ -28,8 +28,9 @@
     "lint:fix": "npm run lint -- --fix",
     "prepack": "oclif-dev manifest && npm run replace-doc",
     "postpack": "rm -f oclif.manifest.json",
-    "publish:next": "./bin/publish $1",
+    "publish:beta": "./bin/publish $1 beta",
     "publish:public": "./bin/publish $1 public",
+    "publish:alpha": "./bin/publish $1 alpha",
     "replace-doc": "cp docs/README.md README.md && oclif-dev readme",
     "test": "mocha -r ts-node/register \"src/__tests__/**/*.test.ts\"",
     "test:ci": "nyc npm run test"
