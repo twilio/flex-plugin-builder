@@ -1,9 +1,9 @@
 import WebpackDevServer, { Configuration } from 'webpack-dev-server';
 import { env, logger, open } from 'flex-dev-utils';
-import { WebpackType } from '../index';
-import { exit } from '../../utils/run';
-import { _updatePluginsUrl } from '../../scripts/start';
 import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
+
+import { WebpackType } from '..';
+import { exit } from '../../utils/run';
 import { Compiler } from '../compiler';
 
 const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
@@ -49,11 +49,6 @@ export default (devCompiler: Compiler, devConfig: Configuration, type: WebpackTy
       logger.debug('Starting development server %s...', serverType);
     }
 
-
-    if (!isStaticServer) {
-      _updatePluginsUrl(port);
-    }
-
     if (!isJavaScriptServer) {
       await open(local.url);
     }
@@ -70,4 +65,4 @@ export default (devCompiler: Compiler, devConfig: Configuration, type: WebpackTy
     process.stdin.on('end', cleanUp);
     process.stdin.resume();
   }
-}
+};

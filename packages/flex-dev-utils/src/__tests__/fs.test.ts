@@ -390,7 +390,6 @@ describe('fs', () => {
       // public/ directory
       expect(fs.getPaths().app.publicDir).toEqual(expect.stringMatching('public$'));
       expect(fs.getPaths().app.appConfig).toEqual(expect.stringMatching('appConfig\.js$'));
-      expect(fs.getPaths().app.pluginsJsonPath).toEqual(expect.stringMatching('plugins\.json$'));
 
       // package.json
       expect(fs.getPaths().app.name).toEqual('plugin-test');
