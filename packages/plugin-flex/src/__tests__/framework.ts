@@ -17,6 +17,7 @@ interface Context<C> {
   userConfig: typeof ConfigData;
   config: typeof Config;
   testCmd: C;
+  variables: Record<string, unknown>;
 }
 
 type HelperTest<C> = FancyTypes.Base<
@@ -38,11 +39,24 @@ type HelperTest<C> = FancyTypes.Base<
       };
       args: [];
     };
+    init: {
+      output: {
+        variables: Record<string, unknown>;
+      };
+      args: [];
+    };
   }
 > &
   typeof test;
 
 export const pluginTest = test
+  .register('init', () => {
+    return {
+      async run(ctx) {
+        ctx.variables = {};
+      },
+    };
+  })
   .register('mockLogger', () => {
     return {
       async run(ctx) {
@@ -110,6 +124,7 @@ export const createTest = <C>(command: new (...args: any[]) => C) => {
         .twilioFakeProfile(ConfigData)
         .twilioCliEnv(Config)
         .twilioCreateCommand(command, args)
+        .init()
         .mockLogger() as HelperTest<C>;
     },
   };

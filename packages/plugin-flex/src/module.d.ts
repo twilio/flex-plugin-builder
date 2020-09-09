@@ -48,7 +48,9 @@ declare module '@twilio/cli-test' {
     testCmd?: typeof baseCommands.TwilioClientCommand & {
       _logger: Logger;
     };
+    variables: Record<string, unknown>;
   };
+
 
   type TwilioCliTest<C extends TwilioClientCommand> = FancyTypes.Base<FancyTypes.Context & TestCmd, {
     twilioFakeProfile: {

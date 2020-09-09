@@ -41,3 +41,12 @@ export const instanceOf = <T>(instance: Object, klass: Constructable<T>): boolea
 
   return false;
 };
+
+/**
+ * Exits the application
+ * @param exitCode  the exit code
+ */
+export const exit = (exitCode = 1) => {
+  // eslint-disable-next-line no-process-exit
+  process.exit(exitCode);
+};
