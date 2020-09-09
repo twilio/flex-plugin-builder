@@ -1,6 +1,6 @@
 {
   "name": "flex-dev-utils",
-  "version": "3.13.10",
+  "version": "3.13.7",
   "description": "Common development utility for creating a Flex plugin",
   "keywords": [
     "flex",
@@ -32,40 +32,40 @@
     "test:watch": "cd ../.. && jest packages/flex-dev-utils --watch"
   },
   "dependencies": {
-    "@k88/pipe-compose": "^2.1.1",
+    "@k88/pipe-compose": "^2.1.2",
     "@types/inquirer": "^6.5.0",
     "app-module-path": "^2.2.0",
-    "axios": "^0.19.0",
-    "axios-mock-adapter": "^1.17.0",
+    "axios": "^0.20.0",
+    "axios-mock-adapter": "^1.18.2",
     "copy-template-dir": "^1.4.0",
     "execa": "^2.1.0",
-    "flex-plugins-utils-exception": "^0.7.0",
-    "flex-plugins-utils-logger": "^0.7.3",
-    "inquirer": "7.0.0",
-    "lodash": "^4.17.15",
-    "marked": "^0.7.0",
+    "flex-plugins-utils-exception": "^0.15.0",
+    "flex-plugins-utils-logger": "^0.15.0",
+    "inquirer": "7.3.3",
+    "lodash": "^4.17.20",
+    "marked": "^0.8.2",
     "marked-terminal": "^3.3.0",
-    "mkdirp": "^0.5.1",
+    "mkdirp": "^0.5.5",
     "open": "^6.4.0",
-    "rimraf": "^3.0.0",
+    "rimraf": "^3.0.2",
     "semver": "^7.3.2",
-    "tmp": "^0.1.0",
+    "tmp": "^0.2.1",
     "update-notifier": "^3.0.1",
-    "util": "^0.12.1"
+    "util": "^0.12.3"
   },
   "devDependencies": {
     "@types/app-module-path": "^2.2.0",
-    "@types/lodash": "^4.14.144",
-    "@types/marked": "^0.6.5",
+    "@types/lodash": "^4.14.161",
+    "@types/marked": "^0.7.4",
     "@types/marked-terminal": "^3.1.1",
     "@types/mkdirp": "^0.5.2",
-    "@types/rimraf": "^2.0.2",
-    "@types/semver": "^7.1.0",
-    "@types/tmp": "^0.1.0",
-    "@types/update-notifier": "^2.5.0"
+    "@types/rimraf": "^2.0.4",
+    "@types/semver": "^7.3.3",
+    "@types/tmp": "^0.2.0",
+    "@types/update-notifier": "^2.5.1"
   },
   "optionalDependencies": {
-    "keytar": "^4.13.0"
+    "keytar": "^6.0.1"
   },
   "gitHead": "741e95edbfa78da5f862ec7cfe7d032e842606a4"
 }
