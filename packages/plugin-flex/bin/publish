@@ -10,19 +10,19 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # Release tag
 tag="alpha"
-if [ "$2" == "public" ] ; then
+if [ "$1" == "public" ] ; then
   tag="public"
 fi
-if [ "$2" == "beta" ] ; then
+if [ "$1" == "beta" ] ; then
   tag="next"
 fi
 
 # Version bump
 bump="patch"
-if [ "$1" == "minor" ] ; then
+if [ "$2" == "minor" ] ; then
   bump="minor"
 fi
-if [ "$1" == "major" ] ; then
+if [ "$2" == "major" ] ; then
   bump="major"
 fi
 
