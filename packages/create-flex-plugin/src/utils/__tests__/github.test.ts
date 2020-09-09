@@ -250,7 +250,7 @@ describe('github', () => {
         .mockReturnValue(undefined);
       const mkdirpSync = jest
         .spyOn(fsScripts, 'mkdirpSync')
-        .mockReturnValue(null);
+        .mockReturnValue(undefined);
       const request = jest
         .spyOn(axios, 'request')
         .mockResolvedValue(result);
