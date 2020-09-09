@@ -1,6 +1,6 @@
 {
   "name": "flex-dev-utils",
-  "version": "4.7.1-alpha.0",
+  "version": "4.8.0-alpha.0",
   "description": "Common development utility for creating a Flex plugin",
   "keywords": [
     "flex",
@@ -57,8 +57,8 @@
     "util": "^0.12.3"
   },
   "devDependencies": {
-    "@types/inquirer": "^6.5.0",
     "@types/app-module-path": "^2.2.0",
+    "@types/inquirer": "^6.5.0",
     "@types/lodash": "^4.14.161",
     "@types/marked": "^1.1.0",
     "@types/marked-terminal": "^3.1.1",
