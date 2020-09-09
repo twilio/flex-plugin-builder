@@ -6,7 +6,6 @@ import { findPort, getDefaultPort } from 'flex-dev-utils/dist/urls';
 
 import getConfiguration, { ConfigurationType, WebpackType } from '../config';
 import compiler, { onCompileComplete } from '../config/compiler';
-
 import run from '../utils/run';
 import pluginServer, { Plugin } from '../config/devServer/pluginServer';
 import {
@@ -36,10 +35,9 @@ export interface StartScript {
 export const findPortAvailablePort = (...args: string[]) => {
   const portIndex = args.indexOf('--port');
   return portIndex !== -1
-      ? Promise.resolve(parseInt(args[portIndex + 1], 10))
-      : findPort(getDefaultPort(process.env.PORT));
-}
-
+    ? Promise.resolve(parseInt(args[portIndex + 1], 10))
+    : findPort(getDefaultPort(process.env.PORT));
+};
 
 /**
  * Starts the dev-server
@@ -58,7 +56,9 @@ export const start = async (...args: string[]): Promise<StartScript> => {
   env.setPort(port);
 
   // Future  node version will silently consume unhandled exception
-  process.on('unhandledRejection', err => { throw err; });
+  process.on('unhandledRejection', (err) => {
+    throw err;
+  });
 
   const userInputPlugins = parseUserInputPlugins(true, ...args);
   const plugin = findFirstLocalPlugin(userInputPlugins);
@@ -70,8 +70,10 @@ export const start = async (...args: string[]): Promise<StartScript> => {
   if (args[0] === 'flex') {
     type = WebpackType.Static;
 
-    // For some reason start flex sometimes throws this exception
-    // I haven't been able to figure why but it doesn't look like it is crashing the server
+    /*
+     * For some reason start flex sometimes throws this exception
+     * I haven't been able to figure why but it doesn't look like it is crashing the server
+     */
     process.on('uncaughtException', (err) => {
       // @ts-ignore
       if (err.code === 'ECONNRESET') {
@@ -108,17 +110,20 @@ export const start = async (...args: string[]): Promise<StartScript> => {
  * @private
  */
 /* istanbul ignore next */
-export const _startDevServer = async (plugins: UserInputPlugin[], options: StartServerOptions): Promise<StartScript> => {
+export const _startDevServer = async (
+  plugins: UserInputPlugin[],
+  options: StartServerOptions,
+): Promise<StartScript> => {
   const { type, port, remoteAll } = options;
   const isJavaScriptServer = type === WebpackType.JavaScript;
   const isStaticServer = type === WebpackType.Static;
   const config = getConfiguration(ConfigurationType.Webpack, Environment.Development, type);
   const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development, type);
 
-  const localPlugins = plugins.filter(p => !p.remote);
+  const localPlugins = plugins.filter((p) => !p.remote);
   const pluginRequest = {
-    local: localPlugins.map(p => p.name),
-    remote: plugins.filter(p => p.remote).map(p => p.name),
+    local: localPlugins.map((p) => p.name),
+    remote: plugins.filter((p) => p.remote).map((p) => p.name),
   };
 
   // Setup plugin's server
@@ -147,7 +152,7 @@ export const _startDevServer = async (plugins: UserInputPlugin[], options: Start
 
   return {
     port,
-  }
+  };
 };
 
 /**
@@ -166,30 +171,6 @@ export const _requirePackages = (pluginsPath: string, pkgPath: string) => {
     plugins,
     pkg,
   };
-};
-
-/**
- * Replaces the port in plugins.json and re-writes ito the file
- *
- * @param port  the port to update to
- * @private
- */
-export const _updatePluginsUrl = (port: number) => {
-  const { plugins, pkg } = _requirePackages(getPaths().app.pluginsJsonPath, getPaths().app.pkgPath);
-
-  const pluginIndex = plugins.findIndex((p) => p.src.indexOf(pkg.name) !== -1);
-  if (pluginIndex === -1) {
-    throw new FlexPluginError(`Could not find plugin ${pkg.name}`);
-  }
-  const url = plugins[pluginIndex].src;
-  const matches = url.match(/localhost:(\d*)/);
-  if (!matches) {
-    throw new FlexPluginError(`Could not find a local port on url ${url}`);
-  }
-
-  // Replace port and re-write to file
-  plugins[pluginIndex].src = plugins[pluginIndex].src.replace(matches[1], port.toString());
-  writeJSONFile(getPaths().app.pluginsJsonPath, plugins);
 };
 
 /**

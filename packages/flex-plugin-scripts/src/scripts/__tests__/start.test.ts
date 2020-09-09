@@ -1,6 +1,7 @@
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import * as fs from 'flex-dev-utils/dist/fs';
 import * as urlScripts from 'flex-dev-utils/dist/urls';
+
 import * as parserUtils from '../../utils/parser';
 import * as startScripts from '../start';
 import * as pluginServerScripts from '../../config/devServer/pluginServer';
@@ -42,22 +43,14 @@ describe('StartScript', () => {
 
   describe('default', () => {
     const port = 1234;
-    const findPort = jest
-      .spyOn(urlScripts, 'findPort');
-    const getDefaultPort = jest
-      .spyOn(urlScripts, 'getDefaultPort');
-    const _startDevServer = jest
-      .spyOn(startScripts, '_startDevServer');
-    const readPluginsJson = jest
-      .spyOn(fs, 'readPluginsJson');
-    const parseUserInputPlugins = jest
-      .spyOn(parserUtils, 'parseUserInputPlugins');
-    const writeJSONFile = jest
-      .spyOn(fs, 'writeJSONFile');
-    const _updatePluginPort = jest
-      .spyOn(startScripts, '_updatePluginPort');
-    const setCwd = jest
-      .spyOn(fs, 'setCwd');
+    const findPort = jest.spyOn(urlScripts, 'findPort');
+    const getDefaultPort = jest.spyOn(urlScripts, 'getDefaultPort');
+    const _startDevServer = jest.spyOn(startScripts, '_startDevServer');
+    const readPluginsJson = jest.spyOn(fs, 'readPluginsJson');
+    const parseUserInputPlugins = jest.spyOn(parserUtils, 'parseUserInputPlugins');
+    const writeJSONFile = jest.spyOn(fs, 'writeJSONFile');
+    const _updatePluginPort = jest.spyOn(startScripts, '_updatePluginPort');
+    const setCwd = jest.spyOn(fs, 'setCwd');
 
     const assertTest = (type: configScripts.WebpackType) => {
       expect(findPort).toHaveBeenCalledTimes(1);
@@ -66,14 +59,18 @@ describe('StartScript', () => {
       expect(getDefaultPort).toHaveBeenCalledWith(port.toString());
       expect(_startDevServer).toHaveBeenCalledTimes(1);
       expect(parseUserInputPlugins).toHaveBeenCalledTimes(1);
-      expect(_startDevServer).toHaveBeenCalledWith([{name: 'plugin-test', remote: false}], {port, type, remoteAll: false});
-    }
+      expect(_startDevServer).toHaveBeenCalledWith([{ name: 'plugin-test', remote: false }], {
+        port,
+        type,
+        remoteAll: false,
+      });
+    };
 
     beforeEach(() => {
       findPort.mockResolvedValue(port);
       getDefaultPort.mockReturnValue(port);
       _startDevServer.mockReturnThis();
-      readPluginsJson.mockReturnValue({plugins: [{name: 'plugin-test', dir: 'test-dir', port: 0}]});
+      readPluginsJson.mockReturnValue({ plugins: [{ name: 'plugin-test', dir: 'test-dir', port: 0 }] });
       writeJSONFile.mockReturnThis();
       _updatePluginPort.mockReturnThis();
       setCwd.mockReturnThis();
@@ -91,7 +88,7 @@ describe('StartScript', () => {
     });
 
     it('should start dev-server', async () => {
-      parseUserInputPlugins.mockReturnValue([{name: 'plugin-test', remote: false}]);
+      parseUserInputPlugins.mockReturnValue([{ name: 'plugin-test', remote: false }]);
 
       await startScripts.default();
 
@@ -99,7 +96,7 @@ describe('StartScript', () => {
     });
 
     it('should start static html page', async () => {
-      parseUserInputPlugins.mockReturnValue([{name: 'plugin-test', remote: false}]);
+      parseUserInputPlugins.mockReturnValue([{ name: 'plugin-test', remote: false }]);
 
       await startScripts.default(...['flex']);
 
@@ -107,7 +104,7 @@ describe('StartScript', () => {
     });
 
     it('should start plugin', async () => {
-      parseUserInputPlugins.mockReturnValue([{name: 'plugin-test', remote: false}]);
+      parseUserInputPlugins.mockReturnValue([{ name: 'plugin-test', remote: false }]);
 
       await startScripts.default(...['plugin', '--name', 'plugin-test']);
 
@@ -118,7 +115,7 @@ describe('StartScript', () => {
     });
 
     it('should throw exception if plugin is not found', async (done) => {
-      parseUserInputPlugins.mockReturnValue([{name: 'plugin-bad', remote: false}]);
+      parseUserInputPlugins.mockReturnValue([{ name: 'plugin-bad', remote: false }]);
 
       try {
         await startScripts.default(...['plugin', '--name', 'plugin-bad']);
@@ -129,90 +126,16 @@ describe('StartScript', () => {
     });
   });
 
-  describe('_updatePluginsUrl', () => {
-    const pkg = { name: 'plugin-test' };
-    const port = 2345;
-
-    it('should throw an error if plugin not found', (done) => {
-      const plugins = [{
-        phase: 3,
-        name: 'plugin-test',
-        src: 'broken url',
-      }];
-
-      const requirePackages = jest
-        .spyOn(startScripts, '_requirePackages')
-        .mockReturnValue({ plugins, pkg });
-
-      try {
-        startScripts._updatePluginsUrl(port);
-      } catch (e) {
-        expect(e).toBeInstanceOf(FlexPluginError);
-        expect(requirePackages).toHaveBeenCalledTimes(1);
-        expect(e.message).toContain('find plugin');
-        done();
-      }
-    });
-
-    it('should throw an error if it fails to find local port', (done) => {
-      const plugins = [{
-        phase: 3,
-        name: 'plugin-test',
-        src: 'http://twilio.com/plugin-test.js',
-      }];
-
-      const requirePackages = jest
-        .spyOn(startScripts, '_requirePackages')
-        .mockReturnValue({ plugins, pkg });
-
-      try {
-        startScripts._updatePluginsUrl(port);
-      } catch (e) {
-        expect(e).toBeInstanceOf(FlexPluginError);
-        expect(requirePackages).toHaveBeenCalledTimes(1);
-        expect(e.message).toContain('local port');
-        done();
-      }
-    });
-
-    it('should update plugins URL', () => {
-      const plugins = [{
-        phase: 3,
-        name: 'plugin-test',
-        src: 'http://localhost:1234/plugin-test.js',
-      }];
-
-      const requirePackages = jest
-        .spyOn(startScripts, '_requirePackages')
-        .mockReturnValue({ plugins, pkg });
-      const writeJSONFile = jest
-        .spyOn(fs, 'writeJSONFile')
-        .mockReturnThis();
-
-      startScripts._updatePluginsUrl(port);
-
-      expect(requirePackages).toHaveBeenCalledTimes(1);
-      expect(writeJSONFile).toHaveBeenCalledTimes(1);
-      expect(plugins[0].src.indexOf(port.toString()) !== -1).toBeTruthy();
-
-      requirePackages.mockRestore();
-      writeJSONFile.mockRestore();
-    });
-  });
-
   describe('updatePluginsPort', () => {
     const port = 1234;
     const plugin = { name: 'plugin-test', dir: 'test-dir', port: 0 };
-    const readPluginsJson = jest
-      .spyOn(fs, 'readPluginsJson');
-    const writeJSONFile = jest
-      .spyOn(fs, 'writeJSONFile');
-    const parseUserInputPlugins = jest
-      .spyOn(parserUtils, 'parseUserInputPlugins');
+    const readPluginsJson = jest.spyOn(fs, 'readPluginsJson');
+    const writeJSONFile = jest.spyOn(fs, 'writeJSONFile');
+    const parseUserInputPlugins = jest.spyOn(parserUtils, 'parseUserInputPlugins');
 
     beforeEach(() => {
-      parseUserInputPlugins.mockReturnValue([{name: 'plugin-test', remote: false}]);
-      readPluginsJson.mockReturnValue({plugins: [plugin]});
+      parseUserInputPlugins.mockReturnValue([{ name: 'plugin-test', remote: false }]);
+      readPluginsJson.mockReturnValue({ plugins: [plugin] });
       writeJSONFile.mockReturnThis();
     });
 
@@ -226,14 +149,14 @@ describe('StartScript', () => {
       startScripts._updatePluginPort(port, plugin.name);
 
       expect(writeJSONFile).toHaveBeenCalledTimes(1);
-      expect(writeJSONFile).toHaveBeenCalledWith(CliPath, {'plugins': [ {...plugin, port}]});
+      expect(writeJSONFile).toHaveBeenCalledWith(CliPath, { plugins: [{ ...plugin, port }] });
     });
 
     it('should not update the plugin port', () => {
       startScripts._updatePluginPort(port, 'unknown-plugin');
 
       expect(writeJSONFile).toHaveBeenCalledTimes(1);
-      expect(writeJSONFile).toHaveBeenCalledWith(CliPath, {'plugins': [ {...plugin}]});
+      expect(writeJSONFile).toHaveBeenCalledWith(CliPath, { plugins: [{ ...plugin }] });
     });
   });
 

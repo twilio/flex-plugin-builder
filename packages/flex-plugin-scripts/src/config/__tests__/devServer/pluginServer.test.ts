@@ -11,7 +11,6 @@ describe('pluginServer', () => {
   const paths = {
     app: {
       name: 'default-plugin',
-      pluginsServicePath: 'pluginsService.js',
     },
   };
 

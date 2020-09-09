@@ -1,13 +1,15 @@
 import fs from 'fs';
 import * as path from 'path';
-import globby from 'globby';
 import os, { homedir } from 'os';
+import { promisify } from 'util';
+
+import globby from 'globby';
 import mkdirp from 'mkdirp';
 import tmp from 'tmp';
-import { promisify } from 'util';
 import rimRaf from 'rimraf';
-import { confirm } from './inquirer';
 import appModule from 'app-module-path';
+
+import { confirm } from './inquirer';
 
 export interface PackageJson {
   name: string;
@@ -29,7 +31,7 @@ export interface FlexConfigurationPlugin {
 }
 
 export interface CLIFlexConfiguration {
-  plugins: FlexConfigurationPlugin[]
+  plugins: FlexConfigurationPlugin[];
 }
 
 export default fs;
@@ -43,19 +45,19 @@ export const _setRequirePaths = (requirePath: string) => {
   appModule.addPath(requirePath);
 
   // Now try to specifically set the node_modules path
-  const requirePaths: string[] = require.main && require.main.paths || [];
+  const requirePaths: string[] = (require.main && require.main.paths) || [];
   if (!requirePaths.includes(requirePath)) {
     requirePaths.push(requirePath);
   }
-}
+};
 export const setCwd = (p: string) => {
   internalCwd = p;
-  _setRequirePaths(path.join(internalCwd, 'node_modules'))
-}
+  _setRequirePaths(path.join(internalCwd, 'node_modules'));
+};
 export const setCoreCwd = (p: string) => {
   internalCoreCwd = p;
-  _setRequirePaths(path.join(internalCoreCwd, 'node_modules'))
-}
+  _setRequirePaths(path.join(internalCoreCwd, 'node_modules'));
+};
 
 // Get working directory
 export const getCwd = () => internalCwd;
@@ -72,7 +74,9 @@ export const getCoreCwd = () => internalCoreCwd;
 // The OS root directory
 const rootDir = os.platform() === 'win32' ? getCwd().split(path.sep)[0] : '/';
 
-// Promise version of {@link copyTempDir}
+/*
+ * Promise version of {@link copyTempDir}
+ */
 // tslint:disable-next-line
 const promiseCopyTempDir = promisify(require('copy-template-dir'));
 
@@ -82,9 +86,7 @@ const promiseCopyTempDir = promisify(require('copy-template-dir'));
  * @param files the files to check that they exist
  */
 export const checkFilesExist = (...files: string[]) => {
-  return files
-    .map(fs.existsSync)
-    .every((resp) => resp);
+  return files.map(fs.existsSync).every((resp) => resp);
 };
 
 /**
@@ -109,7 +111,7 @@ export const updateAppVersion = (version: string) => {
  */
 export const readAppPackageJson = (): AppPackageJson => {
   return readPackageJson(getPackageJsonPath()) as AppPackageJson;
-}
+};
 
 /**
  * Reads a JSON file
@@ -125,9 +127,9 @@ export const readPackageJson = (filePath: string): PackageJson => {
  *
  * @param filePath  the file path to read
  */
-export const readJsonFile = <T> (filePath: string): T => {
+export const readJsonFile = <T>(filePath: string): T => {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-}
+};
 
 /**
  * Returns the package.json version field of the package
@@ -138,7 +140,7 @@ export const getPackageVersion = (name: string) => {
   const installedPath = resolveRelative(getPaths().app.nodeModulesDir, name, 'package.json');
 
   return readPackageJson(installedPath).version;
-}
+};
 
 /**
  * Finds the closest up file relative to dir
@@ -253,15 +255,15 @@ export const findGlobs = (...patterns: string[]) => {
 export const checkPluginConfigurationExists = async (name: string, dir: string) => {
   const cliPaths = getCliPaths();
   if (!checkFilesExist(cliPaths.pluginsJsonPath)) {
-      mkdirpSync(cliPaths.flexDir);
-      writeJSONFile(cliPaths.pluginsJsonPath, {plugins: []});
+    mkdirpSync(cliPaths.flexDir);
+    writeJSONFile(cliPaths.pluginsJsonPath, { plugins: [] });
   }
 
   const config = readPluginsJson();
   const plugin = config.plugins.find((p) => p.name === name);
 
   if (!plugin) {
-    config.plugins.push({name, dir, port: 0});
+    config.plugins.push({ name, dir, port: 0 });
     writeJSONFile(cliPaths.pluginsJsonPath, config);
     return;
   }
@@ -270,7 +272,10 @@ export const checkPluginConfigurationExists = async (name: string, dir: string) 
     return;
   }
 
-  const answer = await confirm(`You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${dir}?`, 'N');
+  const answer = await confirm(
+    `You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${dir}?`,
+    'N',
+  );
   if (answer) {
     plugin.dir = dir;
     writeJSONFile(cliPaths.pluginsJsonPath, config);
@@ -301,7 +306,7 @@ export const addCWDNodeModule = (...args: string[]) => {
   }
   // This is to setup the app environment
   setCwd(getCwd());
-}
+};
 
 /**
  * Returns the absolute path to the pkg if found
@@ -313,7 +318,7 @@ export const resolveModulePath = (pkg: string) => {
     return require.resolve(pkg);
   } catch (e1) {
     // Now try to specifically set the node_modules path
-    const requirePaths: string[] = require.main && require.main.paths || [];
+    const requirePaths: string[] = (require.main && require.main.paths) || [];
     try {
       return require.resolve(pkg, { paths: requirePaths });
     } catch (e2) {
@@ -349,7 +354,7 @@ export const getCliPaths = () => {
     flexDir,
     pluginsJsonPath: resolveRelative(flexDir, 'plugins.json'),
   };
-}
+};
 
 export const getPaths = () => {
   const cwd = getCwd();
@@ -404,10 +409,7 @@ export const getPaths = () => {
       devServerConfigPath: resolveCwd('webpack.dev.js'),
       tsConfigPath,
       isTSProject: () => checkFilesExist(tsConfigPath),
-      setupTestsPaths: [
-        resolveCwd('setupTests.js'),
-        resolveRelative(srcDir, 'setupTests.js'),
-      ],
+      setupTestsPaths: [resolveCwd('setupTests.js'), resolveRelative(srcDir, 'setupTests.js')],
 
       // build/*
       buildDir,
@@ -426,12 +428,10 @@ export const getPaths = () => {
       // public/*
       publicDir,
       appConfig: resolveRelative(publicDir, 'appConfig.js'),
-      pluginsJsonPath: resolveRelative(publicDir, 'plugins.json'),
-      pluginsServicePath: resolveRelative(publicDir, 'pluginsService.js'),
     },
 
     // others
     assetBaseUrlTemplate: `/plugins/${pkgName}/%PLUGIN_VERSION%`,
     extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
   };
-}
+};
