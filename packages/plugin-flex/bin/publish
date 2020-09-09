@@ -14,7 +14,7 @@ if [ "$2" == "public" ] ; then
   tag="public"
 fi
 if [ "$2" == "beta" ] ; then
-  tag="beta"
+  tag="next"
 fi
 
 # Version bump
