@@ -93,7 +93,8 @@
     "description": "Upgrades the scaffolding of the plugin to the latest version",
     "flags": {
       "install": "If set, will run npm install as well",
-      "beta": "If set, will upgrade to the latest beta version"
+      "beta": "If set, will upgrade to the latest beta version",
+      "yes": "If set, will answer yes to all prompts"
     }
   }
 }

@@ -55,6 +55,8 @@ interface Pkg {
   scripts: Record<string, string>;
 }
 
+export type PkgCallback = (input: Pkg) => Pkg;
+
 /**
  * Base class for all flex-plugin * scripts.
  * This will ensure the script is running on a Flex-plugin project, otherwise will throw an error

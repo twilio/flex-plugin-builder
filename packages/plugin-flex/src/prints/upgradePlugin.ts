@@ -18,8 +18,8 @@ const upgradeNotification = (logger: Logger) => async () => {
 /**
  * Script started
  */
-const scriptStarted = (logger: Logger) => () => {
-  logger.info('@@Upgrading your plugin from v3 to v4@@');
+const scriptStarted = (logger: Logger) => (version: string) => {
+  logger.info(`@@Upgrading your plugin from ${version} to v4@@`);
   logger.newline();
 };
 
