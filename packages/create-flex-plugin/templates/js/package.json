@@ -3,20 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "bootstrap": "flex-plugin check-start",
-    "prebuild": "rimraf build && npm run bootstrap",
-    "build": "flex-plugin build",
-    "clear": "flex-plugin clear",
-    "predeploy": "npm run build",
-    "deploy": "flex-plugin deploy",
-    "eject": "flex-plugin eject",
-    "info": "flex-plugin info",
-    "postinstall": "npm run bootstrap",
-    "list": "flex-plugin list",
-    "remove": "flex-plugin remove",
-    "prestart": "npm run bootstrap",
-    "start": "flex-plugin start",
-    "test": "flex-plugin test --env=jsdom"
+    "postinstall": "flex-plugin check-start"
   },
   "dependencies": {
     "flex-plugin": "{{flexPluginVersion}}",
