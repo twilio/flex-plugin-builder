@@ -45,6 +45,9 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     beta: flags.boolean({
       description: upgradePluginDoc.flags.beta,
     }),
+    yes: flags.boolean({
+      description: upgradePluginDoc.flags.yes,
+    }),
   };
 
   private static cracoConfigSha = '4a8ecfec7b70da88a0849b7b0163808b2cc46eee08c9ab599c8aa3525ff01546';
@@ -57,31 +60,30 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     super(argv, config, secureStorage, {});
 
     this.prints = this._prints.upgradePlugin;
+    this.parse(FlexPluginsUpgradePlugin);
   }
 
   /**
    * @override
    */
   async doRun() {
-    await this.prints.upgradeNotification();
+    await this.prints.upgradeNotification(this._flags.yes);
 
     if (this.pkgVersion === 1) {
       await this.upgradeFromV1();
-      return;
     }
 
     if (this.pkgVersion === 2) {
       await this.upgradeFromV2();
-      return;
     }
 
     if (this.pkgVersion === 3) {
       await this.upgradeFromV3();
-      return;
     }
 
-    this.prints.notAvailable(this.pkgVersion);
-    this.exit(1);
+    await this.upgradeToLatest();
+
+    this.exit(0);
   }
 
   /**
@@ -198,6 +200,26 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     await this.npmInstall();
 
     this.prints.scriptSucceeded(!this._flags.install);
+  }
+
+  /**
+   * Upgrades the packages to the latest version
+   */
+  async upgradeToLatest() {
+    this.prints.upgradeToLatest();
+    const depsToAdd: DependencyUpdates = {
+      remove: [],
+      deps: {
+        'flex-plugin': '*',
+      },
+      devDeps: {
+        'flex-plugin-scripts': '*',
+        '@twilio/flex-ui': '^1',
+      },
+    };
+
+    await this.updatePackageJson(depsToAdd);
+    await this.npmInstall();
   }
 
   /**

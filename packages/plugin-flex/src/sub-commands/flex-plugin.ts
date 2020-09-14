@@ -35,6 +35,7 @@ export type SecureStorage = typeof services.secureStorage.SecureStorage;
 
 export interface FlexPluginFlags {
   json: boolean;
+  'clear-terminal': boolean;
 }
 
 export interface FlexConfigurationPlugin {
@@ -64,6 +65,9 @@ export type PkgCallback = (input: Pkg) => Pkg;
 export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   static flags = {
     json: flags.boolean({
+      description: flexPluginDocs.flags.json,
+    }),
+    'clear-terminal': flags.boolean({
       description: flexPluginDocs.flags.json,
     }),
   };
@@ -263,6 +267,9 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    */
   async run() {
     await super.run();
+    if (this._flags['clear-terminal']) {
+      this._logger.clearTerminal();
+    }
 
     if (this.opts.runInDirectory && !this.isPluginFolder()) {
       throw new TwilioCliError(

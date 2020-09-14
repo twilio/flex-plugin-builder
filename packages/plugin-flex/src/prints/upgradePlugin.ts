@@ -7,19 +7,29 @@ const cracoUpgradeGuideLink = 'https://twilio.com';
 /**
  * Upgrade notification
  */
-const upgradeNotification = (logger: Logger) => async () => {
+const upgradeNotification = (logger: Logger) => async (skip: boolean) => {
   boxen.warning('You are about to upgrade your plugin to use the latest version of Flex Plugin CLI.');
-  const answer = await confirm('Please backup your plugin either locally or on GitHub. Do you want to continue?');
-  if (!answer) {
-    exit();
+  if (!skip) {
+    const answer = await confirm('Please backup your plugin either locally or on GitHub. Do you want to continue?');
+    if (!answer) {
+      exit(0);
+    }
   }
+};
+
+/**
+ * Upgrade to latest
+ */
+const upgradeToLatest = (logger: Logger) => () => {
+  logger.info(`@@Updating your plugin\'s dependencies to the latest version@@`);
+  logger.newline();
 };
 
 /**
  * Script started
  */
 const scriptStarted = (logger: Logger) => (version: string) => {
-  logger.info(`@@Upgrading your plugin from ${version} to v4@@`);
+  logger.info(`@@**Upgrading your plugin from ${version} to v4**@@`);
   logger.newline();
 };
 
@@ -98,6 +108,7 @@ const warnNotRemoved = (logger: Logger) => (note: string) => {
 export default (logger: Logger) => ({
   upgradeNotification: upgradeNotification(logger),
   scriptStarted: scriptStarted(logger),
+  upgradeToLatest: upgradeToLatest(logger),
   scriptSucceeded: scriptSucceeded(logger),
   updatePluginUrl: updatePluginUrl(logger),
   cannotRemoveCraco: cannotRemoveCraco(logger),

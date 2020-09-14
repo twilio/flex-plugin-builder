@@ -1,16 +1,20 @@
 {
   "flexPlugin": {
     "flags": {
+      "clearTerminal": "Clears the terminal before running the command",
       "json": "Outputs the result of the command as json string"
     }
   },
   "build": {
     "description": "Builds Flex plugin and creates a JavaScript and sourcemap bundle"
   },
+  "test": {
+    "description": "Runs the test suite"
+  },
   "start": {
-    "description": "Starts a dev-server to build the Flex plugin locally. If the --name flag is used at least once, the command does not need to be invoked in a plugin directory. Else, it does.",
+    "description": "Starts a dev-server to build the Flex plugin locally",
     "flags": {
-      "name": "The name of the plugin(s) you would like to run, formatted as pluginName to run locally, or pluginName@remote to run remotely",
+      "name": "The name of the plugin(s) you would like to run",
       "includeRemote": "Use this flag to include all remote plugins in your build"
     }
   },
@@ -92,7 +96,7 @@
   "upgradePlugin": {
     "description": "Upgrades the scaffolding of the plugin to the latest version",
     "flags": {
-      "install": "If set, will run npm install as well",
+      "install": "If set, will run `npm install`",
       "beta": "If set, will upgrade to the latest beta version",
       "yes": "If set, will answer yes to all prompts"
     }
