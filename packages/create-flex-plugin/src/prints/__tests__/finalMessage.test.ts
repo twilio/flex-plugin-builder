@@ -1,9 +1,21 @@
 import boxen from 'flex-dev-utils/dist/boxen';
 
 import finalMessage from '../finalMessage';
+import { FlexPluginArguments } from '../../lib/create-flex-plugin';
 jest.mock('flex-dev-utils/dist/boxen');
 
 describe('finalMessage', () => {
+  const config: FlexPluginArguments = {
+    name: 'plugin-final-message',
+    targetDirectory: '/target/directory',
+    flexSdkVersion: '1.2.3-flex-sdk',
+    flexPluginVersion: '1.2.3-flex-plugin',
+    pluginScriptsVersion: '1.2.3-plugin-script',
+    pluginJsonContent: '{}',
+    pluginClassName: 'PluginFinalMessage',
+    pluginNamespace: 'PluginFinalMessage',
+  };
+
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -12,7 +24,7 @@ describe('finalMessage', () => {
     let message = '';
     (boxen as any).info = jest.fn((msg) => message = msg);
 
-    finalMessage({} as any);
+    finalMessage(config);
 
     expect(boxen.info).toHaveBeenCalledTimes(1);
     expect(message).toMatchSnapshot();
@@ -22,7 +34,7 @@ describe('finalMessage', () => {
     let message = '';
     (boxen as any).info = jest.fn((msg) => message = msg);
 
-    finalMessage({yarn: true} as any);
+    finalMessage({...config, yarn: true});
 
     expect(boxen.info).toHaveBeenCalledTimes(1);
     expect(message).toMatchSnapshot();
@@ -32,7 +44,7 @@ describe('finalMessage', () => {
     let message = '';
     (boxen as any).info = jest.fn((msg) => message = msg);
 
-    finalMessage({install: true} as any);
+    finalMessage({...config, install: true});
 
     expect(boxen.info).toHaveBeenCalledTimes(1);
     expect(message).toMatchSnapshot();

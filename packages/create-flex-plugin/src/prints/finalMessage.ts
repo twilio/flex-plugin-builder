@@ -11,7 +11,7 @@ const headline = logger.coloredStrings.headline;
  * @param config
  */
 export default (config: FlexPluginArguments) => {
-  const installCommand = config.yarn ? 'yarn' : 'npm install';
+  const installCommand = config.yarn ? 'yarn install' : 'npm install';
   const setupMessage = multilineString(
     `${headline('Setup:')}`,
     `$ cd ${config.name}/`,
