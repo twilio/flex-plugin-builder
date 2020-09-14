@@ -62,7 +62,7 @@ export const _parseArgs = (...args: string[]) => {
  * Runs Jest tests
  */
 const test = async (...args: string[]) => {
-  logger.info('Running tests');
+  logger.debug('Running tests');
 
   addCWDNodeModule();
 
