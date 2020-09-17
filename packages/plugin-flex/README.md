@@ -64,7 +64,7 @@ USAGE
 
 ## `twilio flex:plugins:build`
 
-Builds Flex plugin and creates a JavaScript and sourcemap bundle. This command needs to be invoked inside a plugin directory.
+Builds the Flex plugin and creates a JavaScript and sourcemap bundle. This command needs to be invoked inside a plugin directory.
 
 ```
 USAGE
@@ -75,7 +75,7 @@ OPTIONS
   --json            Outputs the result of the command as json string
 ```
 
-_See code: [src/commands/flex/plugins/build.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.12.1-next.0/src/commands/flex/plugins/build.ts)_
+_See code: [src/commands/flex/plugins/build.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.13.0-next.0/src/commands/flex/plugins/build.ts)_
 
 ## `twilio flex:plugins:create NAME`
 
@@ -106,7 +106,7 @@ DESCRIPTION
   name	Name of your plugin. Needs to start with plugin-. This command needs to be invoked inside a plugin directory.
 ```
 
-_See code: [src/commands/flex/plugins/create.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.12.1-next.0/src/commands/flex/plugins/create.ts)_
+_See code: [src/commands/flex/plugins/create.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.13.0-next.0/src/commands/flex/plugins/create.ts)_
 
 ## `twilio flex:plugins:create-configuration`
 
@@ -120,18 +120,18 @@ OPTIONS
   --clear-terminal           Outputs the result of the command as json string
   --description=description  The description of this Flex Plugin Configuration
   --json                     Outputs the result of the command as json string
-  --name=name                [default: Sep 14, 2020] The friendly name of the Flex Plugin Configuration
+  --name=name                [default: Sep 17, 2020] The friendly name of the Flex Plugin Configuration
   --new                      The friendly name of the Flex Plugin Configuration
 
   --plugin=plugin            (required) The plugin to install, formatted as pluginName@version. Use additional --plugin
                              to provide other plugins to install
 ```
 
-_See code: [src/commands/flex/plugins/create-configuration.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.12.1-next.0/src/commands/flex/plugins/create-configuration.ts)_
+_See code: [src/commands/flex/plugins/create-configuration.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.13.0-next.0/src/commands/flex/plugins/create-configuration.ts)_
 
 ## `twilio flex:plugins:deploy`
 
-Builds and deploys a new version of Flex plugin to your Flex application. This command needs to be invoked inside a plugin directory.
+Builds and deploys a new version of the Flex plugin to your Flex application. This command needs to be invoked inside a plugin directory.
 
 ```
 USAGE
@@ -142,18 +142,18 @@ OPTIONS
   --clear-terminal           Outputs the result of the command as json string
   --description=description  The description of this Flex plugin
   --json                     Outputs the result of the command as json string
-  --major                    Publishes the version as a major (semver)
-  --minor                    Publishes the version as a minor (semver)
-  --patch                    Publishes the version as a patch (semver); this is the default
+  --major                    Publishes the version as a major (SemVer)
+  --minor                    Publishes the version as a minor (SemVer)
+  --patch                    Publishes the version as a patch (SemVer); this is the default
   --public                   Publishes the plugin as a public Twilio Asset; default is private
   --version=version          The custom version to publish
 ```
 
-_See code: [src/commands/flex/plugins/deploy.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.12.1-next.0/src/commands/flex/plugins/deploy.ts)_
+_See code: [src/commands/flex/plugins/deploy.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.13.0-next.0/src/commands/flex/plugins/deploy.ts)_
 
 ## `twilio flex:plugins:describe:configuration`
 
-Describes a Flex Plugin Configuration and its associated Plugins.
+Provides details of the Flex Plugin Configuration like status, description and its associated Plugins.
 
 ```
 USAGE
@@ -165,11 +165,11 @@ OPTIONS
   --sid=sid         (required) The Flex Plugin Configuration SID
 ```
 
-_See code: [src/commands/flex/plugins/describe/configuration.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.12.1-next.0/src/commands/flex/plugins/describe/configuration.ts)_
+_See code: [src/commands/flex/plugins/describe/configuration.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.13.0-next.0/src/commands/flex/plugins/describe/configuration.ts)_
 
 ## `twilio flex:plugins:describe:plugin`
 
-Describes a Flex Plugin and its Flex Plugin Versions.
+Provides details of the Flex Plugin like status, description and its Flex Plugin Versions.
 
 ```
 USAGE
@@ -178,14 +178,14 @@ USAGE
 OPTIONS
   --clear-terminal  Outputs the result of the command as json string
   --json            Outputs the result of the command as json string
-  --name=name       (required) The Flex Plugin name to describe
+  --name=name       (required) The name of the Flex Plugin to describe
 ```
 
-_See code: [src/commands/flex/plugins/describe/plugin.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.12.1-next.0/src/commands/flex/plugins/describe/plugin.ts)_
+_See code: [src/commands/flex/plugins/describe/plugin.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.13.0-next.0/src/commands/flex/plugins/describe/plugin.ts)_
 
 ## `twilio flex:plugins:describe:plugin-version`
 
-Describes a Flex Plugin Version.
+Provides details of the Flex Plugin Version like changelog, status and the url of the plugin package.
 
 ```
 USAGE
@@ -198,11 +198,11 @@ OPTIONS
   --version=version  (required) The Flex Plugin Version to describe
 ```
 
-_See code: [src/commands/flex/plugins/describe/plugin-version.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.12.1-next.0/src/commands/flex/plugins/describe/plugin-version.ts)_
+_See code: [src/commands/flex/plugins/describe/plugin-version.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.13.0-next.0/src/commands/flex/plugins/describe/plugin-version.ts)_
 
 ## `twilio flex:plugins:describe:release`
 
-Describes a Flex Plugin Release and its Plugin Configuration.
+Provides details of the Flex Plugin Release like the underlying Plugin Configuration and Plugins.
 
 ```
 USAGE
@@ -215,11 +215,11 @@ OPTIONS
   --sid=sid         The Flex Plugin Release SID to describe
 ```
 
-_See code: [src/commands/flex/plugins/describe/release.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.12.1-next.0/src/commands/flex/plugins/describe/release.ts)_
+_See code: [src/commands/flex/plugins/describe/release.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.13.0-next.0/src/commands/flex/plugins/describe/release.ts)_
 
 ## `twilio flex:plugins:diff ID1 [ID2]`
 
-Finds the diff between two configurations.
+Finds the diff between two Flex Plugin Configurations.
 
 ```
 USAGE
@@ -234,7 +234,7 @@ OPTIONS
   --json            Outputs the result of the command as json string
 ```
 
-_See code: [src/commands/flex/plugins/diff.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.12.1-next.0/src/commands/flex/plugins/diff.ts)_
+_See code: [src/commands/flex/plugins/diff.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.13.0-next.0/src/commands/flex/plugins/diff.ts)_
 
 ## `twilio flex:plugins:list:configurations`
 
@@ -249,7 +249,7 @@ OPTIONS
   --json            Outputs the result of the command as json string
 ```
 
-_See code: [src/commands/flex/plugins/list/configurations.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.12.1-next.0/src/commands/flex/plugins/list/configurations.ts)_
+_See code: [src/commands/flex/plugins/list/configurations.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.13.0-next.0/src/commands/flex/plugins/list/configurations.ts)_
 
 ## `twilio flex:plugins:list:plugin-versions`
 
@@ -265,7 +265,7 @@ OPTIONS
   --name=name       (required) The plugin name to list its versions
 ```
 
-_See code: [src/commands/flex/plugins/list/plugin-versions.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.12.1-next.0/src/commands/flex/plugins/list/plugin-versions.ts)_
+_See code: [src/commands/flex/plugins/list/plugin-versions.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.13.0-next.0/src/commands/flex/plugins/list/plugin-versions.ts)_
 
 ## `twilio flex:plugins:list:plugins`
 
@@ -280,7 +280,7 @@ OPTIONS
   --json            Outputs the result of the command as json string
 ```
 
-_See code: [src/commands/flex/plugins/list/plugins.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.12.1-next.0/src/commands/flex/plugins/list/plugins.ts)_
+_See code: [src/commands/flex/plugins/list/plugins.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.13.0-next.0/src/commands/flex/plugins/list/plugins.ts)_
 
 ## `twilio flex:plugins:list:releases`
 
@@ -295,11 +295,11 @@ OPTIONS
   --json            Outputs the result of the command as json string
 ```
 
-_See code: [src/commands/flex/plugins/list/releases.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.12.1-next.0/src/commands/flex/plugins/list/releases.ts)_
+_See code: [src/commands/flex/plugins/list/releases.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.13.0-next.0/src/commands/flex/plugins/list/releases.ts)_
 
 ## `twilio flex:plugins:release`
 
-Creates a Flex Plugin Release. This command needs to be invoked inside a plugin directory.
+Creates a Flex Plugin Release. Enables the plugins (passed as params or via the Flex Configuration) on your Flex application.
 
 ```
 USAGE
@@ -315,7 +315,7 @@ OPTIONS
 
   --json                                 Outputs the result of the command as json string
 
-  --name=name                            [default: Sep 14, 2020] The friendly name of the Flex Plugin Configuration
+  --name=name                            [default: Sep 17, 2020] The friendly name of the Flex Plugin Configuration
 
   --new                                  The friendly name of the Flex Plugin Configuration
 
@@ -323,7 +323,7 @@ OPTIONS
                                          to provide other plugins to install
 ```
 
-_See code: [src/commands/flex/plugins/release.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.12.1-next.0/src/commands/flex/plugins/release.ts)_
+_See code: [src/commands/flex/plugins/release.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.13.0-next.0/src/commands/flex/plugins/release.ts)_
 
 ## `twilio flex:plugins:start`
 
@@ -340,7 +340,7 @@ OPTIONS
   --name=name       The name of the plugin(s) you would like to run
 ```
 
-_See code: [src/commands/flex/plugins/start.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.12.1-next.0/src/commands/flex/plugins/start.ts)_
+_See code: [src/commands/flex/plugins/start.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.13.0-next.0/src/commands/flex/plugins/start.ts)_
 
 ## `twilio flex:plugins:test`
 
@@ -355,11 +355,11 @@ OPTIONS
   --json            Outputs the result of the command as json string
 ```
 
-_See code: [src/commands/flex/plugins/test.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.12.1-next.0/src/commands/flex/plugins/test.ts)_
+_See code: [src/commands/flex/plugins/test.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.13.0-next.0/src/commands/flex/plugins/test.ts)_
 
 ## `twilio flex:plugins:upgrade-plugin`
 
-Upgrades the scaffolding of the plugin to the latest version.
+Upgrades your plugin to use the latest version of the Plugin CLI.
 
 ```
 USAGE
@@ -368,10 +368,10 @@ USAGE
 OPTIONS
   --beta            If set, will upgrade to the latest beta version
   --clear-terminal  Outputs the result of the command as json string
-  --install         If set, will run `npm install`
+  --install         If set, will install the dependencies
   --json            Outputs the result of the command as json string
   --yes             If set, will answer yes to all prompts
 ```
 
-_See code: [src/commands/flex/plugins/upgrade-plugin.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.12.1-next.0/src/commands/flex/plugins/upgrade-plugin.ts)_
+_See code: [src/commands/flex/plugins/upgrade-plugin.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.13.0-next.0/src/commands/flex/plugins/upgrade-plugin.ts)_
 <!-- commandsstop -->
