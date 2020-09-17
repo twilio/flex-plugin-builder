@@ -10,7 +10,7 @@ import { createConfiguration as createConfigurationDocs, release as releaseDocs 
  * Creates a Flex Plugin Configuration and releases and sets it to active
  */
 export default class FlexPluginsRelease extends CreateConfiguration {
-  static description = createDescription(releaseDocs.description, true);
+  static description = createDescription(releaseDocs.description, false);
 
   public static flags = {
     ...CreateConfiguration.flags,
