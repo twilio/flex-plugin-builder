@@ -21,8 +21,5 @@ branches:
   except:
   - /^v\d+\.\d+\.\d+$/
   only:
-  - master
   - main
-  - dev
-  - main
-  - next
+  - /v\d-beta/
