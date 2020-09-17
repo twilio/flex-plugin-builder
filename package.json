@@ -27,8 +27,9 @@
     "test": "jest --color",
     "test:ci": "jest --clearCache && jest --coverage --color",
     "test:watch": "jest --watchAll --color",
-    "publish:next": "bin/publish",
-    "publish:public": "bin/publish public"
+    "publish:alpha": "bin/publish alpha $1",
+    "publish:beta": "bin/publish beta $1",
+    "publish:public": "bin/publish public $1"
   },
   "husky": {
     "hooks": {
