@@ -4,11 +4,48 @@
 ## Cleans up the node_modules, re-installs everything, runs test before publishing
 ## By default, it will attempt to publish as next-gen, unless 'public' is provided
 ## i.e.
-##    ./bin/publish public      publishes as a bump
-##    ./bin/publish             publishes as next-gen
+##    ./bin/publish public        publishes as a public patch bump
+##    ./bin/publish               publishes as an alpha tag prepatch bump
+##    ./bin/publish beta minor    publishes as an beta tag preminor bump
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 LERNA="$DIR/../node_modules/.bin/lerna"
+CURRENT_BRANCH=$(git branch --show-current)
+
+# Release tag
+tag="alpha"
+if [ "$1" == "public" ] ; then
+  tag="public"
+fi
+if [ "$1" == "beta" ] ; then
+  tag="beta"
+fi
+
+# Version bump
+bump="patch"
+if [ "$2" == "minor" ] ; then
+  bump="minor"
+fi
+if [ "$2" == "major" ] ; then
+  bump="major"
+fi
+if [ "$1" != "public" ] ; then
+  bump="pre${bump}"
+fi
+
+# Verify tag and branch
+if [ "$CURRENT_BRANCH" == "main" ] && [ "$1" != "public" ] ; then
+  echo "main branch can only have public release"
+  exit 1
+fi
+if [ "$1" == "public" ] && [ "$CURRENT_BRANCH" != "main" ] ; then
+  echo "Public release must be done on the main branch"
+  exit 1
+fi
+if [ "$1" == "alpha" ] && [[ "$CURRENT_BRANCH" =~ ^v.-beta$ ]] ; then
+  echo "Alpha release cannot be on a v*-beta branch"
+  exit 1
+fi
 
 # Runs script but quits if script exists with non-zero exit code
 function run_script() {
@@ -19,18 +56,14 @@ function run_script() {
   fi
 }
 
-# Show notification and a countdown before publihsing 
+# Show notification and a countdown before publihsing
 secs=5
 while [ $secs -gt 0 ]; do
-  tag="beta (next)"
-  if [ "$1" == "public" ] ; then 
-    tag="public" 
-  fi
-  echo -ne "Publishing as a \033[1m${tag}\033[0m release in ${secs}sec\033[0K\r"
+  echo -ne "Publishing a \033[1m${bump}\033[0m bump as a \033[1m${tag}\033[0m release in ${secs}sec\033[0K\r"
   sleep 1
   : $((secs--))
 done
-echo -ne "Publishing as a \033[1m${tag}\033[0m release\033[0K\r"
+echo -ne "Publishing a \033[1m${bump}\033[0m bump as a \033[1m${tag}\033[0m release\033[0K\r"
 echo -ne "\r\n"
 
 # Cleanup
@@ -51,15 +84,12 @@ run_script npm run build
 # Remove package-lock file
 find . -type f -regex "\.\/packages\/[a-zA-z-]*\/package-lock\.json" -delete -o -regex "\.\/package-lock.json" -delete
 
-# Publish
+# Publish package
+echo -e "\n------------------------------------"
+echo "-- Publishing as ${tag} release --"
+echo -e "------------------------------------\n"
 if [ "$1" == "public" ] ; then
-  echo -e "\n------------------------------------"
-  echo "-- Publishing as a public release --"
-  echo -e "------------------------------------\n"
-  run_script $LERNA publish
+  run_script $LERNA publish $bump --yes
 else
-  echo -e "\n-----------------------------------------"
-  echo "-- Publishing as a beta (next) release --"
-  echo -e "-----------------------------------------\n"
-  run_script $LERNA publish --dist-tag next
+  run_script $LERNA publish $bump --preid ${tag} --yes
 fi
