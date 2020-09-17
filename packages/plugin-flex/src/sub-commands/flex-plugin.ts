@@ -14,9 +14,10 @@ import {
 } from 'flex-plugins-api-client';
 import { TwilioError } from 'flex-plugins-utils-exception';
 import dayjs from 'dayjs';
-import { flags } from '@oclif/parser';
+import { flags } from '@oclif/command';
 import * as Errors from '@oclif/errors';
 import mkdirp from 'mkdirp';
+import { PluginServiceHttpOption } from 'flex-plugins-api-client/dist/clients/client';
 
 import { filesExist, readJSONFile, readJsonFile, writeJSONFile } from '../utils/fs';
 import { TwilioCliError } from '../exceptions';
@@ -36,6 +37,7 @@ export type SecureStorage = typeof services.secureStorage.SecureStorage;
 export interface FlexPluginFlags {
   json: boolean;
   'clear-terminal': boolean;
+  region?: string;
 }
 
 export interface FlexConfigurationPlugin {
@@ -69,6 +71,11 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     }),
     'clear-terminal': flags.boolean({
       description: flexPluginDocs.flags.json,
+    }),
+    region: flags.enum({
+      options: ['dev', 'stage'],
+      default: process.env.TWILIO_REGION,
+      hidden: true,
     }),
   };
 
@@ -277,7 +284,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       );
     }
 
-    const options = {
+    const options: PluginServiceHttpOption = {
       caller: 'twilio-cli',
       packages: {
         'flex-plugin-scripts': FlexPlugin.getPackageVersion('flex-plugin-scripts'),
@@ -287,6 +294,11 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
         'twilio-cli-flex-plugin': FlexPlugin.getPackageVersion(this.pluginRootDir),
       },
     };
+    if (this._flags.region) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      options.realm = this._flags.region as any;
+    }
+
     const httpClient = new PluginServiceHTTPClient(
       this.twilioApiClient.username,
       this.twilioApiClient.password,
