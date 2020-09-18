@@ -91,5 +91,5 @@ echo -e "------------------------------------\n"
 if [ "$1" == "public" ] ; then
   run_script $LERNA publish $bump --yes
 else
-  run_script $LERNA publish $bump --preid ${tag} --yes
+  run_script $LERNA publish $bump --preid ${tag} --dist-tag ${tag} --yes
 fi
