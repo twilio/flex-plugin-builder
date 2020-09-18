@@ -16,7 +16,6 @@ fi
 if [ "$1" == "beta" ] ; then
   tag="next"
 fi
-
 # Version bump
 bump="patch"
 if [ "$2" == "minor" ] ; then
@@ -25,12 +24,15 @@ fi
 if [ "$2" == "major" ] ; then
   bump="major"
 fi
+if [ "$1" != "public" ] ; then
+  bump="pre${bump}"
+fi
 
 # Version
 if [ "$tag" == "public" ] ; then
   version=$(npm version "${bump}")
 else
-  version=$(npm version "pre${bump}" --preid="${tag}")
+  version=$(npm version "${bump}" --preid="${tag}")
 fi
 
 # Show notification and a countdown before publishing
