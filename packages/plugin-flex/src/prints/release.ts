@@ -9,7 +9,7 @@ export const releaseSuccessful = (logger: Logger) => (configurationSid: string) 
   logger.newline();
 
   logger.info('**Next Steps:**');
-  logger.info('Visit https://flex.twilio.com to see your plugin(s) live on your contact-center.');
+  logger.info('Visit https://flex.twilio.com/admin/plugins to see your plugin(s) live on your contact-center.');
   logger.newline();
 };
 
