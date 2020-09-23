@@ -2,7 +2,7 @@ import fs from 'fs';
 
 import * as fsScripts from 'flex-dev-utils/dist/fs';
 import * as prints from '../../prints';
-import * as checkStartScript from '../check-start';
+import * as preScriptCheck from '../pre-script-check';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('../../prints/versionMismatch');
@@ -13,7 +13,7 @@ jest.mock('../../prints/expectedDependencyNotFound');
 jest.mock('../../prints/typescriptNotInstalled');
 jest.mock('../../prints/loadPluginCountError');
 
-describe('CheckStartScript', () => {
+describe('PreScriptCheck', () => {
   const paths = {
     scripts: {
       tsConfigPath: 'test-ts-config-path',
@@ -48,22 +48,19 @@ describe('CheckStartScript', () => {
   });
 
   describe('main', () => {
-    const _checkAppConfig = jest.spyOn(checkStartScript, '_checkAppConfig');
-    const _checkExternalDepsVersions = jest.spyOn(checkStartScript, '_checkExternalDepsVersions');
-    const _validateTypescriptProject = jest.spyOn(checkStartScript, '_validateTypescriptProject');
-    const _checkPluginCount = jest.spyOn(checkStartScript, '_checkPluginCount');
+    const _checkExternalDepsVersions = jest.spyOn(preScriptCheck, '_checkExternalDepsVersions');
+    const _validateTypescriptProject = jest.spyOn(preScriptCheck, '_validateTypescriptProject');
+    const _checkPluginCount = jest.spyOn(preScriptCheck, '_checkPluginCount');
     const checkPluginConfigurationExists = jest.spyOn(fsScripts, 'checkPluginConfigurationExists');
-    const _setPluginDir = jest.spyOn(checkStartScript, '_setPluginDir');
+    const _setPluginDir = jest.spyOn(preScriptCheck, '_setPluginDir');
 
     beforeEach(() => {
-      _checkAppConfig.mockReset();
       _checkExternalDepsVersions.mockReset();
       _validateTypescriptProject.mockReset();
       _checkPluginCount.mockReset();
       checkPluginConfigurationExists.mockReset();
       _setPluginDir.mockReset();
 
-      _checkAppConfig.mockReturnThis();
       _checkExternalDepsVersions.mockReturnThis();
       _validateTypescriptProject.mockReturnValue(undefined);
       _checkPluginCount.mockReturnValue(undefined);
@@ -72,7 +69,6 @@ describe('CheckStartScript', () => {
     });
 
     afterAll(() => {
-      _checkAppConfig.mockRestore();
       _checkExternalDepsVersions.mockRestore();
       _validateTypescriptProject.mockRestore();
       _checkPluginCount.mockRestore();
@@ -80,7 +76,6 @@ describe('CheckStartScript', () => {
     });
 
     const expectCalled = (allowSkip: boolean, allowReact: boolean) => {
-      expect(_checkAppConfig).toHaveBeenCalledTimes(1);
       expect(_checkExternalDepsVersions).toHaveBeenCalledTimes(1);
       expect(_validateTypescriptProject).toHaveBeenCalledTimes(1);
       expect(_checkExternalDepsVersions).toHaveBeenCalledWith(allowSkip, allowReact);
@@ -89,27 +84,27 @@ describe('CheckStartScript', () => {
     };
 
     it('should call all methods', async () => {
-      await checkStartScript.default();
+      await preScriptCheck.default();
 
       expectCalled(false, false);
     });
 
     it('should call all methods and allow skip', async () => {
       process.env.SKIP_PREFLIGHT_CHECK = 'true';
-      await checkStartScript.default();
+      await preScriptCheck.default();
 
       expectCalled(true, false);
     });
 
     it('should call all methods and allow react', async () => {
       process.env.UNBUNDLED_REACT = 'true';
-      await checkStartScript.default();
+      await preScriptCheck.default();
 
       expectCalled(false, true);
     });
 
     it('should call methods in a specific order', async () => {
-      await checkStartScript.default();
+      await preScriptCheck.default();
 
       expect(_setPluginDir.mock.invocationCallOrder[0])
         .toBeLessThan(checkPluginConfigurationExists.mock.invocationCallOrder[0]);
@@ -122,7 +117,7 @@ describe('CheckStartScript', () => {
         .spyOn(fs, 'existsSync')
         .mockReturnValue(false);
 
-      checkStartScript._checkAppConfig();
+      preScriptCheck._checkAppConfig();
 
       expect(existSync).toHaveBeenCalledTimes(1);
       expect(existSync).toHaveBeenCalledWith(expect.stringContaining('appConfig.js'));
@@ -138,7 +133,7 @@ describe('CheckStartScript', () => {
         .spyOn(fs, 'existsSync')
         .mockReturnValue(true);
 
-      checkStartScript._checkAppConfig();
+      preScriptCheck._checkAppConfig();
 
       expect(existSync).toHaveBeenCalledTimes(1);
       expect(existSync).toHaveBeenCalledWith(expect.stringContaining('appConfig.js'));
@@ -157,7 +152,7 @@ describe('CheckStartScript', () => {
         version: '1.18.0',
         dependencies: {},
       };
-      checkStartScript._verifyPackageVersion(pkg, false, false, 'foo');
+      preScriptCheck._verifyPackageVersion(pkg, false, false, 'foo');
 
       expect(prints.expectedDependencyNotFound).toHaveBeenCalledTimes(1);
       expect(prints.expectedDependencyNotFound).toHaveBeenCalledWith('foo');
@@ -173,7 +168,7 @@ describe('CheckStartScript', () => {
       };
       _require.mockReturnValue({ version: '1.0.0' });
 
-      checkStartScript._verifyPackageVersion(pkg, false, false, 'somePackage');
+      preScriptCheck._verifyPackageVersion(pkg, false, false, 'somePackage');
 
       expect(prints.versionMismatch).toHaveBeenCalledTimes(1);
       expect(prints.versionMismatch).toHaveBeenCalledWith('somePackage', '1.0.0', '2.0.0', false);
@@ -190,7 +185,7 @@ describe('CheckStartScript', () => {
       };
       _require.mockReturnValue({ version: '1.0.0' });
 
-      checkStartScript._verifyPackageVersion(pkg, true, false, 'somePackage');
+      preScriptCheck._verifyPackageVersion(pkg, true, false, 'somePackage');
 
       expect(prints.versionMismatch).toHaveBeenCalledTimes(1);
       expect(prints.versionMismatch).toHaveBeenCalledWith('somePackage', '1.0.0', '2.0.0', true);
@@ -205,7 +200,7 @@ describe('CheckStartScript', () => {
         dependencies: { somePackage: '1.0.0' },
       };
       _require.mockReturnValue({ version: '1.0.0' });
-      checkStartScript._verifyPackageVersion(pkg, false, false, 'somePackage');
+      preScriptCheck._verifyPackageVersion(pkg, false, false, 'somePackage');
 
       expect(exit).not.toHaveBeenCalled();
       expect(_require).toHaveBeenCalledTimes(1);
@@ -218,7 +213,7 @@ describe('CheckStartScript', () => {
         dependencies: { somePackage: `^1.0.0` },
       };
       _require.mockReturnValue({ version: '1.0.0' });
-      checkStartScript._verifyPackageVersion(pkg, false, false, 'somePackage');
+      preScriptCheck._verifyPackageVersion(pkg, false, false, 'somePackage');
 
       expect(exit).not.toHaveBeenCalled();
       expect(_require).toHaveBeenCalledTimes(1);
@@ -231,7 +226,7 @@ describe('CheckStartScript', () => {
         dependencies: { somePackage: `1.0.0` },
       };
       _require.mockReturnValue({ version: '2.0.0' });
-      checkStartScript._verifyPackageVersion(pkg, false, true, 'somePackage');
+      preScriptCheck._verifyPackageVersion(pkg, false, true, 'somePackage');
 
       expect(prints.unbundledReactMismatch).toHaveBeenCalledTimes(1);
       expect(prints.unbundledReactMismatch).toHaveBeenCalledWith('1.18.0', 'somePackage', '2.0.0', false);
@@ -247,7 +242,7 @@ describe('CheckStartScript', () => {
         dependencies: { somePackage: `1.0.0` },
       };
       _require.mockReturnValue({ version: '2.0.0' });
-      checkStartScript._verifyPackageVersion(pkg, false, true, 'somePackage');
+      preScriptCheck._verifyPackageVersion(pkg, false, true, 'somePackage');
 
       expect(prints.unbundledReactMismatch).not.toHaveBeenCalled();
       expect(prints.versionMismatch).not.toHaveBeenCalled();
@@ -259,7 +254,7 @@ describe('CheckStartScript', () => {
 
   describe('_checkPluginCount', () => {
     const _readIndexPage = jest
-      .spyOn(checkStartScript, '_readIndexPage');
+      .spyOn(preScriptCheck, '_readIndexPage');
 
     beforeEach(() => {
       _readIndexPage.mockReset();
@@ -271,7 +266,7 @@ describe('CheckStartScript', () => {
 
     it('should check with no error', () => {
       _readIndexPage.mockReturnValue('blahblah\nFlexPlugin.loadPlugin\nblahblah');
-      checkStartScript._checkPluginCount();
+      preScriptCheck._checkPluginCount();
 
       expect(_readIndexPage).toHaveBeenCalledTimes(1);
       expect(exit).not.toHaveBeenCalled();
@@ -280,7 +275,7 @@ describe('CheckStartScript', () => {
 
     it('should warn no loadPlugin was called', () => {
       _readIndexPage.mockReturnValue('blahblah');
-      checkStartScript._checkPluginCount();
+      preScriptCheck._checkPluginCount();
 
       expect(_readIndexPage).toHaveBeenCalledTimes(1);
       expect(exit).toHaveBeenCalledTimes(1);
@@ -291,7 +286,7 @@ describe('CheckStartScript', () => {
 
     it('should warn that multiple loadPlugins were called', () => {
       _readIndexPage.mockReturnValue('blahblah\nloadPlugin\nloadPlugin\nloadPlugin\nblahblah');
-      checkStartScript._checkPluginCount();
+      preScriptCheck._checkPluginCount();
 
       expect(_readIndexPage).toHaveBeenCalledTimes(1);
       expect(exit).toHaveBeenCalledTimes(1);
@@ -303,7 +298,7 @@ describe('CheckStartScript', () => {
 
   describe('_validateTypescriptProject', () => {
     const _hasTypescriptFiles = jest
-      .spyOn(checkStartScript, '_hasTypescriptFiles')
+      .spyOn(preScriptCheck, '_hasTypescriptFiles')
       .mockReturnThis();
     const resolveModulePath = jest
       .spyOn(fsScripts, 'resolveModulePath')
@@ -332,7 +327,7 @@ describe('CheckStartScript', () => {
     it('should not do anything if not a typescript project', () => {
       _hasTypescriptFiles.mockReturnValue(false);
 
-      checkStartScript._validateTypescriptProject();
+      preScriptCheck._validateTypescriptProject();
 
       expect(_hasTypescriptFiles).toHaveBeenCalledTimes(1);
       expect(resolveModulePath).not.toHaveBeenCalled();
@@ -343,7 +338,7 @@ describe('CheckStartScript', () => {
       _hasTypescriptFiles.mockReturnValue(true);
       resolveModulePath.mockReturnValue(false);
 
-      checkStartScript._validateTypescriptProject();
+      preScriptCheck._validateTypescriptProject();
 
       expect(_hasTypescriptFiles).toHaveBeenCalledTimes(1);
       expect(resolveModulePath).toHaveBeenCalledTimes(1);
@@ -359,7 +354,7 @@ describe('CheckStartScript', () => {
       resolveModulePath.mockReturnValue('some-path');
       checkFilesExist.mockReturnValue(true);
 
-      checkStartScript._validateTypescriptProject();
+      preScriptCheck._validateTypescriptProject();
 
       expect(_hasTypescriptFiles).toHaveBeenCalledTimes(1);
       expect(resolveModulePath).toHaveBeenCalledTimes(1);
@@ -379,7 +374,7 @@ describe('CheckStartScript', () => {
         .spyOn(fs, 'copyFileSync')
         .mockReturnValue(undefined);
 
-      checkStartScript._validateTypescriptProject();
+      preScriptCheck._validateTypescriptProject();
 
       expect(_hasTypescriptFiles).toHaveBeenCalledTimes(1);
       expect(resolveModulePath).toHaveBeenCalledTimes(1);

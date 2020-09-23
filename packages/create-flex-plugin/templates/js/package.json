@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "postinstall": "flex-plugin check-start"
+    "postinstall": "flex-plugin pre-script-check"
   },
   "dependencies": {
     "flex-plugin": "{{flexPluginVersion}}",

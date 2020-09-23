@@ -188,19 +188,18 @@ export const _setPluginDir = (...args: string[]) => {
 /**
  * Runs pre-start/build checks
  */
-const checkStart = async (...args: string[]) => {
+const preScriptCheck = async (...args: string[]) => {
   logger.debug('Checking Flex plugin project directory');
 
   addCWDNodeModule(...args);
 
   _setPluginDir(...args);
   await checkPluginConfigurationExists(getPaths().app.name, getPaths().app.dir);
-  _checkAppConfig();
   _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
   _checkPluginCount();
   _validateTypescriptProject();
 };
 
-run(checkStart);
+run(preScriptCheck);
 
-export default checkStart;
+export default preScriptCheck;

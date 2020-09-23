@@ -24,9 +24,6 @@
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "bin": {
-    "flex-check-start": "./bin/check-start"
-  },
   "directories": {
     "lib": "src",
     "bin": "bin",
