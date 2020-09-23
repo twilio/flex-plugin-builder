@@ -53,11 +53,11 @@ fi
 # Show notification and a countdown before publishing
 secs=5
 while [ $secs -gt 0 ]; do
-  echo -ne "Publishing v\033[1m${version}\033[0m as a \033[1m${tag}\033[0m release in ${secs}sec\033[0K\r"
+  echo -ne "Publishing \033[1m${version}\033[0m as a \033[1m${tag}\033[0m release in ${secs}sec\033[0K\r"
   sleep 1
   : $((secs--))
 done
-echo -ne "Publishing v\033[1m${version}\033[0m as a \033[1m${tag}\033[0m release\033[0K\r"
+echo -ne "Publishing \033[1m${version}\033[0m as a \033[1m${tag}\033[0m release\033[0K\r"
 echo -ne "\r\n"
 
 # Cleanup
