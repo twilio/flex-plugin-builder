@@ -7,7 +7,6 @@ import * as preScriptCheck from '../pre-script-check';
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('../../prints/versionMismatch');
 jest.mock('../../prints/unbundledReactMismatch');
-jest.mock('../../prints/appConfigMissing');
 jest.mock('../../prints/publicDirCopyFailed');
 jest.mock('../../prints/expectedDependencyNotFound');
 jest.mock('../../prints/typescriptNotInstalled');
@@ -108,39 +107,6 @@ describe('PreScriptCheck', () => {
 
       expect(_setPluginDir.mock.invocationCallOrder[0])
         .toBeLessThan(checkPluginConfigurationExists.mock.invocationCallOrder[0]);
-    });
-  });
-
-  describe('_checkAppConfig', () => {
-    it('quit if no appConfig is found', () => {
-      const existSync = jest
-        .spyOn(fs, 'existsSync')
-        .mockReturnValue(false);
-
-      preScriptCheck._checkAppConfig();
-
-      expect(existSync).toHaveBeenCalledTimes(1);
-      expect(existSync).toHaveBeenCalledWith(expect.stringContaining('appConfig.js'));
-      expect(prints.appConfigMissing).toHaveBeenCalledTimes(1);
-      expect(exit).toHaveBeenCalledTimes(1);
-      expect(exit).toHaveBeenCalledWith(1);
-
-      existSync.mockRestore();
-    });
-
-    it('not quit if appConfig is found', () => {
-      const existSync = jest
-        .spyOn(fs, 'existsSync')
-        .mockReturnValue(true);
-
-      preScriptCheck._checkAppConfig();
-
-      expect(existSync).toHaveBeenCalledTimes(1);
-      expect(existSync).toHaveBeenCalledWith(expect.stringContaining('appConfig.js'));
-      expect(prints.appConfigMissing).not.toHaveBeenCalled();
-      expect(exit).not.toHaveBeenCalled();
-
-      existSync.mockRestore();
     });
   });
 

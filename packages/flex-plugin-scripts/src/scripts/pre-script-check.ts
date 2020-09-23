@@ -10,10 +10,9 @@ import {
   resolveModulePath,
   _require, setCwd,
 } from 'flex-dev-utils/dist/fs';
-import { existsSync, copyFileSync, readFileSync } from 'fs';
+import { copyFileSync, readFileSync } from 'fs';
 import { join } from 'path';
 import {
-  appConfigMissing,
   unbundledReactMismatch,
   versionMismatch,
   expectedDependencyNotFound,
@@ -65,19 +64,6 @@ export const _validateTypescriptProject = () => {
   env.persistTerminal();
   logger.warning('No tsconfig.json was found, creating a default one.');
   copyFileSync(getPaths().scripts.tsConfigPath, getPaths().app.tsConfigPath);
-};
-
-/**
- * Checks appConfig exists
- *
- * @private
- */
-export const _checkAppConfig = () => {
-  if (!existsSync(getPaths().app.appConfig)) {
-    appConfigMissing();
-
-    return exit(1);
-  }
 };
 
 /**

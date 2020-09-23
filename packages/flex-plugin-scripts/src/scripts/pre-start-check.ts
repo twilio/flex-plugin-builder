@@ -8,6 +8,7 @@ import {
   appConfigMissing,
 } from '../prints';
 import run, { exit } from '../utils/run';
+import { _setPluginDir } from './pre-script-check';
 
 /**
  * Checks appConfig exists
@@ -30,6 +31,7 @@ const preScriptCheck = async (...args: string[]) => {
 
   addCWDNodeModule(...args);
 
+  _setPluginDir(...args);
   _checkAppConfig();
 };
 
