@@ -5,6 +5,7 @@ import { TwilioCliError } from '../../../../exceptions';
 
 describe('Commands/FlexPluginsDeploy', () => {
   const { sinon, start: _start } = createTest(FlexPluginsDeploy);
+  const defaultChangelog = 'sample changlog';
   const pkg = {
     name: 'test-package',
     description: 'the package json description',
@@ -42,13 +43,16 @@ describe('Commands/FlexPluginsDeploy', () => {
     sinon.restore();
   });
 
-  const start = (args?: string[]) =>
-    _start(args).setup(async (instance) => {
+  const start = (args?: string[]) => {
+    args = args ? args : [];
+
+    return _start(['--changelog', defaultChangelog, ...args]).setup(async (instance) => {
       sinon.stub(instance, 'isPluginFolder').returns(true);
       sinon.stub(instance, 'doRun').returnsThis();
       sinon.stub(instance, 'pkg').get(() => pkg);
       await instance.run();
     });
+  };
 
   start(['--major'])
     .test(async (instance) => {
@@ -95,7 +99,7 @@ describe('Commands/FlexPluginsDeploy', () => {
         Version: deployResult.nextVersion,
         PluginUrl: deployResult.pluginUrl,
         Private: !deployResult.isPublic,
-        Changelog: '',
+        Changelog: defaultChangelog,
       });
     })
     .it('should call registerPluginVersion without any changelog');

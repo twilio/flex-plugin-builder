@@ -25,10 +25,13 @@ export default class FlexPluginsRelease extends CreateConfiguration {
     }),
   };
 
+  private prints;
+
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, { strict: false, runInDirectory: false });
 
     this.scriptArgs = [];
+    this.prints = this._prints.release;
   }
 
   /**
@@ -45,14 +48,12 @@ export default class FlexPluginsRelease extends CreateConfiguration {
 
   async doCreateRelease(configurationSid: string) {
     await progress(
-      `Enabling configuration **v${configurationSid}**`,
+      `Enabling configuration **${configurationSid}**`,
       async () => this.createRelease(configurationSid),
       false,
     );
 
-    this._logger.newline();
-    this._logger.success(`🚀 Configuration **${configurationSid}** was successfully enabled`);
-    this._logger.newline();
+    this.prints.releaseSuccessful(configurationSid);
   }
 
   /**

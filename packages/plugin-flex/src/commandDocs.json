@@ -37,6 +37,9 @@
       "name": "The friendly name of the Flex Plugin Configuration",
       "plugin": "The plugin to install, formatted as pluginName@version. Use additional --plugin to provide other plugins to install",
       "description": "The description of this Flex Plugin Configuration"
+    },
+    "defaults": {
+      "description": "The description of this Flex Plugin Configuration"
     }
   },
   "release": {

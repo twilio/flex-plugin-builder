@@ -39,16 +39,20 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     }),
     changelog: flags.string({
       description: deployDocs.flags.changelog,
+      required: true,
     }),
     description: flags.string({
       description: deployDocs.flags.description,
     }),
   };
 
+  private prints;
+
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, { strict: false });
 
     this.scriptArgs = [];
+    this.prints = this._prints.deploy;
   }
 
   /**
@@ -78,19 +82,8 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       async () => this.registerPluginVersion(deployedData),
       false,
     );
-    const availability = pluginVersion.private ? 'private' : 'public';
 
-    this._logger.newline();
-    this._logger.success(
-      `🚀 Plugin (${availability}) **${this.pkg.name}**@**${deployedData.nextVersion}** was successfully deployed using Plugins API`,
-    );
-    this._logger.newline();
-
-    this._logger.info('**Next Steps:**');
-    this._logger.info(
-      `Run {{$ twilio flex:plugins:release --plugin ${this.pkg.name}@${deployedData.nextVersion}}} to enable this plugin on your flex instance`,
-    );
-    this._logger.newline();
+    this.prints.deploySuccessful(this.pkg.name, pluginVersion.private ? 'private' : 'public', deployedData);
   }
 
   /**

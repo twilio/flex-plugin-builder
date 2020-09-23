@@ -70,7 +70,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       description: flexPluginDocs.flags.json,
     }),
     'clear-terminal': flags.boolean({
-      description: flexPluginDocs.flags.json,
+      description: flexPluginDocs.flags.clearTerminal,
     }),
     region: flags.enum({
       options: ['dev', 'stage'],

@@ -20,11 +20,12 @@ export default abstract class CreateConfiguration extends FlexPlugin {
   public static flags = {
     ...FlexPlugin.flags,
     new: flags.boolean({
-      description: createConfigurationDocs.flags.name,
+      description: createConfigurationDocs.flags.new,
     }),
     name: flags.string({
       description: createConfigurationDocs.flags.name,
       default: dayjs().format('MMM D, YYYY'),
+      required: true,
     }),
     plugin: flags.string({
       description: createConfigurationDocs.flags.plugin,
@@ -33,6 +34,8 @@ export default abstract class CreateConfiguration extends FlexPlugin {
     }),
     description: flags.string({
       description: createConfigurationDocs.flags.description,
+      default: createConfigurationDocs.defaults.description,
+      required: true,
     }),
   };
 
