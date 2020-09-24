@@ -67,6 +67,10 @@ describe('Commands/FlexPluginsDeploy', () => {
     sinon.restore();
   });
 
+  it('should have flag as own property', () => {
+    expect(FlexPluginsDiff.hasOwnProperty('flags')).to.equal(true);
+  });
+
   start([configId1, configId2])
     .setup(async (instance) => {
       sinon.stub(instance, 'getDiffs').returns(Promise.resolve(diffs));

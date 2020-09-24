@@ -8,6 +8,10 @@ import { readJSONFile } from '../../../utils/fs';
 import { TwilioCliError } from '../../../exceptions';
 import { start as startDocs } from '../../../commandDocs.json';
 
+const baseFlags = { ...FlexPlugin.flags };
+// @ts-ignore
+delete baseFlags.json;
+
 /**
  * Starts the dev-server for building and iterating on a plugin bundle
  */
@@ -15,13 +19,14 @@ export default class FlexPluginsStart extends FlexPlugin {
   static description = createDescription(startDocs.description, false);
 
   static flags = {
-    ...FlexPlugin.flags,
+    ...baseFlags,
     name: flags.string({
       description: startDocs.flags.name,
       multiple: true,
     }),
     'include-remote': flags.boolean({
       description: startDocs.flags.includeRemote,
+      hidden: true,
     }),
   };
 

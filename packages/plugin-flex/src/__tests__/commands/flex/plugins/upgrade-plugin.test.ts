@@ -9,6 +9,10 @@ describe('Commands/FlexPluginsStart', () => {
     sinon.restore();
   });
 
+  it('should have flag as own property', () => {
+    expect(FlexPluginsUpgradePlugin.hasOwnProperty('flags')).to.equal(true);
+  });
+
   start()
     .setup((instance) => {
       sinon.stub(instance, 'pkg').get(() => ({

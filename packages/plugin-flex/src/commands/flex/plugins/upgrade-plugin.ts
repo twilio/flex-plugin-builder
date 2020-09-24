@@ -31,6 +31,10 @@ interface DependencyUpdates {
   devDeps: Record<string, string>;
 }
 
+const baseFlags = { ...FlexPlugin.flags };
+// @ts-ignore
+delete baseFlags.json;
+
 /**
  * Starts the dev-server for building and iterating on a plugin bundle
  */
@@ -38,7 +42,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   static description = createDescription(upgradePluginDoc.description, false);
 
   static flags = {
-    ...FlexPlugin.flags,
+    ...baseFlags,
     install: flags.boolean({
       description: upgradePluginDoc.flags.install,
     }),

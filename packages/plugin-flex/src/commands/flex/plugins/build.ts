@@ -2,6 +2,10 @@ import { createDescription } from '../../../utils/general';
 import FlexPlugin from '../../../sub-commands/flex-plugin';
 import { build as buildDocs } from '../../../commandDocs.json';
 
+const baseFlags = { ...FlexPlugin.flags };
+// @ts-ignore
+delete baseFlags.json;
+
 /**
  * Builds the the plugin bundle
  */

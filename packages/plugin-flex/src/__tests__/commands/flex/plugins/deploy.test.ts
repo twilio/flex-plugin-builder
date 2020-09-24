@@ -82,6 +82,10 @@ describe('Commands/FlexPluginsDeploy', () => {
     });
   });
 
+  it('should have flag as own property', () => {
+    expect(FlexPluginsDeploy.hasOwnProperty('flags')).to.equal(true);
+  });
+
   start(['--major'])
     .test(async (instance) => {
       expect(instance.bumpLevel).to.equal('major');

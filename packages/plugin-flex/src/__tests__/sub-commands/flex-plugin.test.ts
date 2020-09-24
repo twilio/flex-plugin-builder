@@ -15,6 +15,10 @@ describe('SubCommands/FlexPlugin', () => {
     sinon.restore();
   });
 
+  it('should have flag as own property', () => {
+    expect(FlexPlugin.hasOwnProperty('flags')).to.equal(true);
+  });
+
   start()
     .setup(() => {
       sinon.stub(fs, 'filesExist').returns(false);

@@ -8,6 +8,10 @@ describe('Commands/FlexPluginsTest', () => {
     sinon.restore();
   });
 
+  it('should have flag as own property', () => {
+    expect(FlexPluginsTest.hasOwnProperty('flags')).to.equal(true);
+  });
+
   start()
     .setup((instance) => {
       sinon.stub(instance, 'runScript').returnsThis();

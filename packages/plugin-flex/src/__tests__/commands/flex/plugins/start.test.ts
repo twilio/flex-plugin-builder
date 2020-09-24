@@ -45,6 +45,10 @@ describe('Commands/FlexPluginsStart', () => {
     findPortAvailablePort = sinon.stub(pluginBuilderStartScript, 'findPortAvailablePort');
   });
 
+  it('should have flag as own property', () => {
+    expect(FlexPluginsStart.hasOwnProperty('flags')).to.equal(true);
+  });
+
   start()
     .setup((instance) => {
       sinon.stub(instance, 'runScript').returnsThis();

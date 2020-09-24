@@ -10,6 +10,10 @@ interface IsActive {
  * A helper class for the describe/list methods
  */
 export default abstract class InformationFlexPlugin<T> extends FlexPlugin {
+  static flags = {
+    ...FlexPlugin.flags,
+  };
+
   public constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, { runInDirectory: false });
 

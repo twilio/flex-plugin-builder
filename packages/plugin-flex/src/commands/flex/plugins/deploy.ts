@@ -27,6 +27,10 @@ export const parseVersionInput = (input: string): string => {
   return input;
 };
 
+const baseFlags = { ...FlexPlugin.flags };
+// @ts-ignore
+delete baseFlags.json;
+
 /**
  * Builds and then deploys the Flex Plugin
  */
@@ -34,7 +38,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
   static description = createDescription(deployDocs.description, true);
 
   static flags = {
-    ...FlexPlugin.flags,
+    ...baseFlags,
     patch: flags.boolean({
       description: deployDocs.flags.patch,
       exclusive: ['minor', 'major', 'version'],

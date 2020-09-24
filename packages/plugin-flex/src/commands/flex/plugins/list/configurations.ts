@@ -10,6 +10,10 @@ import { listConfigurations as listConfigurationsDocs } from '../../../../comman
 export default class FlexPluginsListConfigurations extends InformationFlexPlugin<ListConfigurations[]> {
   static description = createDescription(listConfigurationsDocs.description, false);
 
+  static flags = {
+    ...InformationFlexPlugin.flags,
+  };
+
   /**
    * @override
    */

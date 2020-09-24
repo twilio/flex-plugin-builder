@@ -10,6 +10,10 @@ import { listReleases as listReleasesDocs } from '../../../../commandDocs.json';
 export default class FlexPluginsListPlugins extends InformationFlexPlugin<ListReleases[]> {
   static description = createDescription(listReleasesDocs.description, false);
 
+  static flags = {
+    ...InformationFlexPlugin.flags,
+  };
+
   /**
    * @override
    */

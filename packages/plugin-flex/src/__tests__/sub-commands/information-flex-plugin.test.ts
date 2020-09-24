@@ -34,6 +34,10 @@ describe('SubCommands/InformationFlexPlugin', () => {
     sinon.restore();
   });
 
+  it('should have flag as own property', () => {
+    expect(InformationFlexPlugin.hasOwnProperty('flags')).to.equal(true);
+  });
+
   start()
     .setup((cmd) => {
       sinon.spy(cmd, 'notFound');

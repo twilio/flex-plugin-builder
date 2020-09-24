@@ -60,12 +60,16 @@ interface Pkg {
 
 export type PkgCallback = (input: Pkg) => Pkg;
 
+const baseFlag = { ...baseCommands.TwilioClientCommand.flags };
+delete baseFlag['cli-output-format'];
+
 /**
  * Base class for all flex-plugin * scripts.
  * This will ensure the script is running on a Flex-plugin project, otherwise will throw an error
  */
 export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   static flags = {
+    ...baseFlag,
     json: flags.boolean({
       description: flexPluginDocs.flags.json,
     }),
