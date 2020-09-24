@@ -10,10 +10,9 @@ import {
   resolveModulePath,
   _require, setCwd,
 } from 'flex-dev-utils/dist/fs';
-import { existsSync, copyFileSync, readFileSync } from 'fs';
+import { copyFileSync, readFileSync } from 'fs';
 import { join } from 'path';
 import {
-  appConfigMissing,
   unbundledReactMismatch,
   versionMismatch,
   expectedDependencyNotFound,
@@ -65,19 +64,6 @@ export const _validateTypescriptProject = () => {
   env.persistTerminal();
   logger.warning('No tsconfig.json was found, creating a default one.');
   copyFileSync(getPaths().scripts.tsConfigPath, getPaths().app.tsConfigPath);
-};
-
-/**
- * Checks appConfig exists
- *
- * @private
- */
-export const _checkAppConfig = () => {
-  if (!existsSync(getPaths().app.appConfig)) {
-    appConfigMissing();
-
-    return exit(1);
-  }
 };
 
 /**
@@ -188,19 +174,18 @@ export const _setPluginDir = (...args: string[]) => {
 /**
  * Runs pre-start/build checks
  */
-const checkStart = async (...args: string[]) => {
+const preScriptCheck = async (...args: string[]) => {
   logger.debug('Checking Flex plugin project directory');
 
   addCWDNodeModule(...args);
 
   _setPluginDir(...args);
   await checkPluginConfigurationExists(getPaths().app.name, getPaths().app.dir);
-  _checkAppConfig();
   _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
   _checkPluginCount();
   _validateTypescriptProject();
 };
 
-run(checkStart);
+run(preScriptCheck);
 
-export default checkStart;
+export default preScriptCheck;
