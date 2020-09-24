@@ -1,6 +1,6 @@
 {
   "name": "create-flex-plugin",
-  "version": "4.0.2-beta.0",
+  "version": "4.0.3-beta.0",
   "description": "Toolkit to create a new Twilio Flex plugin",
   "keywords": [
     "flex",
