@@ -71,14 +71,17 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
 
     if (this.pkgVersion === 1) {
       await this.upgradeFromV1();
+      return;
     }
 
     if (this.pkgVersion === 2) {
       await this.upgradeFromV2();
+      return;
     }
 
     if (this.pkgVersion === 3) {
       await this.upgradeFromV3();
+      return;
     }
 
     await this.upgradeToLatest();
@@ -303,7 +306,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
 
             // Now find the latest
             const option =
-              FlexPluginsUpgradePlugin.pluginBuilderScripts.includes(dep) && beta ? { version: 'next' } : {};
+              FlexPluginsUpgradePlugin.pluginBuilderScripts.includes(dep) && beta ? { version: 'beta' } : {};
             const scriptPkg = await packageJson(dep, option);
             if (!scriptPkg) {
               this.prints.packageNotFound(dep);

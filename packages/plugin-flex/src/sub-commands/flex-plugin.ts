@@ -197,7 +197,14 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @returns {boolean}
    */
   isPluginFolder() {
-    return filesExist(join(this.cwd, 'public', 'appConfig.js'));
+    if (!filesExist(this.cwd, 'package.json')) {
+      return false;
+    }
+    const { pkg } = this;
+
+    return ['flex-plugin-scripts', '@twilio/flex-ui'].every(
+      (dep) => dep in pkg.dependencies || dep in pkg.devDependencies,
+    );
   }
 
   /**
@@ -330,7 +337,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   }
 
   /**
-   * Cathes any thrown exception
+   * Catches any thrown exception
    * @param error
    */
   async catch(error: Error) {

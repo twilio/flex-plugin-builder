@@ -17,7 +17,44 @@ describe('SubCommands/FlexPlugin', () => {
 
   start()
     .setup(() => {
+      sinon.stub(fs, 'filesExist').returns(false);
+    })
+    .test((cmd) => {
+      const result = cmd.isPluginFolder();
+
+      expect(result).to.equal(false);
+      expect(fs.filesExist).to.have.been.calledOnce;
+    })
+    .it('should test isPluginFolder to be false if no package.json is found');
+
+  start()
+    .setup((cmd) => {
       sinon.stub(fs, 'filesExist').returns(true);
+      sinon.stub(cmd, 'pkg').get(() => ({
+        dependencies: {},
+        devDependencies: {
+          'flex-plugin-scripts': '',
+        },
+      }));
+    })
+    .test((cmd) => {
+      const result = cmd.isPluginFolder();
+
+      expect(result).to.equal(false);
+      expect(fs.filesExist).to.have.been.calledOnce;
+    })
+    .it('should test isPluginFolder to be false if one scripts not found in package.json');
+
+  start()
+    .setup((cmd) => {
+      sinon.stub(fs, 'filesExist').returns(true);
+      sinon.stub(cmd, 'pkg').get(() => ({
+        dependencies: {
+          'flex-plugin-scripts': '',
+          '@twilio/flex-ui': '',
+        },
+        devDependencies: {},
+      }));
     })
     .test((cmd) => {
       const result = cmd.isPluginFolder();
@@ -25,7 +62,26 @@ describe('SubCommands/FlexPlugin', () => {
       expect(result).to.equal(true);
       expect(fs.filesExist).to.have.been.calledOnce;
     })
-    .it('should test isPluginFolder to be true');
+    .it('should test isPluginFolder to be true if both scripts found in dependencies');
+
+  start()
+    .setup((cmd) => {
+      sinon.stub(fs, 'filesExist').returns(true);
+      sinon.stub(cmd, 'pkg').get(() => ({
+        dependencies: {},
+        devDependencies: {
+          'flex-plugin-scripts': '',
+          '@twilio/flex-ui': '',
+        },
+      }));
+    })
+    .test((cmd) => {
+      const result = cmd.isPluginFolder();
+
+      expect(result).to.equal(true);
+      expect(fs.filesExist).to.have.been.calledOnce;
+    })
+    .it('should test isPluginFolder to be true if both scripts found in devDependencies');
 
   start()
     .setup(async () => {

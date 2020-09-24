@@ -1,6 +1,8 @@
 /* eslint-disable camelcase */
+import { CLIParseError } from '@oclif/parser/lib/errors';
+
 import { expect, createTest } from '../../../framework';
-import FlexPluginsDeploy from '../../../../commands/flex/plugins/deploy';
+import FlexPluginsDeploy, { parseVersionInput } from '../../../../commands/flex/plugins/deploy';
 import { TwilioCliError } from '../../../../exceptions';
 
 describe('Commands/FlexPluginsDeploy', () => {
@@ -53,6 +55,32 @@ describe('Commands/FlexPluginsDeploy', () => {
       await instance.run();
     });
   };
+
+  describe('parseVersionInput', () => {
+    it('should parse semver', () => {
+      ['1.0.0', '1.0.0-rc.1'].forEach((s) => expect(parseVersionInput(s)).to.equal(s));
+    });
+
+    it('should throw error if invalid semver', (done) => {
+      try {
+        parseVersionInput('not-a-semver');
+      } catch (e) {
+        expect(e instanceof CLIParseError).to.equal(true);
+        expect(e.message).to.contain('valid SemVer');
+        done();
+      }
+    });
+
+    it('should throw error version 0.0.0 is used', (done) => {
+      try {
+        parseVersionInput('0.0.0');
+      } catch (e) {
+        expect(e instanceof CLIParseError).to.equal(true);
+        expect(e.message).to.contain('cannot be');
+        done();
+      }
+    });
+  });
 
   start(['--major'])
     .test(async (instance) => {
@@ -193,27 +221,6 @@ describe('Commands/FlexPluginsDeploy', () => {
       expect(args[2]).to.equal('--pilot-plugins-api');
     })
     .it('should validate plugin as a minor bump');
-
-  start(['--version', 'not-a-semver'])
-    .setup((instance) => {
-      sinon.stub(instance.pluginsClient, 'get').resolves(pluginResource);
-      sinon.stub(instance.pluginVersionsClient, 'latest').resolves(pluginVersionResource);
-    })
-    .test(async (instance, _, done) => {
-      try {
-        await instance.validatePlugin();
-      } catch (e) {
-        expect(e).to.be.instanceOf(TwilioCliError);
-        expect(e.message).to.contain('valid semver');
-        expect(instance.pluginsClient.get).to.have.been.calledOnce;
-        expect(instance.pluginsClient.get).to.have.been.calledWith(pkg.name);
-        expect(instance.pluginVersionsClient.latest).to.have.been.calledOnce;
-        expect(instance.pluginVersionsClient.latest).to.have.been.calledWith(pkg.name);
-
-        done();
-      }
-    })
-    .it('should invalidate plugin because version is not semver');
 
   start(['--version', '0.0.1'])
     .setup((instance) => {

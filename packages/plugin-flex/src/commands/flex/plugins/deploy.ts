@@ -3,11 +3,29 @@ import { flags } from '@oclif/command';
 import { progress } from 'flex-plugins-utils-logger';
 import semver from 'semver';
 import { DeployResult } from 'flex-plugin-scripts/dist/scripts/deploy';
+import { CLIParseError } from '@oclif/parser/lib/errors';
 
 import { TwilioCliError } from '../../../exceptions';
 import { createDescription } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { deploy as deployDocs } from '../../../commandDocs.json';
+
+/**
+ * Parses the version input
+ * @param input
+ */
+export const parseVersionInput = (input: string): string => {
+  if (!semver.valid(input)) {
+    const message = `Flag --version=${input} must be a valid SemVer`;
+    throw new CLIParseError({ parse: {}, message });
+  }
+  if (input === '0.0.0') {
+    const message = `Flag --version=${input} cannot be 0.0.0`;
+    throw new CLIParseError({ parse: {}, message });
+  }
+
+  return input;
+};
 
 /**
  * Builds and then deploys the Flex Plugin
@@ -32,6 +50,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     version: flags.string({
       description: deployDocs.flags.version,
       exclusive: ['patch', 'minor', 'major'],
+      parse: parseVersionInput,
     }),
     public: flags.boolean({
       description: deployDocs.flags.public,

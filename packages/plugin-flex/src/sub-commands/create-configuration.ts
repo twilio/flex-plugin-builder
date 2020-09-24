@@ -2,16 +2,38 @@ import { flags } from '@oclif/command';
 import { progress } from 'flex-plugins-utils-logger';
 import { CreateConfigurationOption } from 'flex-plugins-api-toolkit';
 import dayjs from 'dayjs';
+import { IOptionFlag } from '@oclif/command/lib/flags';
 
 import FlexPlugin, { FlexPluginFlags } from './flex-plugin';
 import { createConfiguration as createConfigurationDocs } from '../commandDocs.json';
 
+type Required = { required: true };
+type Multiple = { multiple: true };
+
 export interface CreateConfigurationFlags extends FlexPluginFlags {
   new: boolean;
-  name: string;
-  plugin: string[];
+  name?: string;
+  plugin?: string[];
   description?: string;
 }
+
+export const nameFlag = {
+  description: createConfigurationDocs.flags.name,
+  default: dayjs().format('MMM D, YYYY'),
+  required: true,
+};
+
+export const pluginFlag: Partial<IOptionFlag<string[]>> & Required & Multiple = {
+  description: createConfigurationDocs.flags.plugin,
+  multiple: true,
+  required: true,
+};
+
+export const descriptionFlag = {
+  description: createConfigurationDocs.flags.description,
+  default: createConfigurationDocs.defaults.description,
+  required: true,
+};
 
 /**
  * Creates a Configuration
@@ -22,26 +44,13 @@ export default abstract class CreateConfiguration extends FlexPlugin {
     new: flags.boolean({
       description: createConfigurationDocs.flags.new,
     }),
-    name: flags.string({
-      description: createConfigurationDocs.flags.name,
-      default: dayjs().format('MMM D, YYYY'),
-      required: true,
-    }),
-    plugin: flags.string({
-      description: createConfigurationDocs.flags.plugin,
-      multiple: true,
-      required: true,
-    }),
-    description: flags.string({
-      description: createConfigurationDocs.flags.description,
-      default: createConfigurationDocs.defaults.description,
-      required: true,
-    }),
+    name: flags.string(nameFlag),
+    plugin: flags.string(pluginFlag),
+    description: flags.string(descriptionFlag),
   };
 
   /**
    * Performs the actual task of validating and creating configuration. This method is also usd by release script.
-   * @returns {Promise<T>}
    */
   protected async doCreateConfiguration() {
     return progress(`Creating configuration`, async () => this.createConfiguration(), false);
@@ -53,8 +62,8 @@ export default abstract class CreateConfiguration extends FlexPlugin {
    */
   private async createConfiguration() {
     const option: CreateConfigurationOption = {
-      name: this._flags.name,
-      addPlugins: this._flags.plugin,
+      name: this._flags.name as string,
+      addPlugins: this._flags.plugin as string[],
       description: this._flags.description || '',
     };
     if (!this._flags.new) {

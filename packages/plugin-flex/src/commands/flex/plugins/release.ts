@@ -1,10 +1,11 @@
 import { progress } from 'flex-plugins-utils-logger';
 import { flags } from '@oclif/command';
+import { RequiredFlagError } from '@oclif/parser/lib/errors';
 
 import { createDescription } from '../../../utils/general';
 import { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
-import CreateConfiguration from '../../../sub-commands/create-configuration';
-import { createConfiguration as createConfigurationDocs, release as releaseDocs } from '../../../commandDocs.json';
+import CreateConfiguration, { nameFlag, pluginFlag, descriptionFlag } from '../../../sub-commands/create-configuration';
+import { release as releaseDocs } from '../../../commandDocs.json';
 
 /**
  * Creates a Flex Plugin Configuration and releases and sets it to active
@@ -16,12 +17,22 @@ export default class FlexPluginsRelease extends CreateConfiguration {
     ...CreateConfiguration.flags,
     'configuration-sid': flags.string({
       description: releaseDocs.flags.configurationSid,
-      exclusive: ['description', 'name', 'new', 'plugin'],
+      exclusive: ['description', 'name', 'new'],
     }),
-    // Duplicated to remove the required field
+    name: flags.string({
+      ...nameFlag,
+      required: false,
+      exclusive: ['configuration-sid'],
+    }),
     plugin: flags.string({
-      description: createConfigurationDocs.flags.plugin,
-      multiple: true,
+      ...pluginFlag,
+      required: false,
+      exclusive: ['configuration-sid'],
+    }),
+    description: flags.string({
+      ...descriptionFlag,
+      required: false,
+      exclusive: ['configuration-sid'],
     }),
   };
 
@@ -38,7 +49,7 @@ export default class FlexPluginsRelease extends CreateConfiguration {
    * @override
    */
   async doRun() {
-    if (this._flags['configuration-sid'] && !this._flags.plugin) {
+    if (this._flags['configuration-sid']) {
       await this.doCreateRelease(this._flags['configuration-sid']);
     } else {
       const config = await super.doCreateConfiguration();
@@ -65,6 +76,24 @@ export default class FlexPluginsRelease extends CreateConfiguration {
   }
 
   get _flags() {
-    return this.parse(FlexPluginsRelease).flags;
+    const parse = this.parse(FlexPluginsRelease);
+    if (parse.flags['configuration-sid']) {
+      return parse.flags;
+    }
+
+    ['plugin', 'description', 'name'].forEach((key) => {
+      if (!parse.flags[key]) {
+        throw new RequiredFlagError({
+          flag: FlexPluginsRelease.flags[key],
+          parse: {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            input: {} as any,
+            output: parse,
+          },
+        });
+      }
+    });
+
+    return parse.flags;
   }
 }

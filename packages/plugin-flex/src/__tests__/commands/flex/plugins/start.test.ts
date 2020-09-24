@@ -16,12 +16,16 @@ describe('Commands/FlexPluginsStart', () => {
   const badVersionPkg = {
     name: 'pluginBad',
     dependencies: {
+      '@twilio/flex-ui': '1.0.0',
       'flex-plugin-scripts': '3.9.9',
     },
+    devDependencies: {},
   };
   const badPluginsPkg = {
     name: 'fakePlugin',
+    devDependencies: {},
     dependencies: {
+      '@twilio/flex-ui': '1.0.0',
       'flex-plugin-scripts': '4.0.0',
     },
   };
@@ -77,10 +81,10 @@ describe('Commands/FlexPluginsStart', () => {
         await instance.run();
       } catch (e) {
         expect(e).to.be.instanceOf(TwilioCliError);
-        expect(e.message).to.contain('versioning is not compatable');
+        expect(e.message).to.contain('versioning is not compatible');
         expect(instance._flags.name).to.be.undefined;
         expect(instance._flags['include-remote']).to.be.undefined;
-        expect(instance.runScript).not.to.have.been.called;
+        expect(instance.runScript).have.been.calledOnce;
         expect(instance.spawnScript).not.to.have.been.called;
       }
     })
@@ -103,7 +107,7 @@ describe('Commands/FlexPluginsStart', () => {
         expect(e.message).to.contain('was not found');
         expect(instance._flags.name).to.be.undefined;
         expect(instance._flags['include-remote']).to.be.undefined;
-        expect(instance.runScript).not.to.have.been.called;
+        expect(instance.runScript).to.have.been.calledOnce;
         expect(instance.spawnScript).not.to.have.been.called;
       }
     })
