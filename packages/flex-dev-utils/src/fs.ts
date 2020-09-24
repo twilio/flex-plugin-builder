@@ -243,7 +243,6 @@ export const resolveRelative = (dir: string, ...paths: string[]) => {
  * @param patterns the patterns
  */
 export const findGlobs = (...patterns: string[]) => {
-  // TODO: move paths from flex-plugin-scripts into here and use it here too
   return findGlobsIn(path.join(getCwd(), 'src'), ...patterns);
 };
 
@@ -272,10 +271,12 @@ export const checkPluginConfigurationExists = async (name: string, dir: string) 
     return;
   }
 
-  const answer = await confirm(
-    `You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${dir}?`,
-    'N',
-  );
+  // TODO: Make this an optional as part of multi-plugin initiative flag
+  // const answer = await confirm(
+  //   `You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${dir}?`,
+  //   'N',
+  // );
+  const answer = true;
   if (answer) {
     plugin.dir = dir;
     writeJSONFile(cliPaths.pluginsJsonPath, config);
