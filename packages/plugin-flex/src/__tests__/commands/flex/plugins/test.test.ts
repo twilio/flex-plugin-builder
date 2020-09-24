@@ -1,8 +1,8 @@
 import { expect, createTest } from '../../../framework';
-import FlexPluginsBuild from '../../../../commands/flex/plugins/build';
+import FlexPluginsTest from '../../../../commands/flex/plugins/test';
 
-describe('Commands/FlexPluginsBuild', () => {
-  const { sinon, start } = createTest(FlexPluginsBuild);
+describe('Commands/FlexPluginsTest', () => {
+  const { sinon, start } = createTest(FlexPluginsTest);
 
   afterEach(() => {
     sinon.restore();
@@ -17,7 +17,7 @@ describe('Commands/FlexPluginsBuild', () => {
 
       expect(instance.runScript).to.have.been.calledTwice;
       expect(instance.runScript).to.have.been.calledWith('pre-script-check');
-      expect(instance.runScript).to.have.been.calledWith('build');
+      expect(instance.runScript).to.have.been.calledWith('test', ['--env=jsdom']);
     })
-    .it('should run build script');
+    .it('should run test script');
 });

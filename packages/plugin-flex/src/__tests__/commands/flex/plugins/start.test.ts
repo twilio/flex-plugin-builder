@@ -59,9 +59,10 @@ describe('Commands/FlexPluginsStart', () => {
       await instance.doRun();
 
       expect(instance.pluginsConfig).to.equal(config);
-      expect(instance.runScript).to.have.been.calledTwice;
+      expect(instance.runScript).to.have.been.calledThrice;
       expect(instance.runScript).to.have.been.calledWith('start', ['flex', '--name', pkg.name]);
-      expect(instance.runScript).to.have.been.calledWith('check-start', ['--name', pkg.name]);
+      expect(instance.runScript).to.have.been.calledWith('pre-start-check', ['--name', pkg.name]);
+      expect(instance.runScript).to.have.been.calledWith('pre-script-check', ['--name', pkg.name]);
       expect(instance.spawnScript).to.have.been.calledWith('start', ['plugin', '--name', pkg.name, '--port', '100']);
     })
     .it('should run start script for the directory plugin');
@@ -84,7 +85,9 @@ describe('Commands/FlexPluginsStart', () => {
         expect(e.message).to.contain('versioning is not compatible');
         expect(instance._flags.name).to.be.undefined;
         expect(instance._flags['include-remote']).to.be.undefined;
-        expect(instance.runScript).have.been.calledOnce;
+        expect(instance.runScript).have.been.calledTwice;
+        expect(instance.runScript).to.have.been.calledWith('pre-start-check', ['--name', badVersionPkg.name]);
+        expect(instance.runScript).to.have.been.calledWith('pre-script-check', ['--name', badVersionPkg.name]);
         expect(instance.spawnScript).not.to.have.been.called;
       }
     })
@@ -107,7 +110,9 @@ describe('Commands/FlexPluginsStart', () => {
         expect(e.message).to.contain('was not found');
         expect(instance._flags.name).to.be.undefined;
         expect(instance._flags['include-remote']).to.be.undefined;
-        expect(instance.runScript).to.have.been.calledOnce;
+        expect(instance.runScript).have.been.calledTwice;
+        expect(instance.runScript).to.have.been.calledWith('pre-start-check', ['--name', badPluginsPkg.name]);
+        expect(instance.runScript).to.have.been.calledWith('pre-script-check', ['--name', badPluginsPkg.name]);
         expect(instance.spawnScript).not.to.have.been.called;
       }
     })

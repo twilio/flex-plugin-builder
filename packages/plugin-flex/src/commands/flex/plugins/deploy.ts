@@ -83,7 +83,10 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     await progress('Validating plugin deployment', async () => this.validatePlugin(), false);
     await progress(
       `Compiling a production build of **${this.pkg.name}**`,
-      async () => this.runScript('build', args),
+      async () => {
+        await this.runScript('pre-script-check', args);
+        return this.runScript('build', args);
+      },
       false,
     );
     const deployedData: DeployResult = await progress(

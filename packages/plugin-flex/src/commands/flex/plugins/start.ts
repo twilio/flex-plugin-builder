@@ -89,7 +89,8 @@ export default class FlexPluginsStart extends FlexPlugin {
    * @param pluginName  the plugin name
    */
   async checkPlugin(pluginName: string) {
-    await this.runScript('check-start', ['--name', pluginName]);
+    await this.runScript('pre-script-check', ['--name', pluginName]);
+    await this.runScript('pre-start-check', ['--name', pluginName]);
 
     // read cli plugins json to get directory
     const plugin = this.pluginsConfig.plugins.find((p) => p.name === pluginName);

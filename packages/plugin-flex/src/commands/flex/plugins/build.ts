@@ -17,6 +17,7 @@ export default class FlexPluginsBuild extends FlexPlugin {
    */
   async doRun() {
     process.env.PERSIST_TERMINAL = 'true';
+    await this.runScript('pre-script-check');
     await this.runScript('build');
   }
 

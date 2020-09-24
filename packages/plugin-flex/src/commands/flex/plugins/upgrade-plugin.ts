@@ -112,8 +112,6 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
 
     await this.cleanupScaffold();
     await this.updatePackageJson(depsToAdd, (pkg) => {
-      pkg.scripts.bootstrap = 'flex-plugin check-start';
-      pkg.scripts.postinstall = 'npm run bootstrap';
       delete pkg['config-overrides-path'];
 
       return pkg;
@@ -152,8 +150,6 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
 
     await this.cleanupScaffold();
     await this.updatePackageJson(depsToAdd, (pkg) => {
-      pkg.scripts.bootstrap = 'flex-plugin check-start';
-      pkg.scripts.postinstall = 'npm run bootstrap';
       delete pkg['config-overrides-path'];
 
       return pkg;
@@ -190,6 +186,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     await this.cleanupScaffold();
     await this.updatePackageJson(depsToAdd);
     await this.removePackageScripts([
+      { name: 'bootstrap', it: 'flex-plugin check-start' },
       { name: 'build', it: 'flex-plugin build', pre: 'rimraf build && npm run bootstrap' },
       { name: 'clear', it: 'flex-plugin clear' },
       { name: 'deploy', it: 'flex-plugin deploy', pre: 'npm run build' },
@@ -347,6 +344,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
           this.prints.warnNotRemoved(`Script {{${script.name}}} was not removed because it has been modified`);
         }
       });
+      pkg.scripts.postinstall = 'flex-plugin pre-script-check';
 
       writeJSONFile(pkg, this.cwd, 'package.json');
     });
