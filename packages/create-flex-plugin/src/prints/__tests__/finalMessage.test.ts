@@ -11,7 +11,6 @@ describe('finalMessage', () => {
     flexSdkVersion: '1.2.3-flex-sdk',
     flexPluginVersion: '1.2.3-flex-plugin',
     pluginScriptsVersion: '1.2.3-plugin-script',
-    pluginJsonContent: '{}',
     pluginClassName: 'PluginFinalMessage',
     pluginNamespace: 'PluginFinalMessage',
   };
