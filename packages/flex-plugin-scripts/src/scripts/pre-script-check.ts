@@ -9,7 +9,7 @@ import {
   addCWDNodeModule,
   resolveModulePath,
   _require,
-  setCwd
+  setCwd, getCliPaths,
 } from 'flex-dev-utils/dist/fs';
 import { copyFileSync, readFileSync } from 'fs';
 import { join } from 'path';
@@ -165,6 +165,9 @@ export const _checkPluginCount = () => {
  * @private
  */
 export const _setPluginDir = (...args: string[]) => {
+  if (!checkFilesExist(getCliPaths().pluginsJsonPath)) {
+    return;
+  }
   const userInputPlugins = parseUserInputPlugins(false, ...args);
   const plugin = findFirstLocalPlugin(userInputPlugins);
   if (plugin && checkFilesExist(plugin.dir)) {
