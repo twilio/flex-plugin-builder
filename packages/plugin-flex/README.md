@@ -75,7 +75,7 @@ OPTIONS
   --json            Outputs the result of the command as json string
 ```
 
-_See code: [src/commands/flex/plugins/build.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.2-beta.0/src/commands/flex/plugins/build.ts)_
+_See code: [src/commands/flex/plugins/build.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.3-beta.0/src/commands/flex/plugins/build.ts)_
 
 ## `twilio flex:plugins:create NAME`
 
@@ -106,7 +106,7 @@ DESCRIPTION
   name	Name of your plugin. Needs to start with plugin-. This command needs to be invoked inside a plugin directory.
 ```
 
-_See code: [src/commands/flex/plugins/create.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.2-beta.0/src/commands/flex/plugins/create.ts)_
+_See code: [src/commands/flex/plugins/create.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.3-beta.0/src/commands/flex/plugins/create.ts)_
 
 ## `twilio flex:plugins:create-configuration`
 
@@ -133,7 +133,7 @@ OPTIONS
                              to provide other plugins to install
 ```
 
-_See code: [src/commands/flex/plugins/create-configuration.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.2-beta.0/src/commands/flex/plugins/create-configuration.ts)_
+_See code: [src/commands/flex/plugins/create-configuration.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.3-beta.0/src/commands/flex/plugins/create-configuration.ts)_
 
 ## `twilio flex:plugins:deploy`
 
@@ -155,7 +155,7 @@ OPTIONS
   --version=version          The custom version to publish
 ```
 
-_See code: [src/commands/flex/plugins/deploy.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.2-beta.0/src/commands/flex/plugins/deploy.ts)_
+_See code: [src/commands/flex/plugins/deploy.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.3-beta.0/src/commands/flex/plugins/deploy.ts)_
 
 ## `twilio flex:plugins:describe:configuration`
 
@@ -171,7 +171,7 @@ OPTIONS
   --sid=sid         (required) The Flex Plugin Configuration SID
 ```
 
-_See code: [src/commands/flex/plugins/describe/configuration.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.2-beta.0/src/commands/flex/plugins/describe/configuration.ts)_
+_See code: [src/commands/flex/plugins/describe/configuration.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.3-beta.0/src/commands/flex/plugins/describe/configuration.ts)_
 
 ## `twilio flex:plugins:describe:plugin`
 
@@ -187,7 +187,7 @@ OPTIONS
   --name=name       (required) The name of the Flex Plugin to describe
 ```
 
-_See code: [src/commands/flex/plugins/describe/plugin.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.2-beta.0/src/commands/flex/plugins/describe/plugin.ts)_
+_See code: [src/commands/flex/plugins/describe/plugin.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.3-beta.0/src/commands/flex/plugins/describe/plugin.ts)_
 
 ## `twilio flex:plugins:describe:plugin-version`
 
@@ -204,7 +204,7 @@ OPTIONS
   --version=version  (required) The Flex Plugin Version to describe
 ```
 
-_See code: [src/commands/flex/plugins/describe/plugin-version.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.2-beta.0/src/commands/flex/plugins/describe/plugin-version.ts)_
+_See code: [src/commands/flex/plugins/describe/plugin-version.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.3-beta.0/src/commands/flex/plugins/describe/plugin-version.ts)_
 
 ## `twilio flex:plugins:describe:release`
 
@@ -221,7 +221,7 @@ OPTIONS
   --sid=sid         The Flex Plugin Release SID to describe
 ```
 
-_See code: [src/commands/flex/plugins/describe/release.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.2-beta.0/src/commands/flex/plugins/describe/release.ts)_
+_See code: [src/commands/flex/plugins/describe/release.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.3-beta.0/src/commands/flex/plugins/describe/release.ts)_
 
 ## `twilio flex:plugins:diff ID1 [ID2]`
 
@@ -240,7 +240,7 @@ OPTIONS
   --json            Outputs the result of the command as json string
 ```
 
-_See code: [src/commands/flex/plugins/diff.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.2-beta.0/src/commands/flex/plugins/diff.ts)_
+_See code: [src/commands/flex/plugins/diff.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.3-beta.0/src/commands/flex/plugins/diff.ts)_
 
 ## `twilio flex:plugins:list:configurations`
 
@@ -255,7 +255,7 @@ OPTIONS
   --json            Outputs the result of the command as json string
 ```
 
-_See code: [src/commands/flex/plugins/list/configurations.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.2-beta.0/src/commands/flex/plugins/list/configurations.ts)_
+_See code: [src/commands/flex/plugins/list/configurations.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.3-beta.0/src/commands/flex/plugins/list/configurations.ts)_
 
 ## `twilio flex:plugins:list:plugin-versions`
 
@@ -271,7 +271,7 @@ OPTIONS
   --name=name       (required) The plugin name to list its versions
 ```
 
-_See code: [src/commands/flex/plugins/list/plugin-versions.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.2-beta.0/src/commands/flex/plugins/list/plugin-versions.ts)_
+_See code: [src/commands/flex/plugins/list/plugin-versions.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.3-beta.0/src/commands/flex/plugins/list/plugin-versions.ts)_
 
 ## `twilio flex:plugins:list:plugins`
 
@@ -286,7 +286,7 @@ OPTIONS
   --json            Outputs the result of the command as json string
 ```
 
-_See code: [src/commands/flex/plugins/list/plugins.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.2-beta.0/src/commands/flex/plugins/list/plugins.ts)_
+_See code: [src/commands/flex/plugins/list/plugins.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.3-beta.0/src/commands/flex/plugins/list/plugins.ts)_
 
 ## `twilio flex:plugins:list:releases`
 
@@ -301,7 +301,7 @@ OPTIONS
   --json            Outputs the result of the command as json string
 ```
 
-_See code: [src/commands/flex/plugins/list/releases.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.2-beta.0/src/commands/flex/plugins/list/releases.ts)_
+_See code: [src/commands/flex/plugins/list/releases.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.3-beta.0/src/commands/flex/plugins/list/releases.ts)_
 
 ## `twilio flex:plugins:release`
 
@@ -331,7 +331,7 @@ OPTIONS
                                          to provide other plugins to install
 ```
 
-_See code: [src/commands/flex/plugins/release.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.2-beta.0/src/commands/flex/plugins/release.ts)_
+_See code: [src/commands/flex/plugins/release.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.3-beta.0/src/commands/flex/plugins/release.ts)_
 
 ## `twilio flex:plugins:start`
 
@@ -348,7 +348,7 @@ OPTIONS
   --name=name       The name of the plugin(s) you would like to run
 ```
 
-_See code: [src/commands/flex/plugins/start.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.2-beta.0/src/commands/flex/plugins/start.ts)_
+_See code: [src/commands/flex/plugins/start.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.3-beta.0/src/commands/flex/plugins/start.ts)_
 
 ## `twilio flex:plugins:test`
 
@@ -363,7 +363,7 @@ OPTIONS
   --json            Outputs the result of the command as json string
 ```
 
-_See code: [src/commands/flex/plugins/test.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.2-beta.0/src/commands/flex/plugins/test.ts)_
+_See code: [src/commands/flex/plugins/test.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.3-beta.0/src/commands/flex/plugins/test.ts)_
 
 ## `twilio flex:plugins:upgrade-plugin`
 
@@ -381,5 +381,5 @@ OPTIONS
   --yes             If set, will answer yes to all prompts
 ```
 
-_See code: [src/commands/flex/plugins/upgrade-plugin.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.2-beta.0/src/commands/flex/plugins/upgrade-plugin.ts)_
+_See code: [src/commands/flex/plugins/upgrade-plugin.ts](https://github.com/twilio-labs/plugin-flex/blob/v1.0.3-beta.0/src/commands/flex/plugins/upgrade-plugin.ts)_
 <!-- commandsstop -->
