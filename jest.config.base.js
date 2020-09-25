@@ -11,6 +11,8 @@ module.exports = {
     '!<rootDir>/packages/**/src/**/*.test.ts',
     '!<rootDir>/packages/**/src/index.ts',
     '!<rootDir>/packages/**/templates/**/*.ts',
+    '!<rootDir>/packages/**/templates/**/*.js',
+    '!<rootDir>/packages/**/templates/**/*.json',
     '!<rootDir>/packages/**/prints/**/*.ts',
     '!<rootDir>/packages/flex-plugin-scripts/src/config/**/*.ts',
   ],
