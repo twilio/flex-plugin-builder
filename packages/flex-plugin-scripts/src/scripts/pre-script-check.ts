@@ -9,7 +9,8 @@ import {
   addCWDNodeModule,
   resolveModulePath,
   _require,
-  setCwd, getCliPaths,
+  setCwd,
+  getCliPaths,
 } from 'flex-dev-utils/dist/fs';
 import { copyFileSync, readFileSync } from 'fs';
 import { join } from 'path';

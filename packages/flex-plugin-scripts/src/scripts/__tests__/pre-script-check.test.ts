@@ -3,6 +3,7 @@ import fs from 'fs';
 import * as fsScripts from 'flex-dev-utils/dist/fs';
 import * as prints from '../../prints';
 import * as preScriptCheck from '../pre-script-check';
+import * as parser from '../../utils/parser';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('../../prints/versionMismatch');
@@ -72,6 +73,7 @@ describe('PreScriptCheck', () => {
       _validateTypescriptProject.mockRestore();
       _checkPluginCount.mockRestore();
       checkPluginConfigurationExists.mockRestore();
+      _setPluginDir.mockRestore();
     });
 
     const expectCalled = (allowSkip: boolean, allowReact: boolean) => {
@@ -351,6 +353,91 @@ describe('PreScriptCheck', () => {
       expect(exit).not.toHaveBeenCalled();
       expect(prints.typescriptNotInstalled).not.toHaveBeenCalled();
       _copyFileSync.mockRestore();
+    });
+  });
+
+  describe('_setPluginDir', () => {
+    const cliJsonPath = 'the/json/path';
+    const pluginPath = 'the/plugin/path';
+
+    let checkFilesExist = jest.spyOn(fsScripts, 'checkFilesExist');
+    let getCliPaths = jest.spyOn(fsScripts, 'getCliPaths');
+    let setCwd = jest.spyOn(fsScripts, 'setCwd');
+    let parseUserInputPlugins = jest.spyOn(parser, 'parseUserInputPlugins');
+    let findFirstLocalPlugin = jest.spyOn(parser, 'findFirstLocalPlugin');
+
+    beforeEach(() => {
+      checkFilesExist = jest.spyOn(fsScripts, 'checkFilesExist');
+      getCliPaths = jest.spyOn(fsScripts, 'getCliPaths');
+      setCwd = jest.spyOn(fsScripts, 'setCwd');
+      parseUserInputPlugins = jest.spyOn(parser, 'parseUserInputPlugins');
+      findFirstLocalPlugin = jest.spyOn(parser, 'findFirstLocalPlugin');
+
+      // @ts-ignore
+      getCliPaths.mockReturnValue({ pluginsJsonPath: cliJsonPath });
+    });
+
+    afterAll(() => {
+      checkFilesExist.mockRestore();
+      getCliPaths.mockRestore();
+      setCwd.mockRestore();
+      parseUserInputPlugins.mockRestore();
+      findFirstLocalPlugin.mockRestore();
+    });
+
+    it('should do nothing if flex/plugins.json does not exist', () => {
+      checkFilesExist.mockReturnValue(false);
+
+      preScriptCheck._setPluginDir();
+
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(checkFilesExist).toHaveBeenCalledWith(cliJsonPath);
+      expect(getCliPaths).toHaveBeenCalledTimes(1);
+      expect(parseUserInputPlugins).not.toHaveBeenCalled();
+    });
+
+    it('should do nothing if no plugin is found', () => {
+      checkFilesExist.mockReturnValue(true);
+      parseUserInputPlugins.mockReturnValue([{ name: 'plugin', remote: false }]);
+      findFirstLocalPlugin.mockReturnValue(undefined);
+
+      preScriptCheck._setPluginDir();
+
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(checkFilesExist).toHaveBeenCalledWith(cliJsonPath);
+      expect(parseUserInputPlugins).toHaveBeenCalledTimes(1);
+      expect(findFirstLocalPlugin).toHaveBeenCalledTimes(1);
+      expect(setCwd).not.toHaveBeenCalled();
+    });
+
+    it('should do nothing if plugin is found but its directory is not', () => {
+      checkFilesExist.mockImplementation((...p: string[]) => p.includes(cliJsonPath));
+      parseUserInputPlugins.mockReturnValue([{ name: 'plugin', remote: false }]);
+      findFirstLocalPlugin.mockReturnValue({ name: 'plugin', dir: pluginPath, port: 0 });
+
+      preScriptCheck._setPluginDir();
+
+      expect(checkFilesExist).toHaveBeenCalledTimes(2);
+      expect(checkFilesExist).toHaveBeenCalledWith(cliJsonPath);
+      expect(checkFilesExist).toHaveBeenCalledWith(pluginPath);
+      expect(parseUserInputPlugins).toHaveBeenCalledTimes(1);
+      expect(findFirstLocalPlugin).toHaveBeenCalledTimes(1);
+      expect(setCwd).not.toHaveBeenCalled();
+    });
+
+    it('should set directory', () => {
+      checkFilesExist.mockReturnValue(true);
+      parseUserInputPlugins.mockReturnValue([{ name: 'plugin', remote: false }]);
+      findFirstLocalPlugin.mockReturnValue({ name: 'plugin', dir: pluginPath, port: 0 });
+
+      preScriptCheck._setPluginDir();
+
+      expect(checkFilesExist).toHaveBeenCalledTimes(2);
+      expect(checkFilesExist).toHaveBeenCalledWith(cliJsonPath);
+      expect(checkFilesExist).toHaveBeenCalledWith(pluginPath);
+      expect(parseUserInputPlugins).toHaveBeenCalledTimes(1);
+      expect(findFirstLocalPlugin).toHaveBeenCalledTimes(1);
+      expect(setCwd).toHaveBeenCalledTimes(1);
     });
   });
 });
