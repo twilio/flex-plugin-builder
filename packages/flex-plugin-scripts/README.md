@@ -6,7 +6,7 @@
 
 Scripts to run, build, and deploy Flex plugin.
 
-_Deprecated Notice_: These scripts are deprecated and no longer recommended to be used. Please head over to [Twilio CLI's Flex Plugins integration](https://github.com/twilio-labs/plugin-flex/tree/v1-beta) on how to use Plugin Builder.
+_Deprecation Notice_: These scripts are deprecated and no longer recommended to be used. Please head over to [Twilio CLI's Flex Plugins integration](https://github.com/twilio-labs/plugin-flex/tree/v1-beta) on how to use Plugin Builder.
 
 ## Installation
 
