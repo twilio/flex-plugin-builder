@@ -45,6 +45,10 @@ type HelperTest<C> = FancyTypes.Base<
       };
       args: [];
     };
+    catch: {
+      output: undefined;
+      args: [(error: Error) => Promise<void> | void];
+    };
   }
 > &
   typeof test;

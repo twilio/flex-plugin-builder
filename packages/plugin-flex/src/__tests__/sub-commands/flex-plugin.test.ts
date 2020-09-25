@@ -187,4 +187,58 @@ describe('SubCommands/FlexPlugin', () => {
       }
     })
     .it('should throw exception if script needs to run in plugin directory but is not');
+
+  start()
+    .setup(async () => {
+      sinon.stub(fs, 'readJSONFile').returns({
+        devDependencies: {},
+        dependencies: {},
+      });
+    })
+    .test(async (cmd) => {
+      expect(cmd.builderVersion).to.be.null;
+    })
+    .it('should return null for builderVersion if script is not found');
+
+  start()
+    .setup(async () => {
+      sinon.stub(fs, 'readJSONFile').returns({
+        devDependencies: {},
+        dependencies: {
+          'flex-plugin-scripts': '1.2.3',
+        },
+      });
+    })
+    .test(async (cmd) => {
+      expect(cmd.builderVersion).to.equal(1);
+    })
+    .it('should return version from dependencies');
+
+  start()
+    .setup(async () => {
+      sinon.stub(fs, 'readJSONFile').returns({
+        devDependencies: {
+          'flex-plugin-scripts': '^2.3.4-beta.0',
+        },
+        dependencies: {},
+      });
+    })
+    .test(async (cmd) => {
+      expect(cmd.builderVersion).to.equal(2);
+    })
+    .it('should return version from devDependencies');
+
+  start()
+    .setup(async () => {
+      sinon.stub(fs, 'readJSONFile').returns({
+        devDependencies: {
+          'flex-plugin-scripts': 'not-a-semver',
+        },
+        dependencies: {},
+      });
+    })
+    .test(async (cmd) => {
+      expect(cmd.builderVersion).to.be.null;
+    })
+    .it('should return null if invalid version');
 });

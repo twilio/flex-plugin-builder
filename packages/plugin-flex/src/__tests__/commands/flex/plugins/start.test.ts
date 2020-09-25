@@ -77,6 +77,7 @@ describe('Commands/FlexPluginsStart', () => {
       sinon.stub(instance, 'spawnScript').returnsThis();
       sinon.stub(instance, 'isPluginFolder').returns(true);
       sinon.stub(instance, 'pkg').get(() => badVersionPkg);
+      sinon.stub(instance, 'pkg').get(() => badVersionPkg);
       sinon.stub(instance, 'pluginsConfig').get(() => config);
       sinon.stub(fs, 'readJSONFile').returns(badVersionPkg);
       findPortAvailablePort.returns(Promise.resolve(100));
@@ -86,7 +87,7 @@ describe('Commands/FlexPluginsStart', () => {
         await instance.run();
       } catch (e) {
         expect(e).to.be.instanceOf(TwilioCliError);
-        expect(e.message).to.contain('versioning is not compatible');
+        expect(e.message).to.contain('is not compatible');
         expect(instance._flags.name).to.be.undefined;
         expect(instance._flags['include-remote']).to.be.undefined;
         expect(instance.runScript).have.been.calledTwice;

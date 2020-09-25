@@ -14,11 +14,14 @@ import {
 } from 'flex-plugins-api-client';
 import { TwilioError } from 'flex-plugins-utils-exception';
 import dayjs from 'dayjs';
-import { flags } from '@oclif/command';
 import * as Errors from '@oclif/errors';
 import mkdirp from 'mkdirp';
 import { PluginServiceHttpOption } from 'flex-plugins-api-client/dist/clients/client';
+import * as Parser from '@oclif/parser';
+import semver from 'semver/preload';
 
+import parser from '../utils/parser';
+import * as flags from '../utils/flags';
 import { filesExist, readJSONFile, readJsonFile, writeJSONFile } from '../utils/fs';
 import { TwilioCliError } from '../exceptions';
 import { exit, instanceOf } from '../utils/general';
@@ -217,6 +220,24 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    */
   get pkg(): Pkg {
     return readJSONFile<Pkg>(this.cwd, 'package.json');
+  }
+
+  /**
+   * Returns the major version of flex-plugin-scripts of the package
+   */
+  get builderVersion(): number | null {
+    const { pkg } = this;
+    const script = pkg.dependencies['flex-plugin-scripts'] || pkg.devDependencies['flex-plugin-scripts'];
+    if (!script) {
+      return null;
+    }
+
+    const version = semver.coerce(script);
+    if (!version) {
+      return null;
+    }
+
+    return version.major;
   }
 
   /**
@@ -480,5 +501,16 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    */
   get _prints() {
     return prints(this._logger);
+  }
+
+  /**
+   * The command parse override
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  protected parse<F, A extends { [name: string]: any }>(
+    options?: Parser.Input<F>,
+    argv = this.argv,
+  ): Parser.Output<F, A> {
+    return parser(super.parse)(options, argv);
   }
 }

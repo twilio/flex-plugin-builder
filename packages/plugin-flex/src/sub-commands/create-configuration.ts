@@ -1,9 +1,9 @@
-import { flags } from '@oclif/command';
 import { progress } from 'flex-plugins-utils-logger';
 import { CreateConfigurationOption } from 'flex-plugins-api-toolkit';
 import dayjs from 'dayjs';
 import { IOptionFlag } from '@oclif/command/lib/flags';
 
+import * as flags from '../utils/flags';
 import FlexPlugin, { FlexPluginFlags } from './flex-plugin';
 import { createConfiguration as createConfigurationDocs } from '../commandDocs.json';
 
@@ -21,6 +21,7 @@ export const nameFlag = {
   description: createConfigurationDocs.flags.name,
   default: dayjs().format('MMM D, YYYY'),
   required: true,
+  max: 100,
 };
 
 export const pluginFlag: Partial<IOptionFlag<string[]>> & Required & Multiple = {
@@ -33,6 +34,7 @@ export const descriptionFlag = {
   description: createConfigurationDocs.flags.description,
   default: createConfigurationDocs.defaults.description,
   required: true,
+  max: 500,
 };
 
 const baseFlags = { ...FlexPlugin.flags };

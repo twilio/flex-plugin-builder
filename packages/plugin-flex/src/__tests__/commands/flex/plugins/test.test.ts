@@ -1,5 +1,7 @@
 import { expect, createTest } from '../../../framework';
 import FlexPluginsTest from '../../../../commands/flex/plugins/test';
+import { instanceOf } from '../../../../utils/general';
+import { IncompatibleVersionError } from '../../../../exceptions';
 
 describe('Commands/FlexPluginsTest', () => {
   const { sinon, start } = createTest(FlexPluginsTest);
@@ -13,15 +15,28 @@ describe('Commands/FlexPluginsTest', () => {
   });
 
   start()
-    .setup((instance) => {
-      sinon.stub(instance, 'runScript').returnsThis();
+    .setup((cmd) => {
+      sinon.stub(cmd, 'builderVersion').get(() => 4);
+      sinon.stub(cmd, 'runScript').returnsThis();
     })
-    .test(async (instance) => {
-      await instance.doRun();
+    .test(async (cmd) => {
+      await cmd.doRun();
 
-      expect(instance.runScript).to.have.been.calledTwice;
-      expect(instance.runScript).to.have.been.calledWith('pre-script-check');
-      expect(instance.runScript).to.have.been.calledWith('test', ['--env=jsdom']);
+      expect(cmd.runScript).to.have.been.calledTwice;
+      expect(cmd.runScript).to.have.been.calledWith('pre-script-check');
+      expect(cmd.runScript).to.have.been.calledWith('test', ['--env=jsdom']);
     })
     .it('should run test script');
+
+  start()
+    .setup((cmd) => {
+      sinon.stub(cmd, 'builderVersion').get(() => null);
+    })
+    .test(async (cmd) => {
+      await cmd.doRun();
+    })
+    .catch((e) => {
+      expect(instanceOf(e, IncompatibleVersionError)).to.equal(true);
+    })
+    .it('should throw error if not using plugin-builder 4');
 });

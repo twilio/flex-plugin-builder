@@ -1,11 +1,11 @@
 import { PluginVersionResource } from 'flex-plugins-api-client/dist/clients/pluginVersions';
-import { flags } from '@oclif/command';
 import { progress } from 'flex-plugins-utils-logger';
 import semver from 'semver';
 import { DeployResult } from 'flex-plugin-scripts/dist/scripts/deploy';
 import { CLIParseError } from '@oclif/parser/lib/errors';
 
-import { TwilioCliError } from '../../../exceptions';
+import * as flags from '../../../utils/flags';
+import { IncompatibleVersionError, TwilioCliError } from '../../../exceptions';
 import { createDescription } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { deploy as deployDocs } from '../../../commandDocs.json';
@@ -63,9 +63,11 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     changelog: flags.string({
       description: deployDocs.flags.changelog,
       required: true,
+      max: 1000,
     }),
     description: flags.string({
       description: deployDocs.flags.description,
+      max: 500,
     }),
   };
 
@@ -82,6 +84,10 @@ export default class FlexPluginsDeploy extends FlexPlugin {
    * @override
    */
   async doRun() {
+    if (this.builderVersion !== 4) {
+      throw new IncompatibleVersionError(this.pkg.name, this.builderVersion);
+    }
+
     const args = ['--quiet', '--persist-terminal'];
 
     await progress('Validating plugin deployment', async () => this.validatePlugin(), false);

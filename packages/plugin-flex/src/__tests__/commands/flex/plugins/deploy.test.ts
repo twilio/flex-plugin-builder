@@ -48,11 +48,11 @@ describe('Commands/FlexPluginsDeploy', () => {
   const start = (args?: string[]) => {
     args = args ? args : [];
 
-    return _start(['--changelog', defaultChangelog, ...args]).setup(async (instance) => {
-      sinon.stub(instance, 'isPluginFolder').returns(true);
-      sinon.stub(instance, 'doRun').returnsThis();
-      sinon.stub(instance, 'pkg').get(() => pkg);
-      await instance.run();
+    return _start(['--changelog', defaultChangelog, ...args]).setup(async (cmd) => {
+      sinon.stub(cmd, 'isPluginFolder').returns(true);
+      sinon.stub(cmd, 'doRun').returnsThis();
+      sinon.stub(cmd, 'pkg').get(() => pkg);
+      await cmd.run();
     });
   };
 
@@ -87,26 +87,26 @@ describe('Commands/FlexPluginsDeploy', () => {
   });
 
   start(['--major'])
-    .test(async (instance) => {
-      expect(instance.bumpLevel).to.equal('major');
+    .test(async (cmd) => {
+      expect(cmd.bumpLevel).to.equal('major');
     })
     .it('should get major bump level');
 
   start(['--minor'])
-    .test(async (instance) => {
-      expect(instance.bumpLevel).to.equal('minor');
+    .test(async (cmd) => {
+      expect(cmd.bumpLevel).to.equal('minor');
     })
     .it('should get minor bump level');
 
   start(['--patch'])
-    .test(async (instance) => {
-      expect(instance.bumpLevel).to.equal('patch');
+    .test(async (cmd) => {
+      expect(cmd.bumpLevel).to.equal('patch');
     })
     .it('should get patch bump level');
 
   start()
-    .test(async (instance) => {
-      expect(instance.bumpLevel).to.equal('patch');
+    .test(async (cmd) => {
+      expect(cmd.bumpLevel).to.equal('patch');
     })
     .it('should get patch bump level without any flags');
 
@@ -116,18 +116,18 @@ describe('Commands/FlexPluginsDeploy', () => {
       flags.push('--changelog', changelog);
     }
 
-    return start(flags).setup(async (instance) => {
-      sinon.stub(instance.pluginVersionsClient, 'create').resolves(pluginVersionResource);
+    return start(flags).setup(async (cmd) => {
+      sinon.stub(cmd.pluginVersionsClient, 'create').resolves(pluginVersionResource);
     });
   };
 
   pluginVersionsTest()
-    .test(async (instance) => {
-      const result = await instance.registerPluginVersion(deployResult);
+    .test(async (cmd) => {
+      const result = await cmd.registerPluginVersion(deployResult);
 
       expect(result).to.equal(pluginVersionResource);
-      expect(instance.pluginVersionsClient.create).to.have.been.calledOnce;
-      expect(instance.pluginVersionsClient.create).to.have.been.calledWith(pkg.name, {
+      expect(cmd.pluginVersionsClient.create).to.have.been.calledOnce;
+      expect(cmd.pluginVersionsClient.create).to.have.been.calledWith(pkg.name, {
         Version: deployResult.nextVersion,
         PluginUrl: deployResult.pluginUrl,
         Private: !deployResult.isPublic,
@@ -137,12 +137,12 @@ describe('Commands/FlexPluginsDeploy', () => {
     .it('should call registerPluginVersion without any changelog');
 
   pluginVersionsTest('the-changelog')
-    .test(async (instance) => {
-      const result = await instance.registerPluginVersion(deployResult);
+    .test(async (cmd) => {
+      const result = await cmd.registerPluginVersion(deployResult);
 
       expect(result).to.equal(pluginVersionResource);
-      expect(instance.pluginVersionsClient.create).to.have.been.calledOnce;
-      expect(instance.pluginVersionsClient.create).to.have.been.calledWith(pkg.name, {
+      expect(cmd.pluginVersionsClient.create).to.have.been.calledOnce;
+      expect(cmd.pluginVersionsClient.create).to.have.been.calledWith(pkg.name, {
         Version: deployResult.nextVersion,
         PluginUrl: deployResult.pluginUrl,
         Private: !deployResult.isPublic,
@@ -152,15 +152,15 @@ describe('Commands/FlexPluginsDeploy', () => {
     .it('should call registerPluginVersion with changelog');
 
   start()
-    .setup(async (instance) => {
-      sinon.stub(instance.pluginsClient, 'upsert').resolves(pluginResource);
+    .setup(async (cmd) => {
+      sinon.stub(cmd.pluginsClient, 'upsert').resolves(pluginResource);
     })
-    .test(async (instance) => {
-      const result = await instance.registerPlugin();
+    .test(async (cmd) => {
+      const result = await cmd.registerPlugin();
 
       expect(result).to.equal(pluginResource);
-      expect(instance.pluginsClient.upsert).to.have.been.calledOnce;
-      expect(instance.pluginsClient.upsert).to.have.been.calledWith({
+      expect(cmd.pluginsClient.upsert).to.have.been.calledOnce;
+      expect(cmd.pluginsClient.upsert).to.have.been.calledWith({
         UniqueName: pkg.name,
         FriendlyName: pkg.name,
         Description: '',
@@ -169,15 +169,15 @@ describe('Commands/FlexPluginsDeploy', () => {
     .it('should call registerPlugin');
 
   start(['--description', 'some description'])
-    .setup(async (instance) => {
-      sinon.stub(instance.pluginsClient, 'upsert').resolves(pluginResource);
+    .setup(async (cmd) => {
+      sinon.stub(cmd.pluginsClient, 'upsert').resolves(pluginResource);
     })
-    .test(async (instance) => {
-      const result = await instance.registerPlugin();
+    .test(async (cmd) => {
+      const result = await cmd.registerPlugin();
 
       expect(result).to.equal(pluginResource);
-      expect(instance.pluginsClient.upsert).to.have.been.calledOnce;
-      expect(instance.pluginsClient.upsert).to.have.been.calledWith({
+      expect(cmd.pluginsClient.upsert).to.have.been.calledOnce;
+      expect(cmd.pluginsClient.upsert).to.have.been.calledWith({
         UniqueName: pkg.name,
         FriendlyName: pkg.name,
         Description: 'some description',
@@ -186,19 +186,19 @@ describe('Commands/FlexPluginsDeploy', () => {
     .it('should call registerPlugin with custom description');
 
   start()
-    .setup((instance) => {
-      sinon.stub(instance.pluginsClient, 'get').rejects();
-      sinon.stub(instance.pluginVersionsClient, 'latest');
+    .setup((cmd) => {
+      sinon.stub(cmd.pluginsClient, 'get').rejects();
+      sinon.stub(cmd.pluginVersionsClient, 'latest');
     })
-    .test(async (instance) => {
-      await instance.validatePlugin();
+    .test(async (cmd) => {
+      await cmd.validatePlugin();
 
-      expect(instance.pluginsClient.get).to.have.been.calledOnce;
-      expect(instance.pluginsClient.get).to.have.been.calledWith(pkg.name);
-      expect(instance.pluginVersionsClient.latest).to.not.have.been.called;
+      expect(cmd.pluginsClient.get).to.have.been.calledOnce;
+      expect(cmd.pluginsClient.get).to.have.been.calledWith(pkg.name);
+      expect(cmd.pluginVersionsClient.latest).to.not.have.been.called;
 
       // @ts-ignore
-      const args = instance.scriptArgs;
+      const args = cmd.scriptArgs;
       expect(args[0]).to.equal('version');
       expect(args[1]).to.equal('0.0.1');
       expect(args[2]).to.equal('--pilot-plugins-api');
@@ -206,20 +206,20 @@ describe('Commands/FlexPluginsDeploy', () => {
     .it('should validate brand new plugin');
 
   start(['--minor'])
-    .setup((instance) => {
-      sinon.stub(instance.pluginsClient, 'get').resolves(pluginResource);
-      sinon.stub(instance.pluginVersionsClient, 'latest').resolves(pluginVersionResource);
+    .setup((cmd) => {
+      sinon.stub(cmd.pluginsClient, 'get').resolves(pluginResource);
+      sinon.stub(cmd.pluginVersionsClient, 'latest').resolves(pluginVersionResource);
     })
-    .test(async (instance) => {
-      await instance.validatePlugin();
+    .test(async (cmd) => {
+      await cmd.validatePlugin();
 
-      expect(instance.pluginsClient.get).to.have.been.calledOnce;
-      expect(instance.pluginsClient.get).to.have.been.calledWith(pkg.name);
-      expect(instance.pluginVersionsClient.latest).to.have.been.calledOnce;
-      expect(instance.pluginVersionsClient.latest).to.have.been.calledWith(pkg.name);
+      expect(cmd.pluginsClient.get).to.have.been.calledOnce;
+      expect(cmd.pluginsClient.get).to.have.been.calledWith(pkg.name);
+      expect(cmd.pluginVersionsClient.latest).to.have.been.calledOnce;
+      expect(cmd.pluginVersionsClient.latest).to.have.been.calledWith(pkg.name);
 
       // @ts-ignore
-      const args = instance.scriptArgs;
+      const args = cmd.scriptArgs;
       expect(args[0]).to.equal('version');
       expect(args[1]).to.equal('2.1.0');
       expect(args[2]).to.equal('--pilot-plugins-api');
@@ -227,20 +227,20 @@ describe('Commands/FlexPluginsDeploy', () => {
     .it('should validate plugin as a minor bump');
 
   start(['--version', '0.0.1'])
-    .setup((instance) => {
-      sinon.stub(instance.pluginsClient, 'get').resolves(pluginResource);
-      sinon.stub(instance.pluginVersionsClient, 'latest').resolves(pluginVersionResource);
+    .setup((cmd) => {
+      sinon.stub(cmd.pluginsClient, 'get').resolves(pluginResource);
+      sinon.stub(cmd.pluginVersionsClient, 'latest').resolves(pluginVersionResource);
     })
-    .test(async (instance, _, done) => {
+    .test(async (cmd, _, done) => {
       try {
-        await instance.validatePlugin();
+        await cmd.validatePlugin();
       } catch (e) {
         expect(e).to.be.instanceOf(TwilioCliError);
         expect(e.message).to.contain('version 0.0.1 must be greater than 2.0.0');
-        expect(instance.pluginsClient.get).to.have.been.calledOnce;
-        expect(instance.pluginsClient.get).to.have.been.calledWith(pkg.name);
-        expect(instance.pluginVersionsClient.latest).to.have.been.calledOnce;
-        expect(instance.pluginVersionsClient.latest).to.have.been.calledWith(pkg.name);
+        expect(cmd.pluginsClient.get).to.have.been.calledOnce;
+        expect(cmd.pluginsClient.get).to.have.been.calledWith(pkg.name);
+        expect(cmd.pluginVersionsClient.latest).to.have.been.calledOnce;
+        expect(cmd.pluginVersionsClient.latest).to.have.been.calledWith(pkg.name);
 
         done();
       }
