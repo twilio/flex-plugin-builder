@@ -254,6 +254,9 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         [require.resolve('create-flex-plugin'), '..', '..', 'templates', 'core', 'public', 'appConfig.example.js'],
         [this.cwd, 'public', 'appConfig.example.js'],
       );
+      ['jest.config.js', 'webpack.config.js', 'webpack.dev.js'].forEach((file) => {
+        copyFile([require.resolve('create-flex-plugin'), '..', '..', 'templates', 'core', file], [this.cwd, file]);
+      });
 
       if (fileExists(this.cwd, 'public', 'appConfig.js')) {
         const newLines: string[] = [];
