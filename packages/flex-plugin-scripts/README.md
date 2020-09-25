@@ -6,6 +6,8 @@
 
 Scripts to run, build, and deploy Flex plugin.
 
+_Deprecated Notice_: These scripts are deprecated and no longer recommended to be used. Please head over to [Twilio CLI's Flex Plugins integration](https://github.com/twilio-labs/plugin-flex/tree/v1-beta) on how to use Plugin Builder.
+
 ## Installation
 
 This repo will automatically be installed as part of creating a new plugin.
@@ -13,6 +15,22 @@ This repo will automatically be installed as part of creating a new plugin.
 ## Verbose/Debug Mode
 
 All scripts can run with `DEBUG=1` for a more verbose mode. You may also use `TRACE=1` for an even more verbose mode.
+
+## Customizing the Configuration
+
+Plugin Builder is built using [Webpack.js](https://webpack.js.org/) and uses [Jest](https://jestjs.io) for testing. For users, they will not need to modify any of the Webpack/Jest configurations. For those who do, you can have full control over the Webpack/Jest! 
+
+Create a `*.config.js` in the root directory of your application. For Jest, create a `jest.config.js`. For Webpack, create a `webpack.config.js`. For Webpack DevServer, create a `webpack.dev.js`. Each of these configurations file should be of the format below:
+
+```js
+module.exports = (config, { isProd, isDev, isTest }) => {
+  /**
+   * Modify the configuration and then return it
+   */
+
+  return config;
+}
+```
 
 ## Scripts
 
