@@ -9,8 +9,7 @@
     "flex-plugin": "{{flexPluginVersion}}",
     "react": "16.5.2",
     "react-dom": "16.5.2",
-    "react-emotion": "9.2.12",
-    "typescript": "^3"
+    "react-emotion": "9.2.12"
   },
   "devDependencies": {
     "@twilio/flex-ui": "{{flexSdkVersion}}",
@@ -24,8 +23,7 @@
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
     "flex-plugin-scripts": "{{pluginScriptsVersion}}",
-    "rimraf": "^3.0.0",
-    "typescript": "^3.6.4"
+    "typescript": "^3"
   },
   "browserslist": {
     "production": [

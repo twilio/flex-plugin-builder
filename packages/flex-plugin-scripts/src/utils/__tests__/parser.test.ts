@@ -53,4 +53,16 @@ describe('parser', () => {
       }
     });
   });
+
+  describe('findFirstLocalPlugin', () => {
+    it('should find no plugin', () => {
+      const plugin = {
+        name: 'local-plugin',
+        remote: true,
+      };
+      const result = parserScripts.findFirstLocalPlugin([plugin]);
+
+      expect(result).toBeUndefined();
+    });
+  });
 })
