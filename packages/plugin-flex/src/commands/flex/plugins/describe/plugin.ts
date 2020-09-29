@@ -40,7 +40,7 @@ export default class FlexPluginsDescribePlugin extends InformationFlexPlugin<Des
   print(plugin: DescribePlugin) {
     this.printHeader('SID', plugin.sid);
     this.printHeader('Name', plugin.name);
-    this.printHeader('Status', plugin.isActive ? 'Active' : 'Inactive');
+    this.printHeader('Status', plugin.isActive);
     this.printHeader('Friendly Name', plugin.friendlyName);
     this.printHeader('Description', plugin.description);
     this.printHeader('Created', plugin.dateCreated);
