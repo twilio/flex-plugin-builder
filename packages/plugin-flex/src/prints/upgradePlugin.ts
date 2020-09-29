@@ -1,4 +1,4 @@
-import { Logger, singleLineString, boxen, confirm } from 'flex-plugins-utils-logger';
+import { Logger, singleLineString, boxen, confirm, coloredStrings } from 'flex-plugins-utils-logger';
 
 import { exit } from '../utils/general';
 
@@ -106,6 +106,66 @@ const warnNotRemoved = (logger: Logger) => (note: string) => {
   logger.info(`> !!${note}. Please review and remove it manually.!!`);
 };
 
+/**
+ * Remove legacy plugin notification
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const removeLegacyNotification = (logger: Logger) => async (pluginName: string, skip: boolean) => {
+  const name = coloredStrings.name(pluginName);
+  boxen.warning(`You are about to delete your legacy plugin ${name} bundle hosted on Twilio Assets.`);
+  if (!skip) {
+    const answer = await confirm(
+      'Please confirm that you have already migrated this plugin to use the Plugins API. Do you want to continue?',
+    );
+    if (!answer) {
+      exit(0);
+    }
+  }
+};
+
+/**
+ * No legacy plugin was found
+ * @param logger
+ */
+const noLegacyPluginFound = (logger: Logger) => (pluginName: string) => {
+  const name = coloredStrings.name(pluginName);
+
+  logger.info(`Plugin bundle ${name} was not found; it may have already been successfully migrated to Plugins API.`);
+  logger.newline();
+
+  logger.info('**Next Steps:**');
+  logger.info(`Run {{$ twilio flex:plugins:describe:plugin --name ${name}}} for more information on your plugin.`);
+};
+
+/**
+ * Remove legacy was successful
+ * @param logger
+ */
+const removeLegacyPluginSucceeded = (logger: Logger) => (pluginName: string) => {
+  const name = coloredStrings.name(pluginName);
+
+  logger.newline();
+  logger.success(
+    `🎉 Your legacy plugin ${name} bundle was successfully removed from Twilio Assets. The migration of your plugin to Plugins API is now complete.`,
+  );
+  logger.newline();
+};
+
+/**
+ * Warning about plugin not registed with plugins api yet
+ */
+const warningPluginNotInAPI = (logger: Logger) => (pluginName: string) => {
+  const name = coloredStrings.name(pluginName);
+
+  logger.info(`Plugin ${name} has not been migrated to Plugins API.`);
+  logger.newline();
+  logger.info(`Run {{$ twilio flex:plugins:upgrade-plugin \\-\\-beta \\-\\-install}} to upgrade your plugin code.`);
+  logger.info(
+    `Run {{$ twilio flex:plugins:deploy \\-\\-changelog "migrating to Flex Plugins API" \\-\\-major}} to register with Plugins API.`,
+  );
+  logger.info(`Run {{$ twilio flex:plugins:upgrade-plugin --remove-legacy-plugin}} again after to finish migration.`);
+};
+
 export default (logger: Logger) => ({
   upgradeNotification: upgradeNotification(logger),
   scriptStarted: scriptStarted(logger),
@@ -116,4 +176,8 @@ export default (logger: Logger) => ({
   packageNotFound: packageNotFound(logger),
   notAvailable: notAvailable(logger),
   warnNotRemoved: warnNotRemoved(logger),
+  removeLegacyNotification: removeLegacyNotification(logger),
+  noLegacyPluginFound: noLegacyPluginFound(logger),
+  removeLegacyPluginSucceeded: removeLegacyPluginSucceeded(logger),
+  warningPluginNotInAPI: warningPluginNotInAPI(logger),
 });

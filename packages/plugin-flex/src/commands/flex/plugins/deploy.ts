@@ -88,6 +88,8 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       throw new IncompatibleVersionError(this.pkg.name, this.builderVersion);
     }
 
+    await this.checkForLegacy();
+
     const args = ['--quiet', '--persist-terminal'];
 
     await progress('Validating plugin deployment', async () => this.validatePlugin(), false);
@@ -174,6 +176,19 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       Private: !deployResult.isPublic,
       Changelog: this._flags.changelog || '',
     });
+  }
+
+  /**
+   * Checks to see if a legacy plugin exist
+   */
+  async checkForLegacy() {
+    const serviceSid = await this.flexConfigurationClient.getServerlessSid();
+    if (serviceSid) {
+      const hasLegacy = await this.serverlessClient.hasLegacy(serviceSid, this.pkg.name);
+      if (hasLegacy) {
+        this.prints.warnHasLegacy();
+      }
+    }
   }
 
   /**

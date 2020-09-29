@@ -2,12 +2,12 @@ declare module '@twilio/cli-core' {
   import { ConfigData, ConfigDataProfile } from '@twilio/cli-core/src/services/config';
   import { SecureStorage } from '@twilio/cli-core/src/services/secure-storage';
   import { TwilioApiClient } from '@twilio/cli-core/src/services/twilio-api/twilio-client';
-  import Twilio from 'twilio';
+  import { Twilio } from 'twilio';
   import { Command } from '@oclif/command';
 
   class TwilioClientCommand extends Command {
     protected showHeaders: boolean;
-    protected twilioClient: Twilio;
+    protected twilioClient: Twilio & { username: string; password: string; };
     protected twilioApiClient: typeof TwilioApiClient;
     protected currentProfile: typeof ConfigDataProfile;
     protected logger: {

@@ -28,6 +28,8 @@ import { exit, instanceOf } from '../utils/general';
 import { toSentenceCase } from '../utils/strings';
 import prints from '../prints';
 import { flexPlugin as flexPluginDocs } from '../commandDocs.json';
+import FlexConfigurationClient from '../clients/FlexConfigurationClient';
+import ServerlessClient from '../clients/ServerlessClient';
 
 interface FlexPluginOption {
   strict: boolean;
@@ -122,6 +124,10 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   private _configurationsClient?: ConfigurationsClient;
 
   private _releasesClient?: ReleasesClient;
+
+  private _flexConfigurationClient?: FlexConfigurationClient;
+
+  private _serverlessClient?: ServerlessClient;
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage, opts: Partial<FlexPluginOption>) {
     super(argv, config, secureStorage);
@@ -301,6 +307,30 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   }
 
   /**
+   * Gets an instantiated {@link FlexConfigurationClient}
+   * @returns {FlexConfigurationClient}
+   */
+  get flexConfigurationClient() {
+    if (!this._flexConfigurationClient) {
+      throw new TwilioCliError('flexConfigurationClient is not initialized yet');
+    }
+
+    return this._flexConfigurationClient;
+  }
+
+  /**
+   * Gets an instantiated {@link ServerlessClient}
+   * @returns {ServerlessClient}
+   */
+  get serverlessClient() {
+    if (!this._serverlessClient) {
+      throw new TwilioCliError('serverlessClient is not initialized yet');
+    }
+
+    return this._serverlessClient;
+  }
+
+  /**
    * The main run command
    * @override
    */
@@ -345,6 +375,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     this._pluginVersionsClient = new PluginVersionsClient(httpClient);
     this._configurationsClient = new ConfigurationsClient(httpClient);
     this._releasesClient = new ReleasesClient(httpClient);
+    this._flexConfigurationClient = new FlexConfigurationClient(this.twilioClient.flexApi.v1.configuration.get());
+    this._serverlessClient = new ServerlessClient(this.twilioClient.serverless.v1.services);
 
     if (!this.skipEnvironmentalSetup) {
       this.setupEnvironment();

@@ -1,3 +1,5 @@
+import { TwilioApiError } from 'flex-plugins-utils-exception';
+
 import { expect, createTest } from '../../../framework';
 import { TwilioCliError } from '../../../../exceptions';
 import FlexPluginsUpgradePlugin from '../../../../commands/flex/plugins/upgrade-plugin';
@@ -205,4 +207,100 @@ describe('Commands/FlexPluginsStart', () => {
       expect(instance.prints.updatePluginUrl).to.have.been.calledOnce;
     })
     .it('should warn about cleaning up appConfig.js');
+
+  start(['--remove-legacy-plugin'])
+    .setup((cmd) => {
+      sinon.stub(cmd, 'removeLegacyPlugin').returnsThis();
+    })
+    .test(async (cmd) => {
+      await cmd.doRun();
+
+      expect(cmd.removeLegacyPlugin).to.have.been.calledOnce;
+    })
+    .it('should call removeLegacyPlugin');
+
+  const removeLegacyPlugin = () =>
+    start([]).setup(async (cmd) => {
+      // @ts-ignore
+      const { prints } = cmd;
+
+      sinon.stub(cmd, 'exit').returnsThis();
+      sinon.stub(prints, 'removeLegacyNotification').returns(Promise.resolve());
+      sinon.stub(prints, 'warningPluginNotInAPI');
+      sinon.stub(prints, 'noLegacyPluginFound');
+      sinon.stub(cmd, 'isPluginFolder').returns(true);
+      sinon.stub(cmd, 'doRun').returnsThis();
+      await cmd.run();
+    });
+
+  removeLegacyPlugin()
+    .setup(async (cmd) => {
+      sinon.stub(cmd.pluginsClient, 'get').returns(Promise.reject(new TwilioApiError(0, '', 404)));
+    })
+    .test(async (cmd) => {
+      await cmd.removeLegacyPlugin();
+
+      // @ts-ignore
+      expect(cmd.prints.warningPluginNotInAPI).to.have.been.calledOnce;
+      expect(cmd.exit).to.have.been.calledOnce;
+      expect(cmd.exit).to.have.been.calledWith(1);
+    })
+    .it('should print warning about plugins-api registration required before remove-legacy');
+
+  removeLegacyPlugin()
+    .setup(async (cmd) => {
+      // @ts-ignore
+      sinon.stub(cmd.pluginsClient, 'get').returns(Promise.resolve());
+      sinon.stub(cmd.flexConfigurationClient, 'getServerlessSid').returns(Promise.resolve(null));
+      sinon.stub(cmd.serverlessClient, 'hasLegacy');
+    })
+    .test(async (cmd) => {
+      await cmd.removeLegacyPlugin();
+
+      // @ts-ignore
+      expect(cmd.prints.warningPluginNotInAPI).not.to.have.been.called;
+      expect(cmd.flexConfigurationClient.getServerlessSid).to.have.been.calledOnce;
+      expect(cmd.serverlessClient.hasLegacy).not.to.have.been.called;
+    })
+    .it('should exit if no serviceSid is found');
+
+  removeLegacyPlugin()
+    .setup(async (cmd) => {
+      // @ts-ignore
+      sinon.stub(cmd.pluginsClient, 'get').returns(Promise.resolve());
+      sinon.stub(cmd.flexConfigurationClient, 'getServerlessSid').returns(Promise.resolve('ZSxxx'));
+      sinon.stub(cmd.serverlessClient, 'hasLegacy').returns(Promise.resolve(false));
+    })
+    .test(async (cmd) => {
+      await cmd.removeLegacyPlugin();
+
+      // @ts-ignore
+      expect(cmd.prints.warningPluginNotInAPI).not.to.have.been.called;
+      expect(cmd.flexConfigurationClient.getServerlessSid).to.have.been.calledOnce;
+      expect(cmd.serverlessClient.hasLegacy).to.have.been.calledOnce;
+      expect(cmd.serverlessClient.hasLegacy).to.have.been.calledWith('ZSxxx');
+      // @ts-ignore
+      expect(cmd.prints.noLegacyPluginFound).to.have.been.called;
+    })
+    .it('should notify no legacy plugin is found');
+
+  removeLegacyPlugin()
+    .setup(async (cmd) => {
+      // @ts-ignore
+      sinon.stub(cmd.pluginsClient, 'get').returns(Promise.resolve());
+      sinon.stub(cmd.flexConfigurationClient, 'getServerlessSid').returns(Promise.resolve('ZSxxx'));
+      sinon.stub(cmd.serverlessClient, 'hasLegacy').returns(Promise.resolve(true));
+      sinon.stub(cmd.serverlessClient, 'removeLegacy').returns(Promise.resolve());
+    })
+    .test(async (cmd) => {
+      await cmd.removeLegacyPlugin();
+
+      // @ts-ignore
+      expect(cmd.prints.warningPluginNotInAPI).not.to.have.been.called;
+      expect(cmd.flexConfigurationClient.getServerlessSid).to.have.been.calledOnce;
+      expect(cmd.serverlessClient.hasLegacy).to.have.been.calledOnce;
+      expect(cmd.serverlessClient.hasLegacy).to.have.been.calledWith('ZSxxx');
+      expect(cmd.serverlessClient.removeLegacy).to.have.been.calledOnce;
+    })
+    .it('should remove legacy');
 });

@@ -41,6 +41,9 @@ describe('Commands/FlexPluginsDeploy', () => {
     date_updated: '2020',
   };
 
+  const getServerlessSid = sinon.mock();
+  const hasLegacy = sinon.mock();
+
   afterEach(() => {
     sinon.restore();
   });
@@ -49,9 +52,20 @@ describe('Commands/FlexPluginsDeploy', () => {
     args = args ? args : [];
 
     return _start(['--changelog', defaultChangelog, ...args]).setup(async (cmd) => {
+      getServerlessSid.resetHistory();
+      hasLegacy.resetHistory();
+      getServerlessSid.returns(Promise.resolve(null));
+      hasLegacy.returns(Promise.resolve(false));
+
       sinon.stub(cmd, 'isPluginFolder').returns(true);
       sinon.stub(cmd, 'doRun').returnsThis();
       sinon.stub(cmd, 'pkg').get(() => pkg);
+      sinon.stub(cmd, 'flexConfigurationClient').get(() => ({
+        getServerlessSid,
+      }));
+      sinon.stub(cmd, 'serverlessClient').get(() => ({
+        hasLegacy,
+      }));
       await cmd.run();
     });
   };
@@ -246,4 +260,52 @@ describe('Commands/FlexPluginsDeploy', () => {
       }
     })
     .it('should invalidate plugin because next version is smaller');
+
+  start()
+    .setup(() => {
+      getServerlessSid.returns(Promise.resolve(null));
+    })
+    .test(async (cmd) => {
+      await cmd.checkForLegacy();
+
+      expect(cmd.flexConfigurationClient.getServerlessSid).to.have.been.calledOnce;
+      expect(cmd.serverlessClient.hasLegacy).not.to.have.been.called;
+    })
+    .it('should do nothing if no serviceSid is found');
+
+  start()
+    .setup((cmd) => {
+      getServerlessSid.returns(Promise.resolve('ZSxxx'));
+      hasLegacy.returns(Promise.resolve(false));
+      // @ts-ignore
+      sinon.stub(cmd.prints, 'warnHasLegacy');
+    })
+    .test(async (cmd) => {
+      await cmd.checkForLegacy();
+
+      expect(cmd.flexConfigurationClient.getServerlessSid).to.have.been.calledOnce;
+      expect(cmd.serverlessClient.hasLegacy).to.have.been.calledOnce;
+      expect(cmd.serverlessClient.hasLegacy).to.have.been.calledWith('ZSxxx', pkg.name);
+      // @ts-ignore
+      expect(cmd.prints.warnHasLegacy).not.to.have.been.called;
+    })
+    .it('should print nothing if no legacy plugin is found');
+
+  start()
+    .setup((cmd) => {
+      getServerlessSid.returns(Promise.resolve('ZSxxx'));
+      hasLegacy.returns(Promise.resolve(true));
+      // @ts-ignore
+      sinon.stub(cmd.prints, 'warnHasLegacy');
+    })
+    .test(async (cmd) => {
+      await cmd.checkForLegacy();
+
+      expect(cmd.flexConfigurationClient.getServerlessSid).to.have.been.calledOnce;
+      expect(cmd.serverlessClient.hasLegacy).to.have.been.calledOnce;
+      expect(cmd.serverlessClient.hasLegacy).to.have.been.calledWith('ZSxxx', pkg.name);
+      // @ts-ignore
+      expect(cmd.prints.warnHasLegacy).to.have.been.calledOnce;
+    })
+    .it('should print warning if legacy plugin found');
 });
