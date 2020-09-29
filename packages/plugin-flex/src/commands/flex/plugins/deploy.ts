@@ -92,9 +92,11 @@ export default class FlexPluginsDeploy extends FlexPlugin {
 
     const args = ['--quiet', '--persist-terminal'];
 
-    await progress('Validating plugin deployment', async () => this.validatePlugin(), false);
+    const name = `**${this.pkg.name}**`;
+
+    await progress(`Validating deployment of plugin ${name}`, async () => this.validatePlugin(), false);
     await progress(
-      `Compiling a production build of **${this.pkg.name}**`,
+      `Compiling a production build of ${name}`,
       async () => {
         await this.runScript('pre-script-check', args);
         return this.runScript('build', args);
@@ -102,15 +104,11 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       false,
     );
     const deployedData: DeployResult = await progress(
-      `Uploading **${this.pkg.name}**`,
+      `Uploading ${name}`,
       async () => this.runScript('deploy', [...this.scriptArgs, ...args]),
       false,
     );
-    await progress(
-      `Registering plugin **${this.pkg.name}** with Plugins API`,
-      async () => this.registerPlugin(),
-      false,
-    );
+    await progress(`Registering plugin ${name} with Plugins API`, async () => this.registerPlugin(), false);
     const pluginVersion: PluginVersionResource = await progress(
       `Registering version **v${deployedData.nextVersion}** with Plugins API`,
       async () => this.registerPluginVersion(deployedData),
@@ -150,6 +148,11 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     if (this._flags.public) {
       this.scriptArgs.push('--public');
     }
+
+    return {
+      currentVersion,
+      nextVersion,
+    };
   }
 
   /**

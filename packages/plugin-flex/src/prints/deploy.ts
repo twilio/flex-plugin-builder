@@ -26,7 +26,7 @@ export const deploySuccessful = (logger: Logger) => (
       `\\-\\-plugin ${name}@${deployedData.nextVersion}`,
       `\\-\\-name "${defaultName}"`,
       `\\-\\-description "${createConfigurationDocs.defaults.description}"}}`,
-      'to enable this plugin on your flex instance',
+      'to enable this plugin on your Flex application',
     ),
   );
   logger.newline();

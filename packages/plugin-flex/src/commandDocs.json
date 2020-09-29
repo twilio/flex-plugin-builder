@@ -24,7 +24,7 @@
       "patch": "Publishes the version as a patch (SemVer); this is the default",
       "minor": "Publishes the version as a minor (SemVer)",
       "major": "Publishes the version as a major (SemVer)",
-      "version": "The custom version to publish",
+      "version": "Publishes the version (SemVer)",
       "public": "Publishes the plugin as a public Twilio Asset; default is private",
       "changelog": "The changes (added/removed) made in this plugin version",
       "description": "The description of this Flex plugin"
