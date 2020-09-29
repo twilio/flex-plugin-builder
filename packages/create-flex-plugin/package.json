@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@twilio/flex-ui": "^1",
-    "@types/yargs": "^13.0.10",
+    "@types/yargs": "^13.0.11",
     "flex-plugin": "^4.0.2-beta.0",
     "flex-plugin-scripts": "^4.0.6-beta.0"
   },

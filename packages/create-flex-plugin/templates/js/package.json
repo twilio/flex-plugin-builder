@@ -16,8 +16,7 @@
     "babel-polyfill": "^6.26.0",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
-    "flex-plugin-scripts": "{{pluginScriptsVersion}}",
-    "rimraf": "^3.0.0"
+    "flex-plugin-scripts": "{{pluginScriptsVersion}}"
   },
   "browserslist": {
     "production": [
