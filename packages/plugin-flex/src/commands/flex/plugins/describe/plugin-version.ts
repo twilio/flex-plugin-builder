@@ -50,7 +50,7 @@ export default class FlexPluginsDescribePluginVersion extends InformationFlexPlu
     this.printHeader('Version', version.version);
     this.printHeader('Friendly Name', version.plugin.friendlyName);
     this.printHeader('Description', version.plugin.description);
-    this.printHeader('Status', version.isActive ? 'Active' : 'Inactive');
+    this.printHeader('Status', version.isActive);
     this.printHeader('Url', version.url);
     this.printHeader('Changelog', version.changelog);
     this.printHeader('Private', version.isPrivate);
