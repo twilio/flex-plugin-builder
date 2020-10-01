@@ -14,5 +14,5 @@ var appConfig = {
   sso: {
     accountSid: accountSid
   },
-  logLevel: 'debug',
+  logLevel: 'info',
 };

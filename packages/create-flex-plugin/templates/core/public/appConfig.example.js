@@ -15,6 +15,6 @@ var appConfig = {
     accountSid: accountSid
   },
   ytica: false,
-  logLevel: 'debug',
+  logLevel: 'info',
   showSupervisorDesktopView: true,
 };
