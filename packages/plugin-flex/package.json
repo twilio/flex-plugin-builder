@@ -1,6 +1,6 @@
 {
   "name": "@twilio-labs/plugin-flex",
-  "version": "1.0.9-beta.0",
+  "version": "1.0.10-beta.0",
   "description": "Create, develop and deploy Flex plugins using the Twilio CLI",
   "keywords": [
     "oclif-plugin"
