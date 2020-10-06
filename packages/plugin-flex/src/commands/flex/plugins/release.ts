@@ -39,7 +39,7 @@ export default class FlexPluginsRelease extends CreateConfiguration {
   private prints;
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
-    super(argv, config, secureStorage, { strict: false, runInDirectory: false });
+    super(argv, config, secureStorage, { runInDirectory: false });
 
     this.scriptArgs = [];
     this.prints = this._prints.release;

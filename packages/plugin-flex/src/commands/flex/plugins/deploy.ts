@@ -74,7 +74,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
   private prints;
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
-    super(argv, config, secureStorage, { strict: false });
+    super(argv, config, secureStorage, {});
 
     this.scriptArgs = [];
     this.prints = this._prints.deploy;
@@ -215,5 +215,3 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     return this.parse(FlexPluginsDeploy).flags;
   }
 }
-
-FlexPluginsDeploy.strict = false;

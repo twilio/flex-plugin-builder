@@ -14,7 +14,7 @@ export default class FlexPluginsCreateConfiguration extends CreateConfiguration 
   };
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
-    super(argv, config, secureStorage, { strict: false, runInDirectory: false });
+    super(argv, config, secureStorage, { runInDirectory: false });
 
     this.scriptArgs = [];
   }

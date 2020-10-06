@@ -1,5 +1,5 @@
 import { createDescription } from '../../../utils/general';
-import FlexPlugin from '../../../sub-commands/flex-plugin';
+import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { test as testDocs } from '../../../commandDocs.json';
 import { IncompatibleVersionError } from '../../../exceptions';
 
@@ -16,6 +16,10 @@ export default class FlexPluginsTest extends FlexPlugin {
   static flags = {
     ...baseFlags,
   };
+
+  constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
+    super(argv, config, secureStorage, { strict: false });
+  }
 
   /**
    * @override

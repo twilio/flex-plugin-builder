@@ -95,7 +95,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   protected static ACCESS_FIELDS = ['private', 'isprivate'];
 
   private static defaultOptions: FlexPluginOption = {
-    strict: false,
+    strict: true,
     runInDirectory: true,
   };
 

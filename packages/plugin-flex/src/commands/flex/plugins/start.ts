@@ -31,7 +31,7 @@ export default class FlexPluginsStart extends FlexPlugin {
   };
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
-    super(argv, config, secureStorage, {});
+    super(argv, config, secureStorage, { strict: false });
 
     if (this._flags['include-remote'] || this._flags.name) {
       this.opts.runInDirectory = false;
