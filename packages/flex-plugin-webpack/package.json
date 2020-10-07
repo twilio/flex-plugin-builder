@@ -1,0 +1,34 @@
+{
+  "name": "flex-plugin-webpack",
+  "version": "4.0.8-beta.0",
+  "description": "Flex Plugin Webpack configurations",
+  "keywords": [
+    "flex",
+    "plugins",
+    "scripts",
+    "twilio",
+    "webpack"
+  ],
+  "homepage": "https://github.com/twilio/flex-plugin-builder",
+  "bugs": {
+    "url": "https://github.com/twilio/flex-plugin-builder/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio/flex-plugin-builder.git"
+  },
+  "license": "MIT",
+  "author": "Kousha Talebian <ktalebian@twilio.com>",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "docs",
+    "templates",
+    "jest-preset.js"
+  ],
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}
