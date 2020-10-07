@@ -1,11 +1,15 @@
 import * as fsScript from 'flex-dev-utils/dist/fs';
-import jestFactory from '../jest.config';
+import jestFactory from '../index';
 
 describe('JestConfiguration', () => {
   const paths = {
     cwd: 'the/working/dir',
     app: {
+      nodeModulesDir: 'app/node_modules',
       setupTestsPaths: [],
+    },
+    scripts: {
+      nodeModulesDir: 'scripts/node_modules',
     },
     extensions: ['js', 'jsx', 'ts', 'tsx'],
   }
@@ -21,8 +25,6 @@ describe('JestConfiguration', () => {
   it('should test the basic configs', () => {
     const config = jestFactory();
 
-    expect(config.rootDir).toEqual('the/working/dir');
-
     expect(config.roots).toHaveLength(1);
     expect(config.roots[0]).toEqual('<rootDir>/src');
 
@@ -34,9 +36,10 @@ describe('JestConfiguration', () => {
     expect(Object.keys(config.transform)).toHaveLength(2);
   });
 
-  it('should not have setupTestsFile', () => {
+  it('should use default testFile', () => {
     const config = jestFactory();
 
-    expect(config.setupFilesAfterEnv).toHaveLength(0);
+    expect(config.setupFilesAfterEnv).toHaveLength(1);
+    expect(config.setupFilesAfterEnv[0]).toContain('templates');
   });
 });

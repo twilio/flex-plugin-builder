@@ -9,7 +9,6 @@ describe('finalMessage', () => {
     name: 'plugin-final-message',
     targetDirectory: '/target/directory',
     flexSdkVersion: '1.2.3-flex-sdk',
-    flexPluginVersion: '1.2.3-flex-plugin',
     pluginScriptsVersion: '1.2.3-plugin-script',
     pluginClassName: 'PluginFinalMessage',
     pluginNamespace: 'PluginFinalMessage',

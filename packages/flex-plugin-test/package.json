@@ -13,6 +13,14 @@
   "bugs": {
     "url": "https://github.com/twilio/flex-plugin-builder/issues"
   },
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepublish": "npm run build",
+    "test": "cd ../.. && jest packages/flex-plugin-scripts",
+    "test:watch": "cd ../.. && jest packages/flex-plugin-scripts --watch"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/twilio/flex-plugin-builder.git"
@@ -28,13 +36,17 @@
     "jest-preset.js"
   ],
   "dependencies": {
+    "jest": "^26.4.2",
+    "flex-dev-utils": "^4.0.7-beta.0",
     "babel-jest": "^26.3.0",
     "babel-polyfill": "^6.26.0",
+    "jest-watch-typeahead": "^0.6.1",
     "babel-preset-react-app": "^9.1.2",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
     "jest-environment-jsdom-fourteen": "^1.0.1",
-    "react-app-polyfill": "^1.0.6"
+    "react-app-polyfill": "^1.0.6",
+    "cheerio": "0.22.0"
   },
   "devDependencies": {
     "@jest/types": "^26.5.2"
