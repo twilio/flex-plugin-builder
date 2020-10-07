@@ -1,0 +1,42 @@
+{
+  "name": "flex-plugin-test",
+  "version": "0.0.0",
+  "description": "Flex Plugin default test framework that uses Jest Preset",
+  "keywords": [
+    "flex",
+    "plugins",
+    "scripts",
+    "twilio",
+    "test"
+  ],
+  "homepage": "https://github.com/twilio/flex-plugin-builder",
+  "bugs": {
+    "url": "https://github.com/twilio/flex-plugin-builder/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio/flex-plugin-builder.git"
+  },
+  "license": "MIT",
+  "author": "Kousha Talebian <ktalebian@twilio.com>",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "docs",
+    "templates",
+    "jest-preset.js"
+  ],
+  "dependencies": {
+    "babel-jest": "^26.3.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-react-app": "^9.1.2",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.14.0",
+    "jest-environment-jsdom-fourteen": "^1.0.1",
+    "react-app-polyfill": "^1.0.6"
+  },
+  "devDependencies": {
+    "@jest/types": "^26.5.2"
+  }
+}
