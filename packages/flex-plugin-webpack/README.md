@@ -1,8 +1,8 @@
-![npm](https://img.shields.io/npm/v/flex-plugin-test.svg?style=flat-square)
-![npm](https://img.shields.io/npm/dt/flex-plugin-test.svg?style=flat-square)
-[![NpmLicense](https://img.shields.io/npm/l/flex-plugin-test.svg?style=flat-square)](../../LICENSE)
+![npm](https://img.shields.io/npm/v/flex-plugin-webpack.svg?style=flat-square)
+![npm](https://img.shields.io/npm/dt/flex-plugin-webpack.svg?style=flat-square)
+[![NpmLicense](https://img.shields.io/npm/l/flex-plugin-webpack.svg?style=flat-square)](../../LICENSE)
 
-# Flex Plugin Test
+# Flex Plugin Webpack
 
 To be filled
 
