@@ -22,9 +22,6 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist",
-    "docs",
-    "templates",
-    "jest-preset.js"
+    "dist"
   ]
 }

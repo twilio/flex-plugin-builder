@@ -33,7 +33,6 @@ export default (): JestConfigurations => {
       'node_modules',
       getPaths().app.nodeModulesDir,
       getPaths().scripts.nodeModulesDir,
-      '/Users/ktalebian/Projects/github/twilio/flex-plugin-builder/packages/flex-plugin-test/node_modules',
     ],
     collectCoverageFrom: ['src/**/*.{js,jsx,ts,tsx}', '!src/**/*.d.ts'],
     setupFiles: [
