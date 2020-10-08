@@ -1,4 +1,5 @@
 {
+  "name": "flex-plugin-builder",
   "private": true,
   "homepage": "https://github.com/twilio/flex-plugin-builder#readme",
   "bugs": {
@@ -24,12 +25,12 @@
     "postinstall": "npm run bootstrap",
     "lint": "tslint --project tsconfig.lint.json",
     "lint:fix": "tslint --project tsconfig.lint.json --fix",
-    "test": "jest --color",
-    "test:ci": "jest --clearCache && jest --coverage --color",
-    "test:watch": "jest --watchAll --color",
     "publish:alpha": "bin/publish alpha $1",
     "publish:beta": "bin/publish beta $1",
-    "publish:public": "bin/publish public $1"
+    "publish:public": "bin/publish public $1",
+    "test": "jest --color",
+    "test:ci": "jest --clearCache && jest --coverage --color",
+    "test:watch": "jest --watchAll --color"
   },
   "husky": {
     "hooks": {
@@ -53,7 +54,7 @@
     "glob": "^7.1.6",
     "husky": "^4.3.0",
     "jest": "^26.4.2",
-    "lerna": "3.22.1",
+    "lerna": "^3.22.1",
     "ts-jest": "^26.4.1",
     "tslint": "^6.1.3",
     "tslint-react": "^5.0.0",

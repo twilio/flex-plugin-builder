@@ -6,10 +6,9 @@
     "postinstall": "flex-plugin pre-script-check"
   },
   "dependencies": {
-    "flex-plugin": "{{flexPluginVersion}}",
+    "flex-plugin-scripts": "{{pluginScriptsVersion}}",
     "react": "16.5.2",
-    "react-dom": "16.5.2",
-    "react-emotion": "9.2.12"
+    "react-dom": "16.5.2"
   },
   "devDependencies": {
     "@twilio/flex-ui": "{{flexSdkVersion}}",
@@ -19,10 +18,6 @@
     "@types/react": "^16.8.16",
     "@types/react-dom": "^16.8.4",
     "@types/react-redux": "^7.1.1",
-    "babel-polyfill": "^6.26.0",
-    "enzyme": "^3.10.0",
-    "enzyme-adapter-react-16": "^1.14.0",
-    "flex-plugin-scripts": "{{pluginScriptsVersion}}",
     "typescript": "^3"
   },
   "browserslist": {

@@ -203,7 +203,15 @@ export const rmRfSync = rimRaf.sync;
  */
 /* istanbul ignore next */
 export const getDependencyVersion = (pkgName: string) => {
-  return require(resolveRelative(getPaths().app.nodeModulesDir, pkgName, 'package.json')).version;
+  try {
+    return require(`${pkgName}/package.json`).version;
+  } catch {
+    try {
+      return require(resolveRelative(getPaths().app.nodeModulesDir, pkgName, 'package.json')).version;
+    } catch {
+      return require(resolveRelative(getPaths().scripts.nodeModulesDir, pkgName, 'package.json')).version;
+    }
+  }
 };
 
 /**
@@ -391,6 +399,7 @@ export const getPaths = () => {
     // flex-plugin-scripts paths
     scripts: {
       dir: scriptsDir,
+      nodeModulesDir: resolveRelative(scriptsDir, 'node_modules'),
       devAssetsDir,
       indexHTMLPath: resolveRelative(devAssetsDir, 'index.html'),
       tsConfigPath: resolveRelative(devAssetsDir, 'tsconfig.json'),

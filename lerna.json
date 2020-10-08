@@ -1,5 +1,4 @@
 {
-  "lerna": "3.20.2",
   "packages": [
     "packages/*"
   ],
@@ -15,6 +14,7 @@
         "packages/flex-dev-utils/package-lock.json",
         "packages/flex-plugin-scripts/package-lock.json",
         "packages/flex-plugin/package-lock.json",
+        "packages/flex-plugin-test/package-lock.json",
         "package-lock.json"
       ]
     }

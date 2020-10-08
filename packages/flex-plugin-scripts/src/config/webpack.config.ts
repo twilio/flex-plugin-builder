@@ -395,7 +395,11 @@ export const _getResolve = (environment: Environment): Resolve => {
     : getPaths().extensions;
 
   const resolve: Resolve = {
-    modules: ['node_modules', getPaths().app.nodeModulesDir],
+    modules: [
+      'node_modules',
+      getPaths().app.nodeModulesDir,
+      getPaths().scripts.nodeModulesDir,
+    ],
     extensions: extensions.map(e => `.${e}`),
     alias: {
       '@twilio/flex-ui': FLEX_SHIM,

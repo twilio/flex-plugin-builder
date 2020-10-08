@@ -354,6 +354,17 @@ describe('fs', () => {
       readPackageJson.mockRestore();
     });
 
+    it('should throw exception if flexPluginScriptPath is not found', (done) => {
+      jest.spyOn(fs, 'resolveModulePath').mockReturnValue(false);
+
+      try {
+        fs.getPaths();
+      } catch (e) {
+        expect(e.message).toContain('resolve flex-plugin-scripts');
+        done();
+      }
+    });
+
     it('should give you the paths', () => {
       const readPackageJson = jest
         .spyOn(fs, 'readPackageJson')
@@ -475,6 +486,19 @@ describe('fs', () => {
 
     it('should not find path', () => {
       expect(fs.resolveModulePath('random-unknown-package')).toEqual(false);
+    });
+  });
+
+  describe('findGlobs', () => {
+    it('should return all globs', () => {
+      const findGlobsIn = jest.spyOn(fs, 'findGlobsIn').mockReturnValue(['glob']);
+      const getCwd = jest.spyOn(fs, 'getCwd').mockReturnValue('/the/cwd');
+      const result = fs.findGlobs('pattern1', 'pattern2');
+
+      expect(result).toEqual(['glob']);
+      expect(getCwd).toHaveBeenCalledTimes(1);
+      expect(findGlobsIn).toHaveBeenCalledTimes(1);
+      expect(findGlobsIn).toHaveBeenCalledWith('/the/cwd/src', 'pattern1', 'pattern2');
     });
   });
 });

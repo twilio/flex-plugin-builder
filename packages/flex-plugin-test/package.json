@@ -27,13 +27,25 @@
     "templates",
     "jest-preset.js"
   ],
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepublish": "npm run build",
+    "test": "cd ../.. && jest packages/flex-plugin-scripts",
+    "test:watch": "cd ../.. && jest packages/flex-plugin-scripts --watch"
+  },
   "dependencies": {
     "babel-jest": "^26.3.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-react-app": "^9.1.2",
+    "cheerio": "0.22.0",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
+    "flex-dev-utils": "^4.0.7-beta.0",
+    "jest": "^26.4.2",
     "jest-environment-jsdom-fourteen": "^1.0.1",
+    "jest-watch-typeahead": "^0.6.1",
     "react-app-polyfill": "^1.0.6"
   },
   "devDependencies": {
