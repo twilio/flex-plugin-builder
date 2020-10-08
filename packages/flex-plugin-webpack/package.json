@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-webpack",
-  "version": "4.0.8-beta.0",
+  "version": "4.0.9-beta.0",
   "description": "Flex Plugin Webpack configurations",
   "keywords": [
     "flex",
@@ -26,9 +26,5 @@
     "docs",
     "templates",
     "jest-preset.js"
-  ],
-  "dependencies": {
-  },
-  "devDependencies": {
-  }
+  ]
 }
