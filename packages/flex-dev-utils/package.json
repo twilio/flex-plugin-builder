@@ -18,18 +18,18 @@
   },
   "license": "MIT",
   "author": "Kousha Talebian <ktalebian@twilio.com>",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "scripts": {
     "prebuild": "npm run clean",
     "build": "tsc",
     "clean": "rm -rf dist",
     "prepublish": "npm run build",
-    "test": "cd ../.. && jest packages/flex-dev-utils",
-    "test:watch": "cd ../.. && jest packages/flex-dev-utils --watch"
+    "test": "cd ../.. && jest packages/flex-dev-utils --color",
+    "test:watch": "cd ../.. && jest packages/flex-dev-utils --watch --color"
   },
   "dependencies": {
     "@k88/pipe-compose": "^2.1.2",

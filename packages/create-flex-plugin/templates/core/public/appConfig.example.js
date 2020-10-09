@@ -4,6 +4,6 @@ var appConfig = {
     url: '/plugins',
   },
   ytica: false,
-  logLevel: 'debug',
+  logLevel: 'info',
   showSupervisorDesktopView: true,
 };
