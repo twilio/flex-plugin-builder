@@ -369,9 +369,14 @@ export const getPaths = () => {
   const cwd = getCwd();
   const nodeModulesDir = resolveCwd('node_modules');
   const flexPluginScriptPath = resolveModulePath('flex-plugin-scripts');
+  const flexPluginWebpackPath = resolveModulePath('flex-plugin-webpack');
   if (flexPluginScriptPath === false) {
     throw new Error('Could not resolve flex-plugin-scripts');
   }
+  if (flexPluginWebpackPath === false) {
+    throw new Error(`Could not resolve 'flex-plugin-webpack`);
+  }
+
   const scriptsDir = path.join(path.dirname(flexPluginScriptPath), '..');
   const devAssetsDir = resolveRelative(scriptsDir, 'dev_assets');
   const publicDir = resolveCwd('public');
@@ -379,6 +384,7 @@ export const getPaths = () => {
   const srcDir = resolveCwd('src');
   const flexUIDir = resolveRelative(nodeModulesDir, '@twilio/flex-ui');
   const tsConfigPath = resolveCwd('tsconfig.json');
+  const webpackDir = path.join(path.dirname(flexPluginWebpackPath), '..');
 
   // package.json information
   let pkgName = '';
@@ -395,6 +401,12 @@ export const getPaths = () => {
 
   return {
     cwd,
+
+    // flex-plugin-webpack paths
+    webpack: {
+      dir: webpackDir,
+      nodeModulesDir: resolveRelative(webpackDir, 'node_modules'),
+    },
 
     // flex-plugin-scripts paths
     scripts: {

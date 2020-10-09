@@ -4,6 +4,10 @@ import { Configuration } from 'webpack-dev-server';
 import { WebpackType } from './index';
 import { getPaths } from 'flex-dev-utils/dist/fs';
 
+/**
+ * Returns the base {@link Configuration}
+ * @private
+ */
 export const _getBase = (): Configuration => {
   const { local } = getLocalAndNetworkUrls(env.getPort());
 
@@ -17,7 +21,11 @@ export const _getBase = (): Configuration => {
   };
 };
 
-export const _getStaticConfiguration = (config: Configuration) => {
+/**
+ * Returns the {@link Configuration} for static type
+ * @private
+ */
+export const _getStaticConfiguration = (config: Configuration): Configuration => {
   config.contentBase =  [
     getPaths().app.publicDir,
     getPaths().scripts.devAssetsDir,
@@ -33,7 +41,11 @@ export const _getStaticConfiguration = (config: Configuration) => {
   return config;
 }
 
-export const _getJavaScriptConfiguration = (config: Configuration) => {
+/**
+ * Returns the {@link Configuration} for JS type
+ * @private
+ */
+export const _getJavaScriptConfiguration = (config: Configuration): Configuration => {
   const socket = env.getWSSocket();
   config.injectClient = false;
   config.serveIndex = false;

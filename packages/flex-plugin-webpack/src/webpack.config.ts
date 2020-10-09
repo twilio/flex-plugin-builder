@@ -1,4 +1,4 @@
-/// <reference path="../module.d.ts" />
+/// <reference path="./module.d.ts" />
 
 import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
 import ModuleScopePlugin from '@k88/module-scope-plugin';
@@ -57,6 +57,7 @@ export const _getJSScripts = (flexUIVersion: string, reactVersion: string, react
  * Returns the Babel Loader configuration
  * @param isProd  whether this is a production build
  */
+/* istanbul ignore next */
 const _getBabelLoader = (isProd: boolean) => ({
   test: new RegExp('\.(' + getPaths().extensions.join('|') + ')$'),
   include: getPaths().app.srcDir,
@@ -84,6 +85,7 @@ const _getBabelLoader = (isProd: boolean) => ({
  * Gets the image loader
  * @private
  */
+/* istanbul ignore next */
 export const _getImageLoader = () => ({
     test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
     loader: require.resolve('url-loader'),
@@ -348,6 +350,7 @@ export const _getJavaScriptEntries = (environment: Environment): string[] => {
  * @param environment the environment
  * @private
  */
+/* istanbul ignore next */
 export const _getOptimization = (environment: Environment): Optimization => {
   const isProd = environment === Environment.Production;
   return {
@@ -394,11 +397,14 @@ export const _getResolve = (environment: Environment): Resolve => {
     ? getPaths().extensions.filter(e => !e.includes('ts'))
     : getPaths().extensions;
 
+  const paths = getPaths();
+
   const resolve: Resolve = {
     modules: [
       'node_modules',
-      getPaths().app.nodeModulesDir,
-      getPaths().scripts.nodeModulesDir,
+      paths.app.nodeModulesDir,
+      paths.scripts.nodeModulesDir,
+      paths.webpack.nodeModulesDir,
     ],
     extensions: extensions.map(e => `.${e}`),
     alias: {
@@ -406,7 +412,7 @@ export const _getResolve = (environment: Environment): Resolve => {
     },
     plugins: [
       PnpWebpackPlugin,
-      new ModuleScopePlugin(getPaths().app.srcDir, [getPaths().app.pkgPath]),
+      new ModuleScopePlugin(paths.app.srcDir, [paths.app.pkgPath]),
     ]
   };
 
@@ -418,10 +424,10 @@ export const _getResolve = (environment: Environment): Resolve => {
 };
 
 /**
- * The base method for webpack
- * @param environment
+ * Returns the base {@link Configuration}
+ * @private
  */
-export const _getBase = (environment: Environment) => {
+export const _getBase = (environment: Environment): Configuration => {
   const isProd = environment === Environment.Production;
   const config: Configuration = {
     resolve: _getResolve(environment),
@@ -458,19 +464,29 @@ export const _getBase = (environment: Environment) => {
   return config;
 };
 
-export const _getStaticConfiguration = (config: Configuration, environment: Environment) => {
+/**
+ * Returns the {@link Configuration} for static type
+ * @private
+ */
+export const _getStaticConfiguration = (config: Configuration, environment: Environment): Configuration => {
   config.plugins = config.plugins ? config.plugins : [];
   config.plugins.push(..._getStaticPlugins(environment));
 
   return config;
 }
 
-export const _getJavaScriptConfiguration = (config: Configuration, environment: Environment) => {
+/**
+ * Returns the {@link Configuration} for JS type
+ * @private
+ */
+export const _getJavaScriptConfiguration = (config: Configuration, environment: Environment): Configuration => {
   const isProd = environment === Environment.Production;
   const filename = `${getPaths().app.name}.js`;
   const outputName = environment === Environment.Production ? filename : `plugins/${filename}`;
 
+  config.entry = config.entry ? config.entry : [];
   config.plugins = config.plugins ? config.plugins : [];
+
   // @ts-ignore
   config.entry.push(..._getJavaScriptEntries(environment));
   config.output = {
@@ -504,7 +520,7 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
  * @param environment
  * @param type
  */
-export default (environment: Environment, type: WebpackType) => {
+export default (environment: Environment, type: WebpackType): Configuration => {
   const config = _getBase(environment);
 
   if (type === WebpackType.Static) {

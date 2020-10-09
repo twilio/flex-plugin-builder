@@ -1,17 +1,17 @@
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { checkFilesExist, getPaths } from 'flex-dev-utils/dist/fs';
-import { Configuration as WebpackConfigurations } from 'webpack';
-import { Configuration as WebpackDevConfigurations } from 'webpack-dev-server';
-import webpackFactory from './webpack.config';
-import devFactory from './webpack.dev';
+import {
+  webpackFactory,
+  webpackDevFactory,
+  WebpackType,
+  WebpackConfigurations,
+  WebpackDevConfigurations
+} from 'flex-plugin-webpack';
 import jestFactory, { JestConfigurations } from './jest.config';
 
-export enum WebpackType {
-  Static = 'static',
-  JavaScript = 'javascript',
-  Complete = 'complete',
-}
+export { WebpackType };
+
 export enum ConfigurationType {
   Webpack = 'webpack',
   DevServer = 'devServer',
@@ -53,7 +53,7 @@ const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment
   }
 
   if (name === ConfigurationType.DevServer) {
-    const config = devFactory(type);
+    const config = webpackDevFactory(type);
 
     if (type === WebpackType.Static) {
       return config as Configurations[T];
