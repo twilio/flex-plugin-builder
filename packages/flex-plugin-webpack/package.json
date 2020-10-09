@@ -29,8 +29,8 @@
     "build": "tsc",
     "clean": "rm -rf dist",
     "prepublish": "npm run build",
-    "test": "cd ../.. && jest packages/flex-plugin-scripts",
-    "test:watch": "cd ../.. && jest packages/flex-plugin-scripts --watch"
+    "test": "cd ../.. && jest packages/flex-plugin-webpack",
+    "test:watch": "cd ../.. && jest packages/flex-plugin-webpack --watch"
   },
   "dependencies": {
     "@babel/core": "^7.11.6",

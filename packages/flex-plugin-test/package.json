@@ -31,8 +31,8 @@
     "build": "tsc",
     "clean": "rm -rf dist",
     "prepublish": "npm run build",
-    "test": "cd ../.. && jest packages/flex-plugin-scripts",
-    "test:watch": "cd ../.. && jest packages/flex-plugin-scripts --watch"
+    "test": "cd ../.. && jest packages/flex-plugin-test",
+    "test:watch": "cd ../.. && jest packages/flex-plugin-test --watch"
   },
   "dependencies": {
     "babel-jest": "^26.3.0",
