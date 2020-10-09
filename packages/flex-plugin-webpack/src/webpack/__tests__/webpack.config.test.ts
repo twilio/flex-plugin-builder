@@ -2,7 +2,7 @@ import * as webpack from 'webpack';
 import * as webpackConfig from '../webpack.config';
 import { Environment } from 'flex-dev-utils/dist/env';
 import * as fs from 'flex-dev-utils/dist/fs';
-import { WebpackType } from '../index';
+import { WebpackType } from '../../index';
 
 jest.mock('flex-dev-utils/dist/fs');
 

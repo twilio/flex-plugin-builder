@@ -1,13 +1,12 @@
-import { env, logger } from 'flex-dev-utils';
+import { env, logger, exit, Callback } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { addCWDNodeModule } from 'flex-dev-utils/dist/fs';
-import webpack, { Compiler } from 'webpack';
+import { webpack, WebpackCompiler } from 'flex-plugin-webpack';
 
 import getConfiguration, { ConfigurationType } from '../config';
 import { setEnvironment } from '../index';
 import { buildFailure, buildSuccessful } from '../prints';
-import { Callback } from '../types';
-import run, { exit } from '../utils/run';
+import run from '../utils/run';
 
 interface BuildBundle {
   warnings?: string[];
@@ -27,7 +26,7 @@ export interface Bundle {
  * Builds the JS and Sourcemap bundles
  * @private
  */
-export const _handler = (resolve: Callback<BuildBundle>, reject: Callback<any>): Compiler.Handler => (err, stats) => {
+export const _handler = (resolve: Callback<BuildBundle>, reject: Callback<any>): WebpackCompiler.Handler => (err, stats) => {
   if (err) {
     return reject(err);
   }

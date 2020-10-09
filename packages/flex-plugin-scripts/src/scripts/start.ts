@@ -3,19 +3,21 @@ import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { addCWDNodeModule, getPaths, readPluginsJson, setCwd, writeJSONFile } from 'flex-dev-utils/dist/fs';
 import { findPort, getDefaultPort } from 'flex-dev-utils/dist/urls';
-
-import getConfiguration, { ConfigurationType, WebpackType } from '../config';
-import compiler, { onCompileComplete } from '../config/compiler';
-import run from '../utils/run';
-import pluginServer, { Plugin } from '../config/devServer/pluginServer';
 import {
+  compiler,
+  onCompileComplete,
+  pluginServer,
+  Plugin,
   emitCompileComplete,
   IPCType,
   onIPCServerMessage,
   startIPCClient,
   startIPCServer,
-} from '../config/devServer/ipcServer';
-import webpackDevServer from '../config/devServer/webpackDevServer';
+  webpackDevServer
+} from 'flex-plugin-webpack';
+
+import getConfiguration, { ConfigurationType, WebpackType } from '../config';
+import run from '../utils/run';
 import { findFirstLocalPlugin, parseUserInputPlugins, UserInputPlugin } from '../utils/parser';
 
 interface StartServerOptions {

@@ -1,11 +1,10 @@
-import { logger, FlexPluginError } from 'flex-dev-utils';
+import { logger, FlexPluginError, exit } from 'flex-dev-utils';
 import { Request, Response } from 'express-serve-static-core';
 import { readPluginsJson } from 'flex-dev-utils/dist/fs';
 import { Configuration } from 'webpack-dev-server';
 import https from 'https';
 import { isHTTPS } from 'flex-dev-utils/dist/env';
-import remotePluginNotFound from '../../prints/remotePluginNotFound';
-import { exit } from '../../utils/run';
+import { remotePluginNotFound } from '../prints';
 
 export interface Plugin {
   phase: number;

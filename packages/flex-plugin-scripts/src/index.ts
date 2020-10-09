@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-import { env, spawn } from 'flex-dev-utils';
+import { env, spawn, exit } from 'flex-dev-utils';
 import { logger } from 'flex-dev-utils';
 import { checkForUpdate } from 'flex-dev-utils/dist/updateNotifier';
 import { readdirSync, existsSync } from 'fs';
 import { render as markedRender } from 'flex-dev-utils/dist/marked';
 import { join, dirname } from 'path';
 
-import run, { exit } from './utils/run';
+import run from './utils/run';
 import { getPaths, getCwd, addCWDNodeModule } from 'flex-dev-utils/dist/fs';
 
 checkForUpdate();
@@ -35,7 +35,7 @@ const spawnScript = async (...argv: string[]) => {
   if (!script) {
     const options = logger.colors.blue(scripts.join(', '));
     logger.error(`Unknown script '${script}'; please choose from one of: ${options}.`);
-    return process.exit(1);
+    return exit(1);
   }
 
   // Print help doc and quit
@@ -43,11 +43,11 @@ const spawnScript = async (...argv: string[]) => {
     const docPath = join(dir, '../docs', script) + '.md';
     if (!existsSync(docPath)) {
       logger.warning(`No documentation was found for ${script}`);
-      return process.exit(1);
+      return exit(1);
     }
 
     markedRender(docPath);
-    return process.exit(0);
+    return exit(0);
   }
 
   const nodeArgs = scriptIndex > 0 ? argv.slice(0, scriptIndex) : [];

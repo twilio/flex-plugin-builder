@@ -1,4 +1,4 @@
-/// <reference path="./module.d.ts" />
+/// <reference path="../module.d.ts" />
 
 import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
 import ModuleScopePlugin from '@k88/module-scope-plugin';
@@ -19,7 +19,7 @@ import webpack, {
   Resolve,
   SourceMapDevToolPlugin,
 } from 'webpack';
-import { WebpackType } from './index';
+import { WebpackType } from '../index';
 import Optimization = webpack.Options.Optimization;
 
 interface LoaderOption { [name: string]: any }

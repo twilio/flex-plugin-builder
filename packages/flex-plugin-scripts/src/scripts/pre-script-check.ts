@@ -1,4 +1,4 @@
-import { env, logger, semver, FlexPluginError } from 'flex-dev-utils';
+import { env, logger, semver, FlexPluginError, exit } from 'flex-dev-utils';
 import {
   checkFilesExist,
   findGlobs,
@@ -21,7 +21,7 @@ import {
   loadPluginCountError,
   typescriptNotInstalled,
 } from '../prints';
-import run, { exit } from '../utils/run';
+import run from '../utils/run';
 import { findFirstLocalPlugin, parseUserInputPlugins } from '../utils/parser';
 
 interface Package {
