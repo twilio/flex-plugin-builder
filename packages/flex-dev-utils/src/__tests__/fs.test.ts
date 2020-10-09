@@ -355,12 +355,35 @@ describe('fs', () => {
     });
 
     it('should throw exception if flexPluginScriptPath is not found', (done) => {
-      jest.spyOn(fs, 'resolveModulePath').mockReturnValue(false);
+      jest.spyOn(fs, 'resolveModulePath').mockImplementation((pkg) => {
+        if (pkg === 'flex-plugin-scripts') {
+          return false;
+        }
+
+        return pkg;
+      });
 
       try {
         fs.getPaths();
       } catch (e) {
         expect(e.message).toContain('resolve flex-plugin-scripts');
+        done();
+      }
+    });
+
+    it('should throw exception if flexPluginWebpackPath is not found', (done) => {
+      jest.spyOn(fs, 'resolveModulePath').mockImplementation((pkg) => {
+        if (pkg === 'flex-plugin-webpack') {
+          return false;
+        }
+
+        return pkg;
+      });
+
+      try {
+        fs.getPaths();
+      } catch (e) {
+        expect(e.message).toContain('resolve flex-plugin-webpack');
         done();
       }
     });

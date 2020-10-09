@@ -374,7 +374,7 @@ export const getPaths = () => {
     throw new Error('Could not resolve flex-plugin-scripts');
   }
   if (flexPluginWebpackPath === false) {
-    throw new Error(`Could not resolve 'flex-plugin-webpack`);
+    throw new Error(`Could not resolve flex-plugin-webpack`);
   }
 
   const scriptsDir = path.join(path.dirname(flexPluginScriptPath), '..');
