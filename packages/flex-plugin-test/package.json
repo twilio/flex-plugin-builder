@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-test",
-  "version": "4.0.11-beta.0",
+  "version": "4.0.12-beta.0",
   "description": "Flex Plugin default test framework that uses Jest Preset",
   "keywords": [
     "flex",
