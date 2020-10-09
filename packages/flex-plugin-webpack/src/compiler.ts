@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { logger, FunctionalCallback } from 'flex-dev-utils';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { SyncHook } from 'tapable';

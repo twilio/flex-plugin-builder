@@ -14,7 +14,7 @@ module.exports = {
     '!<rootDir>/packages/**/templates/**/*.js',
     '!<rootDir>/packages/**/templates/**/*.json',
     '!<rootDir>/packages/**/prints/**/*.ts',
-    '!<rootDir>/packages/flex-plugin-scripts/src/config/**/*.ts',
+    '!<rootDir>/packages/flex-plugin-webpack/src/webpack/**/*.ts',
   ],
   testMatch: [
     '<rootDir>/packages/**/*.test.ts'
