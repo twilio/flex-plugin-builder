@@ -1,4 +1,4 @@
 import '@babel/polyfill';
 import { EventEmitter } from 'events';
 
-EventEmitter.defaultMaxListeners = 20;
+EventEmitter.defaultMaxListeners = 15;
