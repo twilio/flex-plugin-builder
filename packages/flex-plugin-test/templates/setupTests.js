@@ -1,7 +1,7 @@
 require('babel-polyfill');
 
-import { configure } from 'enzyme/build';
-import Adapter from 'enzyme-adapter-react-16/build';
+const configure = require('enzyme/build').configure;
+const Adapter = require('enzyme-adapter-react-16/build');
 
 configure({
   adapter: new Adapter(),
