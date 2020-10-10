@@ -14,7 +14,7 @@ type ShellCmd = 'node' | 'yarn' | 'npm';
  * @param options   the spawn argument
  */
 export const spawn = async (shellCmd: ShellCmd, args: string[], options: object = DefaultOptions) => {
-  const spawnOptions = { ... { shell: process.env.SHELL }, ...options};
+  const spawnOptions = {...options};
 
   try {
     const {
