@@ -1,9 +1,8 @@
 import WebpackDevServer, { Configuration } from 'webpack-dev-server';
-import { env, logger, open } from 'flex-dev-utils';
+import { env, logger, open, exit } from 'flex-dev-utils';
 import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 
 import { WebpackType } from '..';
-import { exit } from '../../utils/run';
 import { Compiler } from '../compiler';
 
 const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];

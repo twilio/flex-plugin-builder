@@ -1,4 +1,4 @@
-import * as ipcServerScripts from '../../devServer/ipcServer';
+import * as ipcServerScripts from '../ipcServer';
 
 describe('ipcServer', () => {
   beforeEach(() => {

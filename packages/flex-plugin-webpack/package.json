@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-webpack",
-  "version": "4.0.11-beta.0",
+  "version": "4.1.0-beta.0",
   "description": "Flex Plugin Webpack and Webpack dev-server configurations",
   "keywords": [
     "flex",
@@ -45,9 +45,10 @@
     "babel-plugin-named-asset-import": "^0.3.6",
     "babel-preset-react-app": "^9.1.2",
     "css-loader": "^3.6.0",
-    "flex-dev-utils": "^4.0.10-beta.0",
+    "flex-dev-utils": "^4.1.0-beta.0",
     "fork-ts-checker-webpack-plugin": "^4.1.6",
     "html-webpack-plugin": "^4.5.0",
+    "node-ipc": "^9.1.1",
     "pnp-webpack-plugin": "^1.6.4",
     "postcss-flexbugs-fixes": "^4.2.1",
     "postcss-loader": "^3.0.0",
@@ -62,6 +63,7 @@
     "webpack-dev-server": "^3.11.0"
   },
   "devDependencies": {
+    "@types/node-ipc": "^9.1.3",
     "@types/terser-webpack-plugin": "^2.2.1",
     "@types/webpack": "^4.41.22",
     "@types/webpack-dev-server": "^3.11.0"

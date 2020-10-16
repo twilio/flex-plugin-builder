@@ -322,15 +322,16 @@ export const addCWDNodeModule = (...args: string[]) => {
  * @param pkg the package to lookup
  */
 /* istanbul ignore next */
-export const resolveModulePath = (pkg: string) => {
+export const resolveModulePath = (pkg: string, ...paths: string[]) => {
   try {
     return require.resolve(pkg);
-  } catch (e1) {
+  } catch {
     // Now try to specifically set the node_modules path
     const requirePaths: string[] = (require.main && require.main.paths) || [];
+    requirePaths.push(...paths);
     try {
       return require.resolve(pkg, { paths: requirePaths });
-    } catch (e2) {
+    } catch {
       return false;
     }
   }
@@ -368,22 +369,25 @@ export const getCliPaths = () => {
 export const getPaths = () => {
   const cwd = getCwd();
   const nodeModulesDir = resolveCwd('node_modules');
+
   const flexPluginScriptPath = resolveModulePath('flex-plugin-scripts');
-  const flexPluginWebpackPath = resolveModulePath('flex-plugin-webpack');
   if (flexPluginScriptPath === false) {
     throw new Error('Could not resolve flex-plugin-scripts');
   }
-  if (flexPluginWebpackPath === false) {
-    throw new Error(`Could not resolve 'flex-plugin-webpack`);
-  }
 
   const scriptsDir = path.join(path.dirname(flexPluginScriptPath), '..');
+  const scriptsNodeModulesDir = resolveRelative(scriptsDir, 'node_modules');
   const devAssetsDir = resolveRelative(scriptsDir, 'dev_assets');
   const publicDir = resolveCwd('public');
   const buildDir = resolveCwd('build');
   const srcDir = resolveCwd('src');
   const flexUIDir = resolveRelative(nodeModulesDir, '@twilio/flex-ui');
   const tsConfigPath = resolveCwd('tsconfig.json');
+
+  const flexPluginWebpackPath = resolveModulePath('flex-plugin-webpack', scriptsNodeModulesDir);
+  if (flexPluginWebpackPath === false) {
+    throw new Error(`Could not resolve flex-plugin-webpack`);
+  }
   const webpackDir = path.join(path.dirname(flexPluginWebpackPath), '..');
 
   // package.json information
@@ -411,7 +415,7 @@ export const getPaths = () => {
     // flex-plugin-scripts paths
     scripts: {
       dir: scriptsDir,
-      nodeModulesDir: resolveRelative(scriptsDir, 'node_modules'),
+      nodeModulesDir: scriptsNodeModulesDir,
       devAssetsDir,
       indexHTMLPath: resolveRelative(devAssetsDir, 'index.html'),
       tsConfigPath: resolveRelative(devAssetsDir, 'tsconfig.json'),

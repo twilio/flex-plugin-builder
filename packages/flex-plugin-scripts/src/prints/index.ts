@@ -9,7 +9,6 @@ export { default as packagesVersions } from './packagesVersions';
 export { default as pluginsApiWarning } from './pluginsApiWarning';
 export { default as buildSuccessful } from './buildSuccessful';
 export { default as buildFailure } from './buildFailure';
-export { default as devServerSuccessful } from './devServerSuccessful';
 export { default as typescriptNotInstalled } from './typescriptNotInstalled';
 export { default as jestNotInstalled } from './jestNotInstalled';
 export { default as unbundledReactMismatch } from './unbundledReactMismatch';

@@ -90,19 +90,4 @@ describe('run', () => {
     expect(print).toHaveBeenCalledTimes(1);
     expect(details).toHaveBeenCalledTimes(1);
   });
-
-  describe('exit', () => {
-    it('should not quit if arg has the flag', () => {
-      run.exit(123, ['--no-process-exit']);
-
-      expect(exit).not.toHaveBeenCalled();
-    });
-
-    it('should quit by default', () => {
-      run.exit(123);
-
-      expect(exit).toHaveBeenCalledTimes(1);
-      expect(exit).toHaveBeenCalledWith(123);
-    });
-  });
 });

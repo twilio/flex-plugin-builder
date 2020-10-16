@@ -1,7 +1,7 @@
 import { env } from 'flex-dev-utils';
 import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import { Configuration } from 'webpack-dev-server';
-import { WebpackType } from './index';
+import { WebpackType } from '../index';
 import { getPaths } from 'flex-dev-utils/dist/fs';
 
 /**
