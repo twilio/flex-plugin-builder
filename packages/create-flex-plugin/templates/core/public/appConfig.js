@@ -3,5 +3,5 @@ var appConfig = {
     enabled: true,
     url: '/plugins',
   },
-  logLevel: 'debug',
+  logLevel: 'info',
 };

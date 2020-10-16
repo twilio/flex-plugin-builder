@@ -12,24 +12,6 @@
   },
   "devDependencies": {
     "@twilio/flex-ui": "{{flexSdkVersion}}",
-    "@types/enzyme": "^3.10.6",
-    "@types/jest": "^24.9.1",
-    "@types/node": "^12.7.12",
-    "@types/react": "^16.8.16",
-    "@types/react-dom": "^16.8.4",
-    "@types/react-redux": "^7.1.1",
     "typescript": "^3"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   }
 }

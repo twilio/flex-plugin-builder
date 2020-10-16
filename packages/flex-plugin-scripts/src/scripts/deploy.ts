@@ -134,7 +134,7 @@ export const _getAccount = async (runtime: Runtime, credentials: AuthConfig) => 
  */
 export const _doDeploy = async (nextVersion: string, options: Options): Promise<DeployResult> => {
   if (!checkFilesExist(getPaths().app.bundlePath)) {
-    throw new FlexPluginError('Could not find build file. Did you run `npm run build` first?');
+    throw new FlexPluginError('Could not find build file. Did you run `twilio flex:plugins:build` first?');
   }
 
   const pluginBaseUrl = getPaths().assetBaseUrlTemplate.replace('%PLUGIN_VERSION%', nextVersion);

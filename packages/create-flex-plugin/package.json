@@ -17,11 +17,6 @@
   },
   "license": "MIT",
   "author": "Kousha Talebian <ktalebian@twilio.com>",
-  "files": [
-    "bin",
-    "dist",
-    "templates"
-  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
@@ -32,6 +27,11 @@
     "bin": "bin",
     "test": "__tests__"
   },
+  "files": [
+    "bin",
+    "dist",
+    "templates"
+  ],
   "scripts": {
     "prebuild": "npm run clean",
     "build": "tsc",
