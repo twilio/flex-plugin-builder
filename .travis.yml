@@ -9,6 +9,7 @@ before_install:
 
 before_script:
   - npm install
+  - NODE_OPTIONS="--max-old-space-size=8192"
 
 script:
   - npm run lint

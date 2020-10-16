@@ -29,7 +29,7 @@
     "publish:beta": "bin/publish beta $1",
     "publish:public": "bin/publish public $1",
     "test": "jest --color",
-    "test:ci": "jest --clearCache && jest --coverage --color",
+    "test:ci": "jest --clearCache && jest --coverage --color --maxConcurrency 2 --maxWorkers=2",
     "test:watch": "jest --watchAll --color"
   },
   "husky": {

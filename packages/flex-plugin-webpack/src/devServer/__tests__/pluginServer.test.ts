@@ -1,8 +1,8 @@
 import * as fsScript from 'flex-dev-utils/dist/fs';
 import { Request, Response } from 'express-serve-static-core';
-import { Plugin } from '../../devServer/pluginServer';
+import { Plugin } from '../pluginServer';
 
-import * as pluginServerScript from '../../devServer/pluginServer';
+import * as pluginServerScript from '../pluginServer';
 import { FlexPluginError } from 'flex-dev-utils';
 
 jest.mock('flex-dev-utils/dist/logger');

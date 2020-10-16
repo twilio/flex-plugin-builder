@@ -1,4 +1,4 @@
-import { logger } from 'flex-dev-utils';
+import { logger, exit } from 'flex-dev-utils';
 import {
   getPaths,
   addCWDNodeModule,
@@ -7,7 +7,7 @@ import { existsSync } from 'fs';
 import {
   appConfigMissing,
 } from '../prints';
-import run, { exit } from '../utils/run';
+import run from '../utils/run';
 import { _setPluginDir } from './pre-script-check';
 
 /**

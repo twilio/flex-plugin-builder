@@ -14,7 +14,9 @@ module.exports = {
     '!<rootDir>/packages/**/templates/**/*.js',
     '!<rootDir>/packages/**/templates/**/*.json',
     '!<rootDir>/packages/**/prints/**/*.ts',
+    // TODO: Remove these
     '!<rootDir>/packages/flex-plugin-scripts/src/config/**/*.ts',
+    '!<rootDir>/packages/flex-plugin-webpack/src/**/*.ts',
   ],
   testMatch: [
     '<rootDir>/packages/**/*.test.ts'

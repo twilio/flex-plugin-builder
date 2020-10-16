@@ -1,15 +1,16 @@
-import { logger } from 'flex-dev-utils';
+/* istanbul ignore file */
+
+import { logger, FunctionalCallback } from 'flex-dev-utils';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { SyncHook } from 'tapable';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import typescriptFormatter, { Issue } from '@k88/typescript-compile-error-formatter';
 import webpack, { Compiler as WebpackCompiler, Configuration } from 'webpack';
-import { FunctionalCallback } from '../types';
 import { getPaths } from 'flex-dev-utils/dist/fs';
 import CompilerHooks = webpack.compilation.CompilerHooks;
 import ToJsonOutput = webpack.Stats.ToJsonOutput;
 import { OnCompileCompletePayload } from './devServer/ipcServer';
-import { devServerSuccessful } from '../prints';
+import { devServerSuccessful } from './prints';
 import webpackFormatMessages from '@k88/format-webpack-messages';
 import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 

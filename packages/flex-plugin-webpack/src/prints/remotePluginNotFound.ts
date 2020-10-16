@@ -1,5 +1,5 @@
 import { logger } from 'flex-dev-utils';
-import { Plugin } from '../config/devServer/pluginServer';
+import { Plugin } from '..';
 
 /**
  * Error message for when a remote plugin is not found
