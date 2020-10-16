@@ -21,7 +21,7 @@ export default (local: ServiceUrl, network: ServiceUrl, plugins: string[]) => {
   });
 
   logger.newline();
-  logger.info('This is a development build and is not intended to be used for production.');
+  logger.info('This is a development build and is not intended to be used for production. ');
   logger.info('To create a production build, use:');
   logger.newline();
   logger.installInfo('twilio', 'flex:plugins:build');

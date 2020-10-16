@@ -57,7 +57,6 @@ export default (): JestConfigurations => {
     moduleFileExtensions: [...getPaths().extensions, 'node'].filter(e => !e.includes('mjs')),
     watchPlugins: [
       'jest-watch-typeahead/filename',
-      'jest-watch-typeahead/testname',
     ],
   };
 }
