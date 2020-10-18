@@ -62,6 +62,29 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
 
   private static pluginBuilderScripts = ['flex-plugin-scripts', 'flex-plugin'];
 
+  private static packagesToRemove = [
+    'react-app-rewire-flex-plugin',
+    'react-app-rewired',
+    'react-scripts',
+    'enzyme',
+    'babel-polyfill',
+    'enzyme-adapter-react-16',
+    'react-emotion',
+    '@craco/craco',
+    'craco-config-flex-plugin',
+    'core-j',
+    'react-test-renderer',
+    'react-scripts',
+    'rimraf',
+    '@types/enzyme',
+    '@types/jest',
+    '@types/node',
+    '@types/react',
+    '@types/react-dom',
+    '@types/react-redux',
+    'flex-plugin',
+  ];
+
   private prints;
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
@@ -107,23 +130,8 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   async upgradeFromV1() {
     this.prints.scriptStarted('v1');
 
-    const depsToAdd: DependencyUpdates = {
-      remove: ['react-app-rewire-flex-plugin', 'react-app-rewired', 'react-scripts'],
-      deps: {
-        'flex-plugin': '*',
-        'react-emotion': '9.2.6',
-      },
-      devDeps: {
-        'flex-plugin-scripts': '*',
-        '@twilio/flex-ui': '^1',
-        'babel-polyfill': '*',
-        enzyme: '*',
-        'enzyme-adapter-react-16': '*',
-      },
-    };
-
     await this.cleanupScaffold();
-    await this.updatePackageJson(depsToAdd, (pkg) => {
+    await this.updatePackageJson(this.getDependencyUpdates(), (pkg) => {
       delete pkg['config-overrides-path'];
 
       return pkg;
@@ -145,23 +153,8 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   async upgradeFromV2() {
     this.prints.scriptStarted('v2');
 
-    const depsToAdd: DependencyUpdates = {
-      remove: ['@craco/craco', 'craco-config-flex-plugin', 'core-j', 'react-test-renderer', 'react-scripts'],
-      deps: {
-        'flex-plugin': '*',
-        'react-emotion': '9.2.6',
-      },
-      devDeps: {
-        'flex-plugin-scripts': '*',
-        '@twilio/flex-ui': '^1',
-        'babel-polyfill': '*',
-        enzyme: '*',
-        'enzyme-adapter-react-16': '*',
-      },
-    };
-
     await this.cleanupScaffold();
-    await this.updatePackageJson(depsToAdd, (pkg) => {
+    await this.updatePackageJson(this.getDependencyUpdates(), (pkg) => {
       delete pkg['config-overrides-path'];
 
       return pkg;
@@ -184,19 +177,8 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   async upgradeFromV3() {
     this.prints.scriptStarted('v3');
 
-    const depsToAdd: DependencyUpdates = {
-      remove: ['craco-config-flex-plugin', 'react-scripts', 'rimraf', 'flex-plugin-scripts'],
-      deps: {
-        'flex-plugin': '*',
-      },
-      devDeps: {
-        'flex-plugin-scripts': '*',
-        '@twilio/flex-ui': '^1',
-      },
-    };
-
     await this.cleanupScaffold();
-    await this.updatePackageJson(depsToAdd);
+    await this.updatePackageJson(this.getDependencyUpdates());
     await this.removePackageScripts([
       { name: 'bootstrap', it: 'flex-plugin check-start' },
       { name: 'build', it: 'flex-plugin build', pre: 'rimraf build && npm run bootstrap' },
@@ -219,18 +201,8 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
    */
   async upgradeToLatest() {
     this.prints.upgradeToLatest();
-    const depsToAdd: DependencyUpdates = {
-      remove: [],
-      deps: {
-        'flex-plugin': '*',
-      },
-      devDeps: {
-        'flex-plugin-scripts': '*',
-        '@twilio/flex-ui': '^1',
-      },
-    };
 
-    await this.updatePackageJson(depsToAdd);
+    await this.updatePackageJson(this.getDependencyUpdates());
     await this.npmInstall();
   }
 
@@ -424,6 +396,18 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       async () => this.serverlessClient.removeLegacy(serviceSid, name),
       false,
     );
+  }
+
+  getDependencyUpdates(): DependencyUpdates {
+    return {
+      remove: FlexPluginsUpgradePlugin.packagesToRemove,
+      deps: {
+        'flex-plugin-scripts': '*',
+      },
+      devDeps: {
+        '@twilio/flex-ui': '^1',
+      },
+    };
   }
 
   /**
