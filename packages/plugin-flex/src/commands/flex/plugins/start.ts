@@ -1,5 +1,7 @@
 import { flags } from '@oclif/command';
+import { parse } from '@oclif/parser';
 import { findPortAvailablePort, StartScript } from 'flex-plugin-scripts/dist/scripts/start';
+import { FLAG_MULTI_PLUGINS } from 'flex-plugin-scripts/dist/scripts/pre-script-check';
 import semver from 'semver';
 
 import { createDescription } from '../../../utils/general';
@@ -12,6 +14,8 @@ const baseFlags = { ...FlexPlugin.flags };
 // @ts-ignore
 delete baseFlags.json;
 
+const MULTI_PLUGINS_PILOT = FLAG_MULTI_PLUGINS.substring(2);
+
 /**
  * Starts the dev-server for building and iterating on a plugin bundle
  */
@@ -23,6 +27,9 @@ export default class FlexPluginsStart extends FlexPlugin {
     name: flags.string({
       description: startDocs.flags.name,
       multiple: true,
+    }),
+    [MULTI_PLUGINS_PILOT]: flags.boolean({
+      description: startDocs.flags.multiPluginsPilot,
     }),
     'include-remote': flags.boolean({
       description: startDocs.flags.includeRemote,
@@ -122,4 +129,14 @@ export default class FlexPluginsStart extends FlexPlugin {
   get _flags() {
     return this.parse(FlexPluginsStart).flags;
   }
+}
+
+try {
+  const parsed = parse(process.argv.splice(3), { ...FlexPluginsStart, strict: false });
+  if (parsed.flags[MULTI_PLUGINS_PILOT]) {
+    delete FlexPluginsStart.flags['include-remote'].hidden;
+    FlexPluginsStart.flags.name.description = startDocs.flags.nameMultiPlugins;
+  }
+} catch {
+  // No-op
 }

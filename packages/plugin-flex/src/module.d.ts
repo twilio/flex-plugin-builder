@@ -13,6 +13,7 @@ declare module '@twilio/cli-core' {
     protected logger: {
       error: (...messages: string[]) => void;
       warning: (...messages: string[]) => void;
+      debug: (...messages: string[]) => void;
     };
 
     constructor(argv: string[], config: typeof ConfigData, secureStorage: typeof SecureStorage);

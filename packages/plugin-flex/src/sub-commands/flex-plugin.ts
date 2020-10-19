@@ -336,6 +336,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    */
   async run() {
     await super.run();
+    this.logger.debug(`Using Flex Plugins Config File: ${this.pluginsConfigPath}`);
+
     if (this._flags['clear-terminal']) {
       this._logger.clearTerminal();
     }
@@ -527,10 +529,17 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    */
   get pluginsConfig() {
     mkdirp.sync(join(this.cliRootDir, 'flex'));
-    if (!filesExist(join(this.cliRootDir, 'flex', 'plugins.json'))) {
-      writeJSONFile({ plugins: [] }, this.cliRootDir, 'flex', 'plugins.json');
+    if (!filesExist(this.pluginsConfigPath)) {
+      writeJSONFile({ plugins: [] }, this.pluginsConfigPath);
     }
-    return readJsonFile<CLIFlexConfiguration>(this.cliRootDir, 'flex', 'plugins.json');
+    return readJsonFile<CLIFlexConfiguration>(this.pluginsConfigPath);
+  }
+
+  /**
+   * Returns the pluginsConfigPath
+   */
+  get pluginsConfigPath() {
+    return join(this.cliRootDir, 'flex', 'plugins.json');
   }
 
   /**
