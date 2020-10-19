@@ -36,6 +36,10 @@ const PackagesToVerify = [
   'react-dom',
 ];
 
+export const FLAG_MULTI_PLUGINS = '--multi-plugins';
+
+export const flags = [FLAG_MULTI_PLUGINS];
+
 /**
  * Returns true if there are any .d.ts/.ts/.tsx files
  */
@@ -185,7 +189,7 @@ const preScriptCheck = async (...args: string[]) => {
   addCWDNodeModule(...args);
 
   _setPluginDir(...args);
-  await checkPluginConfigurationExists(getPaths().app.name, getPaths().app.dir);
+  await checkPluginConfigurationExists(getPaths().app.name, getPaths().app.dir, args.includes(FLAG_MULTI_PLUGINS));
   _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
   _checkPluginCount();
   _validateTypescriptProject();
