@@ -10,6 +10,7 @@ import { getPaths } from 'flex-dev-utils/dist/fs';
 import CompilerHooks = webpack.compilation.CompilerHooks;
 import ToJsonOutput = webpack.Stats.ToJsonOutput;
 import { OnCompileCompletePayload } from './devServer/ipcServer';
+import { OnRemotePlugins, Plugin } from './devServer/pluginServer';
 import { devServerSuccessful } from './prints';
 import webpackFormatMessages from '@k88/format-webpack-messages';
 import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
@@ -28,6 +29,10 @@ export interface Compiler extends WebpackCompiler {
 type OnCompile = (payload: OnCompileCompletePayload) => void;
 interface OnCompileResult {
   [key: string]: ToJsonOutput;
+}
+interface CompilerRenderer {
+  onCompile: OnCompile;
+  onRemotePlugins: OnRemotePlugins;
 }
 
 // Holds all compilation errors
@@ -117,50 +122,66 @@ export default (config: Configuration, devServer: boolean, onCompile: OnCompile)
 /**
  * Prints the errors and warnings or a successful message when compilation finishes
  * @param port    the port the server is running on
- * @param plugins the local plugins running
+ * @param localPlugins the local plugins running
  * @param showSuccessMsg    whether to show succecss message or not
+ * @param hasRemote         whether there are any remote plugins
  */
-export const onCompileComplete = (port: number, plugins: string[], showSuccessMsg: boolean): OnCompile => {
+export const compilerRenderer = (port: number, localPlugins: string[], showSuccessMsg: boolean, hasRemote: boolean): CompilerRenderer => {
   const { local, network } = getLocalAndNetworkUrls(port);
-  return ({ result, appName}) => {
-    logger.clearTerminal();
-    results[appName] = result;
-
-    const isSuccessful = Object
-      .values(results)
-      .every(r => r.errors.length === 0 && r.warnings.length === 0);
-    if (isSuccessful) {
-      if (showSuccessMsg) {
-        devServerSuccessful(local, network, plugins);
+  const remotePlugins: Plugin[] = [];
+  const serverSuccessful = (list: Plugin[]) => {
+    list.forEach(l => {
+      if (!remotePlugins.some(r => r.name === l.name)) {
+        remotePlugins.push(l);
       }
-      return;
-    }
+    });
 
-    Object
-      .keys(results)
-      .forEach(name => {
-        const formatted = webpackFormatMessages({
-          errors: results[name].errors,
-          warnings: results[name].warnings,
+    logger.clearTerminal();
+    devServerSuccessful(local, network, localPlugins, remotePlugins, hasRemote);
+  };
+
+  return {
+    onRemotePlugins: serverSuccessful,
+    onCompile: ({ result, appName}) => {
+      logger.clearTerminal();
+      results[appName] = result;
+
+      const isSuccessful = Object
+        .values(results)
+        .every(r => r.errors.length === 0 && r.warnings.length === 0);
+      if (isSuccessful) {
+        if (showSuccessMsg) {
+          serverSuccessful([]);
+        }
+        return;
+      }
+
+      Object
+        .keys(results)
+        .forEach(name => {
+          const formatted = webpackFormatMessages({
+            errors: results[name].errors,
+            warnings: results[name].warnings,
+          });
+
+          // Only show errors if both exist
+          if (results[name].errors.length) {
+            // Most errors are duplicate of the same error
+            // So only show the first error
+            formatted.errors.length = 1;
+
+            logger.error(`Failed to compile plugin ${logger.colors.red.bold(name)}.`);
+            logger.info(formatted.errors.join('\n'));
+            logger.newline();
+            return;
+          }
+
+          if (results[name].warnings.length) {
+            logger.warning(`Compiled plugin ${logger.colors.yellow.bold(name)} with warning(s).`);
+            logger.info(formatted.warnings.join('\n'));
+            logger.newline();
+          }
         });
-
-        // Only show errors if both exist
-        if (results[name].errors.length) {
-          // Most errors are duplicate of the same error
-          // So only show the first error
-          formatted.errors.length = 1;
-
-          logger.error(`Failed to compile plugin ${logger.colors.red.bold(name)}.`);
-          logger.info(formatted.errors.join('\n'));
-          logger.newline();
-          return;
-        }
-
-        if (results[name].warnings.length) {
-          logger.warning(`Compiled plugin ${logger.colors.yellow.bold(name)} with warning(s).`);
-          logger.info(formatted.warnings.join('\n'));
-          logger.newline();
-        }
-      });
+    }
   }
 }

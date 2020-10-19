@@ -10,6 +10,7 @@ export interface Plugin {
   phase: number;
   name: string;
   src: string;
+  version?: string;
 }
 
 interface StartServerPlugins {
@@ -21,6 +22,8 @@ interface StartServerConfig {
   port: number;
   remoteAll: boolean;
 }
+
+export type OnRemotePlugins = (remotePlugins: Plugin[]) => void;
 
 /**
  * Returns the plugin from the local configuration file
@@ -119,8 +122,9 @@ export const _mergePlugins = (localPlugins: Plugin[], remotePlugins: Plugin[]) =
  * Basic server to fetch plugins from Flex and return to the local dev-server
  * @param plugins
  * @param config
+ * @param onRemotePlugin
  */
-export const _startServer = (plugins: StartServerPlugins, config: StartServerConfig) => {
+export const _startServer = (plugins: StartServerPlugins, config: StartServerConfig, onRemotePlugin: OnRemotePlugins) => {
   const responseHeaders = _getHeaders(config.port);
 
 
@@ -168,6 +172,7 @@ export const _startServer = (plugins: StartServerPlugins, config: StartServerCon
       .then(remotePlugins => {
         logger.trace('Got remote plugins', remotePlugins);
 
+        onRemotePlugin(remotePlugins);
         res.writeHead(200, responseHeaders);
         res.end(JSON.stringify(_mergePlugins(localPlugins, remotePlugins)));
       })
@@ -185,7 +190,7 @@ export const _startServer = (plugins: StartServerPlugins, config: StartServerCon
  * @param serverConfig
  */
 /* istanbul ignore next */
-export default (plugins: StartServerPlugins, webpackConfig: Configuration, serverConfig: StartServerConfig) => {
+export default (plugins: StartServerPlugins, webpackConfig: Configuration, serverConfig: StartServerConfig, onRemotePlugin: OnRemotePlugins) => {
   serverConfig.port = webpackConfig.port || 3000;
 
   webpackConfig.proxy = plugins.local.reduce((proxy, name) => {
@@ -207,6 +212,6 @@ export default (plugins: StartServerPlugins, webpackConfig: Configuration, serve
   webpackConfig.before = (app, server) => {
     // @ts-ignore
     serverConfig.port = server.options.port || serverConfig.port;
-    app.use('^/plugins$', _startServer(plugins, serverConfig));
+    app.use('^/plugins$', _startServer(plugins, serverConfig, onRemotePlugin));
   };
 }
