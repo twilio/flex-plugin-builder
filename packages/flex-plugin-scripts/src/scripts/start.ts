@@ -129,7 +129,7 @@ export const _startDevServer = async (
   };
   const hasRemote = pluginRequest.remote.length > 0 || options.remoteAll;
 
-  // onComplication complete callback
+  // compiler render callbacks
   const { onCompile, onRemotePlugins } = compilerRenderer(port, pluginRequest.local, !isJavaScriptServer, hasRemote);
 
   // Setup plugin's server
