@@ -36,7 +36,7 @@ const PackagesToVerify = [
   'react-dom',
 ];
 
-export const FLAG_MULTI_PLUGINS = '--multi-plugins';
+export const FLAG_MULTI_PLUGINS = '--multi-plugins-pilot';
 
 export const flags = [FLAG_MULTI_PLUGINS];
 
