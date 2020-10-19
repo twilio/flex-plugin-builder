@@ -1,11 +1,11 @@
-import { env, logger } from 'flex-dev-utils';
+import { env, logger, exit } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { addCWDNodeModule, getPaths, readPluginsJson, setCwd, writeJSONFile } from 'flex-dev-utils/dist/fs';
 import { findPort, getDefaultPort } from 'flex-dev-utils/dist/urls';
 import {
   compiler,
-  onCompileComplete,
+  compilerRenderer,
   pluginServer,
   Plugin,
   emitCompileComplete,
@@ -127,15 +127,16 @@ export const _startDevServer = async (
     local: localPlugins.map((p) => p.name),
     remote: plugins.filter((p) => p.remote).map((p) => p.name),
   };
+  const hasRemote = pluginRequest.remote.length > 0 || options.remoteAll;
+
+  // compiler render callbacks
+  const { onCompile, onRemotePlugins } = compilerRenderer(port, pluginRequest.local, !isJavaScriptServer, hasRemote);
 
   // Setup plugin's server
   if (!isJavaScriptServer) {
     const pluginServerConfig = { port, remoteAll };
-    pluginServer(pluginRequest, devConfig, pluginServerConfig);
+    pluginServer(pluginRequest, devConfig, pluginServerConfig, onRemotePlugins);
   }
-
-  // onComplication complete callback
-  const onCompile = onCompileComplete(port, pluginRequest.local, !isJavaScriptServer);
 
   // Start IPC Server
   if (isStaticServer) {

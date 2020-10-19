@@ -259,7 +259,7 @@ export const findGlobs = (...patterns: string[]) => {
  * Check if this plugin is in this config file. If not, add it.
  * @private
  */
-export const checkPluginConfigurationExists = async (name: string, dir: string) => {
+export const checkPluginConfigurationExists = async (name: string, dir: string, promptForOverwrite = false) => {
   const cliPaths = getCliPaths();
   if (!checkFilesExist(cliPaths.pluginsJsonPath)) {
     mkdirpSync(cliPaths.flexDir);
@@ -279,12 +279,10 @@ export const checkPluginConfigurationExists = async (name: string, dir: string) 
     return;
   }
 
-  // TODO: Make this an optional as part of multi-plugin initiative flag
-  // const answer = await confirm(
-  //   `You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${dir}?`,
-  //   'N',
-  // );
-  const answer = true;
+  const answer = promptForOverwrite
+    ? await confirm(`You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${dir}?`, 'N')
+    : true;
+
   if (answer) {
     plugin.dir = dir;
     writeJSONFile(cliPaths.pluginsJsonPath, config);

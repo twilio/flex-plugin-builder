@@ -9,6 +9,7 @@ import * as compilerScripts from 'flex-plugin-webpack/dist/compiler';
 import * as parserUtils from '../../utils/parser';
 import * as startScripts from '../start';
 import * as configScripts from '../../config';
+import { WebpackDevConfigurations } from 'flex-plugin-webpack';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/fs');
@@ -176,10 +177,11 @@ describe('StartScript', () => {
     };
 
     const defaultOnCompile = jest.fn();
+    const onRemotePlugins = jest.fn();
     const getConfiguration = jest.spyOn(configScripts, 'default');
     const getLocalAndNetworkUrls = jest.spyOn(urlScripts, 'getLocalAndNetworkUrls');
     const compiler = jest.spyOn(compilerScripts, 'default');
-    const onCompileComplete = jest.spyOn(compilerScripts, 'onCompileComplete');
+    const compilerRenderer = jest.spyOn(compilerScripts, 'compilerRenderer');
     const webpackDevServer = jest.spyOn(devServerScripts, 'default');
     const startIPCServer = jest.spyOn(ipcServerScripts, 'startIPCServer');
     const startIPCClient = jest.spyOn(ipcServerScripts, 'startIPCClient');
@@ -191,7 +193,7 @@ describe('StartScript', () => {
       getConfiguration.mockReturnThis();
       getLocalAndNetworkUrls.mockReturnValue({ local: url, network: url });
       compiler.mockReturnThis();
-      onCompileComplete.mockReturnValue(defaultOnCompile);
+      compilerRenderer.mockReturnValue({ onCompile: defaultOnCompile, onRemotePlugins });
       webpackDevServer.mockReturnThis();
       startIPCServer.mockReturnThis();
       startIPCClient.mockReturnThis();
@@ -206,6 +208,12 @@ describe('StartScript', () => {
       pluginServer.mockReset();
       await startScripts._startDevServer([plugin], { ...opts, type: configScripts.WebpackType.Complete });
       expect(pluginServer).toHaveBeenCalledTimes(1);
+      expect(pluginServer).toHaveBeenCalledWith(
+        { local: [], remote: [plugin.name] },
+        expect.anything(),
+        expect.anything(),
+        onRemotePlugins
+      );
     });
 
     it('should not start pluginServer', async () => {

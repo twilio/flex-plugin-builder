@@ -29,6 +29,7 @@
     "publish:beta": "lerna-publish beta",
     "publish:public": "lerna-publish public",
     "test": "jest --color",
+    "test:coverage": "jest --color --coverage",
     "test:ci": "jest --clearCache && jest --coverage --color --maxConcurrency 2 --maxWorkers=2",
     "test:watch": "jest --watchAll --color"
   },

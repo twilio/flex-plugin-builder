@@ -88,6 +88,14 @@ describe('PreScriptCheck', () => {
       await preScriptCheck.default();
 
       expectCalled(false, false);
+      expect(checkPluginConfigurationExists).toHaveBeenCalledWith(paths.app.name, paths.app.dir, false);
+    });
+
+    it('should call with multi-plugin flag', async () => {
+      await preScriptCheck.default(preScriptCheck.FLAG_MULTI_PLUGINS);
+
+      expectCalled(false, false);
+      expect(checkPluginConfigurationExists).toHaveBeenCalledWith(paths.app.name, paths.app.dir, true);
     });
 
     it('should call all methods and allow skip', async () => {
