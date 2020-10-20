@@ -113,7 +113,7 @@ describe('commands', () => {
       };
       const parseGitHubUrl = jest
         .spyOn(github, 'parseGitHubUrl')
-        .mockReturnValue(info);
+        .mockResolvedValue(info);
       const downloadRepo = jest
         .spyOn(github, 'downloadRepo')
         .mockResolvedValue(null);
