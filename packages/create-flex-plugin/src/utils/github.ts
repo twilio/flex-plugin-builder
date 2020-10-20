@@ -9,6 +9,12 @@ export interface GitHubInfo {
   ref: string;
 }
 
+export interface GitHubBranches {
+  name: string;
+  commit: string;
+  protected: boolean;
+}
+
 export enum GitHubContentType {
   File = 'file',
   Dir = 'dir',
@@ -31,24 +37,46 @@ export interface GitHubContent {
   };
 }
 
+export const ERROR_GITHUB_URL_PARSE = 'Could not get owner and repo name from GitHub URL';
+export const ERROR_BRANCH_MASTER_MAIN = 'Could not find branch main or master on GitHub';
+
 /**
  * Parses the GitHub URL to extract owner and repo information
  *
  * @param url {string}  the GitHub URL
  * @return returns the {@link GitHubInfo}
  */
-export const parseGitHubUrl = (url: string): GitHubInfo => {
+export const parseGitHubUrl = async (url: string): Promise<GitHubInfo> => {
   const matches = url.match(/github\.com\/([0-9a-zA-Z-_]+)\/([0-9a-zA-Z-_]+)(\/tree\/([0-9a-zA-Z._-]+))?/);
 
   if (!matches || matches.length < 3) {
-    throw new Error('Could not get owner and repo name from GitHub URL');
+    throw new Error(ERROR_GITHUB_URL_PARSE);
   }
 
-  return {
+  const info: GitHubInfo = {
     owner: matches[1],
     repo: matches[2],
     ref: matches[4] || 'master',
   };
+
+  // Check whether master or main exists
+  if (info.ref === 'master' || info.ref === 'main') {
+    const branches = await axios.get<GitHubBranches[]>(`https://api.github.com/repos/${info.owner}/${info.repo}/branches`)
+      .then((resp) => resp.data);
+
+    const hasMaster = branches.find((branch) => branch.name === 'master');
+    const hasMain = branches.find((branch) => branch.name === 'main');
+
+    if (hasMaster) {
+      info.ref = 'master';
+    } else if (hasMain) {
+      info.ref = 'main';
+    } else {
+      throw new Error(ERROR_BRANCH_MASTER_MAIN);
+    }
+  }
+
+  return info;
 };
 
 /**
