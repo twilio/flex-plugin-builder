@@ -67,10 +67,10 @@ export const parseGitHubUrl = async (url: string): Promise<GitHubInfo> => {
     const hasMaster = branches.find((branch) => branch.name === 'master');
     const hasMain = branches.find((branch) => branch.name === 'main');
 
-    if (hasMaster) {
-      info.ref = 'master';
-    } else if (hasMain) {
+    if (hasMain) {
       info.ref = 'main';
+    } else if (hasMaster) {
+      info.ref = 'master';
     } else {
       throw new Error(ERROR_BRANCH_MASTER_MAIN);
     }
