@@ -2,22 +2,5 @@
   "packages": [
     "packages/*"
   ],
-  "command": {
-    "bootstrap": {
-      "npmClientArgs": [
-        "--no-package-lock"
-      ]
-    },
-    "publish": {
-      "ignoreChanges": [
-        "packages/create-flex-plugin/package-lock.json",
-        "packages/flex-dev-utils/package-lock.json",
-        "packages/flex-plugin-scripts/package-lock.json",
-        "packages/flex-plugin/package-lock.json",
-        "packages/flex-plugin-test/package-lock.json",
-        "package-lock.json"
-      ]
-    }
-  },
   "version": "4.2.2-beta.0"
 }
