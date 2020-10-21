@@ -4,6 +4,8 @@ node_js:
   - '14'
   - '12'
   - '10'
+  - 'node'
+  - 'lts/*'
 
 before_install:
   - sudo apt-get update
