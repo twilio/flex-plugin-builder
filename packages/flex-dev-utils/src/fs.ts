@@ -350,7 +350,7 @@ export { DirResult as TmpDirResult } from 'tmp';
  * but that script will not have flex-plugin-scripts installed which would cause an exception to be thrown.
  */
 export const getCliPaths = () => {
-  const coreCwd = getCwd();
+  const coreCwd = getCoreCwd();
   const coreNodeModulesDir = resolveRelative(coreCwd, 'node_modules');
   const homeDir = homedir();
   const cliDir = resolveRelative(homeDir, '/.twilio-cli');
