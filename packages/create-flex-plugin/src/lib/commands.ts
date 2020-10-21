@@ -57,7 +57,7 @@ export const setupConfiguration = (config: FlexPluginArguments): FlexPluginArgum
  * @param dir {string}                  the temp directory to save the downloaded file to
  */
 export const downloadFromGitHub = async (url: string, dir: string) => {
-  const info = github.parseGitHubUrl(url);
+  const info = await github.parseGitHubUrl(url);
 
   return await github.downloadRepo(info, dir);
 };

@@ -33,24 +33,53 @@ describe('github', () => {
   });
 
   describe('parseGitHubUrl', () => {
-    it('should get repo and master ref', () => {
-      const resp = github.parseGitHubUrl(gitHubUrl);
+    const branchesWithMaster = [{ name: 'master' }, { name: 'feature-branch' }];
+    const branchesWithMain = [{ name: 'main' }, { name: 'feature-branch' }];
+    const branchesWithNeither = [{ name: 'something-else' }, { name: 'feature-branch' }];
+
+    it('should get repo with master ref', async () => {
+      mockAxios.onGet().reply(() => Promise.resolve([200, branchesWithMaster]));
+      const resp = await github.parseGitHubUrl(gitHubUrl);
 
       expect(resp.ref).toEqual('master');
       expect(resp.repo).toEqual('flex-plugin-builder');
       expect(resp.owner).toEqual('twilio');
     });
 
-    it('should get repo and some ref', () => {
-      const resp = github.parseGitHubUrl(`${gitHubUrl}/tree/some-ref`);
+    it('should get repo with main ref', async () => {
+      mockAxios.onGet().reply(() => Promise.resolve([200, branchesWithMain]));
+      const resp = await github.parseGitHubUrl(gitHubUrl);
+
+      expect(resp.ref).toEqual('main');
+      expect(resp.repo).toEqual('flex-plugin-builder');
+      expect(resp.owner).toEqual('twilio');
+    });
+
+    it('should reject because main/main is not found', async (done) => {
+      mockAxios.onGet().reply(() => Promise.resolve([200, branchesWithNeither]));
+      try {
+        await github.parseGitHubUrl(gitHubUrl);
+      } catch (e) {
+        expect(e.message).toEqual(github.ERROR_BRANCH_MASTER_MAIN);
+        done();
+      }
+    });
+
+    it('should get repo and some ref', async () => {
+      const resp = await github.parseGitHubUrl(`${gitHubUrl}/tree/some-ref`);
 
       expect(resp.ref).toEqual('some-ref');
       expect(resp.repo).toEqual('flex-plugin-builder');
       expect(resp.owner).toEqual('twilio');
     });
 
-    it('should fail to parse', () => {
-      expect(() => github.parseGitHubUrl('/broken')).toThrow();
+    it('should fail to parse', async (done) => {
+      try {
+        await github.parseGitHubUrl('/broken');
+      } catch (e) {
+        expect(e.message).toEqual(github.ERROR_GITHUB_URL_PARSE);
+        done();
+      }
     });
   });
 
