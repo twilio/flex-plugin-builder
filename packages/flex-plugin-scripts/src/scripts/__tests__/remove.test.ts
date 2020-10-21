@@ -6,8 +6,8 @@ import { logger } from 'flex-dev-utils';
 import * as inquirer from 'flex-dev-utils/dist/inquirer';
 
 jest.mock('../../clients/environments');
-jest.mock('inquirer');
 jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/inquirer');
 jest.mock('flex-dev-utils/dist/credentials', () => ({
   getCredential: jest.fn(),
 }));

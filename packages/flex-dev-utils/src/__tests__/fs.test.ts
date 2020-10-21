@@ -4,6 +4,7 @@ import * as fs from '../fs';
 import * as globby from 'globby';
 import * as inquirer from '../inquirer';
 
+jest.mock('flex-plugins-utils-logger/dist/lib/inquirer')
 jest.mock('globby');
 jest.mock('app-module-path');
 

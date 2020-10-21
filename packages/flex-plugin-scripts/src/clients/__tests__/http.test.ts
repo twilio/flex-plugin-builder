@@ -1,5 +1,7 @@
 import HttpClient, { HttpConfig } from '../http';
+import axios, { MockAdapter } from 'flex-dev-utils/dist/axios';
 import { clone } from 'flex-dev-utils/dist/lodash';
+import FormData from 'form-data';
 
 describe('HttpClient', () => {
   const CONFIG: HttpConfig = {
@@ -97,6 +99,34 @@ describe('HttpClient', () => {
       expect(response).toEqual('the-result');
       expect(get).toHaveBeenCalledTimes(1);
       expect(get).toHaveBeenCalledWith('the-uri');
+    });
+  });
+
+  describe('upload', () => {
+    let mockAxios: MockAdapter;
+
+    beforeEach(() => {
+      mockAxios = new MockAdapter(axios);
+    });
+
+    it('should upload content', async () => {
+      const resp = { success: true };
+      const httpClient = new HttpClient(config);
+      mockAxios.onPost().reply(() => Promise.resolve([200, resp]));
+      const post = jest.spyOn(axios, 'post');
+
+      const form = new FormData();
+      form.append('property1', 'value1');
+
+      const result = await httpClient.upload('/upload', form);
+      const options = {
+        headers: form.getHeaders(),
+        auth: config.auth,
+      };
+
+      expect(post).toHaveBeenCalledTimes(1)
+      expect(post).toHaveBeenCalledWith('/upload', form, options)
+      expect(result).toEqual(resp);
     });
   });
 

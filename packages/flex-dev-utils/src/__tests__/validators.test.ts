@@ -39,32 +39,6 @@ describe('validators', () => {
     });
   });
 
-  describe('validateConfirmation', () => {
-    it('should valid false if no default and no answer provided', async () => {
-      expect(await validators.validateConfirmation()('')).toEqual(expect.any(String));
-    });
-
-    it('should valid false if incorrect answer is provided', async () => {
-      expect(await validators.validateConfirmation()('blah')).toEqual(expect.any(String));
-    });
-
-    it('should valid truthy if answer is correct', async () => {
-      expect(await validators.validateConfirmation()('yes')).toBeTruthy();
-      expect(await validators.validateConfirmation()('YeS')).toBeTruthy();
-      expect(await validators.validateConfirmation()('y')).toBeTruthy();
-      expect(await validators.validateConfirmation()('Y')).toBeTruthy();
-      expect(await validators.validateConfirmation()('no')).toBeTruthy();
-      expect(await validators.validateConfirmation()('No')).toBeTruthy();
-      expect(await validators.validateConfirmation()('N')).toBeTruthy();
-      expect(await validators.validateConfirmation()('n')).toBeTruthy();
-    });
-
-    it('should be truthy if no answer is provided, but default is provided', async () => {
-      expect(await validators.validateConfirmation('Y')('')).toBeTruthy();
-      expect(await validators.validateConfirmation('N')('')).toBeTruthy();
-    });
-  });
-
   describe('isValidPluginName', () => {
     it('should be valid plugin names', () => {
       const names = [
