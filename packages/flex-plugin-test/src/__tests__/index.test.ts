@@ -11,6 +11,9 @@ describe('JestConfiguration', () => {
     scripts: {
       nodeModulesDir: 'scripts/node_modules',
     },
+    cli: {
+      nodeModulesDir: 'cli/node_modules',
+    },
     extensions: ['js', 'jsx', 'ts', 'tsx'],
   }
 
