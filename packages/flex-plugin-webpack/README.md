@@ -1,6 +1,6 @@
-![npm](https://img.shields.io/npm/v/flex-plugin-webpack.svg?style=flat-square)
-![npm](https://img.shields.io/npm/dt/flex-plugin-webpack.svg?style=flat-square)
-[![NpmLicense](https://img.shields.io/npm/l/flex-plugin-webpack.svg?style=flat-square)](../../LICENSE)
+![npm](https://img.shields.io/npm/v/flex-plugin-webpack.svg?style=square)
+![npm](https://img.shields.io/npm/dt/flex-plugin-webpack.svg?style=square)
+[![NpmLicense](https://img.shields.io/npm/l/flex-plugin-webpack.svg?style=square)](../../LICENSE)
 
 # Flex Plugin Webpack
 
