@@ -1,7 +1,11 @@
 language: node_js
 
 node_js:
+  - '14'
+  - '12'
   - '10'
+  - 'node'
+  - 'lts/*'
 
 install: npm install
 
