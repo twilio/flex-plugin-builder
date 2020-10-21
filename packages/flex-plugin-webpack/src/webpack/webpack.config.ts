@@ -405,6 +405,7 @@ export const _getResolve = (environment: Environment): Resolve => {
       paths.app.nodeModulesDir,
       paths.scripts.nodeModulesDir,
       paths.webpack.nodeModulesDir,
+      paths.cli.nodeModulesDir,
     ],
     extensions: extensions.map(e => `.${e}`),
     alias: {

@@ -25,14 +25,16 @@ const defaultSetupFile = join(__dirname, '../templates/setupTests.js');
  * Main method for generating a default Jest configuration
  */
 export default (): JestConfigurations => {
-  const setupTestsFile = getPaths().app.setupTestsPaths.find(x => checkFilesExist(x));
+  const paths = getPaths();
+  const setupTestsFile = paths.app.setupTestsPaths.find(x => checkFilesExist(x));
 
   return {
     roots: ['<rootDir>/src'],
     moduleDirectories: [
       'node_modules',
-      getPaths().app.nodeModulesDir,
-      getPaths().scripts.nodeModulesDir,
+      paths.app.nodeModulesDir,
+      paths.scripts.nodeModulesDir,
+      paths.cli.nodeModulesDir,
     ],
     collectCoverageFrom: ['src/**/*.{js,jsx,ts,tsx}', '!src/**/*.d.ts'],
     setupFiles: [
