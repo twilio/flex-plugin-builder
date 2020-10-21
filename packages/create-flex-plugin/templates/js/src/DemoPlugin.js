@@ -26,7 +26,7 @@ export default class {{pluginClassName}} extends FlexPlugin {
     flex.AgentDesktopView
       .Panel1
       .Content
-      .add(<CustomTaskListContainer key="demo-component" />, options);
+      .add(<CustomTaskListContainer key="{{pluginClassName}}-component" />, options);
   }
 
   /**

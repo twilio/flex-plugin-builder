@@ -49,5 +49,8 @@
   },
   "devDependencies": {
     "@jest/types": "^26.5.2"
+  },
+  "engines": {
+    "node": ">=10.12.0"
   }
 }
