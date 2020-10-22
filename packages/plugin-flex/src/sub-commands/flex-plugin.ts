@@ -61,6 +61,7 @@ interface Pkg {
   dependencies: Record<string, string>;
   devDependencies: Record<string, string>;
   scripts: Record<string, string>;
+  browserslist?: Record<string, string>;
 }
 
 export type PkgCallback = (input: Pkg) => Pkg;

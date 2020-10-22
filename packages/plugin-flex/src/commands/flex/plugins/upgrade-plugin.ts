@@ -63,6 +63,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   private static pluginBuilderScripts = ['flex-plugin-scripts', 'flex-plugin'];
 
   private static packagesToRemove = [
+    'flex-plugin-scripts', // remove and then re-add
     'react-app-rewire-flex-plugin',
     'react-app-rewired',
     'react-scripts',
@@ -307,6 +308,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       if (custom) {
         custom(pkg);
       }
+      delete pkg.browserslist;
 
       writeJSONFile(pkg, this.cwd, 'package.json');
     });
