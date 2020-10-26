@@ -6,9 +6,10 @@ import { CLIParseError } from '@oclif/parser/lib/errors';
 
 import * as flags from '../../../utils/flags';
 import { IncompatibleVersionError, TwilioCliError } from '../../../exceptions';
-import { createDescription } from '../../../utils/general';
+import { createDescription, instanceOf } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { deploy as deployDocs } from '../../../commandDocs.json';
+import ServerlessClient from '../../../clients/ServerlessClient';
 
 /**
  * Parses the version input
@@ -88,6 +89,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       throw new IncompatibleVersionError(this.pkg.name, this.builderVersion);
     }
 
+    await this.checkServerlessInstance();
     await this.checkForLegacy();
 
     const args = ['--quiet', '--persist-terminal'];
@@ -179,6 +181,30 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       Private: !deployResult.isPublic,
       Changelog: this._flags.changelog || '',
     });
+  }
+
+  /**
+   * Checks whether a Serverless instance exists or not. If not, will create one
+   */
+  async checkServerlessInstance() {
+    const serviceSid = await this.flexConfigurationClient.getServerlessSid();
+    if (serviceSid) {
+      try {
+        const service = await this.serverlessClient.getService(serviceSid);
+        if (service.friendlyName !== ServerlessClient.NewService.friendlyName) {
+          await this.serverlessClient.updateServiceName(serviceSid);
+        }
+
+        return;
+      } catch (e) {
+        if (!instanceOf(e, TwilioCliError)) {
+          throw e;
+        }
+        await this.flexConfigurationClient.unregisterServerlessSid(serviceSid);
+      }
+    }
+    const service = await this.serverlessClient.createDefaultService();
+    await this.flexConfigurationClient.registerServerlessSid(service.sid);
   }
 
   /**

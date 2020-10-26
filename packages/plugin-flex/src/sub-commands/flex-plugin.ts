@@ -28,7 +28,7 @@ import { exit, instanceOf } from '../utils/general';
 import { toSentenceCase } from '../utils/strings';
 import prints from '../prints';
 import { flexPlugin as flexPluginDocs } from '../commandDocs.json';
-import FlexConfigurationClient from '../clients/FlexConfigurationClient';
+import FlexConfigurationClient, { FlexConfigurationClientOptions } from '../clients/FlexConfigurationClient';
 import ServerlessClient from '../clients/ServerlessClient';
 
 interface FlexPluginOption {
@@ -349,7 +349,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       );
     }
 
-    const options: PluginServiceHttpOption = {
+    const pluginServiceOptions: PluginServiceHttpOption = {
       caller: 'twilio-cli',
       packages: {
         'flex-plugin-scripts': FlexPlugin.getPackageVersion('flex-plugin-scripts'),
@@ -359,26 +359,37 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
         'twilio-cli-flex-plugin': FlexPlugin.getPackageVersion(this.pluginRootDir),
       },
     };
+    const flexConfigOptions: FlexConfigurationClientOptions = {
+      accountSid: this.currentProfile.accountSid,
+      username: this.twilioApiClient.username,
+      password: this.twilioApiClient.password,
+    };
+
     if (this._flags.region) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      options.realm = this._flags.region as any;
+      pluginServiceOptions.realm = this._flags.region as any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      flexConfigOptions.realm = this._flags.region as any;
     }
 
     const httpClient = new PluginServiceHTTPClient(
       this.twilioApiClient.username,
       this.twilioApiClient.password,
-      options,
+      pluginServiceOptions,
     );
     this._pluginsApiToolkit = new PluginsApiToolkit(
       this.twilioApiClient.username,
       this.twilioApiClient.password,
-      options,
+      pluginServiceOptions,
     );
     this._pluginsClient = new PluginsClient(httpClient);
     this._pluginVersionsClient = new PluginVersionsClient(httpClient);
     this._configurationsClient = new ConfigurationsClient(httpClient);
     this._releasesClient = new ReleasesClient(httpClient);
-    this._flexConfigurationClient = new FlexConfigurationClient(this.twilioClient.flexApi.v1.configuration.get());
+    this._flexConfigurationClient = new FlexConfigurationClient(
+      this.twilioClient.flexApi.v1.configuration.get(),
+      flexConfigOptions,
+    );
     this._serverlessClient = new ServerlessClient(this.twilioClient.serverless.v1.services);
 
     if (!this.skipEnvironmentalSetup) {

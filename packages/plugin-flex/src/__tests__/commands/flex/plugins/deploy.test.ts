@@ -4,6 +4,7 @@ import { CLIParseError } from '@oclif/parser/lib/errors';
 import { expect, createTest } from '../../../framework';
 import FlexPluginsDeploy, { parseVersionInput } from '../../../../commands/flex/plugins/deploy';
 import { TwilioCliError } from '../../../../exceptions';
+import ServerlessClient from '../../../../clients/ServerlessClient';
 
 describe('Commands/FlexPluginsDeploy', () => {
   const { sinon, start: _start } = createTest(FlexPluginsDeploy);
@@ -41,8 +42,8 @@ describe('Commands/FlexPluginsDeploy', () => {
     date_updated: '2020',
   };
 
-  const getServerlessSid = sinon.mock();
-  const hasLegacy = sinon.mock();
+  const getServerlessSid = sinon.mock().atLeast(1);
+  const hasLegacy = sinon.mock().atLeast(1);
 
   afterEach(() => {
     sinon.restore();
@@ -308,4 +309,151 @@ describe('Commands/FlexPluginsDeploy', () => {
       expect(cmd.prints.warnHasLegacy).to.have.been.calledOnce;
     })
     .it('should print warning if legacy plugin found');
+
+  start()
+    .setup((cmd) => {
+      getServerlessSid.returns(Promise.resolve('ZS123'));
+
+      const getService = sinon.mock().atLeast(1);
+      const createDefaultService = sinon.mock().atLeast(1);
+      const updateServiceName = sinon.mock().atLeast(1);
+      const unregisterServerlessSid = sinon.mock().atLeast(1);
+      const registerServerlessSid = sinon.mock().atLeast(1);
+      getService.returns(
+        Promise.resolve({
+          friendlyName: ServerlessClient.NewService.friendlyName,
+        }),
+      );
+
+      sinon.stub(cmd, 'serverlessClient').get(() => ({
+        getService,
+        updateServiceName,
+        createDefaultService,
+      }));
+      sinon.stub(cmd, 'flexConfigurationClient').get(() => ({
+        getServerlessSid,
+        unregisterServerlessSid,
+        registerServerlessSid,
+      }));
+    })
+    .test(async (cmd) => {
+      await cmd.checkServerlessInstance();
+
+      expect(cmd.flexConfigurationClient.getServerlessSid).to.have.been.calledOnce;
+      expect(cmd.serverlessClient.getService).to.have.been.calledOnce;
+      expect(cmd.serverlessClient.updateServiceName).not.to.have.been.called;
+      expect(cmd.serverlessClient.createDefaultService).not.to.have.been.called;
+      expect(cmd.flexConfigurationClient.registerServerlessSid).not.to.have.been.called;
+      expect(cmd.flexConfigurationClient.unregisterServerlessSid).not.to.have.been.called;
+    })
+    .it('should do nothing if service already exists and has correct name');
+
+  start()
+    .setup((cmd) => {
+      getServerlessSid.returns(Promise.resolve('ZS123'));
+
+      const getService = sinon.mock().atLeast(1);
+      const createDefaultService = sinon.mock().atLeast(1);
+      const updateServiceName = sinon.mock().atLeast(1);
+      const unregisterServerlessSid = sinon.mock().atLeast(1);
+      const registerServerlessSid = sinon.mock().atLeast(1);
+
+      getService.returns(
+        Promise.resolve({
+          friendlyName: 'something else',
+        }),
+      );
+
+      sinon.stub(cmd, 'serverlessClient').get(() => ({
+        getService,
+        updateServiceName,
+        createDefaultService,
+      }));
+      sinon.stub(cmd, 'flexConfigurationClient').get(() => ({
+        getServerlessSid,
+        unregisterServerlessSid,
+        registerServerlessSid,
+      }));
+    })
+    .test(async (cmd) => {
+      await cmd.checkServerlessInstance();
+
+      expect(cmd.flexConfigurationClient.getServerlessSid).to.have.been.calledOnce;
+      expect(cmd.serverlessClient.getService).to.have.been.calledOnce;
+      expect(cmd.serverlessClient.updateServiceName).to.have.been.calledOnce;
+      expect(cmd.serverlessClient.createDefaultService).not.to.have.been.called;
+      expect(cmd.flexConfigurationClient.registerServerlessSid).not.to.have.been.called;
+      expect(cmd.flexConfigurationClient.unregisterServerlessSid).not.to.have.been.called;
+    })
+    .it('should do update service name');
+
+  start()
+    .setup((cmd) => {
+      getServerlessSid.returns(Promise.resolve(null));
+      const getService = sinon.mock().atLeast(1);
+      const createDefaultService = sinon.mock().atLeast(1);
+      const updateServiceName = sinon.mock().atLeast(1);
+      const unregisterServerlessSid = sinon.mock().atLeast(1);
+      const registerServerlessSid = sinon.mock().atLeast(1);
+      createDefaultService.returns(Promise.resolve({ sid: 'ZS456' }));
+
+      sinon.stub(cmd, 'serverlessClient').get(() => ({
+        getService,
+        updateServiceName,
+        createDefaultService,
+      }));
+      sinon.stub(cmd, 'flexConfigurationClient').get(() => ({
+        getServerlessSid,
+        unregisterServerlessSid,
+        registerServerlessSid,
+      }));
+    })
+    .test(async (cmd) => {
+      await cmd.checkServerlessInstance();
+
+      expect(cmd.flexConfigurationClient.getServerlessSid).to.have.been.calledOnce;
+      expect(cmd.serverlessClient.getService).not.to.have.been.called;
+      expect(cmd.serverlessClient.updateServiceName).not.to.have.been.called;
+      expect(cmd.serverlessClient.createDefaultService).to.have.been.calledOnce;
+      expect(cmd.flexConfigurationClient.registerServerlessSid).to.have.been.calledOnce;
+      expect(cmd.flexConfigurationClient.registerServerlessSid).to.have.been.calledWith('ZS456');
+      expect(cmd.flexConfigurationClient.unregisterServerlessSid).not.to.have.been.called;
+    })
+    .it('should create new service');
+
+  start()
+    .setup((cmd) => {
+      getServerlessSid.returns(Promise.resolve('ZS123'));
+      const getService = sinon.mock().atLeast(1);
+      const createDefaultService = sinon.mock().atLeast(1);
+      const updateServiceName = sinon.mock().atLeast(1);
+      const unregisterServerlessSid = sinon.mock().atLeast(1);
+      const registerServerlessSid = sinon.mock().atLeast(1);
+      createDefaultService.returns(Promise.resolve({ sid: 'ZS456' }));
+      getService.rejects(new TwilioCliError());
+
+      sinon.stub(cmd, 'serverlessClient').get(() => ({
+        getService,
+        updateServiceName,
+        createDefaultService,
+      }));
+      sinon.stub(cmd, 'flexConfigurationClient').get(() => ({
+        getServerlessSid,
+        unregisterServerlessSid,
+        registerServerlessSid,
+      }));
+    })
+    .test(async (cmd) => {
+      await cmd.checkServerlessInstance();
+
+      expect(cmd.flexConfigurationClient.getServerlessSid).to.have.been.calledOnce;
+      expect(cmd.serverlessClient.getService).to.have.been.calledOnce;
+      expect(cmd.serverlessClient.updateServiceName).not.to.have.been.called;
+      expect(cmd.serverlessClient.createDefaultService).to.have.been.calledOnce;
+      expect(cmd.flexConfigurationClient.registerServerlessSid).to.have.been.calledOnce;
+      expect(cmd.flexConfigurationClient.registerServerlessSid).to.have.been.calledWith('ZS456');
+      expect(cmd.flexConfigurationClient.unregisterServerlessSid).to.have.been.calledOnce;
+      expect(cmd.flexConfigurationClient.unregisterServerlessSid).to.have.been.calledWith('ZS123');
+    })
+    .it('should re-create new service');
 });

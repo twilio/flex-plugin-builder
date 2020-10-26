@@ -59,6 +59,7 @@
     "lodash.startcase": "^4.4.0",
     "mkdirp": "^1.0.4",
     "package-json": "^6.5.0",
+    "phin": "^3.5.0",
     "semver": "^7.3.2",
     "yargs": "^15.4.1"
   },
