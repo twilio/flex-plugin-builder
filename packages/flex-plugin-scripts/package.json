@@ -54,9 +54,6 @@
     "querystring": "^0.2.0",
     "react-emotion": "9.2.12"
   },
-  "peerDependencies": {
-    "flex-plugin": "^1"
-  },
   "engines": {
     "node": ">=10.12.0"
   },
