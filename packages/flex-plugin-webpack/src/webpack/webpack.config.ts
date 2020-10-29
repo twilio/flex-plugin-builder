@@ -110,10 +110,8 @@ export const _getStyleLoaders = (isProd: boolean) => {
   const getStyleLoader = (options: LoaderOption, preProcessor?: string, implementation?: string) => {
     const loaders: Loader[] = [];
 
-    // This is for hot-reloading to work
-    if (!isProd) {
-      loaders.push(require.resolve('style-loader'));
-    }
+    // Main style loader to work when compiled
+    loaders.push(require.resolve('style-loader'));
 
     // All css loader
     loaders.push(
