@@ -1,9 +1,10 @@
-import axios, { AxiosInstance } from 'flex-dev-utils/dist/axios';
+import axios, { AxiosInstance, AxiosRequestConfig, httpAdapter, settle } from 'flex-dev-utils/dist/axios';
 import { stringify } from 'querystring';
 import { format } from 'util';
-import { logger } from 'flex-dev-utils';
+import { logger, env } from 'flex-dev-utils';
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 import FormData from 'form-data';
+import { Readable, Transform } from 'stream';
 
 export type ContentType = 'application/x-www-form-urlencoded' | 'application/json';
 export interface HttpConfig {
@@ -12,6 +13,14 @@ export interface HttpConfig {
   auth: AuthConfig;
   exitOnRejection?: boolean;
   contentType?: ContentType;
+}
+
+interface UploadRequstConfig extends AxiosRequestConfig {
+  headers: Record<string, unknown>;
+  auth: {
+    username: string;
+    password: string;
+  };
 }
 
 export default class Http {
@@ -112,20 +121,58 @@ export default class Http {
    * @param url       the url to upload to
    * @param formData  the {@link FormData}
    */
-  public upload = (url: string, formData: FormData): Promise<any> => {
+  public upload = async (url: string, formData: FormData): Promise<any> => {
     logger.debug('Uploading formData to %s', url);
     logger.trace(formData);
 
+    const options: AxiosRequestConfig = await this.getUploadOptions(formData);
+
     return axios
-      .post(url, formData, {
-        headers: formData.getHeaders(),
-        auth: {
-          username: this.config.auth.username,
-          password: this.config.auth.password,
-        },
-      })
+      .post(url, formData, options)
       .then((resp) => resp.data)
       .catch(this.onError);
+  }
+
+  /**
+   * Create the upload configuration
+   * @param formData
+   */
+  private getUploadOptions = async (formData: FormData): Promise<UploadRequstConfig> => {
+    const options: UploadRequstConfig = {
+      headers: formData.getHeaders(),
+      auth: {
+        username: this.config.auth.username,
+        password: this.config.auth.password,
+      },
+    }
+    if (env.isDebug()) {
+      const length = await this.getFormDataSize(formData);
+      options.adapter = (config) => {
+        let bytes = 0;
+        const body = config.data as FormData;
+        const uploadReportStream = new Transform({
+          transform: (chunk: string | Buffer, _encoding, callback) => {
+            bytes += chunk.length;
+            const percentage = bytes / length * 100;
+            logger.debug(`Uploading ${percentage.toFixed(1)}% complete`);
+            callback(undefined, chunk);
+          }
+        });
+        if (typeof body.pipe === 'function') {
+          body.pipe(uploadReportStream);
+        } else {
+          uploadReportStream.end(body);
+        }
+        config.data = uploadReportStream;
+
+        return new Promise((resolve, reject) => {
+          // @ts-ignore
+          httpAdapter(config).then(resp => settle(resolve, reject, resp)).catch(reject);
+        });
+      }
+    }
+
+    return options;
   }
 
   /**
@@ -147,5 +194,22 @@ export default class Http {
     } else {
       return Promise.reject(err);
     }
+  }
+
+  /**
+   * Calculates the {@link FormData} size
+   * @param formData the formData to calculate the size of
+   */
+  private getFormDataSize = async (formData: FormData): Promise<number> => {
+    return new Promise(resolve => {
+      formData.getLength((err, length) => {
+        if (err) {
+          logger.warning('Failed to calculate upload size');
+          resolve(-1);
+        } else {
+          resolve(length);
+        }
+      });
+    });
   }
 }

@@ -1,6 +1,7 @@
 import HttpClient, { HttpConfig } from '../http';
 import axios, { MockAdapter } from 'flex-dev-utils/dist/axios';
 import { clone } from 'flex-dev-utils/dist/lodash';
+import { env } from 'flex-dev-utils';
 import FormData from 'form-data';
 
 describe('HttpClient', () => {
@@ -193,6 +194,53 @@ describe('HttpClient', () => {
       expect(result).toBeNull();
       expect(del).toHaveBeenCalledTimes(1);
       expect(del).toHaveBeenCalledWith('the-uri');
+    });
+  });
+
+  describe.only('getUploadOptions', () => {
+    it('should return config without adapter', async () => {
+      const httpClient = new HttpClient(config);
+      const form = new FormData();
+
+      // @ts-ignore
+      const options = await httpClient.getUploadOptions(form);
+
+      expect(options.headers).toEqual(form.getHeaders());
+      expect(options.auth).toEqual(config.auth);
+      expect('adapter' in options).toEqual(false);
+    });
+
+    it('should return config adapter', async () => {
+      jest.spyOn(env, 'isDebug').mockReturnValue(true);
+      const httpClient = new HttpClient(config);
+      const form = new FormData();
+
+      // @ts-ignore
+      const options = await httpClient.getUploadOptions(form);
+
+      expect(options.headers).toEqual(form.getHeaders());
+      expect(options.auth).toEqual(config.auth);
+      expect('adapter' in options).toEqual(true);
+    });
+  });
+
+  describe('getFormDataSize', () => {
+    it('should get data size of empty form', async () => {
+      const httpClient = new HttpClient(config);
+      const form = new FormData();
+      // @ts-ignore
+      const length = await httpClient.getFormDataSize(form);
+      expect(length).toEqual(0);
+    });
+
+    it('should get data size of empty form', async () => {
+      const httpClient = new HttpClient(config);
+      const form = new FormData();
+      form.append('someKey', 'someValue');
+
+      // @ts-ignore
+      const length = await httpClient.getFormDataSize(form);
+      expect(length).toEqual(171);
     });
   });
 });
