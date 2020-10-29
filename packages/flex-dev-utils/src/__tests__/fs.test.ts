@@ -431,6 +431,11 @@ describe('fs', () => {
       expect(fs.getPaths().app.envExamplePath).toEqual(expect.stringMatching('.env.example'));
       expect(fs.getPaths().app.envDefaultsPath).toEqual(expect.stringMatching('.env.defaults'));
 
+      // dependencies
+      expect(fs.getPaths().app.dependencies.react.version).toEqual('1.2.3');
+      expect(fs.getPaths().app.dependencies.reactDom.version).toEqual('1.2.3');
+      expect(fs.getPaths().app.dependencies.flexUI.version).toEqual('1.2.3');
+
       // package.json
       expect(fs.getPaths().app.name).toEqual('plugin-test');
       expect(fs.getPaths().app.version).toEqual('1.2.3');

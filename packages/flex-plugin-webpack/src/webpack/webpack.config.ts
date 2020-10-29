@@ -272,10 +272,7 @@ export const _getBasePlugins = (environment: Environment): Plugin[] => {
  */
 export const _getStaticPlugins = (environment: Environment): Plugin[] => {
   const plugins: Plugin[] = [];
-
-  const flexUIVersion = getDependencyVersion('@twilio/flex-ui');
-  const reactVersion = getDependencyVersion('react');
-  const reactDOMVersion = getDependencyVersion('react-dom');
+  const dependencies = getPaths().app.dependencies;
 
   // index.html entry point
   if (environment === Environment.Development) {
@@ -286,7 +283,7 @@ export const _getStaticPlugins = (environment: Environment): Plugin[] => {
       template: getPaths().scripts.indexHTMLPath,
     }));
     plugins.push(new InterpolateHtmlPlugin({
-      __FPB_JS_SCRIPTS: _getJSScripts(flexUIVersion, reactVersion, reactDOMVersion).join('\n'),
+      __FPB_JS_SCRIPTS: _getJSScripts(dependencies.flexUI.version, dependencies.react.version, dependencies.reactDom.version).join('\n'),
     }));
   }
 
