@@ -460,6 +460,19 @@ export const getPaths = () => {
       // public/*
       publicDir,
       appConfig: resolveRelative(publicDir, 'appConfig.js'),
+
+      // dependencies
+      dependencies: {
+        react: {
+          version: readPackageJson(resolveRelative(nodeModulesDir, 'react', 'package.json')).version,
+        },
+        reactDom: {
+          version: readPackageJson(resolveRelative(nodeModulesDir, 'react-dom', 'package.json')).version,
+        },
+        flexUI: {
+          version: readPackageJson(resolveRelative(nodeModulesDir, '@twilio/flex-ui', 'package.json')).version,
+        },
+      },
     },
 
     // others
