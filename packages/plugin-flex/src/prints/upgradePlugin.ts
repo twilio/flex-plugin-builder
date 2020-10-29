@@ -43,7 +43,7 @@ const scriptSucceeded = (logger: Logger) => (needsInstall: boolean) => {
   logger.newline();
 
   logger.info('**Next Steps:**');
-  const helpInstruction = '{{$ twilio flex:plugins --help}} to find out more about the new CLI.';
+  const helpInstruction = '{{$ twilio flex:plugins --help}} to find out more about the new CLI';
   if (needsInstall) {
     logger.info(`Run {{$ npm install}} to update all the dependencies and then ${helpInstruction}.`);
   } else {
