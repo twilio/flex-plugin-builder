@@ -21,6 +21,7 @@ import webpack, {
 } from 'webpack';
 import { WebpackType } from '../index';
 import Optimization = webpack.Options.Optimization;
+import DotenvWebpackPlugin from 'dotenv-webpack';
 
 interface LoaderOption { [name: string]: any }
 
@@ -221,6 +222,7 @@ export const _getStyleLoaders = (isProd: boolean) => {
  */
 export const _getBasePlugins = (environment: Environment): Plugin[] => {
   const plugins: Plugin[] = [];
+  const appPaths = getPaths().app;
 
   const flexUIVersion = getDependencyVersion('@twilio/flex-ui');
   const reactVersion = getDependencyVersion('react');
@@ -252,6 +254,14 @@ export const _getBasePlugins = (environment: Environment): Plugin[] => {
   }
 
   plugins.push(new DefinePlugin(defined));
+
+  // Support .env file if provided
+  if (appPaths.hasEnvFile()) {
+    plugins.push(new DotenvWebpackPlugin({
+      safe: appPaths.hasEnvExampleFile(),
+      defaults: appPaths.hasEnvDefaultsPath(),
+    }));
+  }
 
   return plugins;
 };

@@ -1,0 +1,449 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>flex-plugin-builder documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	      <link rel="stylesheet" href="../styles/style.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">flex-plugin-builder documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content interface">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>Interfaces</li>
+  <li>StartServerOptions</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>packages/flex-plugin-scripts/src/scripts/start.ts</code>
+        </p>
+
+
+
+        <section>
+            <h3 id="index">Index</h3>
+            <table class="table table-sm table-bordered index-table">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Properties</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                        <a href="#port">port</a>
+                                </li>
+                                <li>
+                                        <a href="#remoteAll">remoteAll</a>
+                                </li>
+                                <li>
+                                        <a href="#type">type</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+
+
+            <section>
+                <h3 id="inputs">Properties</h3>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="port"></a>
+                                        <span class="name"><b>port</b><a href="#port"><span class="icon ion-ios-link"></span></a></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>port:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="remoteAll"></a>
+                                        <span class="name"><b>remoteAll</b><a href="#remoteAll"><span class="icon ion-ios-link"></span></a></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>remoteAll:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="type"></a>
+                                        <span class="name"><b>type</b><a href="#type"><span class="icon ion-ios-link"></span></a></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>type:     <code>WebpackType</code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>    <code>WebpackType</code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+            </section>
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { env, logger, exit } from &#x27;flex-dev-utils&#x27;;
+import { Environment } from &#x27;flex-dev-utils/dist/env&#x27;;
+import { FlexPluginError } from &#x27;flex-dev-utils/dist/errors&#x27;;
+import { addCWDNodeModule, getPaths, readPluginsJson, setCwd, writeJSONFile } from &#x27;flex-dev-utils/dist/fs&#x27;;
+import { findPort, getDefaultPort } from &#x27;flex-dev-utils/dist/urls&#x27;;
+import {
+  compiler,
+  compilerRenderer,
+  pluginServer,
+  Plugin,
+  emitCompileComplete,
+  IPCType,
+  onIPCServerMessage,
+  startIPCClient,
+  startIPCServer,
+  webpackDevServer
+} from &#x27;flex-plugin-webpack&#x27;;
+
+import getConfiguration, { ConfigurationType, WebpackType } from &#x27;../config&#x27;;
+import run from &#x27;../utils/run&#x27;;
+import { findFirstLocalPlugin, parseUserInputPlugins, UserInputPlugin } from &#x27;../utils/parser&#x27;;
+
+interface StartServerOptions {
+  port: number;
+  remoteAll: boolean;
+  type: WebpackType;
+}
+
+export interface StartScript {
+  port: number;
+}
+
+/**
+ * Finds the port
+ * @param args
+ */
+export const findPortAvailablePort &#x3D; (...args: string[]) &#x3D;&gt; {
+  const portIndex &#x3D; args.indexOf(&#x27;--port&#x27;);
+  return portIndex !&#x3D;&#x3D; -1
+    ? Promise.resolve(parseInt(args[portIndex + 1], 10))
+    : findPort(getDefaultPort(process.env.PORT));
+};
+
+/**
+ * Starts the dev-server
+ */
+export const start &#x3D; async (...args: string[]): Promise&lt;StartScript&gt; &#x3D;&gt; {
+  logger.debug(&#x27;Starting local development environment&#x27;);
+
+  addCWDNodeModule(...args);
+
+  // Finds the first available free port where two consecutive ports are free
+  const port &#x3D; await findPortAvailablePort(...args);
+
+  env.setBabelEnv(Environment.Development);
+  env.setNodeEnv(Environment.Development);
+  env.setHost(&#x27;0.0.0.0&#x27;);
+  env.setPort(port);
+
+  // Future  node version will silently consume unhandled exception
+  process.on(&#x27;unhandledRejection&#x27;, (err) &#x3D;&gt; {
+    throw err;
+  });
+
+  const userInputPlugins &#x3D; parseUserInputPlugins(true, ...args);
+  const plugin &#x3D; findFirstLocalPlugin(userInputPlugins);
+  if (!plugin) {
+    throw new FlexPluginError(&#x27;You must run at least one plugin locally.&#x27;);
+  }
+
+  let type &#x3D; WebpackType.Complete;
+  if (args[0] &#x3D;&#x3D;&#x3D; &#x27;flex&#x27;) {
+    type &#x3D; WebpackType.Static;
+
+    /*
+     * For some reason start flex sometimes throws this exception
+     * I haven&#x27;t been able to figure why but it doesn&#x27;t look like it is crashing the server
+     */
+    process.on(&#x27;uncaughtException&#x27;, (err) &#x3D;&gt; {
+      // @ts-ignore
+      if (err.code &#x3D;&#x3D;&#x3D; &#x27;ECONNRESET&#x27;) {
+        // do nothing
+        return;
+      }
+      throw err;
+    });
+  } else if (args[0] &#x3D;&#x3D;&#x3D; &#x27;plugin&#x27;) {
+    type &#x3D; WebpackType.JavaScript;
+    env.setWDSSocketPort(port);
+  }
+
+  setCwd(plugin.dir);
+  if (type &#x3D;&#x3D;&#x3D; WebpackType.Complete || type &#x3D;&#x3D;&#x3D; WebpackType.JavaScript) {
+    _updatePluginPort(port, plugin.name);
+  }
+
+  const options &#x3D; {
+    port,
+    type,
+    remoteAll: args.includes(&#x27;--include-remote&#x27;),
+  };
+
+  return _startDevServer(userInputPlugins, options);
+};
+
+/**
+ * Starts the webpack dev-server
+ * @param port      the port the server is running on
+ * @param plugins   the list of plugins user has requested
+ * @param type      the webpack type
+ * @param remoteAll whether to request all plugins
+ * @private
+ */
+/* istanbul ignore next */
+export const _startDevServer &#x3D; async (
+  plugins: UserInputPlugin[],
+  options: StartServerOptions,
+): Promise&lt;StartScript&gt; &#x3D;&gt; {
+  const { type, port, remoteAll } &#x3D; options;
+  const isJavaScriptServer &#x3D; type &#x3D;&#x3D;&#x3D; WebpackType.JavaScript;
+  const isStaticServer &#x3D; type &#x3D;&#x3D;&#x3D; WebpackType.Static;
+  const config &#x3D; getConfiguration(ConfigurationType.Webpack, Environment.Development, type);
+  const devConfig &#x3D; getConfiguration(ConfigurationType.DevServer, Environment.Development, type);
+
+  const localPlugins &#x3D; plugins.filter((p) &#x3D;&gt; !p.remote);
+  const pluginRequest &#x3D; {
+    local: localPlugins.map((p) &#x3D;&gt; p.name),
+    remote: plugins.filter((p) &#x3D;&gt; p.remote).map((p) &#x3D;&gt; p.name),
+  };
+  const hasRemote &#x3D; pluginRequest.remote.length &gt; 0 || options.remoteAll;
+
+  // compiler render callbacks
+  const { onCompile, onRemotePlugins } &#x3D; compilerRenderer(port, pluginRequest.local, !isJavaScriptServer, hasRemote);
+
+  // Setup plugin&#x27;s server
+  if (!isJavaScriptServer) {
+    const pluginServerConfig &#x3D; { port, remoteAll };
+    pluginServer(pluginRequest, devConfig, pluginServerConfig, onRemotePlugins);
+  }
+
+  // Start IPC Server
+  if (isStaticServer) {
+    startIPCServer();
+    // start-flex will be listening to compilation errors emitted by start-plugin
+    onIPCServerMessage(IPCType.onCompileComplete, onCompile);
+  }
+  // Start IPC Client
+  if (isJavaScriptServer) {
+    startIPCClient();
+  }
+
+  // Pass either the default onCompile (for start-flex) or the event-emitter (for start-plugin)
+  const devCompiler &#x3D; compiler(config, true, isJavaScriptServer ? emitCompileComplete : onCompile);
+  webpackDevServer(devCompiler, devConfig, type);
+
+  return {
+    port,
+  };
+};
+
+/**
+ * requires packages
+ *
+ * @param pluginsPath   the plugins path
+ * @param pkgPath       the package path
+ * @private
+ */
+/* istanbul ignore next */
+export const _requirePackages &#x3D; (pluginsPath: string, pkgPath: string) &#x3D;&gt; {
+  const plugins &#x3D; require(pluginsPath) as Plugin[];
+  const pkg &#x3D; require(pkgPath);
+
+  return {
+    plugins,
+    pkg,
+  };
+};
+
+/**
+ * Update port of a plugin
+ * @param port
+ * @param name
+ */
+export const _updatePluginPort &#x3D; (port: number, name: string) &#x3D;&gt; {
+  const config &#x3D; readPluginsJson();
+  config.plugins.forEach((plugin) &#x3D;&gt; {
+    if (plugin.name &#x3D;&#x3D;&#x3D; name) {
+      plugin.port &#x3D; port;
+    }
+  });
+
+  writeJSONFile(getPaths().cli.pluginsJsonPath, config);
+};
+
+run(start);
+
+export default start;
+</code></pre>
+    </div>
+</div>
+
+
+                   
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
+            var COMPODOC_CURRENT_PAGE_URL = 'StartServerOptions.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
+       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+       <script src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

@@ -1,0 +1,420 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>flex-plugin-builder documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	      <link rel="stylesheet" href="../styles/style.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">flex-plugin-builder documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content interface">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>Interfaces</li>
+  <li>Package</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>packages/flex-plugin-scripts/src/scripts/pre-script-check.ts</code>
+        </p>
+
+
+
+        <section>
+            <h3 id="index">Index</h3>
+            <table class="table table-sm table-bordered index-table">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Properties</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                        <a href="#dependencies">dependencies</a>
+                                </li>
+                                <li>
+                                        <a href="#version">version</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+
+
+            <section>
+                <h3 id="inputs">Properties</h3>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="dependencies"></a>
+                                        <span class="name"><b>dependencies</b><a href="#dependencies"><span class="icon ion-ios-link"></span></a></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>dependencies:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="version"></a>
+                                        <span class="name"><b>version</b><a href="#version"><span class="icon ion-ios-link"></span></a></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>version:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+            </section>
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { env, logger, semver, FlexPluginError, exit } from &#x27;flex-dev-utils&#x27;;
+import {
+  checkFilesExist,
+  findGlobs,
+  resolveRelative,
+  getPaths,
+  getCwd,
+  checkPluginConfigurationExists,
+  addCWDNodeModule,
+  resolveModulePath,
+  _require,
+  setCwd,
+  getCliPaths,
+} from &#x27;flex-dev-utils/dist/fs&#x27;;
+import { copyFileSync, readFileSync } from &#x27;fs&#x27;;
+import { join } from &#x27;path&#x27;;
+import {
+  unbundledReactMismatch,
+  versionMismatch,
+  expectedDependencyNotFound,
+  loadPluginCountError,
+  typescriptNotInstalled,
+} from &#x27;../prints&#x27;;
+import run from &#x27;../utils/run&#x27;;
+import { findFirstLocalPlugin, parseUserInputPlugins } from &#x27;../utils/parser&#x27;;
+
+interface Package {
+  version: string;
+  dependencies: object;
+}
+
+const extensions &#x3D; [&#x27;js&#x27;, &#x27;jsx&#x27;, &#x27;ts&#x27;, &#x27;tsx&#x27;];
+
+const PackagesToVerify &#x3D; [
+  &#x27;react&#x27;,
+  &#x27;react-dom&#x27;,
+];
+
+export const FLAG_MULTI_PLUGINS &#x3D; &#x27;--multi-plugins-pilot&#x27;;
+
+export const flags &#x3D; [FLAG_MULTI_PLUGINS];
+
+/**
+ * Returns true if there are any .d.ts/.ts/.tsx files
+ */
+/* istanbul ignore next */
+export const _hasTypescriptFiles &#x3D; () &#x3D;&gt; findGlobs(&#x27;**/*.(ts|tsx)&#x27;, &#x27;!**/node_modules&#x27;, &#x27;!**/*.d.ts&#x27;).length !&#x3D;&#x3D; 0;
+
+/**
+ * Validates the TypeScript project
+ * @private
+ */
+export const _validateTypescriptProject &#x3D; () &#x3D;&gt; {
+  if (!_hasTypescriptFiles()) {
+    return;
+  }
+
+  if (!resolveModulePath(&#x27;typescript&#x27;)) {
+    typescriptNotInstalled();
+    exit(1);
+
+    return;
+  }
+
+  if (checkFilesExist(getPaths().app.tsConfigPath)) {
+    return;
+  }
+
+  logger.clearTerminal();
+  env.persistTerminal();
+  logger.warning(&#x27;No tsconfig.json was found, creating a default one.&#x27;);
+  copyFileSync(getPaths().scripts.tsConfigPath, getPaths().app.tsConfigPath);
+};
+
+/**
+ * Checks the version of external libraries and exists if customer is using another version
+ *
+ * allowSkip  whether to allow skip
+ * allowReact whether to allow reacts
+ * @private
+ */
+/* istanbul ignore next */
+export const _checkExternalDepsVersions &#x3D; (allowSkip: boolean, allowReact: boolean) &#x3D;&gt; {
+  const flexUIPkg &#x3D; _require(getPaths().app.flexUIPkgPath);
+
+  PackagesToVerify.forEach((name) &#x3D;&gt; _verifyPackageVersion(flexUIPkg, allowSkip, allowReact, name));
+};
+
+/**
+ * Checks the version of external libraries and exists if customer is using another version
+ *
+ * @param flexUIPkg   the flex-ui package.json
+ * @param allowSkip   whether to allow skip
+ * @param allowReact  whether to allow unbundled react
+ * @param name        the package to check
+ * @private
+ */
+export const _verifyPackageVersion &#x3D; (flexUIPkg: Package, allowSkip: boolean, allowReact: boolean, name: string) &#x3D;&gt; {
+  const expectedDependency &#x3D; flexUIPkg.dependencies[name];
+  const supportsUnbundled &#x3D; semver.satisfies(flexUIPkg.version, &#x27;&gt;&#x3D;1.19.0&#x27;);
+  if (!expectedDependency) {
+    expectedDependencyNotFound(name);
+
+    return exit(1);
+  }
+
+  // @ts-ignore
+  const requiredVersion &#x3D; semver.coerce(expectedDependency).version;
+  const installedPath &#x3D; resolveRelative(getPaths().app.nodeModulesDir, name, &#x27;package.json&#x27;);
+  const installedVersion &#x3D; _require(installedPath).version;
+
+  if (requiredVersion !&#x3D;&#x3D; installedVersion) {
+    if (allowReact) {
+      if (supportsUnbundled) {
+        return;
+      }
+
+      unbundledReactMismatch(flexUIPkg.version, name, installedVersion, allowSkip);
+    } else {
+      versionMismatch(name, installedVersion, requiredVersion, allowSkip);
+    }
+
+
+    if (!allowSkip) {
+      return exit(1);
+    }
+  }
+};
+
+/**
+ * Returns the content of src/index
+ * @private
+ */
+/* istanbul ignore next */
+export const _readIndexPage &#x3D; (): string &#x3D;&gt; {
+  const srcIndexPath &#x3D; join(getCwd(), &#x27;src&#x27;, &#x27;index&#x27;);
+  const match &#x3D; extensions
+    .map(ext &#x3D;&gt; &#x60;${srcIndexPath}.${ext}&#x60;)
+    .find(file &#x3D;&gt; checkFilesExist(file));
+  if (match) {
+    return readFileSync(match, &#x27;utf8&#x27;);
+  }
+
+  throw new FlexPluginError(&#x27;No index file was found in your src directory&#x27;);
+}
+
+/**
+ * Checks how many plugins this single JS bundle is exporting
+ * You can only have one plugin per JS bundle
+ * @private
+ */
+export const _checkPluginCount &#x3D; () &#x3D;&gt; {
+  const content &#x3D; _readIndexPage();
+  const match &#x3D; content.match(/loadPlugin/g);
+  if (!match || match.length &#x3D;&#x3D;&#x3D; 0) {
+    loadPluginCountError(0);
+
+    return process.exit(1);
+  }
+  if (match.length &gt; 1) {
+    loadPluginCountError(match.length);
+
+    return process.exit(1);
+  }
+};
+
+/**
+ * Attempts to set the cwd of the plugin
+ * @param args  the CLI args
+ * @private
+ */
+export const _setPluginDir &#x3D; (...args: string[]) &#x3D;&gt; {
+  if (!checkFilesExist(getCliPaths().pluginsJsonPath)) {
+    return;
+  }
+  const userInputPlugins &#x3D; parseUserInputPlugins(false, ...args);
+  const plugin &#x3D; findFirstLocalPlugin(userInputPlugins);
+  if (plugin &amp;&amp; checkFilesExist(plugin.dir)) {
+    setCwd(plugin.dir);
+  }
+}
+
+/**
+ * Runs pre-start/build checks
+ */
+const preScriptCheck &#x3D; async (...args: string[]) &#x3D;&gt; {
+  logger.debug(&#x27;Checking Flex plugin project directory&#x27;);
+
+  addCWDNodeModule(...args);
+
+  _setPluginDir(...args);
+  await checkPluginConfigurationExists(getPaths().app.name, getPaths().app.dir, args.includes(FLAG_MULTI_PLUGINS));
+  _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
+  _checkPluginCount();
+  _validateTypescriptProject();
+};
+
+run(preScriptCheck);
+
+export default preScriptCheck;
+</code></pre>
+    </div>
+</div>
+
+
+                   
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
+            var COMPODOC_CURRENT_PAGE_URL = 'Package.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
+       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+       <script src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>
