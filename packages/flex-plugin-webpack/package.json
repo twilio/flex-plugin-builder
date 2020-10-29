@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-webpack",
-  "version": "4.3.1-beta.0",
+  "version": "4.3.2-beta.0",
   "description": "Flex Plugin Webpack and Webpack dev-server configurations",
   "keywords": [
     "flex",
