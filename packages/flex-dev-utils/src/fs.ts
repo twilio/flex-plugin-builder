@@ -435,6 +435,14 @@ export const getPaths = () => {
       isTSProject: () => checkFilesExist(tsConfigPath),
       setupTestsPaths: [resolveCwd('setupTests.js'), resolveRelative(srcDir, 'setupTests.js')],
 
+      // .env file support
+      envPath: resolveCwd('/.env'),
+      hasEnvFile: () => checkFilesExist(resolveCwd('/.env')),
+      envExamplePath: resolveCwd('/.env.example'),
+      hasEnvExampleFile: () => checkFilesExist(resolveCwd('/.env.example')),
+      envDefaultsPath: resolveCwd('/.env.defaults'),
+      hasEnvDefaultsPath: () => checkFilesExist(resolveCwd('/.env.defaults')),
+
       // build/*
       buildDir,
       bundlePath: resolveRelative(buildDir, pkgName, '.js'),

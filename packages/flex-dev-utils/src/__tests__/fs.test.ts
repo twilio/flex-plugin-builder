@@ -426,6 +426,11 @@ describe('fs', () => {
       expect(fs.getPaths().app.publicDir).toEqual(expect.stringMatching('public$'));
       expect(fs.getPaths().app.appConfig).toEqual(expect.stringMatching('appConfig\.js$'));
 
+      // env support
+      expect(fs.getPaths().app.envPath).toEqual(expect.stringMatching('.env'));
+      expect(fs.getPaths().app.envExamplePath).toEqual(expect.stringMatching('.env.example'));
+      expect(fs.getPaths().app.envDefaultsPath).toEqual(expect.stringMatching('.env.defaults'));
+
       // package.json
       expect(fs.getPaths().app.name).toEqual('plugin-test');
       expect(fs.getPaths().app.version).toEqual('1.2.3');

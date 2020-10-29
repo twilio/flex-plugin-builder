@@ -1,25 +1,43 @@
 import * as webpack from 'webpack';
-import * as webpackConfig from '../webpack.config';
 import { Environment } from 'flex-dev-utils/dist/env';
+import DotenvWebpackPlugin from 'dotenv-webpack';
+import * as webpackConfig from '../webpack.config';
 import * as fs from 'flex-dev-utils/dist/fs';
 import { WebpackType } from '../../index';
 
 jest.mock('flex-dev-utils/dist/fs');
+jest.mock('dotenv-webpack');
 
 describe('WebpackConfiguration', () => {
+  const isTSProject = jest.fn();
+  const hasEnvFile = jest.fn();
+  const hasEnvExampleFile = jest.fn();
+  const hasEnvDefaultsPath = jest.fn();
   const paths = {
+    webpack: {
+      nodeModulesDir: 'webpack/node_modules'
+    },
     app: {
       name: 'test',
       buildDir: 'the/build/dir',
       publicDir: 'the/public/dir',
+      isTSProject,
+      hasEnvFile,
+      hasEnvExampleFile,
+      hasEnvDefaultsPath,
     },
+    extensions: [],
     scripts: {
       nodeModulesDir: 'the/scripts/node_modules',
-    }
+    },
+    cli: {
+      nodeModulesDir: 'cli/node_modules',
+    },
   }
 
   beforeEach(() => {
     jest.restoreAllMocks();
+    jest.resetModules();
   });
 
   describe('default', () => {
@@ -125,6 +143,66 @@ describe('WebpackConfiguration', () => {
       expect(scripts[2]).toContain('flex-ui');
       expect(scripts[2]).toContain('1.19.0');
       expect(scripts[2]).toContain('twilio-flex.unbundled-react.min.js');
+    });
+  });
+
+  describe('_getBasePlugins', () => {
+    beforeEach(() => {
+      // @ts-ignore
+      DotenvWebpackPlugin.mockReset();
+    });
+
+    it('should not set DotenvWebpackPlugin if no .env file is found', () => {
+      hasEnvFile.mockReturnValue(false);
+      const config = webpackConfig._getBase(Environment.Development);
+
+      const plugins = config.plugins || [];
+      const plugin = plugins.find(p => p.constructor.name === DotenvWebpackPlugin.name);
+
+      expect(plugin).toBeUndefined();
+      expect(DotenvWebpackPlugin).not.toHaveBeenCalled();
+    });
+
+    it('should set DotenvWebpackPlugin with no .example or .defaults files', () => {
+      hasEnvFile.mockReturnValue(true);
+      hasEnvExampleFile.mockReturnValue(false);
+      hasEnvDefaultsPath.mockReturnValue(false);
+      const config = webpackConfig._getBase(Environment.Development);
+
+      const plugins = config.plugins || [];
+      const plugin = plugins.find(p => p.constructor.name === DotenvWebpackPlugin.name);
+
+      expect(plugin).toBeDefined();
+      expect(DotenvWebpackPlugin).toHaveBeenCalledTimes(1);
+      expect(DotenvWebpackPlugin).toHaveBeenCalledWith({ safe: false, defaults: false });
+    });
+
+    it('should set DotenvWebpackPlugin with .example but no .defaults files', () => {
+      hasEnvFile.mockReturnValue(true);
+      hasEnvExampleFile.mockReturnValue(true);
+      hasEnvDefaultsPath.mockReturnValue(false);
+      const config = webpackConfig._getBase(Environment.Development);
+
+      const plugins = config.plugins || [];
+      const plugin = plugins.find(p => p.constructor.name === DotenvWebpackPlugin.name);
+
+      expect(plugin).toBeDefined();
+      expect(DotenvWebpackPlugin).toHaveBeenCalledTimes(1);
+      expect(DotenvWebpackPlugin).toHaveBeenCalledWith({ safe: true, defaults: false });
+    });
+
+    it('should set DotenvWebpackPlugin with .example and .defaults files', () => {
+      hasEnvFile.mockReturnValue(true);
+      hasEnvExampleFile.mockReturnValue(true);
+      hasEnvDefaultsPath.mockReturnValue(true);
+      const config = webpackConfig._getBase(Environment.Development);
+
+      const plugins = config.plugins || [];
+      const plugin = plugins.find(p => p.constructor.name === DotenvWebpackPlugin.name);
+
+      expect(plugin).toBeDefined();
+      expect(DotenvWebpackPlugin).toHaveBeenCalledTimes(1);
+      expect(DotenvWebpackPlugin).toHaveBeenCalledWith({ safe: true, defaults: true });
     });
   });
 });
