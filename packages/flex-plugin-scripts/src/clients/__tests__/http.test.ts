@@ -197,7 +197,7 @@ describe('HttpClient', () => {
     });
   });
 
-  describe.only('getUploadOptions', () => {
+  describe('getUploadOptions', () => {
     it('should return config without adapter', async () => {
       const httpClient = new HttpClient(config);
       const form = new FormData();
@@ -241,6 +241,21 @@ describe('HttpClient', () => {
       // @ts-ignore
       const length = await httpClient.getFormDataSize(form);
       expect(length).toEqual(171);
+    });
+  });
+
+  describe('onError', () => {
+    it('should reject', async (done) => {
+      const httpClient = new HttpClient({ ...config, exitOnRejection: false });
+      const err = new Error('the-error');
+
+      try {
+        // @ts-ignore
+        await httpClient.onError(err);
+      } catch (e) {
+        expect(e).toEqual(err);
+        done();
+      }
     });
   });
 });

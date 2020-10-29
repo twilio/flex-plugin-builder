@@ -4,7 +4,7 @@ import { format } from 'util';
 import { logger, env } from 'flex-dev-utils';
 import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 import FormData from 'form-data';
-import { Readable, Transform } from 'stream';
+import { Transform } from 'stream';
 
 export type ContentType = 'application/x-www-form-urlencoded' | 'application/json';
 export interface HttpConfig {
@@ -15,7 +15,7 @@ export interface HttpConfig {
   contentType?: ContentType;
 }
 
-interface UploadRequstConfig extends AxiosRequestConfig {
+interface UploadRequestConfig extends AxiosRequestConfig {
   headers: Record<string, unknown>;
   auth: {
     username: string;
@@ -137,8 +137,9 @@ export default class Http {
    * Create the upload configuration
    * @param formData
    */
-  private getUploadOptions = async (formData: FormData): Promise<UploadRequstConfig> => {
-    const options: UploadRequstConfig = {
+  /* istanbul ignore next */
+  private getUploadOptions = async (formData: FormData): Promise<UploadRequestConfig> => {
+    const options: UploadRequestConfig = {
       headers: formData.getHeaders(),
       auth: {
         username: this.config.auth.username,
@@ -182,14 +183,14 @@ export default class Http {
   private onError = (err: any): Promise<any> => {
     logger.trace('Http request failed', err);
 
-    const request = err.config || {};
-    const resp = err.response || {};
-    const status = resp.status;
-    const msg = resp.data && resp.data.message || resp.data;
-    const title = 'Request %s to %s failed with status %s and message %s';
-    const errMsg = format(title, request.method, request.url, status, msg);
-
     if (this.config.exitOnRejection) {
+      const request = err.config || {};
+      const resp = err.response || {};
+      const status = resp.status;
+      const msg = resp.data && resp.data.message || resp.data;
+      const title = 'Request %s to %s failed with status %s and message %s';
+      const errMsg = format(title, request.method, request.url, status, msg);
+
       throw new Error(errMsg);
     } else {
       return Promise.reject(err);
