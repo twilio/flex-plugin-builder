@@ -6,6 +6,7 @@ import { checkForUpdate } from 'flex-dev-utils/dist/updateNotifier';
 import { readdirSync, existsSync } from 'fs';
 import { render as markedRender } from 'flex-dev-utils/dist/marked';
 import { join, dirname } from 'path';
+import { Realm } from 'flex-dev-utils/dist/env';
 
 import run from './utils/run';
 import { getPaths, getCwd, addCWDNodeModule } from 'flex-dev-utils/dist/fs';
@@ -84,6 +85,14 @@ export const setEnvironment = (...argv: string[]) => {
 
   if (argv.includes('--persist-terminal')) {
     env.persistTerminal();
+  }
+
+  const indexRealm = argv.indexOf('--realm');
+  if (indexRealm !== -1) {
+    const realm = argv[indexRealm + 1];
+    if (realm === 'dev' || realm === 'stage') {
+      env.setRealm(realm as Realm);
+    }
   }
 };
 

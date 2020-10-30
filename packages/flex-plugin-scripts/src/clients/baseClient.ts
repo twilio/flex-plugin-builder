@@ -2,6 +2,8 @@ import { AuthConfig } from 'flex-dev-utils/dist/credentials';
 
 import Http, { ContentType, HttpConfig } from './http';
 import { getPackageDetails, FLEX_PACKAGES } from '../utils/package';
+import { env } from 'flex-dev-utils';
+import { Realm } from 'flex-dev-utils/dist/env';
 
 export interface BaseClientOptions {
   contentType: ContentType;
@@ -14,7 +16,7 @@ export default abstract class BaseClient {
    */
   public static getBaseUrl = (subDomain: string, version: string): string => {
     const realms = BaseClient.realms;
-    const realm = process.env.REALM;
+    const realm = env.getRealm() as Realm;
     if (realm && !realms.includes(realm)) {
       throw new Error(`Invalid realm ${realm} was provided. Realm must be one of ${realms.join(',')}`);
     }
@@ -35,7 +37,7 @@ export default abstract class BaseClient {
             .trimLeft();
   }
 
-  private static realms = ['dev', 'stage'];
+  private static realms: Realm[] = ['dev', 'stage'];
   protected readonly config: HttpConfig;
   protected readonly http: Http;
 

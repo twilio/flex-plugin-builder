@@ -1,3 +1,7 @@
+import env from 'flex-plugins-utils-env';
+
+export { Realm } from 'flex-plugins-utils-env/dist/lib/env';
+
 export enum Environment {
   Production = 'production',
   Development = 'development',
@@ -20,18 +24,10 @@ export enum Lifecycle {
 const isDefined = (key: string | undefined) => typeof key === 'string' && key !== '';
 
 /* istanbul ignore next */
-export const isWin32 = () => process.platform === 'win32';
-export const persistTerminal = () => process.env.PERSIST_TERMINAL = 'true';
 export const skipPreflightCheck = () => process.env.SKIP_PREFLIGHT_CHECK === 'true';
-export const isTerminalPersisted = () => process.env.PERSIST_TERMINAL === 'true';
 export const allowUnbundledReact = () => process.env.UNBUNDLED_REACT === 'true';
-export const setQuiet = () => process.env.QUIET = 'true';
-export const isCI = () => process.env.CI === 'true';
-export const isTrace = () => process.env.TRACE === 'true';
-export const isDebug = () => process.env.DEBUG === 'true' || isTrace();
 export const getAccountSid = () => process.env.TWILIO_ACCOUNT_SID;
 export const getAuthToken = () => process.env.TWILIO_AUTH_TOKEN;
-export const getRealm = () => process.env.REALM;
 export const hasHost = () => isDefined(process.env.HOST);
 export const getHost = () => process.env.HOST;
 export const setHost = (host: string) => process.env.HOST = host;
@@ -58,18 +54,11 @@ export const getWSSocket = () => ({
 });
 
 export default {
-  isWin32,
-  persistTerminal,
+  ...env,
   skipPreflightCheck,
   allowUnbundledReact,
-  isTerminalPersisted,
-  setQuiet,
-  isCI,
-  isDebug,
-  isTrace,
   getAccountSid,
   getAuthToken,
-  getRealm,
   hasHost,
   getHost,
   setHost,
