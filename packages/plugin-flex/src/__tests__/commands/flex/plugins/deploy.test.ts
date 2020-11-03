@@ -58,6 +58,7 @@ describe('Commands/FlexPluginsDeploy', () => {
       getServerlessSid.returns(Promise.resolve(null));
       hasLegacy.returns(Promise.resolve(false));
 
+      sinon.stub(cmd, 'builderVersion').get(() => 4);
       sinon.stub(cmd, 'isPluginFolder').returns(true);
       sinon.stub(cmd, 'doRun').returnsThis();
       sinon.stub(cmd, 'pkg').get(() => pkg);
@@ -456,4 +457,10 @@ describe('Commands/FlexPluginsDeploy', () => {
       expect(cmd.flexConfigurationClient.unregisterServerlessSid).to.have.been.calledWith('ZS123');
     })
     .it('should re-create new service');
+
+  start()
+    .test(async (cmd) => {
+      expect(cmd.checkCompatibility).to.equal(true);
+    })
+    .it('should have compatibility set');
 });

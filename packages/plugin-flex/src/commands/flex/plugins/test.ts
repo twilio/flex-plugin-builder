@@ -1,7 +1,6 @@
 import { createDescription } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { test as testDocs } from '../../../commandDocs.json';
-import { IncompatibleVersionError } from '../../../exceptions';
 
 const baseFlags = { ...FlexPlugin.flags };
 // @ts-ignore
@@ -25,12 +24,15 @@ export default class FlexPluginsTest extends FlexPlugin {
    * @override
    */
   async doRun() {
-    if (this.builderVersion !== 4) {
-      throw new IncompatibleVersionError(this.pkg.name, this.builderVersion);
-    }
-
     process.env.PERSIST_TERMINAL = 'true';
     await this.runScript('pre-script-check');
     await this.runScript('test', ['--env=jsdom']);
+  }
+
+  /**
+   * @override
+   */
+  get checkCompatibility(): boolean {
+    return true;
   }
 }

@@ -7,7 +7,7 @@ import semver from 'semver';
 import { createDescription } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { readJSONFile } from '../../../utils/fs';
-import { IncompatibleVersionError, TwilioCliError } from '../../../exceptions';
+import { TwilioCliError } from '../../../exceptions';
 import { start as startDocs } from '../../../commandDocs.json';
 
 const baseFlags = { ...FlexPlugin.flags };
@@ -117,10 +117,6 @@ export default class FlexPluginsStart extends FlexPlugin {
     if (!scriptVersion) {
       scriptVersion = semver.coerce(pkg.devDependencies['flex-plugin-scripts']);
     }
-
-    if (scriptVersion === null || scriptVersion.major !== 4) {
-      throw new IncompatibleVersionError(pluginName, scriptVersion?.major);
-    }
   }
 
   /**
@@ -128,6 +124,13 @@ export default class FlexPluginsStart extends FlexPlugin {
    */
   get _flags() {
     return this.parse(FlexPluginsStart).flags;
+  }
+
+  /**
+   * @override
+   */
+  get checkCompatibility(): boolean {
+    return true;
   }
 }
 

@@ -1,2 +1,2 @@
 export { default as TwilioCliError } from './TwilioCliError';
-export { default as IncompatibleVersionError } from './IncompatibleVersionError';
+export { default as NotImplementedError } from './NotImplementedError';

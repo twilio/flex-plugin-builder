@@ -241,4 +241,43 @@ describe('SubCommands/FlexPlugin', () => {
       expect(cmd.builderVersion).to.be.null;
     })
     .it('should return null if invalid version');
+
+  start()
+    .setup(async (cmd) => {
+      sinon.stub(cmd, 'isPluginFolder').returns(true);
+      sinon.stub(cmd, 'builderVersion').get(() => 3);
+      sinon.stub(cmd, 'checkCompatibility').get(() => true);
+      sinon.stub(cmd, 'exit').returnsThis();
+      sinon.stub(cmd, 'doRun').resolves();
+
+      await cmd.run();
+    })
+    .test((cmd) => {
+      // @ts-ignore
+      expect(cmd.exit).to.have.been.calledOnce;
+      expect(cmd.exit).to.have.been.calledWith(1);
+    })
+    .it('should quit if builder version is incorrect');
+
+  start()
+    .setup(async (cmd) => {
+      sinon.stub(cmd, 'isPluginFolder').returns(true);
+      sinon.stub(cmd, 'builderVersion').get(() => 4);
+      sinon.stub(cmd, 'checkCompatibility').get(() => true);
+      sinon.stub(cmd, 'exit').returnsThis();
+      sinon.stub(cmd, 'doRun').resolves();
+
+      await cmd.run();
+    })
+    .test((cmd) => {
+      // @ts-ignore
+      expect(cmd.exit).not.to.have.been.called;
+    })
+    .it('should not quit if builder version is correct');
+
+  start()
+    .test(async (cmd) => {
+      expect(cmd.checkCompatibility).to.equal(false);
+    })
+    .it('should have compatibility set to false');
 });

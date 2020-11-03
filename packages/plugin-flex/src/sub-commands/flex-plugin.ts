@@ -23,7 +23,7 @@ import semver from 'semver/preload';
 import parser from '../utils/parser';
 import * as flags from '../utils/flags';
 import { filesExist, readJSONFile, readJsonFile, writeJSONFile } from '../utils/fs';
-import { TwilioCliError } from '../exceptions';
+import { NotImplementedError, TwilioCliError } from '../exceptions';
 import { exit, instanceOf } from '../utils/general';
 import { toSentenceCase } from '../utils/strings';
 import prints from '../prints';
@@ -337,6 +337,11 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    */
   async run() {
     await super.run();
+    if (this.checkCompatibility && this.builderVersion !== 4) {
+      this._prints.flexPlugin.incompatibleVersion(this.pkg.name, this.builderVersion);
+      this.exit(1);
+    }
+
     this.logger.debug(`Using Flex Plugins Config File: ${this.pluginsConfigPath}`);
 
     if (this._flags['clear-terminal']) {
@@ -518,7 +523,14 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   /* istanbul ignore next */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async doRun(): Promise<any | void> {
-    throw new TwilioCliError('Abstract method must be implemented');
+    throw new NotImplementedError();
+  }
+
+  /**
+   * Requires a check of compatibility
+   */
+  get checkCompatibility(): boolean {
+    return false;
   }
 
   /**

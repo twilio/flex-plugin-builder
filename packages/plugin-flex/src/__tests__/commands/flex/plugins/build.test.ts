@@ -1,7 +1,5 @@
 import { expect, createTest } from '../../../framework';
 import FlexPluginsBuild from '../../../../commands/flex/plugins/build';
-import { IncompatibleVersionError } from '../../../../exceptions';
-import { instanceOf } from '../../../../utils/general';
 
 describe('Commands/FlexPluginsBuild', () => {
   const { sinon, start } = createTest(FlexPluginsBuild);
@@ -29,14 +27,8 @@ describe('Commands/FlexPluginsBuild', () => {
     .it('should run build script');
 
   start()
-    .setup((cmd) => {
-      sinon.stub(cmd, 'builderVersion').get(() => null);
-    })
     .test(async (cmd) => {
-      await cmd.doRun();
+      expect(cmd.checkCompatibility).to.equal(true);
     })
-    .catch((e) => {
-      expect(instanceOf(e, IncompatibleVersionError)).to.equal(true);
-    })
-    .it('should throw error if not using plugin-builder 4');
+    .it('should have compatibility set');
 });

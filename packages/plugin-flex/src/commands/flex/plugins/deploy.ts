@@ -5,7 +5,7 @@ import { DeployResult } from 'flex-plugin-scripts/dist/scripts/deploy';
 import { CLIParseError } from '@oclif/parser/lib/errors';
 
 import * as flags from '../../../utils/flags';
-import { IncompatibleVersionError, TwilioCliError } from '../../../exceptions';
+import { TwilioCliError } from '../../../exceptions';
 import { createDescription, instanceOf } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { deploy as deployDocs } from '../../../commandDocs.json';
@@ -85,10 +85,6 @@ export default class FlexPluginsDeploy extends FlexPlugin {
    * @override
    */
   async doRun() {
-    if (this.builderVersion !== 4) {
-      throw new IncompatibleVersionError(this.pkg.name, this.builderVersion);
-    }
-
     await this.checkServerlessInstance();
     await this.checkForLegacy();
 
@@ -239,5 +235,12 @@ export default class FlexPluginsDeploy extends FlexPlugin {
   /* istanbul ignore next */
   get _flags() {
     return this.parse(FlexPluginsDeploy).flags;
+  }
+
+  /**
+   * @override
+   */
+  get checkCompatibility(): boolean {
+    return true;
   }
 }
