@@ -53,6 +53,7 @@ describe('PreScriptCheck', () => {
     const _checkPluginCount = jest.spyOn(preScriptCheck, '_checkPluginCount');
     const checkPluginConfigurationExists = jest.spyOn(fsScripts, 'checkPluginConfigurationExists');
     const _setPluginDir = jest.spyOn(preScriptCheck, '_setPluginDir');
+    const cwd = jest.spyOn(process, 'cwd');
 
     beforeEach(() => {
       _checkExternalDepsVersions.mockReset();
@@ -60,12 +61,14 @@ describe('PreScriptCheck', () => {
       _checkPluginCount.mockReset();
       checkPluginConfigurationExists.mockReset();
       _setPluginDir.mockReset();
+      cwd.mockReset();
 
       _checkExternalDepsVersions.mockReturnThis();
       _validateTypescriptProject.mockReturnValue(undefined);
       _checkPluginCount.mockReturnValue(undefined);
       checkPluginConfigurationExists.mockReturnThis();
       _setPluginDir.mockReturnThis();
+      cwd.mockReturnValue('/path/to/plugin-dir');
     });
 
     afterAll(() => {
@@ -74,6 +77,7 @@ describe('PreScriptCheck', () => {
       _checkPluginCount.mockRestore();
       checkPluginConfigurationExists.mockRestore();
       _setPluginDir.mockRestore();
+      cwd.mockRestore();
     });
 
     const expectCalled = (allowSkip: boolean, allowReact: boolean) => {
@@ -88,14 +92,16 @@ describe('PreScriptCheck', () => {
       await preScriptCheck.default();
 
       expectCalled(false, false);
-      expect(checkPluginConfigurationExists).toHaveBeenCalledWith(paths.app.name, paths.app.dir, false);
+      expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-dir', '/path/to/plugin-dir', false);
+      expect(_setPluginDir).toHaveBeenCalledTimes(2);
     });
 
     it('should call with multi-plugin flag', async () => {
       await preScriptCheck.default(preScriptCheck.FLAG_MULTI_PLUGINS);
 
       expectCalled(false, false);
-      expect(checkPluginConfigurationExists).toHaveBeenCalledWith(paths.app.name, paths.app.dir, true);
+      expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-dir', '/path/to/plugin-dir', true);
+      expect(_setPluginDir).toHaveBeenCalledTimes(2);
     });
 
     it('should call all methods and allow skip', async () => {

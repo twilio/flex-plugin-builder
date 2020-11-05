@@ -13,7 +13,7 @@ import {
   getCliPaths,
 } from 'flex-dev-utils/dist/fs';
 import { copyFileSync, readFileSync } from 'fs';
-import { join } from 'path';
+import { join, basename } from 'path';
 import {
   unbundledReactMismatch,
   versionMismatch,
@@ -173,8 +173,10 @@ export const _setPluginDir = (...args: string[]) => {
   if (!checkFilesExist(getCliPaths().pluginsJsonPath)) {
     return;
   }
+
   const userInputPlugins = parseUserInputPlugins(false, ...args);
   const plugin = findFirstLocalPlugin(userInputPlugins);
+
   if (plugin && checkFilesExist(plugin.dir)) {
     setCwd(plugin.dir);
   }
@@ -189,7 +191,10 @@ const preScriptCheck = async (...args: string[]) => {
   addCWDNodeModule(...args);
 
   _setPluginDir(...args);
-  await checkPluginConfigurationExists(getPaths().app.name, getPaths().app.dir, args.includes(FLAG_MULTI_PLUGINS));
+  const resetPluginDirectory = await checkPluginConfigurationExists(basename(process.cwd()), process.cwd(), args.includes(FLAG_MULTI_PLUGINS));
+  if (resetPluginDirectory) {
+    _setPluginDir(...args);
+  }
   _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
   _checkPluginCount();
   _validateTypescriptProject();

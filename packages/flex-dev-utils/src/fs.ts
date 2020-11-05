@@ -257,9 +257,12 @@ export const findGlobs = (...patterns: string[]) => {
 /**
  * Touch ~/.twilio-cli/flex/plugins.json if it does not exist
  * Check if this plugin is in this config file. If not, add it.
- * @private
+ * @param name  the plugin name
+ * @param dir   the plugin directory
+ * @param promptForOverwrite  whether to prompt for overwrite
+ * @return whether the plugin-directory was overwritten
  */
-export const checkPluginConfigurationExists = async (name: string, dir: string, promptForOverwrite = false) => {
+export const checkPluginConfigurationExists = async (name: string, dir: string, promptForOverwrite = false): Promise<boolean> => {
   const cliPaths = getCliPaths();
   if (!checkFilesExist(cliPaths.pluginsJsonPath)) {
     mkdirpSync(cliPaths.flexDir);
@@ -272,11 +275,11 @@ export const checkPluginConfigurationExists = async (name: string, dir: string, 
   if (!plugin) {
     config.plugins.push({ name, dir, port: 0 });
     writeJSONFile(cliPaths.pluginsJsonPath, config);
-    return;
+    return true;
   }
 
   if (plugin.dir === dir) {
-    return;
+    return false;
   }
 
   const answer = promptForOverwrite
@@ -286,7 +289,10 @@ export const checkPluginConfigurationExists = async (name: string, dir: string, 
   if (answer) {
     plugin.dir = dir;
     writeJSONFile(cliPaths.pluginsJsonPath, config);
+    return true;
   }
+
+  return false;
 };
 
 /**
