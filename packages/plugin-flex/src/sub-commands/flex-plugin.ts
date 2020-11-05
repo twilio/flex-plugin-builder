@@ -337,21 +337,23 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    */
   async run() {
     await super.run();
-    if (this.checkCompatibility && this.builderVersion !== 4) {
-      this._prints.flexPlugin.incompatibleVersion(this.pkg.name, this.builderVersion);
-      this.exit(1);
-    }
-
     this.logger.debug(`Using Flex Plugins Config File: ${this.pluginsConfigPath}`);
 
     if (this._flags['clear-terminal']) {
       this._logger.clearTerminal();
     }
 
-    if (this.opts.runInDirectory && !this.isPluginFolder()) {
-      throw new TwilioCliError(
-        `${this.cwd} directory is not a flex plugin directory. You must either run a plugin inside a directory or use the --name flag`,
-      );
+    if (this.opts.runInDirectory) {
+      if (!this.isPluginFolder()) {
+        throw new TwilioCliError(
+          `${this.cwd} directory is not a flex plugin directory. You must either run a plugin inside a directory or use the --name flag`,
+        );
+      }
+
+      if (this.checkCompatibility && this.builderVersion !== 4) {
+        this._prints.flexPlugin.incompatibleVersion(this.pkg.name, this.builderVersion);
+        this.exit(1);
+      }
     }
 
     const pluginServiceOptions: PluginServiceHttpOption = {
