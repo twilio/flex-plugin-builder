@@ -33,7 +33,7 @@ describe('create-flex-plugin', () => {
     it('should append the new plugin to plugins.json', async () => {
       const checkPluginConfigurationExists = jest
         .spyOn(fsScripts, 'checkPluginConfigurationExists')
-        .mockResolvedValue();
+        .mockResolvedValue(true);
 
       const config = {
         name: pluginName,

@@ -268,11 +268,12 @@ describe('fs', () => {
     it('do nothing if directories are found', async () => {
       checkFilesExist.mockReturnValue(true);
 
-      await fs.checkPluginConfigurationExists(name, dir);
+      const result = await fs.checkPluginConfigurationExists(name, dir);
 
       expect(checkFilesExist).toHaveBeenCalledTimes(1);
       expect(checkFilesExist).toHaveBeenCalledWith('test-dir-plugins');
       expect(mkdirpSync).not.toHaveBeenCalled();
+      expect(result).toEqual(true);
     });
 
     it('should add the plugin to plugins.json if not found', async () => {
@@ -280,12 +281,13 @@ describe('fs', () => {
       readJsonFile.mockReturnValue({'plugins': []});
       writeFileSync.mockReturnThis();
 
-      await fs.checkPluginConfigurationExists(name, dir);
+      const result = await fs.checkPluginConfigurationExists(name, dir);
 
       expect(checkFilesExist).toHaveBeenCalledTimes(1);
       expect(readJsonFile).toHaveBeenCalledTimes(1);
       expect(writeFileSync).toHaveBeenCalledTimes(1);
       expect(writeFileSync).toHaveBeenCalledWith('test-dir-plugins', JSON.stringify({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]}, null, 2));
+      expect(result).toEqual(true);
     });
 
     it('do nothing if plugin has same directory as an existing one', async () => {
@@ -293,11 +295,12 @@ describe('fs', () => {
       readJsonFile.mockReturnValue({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]});
       writeFileSync.mockReturnThis();
 
-      await fs.checkPluginConfigurationExists(name, dir);
+      const result = await fs.checkPluginConfigurationExists(name, dir);
 
       expect(checkFilesExist).toHaveBeenCalledTimes(1);
       expect(readJsonFile).toHaveBeenCalledTimes(1);
       expect(writeFileSync).not.toHaveBeenCalled();
+      expect(result).toEqual(false);
     });
 
     it('change file path if user confirms', async () => {
@@ -306,7 +309,7 @@ describe('fs', () => {
       writeFileSync.mockReturnThis();
       confirm.mockResolvedValue(true);
 
-      await fs.checkPluginConfigurationExists(name, dir);
+      const result = await fs.checkPluginConfigurationExists(name, dir);
 
       expect(checkFilesExist).toHaveBeenCalledTimes(1);
       expect(readJsonFile).toHaveBeenCalledTimes(1);
@@ -314,6 +317,7 @@ describe('fs', () => {
       expect(readJsonFile).toHaveBeenCalledTimes(1);
       expect(writeFileSync).toHaveBeenCalledTimes(1);
       expect(writeFileSync).toHaveBeenCalledWith('test-dir-plugins', JSON.stringify({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]}, null, 2));
+      expect(result).toEqual(true);
     });
 
     it('do not change file path, user did not confirm', async () => {
@@ -322,12 +326,13 @@ describe('fs', () => {
       writeFileSync.mockReturnThis();
       confirm.mockResolvedValue(false);
 
-      await fs.checkPluginConfigurationExists(name, dir, true);
+      const result = await fs.checkPluginConfigurationExists(name, dir, true);
 
       expect(checkFilesExist).toHaveBeenCalledTimes(1);
       expect(readJsonFile).toHaveBeenCalledTimes(1);
       expect(confirm).toHaveBeenCalledTimes(1);
       expect(writeFileSync).not.toHaveBeenCalled();
+      expect(result).toEqual(false);
     });
   });
 
