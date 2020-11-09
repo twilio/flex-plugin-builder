@@ -11,6 +11,7 @@ describe('ServerlessClient', () => {
   const listEnv = sinon.stub();
   const getBuild = sinon.stub();
   const getService = sinon.stub();
+  const createService = sinon.stub();
   getService.returns({
     environments: {
       list: listEnv,
@@ -23,7 +24,7 @@ describe('ServerlessClient', () => {
   });
 
   // @ts-ignore
-  const twilioClient = { get: getService } as ServiceListInstance;
+  const twilioClient = { get: getService, create: createService } as ServiceListInstance;
   const client = new ServerlessClient(twilioClient);
 
   beforeEach(() => {
@@ -113,6 +114,58 @@ describe('ServerlessClient', () => {
       const result = await client.hasLegacy(serviceSid, pluginName);
 
       expect(result).to.equal(true);
+    });
+  });
+
+  describe('getOrCreateDefaultService', () => {
+    beforeEach(() => {
+      createService.reset();
+    });
+
+    it('should return existing service', async () => {
+      const service1 = { uniqueName: 'default' };
+      const service2 = { uniqueName: 'anotherName' };
+
+      // @ts-ignore
+      sinon.stub(client, 'listServices').returns(Promise.resolve([service1, service2]));
+
+      const service = await client.getOrCreateDefaultService();
+
+      expect(service).to.eql(service1);
+      expect(client.listServices).to.have.been.calledOnce;
+      expect(createService).not.to.have.been.called;
+    });
+
+    it('should not find service and instead create a new service', async () => {
+      const service1 = { uniqueName: 'notDefault' };
+      const service2 = { uniqueName: 'anotherName' };
+      const newService = { uniqueName: 'default' };
+
+      // @ts-ignore
+      sinon.stub(client, 'listServices').returns(Promise.resolve([service1, service2]));
+      createService.returns(Promise.resolve(newService));
+
+      const service = await client.getOrCreateDefaultService();
+
+      expect(service).to.eql(newService);
+      expect(client.listServices).to.have.been.calledOnce;
+      expect(createService).to.have.been.calledOnce;
+      expect(createService).to.have.been.calledWith(ServerlessClient.NewService);
+    });
+
+    it('should create a new service because no services have been found', async () => {
+      const newService = { uniqueName: 'default' };
+
+      // @ts-ignore
+      sinon.stub(client, 'listServices').returns(Promise.resolve([]));
+      createService.returns(Promise.resolve(newService));
+
+      const service = await client.getOrCreateDefaultService();
+
+      expect(service).to.eql(newService);
+      expect(client.listServices).to.have.been.calledOnce;
+      expect(createService).to.have.been.calledOnce;
+      expect(createService).to.have.been.calledWith(ServerlessClient.NewService);
     });
   });
 });

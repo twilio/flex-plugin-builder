@@ -45,9 +45,22 @@ export default class ServerlessClient {
   }
 
   /**
+   * Lists all services
+   */
+  async listServices(): Promise<ServiceInstance[]> {
+    return this.client.list();
+  }
+
+  /**
    * Creates a service instance
    */
-  async createDefaultService(): Promise<ServiceInstance> {
+  async getOrCreateDefaultService(): Promise<ServiceInstance> {
+    const list = await this.listServices();
+    const service = list.find((i) => i.uniqueName === ServerlessClient.NewService.uniqueName);
+    if (service) {
+      return service;
+    }
+
     return this.client.create(ServerlessClient.NewService);
   }
 

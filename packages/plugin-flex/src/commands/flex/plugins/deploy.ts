@@ -199,7 +199,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
         await this.flexConfigurationClient.unregisterServerlessSid(serviceSid);
       }
     }
-    const service = await this.serverlessClient.createDefaultService();
+    const service = await this.serverlessClient.getOrCreateDefaultService();
     await this.flexConfigurationClient.registerServerlessSid(service.sid);
   }
 
