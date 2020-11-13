@@ -95,6 +95,11 @@ export const checkFilesExist = (...files: string[]) => {
 export const getPackageJsonPath = (forModule: boolean = false) => path.join(getCwd(), 'package.json');
 
 /**
+ * Gets package-lock.json path
+ */
+export const getPackageLockJsonPath = () => path.join(process.cwd(), 'package-lock.json');
+
+/**
  * Updates the package.json version field
  *
  * @param version the new version
@@ -104,6 +109,13 @@ export const updateAppVersion = (version: string) => {
   packageJson.version = version;
 
   fs.writeFileSync(getPackageJsonPath(), JSON.stringify(packageJson, null, 2));
+
+  if (fs.existsSync(getPackageLockJsonPath())) {
+    const packageLockJson = readPackageJson(getPackageLockJsonPath());
+    packageLockJson.version = version;
+
+    fs.writeFileSync(getPackageLockJsonPath(), JSON.stringify(packageLockJson, null, 2));
+  }
 };
 
 /**
