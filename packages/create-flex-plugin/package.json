@@ -42,7 +42,7 @@
   "dependencies": {
     "esm": "^3.2.25",
     "flex-dev-utils": "^3.13.5",
-    "yargs": "^14.2.0"
+    "yargs": "^16.0.0"
   },
   "devDependencies": {
     "@twilio/flex-ui": "^1",
