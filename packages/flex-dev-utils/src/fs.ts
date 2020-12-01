@@ -283,7 +283,7 @@ export const checkPluginConfigurationExists = async (name: string, dir: string, 
   }
 
   const answer = promptForOverwrite
-    ? await confirm(`You already have a plugin called ${plugin.name} in the local Flex configuration file, but it is located at ${plugin.dir}. Do you want to update the directory path to ${dir}?`, 'N')
+    ? await confirm(`You already have a plugin called ${plugin.name} located at ${plugin.dir}. Do you want to update it to ${dir}?`, 'N')
     : true;
 
   if (answer) {
