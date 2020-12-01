@@ -1,5 +1,4 @@
 import { flags } from '@oclif/command';
-import { parse } from '@oclif/parser';
 import { findPortAvailablePort, StartScript } from 'flex-plugin-scripts/dist/scripts/start';
 import { FLAG_MULTI_PLUGINS } from 'flex-plugin-scripts/dist/scripts/pre-script-check';
 import semver from 'semver';
@@ -28,12 +27,8 @@ export default class FlexPluginsStart extends FlexPlugin {
       description: startDocs.flags.name,
       multiple: true,
     }),
-    [MULTI_PLUGINS_PILOT]: flags.boolean({
-      description: startDocs.flags.multiPluginsPilot,
-    }),
     'include-remote': flags.boolean({
       description: startDocs.flags.includeRemote,
-      hidden: true,
     }),
   };
 
@@ -101,8 +96,12 @@ export default class FlexPluginsStart extends FlexPlugin {
    * @param pluginName  the plugin name
    */
   async checkPlugin(pluginName: string) {
-    await this.runScript('pre-script-check', ['--name', pluginName]);
-    await this.runScript('pre-start-check', ['--name', pluginName]);
+    const preScriptArgs = ['--name', pluginName];
+    if (this.isMultiPlugin()) {
+      preScriptArgs.push(`--${MULTI_PLUGINS_PILOT}`);
+    }
+    await this.runScript('pre-script-check', preScriptArgs);
+    await this.runScript('pre-start-check', preScriptArgs);
 
     // read cli plugins json to get directory
     const plugin = this.pluginsConfig.plugins.find((p) => p.name === pluginName);
@@ -132,14 +131,20 @@ export default class FlexPluginsStart extends FlexPlugin {
   get checkCompatibility(): boolean {
     return true;
   }
-}
 
-try {
-  const parsed = parse(process.argv.splice(3), { ...FlexPluginsStart, strict: false });
-  if (parsed.flags[MULTI_PLUGINS_PILOT]) {
-    delete FlexPluginsStart.flags['include-remote'].hidden;
-    FlexPluginsStart.flags.name.description = startDocs.flags.nameMultiPlugins;
+  /**
+   * Returns true if we are running multiple plugins
+   * @private
+   */
+  private isMultiPlugin() {
+    if (this._flags['include-remote']) {
+      return true;
+    }
+    const { name } = this._flags;
+    if (!name) {
+      return false;
+    }
+
+    return name.length === 1 && this.pkg.name !== this._flags.name[0];
   }
-} catch {
-  // No-op
 }

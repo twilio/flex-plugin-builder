@@ -14,10 +14,8 @@
   "start": {
     "description": "Starts a dev-server to build the Flex plugin locally",
     "flags": {
-      "name": "The name of the plugin you would like to run",
-      "includeRemote": "Use this flag to include all remote plugins in your build",
-      "multiPluginsPilot": "Use this flag to support multi-plugins dev environment",
-      "nameMultiPlugins": "The name of the plugin you would like to run. You can provide multiple to run them all concurrently in the dev-environment"
+      "name": "The name of the plugin you would like to run. You can provide multiple to run them all concurrently in the dev-environment (in Pilot)",
+      "includeRemote": "Use this flag to include all remote plugins in your build (in Pilot)"
     }
   },
   "deploy": {
