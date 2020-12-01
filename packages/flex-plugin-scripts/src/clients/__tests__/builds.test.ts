@@ -43,7 +43,7 @@ describe('BuildClient', () => {
       Dependencies: { foo: 'bar' },
     } as BuildData;
 
-    it('should create new build', async () => {
+    it.only('should create new build', async () => {
       const client = new BuildClient(auth, 'ZS00000000000000000000000000000000');
       // @ts-ignore
       const create = jest.spyOn(client, '_create').mockResolvedValue(deployedBuild);
@@ -54,6 +54,7 @@ describe('BuildClient', () => {
 
       expect(result).toEqual(deployedBuild);
       expect(create).toHaveBeenCalledTimes(1);
+      // @ts-ignore
       expect(create).toHaveBeenCalledWith(buildData);
       expect(get).toHaveBeenCalledTimes(1);
       expect(get).toHaveBeenCalledWith(deployedBuild.sid);
@@ -74,6 +75,7 @@ describe('BuildClient', () => {
       } catch (e) {
         expect(e).toContain('build has failed');
         expect(create).toHaveBeenCalledTimes(1);
+        // @ts-ignore
         expect(create).toHaveBeenCalledWith(buildData);
         expect(get).toHaveBeenCalledTimes(1);
         expect(get).toHaveBeenCalledWith(failedBuild.sid);

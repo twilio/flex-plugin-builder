@@ -1,4 +1,6 @@
 import * as ipcServerScripts from '../ipcServer';
+import * as webpack from 'webpack';
+import ToJsonOutput = webpack.Stats.ToJsonOutput;
 
 describe('ipcServer', () => {
   beforeEach(() => {
@@ -17,7 +19,7 @@ describe('ipcServer', () => {
   it('should test emitCompileComplete', () => {
     const _emitToServer = jest.spyOn(ipcServerScripts, '_emitToServer').mockReturnThis();
 
-    const payload = { result: {}, appName: 'test' };
+    const payload = { result: {} as ToJsonOutput, appName: 'test' };
     // @ts-ignore
     ipcServerScripts.emitCompileComplete(payload);
 

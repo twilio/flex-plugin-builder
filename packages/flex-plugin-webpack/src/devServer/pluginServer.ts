@@ -77,7 +77,7 @@ export const _getHeaders = (port: number) => ({
  * @param version   the Flex version
  */
 /* istanbul ignore next */
-export const _getRemotePlugins = (token: string, version: string): Promise<Plugin[]> => {
+export const _getRemotePlugins = (token: string, version: string | null | undefined): Promise<Plugin[]> => {
   return new Promise((resolve, reject) => {
     const headers = {
       'X-Flex-JWE': token,

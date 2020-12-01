@@ -53,28 +53,28 @@ describe('list', () => {
       await listScript.default();
 
       expect(doList).toHaveBeenCalledTimes(1);
-      expect(doList).toHaveBeenCalledWith(['public', 'protected'], 'asc');
+      expect(doList).toHaveBeenCalledWith([Visibility.Public, Visibility.Protected], 'asc');
     });
 
     it('should call doList as public', async () => {
       await listScript.default('--public-only');
 
       expect(doList).toHaveBeenCalledTimes(1);
-      expect(doList).toHaveBeenCalledWith(['public'], 'asc');
+      expect(doList).toHaveBeenCalledWith([Visibility.Public], 'asc');
     });
 
     it('should call doList as public', async () => {
       await listScript.default('--private-only');
 
       expect(doList).toHaveBeenCalledTimes(1);
-      expect(doList).toHaveBeenCalledWith(['protected'], 'asc');
+      expect(doList).toHaveBeenCalledWith([Visibility.Protected], 'asc');
     });
 
     it('should call doList in desc', async () => {
       await listScript.default('--desc');
 
       expect(doList).toHaveBeenCalledTimes(1);
-      expect(doList).toHaveBeenCalledWith(['public', 'protected'], 'desc');
+      expect(doList).toHaveBeenCalledWith([Visibility.Public, Visibility.Protected], 'desc');
     });
   });
 

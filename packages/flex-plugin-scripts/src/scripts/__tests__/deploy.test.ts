@@ -110,7 +110,7 @@ describe('DeployScript', () => {
 
     const expectDoDeployCalled = (version: string, options: object) => {
       expect(doDeploy).toHaveBeenCalledTimes(1);
-      expect(doDeploy).toHaveBeenCalledWith(version, options);
+      expect(doDeploy).toHaveBeenCalledWith(version, options as any);
     };
 
     afterAll(() => {

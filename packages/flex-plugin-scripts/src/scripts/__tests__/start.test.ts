@@ -9,7 +9,6 @@ import * as compilerScripts from 'flex-plugin-webpack/dist/compiler';
 import * as parserUtils from '../../utils/parser';
 import * as startScripts from '../start';
 import * as configScripts from '../../config';
-import { WebpackDevConfigurations } from 'flex-plugin-webpack';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/fs');
@@ -252,7 +251,7 @@ describe('StartScript', () => {
     it('should use emitter for javascript', async () => {
       await startScripts._startDevServer([plugin], { ...opts, type: configScripts.WebpackType.JavaScript });
       expect(compiler).toHaveBeenCalledTimes(1);
-      expect(compiler).toHaveBeenCalledWith(expect.any(Object), true, emitCompileComplete);
+      expect(compiler).toHaveBeenCalledWith(expect.any(Object), true, emitCompileComplete as any);
     });
 
     it('should use default compiler for static/complete', async () => {
