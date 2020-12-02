@@ -144,7 +144,14 @@ export default class FlexPluginsStart extends FlexPlugin {
     if (!name) {
       return false;
     }
+    if (name.length > 1) {
+      return true;
+    }
 
-    return name.length === 1 && this.pkg.name !== this._flags.name[0];
+    if (this.isPluginFolder()) {
+      return this.pkg.name !== name[0];
+    }
+
+    return false;
   }
 }

@@ -208,4 +208,65 @@ describe('Commands/FlexPluginsStart', () => {
       expect(cmd.checkCompatibility).to.equal(true);
     })
     .it('should have compatibility set');
+
+  start(['--name', 'plugin-testOne', '--name', 'plugin-testTwo'])
+    .setup(async (cmd) => {
+      sinon.stub(cmd, 'isPluginFolder');
+    })
+    .test(async (cmd) => {
+      // @ts-ignore
+      expect(cmd.isMultiPlugin()).to.equal(true);
+      expect(cmd.isPluginFolder).not.to.have.been.called;
+    })
+    .it('should return true if multiple plugins are provided');
+
+  start(['--include-remote'])
+    .setup(async (cmd) => {
+      sinon.stub(cmd, 'isPluginFolder');
+    })
+    .test(async (cmd) => {
+      // @ts-ignore
+      expect(cmd.isMultiPlugin()).to.equal(true);
+      expect(cmd.isPluginFolder).not.to.have.been.called;
+    })
+    .it('should return true if include-remote is set');
+
+  start([])
+    .setup(async (cmd) => {
+      sinon.stub(cmd, 'isPluginFolder').returns(false);
+    })
+    .test(async (cmd) => {
+      // @ts-ignore
+      expect(cmd.isMultiPlugin()).to.equal(false);
+      expect(cmd.isPluginFolder).not.to.have.been.called;
+    })
+    .it('should return false if no plugins');
+
+  start(['--name', 'plugin-sample'])
+    .setup(async (cmd) => {
+      sinon.stub(cmd, 'isPluginFolder').returns(false);
+      sinon.stub(cmd, 'pkg').get(() => ({
+        name: 'plugin-sample',
+      }));
+    })
+    .test(async (cmd) => {
+      // @ts-ignore
+      expect(cmd.isMultiPlugin()).to.equal(false);
+      expect(cmd.isPluginFolder).to.have.been.calledOnce;
+    })
+    .it('should return false if plugin directory is set but is the same as the --name');
+
+  start(['--name', 'plugin-sample'])
+    .setup(async (cmd) => {
+      sinon.stub(cmd, 'isPluginFolder').returns(true);
+      sinon.stub(cmd, 'pkg').get(() => ({
+        name: 'plugin-another',
+      }));
+    })
+    .test(async (cmd) => {
+      // @ts-ignore
+      expect(cmd.isMultiPlugin()).to.equal(true);
+      expect(cmd.isPluginFolder).to.have.been.calledOnce;
+    })
+    .it('should return true if plugin directory is and is different');
 });
