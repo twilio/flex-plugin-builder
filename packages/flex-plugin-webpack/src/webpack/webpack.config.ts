@@ -256,6 +256,7 @@ export const _getBasePlugins = (environment: Environment): Plugin[] => {
   // Support .env file if provided
   if (appPaths.hasEnvFile()) {
     plugins.push(new DotenvWebpackPlugin({
+      path: appPaths.envPath,
       safe: appPaths.hasEnvExampleFile(),
       defaults: appPaths.hasEnvDefaultsPath(),
     }));
