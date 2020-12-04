@@ -31,7 +31,7 @@ export const _getLocalPlugins = () => JSON.parse(readFileSync(pluginsJsonPath)) 
  * @private
  */
 export const _getHeaders = (port: number) => ({
-  'Access-Control-Allow-Origin': `http://localhost:${port}`,
+  'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET',
   'Access-Control-Allow-Headers': 'Content-Type, X-Flex-Version, X-Flex-JWE',
   'Access-Control-Allow-Credentials': 'true',
