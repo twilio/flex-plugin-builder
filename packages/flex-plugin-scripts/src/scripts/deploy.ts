@@ -1,33 +1,41 @@
 import { logger, semver, progress, FlexPluginError, UserActionError } from 'flex-dev-utils';
 import { ReleaseType } from 'flex-dev-utils/dist/semver';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
-import { checkFilesExist, updatePackageVersion, readPackageJson } from 'flex-dev-utils/dist/fs';
+import { checkFilesExist, updateAppVersion, getPackageVersion, getPaths } from 'flex-dev-utils/dist/fs';
 import { AuthConfig, getCredential } from 'flex-dev-utils/dist/credentials';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
 import AccountsClient from '../clients/accounts';
+import { setEnvironment } from '../index';
+import { deploySuccessful, pluginsApiWarning } from '../prints';
 import { UIDependencies } from '../clients/configuration-types';
-import { deploySuccessful } from '../prints';
-import { getPackageVersion } from '../utils/require';
 
 import run from '../utils/run';
-import { BuildData } from '../clients/builds';
 import { Build, Runtime, Version } from '../clients/serverless-types';
-import paths from '../utils/paths';
-import { AssetClient, BuildClient, DeploymentClient, ConfigurationClient } from '../clients';
+import { AssetClient, BuildClient, DeploymentClient, ConfigurationClient, PluginsApiClient } from '../clients';
 import getRuntime from '../utils/runtime';
 
 const allowedBumps = [
   'major',
   'minor',
   'patch',
-  'custom',
-  'overwrite',
+  'version',
 ];
 
 interface Options {
   isPublic: boolean;
   overwrite: boolean;
   disallowVersioning: boolean;
+  isPluginsPilot: boolean;
+}
+
+export interface DeployResult {
+  serviceSid: string;
+  accountSid: string;
+  environmentSid: string;
+  domainName: string;
+  isPublic: boolean;
+  nextVersion: string;
+  pluginUrl: string;
 }
 
 /**
@@ -50,8 +58,9 @@ export const _verifyPath = (baseUrl: string, build: Build) => {
 
 /**
  * Validates Flex UI version requirement
- * @param flexUI      the flex ui version
- * @param allowReact  whether this deploy supports unbundled React
+ * @param flexUI        the flex ui version
+ * @param dependencies  the package.json dependencie
+ * @param allowReact    whether this deploy supports unbundled React
  * @private
  */
 export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: UIDependencies, allowReact: boolean) => {
@@ -123,18 +132,27 @@ export const _getAccount = async (runtime: Runtime, credentials: AuthConfig) => 
  * @param nextVersion   the next version of the bundle
  * @param options       options for this deploy
  */
-export const _doDeploy = async (nextVersion: string, options: Options) => {
-  if (!checkFilesExist(paths.localBundlePath)) {
-    throw new FlexPluginError('Could not find build file. Did you run `npm run build` first?');
+export const _doDeploy = async (nextVersion: string, options: Options): Promise<DeployResult> => {
+  if (!checkFilesExist(getPaths().app.bundlePath)) {
+    throw new FlexPluginError('Could not find build file. Did you run `twilio flex:plugins:build` first?');
   }
 
-  logger.info('Uploading your Flex plugin to Twilio Assets\n');
-
-  const pluginBaseUrl = paths.assetBaseUrlTemplate.replace('%PLUGIN_VERSION%', nextVersion);
+  const pluginBaseUrl = getPaths().assetBaseUrlTemplate.replace('%PLUGIN_VERSION%', nextVersion);
   const bundleUri = `${pluginBaseUrl}/bundle.js`;
   const sourceMapUri = `${pluginBaseUrl}/bundle.js.map`;
 
   const credentials = await getCredential();
+  if (options.isPluginsPilot) {
+    const pluginsApiClient = new PluginsApiClient(credentials);
+    const hasFlag = await pluginsApiClient.hasFlag();
+    if (!hasFlag) {
+      throw new FlexPluginError('This command is currently in Preview and is restricted to users while we work on improving it. If you would like to participate, please contact flex@twilio.com to learn more.');
+    }
+
+    pluginsApiWarning();
+  }
+
+  logger.info('Uploading your Flex plugin to Twilio Assets\n');
 
   const runtime = await getRuntime(credentials);
   if (!runtime.environment) {
@@ -176,12 +194,12 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
   const buildDependencies = runtime.build ? runtime.build.dependencies : [];
 
   // Upload plugin bundle and source map to S3
-  const buildData = await progress<BuildData>('Uploading your plugin bundle', async () => {
+  const buildData = await progress('Uploading your plugin bundle', async () => {
     // Upload bundle and sourcemap
     const bundleVersion = await assetClient
-      .upload(paths.packageName, bundleUri, paths.localBundlePath, !options.isPublic);
+      .upload(getPaths().app.name, bundleUri, getPaths().app.bundlePath, !options.isPublic);
     const sourceMapVersion = await assetClient
-      .upload(paths.packageName, sourceMapUri, paths.localSourceMapPath, !options.isPublic);
+      .upload(getPaths().app.name, sourceMapUri, getPaths().app.sourceMapPath, !options.isPublic);
 
     const existingAssets = routeCollision && options.overwrite
       ?  buildAssets.filter((v) => v.path !== bundleUri && v.path !== sourceMapUri)
@@ -209,23 +227,35 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
     const newBuild = await buildClient.create(buildData);
     const deployment = await deploymentClient.create(newBuild.sid);
 
-    updatePackageVersion(nextVersion);
+    updateAppVersion(nextVersion);
 
     return deployment;
   });
 
   deploySuccessful(pluginUrl, options.isPublic, await _getAccount(runtime, credentials));
+
+  return {
+    serviceSid: runtime.service.sid,
+    accountSid: runtime.service.account_sid,
+    environmentSid: runtime.environment.sid,
+    domainName: runtime.environment.domain_name,
+    isPublic: options.isPublic,
+    nextVersion,
+    pluginUrl,
+  };
 };
 
 const deploy = async (...argv: string[]) => {
+  setEnvironment(...argv);
   logger.debug('Deploying Flex plugin');
 
   const disallowVersioning = argv.includes('--disallow-versioning');
   let nextVersion = argv[1] as string;
   const bump = argv[0];
-  const opts = {
+  const opts: Options = {
     isPublic: argv.includes('--public'),
     overwrite: argv.includes('--overwrite') || disallowVersioning,
+    isPluginsPilot: argv.includes('--pilot-plugins-api'),
     disallowVersioning,
   };
 
@@ -234,21 +264,21 @@ const deploy = async (...argv: string[]) => {
       throw new FlexPluginError(`Version bump can only be one of ${allowedBumps.join(', ')}`);
     }
 
-    if (bump === 'custom' && !argv[1]) {
+    if (bump === 'version' && !argv[1]) {
       throw new FlexPluginError('Custom version bump requires the version value.');
     }
 
     if (bump === 'overwrite') {
       opts.overwrite = true;
-      nextVersion = readPackageJson().version;
-    } else if (bump !== 'custom') {
-      nextVersion = semver.inc(paths.version, bump as ReleaseType) as any;
+      nextVersion = getPaths().app.version;
+    } else if (bump !== 'version') {
+      nextVersion = semver.inc(getPaths().app.version, bump as ReleaseType) as any;
     }
   } else {
     nextVersion = '0.0.0';
   }
 
-  await _doDeploy(nextVersion, opts);
+  return await _doDeploy(nextVersion, opts);
 };
 
 run(deploy);

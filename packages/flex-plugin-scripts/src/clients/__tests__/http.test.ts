@@ -1,5 +1,8 @@
 import HttpClient, { HttpConfig } from '../http';
+import axios, { MockAdapter } from 'flex-dev-utils/dist/axios';
 import { clone } from 'flex-dev-utils/dist/lodash';
+import { env } from 'flex-dev-utils';
+import FormData from 'form-data';
 
 describe('HttpClient', () => {
   const CONFIG: HttpConfig = {
@@ -100,6 +103,34 @@ describe('HttpClient', () => {
     });
   });
 
+  describe('upload', () => {
+    let mockAxios: MockAdapter;
+
+    beforeEach(() => {
+      mockAxios = new MockAdapter(axios);
+    });
+
+    it('should upload content', async () => {
+      const resp = { success: true };
+      const httpClient = new HttpClient(config);
+      mockAxios.onPost().reply(() => Promise.resolve([200, resp]));
+      const post = jest.spyOn(axios, 'post');
+
+      const form = new FormData();
+      form.append('property1', 'value1');
+
+      const result = await httpClient.upload('/upload', form);
+      const options = {
+        headers: form.getHeaders(),
+        auth: config.auth,
+      };
+
+      expect(post).toHaveBeenCalledTimes(1)
+      expect(post).toHaveBeenCalledWith('/upload', form, options)
+      expect(result).toEqual(resp);
+    });
+  });
+
   describe('post', () => {
     it('should post as application/x-www-form-urlencoded', async () => {
       const httpClient = new HttpClient(config);
@@ -163,6 +194,68 @@ describe('HttpClient', () => {
       expect(result).toBeNull();
       expect(del).toHaveBeenCalledTimes(1);
       expect(del).toHaveBeenCalledWith('the-uri');
+    });
+  });
+
+  describe('getUploadOptions', () => {
+    it('should return config without adapter', async () => {
+      const httpClient = new HttpClient(config);
+      const form = new FormData();
+
+      // @ts-ignore
+      const options = await httpClient.getUploadOptions(form);
+
+      expect(options.headers).toEqual(form.getHeaders());
+      expect(options.auth).toEqual(config.auth);
+      expect('adapter' in options).toEqual(false);
+    });
+
+    it('should return config adapter', async () => {
+      jest.spyOn(env, 'isDebug').mockReturnValue(true);
+      const httpClient = new HttpClient(config);
+      const form = new FormData();
+
+      // @ts-ignore
+      const options = await httpClient.getUploadOptions(form);
+
+      expect(options.headers).toEqual(form.getHeaders());
+      expect(options.auth).toEqual(config.auth);
+      expect('adapter' in options).toEqual(true);
+    });
+  });
+
+  describe('getFormDataSize', () => {
+    it('should get data size of empty form', async () => {
+      const httpClient = new HttpClient(config);
+      const form = new FormData();
+      // @ts-ignore
+      const length = await httpClient.getFormDataSize(form);
+      expect(length).toEqual(0);
+    });
+
+    it('should get data size of empty form', async () => {
+      const httpClient = new HttpClient(config);
+      const form = new FormData();
+      form.append('someKey', 'someValue');
+
+      // @ts-ignore
+      const length = await httpClient.getFormDataSize(form);
+      expect(length).toEqual(171);
+    });
+  });
+
+  describe('onError', () => {
+    it('should reject', async (done) => {
+      const httpClient = new HttpClient({ ...config, exitOnRejection: false });
+      const err = new Error('the-error');
+
+      try {
+        // @ts-ignore
+        await httpClient.onError(err);
+      } catch (e) {
+        expect(e).toEqual(err);
+        done();
+      }
     });
   });
 });

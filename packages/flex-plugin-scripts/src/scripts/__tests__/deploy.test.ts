@@ -1,7 +1,7 @@
 import { logger,  FlexPluginError, UserActionError } from 'flex-dev-utils';
+import * as fsScript from 'flex-dev-utils/dist/fs';
 import * as inquirer from 'flex-dev-utils/dist/inquirer';
 
-import * as requireScript from '../../utils/require';
 import * as prints from '../../prints';
 import * as deployScript from '../deploy';
 
@@ -12,18 +12,17 @@ jest.mock('../../clients/configurations');
 jest.mock('../../clients/environments');
 jest.mock('../../clients/builds');
 jest.mock('../../clients/deployments');
+jest.mock('../../clients/pluginsApi');
 jest.mock('../../prints/deploySuccessful');
-jest.mock('inquirer');
+jest.mock('../../prints/pluginsApiWarning');
+jest.mock('flex-dev-utils/dist/inquirer');
 jest.mock('flex-dev-utils/dist/fs');
 jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/updateNotifier');
 jest.mock('flex-dev-utils/dist/credentials', () => ({
   getCredential: jest.fn(),
 }));
 jest.mock('../../utils/runtime');
-jest.mock('../../utils/paths', () => ({
-  version: '1.0.0',
-  assetBaseUrlTemplate: 'template',
-}));
 
 // tslint:disable
 const Runtime = require('../../utils/runtime').default;
@@ -32,10 +31,17 @@ const AssetClient = require('../../clients/assets').default;
 const BuildClient = require('../../clients/builds').default;
 const DeploymentClient = require('../../clients/deployments').default;
 const ConfigurationClient = require('../../clients/configurations').default;
+const PluginsApiClient = require('../../clients/pluginsApi').default;
 const fs = require('flex-dev-utils/dist/fs');
 // tslint:enable
 
 describe('DeployScript', () => {
+  const paths = {
+    app: {
+      version: '1.0.0',
+    },
+    assetBaseUrlTemplate: 'template',
+  };
   const accountSid = 'AC00000000000000000000000000000000';
   const serviceSid = 'ZS00000000000000000000000000000000';
   const environmentSid = 'ZE00000000000000000000000000000000';
@@ -77,13 +83,16 @@ describe('DeployScript', () => {
       sid: serviceSid,
       accountSid,
     },
-    environment: { sid: environmentSid, build_sid: buildSid, domain_name: 'test.twil.io' },
+    environment: {sid: environmentSid, build_sid: buildSid, domain_name: 'test.twil.io'},
     build: existingBuild,
   };
   Runtime.mockImplementation(() => runtime);
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // @ts-ignore
+    jest.spyOn(fsScript, 'getPaths').mockReturnValue(paths);
 
     AccountClient.mockImplementation(() => ({ get: getAccount }));
     AssetClient.mockImplementation(() => ({ upload }));
@@ -93,7 +102,7 @@ describe('DeployScript', () => {
   });
 
   describe('default', () => {
-    const doDeploy = jest.spyOn(deployScript, '_doDeploy').mockResolvedValue(undefined);
+    const doDeploy = jest.spyOn(deployScript, '_doDeploy').mockReturnThis();
     const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockReturnValue({
       version: '1.0.0',
       name: 'plugin-test',
@@ -101,7 +110,7 @@ describe('DeployScript', () => {
 
     const expectDoDeployCalled = (version: string, options: object) => {
       expect(doDeploy).toHaveBeenCalledTimes(1);
-      expect(doDeploy).toHaveBeenCalledWith(version, options);
+      expect(doDeploy).toHaveBeenCalledWith(version, options as any);
     };
 
     afterAll(() => {
@@ -133,9 +142,9 @@ describe('DeployScript', () => {
       expect(doDeploy).not.toHaveBeenCalled();
     });
 
-    it('should throw an exception if custom is called without an argument', async (done) => {
+    it('should throw an exception if custom version is called without an argument', async (done) => {
       try {
-        await deployScript.default('custom');
+        await deployScript.default('version');
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(e.message).toContain('Custom version bump');
@@ -151,6 +160,7 @@ describe('DeployScript', () => {
       expectDoDeployCalled('2.0.0', {
         isPublic: false,
         overwrite: false,
+        isPluginsPilot: false,
         disallowVersioning: false,
       });
     });
@@ -161,6 +171,7 @@ describe('DeployScript', () => {
       expectDoDeployCalled('1.1.0', {
         isPublic: false,
         overwrite: false,
+        isPluginsPilot: false,
         disallowVersioning: false,
       });
     });
@@ -171,26 +182,18 @@ describe('DeployScript', () => {
       expectDoDeployCalled('1.0.1', {
         isPublic: false,
         overwrite: false,
+        isPluginsPilot: false,
         disallowVersioning: false,
       });
     });
 
-    it('should bump custom', async () => {
-      await deployScript.default('custom', 'custom-version');
+    it('should bump custom version', async () => {
+      await deployScript.default('version', 'custom-version');
 
       expectDoDeployCalled('custom-version', {
         isPublic: false,
         overwrite: false,
-        disallowVersioning: false,
-      });
-    });
-
-    it('should bump overwrite', async () => {
-      await deployScript.default('overwrite');
-
-      expectDoDeployCalled('1.0.0', {
-        isPublic: false,
-        overwrite: true,
+        isPluginsPilot: false,
         disallowVersioning: false,
       });
     });
@@ -201,6 +204,7 @@ describe('DeployScript', () => {
       expectDoDeployCalled('2.0.0', {
         isPublic: true,
         overwrite: false,
+        isPluginsPilot: false,
         disallowVersioning: false,
       });
     });
@@ -211,13 +215,66 @@ describe('DeployScript', () => {
       expect(doDeploy).toHaveBeenCalledTimes(1);
       expect(doDeploy).toHaveBeenCalledWith('0.0.0', expect.any(Object));
     });
+
+    it('should call run pilot program', async () => {
+      await deployScript.default('major', '--pilot-plugins-api');
+
+      expectDoDeployCalled('2.0.0', {
+        isPublic: false,
+        overwrite: false,
+        isPluginsPilot: true,
+        disallowVersioning: false,
+      });
+    });
   });
 
   describe('_doDeploy', () => {
-    it('should quite if build/ does not exist', async (done) => {
+    it('should quit if running the pilot program but not have the flag set', async (done) => {
       const options = {
         isPublic: true,
         overwrite: false,
+        isPluginsPilot: true,
+        disallowVersioning: false,
+      };
+
+      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
+      const hasFlag = jest.fn().mockResolvedValue(false);
+      PluginsApiClient.mockImplementation(() => ({ hasFlag }));
+
+      try {
+        await deployScript._doDeploy('1.0.0', options);
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+        expect(e.message).toContain('is currently in Preview');
+        done();
+      }
+
+      checkFilesExist.mockRestore();
+    });
+
+    it('should run if pilot feature enabled', async () => {
+      const options = {
+        isPublic: true,
+        overwrite: false,
+        isPluginsPilot: true,
+        disallowVersioning: false,
+      };
+
+      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
+      const _getAccount = jest.spyOn(deployScript, '_getAccount').mockReturnThis();
+      const hasFlag = jest.fn().mockResolvedValue(true);
+      PluginsApiClient.mockImplementation(() => ({ hasFlag }));
+
+      await deployScript._doDeploy('1.0.0', options);
+      checkFilesExist.mockRestore();
+      _getAccount.mockRestore();
+    });
+
+    it('should quit if build does not exist', async (done) => {
+      const options = {
+        isPublic: true,
+        overwrite: false,
+        isPluginsPilot: false,
         disallowVersioning: false,
       };
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(false);
@@ -237,6 +294,7 @@ describe('DeployScript', () => {
       const options = {
         isPublic: true,
         overwrite: false,
+        isPluginsPilot: false,
         disallowVersioning: false,
       };
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
@@ -254,37 +312,22 @@ describe('DeployScript', () => {
       verifyPath.mockRestore();
     });
 
-    it('should not quit duplicate route is found but is overwrite', async () => {
-      const options = {
-        isPublic: true,
-        overwrite: true,
-        disallowVersioning: false,
-      };
-      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
-      const _getAccount = jest.spyOn(deployScript, '_getAccount').mockReturnThis();
-      const _verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(true);
-
-      await deployScript._doDeploy('1.0.0', options);
-
-      checkFilesExist.mockRestore();
-      _verifyPath.mockRestore();
-      _getAccount.mockRestore();
-    });
-
     it('should deploy and write a success message', async () => {
       const options = {
         isPublic: true,
         overwrite: true,
+        isPluginsPilot: false,
         disallowVersioning: false,
       };
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
       const _getAccount = jest.spyOn(deployScript, '_getAccount').mockReturnThis();
       const _verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(true);
+      const deploySuccessful = jest.spyOn(prints, 'deploySuccessful');
 
       await deployScript._doDeploy('1.0.0', options);
 
-      expect(AssetClient).toHaveBeenCalledTimes(1);
-      expect(prints.deploySuccessful).toHaveBeenCalledTimes(1);
+      expect(_getAccount).toHaveBeenCalledTimes(1);
+      expect(deploySuccessful).toHaveBeenCalledTimes(1);
 
       checkFilesExist.mockRestore();
       _verifyPath.mockRestore();
@@ -345,7 +388,7 @@ describe('DeployScript', () => {
     it('should ask for no confirmation if react version is correct', async () => {
       const confirm = jest.spyOn(inquirer, 'confirm');
       const getPackageVersion = jest
-        .spyOn(requireScript, 'getPackageVersion')
+        .spyOn(fsScript, 'getPackageVersion')
         .mockReturnValue('16.13.1');
 
       await deployScript._verifyFlexUIConfiguration('^1', dependencies, true);
@@ -357,7 +400,7 @@ describe('DeployScript', () => {
     it('should confirm to allow deployment if react version is mismatched', async () => {
       const confirm = jest.spyOn(inquirer, 'confirm').mockResolvedValue(true);
       const getPackageVersion = jest
-        .spyOn(requireScript, 'getPackageVersion')
+        .spyOn(fsScript, 'getPackageVersion')
         .mockReturnValue('16.12.1');
 
       await deployScript._verifyFlexUIConfiguration('^1', dependencies, true);
@@ -369,7 +412,7 @@ describe('DeployScript', () => {
     it('should reject confirm to allow deployment if react version is mismatched', async (done) => {
       const confirm = jest.spyOn(inquirer, 'confirm').mockResolvedValue(false);
       const getPackageVersion = jest
-        .spyOn(requireScript, 'getPackageVersion')
+        .spyOn(fsScript, 'getPackageVersion')
         .mockReturnValue('16.12.1');
 
       try {
@@ -385,7 +428,7 @@ describe('DeployScript', () => {
 
     it('should not throw any exceptions', async () => {
       jest
-        .spyOn(requireScript, 'getPackageVersion')
+        .spyOn(fsScript, 'getPackageVersion')
         .mockReturnValue('16.13.1');
 
       await deployScript._verifyFlexUIConfiguration('^1', dependencies, true);

@@ -1,4 +1,3 @@
-import { acceptableAnswers, YNAnswer } from './inquirer';
 import { isSidOfType, SidPrefix } from './sids';
 
 // tslint:disable-next-line
@@ -61,23 +60,6 @@ export const validateGitHubUrl = (url: string) => {
   }
 
   return true;
-};
-
-/**
- * Confirmation validator
- *
- * @param defaultAnswer
- */
-export const validateConfirmation = (defaultAnswer?: YNAnswer) => (input: string) => {
-  if (!input && defaultAnswer) {
-    input = defaultAnswer;
-  }
-
-  if (acceptableAnswers.includes(input.toLowerCase())) {
-    return true;
-  }
-
-  return 'Please answer with either "y" or "n"';
 };
 
 /**

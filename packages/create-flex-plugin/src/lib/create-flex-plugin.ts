@@ -1,5 +1,5 @@
 import { logger, progress, FlexPluginError } from 'flex-dev-utils';
-import { copyTemplateDir, tmpDirSync, TmpDirResult } from 'flex-dev-utils/dist/fs';
+import { copyTemplateDir, tmpDirSync, TmpDirResult, checkPluginConfigurationExists } from 'flex-dev-utils/dist/fs';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
 import fs from 'fs';
 import { resolve, join } from 'path';
@@ -15,12 +15,10 @@ const templateJsPath = resolve(templatesRootDir, 'js');
 const templateTsPath = resolve(templatesRootDir, 'ts');
 
 export interface FlexPluginArguments extends CLIArguments {
+  name: string;
   targetDirectory: string;
   flexSdkVersion: string;
-  flexPluginVersion: string;
-  cracoConfigVersion: string;
   pluginScriptsVersion: string;
-  pluginJsonContent: string;
   pluginClassName: string;
   pluginNamespace: string;
 }
@@ -46,6 +44,9 @@ export const createFlexPlugin = async (config: FlexPluginArguments) => {
     throw new FlexPluginError('Failed to scaffold project');
   }
 
+  // Add new plugin to .twilio-cli/flex/plugins.json
+  await checkPluginConfigurationExists(config.name, config.targetDirectory);
+
   // Install NPM dependencies
   if (config.install) {
     if (!await _install(config)) {
@@ -63,7 +64,7 @@ export const createFlexPlugin = async (config: FlexPluginArguments) => {
  * @private
  */
 export const _install = async (config: FlexPluginArguments): Promise<boolean> => {
-  return progress<boolean>('Installing dependencies', async () => {
+  return progress('Installing dependencies', async () => {
     await installDependencies(config);
 
     return true;
@@ -79,8 +80,8 @@ export const _install = async (config: FlexPluginArguments): Promise<boolean> =>
 export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> => {
   let dirObject: TmpDirResult;
 
-  const promise = progress<boolean>('Creating project directory', async () => {
-    // This copies the core such as public/ and craco config.
+  const promise = progress('Creating project directory', async () => {
+    // This copies the core such as public/
     await copyTemplateDir(
       templateCorePath,
       config.targetDirectory,

@@ -1,5 +1,5 @@
 import updateNotifier from 'update-notifier';
-import { readPackageJson, findUp } from './fs';
+import { readPackageJson, findUp, readAppPackageJson } from './fs';
 
 export default updateNotifier;
 
@@ -10,7 +10,7 @@ export default updateNotifier;
 export const checkForUpdate = () => {
   const pkg = module.parent
     ? readPackageJson(findUp(module.parent.filename, 'package.json'))
-    : readPackageJson();
+    : readAppPackageJson();
 
   updateNotifier({pkg}).notify();
 };

@@ -1,16 +1,16 @@
 import { TwilioError } from 'flex-plugins-utils-exception';
-import { PackageJson, readPackageJson } from '../fs';
+import { AppPackageJson, readAppPackageJson } from '../fs';
 import logger from '../logger';
 
 export default class FlexPluginError extends TwilioError {
-  private readonly pkg: PackageJson | null;
+  private readonly pkg: AppPackageJson | null;
 
   constructor(msg?: string) {
     /* istanbul ignore next */
     super(msg);
 
     try {
-      this.pkg = readPackageJson();
+      this.pkg = readAppPackageJson();
     } catch (e) {
       this.pkg = null;
     }
@@ -27,7 +27,6 @@ export default class FlexPluginError extends TwilioError {
     if (this.pkg) {
       const deps = this.pkg.dependencies;
       const names = [
-        'craco-config-flex-plugin',
         'flex-plugin',
         'flex-plugin-scripts',
       ];

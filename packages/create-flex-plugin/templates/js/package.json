@@ -3,47 +3,14 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "bootstrap": "flex-plugin check-start",
-    "prebuild": "rimraf build && npm run bootstrap",
-    "build": "flex-plugin build",
-    "clear": "flex-plugin clear",
-    "predeploy": "npm run build",
-    "deploy": "flex-plugin deploy",
-    "eject": "flex-plugin eject",
-    "info": "flex-plugin info",
-    "postinstall": "npm run bootstrap",
-    "list": "flex-plugin list",
-    "remove": "flex-plugin remove",
-    "prestart": "npm run bootstrap",
-    "start": "flex-plugin start",
-    "test": "flex-plugin test --env=jsdom"
+    "postinstall": "flex-plugin pre-script-check"
   },
   "dependencies": {
-    "craco-config-flex-plugin": "{{cracoConfigVersion}}",
-    "flex-plugin": "{{flexPluginVersion}}",
     "flex-plugin-scripts": "{{pluginScriptsVersion}}",
     "react": "16.5.2",
-    "react-dom": "16.5.2",
-    "react-emotion": "9.2.12",
-    "react-scripts": "3.4.3"
+    "react-dom": "16.5.2"
   },
   "devDependencies": {
-    "@twilio/flex-ui": "{{flexSdkVersion}}",
-    "babel-polyfill": "^6.26.0",
-    "enzyme": "^3.10.0",
-    "enzyme-adapter-react-16": "^1.14.0",
-    "rimraf": "^3.0.0"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "@twilio/flex-ui": "{{flexSdkVersion}}"
   }
 }

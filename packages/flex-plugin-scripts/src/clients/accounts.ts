@@ -7,7 +7,6 @@ export interface Account {
   sid: string;
 }
 
-
 export default class AccountClient extends BaseClient {
   public static BaseUrl = 'Accounts';
   public static version = '2010-04-01';

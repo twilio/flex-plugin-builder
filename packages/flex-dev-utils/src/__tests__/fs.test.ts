@@ -1,33 +1,77 @@
-import { PackageJson } from '../fs';
+import { AppPackageJson, PackageJson } from '../fs';
+import appModule from 'app-module-path';
 import * as fs from '../fs';
+import * as globby from 'globby';
+import * as inquirer from '../inquirer';
+
+jest.mock('flex-plugins-utils-logger/dist/lib/inquirer')
+jest.mock('globby');
+jest.mock('app-module-path');
 
 describe('fs', () => {
+  const appPackage: AppPackageJson = {
+    version: '1',
+    name: 'plugin-test',
+    dependencies: {
+      'flex-plugin-scripts': '1',
+      'flex-plugin': '2',
+    },
+  };
+
   beforeEach(() => {
     jest.resetAllMocks();
     jest.resetModules();
+    jest.restoreAllMocks();
   });
 
   describe('readPackageJson', () => {
     it('should read package.json', () => {
-      const str = '{"version":1}';
-      const cwd = jest.spyOn(process, 'cwd').mockImplementation(() => 'test');
-      const readFileSync = jest.spyOn(fs.default, 'readFileSync').mockImplementation(() => str);
+      const readFileSync = jest.spyOn(fs.default, 'readFileSync').mockReturnValue('{"version":1}');
 
-      const pkg = fs.readPackageJson();
+      const pkg = fs.readPackageJson('filePath');
 
       expect(pkg).toEqual({version: 1});
-      expect(cwd).toHaveBeenCalledTimes(1);
       expect(readFileSync).toHaveBeenCalledTimes(1);
-      expect(readFileSync).toHaveBeenCalledWith('test/package.json', 'utf8');
+      expect(readFileSync).toHaveBeenCalledWith('filePath', 'utf8');
 
-      cwd.mockRestore();
       readFileSync.mockRestore();
+    });
+  });
+
+  describe('readJsonFile', () => {
+    it('should read package.json', () => {
+      const readFileSync = jest.spyOn(fs.default, 'readFileSync').mockReturnValue('{"version":1}');
+
+      const pkg = fs.readJsonFile('filePath');
+
+      expect(pkg).toEqual({version: 1});
+      expect(readFileSync).toHaveBeenCalledTimes(1);
+      expect(readFileSync).toHaveBeenCalledWith('filePath', 'utf8');
+
+      readFileSync.mockRestore();
+    });
+  });
+
+  describe('readAppPackageJson', () => {
+    it('should read app package', () => {
+      const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockReturnValue(appPackage);
+      const getPackageJsonPath = jest.spyOn(fs, 'getPackageJsonPath').mockReturnValue('path');
+
+      const pkg = fs.readAppPackageJson();
+
+      expect(pkg).toEqual(appPackage);
+      expect(readPackageJson).toHaveBeenCalledTimes(1);
+      expect(readPackageJson).toHaveBeenCalledWith('path');
+      expect(getPackageJsonPath).toHaveBeenCalledTimes(1);
+
+      readPackageJson.mockRestore();
+      getPackageJsonPath.mockRestore();
     });
   });
 
   describe('getPackageJsonPath', () => {
     it('should return the right path', () => {
-      const cwd = jest.spyOn(process, 'cwd').mockImplementation(() => 'test');
+      const cwd = jest.spyOn(fs, 'getCwd').mockImplementation(() => 'test');
 
       const path = fs.getPackageJsonPath();
 
@@ -63,17 +107,9 @@ describe('fs', () => {
     });
   });
 
-  describe('updatePackageVersion', () => {
+  describe('updateAppVersion', () => {
     it('should update version', () => {
-      const pkgBefore: PackageJson = {
-        version: '1',
-        name: 'plugin-test',
-        dependencies: {
-          'flex-plugin-scripts': '1',
-          'flex-plugin': '2',
-          'craco-config-flex-plugin': '3',
-        },
-      };
+      const pkgBefore = {...appPackage};
       const pkgAfter: PackageJson = Object.assign({}, pkgBefore, {version: '2'});
 
       // @ts-ignore
@@ -82,7 +118,7 @@ describe('fs', () => {
       const getPackageJsonPath = jest.spyOn(fs, 'getPackageJsonPath').mockReturnValue('package.json');
       const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockReturnValue(pkgBefore);
 
-      fs.updatePackageVersion('2');
+      fs.updateAppVersion('2');
       expect(writeFileSync).toHaveBeenCalledTimes(1);
       expect(writeFileSync).toHaveBeenCalledWith('package.json', JSON.stringify(pkgAfter, null, 2));
 
@@ -128,6 +164,379 @@ describe('fs', () => {
       }
 
       existsSync.mockRestore();
+    });
+  });
+
+  describe('resolveCwd', () => {
+    it('should call resolveRelative', () => {
+      const resolveRelative = jest.spyOn(fs, 'resolveRelative').mockReturnValue('foo');
+
+      expect(fs.resolveCwd('some-path')).toEqual('foo');
+      expect(resolveRelative).toHaveBeenCalledTimes(1);
+      expect(resolveRelative).toHaveBeenCalledWith(expect.any(String), 'some-path');
+
+      resolveRelative.mockRestore();
+    });
+  });
+
+  describe('resolveRelative', () => {
+    it('should return dir if no paths passed', () => {
+      expect(fs.resolveRelative('the-dir')).toEqual('the-dir');
+    });
+
+    it('should build path with single item and no extension', () => {
+      expect(fs.resolveRelative('the-dir', 'the-sub')).toEqual('the-dir/the-sub');
+    });
+
+    it('should build path with single item that is extension', () => {
+      expect(fs.resolveRelative('the-file', '.extension')).toEqual('the-file.extension');
+    });
+
+    it('should build path with two items and no extension', () => {
+      expect(fs.resolveRelative('foo', 'bar', 'baz')).toEqual('foo/bar/baz');
+    });
+
+    it('should build path with two items and an extension', () => {
+      expect(fs.resolveRelative('foo', 'bar', '.baz')).toEqual('foo/bar.baz');
+    });
+
+    it('should build path with multiple items and no extension', () => {
+      expect(fs.resolveRelative('foo', 'bar', 'baz', 'test', 'it')).toEqual('foo/bar/baz/test/it');
+    });
+
+    it('should build path with multiple items and an extension', () => {
+      expect(fs.resolveRelative('foo', 'bar', 'baz', 'test', '.it')).toEqual('foo/bar/baz/test.it');
+    });
+  });
+
+  describe('findGlobsIn', () => {
+    it('should call globby', () => {
+      const dirs = ['path1', 'path2'];
+      const sync = jest.spyOn(globby, 'sync').mockReturnValue(dirs);
+      const patterns = ['pattern1', 'pattern2'];
+      const result = fs.findGlobsIn('the-dir', ...patterns);
+
+      expect(result).toEqual(dirs);
+      expect(sync).toHaveBeenCalledTimes(1);
+      expect(sync).toHaveBeenCalledWith(patterns, { cwd: 'the-dir' });
+    });
+  });
+
+  describe('checkPluginConfigurationExists', () => {
+    const name = 'plugin-test';
+    const dir = 'test-dir';
+    const cliPath = {
+      dir: 'test-dir',
+      flexDir: 'test-dir-flex',
+      pluginsJsonPath: 'test-dir-plugins',
+    };
+
+    let checkFilesExist = jest.spyOn(fs, 'checkFilesExist');
+    let mkdirpSync = jest.spyOn(fs, 'mkdirpSync');
+    let writeFileSync = jest.spyOn(fs.default, 'writeFileSync');
+    let readJsonFile = jest.spyOn(fs, 'readJsonFile');
+    let confirm = jest.spyOn(inquirer, 'confirm');
+    let getCliPaths = jest.spyOn(fs, 'getCliPaths');
+
+    beforeEach(() => {
+      checkFilesExist = jest.spyOn(fs, 'checkFilesExist');
+      mkdirpSync = jest.spyOn(fs, 'mkdirpSync');
+      writeFileSync = jest.spyOn(fs.default, 'writeFileSync');
+      readJsonFile = jest.spyOn(fs, 'readJsonFile');
+      confirm = jest.spyOn(inquirer, 'confirm');
+      getCliPaths = jest.spyOn(fs, 'getCliPaths');
+
+      mkdirpSync.mockReturnThis();
+      writeFileSync.mockReturnThis();
+      readJsonFile.mockReturnValue({'plugins': []});
+
+      // @ts-ignore
+      getCliPaths.mockReturnValue(cliPath);
+    });
+
+    it('make directories if not found', async () => {
+      checkFilesExist.mockReturnValue(false);
+
+      await fs.checkPluginConfigurationExists(name, dir);
+
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(checkFilesExist).toHaveBeenCalledWith('test-dir-plugins');
+      expect(mkdirpSync).toHaveBeenCalledTimes(1);
+      expect(mkdirpSync).toHaveBeenCalledWith('test-dir-flex');
+    });
+
+    it('do nothing if directories are found', async () => {
+      checkFilesExist.mockReturnValue(true);
+
+      const result = await fs.checkPluginConfigurationExists(name, dir);
+
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(checkFilesExist).toHaveBeenCalledWith('test-dir-plugins');
+      expect(mkdirpSync).not.toHaveBeenCalled();
+      expect(result).toEqual(true);
+    });
+
+    it('should add the plugin to plugins.json if not found', async () => {
+      checkFilesExist.mockReturnValue(true);
+      readJsonFile.mockReturnValue({'plugins': []});
+      writeFileSync.mockReturnThis();
+
+      const result = await fs.checkPluginConfigurationExists(name, dir);
+
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(readJsonFile).toHaveBeenCalledTimes(1);
+      expect(writeFileSync).toHaveBeenCalledTimes(1);
+      expect(writeFileSync).toHaveBeenCalledWith('test-dir-plugins', JSON.stringify({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]}, null, 2));
+      expect(result).toEqual(true);
+    });
+
+    it('do nothing if plugin has same directory as an existing one', async () => {
+      checkFilesExist.mockReturnValue(true);
+      readJsonFile.mockReturnValue({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]});
+      writeFileSync.mockReturnThis();
+
+      const result = await fs.checkPluginConfigurationExists(name, dir);
+
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(readJsonFile).toHaveBeenCalledTimes(1);
+      expect(writeFileSync).not.toHaveBeenCalled();
+      expect(result).toEqual(false);
+    });
+
+    it('change file path if user confirms', async () => {
+      checkFilesExist.mockReturnValue(true);
+      readJsonFile.mockReturnValue({'plugins': [{name: 'plugin-test', dir: 'test-dirr', port: 0}]});
+      writeFileSync.mockReturnThis();
+      confirm.mockResolvedValue(true);
+
+      const result = await fs.checkPluginConfigurationExists(name, dir);
+
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(readJsonFile).toHaveBeenCalledTimes(1);
+      // expect(confirm).toHaveBeenCalledTimes(1);
+      expect(readJsonFile).toHaveBeenCalledTimes(1);
+      expect(writeFileSync).toHaveBeenCalledTimes(1);
+      expect(writeFileSync).toHaveBeenCalledWith('test-dir-plugins', JSON.stringify({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]}, null, 2));
+      expect(result).toEqual(true);
+    });
+
+    it('do not change file path, user did not confirm', async () => {
+      checkFilesExist.mockReturnValue(true);
+      readJsonFile.mockReturnValue({'plugins': [{name: 'plugin-test', dir: 'test-dirr', port: 0}]});
+      writeFileSync.mockReturnThis();
+      confirm.mockResolvedValue(false);
+
+      const result = await fs.checkPluginConfigurationExists(name, dir, true);
+
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(readJsonFile).toHaveBeenCalledTimes(1);
+      expect(confirm).toHaveBeenCalledTimes(1);
+      expect(writeFileSync).not.toHaveBeenCalled();
+      expect(result).toEqual(false);
+    });
+  });
+
+  describe('getPaths', () => {
+    const validPackage = {
+      name: 'plugin-test',
+      version: '1.2.3',
+      dependencies: {
+        'flex-plugin-scripts': '1',
+        'flex-plugin': '2'
+      },
+    };
+
+    it('should give cli paths', () => {
+      const readPackageJson = jest
+        .spyOn(fs, 'readPackageJson')
+        .mockReturnValue(validPackage);
+
+      // cli/ directory
+      expect(fs.getCliPaths().dir).toEqual(expect.stringMatching('/.twilio-cli'));
+      expect(fs.getCliPaths().flexDir).toContain('/.twilio-cli/flex');
+      expect(fs.getCliPaths().pluginsJsonPath).toEqual(expect.stringMatching('plugins.json'));
+
+      readPackageJson.mockRestore();
+    });
+
+    it('should throw exception if flexPluginScriptPath is not found', (done) => {
+      jest.spyOn(fs, 'resolveModulePath').mockImplementation((pkg) => {
+        if (pkg === 'flex-plugin-scripts') {
+          return false;
+        }
+
+        return pkg;
+      });
+
+      try {
+        fs.getPaths();
+      } catch (e) {
+        expect(e.message).toContain('resolve flex-plugin-scripts');
+        done();
+      }
+    });
+
+    it('should throw exception if flexPluginWebpackPath is not found', (done) => {
+      jest.spyOn(fs, 'resolveModulePath').mockImplementation((pkg) => {
+        if (pkg === 'flex-plugin-webpack') {
+          return false;
+        }
+
+        return pkg;
+      });
+
+      try {
+        fs.getPaths();
+      } catch (e) {
+        expect(e.message).toContain('resolve flex-plugin-webpack');
+        done();
+      }
+    });
+
+    it('should give you the paths', () => {
+      const readPackageJson = jest
+        .spyOn(fs, 'readPackageJson')
+        .mockReturnValue(validPackage);
+
+      // build/ directory
+      expect(fs.getPaths().app.buildDir).toEqual(expect.stringMatching('build$'));
+      expect(fs.getPaths().app.bundlePath).toContain('build');
+      expect(fs.getPaths().app.bundlePath).toContain(validPackage.name);
+      expect(fs.getPaths().app.bundlePath).toEqual(expect.stringMatching('\.js$'));
+      expect(fs.getPaths().app.sourceMapPath).toContain('build');
+      expect(fs.getPaths().app.sourceMapPath).toContain(validPackage.name);
+      expect(fs.getPaths().app.sourceMapPath).toEqual(expect.stringMatching('\.js\.map$'));
+
+      // cli/ directory
+      expect(fs.getPaths().cli.dir).toEqual(expect.stringMatching('/.twilio-cli'));
+      expect(fs.getPaths().cli.flexDir).toContain('/.twilio-cli/flex');
+      expect(fs.getPaths().cli.pluginsJsonPath).toEqual(expect.stringMatching('plugins.json'));
+
+      // src/ directory
+      expect(fs.getPaths().app.srcDir).toEqual(expect.stringMatching('src$'));
+      expect(fs.getPaths().app.entryPath).toContain('src');
+      expect(fs.getPaths().app.entryPath).toEqual(expect.stringMatching('index$'));
+
+      // node_modules/ directory
+      expect(fs.getPaths().app.nodeModulesDir).toEqual(expect.stringMatching('node_modules$'));
+      expect(fs.getPaths().app.flexUIDir).toContain('node_modules');
+      expect(fs.getPaths().app.flexUIDir).toContain('@twilio/flex-ui');
+      expect(fs.getPaths().app.flexUIPkgPath).toContain('@twilio/flex-ui');
+      expect(fs.getPaths().app.flexUIPkgPath).toEqual(expect.stringMatching('package\.json$'));
+
+      // scripts
+      expect(fs.getPaths().scripts.devAssetsDir).toContain('flex-plugin-scripts');
+
+      // public/ directory
+      expect(fs.getPaths().app.publicDir).toEqual(expect.stringMatching('public$'));
+      expect(fs.getPaths().app.appConfig).toEqual(expect.stringMatching('appConfig\.js$'));
+
+      // env support
+      expect(fs.getPaths().app.envPath).toEqual(expect.stringMatching('.env'));
+      expect(fs.getPaths().app.envExamplePath).toEqual(expect.stringMatching('.env.example'));
+      expect(fs.getPaths().app.envDefaultsPath).toEqual(expect.stringMatching('.env.defaults'));
+
+      // dependencies
+      expect(fs.getPaths().app.dependencies.react.version).toEqual('1.2.3');
+      expect(fs.getPaths().app.dependencies.reactDom.version).toEqual('1.2.3');
+      expect(fs.getPaths().app.dependencies.flexUI.version).toEqual('1.2.3');
+
+      // package.json
+      expect(fs.getPaths().app.name).toEqual('plugin-test');
+      expect(fs.getPaths().app.version).toEqual('1.2.3');
+
+      // typescript
+      expect(fs.getPaths().app.tsConfigPath).toContain('tsconfig.json');
+      expect(fs.getPaths().app.isTSProject()).toEqual(true);
+
+      // setup tests
+      expect(fs.getPaths().app.setupTestsPaths).toHaveLength(2);
+      expect(fs.getPaths().app.setupTestsPaths[0]).toContain('setupTests.js');
+      expect(fs.getPaths().app.setupTestsPaths[0]).not.toContain('src');
+      expect(fs.getPaths().app.setupTestsPaths[1]).toContain('setupTests.js');
+      expect(fs.getPaths().app.setupTestsPaths[1]).toContain('src');
+
+      // others
+      expect(fs.getPaths().assetBaseUrlTemplate).toContain('plugin-test/%PLUGIN_VERSION%');
+
+      readPackageJson.mockRestore();
+    });
+  });
+
+  describe('setCoreCwd', () => {
+    it('should set the core cwd', () => {
+      const cwd = '/new/path';
+      const before = fs.getCoreCwd();
+      fs.setCoreCwd(cwd);
+      const after = fs.getCoreCwd();
+
+      expect(after).toEqual(cwd);
+      expect(before).not.toEqual(after);
+    });
+  });
+
+  describe('setCwd', () => {
+    it('should set the cwd', () => {
+      const cwd = '/new/path';
+      const before = fs.getCwd();
+      fs.setCwd(cwd);
+      const after = fs.getCwd();
+
+      expect(after).toEqual(cwd);
+      expect(before).not.toEqual(after);
+    });
+  });
+
+  describe('addCWDNodeModule', () => {
+    it('should add path', () => {
+      const addPath = jest.spyOn(appModule, 'addPath').mockReturnThis();
+      const setCoreCwd = jest.spyOn(fs, 'setCoreCwd').mockReturnThis();
+
+      fs.addCWDNodeModule();
+      expect(setCoreCwd).not.toHaveBeenCalled();
+      expect(addPath).toHaveBeenCalledTimes(1);
+      expect(addPath).toHaveBeenCalledWith(expect.stringContaining('node_modules'));
+    });
+
+    it('should add core-cwd', () => {
+      const cwd = '/new/path';
+      jest.spyOn(appModule, 'addPath').mockReturnThis();
+      const setCoreCwd = jest.spyOn(fs, 'setCoreCwd').mockReturnThis();
+
+      fs.addCWDNodeModule('--core-cwd', cwd);
+      expect(setCoreCwd).toHaveBeenCalledTimes(1);
+      expect(setCoreCwd).toHaveBeenCalledWith(cwd);
+    });
+
+    it('should not add core-cwd if not provided', () => {
+      jest.spyOn(appModule, 'addPath').mockReturnThis();
+      const setCoreCwd = jest.spyOn(fs, 'setCoreCwd').mockReturnThis();
+
+      fs.addCWDNodeModule('--core-cwd');
+      expect(setCoreCwd).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('resolveModulePath', () => {
+    it('should find path', () => {
+      expect(fs.resolveModulePath('jest')).toContain('jest');
+    });
+
+    it('should not find path', () => {
+      expect(fs.resolveModulePath('random-unknown-package')).toEqual(false);
+    });
+  });
+
+  describe('findGlobs', () => {
+    it('should return all globs', () => {
+      const findGlobsIn = jest.spyOn(fs, 'findGlobsIn').mockReturnValue(['glob']);
+      const getCwd = jest.spyOn(fs, 'getCwd').mockReturnValue('/the/cwd');
+      const result = fs.findGlobs('pattern1', 'pattern2');
+
+      expect(result).toEqual(['glob']);
+      expect(getCwd).toHaveBeenCalledTimes(1);
+      expect(findGlobsIn).toHaveBeenCalledTimes(1);
+      expect(findGlobsIn).toHaveBeenCalledWith('/the/cwd/src', 'pattern1', 'pattern2');
     });
   });
 });

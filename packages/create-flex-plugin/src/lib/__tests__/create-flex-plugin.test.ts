@@ -5,6 +5,7 @@ import { rmRfSync } from 'flex-dev-utils/dist/fs';
 import { FlexPluginArguments } from '../create-flex-plugin';
 import * as createFlexPluginScripts from '../create-flex-plugin';
 import * as commands from '../commands';
+import * as fsScripts from 'flex-dev-utils/dist/fs';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('../../prints/finalMessage');
@@ -12,6 +13,7 @@ jest.mock('../../prints/finalMessage');
 describe('create-flex-plugin', () => {
   const accountSid = 'AC00000000000000000000000000000000';
   const pluginName = 'plugin-test';
+  const pluginTargetDirectory = 'test-dir';
 
   const clearDir = () => {
     if (fs.existsSync(pluginName)) {
@@ -28,6 +30,22 @@ describe('create-flex-plugin', () => {
   afterAll(clearDir);
 
   describe('createFlexPlugin', () => {
+    it('should append the new plugin to plugins.json', async () => {
+      const checkPluginConfigurationExists = jest
+        .spyOn(fsScripts, 'checkPluginConfigurationExists')
+        .mockResolvedValue(true);
+
+      const config = {
+        name: pluginName,
+        accountSid,
+        targetDirectory: pluginTargetDirectory,
+      } as FlexPluginArguments;
+      await createFlexPluginScripts.default(config);
+
+      expect(checkPluginConfigurationExists).toHaveBeenCalledTimes(1);
+      expect(checkPluginConfigurationExists).toHaveBeenCalledWith(config.name, config.targetDirectory);
+    });
+
     it('should not install any dependency by default', async () => {
       const installDependencies = jest
         .spyOn(commands, 'installDependencies');

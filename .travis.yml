@@ -1,7 +1,11 @@
 language: node_js
 
 node_js:
+  - '14'
+  - '12'
   - '10'
+  - 'node'
+  - 'lts/*'
 
 before_install:
   - sudo apt-get update
@@ -9,6 +13,7 @@ before_install:
 
 before_script:
   - npm install
+  - NODE_OPTIONS="--max-old-space-size=8192"
 
 script:
   - npm run lint
@@ -21,6 +26,5 @@ branches:
   except:
   - /^v\d+\.\d+\.\d+$/
   only:
-  - master
   - main
-  - dev
+  - /v\d-beta/

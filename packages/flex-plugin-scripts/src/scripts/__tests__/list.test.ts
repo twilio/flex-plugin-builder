@@ -1,4 +1,5 @@
 import { FlexPluginError } from 'flex-dev-utils';
+import * as fsScript from 'flex-dev-utils/dist/fs';
 import { Visibility } from '../../clients/serverless-types';
 import * as listScript from '../list';
 
@@ -6,9 +7,6 @@ jest.mock('../../prints/pluginVersions');
 jest.mock('../../utils/runtime');
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/credentials');
-jest.mock('../../utils/paths', () => ({
-  packageName: 'plugin-test',
-}));
 
 // tslint:disable
 const getRuntime = require('../../utils/runtime').default;
@@ -16,11 +14,20 @@ const pluginVersions = require('../../prints/pluginVersions').default;
 // tslint:enable
 
 describe('list', () => {
+  const paths = {
+    app: {
+      name: 'plugin-test',
+    },
+  };
+
   process.env.TWILIO_API_KEY = 'SK00000000000000000000000000000000';
   process.env.TWILIO_API_SECRET = 'abc123';
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // @ts-ignore
+    jest.spyOn(fsScript, 'getPaths').mockReturnValue(paths);
   });
 
   describe('main script', () => {
@@ -46,28 +53,28 @@ describe('list', () => {
       await listScript.default();
 
       expect(doList).toHaveBeenCalledTimes(1);
-      expect(doList).toHaveBeenCalledWith(['public', 'protected'], 'asc');
+      expect(doList).toHaveBeenCalledWith([Visibility.Public, Visibility.Protected], 'asc');
     });
 
     it('should call doList as public', async () => {
       await listScript.default('--public-only');
 
       expect(doList).toHaveBeenCalledTimes(1);
-      expect(doList).toHaveBeenCalledWith(['public'], 'asc');
+      expect(doList).toHaveBeenCalledWith([Visibility.Public], 'asc');
     });
 
     it('should call doList as public', async () => {
       await listScript.default('--private-only');
 
       expect(doList).toHaveBeenCalledTimes(1);
-      expect(doList).toHaveBeenCalledWith(['protected'], 'asc');
+      expect(doList).toHaveBeenCalledWith([Visibility.Protected], 'asc');
     });
 
     it('should call doList in desc', async () => {
       await listScript.default('--desc');
 
       expect(doList).toHaveBeenCalledTimes(1);
-      expect(doList).toHaveBeenCalledWith(['public', 'protected'], 'desc');
+      expect(doList).toHaveBeenCalledWith([Visibility.Public, Visibility.Protected], 'desc');
     });
   });
 

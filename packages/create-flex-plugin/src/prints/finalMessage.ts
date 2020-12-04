@@ -11,34 +11,29 @@ const headline = logger.coloredStrings.headline;
  * @param config
  */
 export default (config: FlexPluginArguments) => {
-  const tool = config.yarn ? 'yarn' : 'npm';
-
-  const installCommand = config.yarn ? 'yarn' : 'npm install';
+  const installCommand = config.yarn ? 'yarn install' : 'npm install';
   const setupMessage = multilineString(
     `${headline('Setup:')}`,
     `$ cd ${config.name}/`,
     `$ ${installCommand}`,
   );
 
-  const startCommand = `${tool} start`;
   const devMessage = multilineString(
     `${headline('Development:')}`,
     `$ cd ${config.name}/`,
-    `$ ${startCommand}`,
+    `$ twilio flex:plugins:start`,
   );
 
-  const buildCommand = config.yarn ? 'yarn build' : 'npm run build';
   const buildMessage = multilineString(
     `${headline('Build Command:')}`,
     `$ cd ${config.name}/`,
-    `$ ${buildCommand}`,
+    `$ twilio flex:plugins:build`,
   );
 
-  const deployCommand = config.yarn ? 'yarn deploy' : 'npm run deploy';
   const deployMessage = multilineString(
     `${headline('Deploy Command:')}`,
     `$ cd ${config.name}/`,
-    `$ ${deployCommand}`,
+    `$ twilio flex:plugins:deploy`,
   );
 
   let message = multilineString(

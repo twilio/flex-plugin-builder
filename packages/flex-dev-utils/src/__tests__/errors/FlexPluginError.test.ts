@@ -27,12 +27,11 @@ describe('FlexPluginError', () => {
   });
 
   it('should print details', () => {
-    jest.spyOn(fs, 'readPackageJson')
+    jest.spyOn(fs, 'readAppPackageJson')
       .mockReturnValue({
         name: 'plugin-test',
         version: '1.2.3',
         dependencies: {
-          'craco-config-flex-plugin': '1.0.0',
           'flex-plugin': '2.0.0',
           'flex-plugin-scripts': '3.0.0',
         },
@@ -41,7 +40,7 @@ describe('FlexPluginError', () => {
     const err = new FlexPluginError();
 
     err.details();
-    expect(logger.info).toHaveBeenCalledTimes(4);
+    expect(logger.info).toHaveBeenCalledTimes(3);
   });
 
   it('should not print any details if pkg is not found', () => {
