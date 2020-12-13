@@ -1,13 +1,13 @@
 import * as credentials from '../credentials';
+import * as keychain from '../keychain';
 import { FlexPluginError } from '../errors';
 
-jest.mock('keytar');
 jest.mock('../logger');
 jest.mock('../inquirer');
 jest.mock('../validators');
+jest.mock('../keychain');
 
 // tslint:disable
-const keytar = require('keytar');
 const inquirer = require('../inquirer');
 const validators = require('../validators');
 // tslint:enable
@@ -27,33 +27,43 @@ describe('credentials', () => {
   };
   const OLD_ENV = process.env;
 
+  let findCredentials = jest.fn();
+  let deletePassword = jest.fn();
+  let setPassword = jest.fn();
+  let getKeychain: jest.SpyInstance = jest.fn();
+
   beforeEach(() => {
     jest.resetAllMocks();
     jest.resetModules();
+
+    findCredentials = jest.fn();
+    deletePassword = jest.fn();
+    setPassword = jest.fn();
+
+    getKeychain = jest.spyOn(keychain, 'default').mockReturnValue({
+      findCredentials,
+      deletePassword,
+      setPassword,
+    });
 
     process.env = { ...OLD_ENV };
   });
 
   describe('_getService', () => {
     it('should not call findCredentials if CI is true', async () => {
-      const _findCredentials = jest.spyOn(keytar, 'findCredentials');
       process.env.CI = 'true';
       const result = await credentials._getService();
 
-      expect(_findCredentials).not.toHaveBeenCalled();
+      expect(findCredentials).not.toHaveBeenCalled();
       expect(result).toEqual([]);
-
-      _findCredentials.mockRestore();
     });
 
     it('should call findCredentials', async () => {
-      const _findCredentials = jest.spyOn(keytar, 'findCredentials');
+      findCredentials.mockReturnValue([]);
       const result = await credentials._getService();
 
-      expect(_findCredentials).toHaveBeenCalledTimes(1);
+      expect(findCredentials).toHaveBeenCalledTimes(1);
       expect(result).toEqual([]);
-
-      _findCredentials.mockRestore();
     });
   });
 
@@ -341,30 +351,30 @@ describe('credentials', () => {
 
   describe('_saveCredential', () => {
     it('should not save if CI is set to true', () => {
-      const _getKeytar = jest.spyOn(credentials, '_getKeytar');
+      const _getKeychain = jest.spyOn(credentials, '_getKeychain');
       process.env.CI = 'true';
 
       credentials._saveCredential(accountSid, authToken);
-      expect(_getKeytar).not.toHaveBeenCalled();
-
-      _getKeytar.mockRestore();
+      expect(_getKeychain).not.toHaveBeenCalled();
     });
 
     it('should not save if SKIP_CREDENTIALS_SAVING is set to true', () => {
-      const _getKeytar = jest.spyOn(credentials, '_getKeytar');
+      const _getKeychain = jest.spyOn(credentials, '_getKeychain');
       process.env.SKIP_CREDENTIALS_SAVING = 'true';
 
       credentials._saveCredential(accountSid, authToken);
-      expect(_getKeytar).not.toHaveBeenCalled();
+      expect(_getKeychain).not.toHaveBeenCalled();
 
-      _getKeytar.mockRestore();
+      _getKeychain.mockRestore();
     });
   });
 
-  describe('_getKeytar', () => {
-    it('should get keytar if it exists', () => {
-      const _keytar = credentials._getKeytar();
-      expect(_keytar).not.toBeNull();
+  describe('_getKeychain', () => {
+    it('should call the keychain', () => {
+        credentials._getKeychain();
+
+        expect(getKeychain).toHaveBeenCalledTimes(1);
+        expect(getKeychain).toHaveBeenCalledWith(credentials.SERVICE_NAME);
     });
   });
 
@@ -384,9 +394,7 @@ describe('credentials', () => {
       const _getService = jest
         .spyOn(credentials, '_getService')
         .mockImplementation(() => Promise.resolve([keyCredential, keyCredential]));
-      const deletePassword = jest
-        .spyOn(keytar, 'deletePassword')
-        .mockResolvedValue(true);
+      deletePassword.mockResolvedValue(true);
 
       await credentials.clearCredentials();
 
@@ -394,7 +402,6 @@ describe('credentials', () => {
       expect(deletePassword).toHaveBeenCalledTimes(2);
 
       _getService.mockRestore();
-      deletePassword.mockRestore();
     });
   });
 });

@@ -1,12 +1,11 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential } from 'flex-dev-utils';
 import * as fsScripts from 'flex-dev-utils/dist/fs';
-import * as fsScript from 'flex-dev-utils/dist/fs';
 import * as random from 'flex-dev-utils/dist/random';
 
 import EnvironmentClient from '../environments';
 
 describe('EnvironmentClient', () => {
-  const auth: AuthConfig = {
+  const auth: Credential = {
     username: 'ACxxx',
     password: 'abc',
   };

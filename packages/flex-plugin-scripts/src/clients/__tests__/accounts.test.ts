@@ -1,10 +1,9 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential } from 'flex-dev-utils';
 import BaseClient from '../baseClient';
 import AccountClient from '../accounts';
-import ConfigurationClient from '../configurations';
 
 describe('AccountClient', () => {
-  const auth: AuthConfig = {
+  const auth: Credential = {
     username: 'AC00000000000000000000000000000000',
     password: 'abc',
   };

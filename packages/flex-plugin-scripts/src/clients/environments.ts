@@ -1,4 +1,4 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential } from 'flex-dev-utils';
 import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
 import { randomString } from 'flex-dev-utils/dist/random';
 import { getPaths } from 'flex-dev-utils/dist/fs';
@@ -11,7 +11,7 @@ export default class EnvironmentClient extends BaseClient {
   public static BaseUri = 'Environments';
   public static DomainSuffixLength = 5;
 
-  constructor(auth: AuthConfig, serviceSid: string) {
+  constructor(auth: Credential, serviceSid: string) {
     super(auth, `${ServiceClient.getBaseUrl()}/Services/${serviceSid}`);
 
     if (!isSidOfType(serviceSid, SidPrefix.ServiceSid)) {

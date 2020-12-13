@@ -1,9 +1,9 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential } from 'flex-dev-utils';
 
 import DeploymentClient from '../deployments';
 
 describe('DeploymentClient', () => {
-  const auth: AuthConfig = {
+  const auth: Credential = {
     username: 'ACxxx',
     password: 'abc',
   };

@@ -1,8 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, httpAdapter, settle } from 'flex-dev-utils/dist/axios';
 import { stringify } from 'querystring';
 import { format } from 'util';
-import { logger, env } from 'flex-dev-utils';
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { logger, env, Credential } from 'flex-dev-utils';
 import FormData from 'form-data';
 import { Transform } from 'stream';
 
@@ -10,7 +9,7 @@ export type ContentType = 'application/x-www-form-urlencoded' | 'application/jso
 export interface HttpConfig {
   baseURL: string;
   userAgent?: string;
-  auth: AuthConfig;
+  auth: Credential;
   exitOnRejection?: boolean;
   contentType?: ContentType;
 }

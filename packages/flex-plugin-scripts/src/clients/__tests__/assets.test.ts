@@ -1,4 +1,4 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential } from 'flex-dev-utils';
 import AssetClient from '../assets';
 import FileClient from '../files';
 
@@ -6,7 +6,7 @@ jest.mock('../files');
 
 describe('AssetClient', () => {
   const serviceSid = 'ZS00000000000000000000000000000000';
-  const auth = {} as AuthConfig;
+  const auth = {} as Credential;
 
   describe('constructor', () => {
     it('should instantiate as an Asset', () => {

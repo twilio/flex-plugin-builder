@@ -1,4 +1,4 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential } from 'flex-dev-utils';
 
 import FileClient from '../files';
 import BaseClient from '../baseClient';
@@ -7,7 +7,7 @@ jest.mock('../baseClient');
 
 describe('FileClient', () => {
   const serviceSid = 'ZS00000000000000000000000000000000';
-  const auth = {} as AuthConfig;
+  const auth = {} as Credential;
 
   class Test extends FileClient {
     constructor(sid: string) {

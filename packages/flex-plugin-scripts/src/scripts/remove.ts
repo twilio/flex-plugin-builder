@@ -1,7 +1,6 @@
-import { logger, progress } from 'flex-dev-utils';
+import { logger, progress, Credential, getCredential } from 'flex-dev-utils';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
-import { AuthConfig, getCredential } from 'flex-dev-utils/dist/credentials';
 import { EnvironmentClient } from '../clients';
 import { Runtime } from '../clients/serverless-types';
 import { getPaths } from 'flex-dev-utils/dist/fs';
@@ -15,7 +14,7 @@ import getRuntime from '../utils/runtime';
  * @param credentials the credentials
  * @private
  */
-export const _getRuntime = async (credentials: AuthConfig): Promise<Runtime> => {
+export const _getRuntime = async (credentials: Credential): Promise<Runtime> => {
   const runtime = await getRuntime(credentials, true);
   const environmentClient = new EnvironmentClient(credentials, runtime.service.sid);
 

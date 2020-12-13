@@ -1,4 +1,4 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential } from 'flex-dev-utils';
 import * as fsScript from 'flex-dev-utils/dist/fs';
 
 import getRuntime from '../runtime';
@@ -31,7 +31,7 @@ describe('runtime', () => {
   const environmentWithBuild = {sid: environmentSid, build_sid: buildSid};
   const build = {sid: buildSid};
 
-  const auth: AuthConfig = {
+  const auth: Credential = {
     username: 'AC00000000000000000000000000000000',
     password: 'abc123',
   };
