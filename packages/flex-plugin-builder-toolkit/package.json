@@ -1,0 +1,43 @@
+{
+  "name": "flex-plugin-builder-toolkit",
+  "version": "4.3.8-beta.0",
+  "description": "Scripts to run, build and deploy Flex plugins",
+  "keywords": [
+    "flex",
+    "plugins",
+    "scripts",
+    "twilio",
+    "toolkit"
+  ],
+  "homepage": "https://github.com/twilio/flex-plugin-builder",
+  "bugs": {
+    "url": "https://github.com/twilio/flex-plugin-builder/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio/flex-plugin-builder.git"
+  },
+  "license": "MIT",
+  "author": "Kousha Talebian <ktalebian@twilio.com>",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepublish": "npm run build",
+    "test": "cd ../.. && jest packages/flex-plugin-builder-toolkit --color",
+    "test:watch": "cd ../.. && jest packages/flex-plugin-builder-toolkit --watch --color"
+  },
+  "dependencies": {
+    "flex-plugin-scripts": "^4.3.6-beta.0",
+    "flex-dev-utils": "^4.3.6-beta.0"
+  },
+  "engines": {
+    "node": ">=10.12.0"
+  },
+  "gitHead": "cb92593ce13da010d82f488d974d7f372d973af8"
+}

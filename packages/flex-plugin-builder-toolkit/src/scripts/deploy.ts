@@ -1,0 +1,15 @@
+import { spawn, SpawnPromise } from 'flex-dev-utils';
+
+const deployScriptPath = require.resolve('flex-plugin-scripts/dist/scripts/deploy');
+const preScriptCheck = require.resolve('flex-plugin-scripts/dist/scripts/pre-script-check');
+
+export type DeployOptions = {
+  cwd: string;
+  name: string;
+}
+
+// @ts-ignore
+export default async function run(options: DeployOptions): SpawnPromise {
+  await spawn('node', [preScriptCheck, '--run-script', '--core-cwd', options.cwd, '--cwd', options.cwd])
+  return spawn('node', [deployScriptPath, '--run-script', '--core-cwd', options.cwd, '--name', options.name])
+}

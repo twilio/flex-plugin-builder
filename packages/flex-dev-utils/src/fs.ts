@@ -310,15 +310,24 @@ export const findGlobsIn = (dir: string, ...patterns: string[]) => {
  * the original cwd directory
  */
 export const addCWDNodeModule = (...args: string[]) => {
-  const index = args.indexOf('--core-cwd');
-  if (index !== -1) {
-    const coreCwd = args[index + 1];
+  const indexCoreCwd = args.indexOf('--core-cwd');
+  if (indexCoreCwd !== -1) {
+    const coreCwd = args[indexCoreCwd + 1];
     if (coreCwd) {
       setCoreCwd(coreCwd);
     }
   }
-  // This is to setup the app environment
-  setCwd(getCwd());
+
+  const indexCwd = args.indexOf('--core-cwd');
+  if (indexCwd !== -1) {
+    const cwd = args[indexCwd + 1];
+    if (cwd) {
+      setCwd(cwd);
+    }
+  } else {
+    // This is to setup the app environment
+    setCwd(getCwd());
+  }
 };
 
 /**

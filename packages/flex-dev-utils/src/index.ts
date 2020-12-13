@@ -11,7 +11,7 @@ export { default as credentials } from './credentials';
 export { default as sids } from './sids';
 export { default as random } from './random';
 export { default as validators } from './validators';
-export { default as spawn } from './spawn';
+export { default as spawn, SpawnPromise } from './spawn';
 export { default as axios } from './axios';
 export { default as prints } from './prints';
 export { default as open } from './open';
