@@ -1,5 +1,5 @@
-import { Environment } from 'flex-dev-utils/dist/env';
 import * as env from 'flex-dev-utils/dist/env';
+import * as fs from 'flex-dev-utils/dist/fs'
 import { Bundle } from '../build';
 
 import * as buildScript from '../build';
@@ -25,6 +25,7 @@ describe('BuildScript', () => {
 
   describe('default', () => {
     it('should build successfully', async () => {
+      const updateAppVersion = jest.spyOn(fs, 'updateAppVersion').mockReturnThis();
       const _getBundle = jest
         .spyOn(buildScript, '_runWebpack')
         .mockResolvedValue({ warnings: [], bundles: [bundle]});
@@ -32,14 +33,29 @@ describe('BuildScript', () => {
       await buildScript.default();
 
       expect(env.setBabelEnv).toHaveBeenCalledTimes(1);
-      expect(env.setBabelEnv).toHaveBeenCalledWith(Environment.Production);
+      expect(env.setBabelEnv).toHaveBeenCalledWith(env.Environment.Production);
       expect(env.setNodeEnv).toHaveBeenCalledTimes(1);
-      expect(env.setNodeEnv).toHaveBeenCalledWith(Environment.Production);
+      expect(env.setNodeEnv).toHaveBeenCalledWith(env.Environment.Production);
 
+      expect(updateAppVersion).not.toHaveBeenCalled();
       expect(_getBundle).toHaveBeenCalledTimes(1);
       expect(prints.buildSuccessful).toHaveBeenCalledTimes(1);
       expect(prints.buildFailure).not.toHaveBeenCalled();
       expect(exit).not.toHaveBeenCalled();
+
+      _getBundle.mockRestore();
+    });
+
+    it('should update appVersion if provided', async () => {
+      const updateAppVersion = jest.spyOn(fs, 'updateAppVersion').mockReturnThis();
+      const _getBundle = jest
+        .spyOn(buildScript, '_runWebpack')
+        .mockResolvedValue({ warnings: [], bundles: [bundle]});
+
+      await buildScript.default('--version', '1.2.3');
+
+      expect(updateAppVersion).toHaveBeenCalledTimes(1)
+      expect(updateAppVersion).toHaveBeenCalledWith('1.2.3');
 
       _getBundle.mockRestore();
     });
