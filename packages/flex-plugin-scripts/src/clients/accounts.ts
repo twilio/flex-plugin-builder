@@ -1,4 +1,4 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential } from 'flex-dev-utils';
 import BaseClient from './baseClient';
 
 export interface Account {
@@ -18,7 +18,7 @@ export default class AccountClient extends BaseClient {
     return BaseClient.getBaseUrl('api', AccountClient.version);
   }
 
-  constructor(auth: AuthConfig) {
+  constructor(auth: Credential) {
     super(auth, AccountClient.getBaseUrl(), { contentType: 'application/json' });
   }
 

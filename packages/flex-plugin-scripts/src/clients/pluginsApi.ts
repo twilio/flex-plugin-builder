@@ -1,4 +1,4 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential } from 'flex-dev-utils';
 import BaseClient from './baseClient';
 
 export default class PluginsApiClient extends BaseClient {
@@ -8,7 +8,7 @@ export default class PluginsApiClient extends BaseClient {
     return `${BaseClient.getBaseUrl('flex-api', 'v1')}/PluginService`;
   }
 
-  constructor(auth: AuthConfig) {
+  constructor(auth: Credential) {
     super(auth, PluginsApiClient.getBaseUrl());
   }
 

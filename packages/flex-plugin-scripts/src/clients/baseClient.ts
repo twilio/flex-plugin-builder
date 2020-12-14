@@ -1,4 +1,4 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential } from 'flex-dev-utils';
 
 import Http, { ContentType, HttpConfig } from './http';
 import { getPackageDetails, FLEX_PACKAGES } from '../utils/package';
@@ -39,7 +39,7 @@ export default abstract class BaseClient {
   protected readonly config: HttpConfig;
   protected readonly http: Http;
 
-  protected constructor(auth: AuthConfig, baseUrl: string, options?: BaseClientOptions) {
+  protected constructor(auth: Credential, baseUrl: string, options?: BaseClientOptions) {
     const config: HttpConfig = {
       baseURL: baseUrl,
       userAgent: BaseClient.userAgent,

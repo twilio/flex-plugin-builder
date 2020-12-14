@@ -1,10 +1,10 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential } from 'flex-dev-utils';
 
 import BuildClient, { BuildData } from '../builds';
 import { BuildStatus } from '../serverless-types';
 
 describe('BuildClient', () => {
-  const auth: AuthConfig = {
+  const auth: Credential = {
     username: 'ACxxx',
     password: 'abc',
   };
@@ -43,7 +43,7 @@ describe('BuildClient', () => {
       Dependencies: { foo: 'bar' },
     } as BuildData;
 
-    it.only('should create new build', async () => {
+    it('should create new build', async () => {
       const client = new BuildClient(auth, 'ZS00000000000000000000000000000000');
       // @ts-ignore
       const create = jest.spyOn(client, '_create').mockResolvedValue(deployedBuild);

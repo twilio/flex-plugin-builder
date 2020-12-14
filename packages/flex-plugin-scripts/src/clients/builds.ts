@@ -1,5 +1,4 @@
-import { logger } from 'flex-dev-utils/dist';
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential, logger } from 'flex-dev-utils';
 import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
 
 import BaseClient from './baseClient';
@@ -17,7 +16,7 @@ export default class BuildClient extends BaseClient {
   private static timeoutMsec: number = 60000;
   private static pollingIntervalMsec: number = 500;
 
-  constructor(auth: AuthConfig, serviceSid: string) {
+  constructor(auth: Credential, serviceSid: string) {
     super(auth,  `${ServiceClient.getBaseUrl()}/Services/${serviceSid}`);
 
     if (!isSidOfType(serviceSid, SidPrefix.ServiceSid)) {

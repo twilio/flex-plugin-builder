@@ -1,4 +1,4 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential } from 'flex-dev-utils';
 import FormData from 'form-data';
 import { createReadStream } from 'fs';
 import { basename } from 'path';
@@ -15,7 +15,7 @@ export  default abstract class FilesClient extends BaseClient {
   protected serviceSid: string;
   private readonly fileType: FileTypes;
 
-  protected constructor(auth: AuthConfig, fileType: FileTypes,  serviceSid: string) {
+  protected constructor(auth: Credential, fileType: FileTypes,  serviceSid: string) {
     super(auth, `${ServiceClient.getBaseUrl()}/Services/${serviceSid}`);
 
     if (!isSidOfType(serviceSid, 'ZS')) {

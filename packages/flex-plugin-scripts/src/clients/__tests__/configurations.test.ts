@@ -1,4 +1,4 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential } from 'flex-dev-utils';
 import BaseClient from '../baseClient';
 import ConfigurationClient from '../configurations';
 
@@ -6,7 +6,7 @@ describe('ConfigurationClient', () => {
   const serviceSid = 'ZS00000000000000000000000000000000';
   const anotherSid = 'ZS00000000000000000000000000000001';
   const accountSid = 'AC00000000000000000000000000000000';
-  const auth: AuthConfig = {
+  const auth: Credential = {
     username: accountSid,
     password: 'abc',
   };

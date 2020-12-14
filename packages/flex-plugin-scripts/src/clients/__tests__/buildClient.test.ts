@@ -1,4 +1,4 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential } from 'flex-dev-utils';
 import BaseClient, { BaseClientOptions } from '../baseClient';
 import * as packageUtil from '../../utils/package';
 
@@ -10,7 +10,7 @@ describe('BaseClient', () => {
   const testBaseUrl = 'testBaseUrl';
 
   class Test extends BaseClient {
-    constructor(authConfig: AuthConfig, baseUrl: string, options?: BaseClientOptions) {
+    constructor(authConfig: Credential, baseUrl: string, options?: BaseClientOptions) {
       super(authConfig, baseUrl, options);
     }
 

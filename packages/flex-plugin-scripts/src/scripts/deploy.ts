@@ -1,8 +1,7 @@
-import { logger, semver, progress, FlexPluginError, UserActionError } from 'flex-dev-utils';
+import { logger, semver, progress, FlexPluginError, UserActionError, Credential, getCredential } from 'flex-dev-utils';
 import { ReleaseType } from 'flex-dev-utils/dist/semver';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { checkFilesExist, updateAppVersion, getPackageVersion, getPaths } from 'flex-dev-utils/dist/fs';
-import { AuthConfig, getCredential } from 'flex-dev-utils/dist/credentials';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
 import AccountsClient from '../clients/accounts';
 import { setEnvironment } from '../index';
@@ -104,10 +103,10 @@ export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: U
 /**
  * Returns the Account object only if credentials provided is AccountSid/AuthToken, otherwise returns a dummy data
  * @param runtime     the {@link Runtime}
- * @param credentials the {@link AuthConfig}
+ * @param credentials the {@link Credential}
  * @private
  */
-export const _getAccount = async (runtime: Runtime, credentials: AuthConfig) => {
+export const _getAccount = async (runtime: Runtime, credentials: Credential) => {
   const accountClient = new AccountsClient(credentials);
 
   if (credentials.username.startsWith('AC')) {

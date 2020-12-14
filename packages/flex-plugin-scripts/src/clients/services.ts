@@ -1,4 +1,4 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential } from 'flex-dev-utils';
 
 import BaseClient from './baseClient';
 import { Service, ServiceResource } from './serverless-types';
@@ -19,7 +19,7 @@ export default class ServiceClient extends BaseClient {
 
   private static version = 'v1';
 
-  constructor(auth: AuthConfig) {
+  constructor(auth: Credential) {
     super(auth, ServiceClient.getBaseUrl());
   }
 

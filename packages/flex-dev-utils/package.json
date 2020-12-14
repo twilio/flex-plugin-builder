@@ -1,6 +1,6 @@
 {
   "name": "flex-dev-utils",
-  "version": "4.3.9-beta.0",
+  "version": "4.3.11-alpha.0",
   "description": "Common development utility for creating a Flex plugin",
   "keywords": [
     "flex",
@@ -35,8 +35,8 @@
     "@k88/pipe-compose": "^2.1.2",
     "address": "^1.1.2",
     "app-module-path": "^2.2.0",
-    "axios": "^0.20.0",
-    "axios-mock-adapter": "^1.18.2",
+    "axios": "^0.21.0",
+    "axios-mock-adapter": "^1.19.0",
     "copy-template-dir": "^1.4.0",
     "flex-plugins-utils-exception": "^0.18.0",
     "flex-plugins-utils-logger": "^0.18.0",
@@ -49,16 +49,16 @@
     "net": "^1.0.2",
     "open": "^7.3.0",
     "rimraf": "^3.0.2",
-    "semver": "^7.3.2",
+    "semver": "^7.3.4",
     "tmp": "^0.2.1",
-    "update-notifier": "^5.0.0",
+    "update-notifier": "^5.0.1",
     "url": "^0.11.0",
     "util": "^0.12.3"
   },
   "devDependencies": {
     "@types/app-module-path": "^2.2.0",
-    "@types/lodash": "^4.14.162",
-    "@types/marked": "^1.1.0",
+    "@types/lodash": "^4.14.165",
+    "@types/marked": "^1.1.1",
     "@types/marked-terminal": "^3.1.1",
     "@types/mkdirp": "^1.0.1",
     "@types/rimraf": "^3.0.0",
@@ -67,7 +67,7 @@
     "@types/update-notifier": "^5.0.0"
   },
   "optionalDependencies": {
-    "keytar": "^7.0.0"
+    "keytar": "^7.2.0"
   },
   "gitHead": "cb92593ce13da010d82f488d974d7f372d973af8"
 }

@@ -1,35 +1,13 @@
 import { FlexPluginError } from './errors';
-import { logger } from './index';
 import { prompt, choose, Question } from './inquirer';
+import env from './env';
+import keychain, { Keychain, KeychainCredential } from './keychain';
 import { isInputNotEmpty, validateAccountSid, validateApiKey } from './validators';
 
-// Keytar is installed as an optional dependency
-// Try to load it here but do not fail if it fails to be required
-let keytar: any;
-try {
-  // tslint:disable-next-line
-  keytar = require('keytar');
-} catch (e) {
-  /* istanbul ignore next */
-  if (!process.env.CI) {
-    logger.debug('Failed to require keytar', e);
-  }
-}
+export const SERVICE_NAME = 'com.twilio.flex.plugins.builder';
 
-const SERVICE_NAME = 'com.twilio.flex.plugins.builder';
-
-export interface AuthConfig {
+export interface Credential {
   username: string;
-  password: string;
-}
-
-interface Credential {
-  username: string;
-  password: string;
-}
-
-interface KeytarCredential {
-  account: string;
   password: string;
 }
 
@@ -57,12 +35,12 @@ const chooseAccount: Question = {
  * Fetches the API Key/Secret and stores them in keychain.
  * If no credentials exists, then prompts the user to enter the credentials
  */
-export const getCredential = async (): Promise<AuthConfig> => {
+export const getCredential = async (): Promise<Credential> => {
   let username;
   let password;
 
   const missingCredentials = !((process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) || (process.env.TWILIO_API_KEY && process.env.TWILIO_API_SECRET));
-  if (process.env.CI && missingCredentials) {
+  if (env.isCI() && missingCredentials) {
     throw new FlexPluginError('❌.  Running script in CI, but no AccountSid/AuthToken or API Key/Secret was provided');
   }
 
@@ -107,13 +85,12 @@ export const getCredential = async (): Promise<AuthConfig> => {
  * Clears the credentials
  */
 export const clearCredentials = async (): Promise<void> => {
-  if (process.env.CI) {
+  if (env.isCI()) {
     return Promise.resolve();
   }
 
   const credentials = await _getService();
-  const promises = credentials.map((cred) => _getKeytar().deletePassword(SERVICE_NAME, cred.account));
-
+  const promises = credentials.map((cred) => _getKeychain().deletePassword(cred.account));
   await Promise.all(promises);
 };
 
@@ -124,7 +101,7 @@ export const clearCredentials = async (): Promise<void> => {
  * @private
  */
 export const _findCredential = async (accountSid?: string): Promise<Credential | null> => {
-  const convertCredential = (credential: KeytarCredential): Credential => ({
+  const convertCredential = (credential: KeychainCredential): Credential => ({
     username: credential.account,
     password: credential.password,
   });
@@ -153,24 +130,24 @@ export const _findCredential = async (accountSid?: string): Promise<Credential |
   }
   /* istanbul ignore next */
   if (accounts.length === 1) {
-    return convertCredential(credentials.find((cred) => cred.account === accounts[0]) as KeytarCredential);
+    return convertCredential(credentials.find((cred) => cred.account === accounts[0]) as KeychainCredential);
   }
 
   const selectedAccount = await choose(chooseAccount, accounts);
 
-  return convertCredential(credentials.find((cred) => cred.account === selectedAccount) as KeytarCredential);
+  return convertCredential(credentials.find((cred) => cred.account === selectedAccount) as KeychainCredential);
 };
 
 /**
  * Gets the credential service
  * @private
  */
-export const _getService = async (): Promise<KeytarCredential[]> => {
-  if (process.env.CI) {
+export const _getService = async (): Promise<KeychainCredential[]> => {
+  if (env.isCI()) {
     return [];
   }
 
-  return await _getKeytar().findCredentials(SERVICE_NAME);
+  return await _getKeychain().findCredentials();
 };
 
 /**
@@ -182,24 +159,14 @@ export const _getService = async (): Promise<KeytarCredential[]> => {
  */
 export const _saveCredential = async (username: string, password: string) => {
   // Do not store password on CI builds
-  if (!process.env.CI && !process.env.SKIP_CREDENTIALS_SAVING) {
-    await _getKeytar().setPassword(SERVICE_NAME, username, password);
+  if (!env.isCI() && !process.env.SKIP_CREDENTIALS_SAVING) {
+    await _getKeychain().setPassword(username, password);
   }
 };
 
 /**
- * Keytar is required optionally and so may not exist.
- * It will throw an error if a local installation is not found.
- *
- * @private
+ * Instantiates a keychain to use
  */
-/* istanbul ignore next */
-export const _getKeytar = () => {
-  if (keytar) {
-    return keytar;
-  }
-
-  throw new Error('Optional dependency keytar was not installed');
-};
+export const _getKeychain = (): Keychain => keychain(SERVICE_NAME);
 
 export default getCredential;

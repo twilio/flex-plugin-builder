@@ -1,11 +1,10 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
-import ConfigurationClient from '../configurations';
+import { Credential } from 'flex-dev-utils';
 
 import PluginsApiClient from '../pluginsApi';
 
 describe('PluginsApiClient', () => {
   const accountSid = 'AC00000000000000000000000000000000';
-  const auth: AuthConfig = {
+  const auth: Credential = {
     username: accountSid,
     password: 'abc',
   };
