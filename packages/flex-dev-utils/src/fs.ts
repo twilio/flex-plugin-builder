@@ -318,7 +318,7 @@ export const addCWDNodeModule = (...args: string[]) => {
     }
   }
 
-  const indexCwd = args.indexOf('--core-cwd');
+  const indexCwd = args.indexOf('--cwd');
   if (indexCwd !== -1) {
     const cwd = args[indexCwd + 1];
     if (cwd) {
