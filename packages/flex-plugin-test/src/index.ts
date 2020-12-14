@@ -26,7 +26,7 @@ const defaultSetupFile = join(__dirname, '../templates/setupTests.js');
  */
 export default (): JestConfigurations => {
   const paths = getPaths();
-  const setupTestsFile = paths.app.setupTestsPaths.find(x => checkFilesExist(x));
+  const setupTestsFile = paths.app.setupTestsPaths.find((x: string) => checkFilesExist(x));
 
   return {
     roots: ['<rootDir>/src'],

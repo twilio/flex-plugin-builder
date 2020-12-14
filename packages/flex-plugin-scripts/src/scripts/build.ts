@@ -1,6 +1,6 @@
 import { env, logger, exit, Callback } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
-import { addCWDNodeModule } from 'flex-dev-utils/dist/fs';
+import { addCWDNodeModule, updateAppVersion } from 'flex-dev-utils/dist/fs';
 import { webpack, WebpackCompiler } from 'flex-plugin-webpack';
 
 import getConfiguration, { ConfigurationType } from '../config';
@@ -60,6 +60,11 @@ export const _runWebpack = async (): Promise<BuildBundle> => {
 const build = async (...argv: string[]) => {
   setEnvironment(...argv);
   logger.debug('Building Flex plugin bundle');
+
+  const index = argv.indexOf('--version');
+  if (index !== -1) {
+    updateAppVersion(argv[index + 1]);
+  }
 
   addCWDNodeModule(...argv);
 
