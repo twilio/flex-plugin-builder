@@ -74,6 +74,8 @@ export default class FlexPluginsDeploy extends FlexPlugin {
 
   private prints;
 
+  private nextVersion?: string = undefined;
+
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, {});
 
@@ -97,7 +99,11 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       `Compiling a production build of ${name}`,
       async () => {
         await this.runScript('pre-script-check', args);
-        return this.runScript('build', args);
+        const buildArgs = [...args];
+        if (this.nextVersion) {
+          buildArgs.push('--version', this.nextVersion);
+        }
+        return this.runScript('build', [...buildArgs]);
       },
       false,
     );
@@ -141,6 +147,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     }
 
     // Set the plugin version
+    this.nextVersion = nextVersion;
     this.scriptArgs.push('version', nextVersion);
     this.scriptArgs.push('--pilot-plugins-api');
     if (this._flags.public) {
