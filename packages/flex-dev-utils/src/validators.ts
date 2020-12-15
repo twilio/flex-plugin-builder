@@ -1,6 +1,5 @@
 import { isSidOfType, SidPrefix } from './sids';
 
-// tslint:disable-next-line
 const URL_REGEX = /^(https?:\/\/)?(www\.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
 const GITHUB_REGEX = /github\.com/;
 

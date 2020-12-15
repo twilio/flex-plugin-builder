@@ -94,6 +94,7 @@ export interface Build extends ServerlessEntity {
   status: BuildStatus;
   asset_versions: AssetVersion[];
   function_versions: FunctionVersion[];
+  // eslint-disable-next-line @typescript-eslint/ban-types
   dependencies: object;
   service_sid: string;
 }

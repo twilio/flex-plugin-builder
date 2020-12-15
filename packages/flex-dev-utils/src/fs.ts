@@ -161,6 +161,7 @@ export const readPluginsJson = (): CLIFlexConfiguration =>
  * @param pth the path to write to
  * @param obj the object to write
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 export const writeJSONFile = (pth: string, obj: object): void => fs.writeFileSync(pth, JSON.stringify(obj, null, 2));
 
 // The OS root directory
@@ -244,6 +245,7 @@ export const mkdirpSync = mkdirp.sync;
  * @param variables the variables
  */
 /* istanbul ignore next */
+// eslint-disable-next-line @typescript-eslint/ban-types
 export const copyTemplateDir = async (source: string, target: string, variables: object): Promise<unknown> => {
   return promiseCopyTempDir(source, target, variables);
 };

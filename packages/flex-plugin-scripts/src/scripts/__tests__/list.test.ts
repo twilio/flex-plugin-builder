@@ -10,10 +10,10 @@ jest.mock('../../utils/runtime');
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/credentials');
 
-// tslint:disable
+/* eslint-disable */
 const getRuntime = require('../../utils/runtime').default;
 const pluginVersions = require('../../prints/pluginVersions').default;
-// tslint:enable
+/* eslint-enable */
 
 describe('list', () => {
   const paths = {
@@ -103,7 +103,9 @@ describe('list', () => {
 
     beforeEach(() => {
       getRuntime.mockImplementation(() => ({
+        // eslint-disable-next-line camelcase
         environment: { domain_name: 'test.twil.io' },
+        // eslint-disable-next-line camelcase
         build: { asset_versions: assetVersions },
       }));
     });
@@ -122,6 +124,7 @@ describe('list', () => {
 
     it('should not print table if assets is empty', async () => {
       getRuntime.mockImplementation(() => ({
+        // eslint-disable-next-line camelcase
         build: { asset_versions: [] },
       }));
 

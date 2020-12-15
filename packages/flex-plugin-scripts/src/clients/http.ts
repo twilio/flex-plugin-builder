@@ -92,7 +92,7 @@ export default class Http {
    * @param uri   the uri of the endpoint
    * @param data  the data to post
    */
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
   public async post<R>(uri: string, data: any): Promise<R> {
     logger.debug('Making POST request to %s/%s with data %s', this.config.baseURL, uri, JSON.stringify(data));
     if (!this.jsonPOST) {
@@ -119,7 +119,7 @@ export default class Http {
    * @param url       the url to upload to
    * @param formData  the {@link FormData}
    */
-  public upload = async (url: string, formData: FormData): Promise<any> => {
+  public upload = async <T>(url: string, formData: FormData): Promise<T> => {
     logger.debug('Uploading formData to %s', url);
     logger.trace(formData);
 
@@ -180,7 +180,8 @@ export default class Http {
    * Private error handler
    * @param err Axios error
    */
-  private onError = async (err: any): Promise<any> => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private onError = async (err: any): Promise<string | Error> => {
     logger.trace('Http request failed', err);
 
     if (this.config.exitOnRejection) {

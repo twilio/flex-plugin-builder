@@ -9,9 +9,9 @@ jest.mock('flex-dev-utils/dist/spawn');
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/marked');
 
-// tslint:disable
+/* eslint-disable */
 const { spawn } = require('flex-dev-utils');
-// tslint:enable
+/* eslint-enable */
 
 describe('index', () => {
   const runExit = jest.spyOn(exit, 'default').mockReturnValue();

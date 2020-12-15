@@ -44,7 +44,9 @@ interface Packages {
  */
 /* istanbul ignore next */
 export const _requirePackages = (pluginsPath: string, pkgPath: string): Packages => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require, @typescript-eslint/no-require-imports
   const plugins = require(pluginsPath) as Plugin[];
+  // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require, @typescript-eslint/no-require-imports
   const pkg = require(pkgPath);
 
   return {

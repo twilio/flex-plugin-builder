@@ -92,7 +92,6 @@ describe('BuildClient', () => {
       const client = new BuildClient(auth, sid);
 
       try {
-        // tslint:disable-next-line
         await client.get(sid);
       } catch (e) {
         expect(e.message).toContain('not of type ZB');

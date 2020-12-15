@@ -4,9 +4,9 @@ import * as github from '../../utils/github';
 
 jest.mock('flex-dev-utils/dist/spawn');
 
-// tslint:disable
+/* eslint-disable */
 const { spawn } = require('flex-dev-utils');
-// tslint:enable
+/* eslint-enable */
 
 describe('commands', () => {
   beforeEach(() => {

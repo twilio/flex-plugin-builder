@@ -5,7 +5,9 @@ import webpack from 'webpack';
 import ToJsonOutput = webpack.Stats.ToJsonOutput;
 
 interface Client {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   on(event: string, callback: (...args: any[]) => void): Client;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   emit(event: string, value?: any): Client;
 }
 
@@ -74,6 +76,7 @@ export const _onServerMessage = (data: { payload: unknown; type: string }): void
 
   Object.keys(messageCallbacks).forEach((type) => {
     if (messageCallbacks[type as IPCType]) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       messageCallbacks[type as IPCType]?.forEach((cb: MessageCallback<any>) => cb(data.payload));
     }
   });

@@ -20,6 +20,7 @@ const logError = (error: string): void => {
 /**
  * Prints the errors when a build has failed to compile
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default (errors: any[]): void => {
   errors = errors || [];
   if (!errors.length) {

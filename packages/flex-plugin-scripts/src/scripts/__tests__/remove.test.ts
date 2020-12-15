@@ -11,9 +11,10 @@ jest.mock('flex-dev-utils/dist/inquirer');
 jest.mock('flex-dev-utils/dist/credentials', () => ({
   getCredential: jest.fn(),
 }));
-// tslint:disable
+
+/* eslint-disable */
 const EnvironmentClient = require('../../clients/environments').default;
-// tslint:enable
+/* eslint-enable */
 
 describe('remove', () => {
   const paths = {

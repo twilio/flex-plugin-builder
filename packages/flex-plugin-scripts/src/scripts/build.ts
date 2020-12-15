@@ -27,10 +27,10 @@ interface BuildBundle {
  * @private
  */
 // eslint-disable-next-line import/no-unused-modules
-export const _handler = (resolve: Callback<BuildBundle>, reject: Callback<any>): WebpackCompiler.Handler => (
-  err,
-  stats,
-) => {
+export const _handler = (
+  resolve: Callback<BuildBundle>,
+  reject: Callback<Error | string | string[]>,
+): WebpackCompiler.Handler => (err, stats) => {
   if (err) {
     reject(err);
     return;

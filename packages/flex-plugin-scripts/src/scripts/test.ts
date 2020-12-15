@@ -75,6 +75,7 @@ const test = async (...args: string[]): Promise<void> => {
   logger.notice('Running tests...');
 
   // We run this as a separate module here so that we don't have to import optional `jest` module if not needed
+  // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require, @typescript-eslint/no-require-imports
   require('./test/test').default(jestEnv, ...cleanArgs);
 };
 

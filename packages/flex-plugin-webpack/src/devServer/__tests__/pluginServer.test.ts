@@ -111,7 +111,7 @@ describe('pluginServer', () => {
     };
     const config = { port, remoteAll: true };
     const jweHeaders = { 'x-flex-jwe': 'jweToken' };
-    const getReqResp = (method: string, headers: object) => {
+    const getReqResp = (method: string, headers: Record<string, string>) => {
       // @ts-ignore
       const resp = {
         writeHead: jest.fn(),
@@ -125,7 +125,7 @@ describe('pluginServer', () => {
 
     it('should return 200 for OPTIONS request', async () => {
       const { req, resp } = getReqResp('OPTIONS', {});
-      const _getHeaders = jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' } as any);
+      const _getHeaders = jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' });
 
       await pluginServerScript._startServer(plugins, config, onRemotePlugins)(req, resp);
 
@@ -137,7 +137,7 @@ describe('pluginServer', () => {
 
     it('should 404 for non GET requests', async () => {
       const { req, resp } = getReqResp('POST', {});
-      jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' } as any);
+      jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' });
 
       await pluginServerScript._startServer(plugins, config, onRemotePlugins)(req, resp);
 
@@ -148,7 +148,7 @@ describe('pluginServer', () => {
 
     it('should 400 if no jwe token is provided', async () => {
       const { req, resp } = getReqResp('GET', {});
-      jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' } as any);
+      jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' });
 
       await pluginServerScript._startServer(plugins, config, onRemotePlugins)(req, resp);
 
@@ -161,7 +161,7 @@ describe('pluginServer', () => {
       const { req, resp } = getReqResp('GET', jweHeaders);
       const remotePlugin = [{ name: 'plugin-2' }] as pluginServerScript.Plugin[];
 
-      jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' } as any);
+      jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' });
       const _getRemotePlugins = jest.spyOn(pluginServerScript, '_getRemotePlugins').mockResolvedValue(remotePlugin);
       const _mergePlugins = jest
         .spyOn(pluginServerScript, '_mergePlugins')
@@ -188,7 +188,7 @@ describe('pluginServer', () => {
     it('should fail', async () => {
       const { req, resp } = getReqResp('GET', jweHeaders);
 
-      jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' } as any);
+      jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' });
       const _getRemotePlugins = jest.spyOn(pluginServerScript, '_getRemotePlugins').mockRejectedValue('failed-message');
       const _mergePlugins = jest.spyOn(pluginServerScript, '_mergePlugins');
       jest
