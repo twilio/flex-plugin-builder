@@ -21,6 +21,7 @@ describe('finalMessage', () => {
 
   it('should render an npm setup message to the console', () => {
     let message = '';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (boxen as any).info = jest.fn((msg) => (message = msg));
 
     finalMessage(config);
@@ -31,6 +32,7 @@ describe('finalMessage', () => {
 
   it('should render a yarn setup message to the console', () => {
     let message = '';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (boxen as any).info = jest.fn((msg) => (message = msg));
 
     finalMessage({ ...config, yarn: true });
@@ -41,6 +43,7 @@ describe('finalMessage', () => {
 
   it('should render an instruction message skipping the setup step', () => {
     let message = '';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (boxen as any).info = jest.fn((msg) => (message = msg));
 
     finalMessage({ ...config, install: true });

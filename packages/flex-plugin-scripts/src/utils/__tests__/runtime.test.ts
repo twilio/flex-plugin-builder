@@ -10,12 +10,12 @@ jest.mock('../../clients/environments');
 jest.mock('../../clients/services');
 jest.mock('flex-dev-utils/dist/credentials');
 
-// tslint:disable
+/* eslint-disable */
 const ServiceClient: jest.Mock = require('../../clients/services').default;
 const EnvironmentClient: jest.Mock = require('../../clients/environments').default;
 const BuildClient: jest.Mock = require('../../clients/builds').default;
 const ConfigurationClient: jest.Mock = require('../../clients/configurations').default;
-// tslint:enable
+/* eslint-enable */
 
 describe('runtime', () => {
   const paths = {
@@ -29,6 +29,7 @@ describe('runtime', () => {
   const buildSid = 'ZB00000000000000000000000000000000';
   const service = { sid: serviceSid };
   const environment = { sid: environmentSid };
+  // eslint-disable-next-line camelcase
   const environmentWithBuild = { sid: environmentSid, build_sid: buildSid };
   const build = { sid: buildSid };
 

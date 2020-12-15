@@ -91,6 +91,7 @@ export default class CLI {
   };
 
   private init = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.parser.usage<any>('$0 <name>', usage, CLI.flags);
   };
 }

@@ -47,7 +47,6 @@ describe('DeploymentClient', () => {
       const client = new DeploymentClient(auth, serviceSid, environmentSid);
 
       try {
-        // tslint:disable-next-line
         await client.create(sid);
       } catch (e) {
         expect(e.message).toContain('not of type ZB');

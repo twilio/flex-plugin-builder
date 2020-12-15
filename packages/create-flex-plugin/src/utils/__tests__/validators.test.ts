@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FlexPluginError } from 'flex-dev-utils';
 import * as inquirer from 'flex-dev-utils/dist/inquirer';
 
@@ -14,27 +15,20 @@ describe('validators', () => {
 
   describe('_promptForAccountSid', () => {
     it('should ask for an accountSid if not specified', async () => {
-      (inquirer as any).prompt = jest.fn(async () =>
-        Promise.resolve({
-          accountSid: 'test-sid',
-        }),
-      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const prompt = jest.spyOn(inquirer, 'prompt').mockResolvedValue('test-sid');
 
       await validators._promptForAccountSid();
-      expect(inquirer.prompt).toHaveBeenCalledTimes(1);
+      expect(prompt).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('_promptForTemplateUrl', () => {
     it('should ask for a url if url is invalid', async () => {
-      (inquirer as any).prompt = jest.fn(async () =>
-        Promise.resolve({
-          url: 'twilio',
-        }),
-      );
+      const prompt = jest.spyOn(inquirer, 'prompt').mockResolvedValue('twilio');
 
       await validators._promptForTemplateUrl();
-      expect(inquirer.prompt).toHaveBeenCalledTimes(1);
+      expect(prompt).toHaveBeenCalledTimes(1);
     });
   });
 

@@ -5,7 +5,7 @@ import { camelCase, upperFirst } from 'flex-dev-utils/dist/lodash';
 import * as github from '../utils/github';
 import { FlexPluginArguments } from './create-flex-plugin';
 
-// tslint:disable-next-line
+// eslint-disable-next-line @typescript-eslint/no-var-requires, global-require, @typescript-eslint/no-require-imports
 const pkg = require(findUp(__filename, 'package.json'));
 
 /**

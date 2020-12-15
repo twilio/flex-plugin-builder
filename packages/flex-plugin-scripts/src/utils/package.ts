@@ -31,6 +31,7 @@ export const getPackageDetails = (packages: string[]): PackageDetail[] => {
     try {
       const resolvedPath = resolveModulePath(join(name, 'package.json'));
       if (resolvedPath) {
+        // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
         detail.package = require(resolvedPath);
         detail.found = true;
       }

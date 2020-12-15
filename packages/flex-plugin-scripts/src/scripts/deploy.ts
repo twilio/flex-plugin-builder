@@ -15,7 +15,7 @@ import getRuntime from '../utils/runtime';
 
 const allowedBumps = ['major', 'minor', 'patch', 'version'];
 
-interface Options {
+export interface Options {
   isPublic: boolean;
   overwrite: boolean;
   disallowVersioning: boolean;
@@ -289,7 +289,7 @@ const deploy = async (...argv: string[]): Promise<DeployResult> => {
       opts.overwrite = true;
       nextVersion = getPaths().app.version;
     } else if (bump !== 'version') {
-      nextVersion = semver.inc(getPaths().app.version, bump as ReleaseType) as any;
+      nextVersion = semver.inc(getPaths().app.version, bump as ReleaseType) as string;
     }
   }
 

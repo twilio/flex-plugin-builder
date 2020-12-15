@@ -8,6 +8,7 @@ import ServiceClient from './services';
 export interface BuildData {
   FunctionVersions: string[];
   AssetVersions: string[];
+  // eslint-disable-next-line @typescript-eslint/ban-types
   Dependencies: object;
 }
 

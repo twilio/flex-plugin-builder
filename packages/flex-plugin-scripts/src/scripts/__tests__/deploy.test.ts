@@ -55,6 +55,7 @@ describe('DeployScript', () => {
     friendly_name: 'test-account',
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (logger.colors as any).blue = jest.fn();
   const config = {
     account_sid: accountSid,
@@ -64,7 +65,7 @@ describe('DeployScript', () => {
   };
 
   const getAccount = jest.fn().mockResolvedValue(accountObject);
-  const upload = jest.fn().mockImplementation(async (_: any, path: string) => {
+  const upload = jest.fn().mockImplementation(async (_, path: string) => {
     if (path.indexOf('map') === -1) {
       return Promise.resolve({ sid: versionMapSid });
     }
@@ -107,9 +108,9 @@ describe('DeployScript', () => {
       name: 'plugin-test',
     });
 
-    const expectDoDeployCalled = (version: string, options: object) => {
+    const expectDoDeployCalled = (version: string, options: deployScript.Options) => {
       expect(doDeploy).toHaveBeenCalledTimes(1);
-      expect(doDeploy).toHaveBeenCalledWith(version, options as any);
+      expect(doDeploy).toHaveBeenCalledWith(version, options);
     };
 
     afterAll(() => {
@@ -341,6 +342,7 @@ describe('DeployScript', () => {
         function_versions: [],
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(deployScript._verifyPath('/baseUrl', build as any)).toBeFalsy();
     });
 
@@ -350,6 +352,7 @@ describe('DeployScript', () => {
         function_versions: [],
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(deployScript._verifyPath('/baseUrl', build as any)).toBeFalsy();
     });
 
@@ -359,6 +362,7 @@ describe('DeployScript', () => {
         function_versions: [{ path: '/baseUrl/bundle.js' }],
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(deployScript._verifyPath('/baseUrl', build as any)).toBeFalsy();
     });
 
@@ -368,6 +372,7 @@ describe('DeployScript', () => {
         function_versions: [{ path: '/baseUrl/yetAnotherBundle.js' }],
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(deployScript._verifyPath('/baseUrl', build as any)).toBeTruthy();
     });
   });

@@ -28,7 +28,7 @@ import { findFirstLocalPlugin, parseUserInputPlugins } from '../utils/parser';
 
 interface Package {
   version: string;
-  dependencies: object;
+  dependencies: Record<string, string>;
 }
 
 const extensions = ['js', 'jsx', 'ts', 'tsx'];

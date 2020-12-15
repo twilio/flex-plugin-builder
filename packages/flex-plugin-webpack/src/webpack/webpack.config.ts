@@ -1,3 +1,4 @@
+/* eslint-disable global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires */
 /// <reference path="../module.d.ts" />
 
 import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
@@ -26,6 +27,7 @@ import { WebpackType } from '..';
 import Optimization = webpack.Options.Optimization;
 
 interface LoaderOption {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [name: string]: any;
 }
 
@@ -143,7 +145,7 @@ export const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
 
     // Add a pre-processor loader (converting SCSS to CSS)
     if (preProcessor) {
-      const preProcessorOptions: Record<string, any> = {
+      const preProcessorOptions: Record<string, unknown> = {
         sourceMap: isProd,
       };
 

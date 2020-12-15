@@ -251,6 +251,7 @@ describe('StartScript', () => {
     it('should use emitter for javascript', async () => {
       await startScripts._startDevServer([plugin], { ...opts, type: configScripts.WebpackType.JavaScript });
       expect(compiler).toHaveBeenCalledTimes(1);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(compiler).toHaveBeenCalledWith(expect.any(Object), true, emitCompileComplete as any);
     });
 

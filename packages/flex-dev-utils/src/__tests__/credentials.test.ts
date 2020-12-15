@@ -219,6 +219,7 @@ describe('credentials', () => {
     it('should ask for credentials if nothing exists', async () => {
       jest.spyOn(credentials, '_findCredential').mockResolvedValue(null);
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       jest.spyOn(inquirer, 'prompt').mockImplementation((question: any) => {
         if (question.type === 'input') {
           return 'promptAccountSid';
@@ -260,6 +261,7 @@ describe('credentials', () => {
     };
 
     beforeAll(() => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (credentials._findCredential as any).mockRestore();
     });
 
