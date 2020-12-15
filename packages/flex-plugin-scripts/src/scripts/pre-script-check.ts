@@ -74,20 +74,6 @@ export const _validateTypescriptProject = () => {
 /**
  * Checks the version of external libraries and exists if customer is using another version
  *
- * allowSkip  whether to allow skip
- * allowReact whether to allow reacts
- * @private
- */
-/* istanbul ignore next */
-export const _checkExternalDepsVersions = (allowSkip: boolean, allowReact: boolean) => {
-  const flexUIPkg = _require(getPaths().app.flexUIPkgPath);
-
-  PackagesToVerify.forEach((name) => _verifyPackageVersion(flexUIPkg, allowSkip, allowReact, name));
-};
-
-/**
- * Checks the version of external libraries and exists if customer is using another version
- *
  * @param flexUIPkg   the flex-ui package.json
  * @param allowSkip   whether to allow skip
  * @param allowReact  whether to allow unbundled react
@@ -124,6 +110,20 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, al
       exit(1);
     }
   }
+};
+
+/**
+ * Checks the version of external libraries and exists if customer is using another version
+ *
+ * allowSkip  whether to allow skip
+ * allowReact whether to allow reacts
+ * @private
+ */
+/* istanbul ignore next */
+export const _checkExternalDepsVersions = (allowSkip: boolean, allowReact: boolean) => {
+  const flexUIPkg = _require(getPaths().app.flexUIPkgPath);
+
+  PackagesToVerify.forEach((name) => _verifyPackageVersion(flexUIPkg, allowSkip, allowReact, name));
 };
 
 /**

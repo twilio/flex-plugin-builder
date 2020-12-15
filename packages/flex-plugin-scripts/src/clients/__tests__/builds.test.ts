@@ -115,4 +115,23 @@ describe('BuildClient', () => {
       get.mockRestore();
     });
   });
+
+  describe('_create', () => {
+    it('should call http.post', async () => {
+      const client = new BuildClient(auth, 'ZS00000000000000000000000000000000');
+      // @ts-ignore
+      const post = jest.spyOn(client.http, 'post').mockReturnThis();
+
+      const data: BuildData = {
+        FunctionVersions: [],
+        AssetVersions: [],
+        Dependencies: {},
+      };
+
+      // @ts-ignore
+      await client._create(data);
+      expect(post).toHaveBeenCalledTimes(1);
+      expect(post).toHaveBeenCalledWith(BuildClient.BaseUri, data);
+    });
+  });
 });

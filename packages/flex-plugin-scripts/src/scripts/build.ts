@@ -8,11 +8,6 @@ import { setEnvironment } from '..';
 import { buildFailure, buildSuccessful } from '../prints';
 import run from '../utils/run';
 
-interface BuildBundle {
-  warnings?: string[];
-  bundles: Bundle[];
-}
-
 export interface Bundle {
   chunks?: (number | string)[];
   chunkNames?: string[];
@@ -20,6 +15,11 @@ export interface Bundle {
   isOverSizeLimit?: boolean;
   name: string;
   size: number;
+}
+
+interface BuildBundle {
+  warnings?: string[];
+  bundles: Bundle[];
 }
 
 /**

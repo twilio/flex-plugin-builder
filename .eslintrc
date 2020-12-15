@@ -14,7 +14,6 @@
     "@typescript-eslint/no-explicit-any": "off",
     "import/no-named-as-default-member": "off",
     "import/no-unused-modules": "off",
-    "no-use-before-define": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "prefer-named-capture-group": "off",
     "@typescript-eslint/ban-ts-comment": "off",

@@ -18,6 +18,30 @@ interface InternalServiceUrls {
 export const DEFAULT_PORT = 3000;
 
 /**
+ * Finds whether the port is available
+ *
+ * @param port the port to check
+ * @private
+ */
+/* istanbul ignore next */
+const _findPort = async (port: number) => {
+  return new Promise((resolve, reject) => {
+    const server = net.createConnection({ port });
+
+    /*
+     * If we can connect, port is not free
+     * If we cannot connect (i.e. on('error')), then port is free
+     */
+    server
+      .on('connect', () => {
+        server.end();
+        reject();
+      })
+      .on('error', () => resolve(port));
+  });
+};
+
+/**
  * Returns the default port
  * @param port  optional port parameter
  */
@@ -82,30 +106,6 @@ export const getLocalAndNetworkUrls = (port: number): InternalServiceUrls => {
       host: address.ip(),
     },
   };
-};
-
-/**
- * Finds whether the port is available
- *
- * @param port the port to check
- * @private
- */
-/* istanbul ignore next */
-const _findPort = async (port: number) => {
-  return new Promise((resolve, reject) => {
-    const server = net.createConnection({ port });
-
-    /*
-     * If we can connect, port is not free
-     * If we cannot connect (i.e. on('error')), then port is free
-     */
-    server
-      .on('connect', () => {
-        server.end();
-        reject();
-      })
-      .on('error', () => resolve(port));
-  });
 };
 
 export default url;
