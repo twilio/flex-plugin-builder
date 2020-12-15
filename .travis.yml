@@ -11,10 +11,10 @@ notifications:
   slack:
     email: false
     rooms:
-      - secure: $SLACK_TOKEN
+      - secure: "$SLACK_TOKEN"
     on_success: always
     on_failure: always
-    on_start: never
+    on_start: always
     on_cancel: always
     on_error: always
 
