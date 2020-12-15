@@ -31,7 +31,7 @@
     "release:beta": "lerna-travis-release beta",
     "release:public": "lerna-travis-release public",
     "test": "jest --color",
-    "test:ci": "jest --clearCache && jest --coverage --color --maxWorkers=1",
+    "test:ci": "jest --clearCache && jest --coverage --color --maxWorkers=2",
     "test:coverage": "jest --color --coverage",
     "test:watch": "jest --watchAll --color"
   },
