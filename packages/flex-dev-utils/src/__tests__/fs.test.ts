@@ -521,6 +521,24 @@ describe('fs', () => {
       fs.addCWDNodeModule('--core-cwd');
       expect(setCoreCwd).not.toHaveBeenCalled();
     });
+
+    it('should add cwd', () => {
+      const cwd = '/new/path';
+      jest.spyOn(appModule, 'addPath').mockReturnThis();
+      const setCwd = jest.spyOn(fs, 'setCwd').mockReturnThis();
+
+      fs.addCWDNodeModule('--cwd', cwd);
+      expect(setCwd).toHaveBeenCalledTimes(1);
+      expect(setCwd).toHaveBeenCalledWith(cwd);
+    });
+
+    it('should not add cwd if not provided', () => {
+      jest.spyOn(appModule, 'addPath').mockReturnThis();
+      const setCwd = jest.spyOn(fs, 'setCwd').mockReturnThis();
+
+      fs.addCWDNodeModule('--cwd');
+      expect(setCwd).not.toHaveBeenCalled();
+    });
   });
 
   describe('resolveModulePath', () => {
