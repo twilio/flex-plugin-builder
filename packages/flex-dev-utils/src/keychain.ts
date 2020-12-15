@@ -22,6 +22,7 @@ export interface Keychain {
 /* istanbul ignore next */
 export const _getKeytar = () => {
   try {
+    // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
     return require('keytar');
   } catch (e) {
     /* istanbul ignore next */
@@ -37,7 +38,7 @@ export const _getKeytar = () => {
  * main method that returns a keytar instance
  * @param service
  */
-export default function (service: string): Keychain {
+export default function keychain(service: string): Keychain {
   const keytar = _getKeytar();
 
   return {

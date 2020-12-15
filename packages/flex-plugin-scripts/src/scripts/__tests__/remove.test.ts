@@ -1,9 +1,9 @@
-import * as removeScript from '../remove';
-import * as runtimeScripts from '../../utils/runtime';
 import * as fsScript from 'flex-dev-utils/dist/fs';
-
 import { logger } from 'flex-dev-utils';
 import * as inquirer from 'flex-dev-utils/dist/inquirer';
+
+import * as runtimeScripts from '../../utils/runtime';
+import * as removeScript from '../remove';
 
 jest.mock('../../clients/environments');
 jest.mock('flex-dev-utils/dist/logger');
@@ -20,10 +20,12 @@ describe('remove', () => {
     app: {
       name: 'plugin-test',
     },
-  }
+  };
 
   // @ts-ignore
-  const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
+  const exit = jest.spyOn(process, 'exit').mockImplementation(() => {
+    /* no-op */
+  });
   // @ts-ignore
   logger.colors.blue = jest.fn();
 

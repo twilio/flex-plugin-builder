@@ -36,6 +36,15 @@ export interface CLIFlexConfiguration {
 
 export default fs;
 
+/**
+ * This is an alias for require. Useful for mocking out in tests
+ * @param filePath  the file to require
+ * @private
+ */
+/* istanbul ignore next */
+// eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
+export const _require = (filePath: string) => require(filePath);
+
 // Working directory
 let internalCwd = fs.realpathSync(process.cwd());
 let internalCoreCwd = fs.realpathSync(process.cwd());
@@ -50,10 +59,20 @@ export const _setRequirePaths = (requirePath: string) => {
     requirePaths.push(requirePath);
   }
 };
+
+/**
+ * Sets the working directory
+ * @param p the path to set
+ */
 export const setCwd = (p: string) => {
   internalCwd = p;
   _setRequirePaths(path.join(internalCwd, 'node_modules'));
 };
+
+/**
+ * Sets the core working directory
+ * @param p the path to set
+ */
 export const setCoreCwd = (p: string) => {
   internalCoreCwd = p;
   _setRequirePaths(path.join(internalCoreCwd, 'node_modules'));
@@ -65,7 +84,11 @@ export const getCwd = () => internalCwd;
 // Read plugins.json from Twilio CLI
 export const readPluginsJson = () => readJsonFile<CLIFlexConfiguration>(getCliPaths().pluginsJsonPath);
 
-// Write to json file
+/**
+ * Writes an object as a JSON string to the file
+ * @param pth the path to write to
+ * @param obj the object to write
+ */
 export const writeJSONFile = (pth: string, obj: object) => fs.writeFileSync(pth, JSON.stringify(obj, null, 2));
 
 // The core cwd is the working directory of core packages such as flex-plugin-scripts and flex-plugin
@@ -77,8 +100,7 @@ const rootDir = os.platform() === 'win32' ? getCwd().split(path.sep)[0] : '/';
 /*
  * Promise version of {@link copyTempDir}
  */
-// tslint:disable-next-line
-const promiseCopyTempDir = promisify(require('copy-template-dir'));
+const promiseCopyTempDir = promisify(_require('copy-template-dir'));
 
 /**
  * Checks the provided array of files exist
@@ -92,7 +114,7 @@ export const checkFilesExist = (...files: string[]) => {
 /**
  * Gets package.json path
  */
-export const getPackageJsonPath = (forModule: boolean = false) => path.join(getCwd(), 'package.json');
+export const getPackageJsonPath = () => path.join(getCwd(), 'package.json');
 
 /**
  * Updates the package.json version field
@@ -202,14 +224,15 @@ export const rmRfSync = rimRaf.sync;
  * @return the version of the package installed
  */
 /* istanbul ignore next */
+// eslint-disable-next-line import/no-unused-modules
 export const getDependencyVersion = (pkgName: string) => {
   try {
-    return require(`${pkgName}/package.json`).version;
+    return _require(`${pkgName}/package.json`).version;
   } catch {
     try {
-      return require(resolveRelative(getPaths().app.nodeModulesDir, pkgName, 'package.json')).version;
+      return _require(resolveRelative(getPaths().app.nodeModulesDir, pkgName, 'package.json')).version;
     } catch {
-      return require(resolveRelative(getPaths().scripts.nodeModulesDir, pkgName, 'package.json')).version;
+      return _require(resolveRelative(getPaths().scripts.nodeModulesDir, pkgName, 'package.json')).version;
     }
   }
 };
@@ -326,14 +349,14 @@ export const addCWDNodeModule = (...args: string[]) => {
   }
 
   const indexCwd = args.indexOf('--cwd');
-  if (indexCwd !== -1) {
+  if (indexCwd === -1) {
+    // This is to setup the app environment
+    setCwd(getCwd());
+  } else {
     const cwd = args[indexCwd + 1];
     if (cwd) {
       setCwd(cwd);
     }
-  } else {
-    // This is to setup the app environment
-    setCwd(getCwd());
   }
 };
 
@@ -357,14 +380,7 @@ export const resolveModulePath = (pkg: string, ...paths: string[]) => {
   }
 };
 
-/**
- * This is an alias for require. Useful for mocking out in tests
- * @param filePath  the file to require
- * @private
- */
-/* istanbul ignore next */
-export const _require = (filePath: string) => require(filePath);
-
+// eslint-disable-next-line import/no-unused-modules
 export { DirResult as TmpDirResult } from 'tmp';
 
 /**

@@ -1,4 +1,4 @@
-/// <reference path="../../module.d.ts" />
+/* eslint-disable max-classes-per-file */
 import { Flex } from '@twilio/flex-ui/src/FlexGlobal';
 
 import { FlexGlobal, FlexPlugin, loadPlugin } from '../flex-plugin';
@@ -40,6 +40,7 @@ describe('@twilio/flex-plugin', () => {
       super(PLUGIN_NAME);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public init(flex: FlexGlobal, manager: Flex.Manager) {
       // no-op
     }
@@ -48,12 +49,13 @@ describe('@twilio/flex-plugin', () => {
   beforeEach(() => jest.clearAllMocks());
 
   describe('FlexPlugin', () => {
-    // tslint:disable-next-line:max-classes-per-file
     class TestFlexPlugin extends FlexPlugin {
+      // eslint-disable-next-line @typescript-eslint/no-useless-constructor
       constructor(name: string) {
         super(name);
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       public init(flex: FlexGlobal, manager: Flex.Manager): void {
         // no-op
       }
@@ -91,7 +93,7 @@ describe('@twilio/flex-plugin', () => {
 
   describe('loadPlugin', () => {
     it('should log a warning when `Twilio` namespace is not available', () => {
-      // tslint:disable-next-line:no-string-literal
+      // @ts-ignore
       global.Twilio = undefined;
       loadPlugin(TestPlugin);
 
@@ -100,6 +102,7 @@ describe('@twilio/flex-plugin', () => {
     });
 
     it('should log a warning when `Flex` does not exists in Twilio object', () => {
+      // @ts-ignore
       global.Twilio = {};
       loadPlugin(TestPlugin);
 
@@ -108,7 +111,7 @@ describe('@twilio/flex-plugin', () => {
     });
 
     it('should log a warning `Plugins` does not exists in `Twilio.Flex`', () => {
-      // tslint:disable-next-line:no-string-literal
+      // @ts-ignore
       global.Twilio = {
         Flex: {},
       };
@@ -119,7 +122,7 @@ describe('@twilio/flex-plugin', () => {
     });
 
     it('should initialize the `Twilio.Flex` plugins', () => {
-      // tslint:disable-next-line:no-string-literal
+      // @ts-ignore
       global.Twilio = {
         Flex: {
           Plugins: {
@@ -132,7 +135,7 @@ describe('@twilio/flex-plugin', () => {
 
       // eslint-disable-next-line no-console
       expect(console.warn).not.toHaveBeenCalled();
-      // tslint:disable-next-line:no-string-literal
+      // @ts-ignore
       expect(global.Twilio.Flex.Plugins.init).toHaveBeenCalledWith(TestPlugin);
     });
   });

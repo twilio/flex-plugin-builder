@@ -35,7 +35,7 @@ export const parseUserInputPlugins = (failIfNotFound: boolean, ...args: string[]
     const version = groups[2]; // later we'll use this for the @1.2.3 use case as well
 
     if (version === 'remote') {
-      userInputPlugins.push({name, remote: true});
+      userInputPlugins.push({ name, remote: true });
       continue;
     }
 
@@ -44,7 +44,7 @@ export const parseUserInputPlugins = (failIfNotFound: boolean, ...args: string[]
       throw new FlexPluginError(`No plugin file was found with the name \'${name}\'`);
     }
     if (plugin) {
-      userInputPlugins.push({name: plugin.name, remote: false});
+      userInputPlugins.push({ name: plugin.name, remote: false });
     }
   }
 
@@ -56,10 +56,10 @@ export const parseUserInputPlugins = (failIfNotFound: boolean, ...args: string[]
  * @param plugins
  */
 export const findFirstLocalPlugin = (plugins: UserInputPlugin[]): FlexConfigurationPlugin | undefined => {
-  const localPlugin = plugins.find(p => !p.remote);
+  const localPlugin = plugins.find((p) => !p.remote);
   if (!localPlugin) {
     return undefined;
   }
 
   return readPluginsJson().plugins.find((p) => p.name === localPlugin.name);
-}
+};

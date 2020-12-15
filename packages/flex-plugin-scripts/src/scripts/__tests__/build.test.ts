@@ -1,6 +1,5 @@
 import * as env from 'flex-dev-utils/dist/env';
-import * as fs from 'flex-dev-utils/dist/fs'
-import { Bundle } from '../build';
+import * as fs from 'flex-dev-utils/dist/fs';
 
 import * as buildScript from '../build';
 import * as prints from '../../prints';
@@ -12,8 +11,10 @@ jest.mock('../../prints/buildFailure');
 
 describe('BuildScript', () => {
   // @ts-ignore
-  const exit = jest.spyOn(process, 'exit').mockReturnThis(() => { /* no-op */ });
-  const bundle: Bundle = {
+  const exit = jest.spyOn(process, 'exit').mockReturnThis(() => {
+    /* no-op */
+  });
+  const bundle: buildScript.Bundle = {
     name: 'test-bundle',
     size: 12345,
   };
@@ -26,9 +27,7 @@ describe('BuildScript', () => {
   describe('default', () => {
     it('should build successfully', async () => {
       const updateAppVersion = jest.spyOn(fs, 'updateAppVersion').mockReturnThis();
-      const _getBundle = jest
-        .spyOn(buildScript, '_runWebpack')
-        .mockResolvedValue({ warnings: [], bundles: [bundle]});
+      const _getBundle = jest.spyOn(buildScript, '_runWebpack').mockResolvedValue({ warnings: [], bundles: [bundle] });
 
       await buildScript.default();
 
@@ -48,26 +47,22 @@ describe('BuildScript', () => {
 
     it('should update appVersion if provided', async () => {
       const updateAppVersion = jest.spyOn(fs, 'updateAppVersion').mockReturnThis();
-      const _getBundle = jest
-        .spyOn(buildScript, '_runWebpack')
-        .mockResolvedValue({ warnings: [], bundles: [bundle]});
+      const _getBundle = jest.spyOn(buildScript, '_runWebpack').mockResolvedValue({ warnings: [], bundles: [bundle] });
 
       await buildScript.default('--version', '1.2.3');
 
-      expect(updateAppVersion).toHaveBeenCalledTimes(1)
+      expect(updateAppVersion).toHaveBeenCalledTimes(1);
       expect(updateAppVersion).toHaveBeenCalledWith('1.2.3');
 
       _getBundle.mockRestore();
     });
 
     it('should fail to build', async () => {
-      const _getBundle = jest
-        .spyOn(buildScript, '_runWebpack')
-        .mockRejectedValue('some-error');
+      const _getBundle = jest.spyOn(buildScript, '_runWebpack').mockRejectedValue('some-error');
 
       await buildScript.default();
       expect(_getBundle).toHaveBeenCalledTimes(1);
-      expect(prints.buildSuccessful).not.toHaveBeenCalled()
+      expect(prints.buildSuccessful).not.toHaveBeenCalled();
       expect(prints.buildFailure).toHaveBeenCalledTimes(1);
       expect(prints.buildFailure).toHaveBeenCalledWith('some-error');
       expect(exit).toHaveBeenCalledTimes(1);
@@ -108,11 +103,10 @@ describe('BuildScript', () => {
     });
 
     it('should compile successfully', async () => {
-      const toJson = jest.fn()
-        .mockReturnValue({
-          assets: [ bundle ],
-          warnings: [],
-        });
+      const toJson = jest.fn().mockReturnValue({
+        assets: [bundle],
+        warnings: [],
+      });
       const stats = {
         toJson,
         hasErrors: () => false,
@@ -125,7 +119,7 @@ describe('BuildScript', () => {
       expect(reject).not.toHaveBeenCalled();
       expect(resolve).toHaveBeenCalledTimes(1);
       expect(resolve).toHaveBeenCalledWith({
-        bundles: [ bundle ],
+        bundles: [bundle],
         warnings: [],
       });
     });

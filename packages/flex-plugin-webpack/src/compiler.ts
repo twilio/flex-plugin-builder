@@ -7,13 +7,14 @@ import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import typescriptFormatter, { Issue } from '@k88/typescript-compile-error-formatter';
 import webpack, { Compiler as WebpackCompiler, Configuration } from 'webpack';
 import { getPaths } from 'flex-dev-utils/dist/fs';
-import CompilerHooks = webpack.compilation.CompilerHooks;
-import ToJsonOutput = webpack.Stats.ToJsonOutput;
+import webpackFormatMessages from '@k88/format-webpack-messages';
+import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
+
 import { OnCompileCompletePayload } from './devServer/ipcServer';
 import { OnRemotePlugins, Plugin } from './devServer/pluginServer';
 import { devServerSuccessful } from './prints';
-import webpackFormatMessages from '@k88/format-webpack-messages';
-import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
+import CompilerHooks = webpack.compilation.CompilerHooks;
+import ToJsonOutput = webpack.Stats.ToJsonOutput;
 
 export interface ErrorsAndWarnings {
   errors: string[];
@@ -63,26 +64,22 @@ export default (config: Configuration, devServer: boolean, onCompile: OnCompile)
 
     if (getPaths().app.isTSProject()) {
       compiler.hooks.beforeCompile.tap('beforeCompile', () => {
-        tsMessagesPromise = new Promise(resolve => {
+        tsMessagesPromise = new Promise((resolve) => {
           tsMessagesResolver = (msgs: ErrorsAndWarnings) => resolve(msgs);
         });
       });
 
-      ForkTsCheckerWebpackPlugin
-        .getCompilerHooks(compiler)
-        .receive.tap('afterTSCheck', (diagnostics, lints) => {
-          const allMsgs = [...diagnostics, ...lints];
-          const format = (issue: Issue) => `${issue.file}\n${typescriptFormatter(issue)}`;
+      ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).receive.tap('afterTSCheck', (diagnostics, lints) => {
+        const allMsgs = [...diagnostics, ...lints];
+        const format = (issue: Issue) => `${issue.file}\n${typescriptFormatter(issue)}`;
 
-          if (tsMessagesResolver) {
-            tsMessagesResolver({
-              errors: allMsgs.filter(msg => msg.severity === 'error').map(format),
-              warnings: allMsgs
-                .filter(msg => msg.severity === 'warning')
-                .map(format),
-            });
-          }
-        });
+        if (tsMessagesResolver) {
+          tsMessagesResolver({
+            errors: allMsgs.filter((msg) => msg.severity === 'error').map(format),
+            warnings: allMsgs.filter((msg) => msg.severity === 'warning').map(format),
+          });
+        }
+      });
     }
 
     // invalid is `bundle invalidated` and is invoked when files are modified in dev-server.
@@ -91,7 +88,7 @@ export default (config: Configuration, devServer: boolean, onCompile: OnCompile)
       logger.info(`Re-compiling **${getPaths().app.name}**`);
     });
 
-    compiler.hooks.done.tap('done', async stats => {
+    compiler.hooks.done.tap('done', async (stats) => {
       const result = stats.toJson({ all: false, errors: true, warnings: true });
 
       if (getPaths().app.isTSProject() && !stats.hasErrors()) {
@@ -110,12 +107,12 @@ export default (config: Configuration, devServer: boolean, onCompile: OnCompile)
         compiler.hooks.tsCompiled.call(messages.warnings, messages.errors);
       }
 
-      onCompile({result, appName: getPaths().app.name});
+      onCompile({ result, appName: getPaths().app.name });
     });
 
     return compiler;
   } catch (err) {
-    throw new FlexPluginError('Failed to create a webpack compiler: ' + err.message);
+    throw new FlexPluginError(`Failed to create a webpack compiler: ${err.message}`);
   }
 };
 
@@ -126,12 +123,17 @@ export default (config: Configuration, devServer: boolean, onCompile: OnCompile)
  * @param showSuccessMsg    whether to show succecss message or not
  * @param hasRemote         whether there are any remote plugins
  */
-export const compilerRenderer = (port: number, localPlugins: string[], showSuccessMsg: boolean, hasRemote: boolean): CompilerRenderer => {
+export const compilerRenderer = (
+  port: number,
+  localPlugins: string[],
+  showSuccessMsg: boolean,
+  hasRemote: boolean,
+): CompilerRenderer => {
   const { local, network } = getLocalAndNetworkUrls(port);
   const remotePlugins: Plugin[] = [];
   const serverSuccessful = (list: Plugin[]) => {
-    list.forEach(l => {
-      if (!remotePlugins.some(r => r.name === l.name)) {
+    list.forEach((l) => {
+      if (!remotePlugins.some((r) => r.name === l.name)) {
         remotePlugins.push(l);
       }
     });
@@ -142,13 +144,11 @@ export const compilerRenderer = (port: number, localPlugins: string[], showSucce
 
   return {
     onRemotePlugins: serverSuccessful,
-    onCompile: ({ result, appName}) => {
+    onCompile: ({ result, appName }) => {
       logger.clearTerminal();
       results[appName] = result;
 
-      const isSuccessful = Object
-        .values(results)
-        .every(r => r.errors.length === 0 && r.warnings.length === 0);
+      const isSuccessful = Object.values(results).every((r) => r.errors.length === 0 && r.warnings.length === 0);
       if (isSuccessful) {
         if (showSuccessMsg) {
           serverSuccessful([]);
@@ -156,32 +156,32 @@ export const compilerRenderer = (port: number, localPlugins: string[], showSucce
         return;
       }
 
-      Object
-        .keys(results)
-        .forEach(name => {
-          const formatted = webpackFormatMessages({
-            errors: results[name].errors,
-            warnings: results[name].warnings,
-          });
-
-          // Only show errors if both exist
-          if (results[name].errors.length) {
-            // Most errors are duplicate of the same error
-            // So only show the first error
-            formatted.errors.length = 1;
-
-            logger.error(`Failed to compile plugin ${logger.colors.red.bold(name)}.`);
-            logger.info(formatted.errors.join('\n'));
-            logger.newline();
-            return;
-          }
-
-          if (results[name].warnings.length) {
-            logger.warning(`Compiled plugin ${logger.colors.yellow.bold(name)} with warning(s).`);
-            logger.info(formatted.warnings.join('\n'));
-            logger.newline();
-          }
+      Object.keys(results).forEach((name) => {
+        const formatted = webpackFormatMessages({
+          errors: results[name].errors,
+          warnings: results[name].warnings,
         });
-    }
-  }
-}
+
+        // Only show errors if both exist
+        if (results[name].errors.length) {
+          /*
+           * Most errors are duplicate of the same error
+           * So only show the first error
+           */
+          formatted.errors.length = 1;
+
+          logger.error(`Failed to compile plugin ${logger.colors.red.bold(name)}.`);
+          logger.info(formatted.errors.join('\n'));
+          logger.newline();
+          return;
+        }
+
+        if (results[name].warnings.length) {
+          logger.warning(`Compiled plugin ${logger.colors.yellow.bold(name)} with warning(s).`);
+          logger.info(formatted.warnings.join('\n'));
+          logger.newline();
+        }
+      });
+    },
+  };
+};

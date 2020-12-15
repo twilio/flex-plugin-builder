@@ -1,7 +1,6 @@
 import appModule from 'app-module-path';
 import * as globby from 'globby';
 
-import { AppPackageJson, PackageJson } from '../fs';
 import * as fs from '../fs';
 import * as inquirer from '../inquirer';
 
@@ -10,7 +9,7 @@ jest.mock('globby');
 jest.mock('app-module-path');
 
 describe('fs', () => {
-  const appPackage: AppPackageJson = {
+  const appPackage: fs.AppPackageJson = {
     version: '1',
     name: 'plugin-test',
     dependencies: {
@@ -113,7 +112,7 @@ describe('fs', () => {
   describe('updateAppVersion', () => {
     it('should update version', () => {
       const pkgBefore = { ...appPackage };
-      const pkgAfter: PackageJson = { ...pkgBefore, version: '2' };
+      const pkgAfter: fs.PackageJson = { ...pkgBefore, version: '2' };
 
       // @ts-ignore
       const writeFileSync = jest.spyOn(fs.default, 'writeFileSync').mockImplementation(() => {

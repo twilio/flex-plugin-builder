@@ -1,13 +1,13 @@
-import { logger, FlexPluginError } from 'flex-dev-utils';
+import { logger, FlexPluginError, exit } from 'flex-dev-utils';
 import { getCredential } from 'flex-dev-utils/dist/credentials';
-import { getPaths } from 'flex-dev-utils/dist/fs'
+import { getPaths } from 'flex-dev-utils/dist/fs';
 
 import run from '../utils/run';
 import { Visibility } from '../clients/serverless-types';
 import pluginVersions from '../prints/pluginVersions';
 import getRuntime from '../utils/runtime';
 
-const PLUGIN_REGEX_STR = '^\/plugins\/%PLUGIN_NAME%\/.*\/bundle\.js$';
+const PLUGIN_REGEX_STR = '^/plugins/%PLUGIN_NAME%/.*/bundle.js$';
 
 export type Order = 'desc' | 'asc';
 
@@ -25,17 +25,16 @@ export const _doList = async (visibilities: Visibility[], order: Order = 'asc') 
   const runtime = await getRuntime(credentials);
   const regex = new RegExp(PLUGIN_REGEX_STR.replace('%PLUGIN_NAME%', getPaths().app.name));
 
-  const assets = runtime.build && runtime.build.asset_versions || [];
-  const versions = assets
-    .filter((a) => regex.test(a.path))
-    .filter((a) => visibilities.includes(a.visibility));
+  const assets = (runtime.build && runtime.build.asset_versions) || [];
+  const versions = assets.filter((a) => regex.test(a.path)).filter((a) => visibilities.includes(a.visibility));
 
   if (versions.length === 0) {
     logger.newline();
     logger.info('No versions of plugin %s have been deployed', getPaths().app.name);
     logger.newline();
 
-    return process.exit(0);
+    exit(0);
+    return;
   }
   if (!runtime.environment) {
     throw new FlexPluginError('No Runtime environment was found');
@@ -73,6 +72,7 @@ const list = async (...argv: string[]) => {
   await _doList(visibilities, order);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(list);
 
 export default list;

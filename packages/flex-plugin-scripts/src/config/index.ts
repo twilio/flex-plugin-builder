@@ -6,8 +6,9 @@ import {
   webpackDevFactory,
   WebpackType,
   WebpackConfigurations,
-  WebpackDevConfigurations
+  WebpackDevConfigurations,
 } from 'flex-plugin-webpack';
+
 import jestFactory, { JestConfigurations } from './jest.config';
 
 export { WebpackType };
@@ -32,7 +33,11 @@ interface Configurations {
  * @param env   the environment
  * @param type  the webpack type
  */
-const getConfiguration = <T extends ConfigurationType>(name: T, env: Environment, type: WebpackType = WebpackType.Complete): Configurations[T] => {
+const getConfiguration = <T extends ConfigurationType>(
+  name: T,
+  env: Environment,
+  type: WebpackType = WebpackType.Complete,
+): Configurations[T] => {
   const args = {
     isProd: env === Environment.Production,
     isDev: env === Environment.Development,

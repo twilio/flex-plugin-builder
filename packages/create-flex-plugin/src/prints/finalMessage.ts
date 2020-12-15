@@ -1,10 +1,9 @@
-import { logger } from 'flex-dev-utils';
-import { boxen } from 'flex-dev-utils';
+import { logger, boxen } from 'flex-dev-utils';
 import { multilineString } from 'flex-dev-utils/dist/strings';
 
 import { FlexPluginArguments } from '../lib/create-flex-plugin';
 
-const headline = logger.coloredStrings.headline;
+const { headline } = logger.coloredStrings;
 
 /**
  * Prints the final message after the successful creation of a new project
@@ -12,11 +11,7 @@ const headline = logger.coloredStrings.headline;
  */
 export default (config: FlexPluginArguments) => {
   const installCommand = config.yarn ? 'yarn install' : 'npm install';
-  const setupMessage = multilineString(
-    `${headline('Setup:')}`,
-    `$ cd ${config.name}/`,
-    `$ ${installCommand}`,
-  );
+  const setupMessage = multilineString(`${headline('Setup:')}`, `$ cd ${config.name}/`, `$ ${installCommand}`);
 
   const devMessage = multilineString(
     `${headline('Development:')}`,

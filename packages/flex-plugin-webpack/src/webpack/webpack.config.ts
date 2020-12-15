@@ -19,18 +19,21 @@ import webpack, {
   Resolve,
   SourceMapDevToolPlugin,
 } from 'webpack';
-import { WebpackType } from '../index';
-import Optimization = webpack.Options.Optimization;
 import DotenvWebpackPlugin from 'dotenv-webpack';
 
-interface LoaderOption { [name: string]: any }
+import { WebpackType } from '..';
+import Optimization = webpack.Options.Optimization;
+
+interface LoaderOption {
+  [name: string]: any;
+}
 
 const IMAGE_SIZE_BYTE = 10 * 1024;
 const FLEX_SHIM = 'flex-plugin-scripts/dev_assets/flex-shim.js';
 const EXTERNALS = {
-  'react': 'React',
+  react: 'React',
   'react-dom': 'ReactDOM',
-  'redux': 'Redux',
+  redux: 'Redux',
   'react-redux': 'ReactRedux',
 };
 
@@ -60,7 +63,7 @@ export const _getJSScripts = (flexUIVersion: string, reactVersion: string, react
  */
 /* istanbul ignore next */
 const _getBabelLoader = (isProd: boolean) => ({
-  test: new RegExp('\.(' + getPaths().extensions.join('|') + ')$'),
+  test: new RegExp(`\.(${getPaths().extensions.join('|')})$`),
   include: getPaths().app.srcDir,
   loader: require.resolve('babel-loader'),
   options: {
@@ -88,11 +91,11 @@ const _getBabelLoader = (isProd: boolean) => ({
  */
 /* istanbul ignore next */
 export const _getImageLoader = () => ({
-    test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
-    loader: require.resolve('url-loader'),
-    options: {
-      limit: IMAGE_SIZE_BYTE,
-    },
+  test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+  loader: require.resolve('url-loader'),
+  options: {
+    limit: IMAGE_SIZE_BYTE,
+  },
 });
 
 /**
@@ -134,7 +137,7 @@ export const _getStyleLoaders = (isProd: boolean) => {
           ],
           sourceMap: isProd,
         },
-      }
+      },
     );
 
     // Add a pre-processor loader (converting SCSS to CSS)
@@ -160,7 +163,7 @@ export const _getStyleLoaders = (isProd: boolean) => {
         {
           loader: require.resolve(preProcessor),
           options: preProcessorOptions,
-        }
+        },
       );
     }
 
@@ -171,7 +174,7 @@ export const _getStyleLoaders = (isProd: boolean) => {
     {
       test: /\.css$/,
       exclude: /\.module\.css$/,
-      use: getStyleLoader( {
+      use: getStyleLoader({
         importLoaders: 1,
         sourceMap: isProd,
       }),
@@ -182,7 +185,7 @@ export const _getStyleLoaders = (isProd: boolean) => {
       use: getStyleLoader({
         importLoaders: 1,
         sourceMap: isProd,
-        modules: true
+        modules: true,
       }),
     },
     {
@@ -255,11 +258,13 @@ export const _getBasePlugins = (environment: Environment): Plugin[] => {
 
   // Support .env file if provided
   if (appPaths.hasEnvFile()) {
-    plugins.push(new DotenvWebpackPlugin({
-      path: appPaths.envPath,
-      safe: appPaths.hasEnvExampleFile(),
-      defaults: appPaths.hasEnvDefaultsPath(),
-    }));
+    plugins.push(
+      new DotenvWebpackPlugin({
+        path: appPaths.envPath,
+        safe: appPaths.hasEnvExampleFile(),
+        defaults: appPaths.hasEnvDefaultsPath(),
+      }),
+    );
   }
 
   return plugins;
@@ -271,19 +276,27 @@ export const _getBasePlugins = (environment: Environment): Plugin[] => {
  */
 export const _getStaticPlugins = (environment: Environment): Plugin[] => {
   const plugins: Plugin[] = [];
-  const dependencies = getPaths().app.dependencies;
+  const { dependencies } = getPaths().app;
 
   // index.html entry point
   if (environment === Environment.Development) {
     plugins.push(new HotModuleReplacementPlugin());
-    plugins.push(new HtmlWebpackPlugin({
-      inject: false,
-      hash: false,
-      template: getPaths().scripts.indexHTMLPath,
-    }));
-    plugins.push(new InterpolateHtmlPlugin({
-      __FPB_JS_SCRIPTS: _getJSScripts(dependencies.flexUI.version, dependencies.react.version, dependencies.reactDom.version).join('\n'),
-    }));
+    plugins.push(
+      new HtmlWebpackPlugin({
+        inject: false,
+        hash: false,
+        template: getPaths().scripts.indexHTMLPath,
+      }),
+    );
+    plugins.push(
+      new InterpolateHtmlPlugin({
+        __FPB_JS_SCRIPTS: _getJSScripts(
+          dependencies.flexUI.version,
+          dependencies.react.version,
+          dependencies.reactDom.version,
+        ).join('\n'),
+      }),
+    );
   }
 
   return plugins;
@@ -299,9 +312,11 @@ export const _getJSPlugins = (environment: Environment): Plugin[] => {
   const isProd = environment === Environment.Production;
 
   if (isProd) {
-    plugins.push(new SourceMapDevToolPlugin({
-      append: '\n//# sourceMappingURL=bundle.js.map',
-    }));
+    plugins.push(
+      new SourceMapDevToolPlugin({
+        append: '\n//# sourceMappingURL=bundle.js.map',
+      }),
+    );
   }
   const hasPnp = 'pnp' in process.versions;
 
@@ -312,12 +327,8 @@ export const _getJSPlugins = (environment: Environment): Plugin[] => {
       async: isDev,
       useTypescriptIncrementalApi: true,
       checkSyntacticErrors: true,
-      resolveModuleNameModule: hasPnp
-        ? `${__dirname}/webpack/pnpTs.js`
-        : undefined,
-      resolveTypeReferenceDirectiveModule: hasPnp
-        ? `${__dirname}/webpack/pnpTs.js`
-        : undefined,
+      resolveModuleNameModule: hasPnp ? `${__dirname}/webpack/pnpTs.js` : undefined,
+      resolveTypeReferenceDirectiveModule: hasPnp ? `${__dirname}/webpack/pnpTs.js` : undefined,
       tsconfig: getPaths().app.tsConfigPath,
       reportFiles: [
         '**',
@@ -330,7 +341,7 @@ export const _getJSPlugins = (environment: Environment): Plugin[] => {
       silent: true,
     };
     if (isProd) {
-      config.formatter = typescriptFormatter
+      config.formatter = typescriptFormatter;
     }
 
     plugins.push(new ForkTsCheckerWebpackPlugin(config));
@@ -341,10 +352,9 @@ export const _getJSPlugins = (environment: Environment): Plugin[] => {
 
 /**
  * Returns the `entry` key of the webpack
- * @param environment
  * @private
  */
-export const _getJavaScriptEntries = (environment: Environment): string[] => {
+export const _getJavaScriptEntries = (): string[] => {
   const entry: string[] = [];
   entry.push(getPaths().app.entryPath);
 
@@ -378,11 +388,14 @@ export const _getOptimization = (environment: Environment): Optimization => {
           mangle: {
             safari10: true,
           },
+          // eslint-disable-next-line camelcase
           keep_classnames: isProd,
+          // eslint-disable-next-line camelcase
           keep_fnames: isProd,
           output: {
             ecma: 5,
             comments: false,
+            // eslint-disable-next-line camelcase
             ascii_only: true,
           },
         },
@@ -399,9 +412,9 @@ export const _getOptimization = (environment: Environment): Optimization => {
  */
 export const _getResolve = (environment: Environment): Resolve => {
   const isProd = environment === Environment.Production;
-  const extensions = !getPaths().app.isTSProject()
-    ? getPaths().extensions.filter(e => !e.includes('ts'))
-    : getPaths().extensions;
+  const extensions = getPaths().app.isTSProject()
+    ? getPaths().extensions
+    : getPaths().extensions.filter((e) => !e.includes('ts'));
 
   const paths = getPaths();
 
@@ -413,14 +426,11 @@ export const _getResolve = (environment: Environment): Resolve => {
       paths.webpack.nodeModulesDir,
       paths.cli.nodeModulesDir,
     ],
-    extensions: extensions.map(e => `.${e}`),
+    extensions: extensions.map((e) => `.${e}`),
     alias: {
       '@twilio/flex-ui': FLEX_SHIM,
     },
-    plugins: [
-      PnpWebpackPlugin,
-      new ModuleScopePlugin(paths.app.srcDir, [paths.app.pkgPath]),
-    ]
+    plugins: [PnpWebpackPlugin, new ModuleScopePlugin(paths.app.srcDir, [paths.app.pkgPath])],
   };
 
   if (isProd && resolve.alias) {
@@ -439,9 +449,7 @@ export const _getBase = (environment: Environment): Configuration => {
   const config: Configuration = {
     resolve: _getResolve(environment),
     resolveLoader: {
-      plugins: [
-        PnpWebpackPlugin.moduleLoader(module),
-      ]
+      plugins: [PnpWebpackPlugin.moduleLoader(module)],
     },
     externals: EXTERNALS,
     module: {
@@ -449,13 +457,9 @@ export const _getBase = (environment: Environment): Configuration => {
       rules: [
         { parser: { requireEnsure: false } },
         {
-          oneOf: [
-            _getImageLoader(),
-            _getBabelLoader(isProd),
-            ..._getStyleLoaders(isProd),
-          ]
+          oneOf: [_getImageLoader(), _getBabelLoader(isProd), ..._getStyleLoaders(isProd)],
         },
-      ]
+      ],
     },
     plugins: _getBasePlugins(environment),
   };
@@ -463,9 +467,7 @@ export const _getBase = (environment: Environment): Configuration => {
 
   config.entry = [];
   if (environment === Environment.Development) {
-    config.entry.push(
-      require.resolve('@k88/cra-webpack-hot-dev-client/build'),
-    );
+    config.entry.push(require.resolve('@k88/cra-webpack-hot-dev-client/build'));
   }
 
   return config;
@@ -480,7 +482,7 @@ export const _getStaticConfiguration = (config: Configuration, environment: Envi
   config.plugins.push(..._getStaticPlugins(environment));
 
   return config;
-}
+};
 
 /**
  * Returns the {@link Configuration} for JS type
@@ -495,7 +497,7 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
   config.plugins = config.plugins ? config.plugins : [];
 
   // @ts-ignore
-  config.entry.push(..._getJavaScriptEntries(environment));
+  config.entry.push(..._getJavaScriptEntries());
   config.output = {
     path: getPaths().app.buildDir,
     pathinfo: !isProd,
@@ -515,12 +517,13 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
     http2: 'empty',
     net: 'empty',
     tls: 'empty',
+    // eslint-disable-next-line camelcase
     child_process: 'empty',
   };
   config.plugins.push(..._getJSPlugins(environment));
 
   return config;
-}
+};
 
 /**
  * Main method for generating a webpack configuration

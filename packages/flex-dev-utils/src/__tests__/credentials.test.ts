@@ -205,7 +205,7 @@ describe('credentials', () => {
     });
 
     it('should not ask for API key or password if credentials exist', async () => {
-      jest.spyOn(credentials, '_findCredential').mockImplementation(() => Promise.resolve(credential));
+      jest.spyOn(credentials, '_findCredential').mockResolvedValue(credential);
 
       const creds = await credentials.getCredential();
 
@@ -217,7 +217,7 @@ describe('credentials', () => {
     });
 
     it('should ask for credentials if nothing exists', async () => {
-      jest.spyOn(credentials, '_findCredential').mockImplementation(() => Promise.resolve(null));
+      jest.spyOn(credentials, '_findCredential').mockResolvedValue(null);
 
       jest.spyOn(inquirer, 'prompt').mockImplementation((question: any) => {
         if (question.type === 'input') {
@@ -264,9 +264,7 @@ describe('credentials', () => {
     });
 
     it('should return the passed apiKey if match found', async () => {
-      jest
-        .spyOn(credentials, '_getService')
-        .mockImplementation(() => Promise.resolve([keytarCredential1, keytarCredential2]));
+      jest.spyOn(credentials, '_getService').mockResolvedValue([keytarCredential1, keytarCredential2]);
 
       const cred = await credentials._findCredential(apiKey);
 
@@ -275,9 +273,7 @@ describe('credentials', () => {
     });
 
     it('should return the passed accountSid if match found', async () => {
-      jest
-        .spyOn(credentials, '_getService')
-        .mockImplementation(() => Promise.resolve([keytarCredential1, keytarCredential1]));
+      jest.spyOn(credentials, '_getService').mockResolvedValue([keytarCredential1, keytarCredential1]);
 
       const cred = await credentials._findCredential(accountSid1);
 
@@ -286,7 +282,7 @@ describe('credentials', () => {
     });
 
     it('should return null if credentials is empty', async () => {
-      jest.spyOn(credentials, '_getService').mockImplementation(() => Promise.resolve([]));
+      jest.spyOn(credentials, '_getService').mockResolvedValue([]);
 
       const cred = await credentials._findCredential();
 
@@ -295,7 +291,7 @@ describe('credentials', () => {
     });
 
     it('should return single credential if only one exists', async () => {
-      jest.spyOn(credentials, '_getService').mockImplementation(() => Promise.resolve([keyCredential]));
+      jest.spyOn(credentials, '_getService').mockResolvedValue([keyCredential]);
 
       const cred = await credentials._findCredential();
 
@@ -304,7 +300,7 @@ describe('credentials', () => {
     });
 
     it('should return null if bogus credentials exist', async () => {
-      jest.spyOn(credentials, '_getService').mockImplementation(() => Promise.resolve([badCreds, badCreds]));
+      jest.spyOn(credentials, '_getService').mockResolvedValue([badCreds, badCreds]);
 
       const cred = await credentials._findCredential();
 
@@ -313,7 +309,7 @@ describe('credentials', () => {
     });
 
     it('should ask for you to choose if multiple credentials found', async () => {
-      jest.spyOn(credentials, '_getService').mockImplementation(() => Promise.resolve([keyCredential, keyCredential]));
+      jest.spyOn(credentials, '_getService').mockResolvedValue([keyCredential, keyCredential]);
 
       const choose = jest.spyOn(inquirer, 'choose').mockResolvedValue(accountSid);
 
@@ -325,19 +321,19 @@ describe('credentials', () => {
   });
 
   describe('_saveCredential', () => {
-    it('should not save if CI is set to true', () => {
+    it('should not save if CI is set to true', async () => {
       const _getKeychain = jest.spyOn(credentials, '_getKeychain');
       process.env.CI = 'true';
 
-      credentials._saveCredential(accountSid, authToken);
+      await credentials._saveCredential(accountSid, authToken);
       expect(_getKeychain).not.toHaveBeenCalled();
     });
 
-    it('should not save if SKIP_CREDENTIALS_SAVING is set to true', () => {
+    it('should not save if SKIP_CREDENTIALS_SAVING is set to true', async () => {
       const _getKeychain = jest.spyOn(credentials, '_getKeychain');
       process.env.SKIP_CREDENTIALS_SAVING = 'true';
 
-      credentials._saveCredential(accountSid, authToken);
+      await credentials._saveCredential(accountSid, authToken);
       expect(_getKeychain).not.toHaveBeenCalled();
 
       _getKeychain.mockRestore();
@@ -366,9 +362,7 @@ describe('credentials', () => {
     });
 
     it('should clear credentials', async () => {
-      const _getService = jest
-        .spyOn(credentials, '_getService')
-        .mockImplementation(() => Promise.resolve([keyCredential, keyCredential]));
+      const _getService = jest.spyOn(credentials, '_getService').mockResolvedValue([keyCredential, keyCredential]);
       deletePassword.mockResolvedValue(true);
 
       await credentials.clearCredentials();

@@ -10,9 +10,9 @@ jest.mock('../fs', () => ({
   readFileSync,
 }));
 
-// tslint:disable
+/* eslint-disable */
 const markedScript = require('../marked');
-// tslint:enable
+/* eslint-enable */
 
 describe('marked', () => {
   beforeEach(() => {

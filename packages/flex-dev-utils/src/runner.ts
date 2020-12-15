@@ -1,6 +1,7 @@
 import logger from './logger';
 import { FlexPluginError } from './errors';
 
+// eslint-disable-next-line import/no-unused-modules
 export type Callback = (...argv: string[]) => void;
 
 /**
@@ -21,6 +22,7 @@ export default async (callback: Callback, ...args: string[]) => {
       logger.error(e);
     }
 
+    // eslint-disable-next-line no-process-exit
     return process.exit(1);
   }
 };

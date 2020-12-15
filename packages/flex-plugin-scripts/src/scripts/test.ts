@@ -1,8 +1,8 @@
 import { env, logger, exit } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { checkFilesExist, getPaths, addCWDNodeModule, resolveModulePath } from 'flex-dev-utils/dist/fs';
-import { jestNotInstalled } from '../prints';
 
+import { jestNotInstalled } from '../prints';
 import run from '../utils/run';
 
 export const DEFAULT_JEST_ENV = 'jsdom';
@@ -19,8 +19,6 @@ export const _validateJest = () => {
   if (!resolveModulePath('jest')) {
     jestNotInstalled();
     exit(1);
-
-    return;
   }
 };
 
@@ -80,6 +78,7 @@ const test = async (...args: string[]) => {
   require('./test/test').default(jestEnv, ...cleanArgs);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(test);
 
 export default test;

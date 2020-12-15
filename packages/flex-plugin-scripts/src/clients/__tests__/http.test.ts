@@ -1,8 +1,9 @@
-import HttpClient, { HttpConfig } from '../http';
 import axios, { MockAdapter } from 'flex-dev-utils/dist/axios';
 import { clone } from 'flex-dev-utils/dist/lodash';
 import { env } from 'flex-dev-utils';
 import FormData from 'form-data';
+
+import HttpClient, { HttpConfig } from '../http';
 
 describe('HttpClient', () => {
   const CONFIG: HttpConfig = {
@@ -55,8 +56,7 @@ describe('HttpClient', () => {
       // @ts-ignore
       expect(http.jsonPOST).toBeFalsy();
       // @ts-ignore
-      expect(http.client.defaults.headers['Content-Type'])
-        .toEqual('application/x-www-form-urlencoded');
+      expect(http.client.defaults.headers['Content-Type']).toEqual('application/x-www-form-urlencoded');
     });
 
     it('should set contentType as application/json', () => {
@@ -66,23 +66,20 @@ describe('HttpClient', () => {
       // @ts-ignore
       expect(http.jsonPOST).toBeTruthy();
       // @ts-ignore
-      expect(http.client.defaults.headers['Content-Type'])
-        .toEqual('application/json');
+      expect(http.client.defaults.headers['Content-Type']).toEqual('application/json');
     });
 
     it('should set user agent when defined', () => {
       const http = new HttpClient(config);
       // @ts-ignore
-      expect(http.client.defaults.headers['User-Agent'])
-        .toEqual('007');
+      expect(http.client.defaults.headers['User-Agent']).toEqual('007');
     });
 
     it('should handle no user agent', () => {
       config.userAgent = undefined;
       const http = new HttpClient(config);
       // @ts-ignore
-      expect(http.client.defaults.headers['User-Agent'])
-        .toBeUndefined();
+      expect(http.client.defaults.headers['User-Agent']).toBeUndefined();
     });
   });
 
@@ -90,10 +87,8 @@ describe('HttpClient', () => {
     it('should call get', async () => {
       const httpClient = new HttpClient(config);
       // @ts-ignore
-      const client = httpClient.client;
-      const get = jest
-        .spyOn(client, 'get')
-        .mockResolvedValue({ data: 'the-result' });
+      const { client } = httpClient;
+      const get = jest.spyOn(client, 'get').mockResolvedValue({ data: 'the-result' });
 
       const response = await httpClient.get('the-uri');
 
@@ -113,7 +108,7 @@ describe('HttpClient', () => {
     it('should upload content', async () => {
       const resp = { success: true };
       const httpClient = new HttpClient(config);
-      mockAxios.onPost().reply(() => Promise.resolve([200, resp]));
+      mockAxios.onPost().reply(async () => Promise.resolve([200, resp]));
       const post = jest.spyOn(axios, 'post');
 
       const form = new FormData();
@@ -125,8 +120,8 @@ describe('HttpClient', () => {
         auth: config.auth,
       };
 
-      expect(post).toHaveBeenCalledTimes(1)
-      expect(post).toHaveBeenCalledWith('/upload', form, options)
+      expect(post).toHaveBeenCalledTimes(1);
+      expect(post).toHaveBeenCalledWith('/upload', form, options);
       expect(result).toEqual(resp);
     });
   });
@@ -135,12 +130,10 @@ describe('HttpClient', () => {
     it('should post as application/x-www-form-urlencoded', async () => {
       const httpClient = new HttpClient(config);
       // @ts-ignore
-      const client = httpClient.client;
-      const post = jest
-        .spyOn(client, 'post')
-        .mockResolvedValue({ data: 'the-result' });
+      const { client } = httpClient;
+      const post = jest.spyOn(client, 'post').mockResolvedValue({ data: 'the-result' });
 
-      const response = await httpClient.post('the-uri', {payload: 'the-payload'});
+      const response = await httpClient.post('the-uri', { payload: 'the-payload' });
 
       expect(response).toEqual('the-result');
       expect(post).toHaveBeenCalledTimes(1);
@@ -151,16 +144,14 @@ describe('HttpClient', () => {
       config.contentType = 'application/json';
       const httpClient = new HttpClient(config);
       // @ts-ignore
-      const client = httpClient.client;
-      const post = jest
-        .spyOn(client, 'post')
-        .mockResolvedValue({ data: 'the-result' });
+      const { client } = httpClient;
+      const post = jest.spyOn(client, 'post').mockResolvedValue({ data: 'the-result' });
 
-      const response = await httpClient.post('the-uri', {payload: 'the-payload'});
+      const response = await httpClient.post('the-uri', { payload: 'the-payload' });
 
       expect(response).toEqual('the-result');
       expect(post).toHaveBeenCalledTimes(1);
-      expect(post).toHaveBeenCalledWith('the-uri', {payload: 'the-payload'});
+      expect(post).toHaveBeenCalledWith('the-uri', { payload: 'the-payload' });
     });
   });
 
@@ -168,9 +159,7 @@ describe('HttpClient', () => {
     it('list should call get method', async () => {
       const client = new HttpClient(config);
       const data = { result: 'the-result' };
-      const get = jest
-        .spyOn(client, 'get')
-        .mockResolvedValue([data]);
+      const get = jest.spyOn(client, 'get').mockResolvedValue([data]);
 
       const result = await client.list('the-uri');
 
@@ -184,10 +173,8 @@ describe('HttpClient', () => {
     it('should delete', async () => {
       const httpClient = new HttpClient(config);
       // @ts-ignore
-      const client = httpClient.client;
-      const del = jest
-        .spyOn(client, 'delete')
-        .mockResolvedValue(null);
+      const { client } = httpClient;
+      const del = jest.spyOn(client, 'delete').mockResolvedValue(null);
 
       const result = await httpClient.delete('the-uri');
 

@@ -7,7 +7,7 @@ const preScriptCheck = require.resolve('flex-plugin-scripts/dist/scripts/pre-scr
 export type StartOptions = {
   cwd: string;
   name: string;
-}
+};
 
 /**
  * Entry point for starting a dev-server
@@ -15,7 +15,7 @@ export type StartOptions = {
  */
 // @ts-ignore
 export default async function run(options: StartOptions): SpawnPromise {
-  await spawn('node', [preStartCheck, '--run-script', '--core-cwd', options.cwd, '--cwd', options.cwd])
-  await spawn('node', [preScriptCheck, '--run-script', '--core-cwd', options.cwd, '--cwd', options.cwd])
-  return spawn('node', [startScriptPath, '--run-script', '--core-cwd', options.cwd, '--name', options.name])
+  await spawn('node', [preStartCheck, '--run-script', '--core-cwd', options.cwd, '--cwd', options.cwd]);
+  await spawn('node', [preScriptCheck, '--run-script', '--core-cwd', options.cwd, '--cwd', options.cwd]);
+  return spawn('node', [startScriptPath, '--run-script', '--core-cwd', options.cwd, '--name', options.name]);
 }

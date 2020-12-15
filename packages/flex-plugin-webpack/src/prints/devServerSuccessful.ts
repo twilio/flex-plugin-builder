@@ -1,8 +1,8 @@
 import { logger } from 'flex-dev-utils';
 import { ServiceUrl } from 'flex-dev-utils/dist/urls';
+import { FlexConfigurationPlugin, readPluginsJson } from 'flex-dev-utils/dist/fs';
 
 import { Plugin } from '../devServer/pluginServer';
-import { FlexConfigurationPlugin, readPluginsJson } from 'flex-dev-utils/dist/fs';
 
 /**
  * Prints the success message when dev-server compiles
@@ -12,11 +12,17 @@ import { FlexConfigurationPlugin, readPluginsJson } from 'flex-dev-utils/dist/fs
  * @param remotePlugins the list of remote plugins
  * @param hasRemote whether remote plugins are running
  */
-export default (local: ServiceUrl, network: ServiceUrl, localPlugins: string[], remotePlugins: Plugin[], hasRemote: boolean) => {
+export default (
+  local: ServiceUrl,
+  network: ServiceUrl,
+  localPlugins: string[],
+  remotePlugins: Plugin[],
+  hasRemote: boolean,
+) => {
   logger.success('Compiled successfully!');
 
   logger.newline();
-  logger.info(`Your plugin app is running in the browser on:`)
+  logger.info(`Your plugin app is running in the browser on:`);
   logger.newline();
   const srcs = [
     ['Local', `!!${local.url}!!`],
@@ -29,7 +35,7 @@ export default (local: ServiceUrl, network: ServiceUrl, localPlugins: string[], 
     logger.info('**Local Plugins:**');
     logger.newline();
 
-    const rows = localPlugins.map(name => {
+    const rows = localPlugins.map((name) => {
       const plugin = readPluginsJson().plugins.find((p) => p.name === name) as FlexConfigurationPlugin;
 
       return [`${plugin.name}`, `!!${plugin.dir}!!`];
@@ -43,7 +49,7 @@ export default (local: ServiceUrl, network: ServiceUrl, localPlugins: string[], 
     logger.newline();
 
     const rows = remotePlugins.length
-      ? remotePlugins.map(p => [`${p.name}..@..${p.version}`, `!!${p.src}!!`])
+      ? remotePlugins.map((p) => [`${p.name}..@..${p.version}`, `!!${p.src}!!`])
       : [['Will be displayed when you log into your Flex application']];
 
     logger.columns(rows, { indent: true });

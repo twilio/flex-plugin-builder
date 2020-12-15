@@ -28,7 +28,7 @@ export default (errors: any[]) => {
 
     logger.newline();
   });
-}
+};
 
 /**
  * Logs the error line ; tries to parse and print useful information based on the error
@@ -43,4 +43,3 @@ const logError = (error: string) => {
     logger.notice(`You may file a feature request on GitHub (${link}) so we can add this loader.`);
   }
 };
-

@@ -13,38 +13,25 @@ interface TS {
     containingFile: string,
     options: CompilerOptions,
     moduleResolutionHost: ResolvedModuleWithFailedLookupLocations,
-  ) => ResolvedModuleWithFailedLookupLocations,
+  ) => ResolvedModuleWithFailedLookupLocations;
 }
 
-const resolveModuleName = (typescript: TS,
+export const resolveModuleName = (
+  typescript: TS,
   moduleName: string,
   containingFile: string,
   compilerOptions: CompilerOptions,
-  resolutionHost: ModuleResolutionHost) => {
-  return resolver(
-    moduleName,
-    containingFile,
-    compilerOptions,
-    resolutionHost,
-    typescript.resolveModuleName
-  );
+  resolutionHost: ModuleResolutionHost,
+) => {
+  return resolver(moduleName, containingFile, compilerOptions, resolutionHost, typescript.resolveModuleName);
 };
 
-const resolveTypeReferenceDirective = (typescript: TS,
+export const resolveTypeReferenceDirective = (
+  typescript: TS,
   moduleName: string,
   containingFile: string,
   compilerOptions: CompilerOptions,
-  resolutionHost: ModuleResolutionHost) => {
-  return resolver(
-    moduleName,
-    containingFile,
-    compilerOptions,
-    resolutionHost,
-    typescript.resolveModuleName
-  );
+  resolutionHost: ModuleResolutionHost,
+) => {
+  return resolver(moduleName, containingFile, compilerOptions, resolutionHost, typescript.resolveModuleName);
 };
-
-export {
-  resolveModuleName,
-  resolveTypeReferenceDirective
-}

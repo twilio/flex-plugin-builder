@@ -1,23 +1,23 @@
 #!/usr/bin/env node
 
-import { env, spawn, exit } from 'flex-dev-utils';
-import { logger } from 'flex-dev-utils';
-import { checkForUpdate } from 'flex-dev-utils/dist/updateNotifier';
 import { readdirSync, existsSync } from 'fs';
-import { render as markedRender } from 'flex-dev-utils/dist/marked';
 import { join, dirname } from 'path';
 
-import run from './utils/run';
+import { env, spawn, exit, logger } from 'flex-dev-utils';
+import { checkForUpdate } from 'flex-dev-utils/dist/updateNotifier';
+import { render as markedRender } from 'flex-dev-utils/dist/marked';
 import { getPaths, getCwd, addCWDNodeModule } from 'flex-dev-utils/dist/fs';
 
 checkForUpdate();
 
-const spawnScript = async (...argv: string[]) => {
+const spawnScript = async (...argv: string[]): Promise<void> => {
   // Directory of this file
   const dir = dirname(__filename);
 
-  // Get all the scripts inside /scripts directory
-  // `run.js` is an exception, so filter that one out
+  /*
+   * Get all the scripts inside /scripts directory
+   * `run.js` is an exception, so filter that one out
+   */
   const files = readdirSync(join(dir, 'scripts'));
   let scripts = files
     .filter((f) => {
@@ -35,19 +35,22 @@ const spawnScript = async (...argv: string[]) => {
   if (!script) {
     const options = logger.colors.blue(scripts.join(', '));
     logger.error(`Unknown script '${script}'; please choose from one of: ${options}.`);
-    return exit(1);
+    exit(1);
+    return;
   }
 
   // Print help doc and quit
   if (argv.includes('--help') && script) {
-    const docPath = join(dir, '../docs', script) + '.md';
+    const docPath = `${join(dir, '../docs', script)}.md`;
     if (!existsSync(docPath)) {
       logger.warning(`No documentation was found for ${script}`);
-      return exit(1);
+      exit(1);
+      return;
     }
 
     markedRender(docPath);
-    return exit(0);
+    exit(0);
+    return;
   }
 
   const nodeArgs = scriptIndex > 0 ? argv.slice(0, scriptIndex) : [];

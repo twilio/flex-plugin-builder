@@ -1,12 +1,9 @@
-import { logger, exit } from 'flex-dev-utils';
-import {
-  getPaths,
-  addCWDNodeModule,
-} from 'flex-dev-utils/dist/fs';
 import { existsSync } from 'fs';
-import {
-  appConfigMissing,
-} from '../prints';
+
+import { logger, exit } from 'flex-dev-utils';
+import { getPaths, addCWDNodeModule } from 'flex-dev-utils/dist/fs';
+
+import { appConfigMissing } from '../prints';
 import run from '../utils/run';
 import { _setPluginDir } from './pre-script-check';
 
@@ -15,11 +12,11 @@ import { _setPluginDir } from './pre-script-check';
  *
  * @private
  */
-export const _checkAppConfig = () => {
+export const _checkAppConfig = (): void => {
   if (!existsSync(getPaths().app.appConfig)) {
     appConfigMissing();
 
-    return exit(1);
+    exit(1);
   }
 };
 
@@ -35,6 +32,7 @@ const preScriptCheck = async (...args: string[]) => {
   _checkAppConfig();
 };
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(preScriptCheck);
 
 export default preScriptCheck;

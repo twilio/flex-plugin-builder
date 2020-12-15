@@ -1,4 +1,5 @@
 import * as fsScripts from 'flex-dev-utils/dist/fs';
+
 import * as testScripts from '../test';
 import * as innerTestScript from '../test/test';
 import * as prints from '../../prints';
@@ -15,18 +16,12 @@ describe('TestScript', () => {
 
   describe('default', () => {
     it('should call inner test script', async () => {
-      const _validateJest = jest
-        .spyOn(testScripts, '_validateJest')
-        .mockReturnThis();
-      const _parseArgs = jest
-        .spyOn(testScripts, '_parseArgs')
-        .mockReturnValue({
-          jestEnv: 'test-env',
-          cleanArgs: ['arg1', 'arg2'],
-        });
-      const test = jest
-        .spyOn(innerTestScript, 'default')
-        .mockReturnThis();
+      const _validateJest = jest.spyOn(testScripts, '_validateJest').mockReturnThis();
+      const _parseArgs = jest.spyOn(testScripts, '_parseArgs').mockReturnValue({
+        jestEnv: 'test-env',
+        cleanArgs: ['arg1', 'arg2'],
+      });
+      const test = jest.spyOn(innerTestScript, 'default').mockReturnThis();
 
       await testScripts.default('argA', 'argB');
 
@@ -74,7 +69,9 @@ describe('TestScript', () => {
     const resolveModulePath = jest.spyOn(fsScripts, 'resolveModulePath');
 
     // @ts-ignore
-    const exit = jest.spyOn(process, 'exit').mockReturnThis(() => { /* no-op */ });
+    const exit = jest.spyOn(process, 'exit').mockReturnThis(() => {
+      /* no-op */
+    });
 
     beforeEach(() => {
       // @ts-ignore

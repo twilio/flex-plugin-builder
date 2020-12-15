@@ -1,5 +1,6 @@
 import { logger } from 'flex-dev-utils';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
+
 import { Account } from '../clients/accounts';
 
 /**
@@ -16,10 +17,12 @@ export default (url: string, isPublic: boolean, account: Account) => {
   const accountSid = (friendlyName !== account.sid && ` (${nameLogger(account.sid)})`) || '';
 
   logger.newline();
-  logger.success(singleLineString(
-    '🚀  Your plugin has been successfully deployed to your Flex project',
-    `${nameLogger(friendlyName)}${accountSid}.`,
-    `It is hosted (${availability}) as a Twilio Asset on ${logger.coloredStrings.link(url)}.`,
-  ));
+  logger.success(
+    singleLineString(
+      '🚀  Your plugin has been successfully deployed to your Flex project',
+      `${nameLogger(friendlyName)}${accountSid}.`,
+      `It is hosted (${availability}) as a Twilio Asset on ${logger.coloredStrings.link(url)}.`,
+    ),
+  );
   logger.newline();
 };

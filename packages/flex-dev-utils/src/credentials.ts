@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 import { FlexPluginError } from './errors';
 import { prompt, choose, Question } from './inquirer';
 import env from './env';
@@ -93,8 +94,10 @@ export const clearCredentials = async (): Promise<void> => {
   }
 
   const credentials = await _getService();
-  const promises = credentials.map((cred) => _getKeychain().deletePassword(cred.account));
+  const promises = credentials.map(async (cred) => _getKeychain().deletePassword(cred.account));
   await Promise.all(promises);
+
+  return Promise.resolve();
 };
 
 /**
@@ -150,7 +153,7 @@ export const _getService = async (): Promise<KeychainCredential[]> => {
     return [];
   }
 
-  return await _getKeychain().findCredentials();
+  return _getKeychain().findCredentials();
 };
 
 /**

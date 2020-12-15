@@ -9,6 +9,7 @@ import ServiceClient from './services';
 
 export default class EnvironmentClient extends BaseClient {
   public static BaseUri = 'Environments';
+
   public static DomainSuffixLength = 5;
 
   constructor(auth: Credential, serviceSid: string) {
@@ -24,26 +25,25 @@ export default class EnvironmentClient extends BaseClient {
    *
    * @param create  if set to true, will create an environment if not found
    */
-  public get = (create = true): Promise<Environment> => {
+  public get = async (create = true): Promise<Environment> => {
     return this.list()
       .then((resource) => resource.environments.find((s) => s.unique_name === getPaths().app.name))
       .then((environment) => {
         if (!environment) {
           if (create) {
             return this.create();
-          } else {
-            throw new Error(`No environment with unique_name ${getPaths().app.name} was found`);
           }
+          throw new Error(`No environment with unique_name ${getPaths().app.name} was found`);
         }
 
         return environment;
       });
-  }
+  };
 
   /**
    * Creates an environment with the package name
    */
-  public create = (): Promise<Environment> => {
+  public create = async (): Promise<Environment> => {
     return this.list()
       .then((resource) => resource.environments)
       .then((environments) => {
@@ -51,32 +51,29 @@ export default class EnvironmentClient extends BaseClient {
 
         return randomString(EnvironmentClient.DomainSuffixLength, list);
       })
-      .then((domainSuffix) => {
-        return this.http
-          .post(EnvironmentClient.BaseUri, {
-            UniqueName: getPaths().app.name,
-            DomainSuffix: domainSuffix,
-          });
+      .then(async (domainSuffix) => {
+        return this.http.post(EnvironmentClient.BaseUri, {
+          UniqueName: getPaths().app.name,
+          DomainSuffix: domainSuffix,
+        });
       });
-  }
+  };
 
   /**
    * Removes the Environment
    */
-  public remove = (sid: string): Promise<void> => {
+  public remove = async (sid: string): Promise<void> => {
     if (!isSidOfType(sid, SidPrefix.EnvironmentSid)) {
       throw new Error(`${sid} is not of type ${SidPrefix.EnvironmentSid}`);
     }
 
-    return this.http
-      .delete(`${EnvironmentClient.BaseUri}/${sid}`);
-  }
+    return this.http.delete(`${EnvironmentClient.BaseUri}/${sid}`);
+  };
 
   /**
    * Fetches a list of {@link Environment}
    */
-  public list = (): Promise<EnvironmentResource> => {
-    return this.http
-      .get<EnvironmentResource>(EnvironmentClient.BaseUri);
-  }
+  public list = async (): Promise<EnvironmentResource> => {
+    return this.http.get<EnvironmentResource>(EnvironmentClient.BaseUri);
+  };
 }

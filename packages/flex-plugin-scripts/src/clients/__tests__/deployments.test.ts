@@ -14,7 +14,7 @@ describe('DeploymentClient', () => {
       const environmentSid = 'ZE00000000000000000000000000000000';
 
       try {
-        // tslint:disable-next-line
+        // eslint-disable-next-line no-new
         new DeploymentClient(auth, serviceSid, environmentSid);
       } catch (e) {
         expect(e.message).toContain('not valid');
@@ -28,7 +28,7 @@ describe('DeploymentClient', () => {
       const environmentSid = 'ZB00000000000000000000000000000000';
 
       try {
-        // tslint:disable-next-line
+        // eslint-disable-next-line no-new
         new DeploymentClient(auth, serviceSid, environmentSid);
       } catch (e) {
         expect(e.message).toContain('not valid');

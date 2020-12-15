@@ -1,6 +1,7 @@
 import fs from 'fs';
 
 import * as fsScripts from 'flex-dev-utils/dist/fs';
+
 import * as prints from '../../prints';
 import * as preScriptCheck from '../pre-script-check';
 import * as parser from '../../utils/parser';
@@ -8,7 +9,6 @@ import * as parser from '../../utils/parser';
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('../../prints/versionMismatch');
 jest.mock('../../prints/unbundledReactMismatch');
-jest.mock('../../prints/publicDirCopyFailed');
 jest.mock('../../prints/expectedDependencyNotFound');
 jest.mock('../../prints/typescriptNotInstalled');
 jest.mock('../../prints/loadPluginCountError');
@@ -32,10 +32,12 @@ describe('PreScriptCheck', () => {
       appConfig: 'appConfig.js',
     },
     assetBaseUrlTemplate: 'template',
-  }
+  };
 
   // @ts-ignore
-  const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
+  const exit = jest.spyOn(process, 'exit').mockImplementation(() => {
+    /* no-op */
+  });
   const OLD_ENV = process.env;
 
   beforeEach(() => {
@@ -121,8 +123,9 @@ describe('PreScriptCheck', () => {
     it('should call methods in a specific order', async () => {
       await preScriptCheck.default();
 
-      expect(_setPluginDir.mock.invocationCallOrder[0])
-        .toBeLessThan(checkPluginConfigurationExists.mock.invocationCallOrder[0]);
+      expect(_setPluginDir.mock.invocationCallOrder[0]).toBeLessThan(
+        checkPluginConfigurationExists.mock.invocationCallOrder[0],
+      );
     });
   });
 
@@ -235,8 +238,7 @@ describe('PreScriptCheck', () => {
   });
 
   describe('_checkPluginCount', () => {
-    const _readIndexPage = jest
-      .spyOn(preScriptCheck, '_readIndexPage');
+    const _readIndexPage = jest.spyOn(preScriptCheck, '_readIndexPage');
 
     beforeEach(() => {
       _readIndexPage.mockReset();
@@ -279,18 +281,10 @@ describe('PreScriptCheck', () => {
   });
 
   describe('_validateTypescriptProject', () => {
-    const _hasTypescriptFiles = jest
-      .spyOn(preScriptCheck, '_hasTypescriptFiles')
-      .mockReturnThis();
-    const resolveModulePath = jest
-      .spyOn(fsScripts, 'resolveModulePath')
-      .mockReturnThis();
-    const checkFilesExist = jest
-      .spyOn(fsScripts, 'checkFilesExist')
-      .mockReturnThis();
-    const copyFileSync = jest
-      .spyOn(fs, 'copyFileSync')
-      .mockReturnValue(undefined);
+    const _hasTypescriptFiles = jest.spyOn(preScriptCheck, '_hasTypescriptFiles').mockReturnThis();
+    const resolveModulePath = jest.spyOn(fsScripts, 'resolveModulePath').mockReturnThis();
+    const checkFilesExist = jest.spyOn(fsScripts, 'checkFilesExist').mockReturnThis();
+    const copyFileSync = jest.spyOn(fs, 'copyFileSync').mockReturnValue(undefined);
 
     beforeEach(() => {
       _hasTypescriptFiles.mockReset();
@@ -352,9 +346,7 @@ describe('PreScriptCheck', () => {
       _hasTypescriptFiles.mockReturnValue(true);
       resolveModulePath.mockReturnValue('some-path');
       checkFilesExist.mockReturnValue(false);
-      const _copyFileSync = jest
-        .spyOn(fs, 'copyFileSync')
-        .mockReturnValue(undefined);
+      const _copyFileSync = jest.spyOn(fs, 'copyFileSync').mockReturnValue(undefined);
 
       preScriptCheck._validateTypescriptProject();
 

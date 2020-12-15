@@ -3,22 +3,17 @@ import { ReleaseType } from 'flex-dev-utils/dist/semver';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { checkFilesExist, updateAppVersion, getPackageVersion, getPaths } from 'flex-dev-utils/dist/fs';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
+
 import AccountsClient from '../clients/accounts';
-import { setEnvironment } from '../index';
+import { setEnvironment } from '..';
 import { deploySuccessful, pluginsApiWarning } from '../prints';
 import { UIDependencies } from '../clients/configuration-types';
-
 import run from '../utils/run';
 import { Build, Runtime, Version } from '../clients/serverless-types';
 import { AssetClient, BuildClient, DeploymentClient, ConfigurationClient, PluginsApiClient } from '../clients';
 import getRuntime from '../utils/runtime';
 
-const allowedBumps = [
-  'major',
-  'minor',
-  'patch',
-  'version',
-];
+const allowedBumps = ['major', 'minor', 'patch', 'version'];
 
 interface Options {
   isPublic: boolean;
@@ -69,11 +64,13 @@ export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: U
   }
   const UISupports = semver.satisfies('1.19.0', flexUI) || (coerced && semver.satisfies(coerced, '>=1.19.0'));
   if (!UISupports) {
-    throw new FlexPluginError(singleLineString(
-      `We detected that your account is using Flex UI version ${flexUI} which is incompatible`,
-      `with unbundled React. Please visit https://flex.twilio.com/admin/versioning and update to`,
-      `version 1.19 or above.`,
-    ));
+    throw new FlexPluginError(
+      singleLineString(
+        `We detected that your account is using Flex UI version ${flexUI} which is incompatible`,
+        `with unbundled React. Please visit https://flex.twilio.com/admin/versioning and update to`,
+        `version 1.19 or above.`,
+      ),
+    );
   }
 
   if (!dependencies.react || !dependencies['react-dom']) {
@@ -84,14 +81,18 @@ export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: U
   const reactDOMSupported = semver.satisfies(getPackageVersion('react-dom'), `${dependencies['react-dom']}`);
   if (!reactSupported || !reactDOMSupported) {
     logger.newline();
-    logger.warning(singleLineString(
-      `The React version ${getPackageVersion('react')} installed locally`,
-      `is incompatible with the React version ${dependencies.react} installed on your Flex project.`,
-    ));
-    logger.info(singleLineString(
-      'Change your local React version or visit https://flex.twilio.com/admin/developers to',
-      `change the React version installed on your Flex project.`,
-    ));
+    logger.warning(
+      singleLineString(
+        `The React version ${getPackageVersion('react')} installed locally`,
+        `is incompatible with the React version ${dependencies.react} installed on your Flex project.`,
+      ),
+    );
+    logger.info(
+      singleLineString(
+        'Change your local React version or visit https://flex.twilio.com/admin/developers to',
+        `change the React version installed on your Flex project.`,
+      ),
+    );
     const answer = await confirm('Do you still want to continue deploying?', 'N');
     if (!answer) {
       logger.newline();
@@ -110,13 +111,13 @@ export const _getAccount = async (runtime: Runtime, credentials: Credential) => 
   const accountClient = new AccountsClient(credentials);
 
   if (credentials.username.startsWith('AC')) {
-    return accountClient.get(runtime.service.account_sid)
+    return accountClient.get(runtime.service.account_sid);
   }
 
   return {
     sid: runtime.service.account_sid,
-  }
-}
+  };
+};
 
 /**
  * The main deploy script. This script performs the following in order:
@@ -145,7 +146,9 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
     const pluginsApiClient = new PluginsApiClient(credentials);
     const hasFlag = await pluginsApiClient.hasFlag();
     if (!hasFlag) {
-      throw new FlexPluginError('This command is currently in Preview and is restricted to users while we work on improving it. If you would like to participate, please contact flex@twilio.com to learn more.');
+      throw new FlexPluginError(
+        'This command is currently in Preview and is restricted to users while we work on improving it. If you would like to participate, please contact flex@twilio.com to learn more.',
+      );
     }
 
     pluginsApiWarning();
@@ -195,14 +198,23 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
   // Upload plugin bundle and source map to S3
   const buildData = await progress('Uploading your plugin bundle', async () => {
     // Upload bundle and sourcemap
-    const bundleVersion = await assetClient
-      .upload(getPaths().app.name, bundleUri, getPaths().app.bundlePath, !options.isPublic);
-    const sourceMapVersion = await assetClient
-      .upload(getPaths().app.name, sourceMapUri, getPaths().app.sourceMapPath, !options.isPublic);
+    const bundleVersion = await assetClient.upload(
+      getPaths().app.name,
+      bundleUri,
+      getPaths().app.bundlePath,
+      !options.isPublic,
+    );
+    const sourceMapVersion = await assetClient.upload(
+      getPaths().app.name,
+      sourceMapUri,
+      getPaths().app.sourceMapPath,
+      !options.isPublic,
+    );
 
-    const existingAssets = routeCollision && options.overwrite
-      ?  buildAssets.filter((v) => v.path !== bundleUri && v.path !== sourceMapUri)
-      :  buildAssets;
+    const existingAssets =
+      routeCollision && options.overwrite
+        ? buildAssets.filter((v) => v.path !== bundleUri && v.path !== sourceMapUri)
+        : buildAssets;
 
     // Create build
     const data = {
@@ -258,7 +270,9 @@ const deploy = async (...argv: string[]) => {
     disallowVersioning,
   };
 
-  if (!disallowVersioning) {
+  if (disallowVersioning) {
+    nextVersion = '0.0.0';
+  } else {
     if (!allowedBumps.includes(bump)) {
       throw new FlexPluginError(`Version bump can only be one of ${allowedBumps.join(', ')}`);
     }
@@ -273,13 +287,12 @@ const deploy = async (...argv: string[]) => {
     } else if (bump !== 'version') {
       nextVersion = semver.inc(getPaths().app.version, bump as ReleaseType) as any;
     }
-  } else {
-    nextVersion = '0.0.0';
   }
 
-  return await _doDeploy(nextVersion, opts);
+  return _doDeploy(nextVersion, opts);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(deploy);
 
 export default deploy;

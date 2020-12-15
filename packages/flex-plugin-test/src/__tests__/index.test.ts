@@ -1,5 +1,6 @@
 import * as fsScript from 'flex-dev-utils/dist/fs';
-import jestFactory from '../index';
+
+import jestFactory from '..';
 
 describe('JestConfiguration', () => {
   const paths = {
@@ -15,7 +16,7 @@ describe('JestConfiguration', () => {
       nodeModulesDir: 'cli/node_modules',
     },
     extensions: ['js', 'jsx', 'ts', 'tsx'],
-  }
+  };
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -23,7 +24,6 @@ describe('JestConfiguration', () => {
     // @ts-ignore
     jest.spyOn(fsScript, 'getPaths').mockReturnValue(paths);
   });
-
 
   it('should test the basic configs', () => {
     const config = jestFactory();

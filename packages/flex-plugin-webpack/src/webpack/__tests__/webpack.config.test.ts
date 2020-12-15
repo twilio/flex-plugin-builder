@@ -1,9 +1,10 @@
 import * as webpack from 'webpack';
 import { Environment } from 'flex-dev-utils/dist/env';
 import DotenvWebpackPlugin from 'dotenv-webpack';
-import * as webpackConfig from '../webpack.config';
 import * as fs from 'flex-dev-utils/dist/fs';
-import { WebpackType } from '../../index';
+
+import * as webpackConfig from '../webpack.config';
+import { WebpackType } from '../..';
 
 jest.mock('flex-dev-utils/dist/fs');
 jest.mock('dotenv-webpack');
@@ -15,7 +16,7 @@ describe('WebpackConfiguration', () => {
   const hasEnvDefaultsPath = jest.fn();
   const paths = {
     webpack: {
-      nodeModulesDir: 'webpack/node_modules'
+      nodeModulesDir: 'webpack/node_modules',
     },
     app: {
       name: 'test',
@@ -33,7 +34,7 @@ describe('WebpackConfiguration', () => {
     cli: {
       nodeModulesDir: 'cli/node_modules',
     },
-  }
+  };
 
   beforeEach(() => {
     jest.restoreAllMocks();
@@ -157,7 +158,7 @@ describe('WebpackConfiguration', () => {
       const config = webpackConfig._getBase(Environment.Development);
 
       const plugins = config.plugins || [];
-      const plugin = plugins.find(p => p.constructor.name === DotenvWebpackPlugin.name);
+      const plugin = plugins.find((p) => p.constructor.name === DotenvWebpackPlugin.name);
 
       expect(plugin).toBeUndefined();
       expect(DotenvWebpackPlugin).not.toHaveBeenCalled();
@@ -170,7 +171,7 @@ describe('WebpackConfiguration', () => {
       const config = webpackConfig._getBase(Environment.Development);
 
       const plugins = config.plugins || [];
-      const plugin = plugins.find(p => p.constructor.name === DotenvWebpackPlugin.name);
+      const plugin = plugins.find((p) => p.constructor.name === DotenvWebpackPlugin.name);
 
       expect(plugin).toBeDefined();
       expect(DotenvWebpackPlugin).toHaveBeenCalledTimes(1);
@@ -184,7 +185,7 @@ describe('WebpackConfiguration', () => {
       const config = webpackConfig._getBase(Environment.Development);
 
       const plugins = config.plugins || [];
-      const plugin = plugins.find(p => p.constructor.name === DotenvWebpackPlugin.name);
+      const plugin = plugins.find((p) => p.constructor.name === DotenvWebpackPlugin.name);
 
       expect(plugin).toBeDefined();
       expect(DotenvWebpackPlugin).toHaveBeenCalledTimes(1);
@@ -198,7 +199,7 @@ describe('WebpackConfiguration', () => {
       const config = webpackConfig._getBase(Environment.Development);
 
       const plugins = config.plugins || [];
-      const plugin = plugins.find(p => p.constructor.name === DotenvWebpackPlugin.name);
+      const plugin = plugins.find((p) => p.constructor.name === DotenvWebpackPlugin.name);
 
       expect(plugin).toBeDefined();
       expect(DotenvWebpackPlugin).toHaveBeenCalledTimes(1);

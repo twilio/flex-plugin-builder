@@ -1,6 +1,7 @@
+import { join } from 'path';
+
 import { InitialOptions } from '@jest/types/build/Config';
 import { checkFilesExist, getPaths } from 'flex-dev-utils/dist/fs';
-import { join } from 'path';
 
 interface RegexObject {
   [regex: string]: string;
@@ -37,14 +38,9 @@ export default (): JestConfigurations => {
       paths.cli.nodeModulesDir,
     ],
     collectCoverageFrom: ['src/**/*.{js,jsx,ts,tsx}', '!src/**/*.d.ts'],
-    setupFiles: [
-      require.resolve('react-app-polyfill/jsdom'),
-    ],
+    setupFiles: [require.resolve('react-app-polyfill/jsdom')],
     setupFilesAfterEnv: setupTestsFile ? [setupTestsFile] : [defaultSetupFile],
-    testMatch: [
-      '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
-      '<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}',
-    ],
+    testMatch: ['<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}', '<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}'],
     transform: {
       '^.+\\.(js|jsx|mjs|cjs|ts|tsx)$': require.resolve('./jestTransforms/babel'),
       '^.+\\.css$': require.resolve('./jestTransforms/css'),
@@ -56,10 +52,7 @@ export default (): JestConfigurations => {
     moduleNameMapper: {
       '^src/(.*)$': '<rootDir>/src/$1',
     },
-    moduleFileExtensions: [...getPaths().extensions, 'node'].filter(e => !e.includes('mjs')),
-    watchPlugins: [
-      'jest-watch-typeahead/filename',
-      'jest-watch-typeahead/testname',
-    ],
+    moduleFileExtensions: [...getPaths().extensions, 'node'].filter((e) => !e.includes('mjs')),
+    watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname'],
   };
-}
+};

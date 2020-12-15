@@ -1,9 +1,8 @@
 import * as fsScript from 'flex-dev-utils/dist/fs';
 import { Request, Response } from 'express-serve-static-core';
-import { Plugin } from '../pluginServer';
+import { FlexPluginError } from 'flex-dev-utils';
 
 import * as pluginServerScript from '../pluginServer';
-import { FlexPluginError } from 'flex-dev-utils';
 
 jest.mock('flex-dev-utils/dist/logger');
 
@@ -29,10 +28,8 @@ describe('pluginServer', () => {
 
   describe('_getLocalPlugin', () => {
     const pluginName = 'plugin-test';
-    const plugin = {name: pluginName, dir: 'test-dir', port: 0};
-    jest
-        .spyOn(fsScript, 'readPluginsJson')
-        .mockReturnValue({plugins: [plugin]});
+    const plugin = { name: pluginName, dir: 'test-dir', port: 0 };
+    jest.spyOn(fsScript, 'readPluginsJson').mockReturnValue({ plugins: [plugin] });
 
     it('should find the plugin', () => {
       expect(pluginServerScript._getLocalPlugin('plugin-test')).toEqual(plugin);
@@ -43,19 +40,21 @@ describe('pluginServer', () => {
     });
   });
 
-  describe (' _getLocalPlugins', () => {
+  describe(' _getLocalPlugins', () => {
     const pluginName = 'plugin-test';
     const readPluginsJson = jest
-        .spyOn(fsScript, 'readPluginsJson')
-        .mockReturnValue({plugins: [{name: pluginName, dir: 'test-dir', port: 0}]});
+      .spyOn(fsScript, 'readPluginsJson')
+      .mockReturnValue({ plugins: [{ name: pluginName, dir: 'test-dir', port: 0 }] });
 
     it('should return the plugin if found', () => {
       const result = pluginServerScript._getLocalPlugins(3000, [pluginName]);
-      expect(result).toEqual([{
-        phase: 3,
-        name: pluginName,
-        src: `http://localhost:3000/plugins/${pluginName}.js`
-      }]);
+      expect(result).toEqual([
+        {
+          phase: 3,
+          name: pluginName,
+          src: `http://localhost:3000/plugins/${pluginName}.js`,
+        },
+      ]);
     });
 
     it('should throw error', (done) => {
@@ -72,21 +71,15 @@ describe('pluginServer', () => {
 
   describe('_mergePlugins', () => {
     it('should return both remote and local plugins', () => {
-      const localPlugin = { name: 'default-plugin', phase: 3 } as Plugin;
-      const remotePluginOne = { name: 'plugin-remote-1', phase: 3 } as Plugin;
-      const remotePluginTwo = { name: 'plugin-remote-2', phase: 3 } as Plugin;
+      const localPlugin = { name: 'default-plugin', phase: 3 } as pluginServerScript.Plugin;
+      const remotePluginOne = { name: 'plugin-remote-1', phase: 3 } as pluginServerScript.Plugin;
+      const remotePluginTwo = { name: 'plugin-remote-2', phase: 3 } as pluginServerScript.Plugin;
 
+      jest.spyOn(pluginServerScript, '_getLocalPlugins').mockReturnValue([localPlugin]);
+      jest.spyOn(fsScript, 'readPackageJson').mockReturnValue(pkg);
       jest
-        .spyOn(pluginServerScript, '_getLocalPlugins')
-        .mockReturnValue([localPlugin]);
-
-      jest
-        .spyOn(fsScript, 'readPackageJson')
-        .mockReturnValue(pkg);
-
-      const readPluginsJson = jest
         .spyOn(fsScript, 'readPluginsJson')
-        .mockReturnValue({plugins: [{name: 'test-name', dir: 'test-dir', port: 0}]});
+        .mockReturnValue({ plugins: [{ name: 'test-name', dir: 'test-dir', port: 0 }] });
 
       const plugins = pluginServerScript._mergePlugins([localPlugin], [remotePluginOne, remotePluginTwo]);
 
@@ -94,21 +87,15 @@ describe('pluginServer', () => {
     });
 
     it('should return remote plugins that are not being run locally', () => {
-      const localPlugin = { name: 'plugin-1', phase: 3 } as Plugin;
-      const remotePluginOne = { name: 'plugin-1', phase: 3 } as Plugin;
-      const remotePluginTwo = { name: 'plugin-2', phase: 3 } as Plugin;
+      const localPlugin = { name: 'plugin-1', phase: 3 } as pluginServerScript.Plugin;
+      const remotePluginOne = { name: 'plugin-1', phase: 3 } as pluginServerScript.Plugin;
+      const remotePluginTwo = { name: 'plugin-2', phase: 3 } as pluginServerScript.Plugin;
 
+      jest.spyOn(pluginServerScript, '_getLocalPlugins').mockReturnValue([localPlugin]);
+      jest.spyOn(fsScript, 'readPackageJson').mockReturnValue(pkg);
       jest
-        .spyOn(pluginServerScript, '_getLocalPlugins')
-        .mockReturnValue([localPlugin]);
-
-      jest
-        .spyOn(fsScript, 'readPackageJson')
-        .mockReturnValue(pkg);
-
-      const readPluginsJson = jest
         .spyOn(fsScript, 'readPluginsJson')
-        .mockReturnValue({plugins: [{name: 'test-name', dir: 'test-dir', port: 0}]});
+        .mockReturnValue({ plugins: [{ name: 'test-name', dir: 'test-dir', port: 0 }] });
 
       const plugins = pluginServerScript._mergePlugins([localPlugin], [remotePluginOne, remotePluginTwo]);
 
@@ -138,14 +125,11 @@ describe('pluginServer', () => {
 
     it('should return 200 for OPTIONS request', async () => {
       const { req, resp } = getReqResp('OPTIONS', {});
-      const _getHeaders = jest
-        .spyOn(pluginServerScript, '_getHeaders')
-        .mockReturnValue({ header: 'true' } as any);
+      const _getHeaders = jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' } as any);
 
-      await pluginServerScript._startServer(plugins, config, onRemotePlugins)(req , resp);
+      await pluginServerScript._startServer(plugins, config, onRemotePlugins)(req, resp);
 
       expect(_getHeaders).toHaveBeenCalledTimes(1);
-      expect(_getHeaders).toHaveBeenCalledWith(port);
       expect(resp.writeHead).toHaveBeenCalledTimes(1);
       expect(resp.writeHead).toHaveBeenCalledWith(200, { header: 'true' });
       expect(resp.end).toHaveBeenCalledTimes(1);
@@ -153,11 +137,9 @@ describe('pluginServer', () => {
 
     it('should 404 for non GET requests', async () => {
       const { req, resp } = getReqResp('POST', {});
-      jest
-        .spyOn(pluginServerScript, '_getHeaders')
-        .mockReturnValue({ header: 'true' } as any);
+      jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' } as any);
 
-      await pluginServerScript._startServer(plugins, config, onRemotePlugins)(req , resp);
+      await pluginServerScript._startServer(plugins, config, onRemotePlugins)(req, resp);
 
       expect(resp.writeHead).toHaveBeenCalledTimes(1);
       expect(resp.writeHead).toHaveBeenCalledWith(404, { header: 'true' });
@@ -166,11 +148,9 @@ describe('pluginServer', () => {
 
     it('should 400 if no jwe token is provided', async () => {
       const { req, resp } = getReqResp('GET', {});
-      jest
-        .spyOn(pluginServerScript, '_getHeaders')
-        .mockReturnValue({ header: 'true' } as any);
+      jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' } as any);
 
-      await pluginServerScript._startServer(plugins, config, onRemotePlugins)(req , resp);
+      await pluginServerScript._startServer(plugins, config, onRemotePlugins)(req, resp);
 
       expect(resp.writeHead).toHaveBeenCalledTimes(1);
       expect(resp.writeHead).toHaveBeenCalledWith(400, { header: 'true' });
@@ -179,20 +159,16 @@ describe('pluginServer', () => {
 
     it('should getPlugins and rebase', async (done) => {
       const { req, resp } = getReqResp('GET', jweHeaders);
-      const remotePlugin = [{ name: 'plugin-2'}] as Plugin[];
+      const remotePlugin = [{ name: 'plugin-2' }] as pluginServerScript.Plugin[];
 
-      jest
-        .spyOn(pluginServerScript, '_getHeaders')
-        .mockReturnValue({ header: 'true' } as any);
-      const _getRemotePlugins = jest
-        .spyOn(pluginServerScript, '_getRemotePlugins')
-        .mockResolvedValue(remotePlugin);
+      jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' } as any);
+      const _getRemotePlugins = jest.spyOn(pluginServerScript, '_getRemotePlugins').mockResolvedValue(remotePlugin);
       const _mergePlugins = jest
         .spyOn(pluginServerScript, '_mergePlugins')
-        .mockReturnValue([{name: 'plugin-1'}, {name: 'plugin-2'}] as Plugin[]);
+        .mockReturnValue([{ name: 'plugin-1' }, { name: 'plugin-2' }] as pluginServerScript.Plugin[]);
       jest
         .spyOn(fsScript, 'readPluginsJson')
-        .mockReturnValue({plugins: [{name: 'plugin-1', dir: 'test-dir', port: 0}]});
+        .mockReturnValue({ plugins: [{ name: 'plugin-1', dir: 'test-dir', port: 0 }] });
 
       await pluginServerScript._startServer(plugins, config, onRemotePlugins)(req, resp);
 
@@ -204,7 +180,7 @@ describe('pluginServer', () => {
       expect(onRemotePlugins).toHaveBeenCalledTimes(1);
       expect(onRemotePlugins).toHaveBeenCalledWith(remotePlugin);
       expect(resp.end).toHaveBeenCalledTimes(1);
-      expect(resp.end).toHaveBeenCalledWith('[{\"name\":\"plugin-1\"},{\"name\":\"plugin-2\"}]');
+      expect(resp.end).toHaveBeenCalledWith('[{"name":"plugin-1"},{"name":"plugin-2"}]');
 
       done();
     });
@@ -212,17 +188,12 @@ describe('pluginServer', () => {
     it('should fail', async () => {
       const { req, resp } = getReqResp('GET', jweHeaders);
 
-      jest
-        .spyOn(pluginServerScript, '_getHeaders')
-        .mockReturnValue({ header: 'true' } as any);
-      const _getRemotePlugins = jest
-        .spyOn(pluginServerScript, '_getRemotePlugins')
-        .mockRejectedValue('failed-message');
-      const _mergePlugins = jest
-        .spyOn(pluginServerScript, '_mergePlugins');
+      jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' } as any);
+      const _getRemotePlugins = jest.spyOn(pluginServerScript, '_getRemotePlugins').mockRejectedValue('failed-message');
+      const _mergePlugins = jest.spyOn(pluginServerScript, '_mergePlugins');
       jest
         .spyOn(fsScript, 'readPluginsJson')
-        .mockReturnValue({plugins: [{name: 'test-name', dir: 'test-dir', port: 0}]});
+        .mockReturnValue({ plugins: [{ name: 'test-name', dir: 'test-dir', port: 0 }] });
 
       await pluginServerScript._startServer(plugins, config, onRemotePlugins)(req, resp);
 

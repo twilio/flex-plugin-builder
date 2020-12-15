@@ -7,6 +7,7 @@
 const exit = (exitCode: number, args: string[] = []) => {
   // Exit if not an embedded script
   if (!args.includes('--no-process-exit')) {
+    // eslint-disable-next-line no-process-exit
     process.exit(exitCode);
   }
 };

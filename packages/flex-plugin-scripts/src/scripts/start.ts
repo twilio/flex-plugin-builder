@@ -1,4 +1,4 @@
-import { env, logger, exit } from 'flex-dev-utils';
+import { env, logger } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { addCWDNodeModule, getPaths, readPluginsJson, setCwd, writeJSONFile } from 'flex-dev-utils/dist/fs';
@@ -13,7 +13,7 @@ import {
   onIPCServerMessage,
   startIPCClient,
   startIPCServer,
-  webpackDevServer
+  webpackDevServer,
 } from 'flex-plugin-webpack';
 
 import getConfiguration, { ConfigurationType, WebpackType } from '../config';
@@ -34,11 +34,11 @@ export interface StartScript {
  * Finds the port
  * @param args
  */
-export const findPortAvailablePort = (...args: string[]) => {
+export const findPortAvailablePort = async (...args: string[]) => {
   const portIndex = args.indexOf('--port');
-  return portIndex !== -1
-    ? Promise.resolve(parseInt(args[portIndex + 1], 10))
-    : findPort(getDefaultPort(process.env.PORT));
+  return portIndex === -1
+    ? findPort(getDefaultPort(process.env.PORT))
+    : Promise.resolve(parseInt(args[portIndex + 1], 10));
 };
 
 /**
@@ -192,6 +192,7 @@ export const _updatePluginPort = (port: number, name: string) => {
   writeJSONFile(getPaths().cli.pluginsJsonPath, config);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(start);
 
 export default start;

@@ -1,14 +1,14 @@
 import { logger } from 'flex-dev-utils';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
 
-const link = logger.coloredStrings.link;
+const { link } = logger.coloredStrings;
 
 /**
  * Error about appConfig.js missing
  */
 export default () => {
   const nameColor = logger.coloredStrings.name;
-  const headline = logger.coloredStrings.headline;
+  const { headline } = logger.coloredStrings;
 
   const scriptName = nameColor('flex-plugin-scripts');
 
@@ -21,10 +21,12 @@ export default () => {
   logger.info(`\t ${headline('public/appConfig.js')}`);
   logger.newline();
 
-  logger.info(singleLineString(
-    `Check your ${link('public/')} directory for ${link('appConfig.example.js')},`,
-    `copy it to ${link('appConfig.js')}, and modify your Account Sid and Service URL.`,
-  ));
+  logger.info(
+    singleLineString(
+      `Check your ${link('public/')} directory for ${link('appConfig.example.js')},`,
+      `copy it to ${link('appConfig.js')}, and modify your Account Sid and Service URL.`,
+    ),
+  );
 
   logger.newline();
 };

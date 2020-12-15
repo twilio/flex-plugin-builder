@@ -1,10 +1,10 @@
-import { logger, progress, Credential, getCredential } from 'flex-dev-utils';
+import { logger, progress, Credential, getCredential, exit } from 'flex-dev-utils';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
-import { EnvironmentClient } from '../clients';
-import { Runtime } from '../clients/serverless-types';
 import { getPaths } from 'flex-dev-utils/dist/fs';
 
+import { EnvironmentClient } from '../clients';
+import { Runtime } from '../clients/serverless-types';
 import run from '../utils/run';
 import getRuntime from '../utils/runtime';
 
@@ -31,7 +31,10 @@ export const _getRuntime = async (credentials: Credential): Promise<Runtime> => 
     logger.newline();
     logger.info(`⚠️  Plugin ${pluginName} was not found or was already removed.`);
 
-    return process.exit(0);
+    exit(0);
+
+    // This is to make TS happy
+    return {} as Runtime;
   }
 };
 
@@ -46,7 +49,7 @@ export const _doRemove = async () => {
   if (!runtime.environment) {
     throw new FlexPluginError('No Runtime environment was found');
   }
-  const environment = runtime.environment;
+  const { environment } = runtime;
 
   await progress(`Deleting plugin ${pluginName}`, async () => {
     const environmentClient = new EnvironmentClient(credentials, runtime.service.sid);
@@ -56,7 +59,7 @@ export const _doRemove = async () => {
   logger.newline();
   logger.info(`🎉️  Plugin ${pluginName} was successfully removed.`);
 
-  process.exit(0);
+  exit(0);
 };
 
 /**
@@ -70,12 +73,14 @@ const remove = async () => {
   const answer = await confirm(question, 'N');
 
   if (!answer) {
-    return process.exit(0);
+    exit(0);
+    return;
   }
 
   await _doRemove();
 };
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(remove);
 
 export default remove;

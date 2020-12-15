@@ -1,12 +1,7 @@
 import { prompt } from 'flex-dev-utils/dist/inquirer';
 import { logger, ValidationError } from 'flex-dev-utils';
 import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
-import {
-  isValidPluginName,
-  isValidUrl,
-  validateAccountSid,
-  validateGitHubUrl,
-} from 'flex-dev-utils/dist/validators';
+import { isValidPluginName, isValidUrl, validateAccountSid, validateGitHubUrl } from 'flex-dev-utils/dist/validators';
 
 import { FlexPluginArguments } from '../lib/create-flex-plugin';
 
@@ -15,7 +10,7 @@ import { FlexPluginArguments } from '../lib/create-flex-plugin';
  * @private
  */
 export const _promptForAccountSid = async (): Promise<string> => {
-  return await prompt({
+  return prompt({
     type: 'input',
     name: 'accountSid',
     message: 'Twilio Flex Account SID',
@@ -28,7 +23,7 @@ export const _promptForAccountSid = async (): Promise<string> => {
  * @private
  */
 export const _promptForTemplateUrl = async (): Promise<string> => {
-  return await prompt({
+  return prompt({
     type: 'input',
     name: 'template',
     message: 'Template URL',

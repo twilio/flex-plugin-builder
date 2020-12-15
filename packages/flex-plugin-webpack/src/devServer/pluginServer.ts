@@ -1,9 +1,11 @@
+import https from 'https';
+
 import { logger, FlexPluginError, exit } from 'flex-dev-utils';
 import { Request, Response } from 'express-serve-static-core';
 import { readPluginsJson } from 'flex-dev-utils/dist/fs';
 import { Configuration } from 'webpack-dev-server';
-import https from 'https';
 import { isHTTPS } from 'flex-dev-utils/dist/env';
+
 import { remotePluginNotFound } from '../prints';
 
 export interface Plugin {
@@ -32,14 +34,14 @@ export type OnRemotePlugins = (remotePlugins: Plugin[]) => void;
  */
 export const _getLocalPlugin = (name: string) => {
   return readPluginsJson().plugins.find((p) => p.name === name);
-}
+};
 
 /**
  * Returns local plugins from  cli/plugins.json
  * @private
  */
 export const _getLocalPlugins = (port: number, names: string[]) => {
-  const protocol = 'http' + (isHTTPS() ? 's' : '') + '://';
+  const protocol = `http${isHTTPS() ? 's' : ''}://`;
 
   return names.map((name) => {
     const match = _getLocalPlugin(name);
@@ -52,17 +54,18 @@ export const _getLocalPlugins = (port: number, names: string[]) => {
       };
     }
 
-    throw new FlexPluginError(`The plugin ${name} was not locally found. Try running \`npm install\` once in the plugin directory and try again.`);
+    throw new FlexPluginError(
+      `The plugin ${name} was not locally found. Try running \`npm install\` once in the plugin directory and try again.`,
+    );
   });
 };
 
 /**
  * Generates the response headers
  *
- * @param port  the port the browser will be running on
  * @private
  */
-export const _getHeaders = (port: number) => ({
+export const _getHeaders = () => ({
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET',
   'Access-Control-Allow-Headers': 'Content-Type, X-Flex-Version, X-Flex-JWE',
@@ -77,7 +80,7 @@ export const _getHeaders = (port: number) => ({
  * @param version   the Flex version
  */
 /* istanbul ignore next */
-export const _getRemotePlugins = (token: string, version: string | null | undefined): Promise<Plugin[]> => {
+export const _getRemotePlugins = async (token: string, version: string | null | undefined): Promise<Plugin[]> => {
   return new Promise((resolve, reject) => {
     const headers = {
       'X-Flex-JWE': token,
@@ -113,9 +116,9 @@ export const _getRemotePlugins = (token: string, version: string | null | undefi
  * @private
  */
 export const _mergePlugins = (localPlugins: Plugin[], remotePlugins: Plugin[]) => {
-  const deduped = remotePlugins.filter(r => !localPlugins.some(l => l.name === r.name));
+  const deduped = remotePlugins.filter((r) => !localPlugins.some((l) => l.name === r.name));
 
-  return [... localPlugins, ...deduped];
+  return [...localPlugins, ...deduped];
 };
 
 /**
@@ -124,9 +127,12 @@ export const _mergePlugins = (localPlugins: Plugin[], remotePlugins: Plugin[]) =
  * @param config
  * @param onRemotePlugin
  */
-export const _startServer = (plugins: StartServerPlugins, config: StartServerConfig, onRemotePlugin: OnRemotePlugins) => {
-  const responseHeaders = _getHeaders(config.port);
-
+export const _startServer = (
+  plugins: StartServerPlugins,
+  config: StartServerConfig,
+  onRemotePlugin: OnRemotePlugins,
+) => {
+  const responseHeaders = _getHeaders();
 
   return async (req: Request, res: Response) => {
     const { headers, method } = req;
@@ -152,36 +158,38 @@ export const _startServer = (plugins: StartServerPlugins, config: StartServerCon
     const localPlugins = _getLocalPlugins(config.port, plugins.local);
     const promise: Promise<Plugin[]> = hasRemotePlugin ? _getRemotePlugins(jweToken, flexVersion) : Promise.resolve([]);
 
-    return promise
-      .then(remotePlugins => {
-        if (config.remoteAll) {
-          return remotePlugins;
-        }
+    return (
+      promise
+        .then((remotePlugins) => {
+          if (config.remoteAll) {
+            return remotePlugins;
+          }
 
-        // Check that all remote plugins inputted are valid
-        const notFoundPlugins = plugins.remote.filter(plgin => !remotePlugins.find(r => r.name === plgin));
-        if (notFoundPlugins.length) {
-          remotePluginNotFound(notFoundPlugins, remotePlugins);
-          exit(1);
-        }
+          // Check that all remote plugins inputted are valid
+          const notFoundPlugins = plugins.remote.filter((plgin) => !remotePlugins.find((r) => r.name === plgin));
+          if (notFoundPlugins.length) {
+            remotePluginNotFound(notFoundPlugins, remotePlugins);
+            exit(1);
+          }
 
-        // Filter and only return the ones that are in remoteInputPlugins
-        return remotePlugins.filter(r => plugins.remote.includes(r.name))
-      })
-      // rebase will eventually get both local and remote plugins
-      .then(remotePlugins => {
-        logger.trace('Got remote plugins', remotePlugins);
+          // Filter and only return the ones that are in remoteInputPlugins
+          return remotePlugins.filter((r) => plugins.remote.includes(r.name));
+        })
+        // rebase will eventually get both local and remote plugins
+        .then((remotePlugins) => {
+          logger.trace('Got remote plugins', remotePlugins);
 
-        onRemotePlugin(remotePlugins);
-        res.writeHead(200, responseHeaders);
-        res.end(JSON.stringify(_mergePlugins(localPlugins, remotePlugins)));
-      })
-      .catch(err => {
-        res.writeHead(500, responseHeaders);
-        res.end(err);
-      });
+          onRemotePlugin(remotePlugins);
+          res.writeHead(200, responseHeaders);
+          res.end(JSON.stringify(_mergePlugins(localPlugins, remotePlugins)));
+        })
+        .catch((err) => {
+          res.writeHead(500, responseHeaders);
+          res.end(err);
+        })
+    );
   };
-}
+};
 
 /**
  * Setups up the plugin servers
@@ -190,7 +198,12 @@ export const _startServer = (plugins: StartServerPlugins, config: StartServerCon
  * @param serverConfig
  */
 /* istanbul ignore next */
-export default (plugins: StartServerPlugins, webpackConfig: Configuration, serverConfig: StartServerConfig, onRemotePlugin: OnRemotePlugins) => {
+export default (
+  plugins: StartServerPlugins,
+  webpackConfig: Configuration,
+  serverConfig: StartServerConfig,
+  onRemotePlugin: OnRemotePlugins,
+) => {
   serverConfig.port = webpackConfig.port || 3000;
 
   webpackConfig.proxy = plugins.local.reduce((proxy, name) => {
@@ -203,8 +216,8 @@ export default (plugins: StartServerPlugins, webpackConfig: Configuration, serve
         }
 
         return `http://localhost:${match.port}`;
-      }
-    }
+      },
+    };
 
     return proxy;
   }, {});
@@ -214,4 +227,4 @@ export default (plugins: StartServerPlugins, webpackConfig: Configuration, serve
     serverConfig.port = server.options.port || serverConfig.port;
     app.use('^/plugins$', _startServer(plugins, serverConfig, onRemotePlugin));
   };
-}
+};

@@ -1,17 +1,14 @@
-declare global {
-  interface Twilio {
-    Flex: {
-      Plugins: {
-        init(FlexPlugin);
-      };
-    };
-  }
-
-  interface Window {
-    appConfig?: Record<string, unknown>;
-    Twilio: Twilio;
-  }
+interface Window {
+  appConfig?: Record<string, unknown>;
 }
+
+declare const Twilio: {
+  Flex: {
+    Plugins: {
+      init(FlexPlugin);
+    };
+  };
+};
 
 declare const __FPB_PLUGIN_UNIQUE_NAME: string;
 declare const __FPB_PLUGIN_VERSION: string;

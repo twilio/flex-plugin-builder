@@ -1,4 +1,3 @@
-import { PackageDetail } from '../../utils/package';
 import * as packageUtil from '../../utils/package';
 import * as infoScript from '../info';
 import * as prints from '../../prints';
@@ -14,7 +13,7 @@ describe('info', () => {
     jest.resetModules();
   });
 
-  const foundPackage: PackageDetail = {
+  const foundPackage: packageUtil.PackageDetail = {
     name: 'found-package',
     found: true,
     package: {
@@ -23,7 +22,7 @@ describe('info', () => {
     },
   };
 
-  const notFoundPackage: PackageDetail = {
+  const notFoundPackage: packageUtil.PackageDetail = {
     name: 'not-found-package',
     found: false,
     package: {},

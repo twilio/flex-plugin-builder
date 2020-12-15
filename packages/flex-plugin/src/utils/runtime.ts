@@ -4,7 +4,7 @@
  */
 export const getRuntimeUrl = (): string => {
   if (document && document.currentScript) {
-    const pluginScript = document.currentScript;
+    const pluginScript = document.currentScript as HTMLScriptElement;
 
     // tslint:disable-next-line:no-string-literal
     if (typeof pluginScript.src === 'string') {

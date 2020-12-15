@@ -1,9 +1,10 @@
 import fs from 'fs';
 
+import * as fsScripts from 'flex-dev-utils/dist/fs';
+
 import * as preStartCheck from '../pre-start-check';
 import * as preScriptCheck from '../pre-script-check';
 import * as prints from '../../prints';
-import * as fsScripts from 'flex-dev-utils/dist/fs';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('../../prints/appConfigMissing');
@@ -17,10 +18,12 @@ describe('PreStartCheck', () => {
       nodeModulesDir: 'test-node-modules',
       appConfig: 'appConfig.js',
     },
-  }
+  };
 
   // @ts-ignore
-  const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
+  const exit = jest.spyOn(process, 'exit').mockImplementation(() => {
+    /* no-op */
+  });
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -57,9 +60,7 @@ describe('PreStartCheck', () => {
 
   describe('_checkAppConfig', () => {
     it('quit if no appConfig is found', () => {
-      const existSync = jest
-        .spyOn(fs, 'existsSync')
-        .mockReturnValue(false);
+      const existSync = jest.spyOn(fs, 'existsSync').mockReturnValue(false);
 
       preStartCheck._checkAppConfig();
 
@@ -73,9 +74,7 @@ describe('PreStartCheck', () => {
     });
 
     it('not quit if appConfig is found', () => {
-      const existSync = jest
-        .spyOn(fs, 'existsSync')
-        .mockReturnValue(true);
+      const existSync = jest.spyOn(fs, 'existsSync').mockReturnValue(true);
 
       preStartCheck._checkAppConfig();
 

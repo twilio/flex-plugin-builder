@@ -54,6 +54,7 @@
     "form-data": "^2.5.1",
     "jest": "26.5.3",
     "querystring": "^0.2.0",
+    "@jest/types": "^26.6.2",
     "react-emotion": "9.2.12"
   },
   "engines": {

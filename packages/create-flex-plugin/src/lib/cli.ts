@@ -1,8 +1,7 @@
 import yargs, { Argv, Options } from 'yargs';
-import { multilineString } from 'flex-dev-utils/dist/strings';
-import { runner } from 'flex-dev-utils';
+import { runner, exit, multilineString } from 'flex-dev-utils';
 
-import createFlexPlugin, { FlexPluginArguments } from './create-flex-plugin';
+import { FlexPluginArguments, createFlexPlugin } from './create-flex-plugin';
 
 const usage = multilineString(
   'Creates a new Twilio Flex Plugin project',
@@ -29,7 +28,8 @@ export interface CLIArguments {
 
 export default class CLI {
   public static description = usage;
-  public static flags: { [key: string]: Options; } = {
+
+  public static flags: { [key: string]: Options } = {
     typescript: {
       alias: 's',
       type: 'boolean',
@@ -74,6 +74,7 @@ export default class CLI {
       alias: 'v',
     },
   };
+
   private readonly parser: Argv<CLIArguments>;
 
   constructor(cwd?: string) {
@@ -85,12 +86,11 @@ export default class CLI {
   public parse = async (...args: string[]) => {
     const argv: CLIArguments = this.parser.parse(args);
 
-    await runner(async () => await createFlexPlugin(argv as FlexPluginArguments));
-    return process.exit(0);
-  }
+    await runner(async () => createFlexPlugin(argv as FlexPluginArguments));
+    return exit(0);
+  };
 
   private init = () => {
-    this.parser
-      .usage<any>('$0 <name>', usage, CLI.flags);
-  }
+    this.parser.usage<any>('$0 <name>', usage, CLI.flags);
+  };
 }

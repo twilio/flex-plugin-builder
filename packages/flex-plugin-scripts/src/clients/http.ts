@@ -1,9 +1,10 @@
-import axios, { AxiosInstance, AxiosRequestConfig, httpAdapter, settle } from 'flex-dev-utils/dist/axios';
 import { stringify } from 'querystring';
 import { format } from 'util';
+import { Transform } from 'stream';
+
+import axios, { AxiosInstance, AxiosRequestConfig, httpAdapter, settle } from 'flex-dev-utils/dist/axios';
 import { logger, env, Credential } from 'flex-dev-utils';
 import FormData from 'form-data';
-import { Transform } from 'stream';
 
 export type ContentType = 'application/x-www-form-urlencoded' | 'application/json';
 export interface HttpConfig {
@@ -23,26 +24,10 @@ interface UploadRequestConfig extends AxiosRequestConfig {
 }
 
 export default class Http {
-  /**
-   * Determines the content type based on file extension
-   *
-   * @param filePath  the local path to the file
-   * @returns the content type
-   */
-  public static getContentType = (filePath: string): string => {
-    const ext = filePath.split('.').pop();
-
-    if (ext === 'js') {
-      return 'application/javascript';
-    } else if (ext === 'map') {
-      return 'application/json';
-    }
-
-    return 'application/octet-stream';
-  }
-
   protected readonly client: AxiosInstance;
+
   private readonly config: HttpConfig;
+
   private readonly jsonPOST: boolean;
 
   constructor(config: HttpConfig) {
@@ -60,17 +45,35 @@ export default class Http {
     });
 
     if (config.userAgent) {
-        this.client.defaults.headers['User-Agent'] = config.userAgent;
+      this.client.defaults.headers['User-Agent'] = config.userAgent;
     }
 
     this.client.interceptors.response.use((r) => r, this.onError);
   }
 
   /**
+   * Determines the content type based on file extension
+   *
+   * @param filePath  the local path to the file
+   * @returns the content type
+   */
+  public static getContentType = (filePath: string): string => {
+    const ext = filePath.split('.').pop();
+
+    if (ext === 'js') {
+      return 'application/javascript';
+    } else if (ext === 'map') {
+      return 'application/json';
+    }
+
+    return 'application/octet-stream';
+  };
+
+  /**
    * List API endpoint; makes a GET request and returns an array of R
    * @param uri   the uri endpoint
    */
-  public list<R>(uri: string): Promise<R[]> {
+  public async list<R>(uri: string): Promise<R[]> {
     return this.get<R[]>(uri);
   }
 
@@ -78,12 +81,10 @@ export default class Http {
    * Makes a GET request to return an instance
    * @param uri   the uri endpoint
    */
-  public get<R>(uri: string): Promise<R> {
+  public async get<R>(uri: string): Promise<R> {
     logger.debug('Making GET request to %s/%s', this.config.baseURL, uri);
 
-    return this.client
-      .get(uri)
-      .then((resp) => resp.data || {});
+    return this.client.get(uri).then((resp) => resp.data || {});
   }
 
   /**
@@ -91,15 +92,13 @@ export default class Http {
    * @param uri   the uri of the endpoint
    * @param data  the data to post
    */
-  public post<R>(uri: string, data: any): Promise<R> {
+  public async post<R>(uri: string, data: any): Promise<R> {
     logger.debug('Making POST request to %s/%s with data %s', this.config.baseURL, uri, JSON.stringify(data));
     if (!this.jsonPOST) {
       data = stringify(data);
     }
 
-    return this.client
-      .post(uri, data)
-      .then((resp) => resp.data);
+    return this.client.post(uri, data).then((resp) => resp.data);
   }
 
   /**
@@ -107,11 +106,10 @@ export default class Http {
    *
    * @param uri   the uri of the endpoint
    */
-  public delete(uri: string): Promise<void> {
+  public async delete(uri: string): Promise<void> {
     logger.debug('Making DELETE request to %s/%s', this.config.baseURL, uri);
 
-    return this.client
-      .delete(uri);
+    return this.client.delete(uri);
   }
 
   /**
@@ -130,7 +128,7 @@ export default class Http {
       .post(url, formData, options)
       .then((resp) => resp.data)
       .catch(this.onError);
-  }
+  };
 
   /**
    * Create the upload configuration
@@ -144,19 +142,19 @@ export default class Http {
         username: this.config.auth.username,
         password: this.config.auth.password,
       },
-    }
+    };
     if (env.isDebug()) {
       const length = await this.getFormDataSize(formData);
-      options.adapter = (config) => {
+      options.adapter = async (config) => {
         let bytes = 0;
         const body = config.data as FormData;
         const uploadReportStream = new Transform({
           transform: (chunk: string | Buffer, _encoding, callback) => {
             bytes += chunk.length;
-            const percentage = bytes / length * 100;
+            const percentage = (bytes / length) * 100;
             logger.debug(`Uploading ${percentage.toFixed(1)}% complete`);
             callback(undefined, chunk);
-          }
+          },
         });
         if (typeof body.pipe === 'function') {
           body.pipe(uploadReportStream);
@@ -166,27 +164,29 @@ export default class Http {
         config.data = uploadReportStream;
 
         return new Promise((resolve, reject) => {
-          // @ts-ignore
-          httpAdapter(config).then(resp => settle(resolve, reject, resp)).catch(reject);
+          httpAdapter(config)
+            // @ts-ignore
+            .then((resp) => settle(resolve, reject, resp))
+            .catch(reject);
         });
-      }
+      };
     }
 
     return options;
-  }
+  };
 
   /**
    * Private error handler
    * @param err Axios error
    */
-  private onError = (err: any): Promise<any> => {
+  private onError = async (err: any): Promise<any> => {
     logger.trace('Http request failed', err);
 
     if (this.config.exitOnRejection) {
       const request = err.config || {};
       const resp = err.response || {};
-      const status = resp.status;
-      const msg = resp.data && resp.data.message || resp.data;
+      const { status } = resp;
+      const msg = (resp.data && resp.data.message) || resp.data;
       const title = 'Request %s to %s failed with status %s and message %s';
       const errMsg = format(title, request.method, request.url, status, msg);
 
@@ -194,14 +194,14 @@ export default class Http {
     } else {
       return Promise.reject(err);
     }
-  }
+  };
 
   /**
    * Calculates the {@link FormData} size
    * @param formData the formData to calculate the size of
    */
   private getFormDataSize = async (formData: FormData): Promise<number> => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       formData.getLength((err, length) => {
         if (err) {
           logger.warning('Failed to calculate upload size');
@@ -211,5 +211,5 @@ export default class Http {
         }
       });
     });
-  }
+  };
 }

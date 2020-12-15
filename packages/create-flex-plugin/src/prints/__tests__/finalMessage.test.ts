@@ -2,6 +2,7 @@ import boxen from 'flex-dev-utils/dist/boxen';
 
 import finalMessage from '../finalMessage';
 import { FlexPluginArguments } from '../../lib/create-flex-plugin';
+
 jest.mock('flex-dev-utils/dist/boxen');
 
 describe('finalMessage', () => {
@@ -20,7 +21,7 @@ describe('finalMessage', () => {
 
   it('should render an npm setup message to the console', () => {
     let message = '';
-    (boxen as any).info = jest.fn((msg) => message = msg);
+    (boxen as any).info = jest.fn((msg) => (message = msg));
 
     finalMessage(config);
 
@@ -30,9 +31,9 @@ describe('finalMessage', () => {
 
   it('should render a yarn setup message to the console', () => {
     let message = '';
-    (boxen as any).info = jest.fn((msg) => message = msg);
+    (boxen as any).info = jest.fn((msg) => (message = msg));
 
-    finalMessage({...config, yarn: true});
+    finalMessage({ ...config, yarn: true });
 
     expect(boxen.info).toHaveBeenCalledTimes(1);
     expect(message).toMatchSnapshot();
@@ -40,9 +41,9 @@ describe('finalMessage', () => {
 
   it('should render an instruction message skipping the setup step', () => {
     let message = '';
-    (boxen as any).info = jest.fn((msg) => message = msg);
+    (boxen as any).info = jest.fn((msg) => (message = msg));
 
-    finalMessage({...config, install: true});
+    finalMessage({ ...config, install: true });
 
     expect(boxen.info).toHaveBeenCalledTimes(1);
     expect(message).toMatchSnapshot();

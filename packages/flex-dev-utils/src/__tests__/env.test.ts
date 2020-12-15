@@ -176,11 +176,13 @@ describe('env', () => {
 
   describe('lifeCycle', () => {
     it('should return babel env', () => {
+      // eslint-disable-next-line camelcase
       process.env.npm_lifecycle_event = Lifecycle.Test;
       expect(env.getLifecycle()).toEqual(Lifecycle.Test);
     });
 
     it('should return true for correct lifecycle', () => {
+      // eslint-disable-next-line camelcase
       process.env.npm_lifecycle_event = Lifecycle.Build;
       expect(env.isLifecycle(Lifecycle.Build)).toEqual(true);
     });

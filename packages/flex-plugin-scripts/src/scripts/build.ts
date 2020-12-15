@@ -4,7 +4,7 @@ import { addCWDNodeModule, updateAppVersion } from 'flex-dev-utils/dist/fs';
 import { webpack, WebpackCompiler } from 'flex-plugin-webpack';
 
 import getConfiguration, { ConfigurationType } from '../config';
-import { setEnvironment } from '../index';
+import { setEnvironment } from '..';
 import { buildFailure, buildSuccessful } from '../prints';
 import run from '../utils/run';
 
@@ -26,17 +26,22 @@ export interface Bundle {
  * Builds the JS and Sourcemap bundles
  * @private
  */
-export const _handler = (resolve: Callback<BuildBundle>, reject: Callback<any>): WebpackCompiler.Handler => (err, stats) => {
+export const _handler = (resolve: Callback<BuildBundle>, reject: Callback<any>): WebpackCompiler.Handler => (
+  err,
+  stats,
+) => {
   if (err) {
-    return reject(err);
+    reject(err);
+    return;
   }
 
   const result = stats.toJson({ all: false, warnings: true, errors: true });
   if (stats.hasErrors()) {
-    return reject(result.errors);
+    reject(result.errors);
+    return;
   }
 
-  resolve( {
+  resolve({
     bundles: stats.toJson({ assets: true }).assets as Bundle[],
     warnings: result.warnings,
   });
@@ -49,8 +54,7 @@ export const _handler = (resolve: Callback<BuildBundle>, reject: Callback<any>):
 /* istanbul ignore next */
 export const _runWebpack = async (): Promise<BuildBundle> => {
   return new Promise((resolve, reject) => {
-    webpack(getConfiguration(ConfigurationType.Webpack, Environment.Production))
-      .run(_handler(resolve, reject));
+    webpack(getConfiguration(ConfigurationType.Webpack, Environment.Production)).run(_handler(resolve, reject));
   });
 };
 
@@ -84,6 +88,7 @@ const build = async (...argv: string[]) => {
   }
 };
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(build);
 
 export default build;

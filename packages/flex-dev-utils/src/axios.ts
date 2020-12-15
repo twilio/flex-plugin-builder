@@ -1,5 +1,6 @@
-import axios, { AxiosRequestConfig, AxiosInstance } from 'axios';
+/* eslint-disable import/order */
 import MockAdapter from 'axios-mock-adapter';
+import axios, { AxiosRequestConfig, AxiosInstance } from 'axios';
 
 // @ts-ignore
 import httpAdapter from 'axios/lib/adapters/http';

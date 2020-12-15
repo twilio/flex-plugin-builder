@@ -1,8 +1,9 @@
+import fs from 'fs';
+import { resolve, join } from 'path';
+
 import { logger, progress, FlexPluginError } from 'flex-dev-utils';
 import { copyTemplateDir, tmpDirSync, TmpDirResult, checkPluginConfigurationExists } from 'flex-dev-utils/dist/fs';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
-import fs from 'fs';
-import { resolve, join } from 'path';
 
 import { setupConfiguration, installDependencies, downloadFromGitHub } from './commands';
 import { CLIArguments } from './cli';
@@ -33,14 +34,16 @@ export const createFlexPlugin = async (config: FlexPluginArguments) => {
 
   // Check folder does not exist
   if (fs.existsSync(config.targetDirectory)) {
-    throw new FlexPluginError(singleLineString(
-      `Path ${logger.coloredStrings.link(config.targetDirectory)} already exists;`,
-      'please remove it and try again.',
-    ));
+    throw new FlexPluginError(
+      singleLineString(
+        `Path ${logger.coloredStrings.link(config.targetDirectory)} already exists;`,
+        'please remove it and try again.',
+      ),
+    );
   }
 
   // Setup the directories
-  if (!await _scaffold(config)) {
+  if (!(await _scaffold(config))) {
     throw new FlexPluginError('Failed to scaffold project');
   }
 
@@ -49,7 +52,7 @@ export const createFlexPlugin = async (config: FlexPluginArguments) => {
 
   // Install NPM dependencies
   if (config.install) {
-    if (!await _install(config)) {
+    if (!(await _install(config))) {
       logger.error('Failed to install dependencies. Please run `npm install` manually.');
       config.install = false;
     }
@@ -82,11 +85,7 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
 
   const promise = progress('Creating project directory', async () => {
     // This copies the core such as public/
-    await copyTemplateDir(
-      templateCorePath,
-      config.targetDirectory,
-      config,
-    );
+    await copyTemplateDir(templateCorePath, config.targetDirectory, config);
 
     // Get src directory from template URL if provided
     let srcPath = templateJsPath;
@@ -100,11 +99,7 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
     }
 
     // This copies the src/ directory
-    await copyTemplateDir(
-      srcPath,
-      config.targetDirectory,
-      config,
-    );
+    await copyTemplateDir(srcPath, config.targetDirectory, config);
 
     // Rename plugins
     if (!dirObject) {
@@ -125,9 +120,7 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
     }
   };
 
-  promise
-    .then(cleanUp)
-    .catch(cleanUp);
+  promise.then(cleanUp).catch(cleanUp);
 
   return promise;
 };

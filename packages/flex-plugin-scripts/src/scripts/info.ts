@@ -1,6 +1,6 @@
 import { logger } from 'flex-dev-utils';
-import { packagesVersions } from '../prints';
 
+import { packagesVersions } from '../prints';
 import run from '../utils/run';
 import { getPackageDetails, LIST_OF_PACKAGES } from '../utils/package';
 
@@ -17,6 +17,7 @@ const info = async () => {
   packagesVersions(found, notFound);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(info);
 
 export default info;

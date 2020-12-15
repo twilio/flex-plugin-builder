@@ -41,11 +41,11 @@ export default (devCompiler: Compiler, devConfig: Configuration, type: WebpackTy
     }
 
     const serverType = type === WebpackType.Complete ? '' : `(${type})`;
-    if (!isJavaScriptServer) {
+    if (isJavaScriptServer) {
+      logger.debug('Starting development server %s...', serverType);
+    } else {
       logger.clearTerminal();
       logger.notice('Starting development server %s...', serverType);
-    } else {
-      logger.debug('Starting development server %s...', serverType);
     }
 
     if (!isJavaScriptServer) {
