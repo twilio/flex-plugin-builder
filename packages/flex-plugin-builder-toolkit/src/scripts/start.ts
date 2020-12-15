@@ -9,6 +9,10 @@ export type StartOptions = {
   name: string;
 }
 
+/**
+ * Entry point for starting a dev-server
+ * @param options
+ */
 // @ts-ignore
 export default async function run(options: StartOptions): SpawnPromise {
   await spawn('node', [preStartCheck, '--run-script', '--core-cwd', options.cwd, '--cwd', options.cwd])

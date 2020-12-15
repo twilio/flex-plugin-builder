@@ -8,6 +8,10 @@ export type DeployOptions = {
   name: string;
 }
 
+/**
+ * Entry point for deploying a JS bundle
+ * @param options
+ */
 // @ts-ignore
 export default async function run(options: DeployOptions): SpawnPromise {
   await spawn('node', [preScriptCheck, '--run-script', '--core-cwd', options.cwd, '--cwd', options.cwd])

@@ -8,6 +8,10 @@ export type BuildOptions = {
   name: string;
 }
 
+/**
+ * Entry point for building a JS bundle
+ * @param options
+ */
 // @ts-ignore
 export default async function run(options: BuildOptions): SpawnPromise {
   await spawn('node', [preScriptCheck, '--run-script', '--core-cwd', options.cwd, '--cwd', options.cwd])
