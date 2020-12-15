@@ -1,4 +1,5 @@
 /* istanbul ignore file */
+/* eslint-disable import/no-unused-modules, @typescript-eslint/explicit-module-boundary-types */
 import { CompilerOptions, ModuleResolutionHost, ResolvedModuleWithFailedLookupLocations } from 'typescript';
 import { resolveModuleName as resolver } from 'ts-pnp';
 

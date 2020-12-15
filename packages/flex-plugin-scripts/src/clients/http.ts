@@ -92,6 +92,7 @@ export default class Http {
    * @param uri   the uri of the endpoint
    * @param data  the data to post
    */
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   public async post<R>(uri: string, data: any): Promise<R> {
     logger.debug('Making POST request to %s/%s with data %s', this.config.baseURL, uri, JSON.stringify(data));
     if (!this.jsonPOST) {

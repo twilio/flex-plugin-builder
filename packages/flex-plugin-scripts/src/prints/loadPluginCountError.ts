@@ -1,7 +1,7 @@
 import { logger } from 'flex-dev-utils';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
 
-export default (count: number) => {
+export default (count: number): void => {
   const { bold } = logger.colors;
   const { link } = logger.coloredStrings;
 

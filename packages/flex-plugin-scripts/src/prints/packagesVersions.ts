@@ -3,7 +3,7 @@ import { logger } from 'flex-dev-utils';
 import { PackageDetail } from '../utils/package';
 import instructionToReinstall from './instructionToReinstall';
 
-export default (foundPackages: PackageDetail[], notFoundPackages: PackageDetail[]) => {
+export default (foundPackages: PackageDetail[], notFoundPackages: PackageDetail[]): void => {
   const { headline } = logger.coloredStrings;
 
   logger.info('Your plugin has the following packages installed:');

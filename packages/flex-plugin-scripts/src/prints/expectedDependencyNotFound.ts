@@ -7,7 +7,7 @@ import instructionToReinstall from './instructionToReinstall';
  *
  * @param packageName the package name
  */
-export default (packageName: string) => {
+export default (packageName: string): void => {
   const nameColor = logger.coloredStrings.name;
   const flexUIName = nameColor('@twilio/flex-ui');
 

@@ -42,11 +42,11 @@ export default fs;
  * @private
  */
 /* istanbul ignore next */
-// eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
+// eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/explicit-module-boundary-types
 export const _require = (filePath: string) => require(filePath);
 
 // Set working directory
-export const _setRequirePaths = (requirePath: string) => {
+export const _setRequirePaths = (requirePath: string): void => {
   appModule.addPath(requirePath);
 
   // Now try to specifically set the node_modules path
@@ -70,7 +70,7 @@ export const readPackageJson = (filePath: string): PackageJson => {
  * @param dir   the dir
  * @param paths the paths
  */
-export const resolveRelative = (dir: string, ...paths: string[]) => {
+export const resolveRelative = (dir: string, ...paths: string[]): string => {
   if (paths.length === 0) {
     return dir;
   }
@@ -99,7 +99,7 @@ let internalCoreCwd = fs.realpathSync(process.cwd());
  * Sets the working directory
  * @param p the path to set
  */
-export const setCwd = (p: string) => {
+export const setCwd = (p: string): void => {
   internalCwd = p;
   _setRequirePaths(path.join(internalCwd, 'node_modules'));
 };
@@ -107,13 +107,13 @@ export const setCwd = (p: string) => {
 /**
  * Returns the working directory
  */
-export const getCwd = () => internalCwd;
+export const getCwd = (): string => internalCwd;
 
 /**
  * Sets the core working directory
  * @param p the path to set
  */
-export const setCoreCwd = (p: string) => {
+export const setCoreCwd = (p: string): void => {
   internalCoreCwd = p;
   _setRequirePaths(path.join(internalCoreCwd, 'node_modules'));
 };
@@ -121,7 +121,7 @@ export const setCoreCwd = (p: string) => {
 /**
  * The core cwd is the working directory of core packages such as flex-plugin-scripts and flex-plugin
  */
-export const getCoreCwd = () => internalCoreCwd;
+export const getCoreCwd = (): string => internalCoreCwd;
 
 /**
  * Reads a JSON file (Templated)
@@ -136,6 +136,7 @@ export const readJsonFile = <T>(filePath: string): T => {
  * Gets the CLI paths. This is separated out from getPaths because create-flex-plugin also needs to read it,
  * but that script will not have flex-plugin-scripts installed which would cause an exception to be thrown.
  */
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const getCliPaths = () => {
   const coreCwd = getCoreCwd();
   const coreNodeModulesDir = resolveRelative(coreCwd, 'node_modules');
@@ -152,14 +153,15 @@ export const getCliPaths = () => {
 };
 
 // Read plugins.json from Twilio CLI
-export const readPluginsJson = () => readJsonFile<CLIFlexConfiguration>(getCliPaths().pluginsJsonPath);
+export const readPluginsJson = (): CLIFlexConfiguration =>
+  readJsonFile<CLIFlexConfiguration>(getCliPaths().pluginsJsonPath);
 
 /**
  * Writes an object as a JSON string to the file
  * @param pth the path to write to
  * @param obj the object to write
  */
-export const writeJSONFile = (pth: string, obj: object) => fs.writeFileSync(pth, JSON.stringify(obj, null, 2));
+export const writeJSONFile = (pth: string, obj: object): void => fs.writeFileSync(pth, JSON.stringify(obj, null, 2));
 
 // The OS root directory
 const rootDir = os.platform() === 'win32' ? getCwd().split(path.sep)[0] : '/';
@@ -174,14 +176,14 @@ const promiseCopyTempDir = promisify(_require('copy-template-dir'));
  *
  * @param files the files to check that they exist
  */
-export const checkFilesExist = (...files: string[]) => {
+export const checkFilesExist = (...files: string[]): boolean => {
   return files.map(fs.existsSync).every((resp) => resp);
 };
 
 /**
  * Gets package.json path
  */
-export const getPackageJsonPath = () => path.join(getCwd(), 'package.json');
+export const getPackageJsonPath = (): string => path.join(getCwd(), 'package.json');
 
 /**
  * Reads app package.json from the rootDir.
@@ -195,7 +197,7 @@ export const readAppPackageJson = (): AppPackageJson => {
  *
  * @param version the new version
  */
-export const updateAppVersion = (version: string) => {
+export const updateAppVersion = (version: string): void => {
   const packageJson = readAppPackageJson();
   packageJson.version = version;
 
@@ -242,7 +244,7 @@ export const mkdirpSync = mkdirp.sync;
  * @param variables the variables
  */
 /* istanbul ignore next */
-export const copyTemplateDir = (source: string, target: string, variables: object) => {
+export const copyTemplateDir = async (source: string, target: string, variables: object): Promise<unknown> => {
   return promiseCopyTempDir(source, target, variables);
 };
 
@@ -260,14 +262,14 @@ export const rmRfSync = rimRaf.sync;
  * Builds path relative to cwd
  * @param paths  the paths
  */
-export const resolveCwd = (...paths: string[]) => resolveRelative(getCwd(), ...paths);
+export const resolveCwd = (...paths: string[]): string => resolveRelative(getCwd(), ...paths);
 
 /**
  * Finds globs in any cwd directory
  * @param dir     the cwd to check for patterns
  * @param patterns the patterns
  */
-export const findGlobsIn = (dir: string, ...patterns: string[]) => {
+export const findGlobsIn = (dir: string, ...patterns: string[]): string[] => {
   return globby.sync(patterns, { cwd: dir });
 };
 
@@ -275,7 +277,7 @@ export const findGlobsIn = (dir: string, ...patterns: string[]) => {
  * Finds globs in the src directory
  * @param patterns the patterns
  */
-export const findGlobs = (...patterns: string[]) => {
+export const findGlobs = (...patterns: string[]): string[] => {
   return findGlobsIn(path.join(getCwd(), 'src'), ...patterns);
 };
 
@@ -332,7 +334,7 @@ export const checkPluginConfigurationExists = async (
  * This is needed because we spawn different scripts when running start/build/test and so we lose
  * the original cwd directory
  */
-export const addCWDNodeModule = (...args: string[]) => {
+export const addCWDNodeModule = (...args: string[]): void => {
   const indexCoreCwd = args.indexOf('--core-cwd');
   if (indexCoreCwd !== -1) {
     const coreCwd = args[indexCoreCwd + 1];
@@ -358,7 +360,7 @@ export const addCWDNodeModule = (...args: string[]) => {
  * @param pkg the package to lookup
  */
 /* istanbul ignore next */
-export const resolveModulePath = (pkg: string, ...paths: string[]) => {
+export const resolveModulePath = (pkg: string, ...paths: string[]): string | false => {
   try {
     return require.resolve(pkg);
   } catch {
@@ -379,6 +381,7 @@ export { DirResult as TmpDirResult } from 'tmp';
 /**
  * Returns the paths to all modules and directories used in the plugin-builder
  */
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const getPaths = () => {
   const cwd = getCwd();
   const nodeModulesDir = resolveCwd('node_modules');
@@ -503,7 +506,7 @@ export const getPaths = () => {
  */
 /* istanbul ignore next */
 // eslint-disable-next-line import/no-unused-modules
-export const getDependencyVersion = (pkgName: string) => {
+export const getDependencyVersion = (pkgName: string): string => {
   try {
     return _require(`${pkgName}/package.json`).version;
   } catch {
@@ -520,7 +523,7 @@ export const getDependencyVersion = (pkgName: string) => {
  * @param name  the package
  */
 /* istanbul ignore next */
-export const getPackageVersion = (name: string) => {
+export const getPackageVersion = (name: string): string => {
   const installedPath = resolveRelative(getPaths().app.nodeModulesDir, name, 'package.json');
 
   return readPackageJson(installedPath).version;

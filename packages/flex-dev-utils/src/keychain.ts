@@ -15,12 +15,18 @@ export interface Keychain {
   setPassword: (account: string, password: string) => Promise<void>;
 }
 
+interface Keytar {
+  deletePassword: (service: string, account: string) => Promise<boolean>;
+  findCredentials: (service: string) => Promise<KeychainCredential[]>;
+  setPassword: (service: string, account: string, password: string) => Promise<void>;
+}
+
 /**
  * Keytar is required optionally and so may not exist.
  * It will throw an error if a local installation is not found.
  */
 /* istanbul ignore next */
-export const _getKeytar = () => {
+export const _getKeytar = (): Keytar => {
   try {
     // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
     return require('keytar');
@@ -42,8 +48,8 @@ export default function keychain(service: string): Keychain {
   const keytar = _getKeytar();
 
   return {
-    deletePassword: (account: string) => keytar.deletePassword(service, account),
-    findCredentials: () => keytar.findCredentials(service),
-    setPassword: (account: string, password: string) => keytar.setPassword(service, account, password),
+    deletePassword: async (account: string) => keytar.deletePassword(service, account),
+    findCredentials: async () => keytar.findCredentials(service),
+    setPassword: async (account: string, password: string) => keytar.setPassword(service, account, password),
   };
 }

@@ -9,7 +9,7 @@ export type Callback = (...argv: string[]) => void;
  * @param callback
  * @param args
  */
-export default async (callback: Callback, ...args: string[]) => {
+export default async (callback: Callback, ...args: string[]): Promise<unknown> => {
   try {
     return await callback(...args);
   } catch (e) {

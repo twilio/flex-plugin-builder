@@ -86,7 +86,7 @@ describe('github', () => {
 
   describe('downloadRepo', () => {
     it('should call _downloadDir with a templated url', async () => {
-      const _downloadDir = jest.spyOn(github, '_downloadDir').mockResolvedValue(null);
+      const _downloadDir = jest.spyOn(github, '_downloadDir').mockResolvedValue();
       const _hasTemplateDir = jest.spyOn(github, '_hasTemplateDir').mockResolvedValue(true);
 
       await github.downloadRepo(githubInfo, '/dir');
@@ -102,7 +102,7 @@ describe('github', () => {
     });
 
     it('should call _downloadDir with a normal url', async () => {
-      const _downloadDir = jest.spyOn(github, '_downloadDir').mockResolvedValue(null);
+      const _downloadDir = jest.spyOn(github, '_downloadDir').mockResolvedValue();
       const _hasTemplateDir = jest.spyOn(github, '_hasTemplateDir').mockResolvedValue(false);
 
       await github.downloadRepo(githubInfo, '/dir');

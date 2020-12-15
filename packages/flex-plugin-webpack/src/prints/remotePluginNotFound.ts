@@ -5,10 +5,10 @@ import { Plugin } from '..';
 /**
  * Error message for when a remote plugin is not found
  *
- * @param name  name of the plugin
+ * @param notFoundPlugins  name of the plugin
  * @param remotePlugins array of remote plugins
  */
-export default (notFoundPlugins: string[], remotePlugins: Plugin[]) => {
+export default (notFoundPlugins: string[], remotePlugins: Plugin[]): void => {
   logger.clearTerminal();
 
   logger.error('Server not loading because these plugins were not found remotely:');

@@ -19,11 +19,11 @@ export default class FlexPluginError extends TwilioError {
     Object.setPrototypeOf(this, FlexPluginError.prototype);
   }
 
-  public print = () => {
+  public print = (): void => {
     logger.error(this.message);
   };
 
-  public details = () => {
+  public details = (): void => {
     const { headline } = logger.coloredStrings;
     if (this.pkg) {
       const deps = this.pkg.dependencies;

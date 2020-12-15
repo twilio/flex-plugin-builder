@@ -6,7 +6,7 @@ import { printList } from 'flex-dev-utils/dist/prints';
  *
  * @param extras  any extra steps to include
  */
-export default (...extras: string[]) => {
+export default (...extras: string[]): void => {
   const nameColor = logger.coloredStrings.name;
   const { headline } = logger.coloredStrings;
 

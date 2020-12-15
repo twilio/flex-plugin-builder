@@ -30,6 +30,11 @@ export interface StartScript {
   port: number;
 }
 
+interface Packages {
+  plugins: Plugin[];
+  pkg: Record<string, string>;
+}
+
 /**
  * requires packages
  *
@@ -38,7 +43,7 @@ export interface StartScript {
  * @private
  */
 /* istanbul ignore next */
-export const _requirePackages = (pluginsPath: string, pkgPath: string) => {
+export const _requirePackages = (pluginsPath: string, pkgPath: string): Packages => {
   const plugins = require(pluginsPath) as Plugin[];
   const pkg = require(pkgPath);
 
@@ -53,7 +58,7 @@ export const _requirePackages = (pluginsPath: string, pkgPath: string) => {
  * @param port
  * @param name
  */
-export const _updatePluginPort = (port: number, name: string) => {
+export const _updatePluginPort = (port: number, name: string): void => {
   const config = readPluginsJson();
   config.plugins.forEach((plugin) => {
     if (plugin.name === name) {
@@ -123,7 +128,7 @@ export const _startDevServer = async (
  * Finds the port
  * @param args
  */
-export const findPortAvailablePort = async (...args: string[]) => {
+export const findPortAvailablePort = async (...args: string[]): Promise<number> => {
   const portIndex = args.indexOf('--port');
   return portIndex === -1
     ? findPort(getDefaultPort(process.env.PORT))
@@ -195,4 +200,5 @@ export const start = async (...args: string[]): Promise<StartScript> => {
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(start);
 
+// eslint-disable-next-line import/no-unused-modules
 export default start;

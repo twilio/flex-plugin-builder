@@ -6,7 +6,7 @@ const { link } = logger.coloredStrings;
 /**
  * Error about appConfig.js missing
  */
-export default () => {
+export default (): void => {
   const nameColor = logger.coloredStrings.name;
   const { headline } = logger.coloredStrings;
 

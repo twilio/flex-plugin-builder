@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unused-modules */
 /* istanbul ignore file */
 
 import webpack from 'webpack';

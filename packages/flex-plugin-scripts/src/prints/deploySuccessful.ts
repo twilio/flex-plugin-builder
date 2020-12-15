@@ -10,7 +10,7 @@ import { Account } from '../clients/accounts';
  * @param isPublic  whether the Asset is uploaded publicly or privately
  * @param account   the account doing the deploy
  */
-export default (url: string, isPublic: boolean, account: Account) => {
+export default (url: string, isPublic: boolean, account: Account): void => {
   const availability = isPublic ? 'publicly' : 'privately';
   const nameLogger = logger.coloredStrings.name;
   const friendlyName = account.friendly_name || account.sid;

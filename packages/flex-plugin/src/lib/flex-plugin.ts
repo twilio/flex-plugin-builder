@@ -45,7 +45,7 @@ export type PluginConstructor<T> = new () => T;
  * Plugin loader helper function
  * @param plugin
  */
-export const loadPlugin = <T extends FlexPlugin>(plugin: PluginConstructor<T>) => {
+export const loadPlugin = <T extends FlexPlugin>(plugin: PluginConstructor<T>): void => {
   if (Twilio && Twilio.Flex && Twilio.Flex.Plugins) {
     Twilio.Flex.Plugins.init(plugin);
   } else {
