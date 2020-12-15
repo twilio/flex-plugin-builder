@@ -47,17 +47,6 @@ const getEmitItem = <T extends IPCType>(type?: T, payload?: IPCPayload[T]) => ({
 const emitQueue = [getEmitItem()].slice(1);
 
 /**
- * Emits to the server
- * @param type      the event type
- * @param payload   the event payload
- * @private
- */
-export const _emitToServer = async <T extends IPCType>(type: T, payload: IPCPayload[T]) => {
-  emitQueue.push({ type, payload });
-  await _processEmitQueue();
-};
-
-/**
  * Processes the emit queue
  * @private
  */
@@ -96,6 +85,17 @@ export const _onServerMessage = (data: any) => {
  */
 export const _onClientConnected = async () => {
   _isClientConnected = true;
+  await _processEmitQueue();
+};
+
+/**
+ * Emits to the server
+ * @param type      the event type
+ * @param payload   the event payload
+ * @private
+ */
+export const _emitToServer = async <T extends IPCType>(type: T, payload: IPCPayload[T]) => {
+  emitQueue.push({ type, payload });
   await _processEmitQueue();
 };
 

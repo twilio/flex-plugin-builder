@@ -1,4 +1,20 @@
 /* eslint-disable camelcase */
+export enum FileVisibility {
+  Public = 'Public',
+  Protected = 'Protected',
+}
+
+export enum Visibility {
+  Public = 'public',
+  Protected = 'protected',
+}
+
+export enum BuildStatus {
+  Building = 'building',
+  Completed = 'completed',
+  Failed = 'failed',
+}
+
 export interface Meta<Key> {
   page: number;
   page_size: number;
@@ -92,20 +108,4 @@ export interface Runtime {
   service: Service;
   environment?: Environment;
   build?: Build;
-}
-
-export enum FileVisibility {
-  Public = 'Public',
-  Protected = 'Protected',
-}
-
-export enum Visibility {
-  Public = 'public',
-  Protected = 'protected',
-}
-
-export enum BuildStatus {
-  Building = 'building',
-  Completed = 'completed',
-  Failed = 'failed',
 }

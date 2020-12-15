@@ -33,6 +33,81 @@ const chooseAccount: Question = {
 };
 
 /**
+ * Instantiates a keychain to use
+ */
+export const _getKeychain = (): Keychain => keychain(SERVICE_NAME);
+
+/**
+ * Gets the credential service
+ * @private
+ */
+export const _getService = async (): Promise<KeychainCredential[]> => {
+  if (env.isCI()) {
+    return [];
+  }
+
+  return _getKeychain().findCredentials();
+};
+
+/**
+ * Finds the credential. If more than one credential exists, then it prompt the user to choose one.
+ *
+ * @param accountSid  optional accountSid to find
+ * @private
+ */
+export const _findCredential = async (accountSid?: string): Promise<Credential | null> => {
+  const convertCredential = (credential: KeychainCredential): Credential => ({
+    username: credential.account,
+    password: credential.password,
+  });
+
+  const credentials = await _getService();
+
+  if (accountSid) {
+    const match = credentials.find((cred) => cred.account === accountSid);
+    if (match) {
+      return convertCredential(match);
+    }
+  }
+
+  const accounts = credentials
+    .map((cred) => cred.account)
+    .filter((acc) => acc.length === 34 && (acc.substr(0, 2) === 'AC' || acc.substr(0, 2) === 'SK'));
+
+  if (credentials.length === 0) {
+    return null;
+  }
+  if (credentials.length === 1) {
+    return convertCredential(credentials[0]);
+  }
+  if (accounts.length === 0) {
+    return null;
+  }
+  /* istanbul ignore next */
+  if (accounts.length === 1) {
+    return convertCredential(credentials.find((cred) => cred.account === accounts[0]) as KeychainCredential);
+  }
+
+  const selectedAccount = await choose(chooseAccount, accounts);
+
+  return convertCredential(credentials.find((cred) => cred.account === selectedAccount) as KeychainCredential);
+};
+
+/**
+ * Saves the credential
+ *
+ * @param username   the username
+ * @param password  the password
+ * @private
+ */
+export const _saveCredential = async (username: string, password: string) => {
+  // Do not store password on CI builds
+  if (!env.isCI() && !process.env.SKIP_CREDENTIALS_SAVING) {
+    await _getKeychain().setPassword(username, password);
+  }
+};
+
+/**
  * Fetches the API Key/Secret and stores them in keychain.
  * If no credentials exists, then prompts the user to enter the credentials
  */
@@ -99,80 +174,5 @@ export const clearCredentials = async (): Promise<void> => {
 
   return Promise.resolve();
 };
-
-/**
- * Finds the credential. If more than one credential exists, then it prompt the user to choose one.
- *
- * @param accountSid  optional accountSid to find
- * @private
- */
-export const _findCredential = async (accountSid?: string): Promise<Credential | null> => {
-  const convertCredential = (credential: KeychainCredential): Credential => ({
-    username: credential.account,
-    password: credential.password,
-  });
-
-  const credentials = await _getService();
-
-  if (accountSid) {
-    const match = credentials.find((cred) => cred.account === accountSid);
-    if (match) {
-      return convertCredential(match);
-    }
-  }
-
-  const accounts = credentials
-    .map((cred) => cred.account)
-    .filter((acc) => acc.length === 34 && (acc.substr(0, 2) === 'AC' || acc.substr(0, 2) === 'SK'));
-
-  if (credentials.length === 0) {
-    return null;
-  }
-  if (credentials.length === 1) {
-    return convertCredential(credentials[0]);
-  }
-  if (accounts.length === 0) {
-    return null;
-  }
-  /* istanbul ignore next */
-  if (accounts.length === 1) {
-    return convertCredential(credentials.find((cred) => cred.account === accounts[0]) as KeychainCredential);
-  }
-
-  const selectedAccount = await choose(chooseAccount, accounts);
-
-  return convertCredential(credentials.find((cred) => cred.account === selectedAccount) as KeychainCredential);
-};
-
-/**
- * Gets the credential service
- * @private
- */
-export const _getService = async (): Promise<KeychainCredential[]> => {
-  if (env.isCI()) {
-    return [];
-  }
-
-  return _getKeychain().findCredentials();
-};
-
-/**
- * Saves the credential
- *
- * @param username   the username
- * @param password  the password
- * @private
- */
-export const _saveCredential = async (username: string, password: string) => {
-  // Do not store password on CI builds
-  if (!env.isCI() && !process.env.SKIP_CREDENTIALS_SAVING) {
-    await _getKeychain().setPassword(username, password);
-  }
-};
-
-/**
- * Instantiates a keychain to use
- */
-export const _getKeychain = (): Keychain => keychain(SERVICE_NAME);
 
 export default getCredential;

@@ -38,6 +38,7 @@ export default class BuildClient extends BaseClient {
       const { sid } = newBuild;
 
       const timeoutId = setTimeout(() => {
+        // eslint-disable-next-line no-use-before-define
         clearInterval(intervalId);
         reject('Timeout while waiting for new Twilio Runtime build status to change to complete.');
       }, BuildClient.timeoutMsec);

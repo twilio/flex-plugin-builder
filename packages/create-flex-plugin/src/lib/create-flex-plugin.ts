@@ -25,43 +25,6 @@ export interface FlexPluginArguments extends CLIArguments {
 }
 
 /**
- * Creates a Flex Plugin from the {@link FlexPluginArguments}
- * @param config {FlexPluginArguments} the configuration
- */
-export const createFlexPlugin = async (config: FlexPluginArguments) => {
-  config = await validate(config);
-  config = setupConfiguration(config);
-
-  // Check folder does not exist
-  if (fs.existsSync(config.targetDirectory)) {
-    throw new FlexPluginError(
-      singleLineString(
-        `Path ${logger.coloredStrings.link(config.targetDirectory)} already exists;`,
-        'please remove it and try again.',
-      ),
-    );
-  }
-
-  // Setup the directories
-  if (!(await _scaffold(config))) {
-    throw new FlexPluginError('Failed to scaffold project');
-  }
-
-  // Add new plugin to .twilio-cli/flex/plugins.json
-  await checkPluginConfigurationExists(config.name, config.targetDirectory);
-
-  // Install NPM dependencies
-  if (config.install) {
-    if (!(await _install(config))) {
-      logger.error('Failed to install dependencies. Please run `npm install` manually.');
-      config.install = false;
-    }
-  }
-
-  finalMessage(config);
-};
-
-/**
  * Runs the NPM Installation
  * @param config {FlexPluginArguments}  the configuration
  * @private
@@ -123,6 +86,43 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
   promise.then(cleanUp).catch(cleanUp);
 
   return promise;
+};
+
+/**
+ * Creates a Flex Plugin from the {@link FlexPluginArguments}
+ * @param config {FlexPluginArguments} the configuration
+ */
+export const createFlexPlugin = async (config: FlexPluginArguments) => {
+  config = await validate(config);
+  config = setupConfiguration(config);
+
+  // Check folder does not exist
+  if (fs.existsSync(config.targetDirectory)) {
+    throw new FlexPluginError(
+      singleLineString(
+        `Path ${logger.coloredStrings.link(config.targetDirectory)} already exists;`,
+        'please remove it and try again.',
+      ),
+    );
+  }
+
+  // Setup the directories
+  if (!(await _scaffold(config))) {
+    throw new FlexPluginError('Failed to scaffold project');
+  }
+
+  // Add new plugin to .twilio-cli/flex/plugins.json
+  await checkPluginConfigurationExists(config.name, config.targetDirectory);
+
+  // Install NPM dependencies
+  if (config.install) {
+    if (!(await _install(config))) {
+      logger.error('Failed to install dependencies. Please run `npm install` manually.');
+      config.install = false;
+    }
+  }
+
+  finalMessage(config);
 };
 
 export default createFlexPlugin;

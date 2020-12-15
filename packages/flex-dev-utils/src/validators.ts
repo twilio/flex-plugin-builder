@@ -46,6 +46,24 @@ export const validateApiKey = (str: string) => {
 };
 
 /**
+ * Validates the string is valid URL
+ *
+ * @param url {string}  the URL string to validate
+ * @return whether the URL is valid
+ * @private
+ */
+export const isValidUrl = (url: string): boolean => URL_REGEX.test(url);
+
+/**
+ * Validates the string is a GitHub URL
+ *
+ * @param url {string}  the URL string to validate
+ * @return whether the URL is GitHub
+ * @private
+ */
+export const isGitHubUrl = (url: string): boolean => GITHUB_REGEX.test(url);
+
+/**
  * Validates that the URL is a GitHub URL
  *
  * @param url the URL to validate
@@ -70,23 +88,5 @@ export const validateGitHubUrl = (url: string) => {
 export const isValidPluginName = (name: string): boolean => {
   return /^plugin-\S.*/.test(name);
 };
-
-/**
- * Validates the string is valid URL
- *
- * @param url {string}  the URL string to validate
- * @return whether the URL is valid
- * @private
- */
-export const isValidUrl = (url: string): boolean => URL_REGEX.test(url);
-
-/**
- * Validates the string is a GitHub URL
- *
- * @param url {string}  the URL string to validate
- * @return whether the URL is GitHub
- * @private
- */
-export const isGitHubUrl = (url: string): boolean => GITHUB_REGEX.test(url);
 
 export default {};

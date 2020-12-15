@@ -45,10 +45,6 @@ export default fs;
 // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
 export const _require = (filePath: string) => require(filePath);
 
-// Working directory
-let internalCwd = fs.realpathSync(process.cwd());
-let internalCoreCwd = fs.realpathSync(process.cwd());
-
 // Set working directory
 export const _setRequirePaths = (requirePath: string) => {
   appModule.addPath(requirePath);
@@ -61,6 +57,45 @@ export const _setRequirePaths = (requirePath: string) => {
 };
 
 /**
+ * Reads a JSON file
+ *
+ * @param filePath   the file path to read
+ */
+export const readPackageJson = (filePath: string): PackageJson => {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+};
+
+/**
+ * Builds path relative to the given dir
+ * @param dir   the dir
+ * @param paths the paths
+ */
+export const resolveRelative = (dir: string, ...paths: string[]) => {
+  if (paths.length === 0) {
+    return dir;
+  }
+
+  const lastElement = paths[paths.length - 1];
+  // Check if last element is an extension
+  if (lastElement.charAt(0) !== '.') {
+    return path.join(dir, ...paths);
+  }
+
+  // Only one entry as extension
+  if (paths.length === 1) {
+    return path.join(`${dir}${lastElement}`);
+  }
+  const secondLastElement = paths[paths.length - 2];
+  const remainder = paths.slice(0, paths.length - 2);
+
+  return path.join(dir, ...[...remainder, `${secondLastElement}${lastElement}`]);
+};
+
+// Working directory
+let internalCwd = fs.realpathSync(process.cwd());
+let internalCoreCwd = fs.realpathSync(process.cwd());
+
+/**
  * Sets the working directory
  * @param p the path to set
  */
@@ -68,6 +103,11 @@ export const setCwd = (p: string) => {
   internalCwd = p;
   _setRequirePaths(path.join(internalCwd, 'node_modules'));
 };
+
+/**
+ * Returns the working directory
+ */
+export const getCwd = () => internalCwd;
 
 /**
  * Sets the core working directory
@@ -78,8 +118,38 @@ export const setCoreCwd = (p: string) => {
   _setRequirePaths(path.join(internalCoreCwd, 'node_modules'));
 };
 
-// Get working directory
-export const getCwd = () => internalCwd;
+/**
+ * The core cwd is the working directory of core packages such as flex-plugin-scripts and flex-plugin
+ */
+export const getCoreCwd = () => internalCoreCwd;
+
+/**
+ * Reads a JSON file (Templated)
+ *
+ * @param filePath  the file path to read
+ */
+export const readJsonFile = <T>(filePath: string): T => {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+};
+
+/**
+ * Gets the CLI paths. This is separated out from getPaths because create-flex-plugin also needs to read it,
+ * but that script will not have flex-plugin-scripts installed which would cause an exception to be thrown.
+ */
+export const getCliPaths = () => {
+  const coreCwd = getCoreCwd();
+  const coreNodeModulesDir = resolveRelative(coreCwd, 'node_modules');
+  const homeDir = homedir();
+  const cliDir = resolveRelative(homeDir, '/.twilio-cli');
+  const flexDir = resolveRelative(cliDir, 'flex');
+
+  return {
+    dir: cliDir,
+    nodeModulesDir: coreNodeModulesDir,
+    flexDir,
+    pluginsJsonPath: resolveRelative(flexDir, 'plugins.json'),
+  };
+};
 
 // Read plugins.json from Twilio CLI
 export const readPluginsJson = () => readJsonFile<CLIFlexConfiguration>(getCliPaths().pluginsJsonPath);
@@ -90,9 +160,6 @@ export const readPluginsJson = () => readJsonFile<CLIFlexConfiguration>(getCliPa
  * @param obj the object to write
  */
 export const writeJSONFile = (pth: string, obj: object) => fs.writeFileSync(pth, JSON.stringify(obj, null, 2));
-
-// The core cwd is the working directory of core packages such as flex-plugin-scripts and flex-plugin
-export const getCoreCwd = () => internalCoreCwd;
 
 // The OS root directory
 const rootDir = os.platform() === 'win32' ? getCwd().split(path.sep)[0] : '/';
@@ -117,6 +184,13 @@ export const checkFilesExist = (...files: string[]) => {
 export const getPackageJsonPath = () => path.join(getCwd(), 'package.json');
 
 /**
+ * Reads app package.json from the rootDir.
+ */
+export const readAppPackageJson = (): AppPackageJson => {
+  return readPackageJson(getPackageJsonPath()) as AppPackageJson;
+};
+
+/**
  * Updates the package.json version field
  *
  * @param version the new version
@@ -126,42 +200,6 @@ export const updateAppVersion = (version: string) => {
   packageJson.version = version;
 
   fs.writeFileSync(getPackageJsonPath(), JSON.stringify(packageJson, null, 2));
-};
-
-/**
- * Reads app package.json from the rootDir.
- */
-export const readAppPackageJson = (): AppPackageJson => {
-  return readPackageJson(getPackageJsonPath()) as AppPackageJson;
-};
-
-/**
- * Reads a JSON file
- *
- * @param filePath   the file path to read
- */
-export const readPackageJson = (filePath: string): PackageJson => {
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-};
-
-/**
- * Reads a JSON file (Templated)
- *
- * @param filePath  the file path to read
- */
-export const readJsonFile = <T>(filePath: string): T => {
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-};
-
-/**
- * Returns the package.json version field of the package
- * @param name  the package
- */
-/* istanbul ignore next */
-export const getPackageVersion = (name: string) => {
-  const installedPath = resolveRelative(getPaths().app.nodeModulesDir, name, 'package.json');
-
-  return readPackageJson(installedPath).version;
 };
 
 /**
@@ -219,54 +257,18 @@ export const tmpDirSync = tmp.dirSync;
 export const rmRfSync = rimRaf.sync;
 
 /**
- * Returns the version of the dependency that is installed in node_modules
- * @param pkgName  the package name
- * @return the version of the package installed
- */
-/* istanbul ignore next */
-// eslint-disable-next-line import/no-unused-modules
-export const getDependencyVersion = (pkgName: string) => {
-  try {
-    return _require(`${pkgName}/package.json`).version;
-  } catch {
-    try {
-      return _require(resolveRelative(getPaths().app.nodeModulesDir, pkgName, 'package.json')).version;
-    } catch {
-      return _require(resolveRelative(getPaths().scripts.nodeModulesDir, pkgName, 'package.json')).version;
-    }
-  }
-};
-
-/**
  * Builds path relative to cwd
  * @param paths  the paths
  */
 export const resolveCwd = (...paths: string[]) => resolveRelative(getCwd(), ...paths);
 
 /**
- * Builds path relative to the given dir
- * @param dir   the dir
- * @param paths the paths
+ * Finds globs in any cwd directory
+ * @param dir     the cwd to check for patterns
+ * @param patterns the patterns
  */
-export const resolveRelative = (dir: string, ...paths: string[]) => {
-  if (paths.length === 0) {
-    return dir;
-  }
-
-  const lastElement = paths[paths.length - 1];
-  // Check if last element is an extension
-  if (lastElement.charAt(0) !== '.') {
-    return path.join(dir, ...paths);
-  }
-
-  // Only one entry as extension
-  if (paths.length === 1) {
-    return path.join(`${dir}${lastElement}`);
-  }
-  const secondLastElement = paths[paths.length - 2];
-  const remainder = paths.slice(0, paths.length - 2);
-
-  return path.join(dir, ...[...remainder, `${secondLastElement}${lastElement}`]);
+export const findGlobsIn = (dir: string, ...patterns: string[]) => {
+  return globby.sync(patterns, { cwd: dir });
 };
 
 /**
@@ -326,15 +328,6 @@ export const checkPluginConfigurationExists = async (
 };
 
 /**
- * Finds globs in any cwd directory
- * @param dir     the cwd to check for patterns
- * @param patterns the patterns
- */
-export const findGlobsIn = (dir: string, ...patterns: string[]) => {
-  return globby.sync(patterns, { cwd: dir });
-};
-
-/**
  * Adds the node_modules to the app module.
  * This is needed because we spawn different scripts when running start/build/test and so we lose
  * the original cwd directory
@@ -384,24 +377,8 @@ export const resolveModulePath = (pkg: string, ...paths: string[]) => {
 export { DirResult as TmpDirResult } from 'tmp';
 
 /**
- * Gets the CLI paths. This is separated out from getPaths because create-flex-plugin also needs to read it,
- * but that script will not have flex-plugin-scripts installed which would cause an exception to be thrown.
+ * Returns the paths to all modules and directories used in the plugin-builder
  */
-export const getCliPaths = () => {
-  const coreCwd = getCoreCwd();
-  const coreNodeModulesDir = resolveRelative(coreCwd, 'node_modules');
-  const homeDir = homedir();
-  const cliDir = resolveRelative(homeDir, '/.twilio-cli');
-  const flexDir = resolveRelative(cliDir, 'flex');
-
-  return {
-    dir: cliDir,
-    nodeModulesDir: coreNodeModulesDir,
-    flexDir,
-    pluginsJsonPath: resolveRelative(flexDir, 'plugins.json'),
-  };
-};
-
 export const getPaths = () => {
   const cwd = getCwd();
   const nodeModulesDir = resolveCwd('node_modules');
@@ -517,4 +494,34 @@ export const getPaths = () => {
     assetBaseUrlTemplate: `/plugins/${pkgName}/%PLUGIN_VERSION%`,
     extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
   };
+};
+
+/**
+ * Returns the version of the dependency that is installed in node_modules
+ * @param pkgName  the package name
+ * @return the version of the package installed
+ */
+/* istanbul ignore next */
+// eslint-disable-next-line import/no-unused-modules
+export const getDependencyVersion = (pkgName: string) => {
+  try {
+    return _require(`${pkgName}/package.json`).version;
+  } catch {
+    try {
+      return _require(resolveRelative(getPaths().app.nodeModulesDir, pkgName, 'package.json')).version;
+    } catch {
+      return _require(resolveRelative(getPaths().scripts.nodeModulesDir, pkgName, 'package.json')).version;
+    }
+  }
+};
+
+/**
+ * Returns the package.json version field of the package
+ * @param name  the package
+ */
+/* istanbul ignore next */
+export const getPackageVersion = (name: string) => {
+  const installedPath = resolveRelative(getPaths().app.nodeModulesDir, name, 'package.json');
+
+  return readPackageJson(installedPath).version;
 };
