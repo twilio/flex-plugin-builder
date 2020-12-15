@@ -5,10 +5,8 @@ import webpack from 'webpack';
 import ToJsonOutput = webpack.Stats.ToJsonOutput;
 
 interface Client {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  on(event: string, callback: (...args: any[]) => void): Client;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  emit(event: string, value?: any): Client;
+  on(event: string, callback: (...args: unknown[]) => void): Client;
+  emit(event: string, value?: unknown): Client;
 }
 
 export enum IPCType {
