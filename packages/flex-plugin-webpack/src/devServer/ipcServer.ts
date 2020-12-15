@@ -32,9 +32,9 @@ ipc.config.silent = !env.isDebug();
 let _isServerRunning: boolean = false;
 let _isClientConnected: boolean = false;
 /* istanbul ignore next */
-export const isServerRunning = () => _isServerRunning;
+export const isServerRunning = (): boolean => _isServerRunning;
 /* istanbul ignore next */
-export const isClientConnected = () => _isClientConnected;
+export const isClientConnected = (): boolean => _isClientConnected;
 
 let clientNode: Client | null = null;
 const messageCallbacks: MessageCallbacks = {};
@@ -51,7 +51,7 @@ const emitQueue = [getEmitItem()].slice(1);
  * @private
  */
 /* istanbul ignore next */
-export const _processEmitQueue = async () => {
+export const _processEmitQueue = async (): Promise<void> => {
   if (!isClientConnected()) {
     return;
   }
@@ -66,7 +66,7 @@ export const _processEmitQueue = async () => {
  * @param data
  * @private
  */
-export const _onServerMessage = (data: any) => {
+export const _onServerMessage = (data: { payload: unknown; type: string }): void => {
   if (!data.type) {
     logger.error('IPC got an unexpected message: ', data);
     return;
@@ -83,7 +83,7 @@ export const _onServerMessage = (data: any) => {
  * Processes on client connected
  * @private
  */
-export const _onClientConnected = async () => {
+export const _onClientConnected = async (): Promise<void> => {
   _isClientConnected = true;
   await _processEmitQueue();
 };
@@ -94,7 +94,7 @@ export const _onClientConnected = async () => {
  * @param payload   the event payload
  * @private
  */
-export const _emitToServer = async <T extends IPCType>(type: T, payload: IPCPayload[T]) => {
+export const _emitToServer = async <T extends IPCType>(type: T, payload: IPCPayload[T]): Promise<void> => {
   emitQueue.push({ type, payload });
   await _processEmitQueue();
 };
@@ -102,7 +102,7 @@ export const _emitToServer = async <T extends IPCType>(type: T, payload: IPCPayl
 /**
  * Starts an IPC server
  */
-export const startIPCServer = () => {
+export const startIPCServer = (): void => {
   if (isServerRunning()) {
     return;
   }
@@ -116,7 +116,7 @@ export const startIPCServer = () => {
 /**
  * Starts an IPC Client
  */
-export const startIPCClient = () => {
+export const startIPCClient = (): void => {
   if (isClientConnected()) {
     return;
   }
@@ -133,7 +133,7 @@ export const startIPCClient = () => {
  * @param callback
  */
 /* istanbul ignore next */
-export const onIPCServerMessage = <T extends IPCType>(type: T, callback: MessageCallback<T>) => {
+export const onIPCServerMessage = <T extends IPCType>(type: T, callback: MessageCallback<T>): void => {
   if (!(type in messageCallbacks)) {
     messageCallbacks[type as IPCType] = [];
   }
@@ -145,5 +145,5 @@ export const onIPCServerMessage = <T extends IPCType>(type: T, callback: Message
  * Emits a compilation complete event
  * @param payload
  */
-export const emitCompileComplete = async (payload: OnCompileCompletePayload) =>
+export const emitCompileComplete = async (payload: OnCompileCompletePayload): Promise<void> =>
   _emitToServer(IPCType.onCompileComplete, payload);

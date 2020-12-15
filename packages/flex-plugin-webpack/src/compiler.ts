@@ -16,7 +16,7 @@ import { devServerSuccessful } from './prints';
 import CompilerHooks = webpack.compilation.CompilerHooks;
 import ToJsonOutput = webpack.Stats.ToJsonOutput;
 
-export interface ErrorsAndWarnings {
+interface ErrorsAndWarnings {
   errors: string[];
   warnings: string[];
 }

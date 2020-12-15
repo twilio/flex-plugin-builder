@@ -7,7 +7,7 @@ const GITHUB_FEATURE_REQUEST = 'https://bit.ly/2UMdbbj';
  * Logs the error line ; tries to parse and print useful information based on the error
  * @param error the error line
  */
-const logError = (error: string) => {
+const logError = (error: string): void => {
   logger.info(error);
 
   if (error.indexOf('You may need an appropriate loader') !== -1) {
@@ -20,7 +20,7 @@ const logError = (error: string) => {
 /**
  * Prints the errors when a build has failed to compile
  */
-export default (errors: any[]) => {
+export default (errors: any[]): void => {
   errors = errors || [];
   if (!errors.length) {
     errors = [errors];

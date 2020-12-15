@@ -80,7 +80,7 @@ const spawnScript = async (...argv: string[]): Promise<void> => {
  * Sets the environment variables from the argv command line
  * @param argv
  */
-export const setEnvironment = (...argv: string[]) => {
+export const setEnvironment = (...argv: string[]): void => {
   if (argv.includes('--quiet')) {
     env.setQuiet();
   }

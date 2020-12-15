@@ -83,11 +83,11 @@ export default class CLI {
     this.init();
   }
 
-  public parse = async (...args: string[]) => {
+  public parse = async (...args: string[]): Promise<void> => {
     const argv: CLIArguments = this.parser.parse(args);
 
     await runner(async () => createFlexPlugin(argv as FlexPluginArguments));
-    return exit(0);
+    exit(0);
   };
 
   private init = () => {

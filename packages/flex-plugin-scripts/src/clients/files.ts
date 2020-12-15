@@ -38,7 +38,12 @@ export default abstract class FilesClient extends BaseClient {
    * @param isProtected   whether to upload this file as Public or Protected
    */
   /* istanbul ignore next */
-  public upload = async (friendlyName: string, uri: string, localFilePath: string, isProtected: boolean = true) => {
+  public upload = async (
+    friendlyName: string,
+    uri: string,
+    localFilePath: string,
+    isProtected: boolean = true,
+  ): Promise<File> => {
     const file = await this._create(friendlyName);
 
     const contentConfig = {

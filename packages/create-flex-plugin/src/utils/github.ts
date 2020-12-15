@@ -48,7 +48,7 @@ export const ERROR_BRANCH_MASTER_MAIN = 'Could not find branch main or master on
  * @param hasTemplateDir {boolean} whether the GitHub repo has a template directory
  * @private
  */
-export const _getBaseRegex = (info: GitHubInfo, hasTemplateDir: boolean) => {
+export const _getBaseRegex = (info: GitHubInfo, hasTemplateDir: boolean): string => {
   const baseRegex = `\/${info.owner}\/${info.repo}\/${info.ref}\/`;
   if (hasTemplateDir) {
     return `${baseRegex}template\/`;
@@ -62,7 +62,7 @@ export const _getBaseRegex = (info: GitHubInfo, hasTemplateDir: boolean) => {
  * @param info {GitHubInfo}  the {@link GitHubInfo} information
  * @private
  */
-export const _hasTemplateDir = async (info: GitHubInfo) => {
+export const _hasTemplateDir = async (info: GitHubInfo): Promise<boolean> => {
   const url = `https://api.github.com/repos/${info.owner}/${info.repo}/contents?ref=${info.ref}`;
 
   return axios
@@ -78,7 +78,7 @@ export const _hasTemplateDir = async (info: GitHubInfo) => {
  * @param output {string}   the output path
  * @private
  */
-export const _downloadFile = async (url: string, output: string) => {
+export const _downloadFile = async (url: string, output: string): Promise<void> => {
   const config: AxiosRequestConfig = {
     url,
     responseType: 'arraybuffer',
@@ -99,7 +99,7 @@ export const _downloadFile = async (url: string, output: string) => {
  * @param baseRegex {String} the base path regex
  * @private
  */
-export const _downloadDir = async (url: string, dir: string, baseRegex: string): Promise<null> => {
+export const _downloadDir = async (url: string, dir: string, baseRegex: string): Promise<void> => {
   return axios
     .get<GitHubContent[]>(url)
     .then((resp) => resp.data)
@@ -123,9 +123,8 @@ export const _downloadDir = async (url: string, dir: string, baseRegex: string):
         return _downloadFile(content.download_url, output);
       });
 
-      return Promise.all(promises);
-    })
-    .then(() => null);
+      await Promise.all(promises);
+    });
 };
 
 /**
@@ -175,7 +174,7 @@ export const parseGitHubUrl = async (url: string): Promise<GitHubInfo> => {
  * @param dir {string}      the directory to download the content to
  * @return null
  */
-export const downloadRepo = async (info: GitHubInfo, dir: string) => {
+export const downloadRepo = async (info: GitHubInfo, dir: string): Promise<void> => {
   const hasTemplateDir = await _hasTemplateDir(info);
 
   const url = hasTemplateDir

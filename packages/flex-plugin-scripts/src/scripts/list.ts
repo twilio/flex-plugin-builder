@@ -18,7 +18,7 @@ export type Order = 'desc' | 'asc';
  * @param order         the order of versions. This can be desc or asc
  * @private
  */
-export const _doList = async (visibilities: Visibility[], order: Order = 'asc') => {
+export const _doList = async (visibilities: Visibility[], order: Order = 'asc'): Promise<void> => {
   logger.info('Fetching all available versions of plugin %s', getPaths().app.name);
 
   const credentials = await getCredential();
@@ -48,7 +48,7 @@ export const _doList = async (visibilities: Visibility[], order: Order = 'asc') 
  *
  * @param argv
  */
-const list = async (...argv: string[]) => {
+const list = async (...argv: string[]): Promise<void> => {
   logger.debug('Listing plugin versions');
 
   const publicOnly = argv.includes('--public-only');
@@ -75,4 +75,5 @@ const list = async (...argv: string[]) => {
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(list);
 
+// eslint-disable-next-line import/no-unused-modules
 export default list;

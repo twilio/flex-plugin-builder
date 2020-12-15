@@ -14,6 +14,8 @@ marked.setOptions({
  *
  * @param filePath  path to markdown file
  */
-export const render = (filePath: string) => pipe(filePath, readFileSync, marked, logger.info);
+// eslint-disable-next-line import/no-unused-modules
+export const render = (filePath: string): void => pipe(filePath, readFileSync, marked, logger.info);
 
+// eslint-disable-next-line import/no-unused-modules
 export default marked;

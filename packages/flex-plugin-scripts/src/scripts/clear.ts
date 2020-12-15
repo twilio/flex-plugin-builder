@@ -6,7 +6,7 @@ import run from '../utils/run';
 /**
  * Clears the environment
  */
-const clear = async () => {
+const clear = async (): Promise<void> => {
   logger.info('Clearing caches and stored credentials');
 
   await progress('Removing stored credentials', async () => clearCredentials());
@@ -19,4 +19,5 @@ const clear = async () => {
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(clear);
 
+// eslint-disable-next-line import/no-unused-modules
 export default clear;

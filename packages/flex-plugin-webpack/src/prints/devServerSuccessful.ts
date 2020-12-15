@@ -18,7 +18,7 @@ export default (
   localPlugins: string[],
   remotePlugins: Plugin[],
   hasRemote: boolean,
-) => {
+): void => {
   logger.success('Compiled successfully!');
 
   logger.newline();

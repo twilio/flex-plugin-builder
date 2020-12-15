@@ -9,7 +9,7 @@ export default class PluginsApiClient extends BaseClient {
     super(auth, PluginsApiClient.getBaseUrl());
   }
 
-  public static getBaseUrl = () => {
+  public static getBaseUrl = (): string => {
     return `${BaseClient.getBaseUrl('flex-api', 'v1')}/PluginService`;
   };
 

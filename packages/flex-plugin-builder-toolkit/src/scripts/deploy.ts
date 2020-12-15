@@ -3,6 +3,7 @@ import { spawn, SpawnPromise } from 'flex-dev-utils';
 const deployScriptPath = require.resolve('flex-plugin-scripts/dist/scripts/deploy');
 const preScriptCheck = require.resolve('flex-plugin-scripts/dist/scripts/pre-script-check');
 
+// eslint-disable-next-line import/no-unused-modules
 export type DeployOptions = {
   cwd: string;
   name: string;

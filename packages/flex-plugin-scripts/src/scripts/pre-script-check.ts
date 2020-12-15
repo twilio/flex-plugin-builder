@@ -43,13 +43,14 @@ export const flags = [FLAG_MULTI_PLUGINS];
  * Returns true if there are any .d.ts/.ts/.tsx files
  */
 /* istanbul ignore next */
-export const _hasTypescriptFiles = () => findGlobs('**/*.(ts|tsx)', '!**/node_modules', '!**/*.d.ts').length !== 0;
+export const _hasTypescriptFiles = (): boolean =>
+  findGlobs('**/*.(ts|tsx)', '!**/node_modules', '!**/*.d.ts').length !== 0;
 
 /**
  * Validates the TypeScript project
  * @private
  */
-export const _validateTypescriptProject = () => {
+export const _validateTypescriptProject = (): void => {
   if (!_hasTypescriptFiles()) {
     return;
   }
@@ -80,7 +81,12 @@ export const _validateTypescriptProject = () => {
  * @param name        the package to check
  * @private
  */
-export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, allowReact: boolean, name: string) => {
+export const _verifyPackageVersion = (
+  flexUIPkg: Package,
+  allowSkip: boolean,
+  allowReact: boolean,
+  name: string,
+): void => {
   const expectedDependency = flexUIPkg.dependencies[name];
   const supportsUnbundled = semver.satisfies(flexUIPkg.version, '>=1.19.0');
   if (!expectedDependency) {
@@ -120,7 +126,7 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, al
  * @private
  */
 /* istanbul ignore next */
-export const _checkExternalDepsVersions = (allowSkip: boolean, allowReact: boolean) => {
+export const _checkExternalDepsVersions = (allowSkip: boolean, allowReact: boolean): void => {
   const flexUIPkg = _require(getPaths().app.flexUIPkgPath);
 
   PackagesToVerify.forEach((name) => _verifyPackageVersion(flexUIPkg, allowSkip, allowReact, name));
@@ -146,7 +152,7 @@ export const _readIndexPage = (): string => {
  * You can only have one plugin per JS bundle
  * @private
  */
-export const _checkPluginCount = () => {
+export const _checkPluginCount = (): void => {
   const content = _readIndexPage();
   const match = content.match(/loadPlugin/g);
   if (!match || match.length === 0) {
@@ -167,7 +173,7 @@ export const _checkPluginCount = () => {
  * @param args  the CLI args
  * @private
  */
-export const _setPluginDir = (...args: string[]) => {
+export const _setPluginDir = (...args: string[]): void => {
   if (!checkFilesExist(getCliPaths().pluginsJsonPath)) {
     return;
   }
@@ -183,7 +189,7 @@ export const _setPluginDir = (...args: string[]) => {
 /**
  * Runs pre-start/build checks
  */
-const preScriptCheck = async (...args: string[]) => {
+const preScriptCheck = async (...args: string[]): Promise<void> => {
   logger.debug('Checking Flex plugin project directory');
 
   addCWDNodeModule(...args);
@@ -205,4 +211,5 @@ const preScriptCheck = async (...args: string[]) => {
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(preScriptCheck);
 
+// eslint-disable-next-line import/no-unused-modules
 export default preScriptCheck;

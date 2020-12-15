@@ -9,7 +9,7 @@ import { multilineString } from './strings';
  *
  * @param lines the lines to print
  */
-export const printList = (...lines: string[]) => {
+export const printList = (...lines: string[]): void => {
   const digitColor = logger.coloredStrings.digit;
 
   lines = lines.map((line, index) => `\t ${digitColor((index + 1).toString())}. ${line}`);

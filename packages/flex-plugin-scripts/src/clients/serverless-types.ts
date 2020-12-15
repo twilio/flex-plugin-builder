@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+/* eslint-disable camelcase, import/no-unused-modules */
 export enum FileVisibility {
   Public = 'Public',
   Protected = 'Protected',

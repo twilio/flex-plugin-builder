@@ -2,7 +2,7 @@ import https from 'https';
 
 import { logger, FlexPluginError, exit } from 'flex-dev-utils';
 import { Request, Response } from 'express-serve-static-core';
-import { readPluginsJson } from 'flex-dev-utils/dist/fs';
+import { FlexConfigurationPlugin, readPluginsJson } from 'flex-dev-utils/dist/fs';
 import { Configuration } from 'webpack-dev-server';
 import { isHTTPS } from 'flex-dev-utils/dist/env';
 
@@ -32,15 +32,17 @@ export type OnRemotePlugins = (remotePlugins: Plugin[]) => void;
  * @param name  the plugin name
  * @private
  */
-export const _getLocalPlugin = (name: string) => {
-  return readPluginsJson().plugins.find((p) => p.name === name);
+// eslint-disable-next-line import/no-unused-modules
+export const _getLocalPlugin = (name: string): FlexConfigurationPlugin | undefined => {
+  return readPluginsJson().plugins.find((p: FlexConfigurationPlugin) => p.name === name);
 };
 
 /**
  * Returns local plugins from  cli/plugins.json
  * @private
  */
-export const _getLocalPlugins = (port: number, names: string[]) => {
+// eslint-disable-next-line import/no-unused-modules
+export const _getLocalPlugins = (port: number, names: string[]): Plugin[] => {
   const protocol = `http${isHTTPS() ? 's' : ''}://`;
 
   return names.map((name) => {
@@ -65,7 +67,8 @@ export const _getLocalPlugins = (port: number, names: string[]) => {
  *
  * @private
  */
-export const _getHeaders = () => ({
+// eslint-disable-next-line import/no-unused-modules
+export const _getHeaders = (): Record<string, string> => ({
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET',
   'Access-Control-Allow-Headers': 'Content-Type, X-Flex-Version, X-Flex-JWE',
@@ -80,6 +83,7 @@ export const _getHeaders = () => ({
  * @param version   the Flex version
  */
 /* istanbul ignore next */
+// eslint-disable-next-line import/no-unused-modules
 export const _getRemotePlugins = async (token: string, version: string | null | undefined): Promise<Plugin[]> => {
   return new Promise((resolve, reject) => {
     const headers = {
@@ -115,7 +119,8 @@ export const _getRemotePlugins = async (token: string, version: string | null | 
  * @param remotePlugins  the lost of remote plugins
  * @private
  */
-export const _mergePlugins = (localPlugins: Plugin[], remotePlugins: Plugin[]) => {
+// eslint-disable-next-line import/no-unused-modules
+export const _mergePlugins = (localPlugins: Plugin[], remotePlugins: Plugin[]): Plugin[] => {
   const deduped = remotePlugins.filter((r) => !localPlugins.some((l) => l.name === r.name));
 
   return [...localPlugins, ...deduped];
@@ -127,6 +132,7 @@ export const _mergePlugins = (localPlugins: Plugin[], remotePlugins: Plugin[]) =
  * @param config
  * @param onRemotePlugin
  */
+// eslint-disable-next-line import/no-unused-modules, @typescript-eslint/explicit-module-boundary-types
 export const _startServer = (
   plugins: StartServerPlugins,
   config: StartServerConfig,
@@ -134,7 +140,7 @@ export const _startServer = (
 ) => {
   const responseHeaders = _getHeaders();
 
-  return async (req: Request, res: Response) => {
+  return async (req: Request, res: Response): Promise<void> => {
     const { headers, method } = req;
 
     if (method === 'OPTIONS') {
@@ -203,7 +209,7 @@ export default (
   webpackConfig: Configuration,
   serverConfig: StartServerConfig,
   onRemotePlugin: OnRemotePlugins,
-) => {
+): void => {
   serverConfig.port = webpackConfig.port || 3000;
 
   webpackConfig.proxy = plugins.local.reduce((proxy, name) => {

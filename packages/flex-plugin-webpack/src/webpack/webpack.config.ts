@@ -17,6 +17,7 @@ import webpack, {
   Loader,
   Plugin,
   Resolve,
+  RuleSetRule,
   SourceMapDevToolPlugin,
 } from 'webpack';
 import DotenvWebpackPlugin from 'dotenv-webpack';
@@ -90,7 +91,7 @@ const _getBabelLoader = (isProd: boolean) => ({
  * @private
  */
 /* istanbul ignore next */
-export const _getImageLoader = () => ({
+export const _getImageLoader = (): RuleSetRule => ({
   test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
   loader: require.resolve('url-loader'),
   options: {
@@ -103,7 +104,7 @@ export const _getImageLoader = () => ({
  * @param isProd  whether this is a production build
  * @private
  */
-export const _getStyleLoaders = (isProd: boolean) => {
+export const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
   /**
    * Gets the loader for the given style
    * @param options the options

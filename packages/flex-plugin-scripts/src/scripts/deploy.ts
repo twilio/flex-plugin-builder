@@ -38,7 +38,7 @@ export interface DeployResult {
  * @param baseUrl   the baseURL of the file
  * @param build     the existing build
  */
-export const _verifyPath = (baseUrl: string, build: Build) => {
+export const _verifyPath = (baseUrl: string, build: Build): boolean => {
   const bundlePath = `${baseUrl}/bundle.js`;
   const sourceMapPath = `${baseUrl}/bundle.js.map`;
 
@@ -57,7 +57,11 @@ export const _verifyPath = (baseUrl: string, build: Build) => {
  * @param allowReact    whether this deploy supports unbundled React
  * @private
  */
-export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: UIDependencies, allowReact: boolean) => {
+export const _verifyFlexUIConfiguration = async (
+  flexUI: string,
+  dependencies: UIDependencies,
+  allowReact: boolean,
+): Promise<void> => {
   const coerced = semver.coerce(flexUI);
   if (!allowReact) {
     return;
@@ -107,7 +111,7 @@ export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: U
  * @param credentials the {@link Credential}
  * @private
  */
-export const _getAccount = async (runtime: Runtime, credentials: Credential) => {
+export const _getAccount = async (runtime: Runtime, credentials: Credential): Promise<{ sid: string }> => {
   const accountClient = new AccountsClient(credentials);
 
   if (credentials.username.startsWith('AC')) {
@@ -256,7 +260,7 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
   };
 };
 
-const deploy = async (...argv: string[]) => {
+const deploy = async (...argv: string[]): Promise<DeployResult> => {
   setEnvironment(...argv);
   logger.debug('Deploying Flex plugin');
 
@@ -295,4 +299,5 @@ const deploy = async (...argv: string[]) => {
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(deploy);
 
+// eslint-disable-next-line import/no-unused-modules
 export default deploy;

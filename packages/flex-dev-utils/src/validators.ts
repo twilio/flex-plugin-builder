@@ -9,14 +9,14 @@ const GITHUB_REGEX = /github\.com/;
  *
  * @param input the input to validate
  */
-export const isInputNotEmpty = (input: string) => input && input.length > 0;
+export const isInputNotEmpty = (input: string): boolean => Boolean(input && input.length > 0);
 
 /**
  * Validates that the accountSid is valid
  *
  * @param str the accountSid
  */
-export const validateAccountSid = (str: string) => {
+export const validateAccountSid = (str: string): string | boolean => {
   if (!isInputNotEmpty(str)) {
     return false;
   }
@@ -33,7 +33,7 @@ export const validateAccountSid = (str: string) => {
  *
  * @param str the apiKey
  */
-export const validateApiKey = (str: string) => {
+export const validateApiKey = (str: string): string | boolean => {
   if (!isInputNotEmpty(str)) {
     return false;
   }
@@ -68,7 +68,7 @@ export const isGitHubUrl = (url: string): boolean => GITHUB_REGEX.test(url);
  *
  * @param url the URL to validate
  */
-export const validateGitHubUrl = (url: string) => {
+export const validateGitHubUrl = (url: string): string | boolean => {
   if (!isValidUrl(url)) {
     return 'Please enter a valid URL';
   }

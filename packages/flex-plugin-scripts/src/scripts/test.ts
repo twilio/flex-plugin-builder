@@ -11,7 +11,7 @@ export const DEFAULT_JEST_ENV = 'jsdom';
  * Validates that this is Jest test framework and that all dependencies are installed.
  * @private
  */
-export const _validateJest = () => {
+export const _validateJest = (): void => {
   if (!checkFilesExist(getPaths().app.jestConfigPath)) {
     return;
   }
@@ -27,7 +27,7 @@ export const _validateJest = () => {
  * @param args  the args
  * @private
  */
-export const _parseArgs = (...args: string[]) => {
+export const _parseArgs = (...args: string[]): { jestEnv: string; cleanArgs: string[] } => {
   const cleanArgs: string[] = [];
   let jestEnv = DEFAULT_JEST_ENV;
   let skipNext = false;
@@ -59,7 +59,7 @@ export const _parseArgs = (...args: string[]) => {
 /**
  * Runs Jest tests
  */
-const test = async (...args: string[]) => {
+const test = async (...args: string[]): Promise<void> => {
   logger.debug('Running tests');
 
   addCWDNodeModule();
@@ -81,4 +81,5 @@ const test = async (...args: string[]) => {
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(test);
 
+// eslint-disable-next-line import/no-unused-modules
 export default test;

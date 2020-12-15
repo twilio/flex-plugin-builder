@@ -3,6 +3,7 @@ import { spawn, SpawnPromise } from 'flex-dev-utils';
 const buildScriptPath = require.resolve('flex-plugin-scripts/dist/scripts/build');
 const preScriptCheck = require.resolve('flex-plugin-scripts/dist/scripts/pre-script-check');
 
+// eslint-disable-next-line import/no-unused-modules
 export type BuildOptions = {
   cwd: string;
   name: string;

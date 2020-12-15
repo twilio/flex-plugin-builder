@@ -4,7 +4,7 @@
  * @param exitCode  the exitCode
  * @param args      the process argument
  */
-const exit = (exitCode: number, args: string[] = []) => {
+const exit = (exitCode: number, args: string[] = []): void => {
   // Exit if not an embedded script
   if (!args.includes('--no-process-exit')) {
     // eslint-disable-next-line no-process-exit

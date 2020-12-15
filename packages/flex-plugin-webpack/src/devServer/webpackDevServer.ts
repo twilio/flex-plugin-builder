@@ -13,7 +13,7 @@ const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
  * @param devConfig the dev {@link Configuration}
  * @param type the {@link WebpackType}
  */
-export default (devCompiler: Compiler, devConfig: Configuration, type: WebpackType) => {
+export default (devCompiler: Compiler, devConfig: Configuration, type: WebpackType): void => {
   const port = env.getPort();
   const { local } = getLocalAndNetworkUrls(port);
   const isJavaScriptServer = type === WebpackType.JavaScript;

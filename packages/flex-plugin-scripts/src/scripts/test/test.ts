@@ -11,7 +11,7 @@ import getConfiguration, { ConfigurationType } from '../../config';
  * @param args
  */
 /* istanbul ignore next */
-export default async (env: string, ...args: string[]) => {
+export default async (env: string, ...args: string[]): Promise<void> => {
   const config = getConfiguration(ConfigurationType.Jest, Environment.Test);
   const runArgs: string[] = [...args];
 

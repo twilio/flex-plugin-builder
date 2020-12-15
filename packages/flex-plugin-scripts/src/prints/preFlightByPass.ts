@@ -6,7 +6,7 @@ import { multilineString } from 'flex-dev-utils/dist/strings';
  *
  * @param skip  whether SKIP_PREFLIGHT_CHECK is already set
  */
-export default (skip: boolean) => {
+export default (skip: boolean): void => {
   if (skip) {
     logger.warning('SKIP_PREFLIGHT_CHECK=true is used and the warning is ignored; your script will continue.');
   } else {

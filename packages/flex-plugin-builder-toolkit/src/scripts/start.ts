@@ -4,6 +4,7 @@ const startScriptPath = require.resolve('flex-plugin-scripts/dist/scripts/start'
 const preStartCheck = require.resolve('flex-plugin-scripts/dist/scripts/pre-start-check');
 const preScriptCheck = require.resolve('flex-plugin-scripts/dist/scripts/pre-script-check');
 
+// eslint-disable-next-line import/no-unused-modules
 export type StartOptions = {
   cwd: string;
   name: string;

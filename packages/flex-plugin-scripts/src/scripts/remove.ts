@@ -42,7 +42,7 @@ export const _getRuntime = async (credentials: Credential): Promise<Runtime> => 
  * Performs the delete action
  * @private
  */
-export const _doRemove = async () => {
+export const _doRemove = async (): Promise<void> => {
   const pluginName = logger.colors.blue(getPaths().app.name);
   const credentials = await getCredential();
   const runtime = await _getRuntime(credentials);
@@ -65,7 +65,7 @@ export const _doRemove = async () => {
 /**
  * Removes the plugin by deleting it's associated Environment
  */
-const remove = async () => {
+const remove = async (): Promise<void> => {
   logger.debug('Removing plugin');
 
   const pluginName = logger.colors.blue(getPaths().app.name);
@@ -83,4 +83,5 @@ const remove = async () => {
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(remove);
 
+// eslint-disable-next-line import/no-unused-modules
 export default remove;

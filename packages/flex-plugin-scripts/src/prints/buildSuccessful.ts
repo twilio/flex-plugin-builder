@@ -7,7 +7,7 @@ import { Bundle } from '../scripts/build';
 /**
  * Prints the successful message when a build has successfully compiled
  */
-export default (bundles: Bundle[], warnings?: string[]) => {
+export default (bundles: Bundle[], warnings?: string[]): void => {
   if (warnings && warnings.length) {
     const pkgName = logger.colors.yellow.bold(getPaths().app.name);
     logger.error(`Plugin ${pkgName} was successfully compiled with some warnings.`);

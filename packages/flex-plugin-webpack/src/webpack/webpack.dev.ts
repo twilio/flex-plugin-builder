@@ -9,6 +9,7 @@ import { WebpackType } from '..';
  * Returns the base {@link Configuration}
  * @private
  */
+// eslint-disable-next-line import/no-unused-modules
 export const _getBase = (): Configuration => {
   const { local } = getLocalAndNetworkUrls(env.getPort());
 
@@ -26,6 +27,7 @@ export const _getBase = (): Configuration => {
  * Returns the {@link Configuration} for static type
  * @private
  */
+// eslint-disable-next-line import/no-unused-modules
 export const _getStaticConfiguration = (config: Configuration): Configuration => {
   config.contentBase = [getPaths().app.publicDir, getPaths().scripts.devAssetsDir];
   config.contentBasePublicPath = '/';
@@ -43,6 +45,7 @@ export const _getStaticConfiguration = (config: Configuration): Configuration =>
  * Returns the {@link Configuration} for JS type
  * @private
  */
+// eslint-disable-next-line import/no-unused-modules
 export const _getJavaScriptConfiguration = (config: Configuration): Configuration => {
   const socket = env.getWSSocket();
   config.injectClient = false;
@@ -64,7 +67,7 @@ export const _getJavaScriptConfiguration = (config: Configuration): Configuratio
  * Generates a webpack-dev configuration
  */
 /* istanbul ignore next */
-export default (type: WebpackType) => {
+export default (type: WebpackType): Configuration => {
   const config = _getBase();
 
   if (type === WebpackType.Static) {

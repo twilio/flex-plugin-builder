@@ -23,7 +23,7 @@ export const _checkAppConfig = (): void => {
 /**
  * Runs pre-start/build checks
  */
-const preScriptCheck = async (...args: string[]) => {
+const preScriptCheck = async (...args: string[]): Promise<void> => {
   logger.debug('Checking Flex plugin project directory');
 
   addCWDNodeModule(...args);
@@ -35,4 +35,5 @@ const preScriptCheck = async (...args: string[]) => {
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(preScriptCheck);
 
+// eslint-disable-next-line import/no-unused-modules
 export default preScriptCheck;

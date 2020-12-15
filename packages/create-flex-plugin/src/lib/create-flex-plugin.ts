@@ -92,7 +92,7 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
  * Creates a Flex Plugin from the {@link FlexPluginArguments}
  * @param config {FlexPluginArguments} the configuration
  */
-export const createFlexPlugin = async (config: FlexPluginArguments) => {
+export const createFlexPlugin = async (config: FlexPluginArguments): Promise<void> => {
   config = await validate(config);
   config = setupConfiguration(config);
 

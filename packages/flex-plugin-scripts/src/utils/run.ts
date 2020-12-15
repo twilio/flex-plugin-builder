@@ -6,7 +6,7 @@ import { Callback } from 'flex-dev-utils/dist/runner';
  *
  * @param callback
  */
-export default async (callback: Callback) => {
+export default async (callback: Callback): Promise<void> => {
   if (process.argv.includes('--run-script')) {
     await runner(callback, ...process.argv.splice(2));
   }

@@ -100,7 +100,7 @@ export const _findCredential = async (accountSid?: string): Promise<Credential |
  * @param password  the password
  * @private
  */
-export const _saveCredential = async (username: string, password: string) => {
+export const _saveCredential = async (username: string, password: string): Promise<void> => {
   // Do not store password on CI builds
   if (!env.isCI() && !process.env.SKIP_CREDENTIALS_SAVING) {
     await _getKeychain().setPassword(username, password);

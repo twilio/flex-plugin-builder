@@ -26,6 +26,7 @@ interface BuildBundle {
  * Builds the JS and Sourcemap bundles
  * @private
  */
+// eslint-disable-next-line import/no-unused-modules
 export const _handler = (resolve: Callback<BuildBundle>, reject: Callback<any>): WebpackCompiler.Handler => (
   err,
   stats,
@@ -52,6 +53,7 @@ export const _handler = (resolve: Callback<BuildBundle>, reject: Callback<any>):
  * @private
  */
 /* istanbul ignore next */
+// eslint-disable-next-line import/no-unused-modules
 export const _runWebpack = async (): Promise<BuildBundle> => {
   return new Promise((resolve, reject) => {
     webpack(getConfiguration(ConfigurationType.Webpack, Environment.Production)).run(_handler(resolve, reject));
@@ -61,7 +63,7 @@ export const _runWebpack = async (): Promise<BuildBundle> => {
 /**
  * Builds the bundle
  */
-const build = async (...argv: string[]) => {
+const build = async (...argv: string[]): Promise<void> => {
   setEnvironment(...argv);
   logger.debug('Building Flex plugin bundle');
 
@@ -91,4 +93,5 @@ const build = async (...argv: string[]) => {
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(build);
 
+// eslint-disable-next-line import/no-unused-modules
 export default build;

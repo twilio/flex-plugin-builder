@@ -19,7 +19,7 @@ const warningMsg = 'You plugin does not follow SemVer versioning; the list below
  * @param versions    the list of versions
  * @param order       the order to display the result
  */
-export default (domainName: string, versions: AssetVersion[], order: Order) => {
+export default (domainName: string, versions: AssetVersion[], order: Order): void => {
   const list: DisplayList[] = versions.map((version) => {
     const match = version.path.match(VERSION_MATCH_REGEX);
 

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unused-modules */
 import { join } from 'path';
 
 import { InitialOptions } from '@jest/types/build/Config';

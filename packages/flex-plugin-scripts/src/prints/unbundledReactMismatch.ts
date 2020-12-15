@@ -11,7 +11,7 @@ import preFlightByPass from './preFlightByPass';
  * @param version         the installed version
  * @param skip            whether the developer is opting to skip
  */
-export default (flexUIVersion: string, packageName: string, version: string, skip: boolean) => {
+export default (flexUIVersion: string, packageName: string, version: string, skip: boolean): void => {
   const nameColor = logger.coloredStrings.name;
   const { headline } = logger.coloredStrings;
 
