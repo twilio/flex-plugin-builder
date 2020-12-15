@@ -7,24 +7,42 @@ node_js:
   - 'node'
   - 'lts/*'
 
+notifications:
+  slack: $SLACK_TOKEN
+
 before_install:
   - sudo apt-get update
   - sudo apt-get install -y libsecret-1-dev
 
 before_script:
-  - npm install
+  - npm install --no-package-lock
   - NODE_OPTIONS="--max-old-space-size=8192"
 
 script:
   - npm run lint
   - CI= npm run test:ci
+  - npm run build
 
 after_success:
   - codecov --token="$CODECOV_TOKEN"
 
+before_deploy:
+  - npm config set access public
+  - npm config set registry https://registry.npmjs.org
+  - npm set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
+
+deploy:
+  provider: script
+  script: "npm run publish"
+  skip_cleanup: true
+  on:
+    tags: true
+    branch: main
+    repo: twilio/flex-plugin-builder
+    node_js: '10'
+
 branches:
-  except:
-  - /^v\d+\.\d+\.\d+$/
   only:
-  - main
-  - /v\d-beta/
+    - main
+    - /v\d-beta/
+    - /^v\d+\.\d+\.\d+.*$/
