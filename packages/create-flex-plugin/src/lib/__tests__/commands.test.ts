@@ -102,7 +102,7 @@ describe('commands', () => {
         ref: 'ref',
       };
       const parseGitHubUrl = jest.spyOn(github, 'parseGitHubUrl').mockResolvedValue(info);
-      const downloadRepo = jest.spyOn(github, 'downloadRepo').mockResolvedValue(null);
+      const downloadRepo = jest.spyOn(github, 'downloadRepo').mockResolvedValue();
 
       await commands.downloadFromGitHub('the-url', 'the-dir');
 
