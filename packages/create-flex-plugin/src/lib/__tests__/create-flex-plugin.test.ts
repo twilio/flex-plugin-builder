@@ -1,11 +1,10 @@
 import fs from 'fs';
-import { logger, FlexPluginError } from 'flex-dev-utils';
-import { rmRfSync } from 'flex-dev-utils/dist/fs';
 
-import { FlexPluginArguments } from '../create-flex-plugin';
+import { logger, FlexPluginError } from 'flex-dev-utils';
+import * as fsScripts from 'flex-dev-utils/dist/fs';
+
 import * as createFlexPluginScripts from '../create-flex-plugin';
 import * as commands from '../commands';
-import * as fsScripts from 'flex-dev-utils/dist/fs';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('../../prints/finalMessage');
@@ -17,7 +16,7 @@ describe('create-flex-plugin', () => {
 
   const clearDir = () => {
     if (fs.existsSync(pluginName)) {
-      rmRfSync(pluginName);
+      fsScripts.rmRfSync(pluginName);
     }
   };
 
@@ -39,7 +38,7 @@ describe('create-flex-plugin', () => {
         name: pluginName,
         accountSid,
         targetDirectory: pluginTargetDirectory,
-      } as FlexPluginArguments;
+      } as createFlexPluginScripts.FlexPluginArguments;
       await createFlexPluginScripts.default(config);
 
       expect(checkPluginConfigurationExists).toHaveBeenCalledTimes(1);
@@ -47,27 +46,24 @@ describe('create-flex-plugin', () => {
     });
 
     it('should not install any dependency by default', async () => {
-      const installDependencies = jest
-        .spyOn(commands, 'installDependencies');
+      const installDependencies = jest.spyOn(commands, 'installDependencies');
 
       await createFlexPluginScripts.default({
         name: pluginName,
         accountSid,
-      } as FlexPluginArguments);
+      } as createFlexPluginScripts.FlexPluginArguments);
 
       expect(installDependencies).not.toHaveBeenCalled();
     });
 
     it('should install the dependencies if specified', async () => {
-      const installDependencies = jest
-        .spyOn(commands, 'installDependencies')
-        .mockResolvedValue('');
+      const installDependencies = jest.spyOn(commands, 'installDependencies').mockResolvedValue('');
 
       const config = {
         name: pluginName,
         accountSid,
         install: true,
-      } as FlexPluginArguments;
+      } as createFlexPluginScripts.FlexPluginArguments;
       await createFlexPluginScripts.default(config);
 
       expect(installDependencies).toHaveBeenCalledTimes(1);
@@ -82,7 +78,7 @@ describe('create-flex-plugin', () => {
         name: pluginName,
         accountSid,
         targetDirectory: '/tmp',
-      } as FlexPluginArguments;
+      } as createFlexPluginScripts.FlexPluginArguments;
 
       try {
         await createFlexPluginScripts.default(config);
@@ -100,14 +96,13 @@ describe('create-flex-plugin', () => {
 
     it('should quit if scaffolding fails', async (done) => {
       const existsSync = jest.spyOn(fs, 'existsSync').mockReturnValue(false);
-      const scaffold = jest.spyOn(createFlexPluginScripts, '_scaffold')
-        .mockResolvedValue(false);
+      const scaffold = jest.spyOn(createFlexPluginScripts, '_scaffold').mockResolvedValue(false);
 
       const config = {
         name: pluginName,
         accountSid,
         targetDirectory: '/tmp',
-      } as FlexPluginArguments;
+      } as createFlexPluginScripts.FlexPluginArguments;
 
       try {
         await createFlexPluginScripts.default(config);
@@ -126,15 +121,13 @@ describe('create-flex-plugin', () => {
 
     it('should warn if installation fails', async () => {
       const scaffold = jest.spyOn(createFlexPluginScripts, '_scaffold');
-      const install = jest
-        .spyOn(createFlexPluginScripts, '_install')
-        .mockResolvedValue(false);
+      const install = jest.spyOn(createFlexPluginScripts, '_install').mockResolvedValue(false);
 
       const config = {
         name: pluginName,
         accountSid,
         install: true,
-      } as FlexPluginArguments;
+      } as createFlexPluginScripts.FlexPluginArguments;
 
       await createFlexPluginScripts.default(config);
 
@@ -145,6 +138,54 @@ describe('create-flex-plugin', () => {
 
       scaffold.mockRestore();
       install.mockRestore();
+    });
+  });
+
+  describe('_scaffold', () => {
+    it('should use typescript', async () => {
+      const config = {
+        name: pluginName,
+        accountSid,
+        install: true,
+        typescript: true,
+        targetDirectory: '',
+      } as createFlexPluginScripts.FlexPluginArguments;
+
+      const copyTemplateDir = jest.spyOn(fsScripts, 'copyTemplateDir').mockReturnThis();
+      jest.spyOn(fs, 'renameSync').mockReturnThis();
+      const downloadFromGitHub = jest.spyOn(commands, 'downloadFromGitHub').mockReturnThis();
+
+      await createFlexPluginScripts._scaffold(config);
+      expect(downloadFromGitHub).not.toHaveBeenCalled();
+      expect(copyTemplateDir).toHaveBeenCalledTimes(2);
+      expect(copyTemplateDir).toHaveBeenCalledWith(
+        expect.stringContaining('templates/ts'),
+        expect.anything(),
+        expect.anything(),
+      );
+    });
+
+    it('should use template', async () => {
+      const config = {
+        name: pluginName,
+        accountSid,
+        install: true,
+        template: 'the-template',
+        targetDirectory: '',
+      } as createFlexPluginScripts.FlexPluginArguments;
+
+      const copyTemplateDir = jest.spyOn(fsScripts, 'copyTemplateDir').mockReturnThis();
+      jest.spyOn(fs, 'renameSync').mockReturnThis();
+      const downloadFromGitHub = jest.spyOn(commands, 'downloadFromGitHub').mockReturnThis();
+
+      await createFlexPluginScripts._scaffold(config);
+      expect(copyTemplateDir).toHaveBeenCalledTimes(2);
+      expect(downloadFromGitHub).toHaveBeenCalledTimes(1);
+      expect(copyTemplateDir).not.toHaveBeenCalledWith(
+        expect.stringContaining('templates/ts'),
+        expect.anything(),
+        expect.anything(),
+      );
     });
   });
 });

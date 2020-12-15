@@ -1,4 +1,3 @@
-import { GitHubInfo } from '../../utils/github';
 import * as commands from '../commands';
 import { FlexPluginArguments } from '../create-flex-plugin';
 import * as github from '../../utils/github';
@@ -6,11 +5,10 @@ import * as github from '../../utils/github';
 jest.mock('flex-dev-utils/dist/spawn');
 
 // tslint:disable
-const spawn = require('flex-dev-utils').spawn;
+const { spawn } = require('flex-dev-utils');
 // tslint:enable
 
 describe('commands', () => {
-
   beforeEach(() => {
     jest.resetAllMocks();
     jest.resetModules();
@@ -89,7 +87,7 @@ describe('commands', () => {
     });
 
     it('name should be set to empty string', () => {
-      const config = { } as FlexPluginArguments;
+      const config = {} as FlexPluginArguments;
 
       const result = commands.setupConfiguration(config);
       expect(result.pluginClassName).toEqual('Plugin');
@@ -98,17 +96,13 @@ describe('commands', () => {
 
   describe('downloadFromGitHub', () => {
     it('should download from GitHub', async () => {
-      const info: GitHubInfo = {
+      const info: github.GitHubInfo = {
         owner: 'twilio',
         repo: 'twilio-repo',
         ref: 'ref',
       };
-      const parseGitHubUrl = jest
-        .spyOn(github, 'parseGitHubUrl')
-        .mockResolvedValue(info);
-      const downloadRepo = jest
-        .spyOn(github, 'downloadRepo')
-        .mockResolvedValue(null);
+      const parseGitHubUrl = jest.spyOn(github, 'parseGitHubUrl').mockResolvedValue(info);
+      const downloadRepo = jest.spyOn(github, 'downloadRepo').mockResolvedValue(null);
 
       await commands.downloadFromGitHub('the-url', 'the-dir');
 

@@ -1,4 +1,5 @@
 import marked from 'marked';
+
 import logger from '../logger';
 
 const readFileSync = jest.fn();
@@ -9,9 +10,9 @@ jest.mock('../fs', () => ({
   readFileSync,
 }));
 
-// tslint:disable
+/* eslint-disable */
 const markedScript = require('../marked');
-// tslint:enable
+/* eslint-enable */
 
 describe('marked', () => {
   beforeEach(() => {

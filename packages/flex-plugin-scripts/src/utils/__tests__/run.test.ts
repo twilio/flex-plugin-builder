@@ -1,12 +1,15 @@
 import { logger, FlexPluginError } from 'flex-dev-utils';
 import * as fsScripts from 'flex-dev-utils/dist/fs';
+
 import * as run from '../run';
 
 jest.mock('flex-dev-utils/dist/logger');
 
 describe('run', () => {
   // @ts-ignore
-  const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
+  const exit = jest.spyOn(process, 'exit').mockImplementation(() => {
+    /* no-op */
+  });
   const OLD_ENV = process.env;
   const OLD_ARGV = process.argv;
   jest.spyOn(fsScripts, 'readAppPackageJson').mockReturnValue({
@@ -23,7 +26,7 @@ describe('run', () => {
     jest.resetModules();
 
     process.env = { ...OLD_ENV };
-    process.argv = [ ...OLD_ARGV ];
+    process.argv = [...OLD_ARGV];
   });
 
   it('should not run', async () => {

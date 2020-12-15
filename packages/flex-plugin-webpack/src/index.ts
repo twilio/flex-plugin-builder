@@ -22,5 +22,5 @@ export {
   IPCType,
   onIPCServerMessage,
   startIPCClient,
-  startIPCServer
+  startIPCServer,
 } from './devServer/ipcServer';

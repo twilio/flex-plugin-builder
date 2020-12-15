@@ -1,3 +1,6 @@
+import { copyFileSync, readFileSync } from 'fs';
+import { join, basename } from 'path';
+
 import { env, logger, semver, FlexPluginError, exit } from 'flex-dev-utils';
 import {
   checkFilesExist,
@@ -12,8 +15,7 @@ import {
   setCwd,
   getCliPaths,
 } from 'flex-dev-utils/dist/fs';
-import { copyFileSync, readFileSync } from 'fs';
-import { join, basename } from 'path';
+
 import {
   unbundledReactMismatch,
   versionMismatch,
@@ -31,10 +33,7 @@ interface Package {
 
 const extensions = ['js', 'jsx', 'ts', 'tsx'];
 
-const PackagesToVerify = [
-  'react',
-  'react-dom',
-];
+const PackagesToVerify = ['react', 'react-dom'];
 
 export const FLAG_MULTI_PLUGINS = '--multi-plugins-pilot';
 
@@ -101,7 +100,8 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, al
   if (!expectedDependency) {
     expectedDependencyNotFound(name);
 
-    return exit(1);
+    exit(1);
+    return;
   }
 
   // @ts-ignore
@@ -120,9 +120,8 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, al
       versionMismatch(name, installedVersion, requiredVersion, allowSkip);
     }
 
-
     if (!allowSkip) {
-      return exit(1);
+      exit(1);
     }
   }
 };
@@ -134,15 +133,13 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, al
 /* istanbul ignore next */
 export const _readIndexPage = (): string => {
   const srcIndexPath = join(getCwd(), 'src', 'index');
-  const match = extensions
-    .map(ext => `${srcIndexPath}.${ext}`)
-    .find(file => checkFilesExist(file));
+  const match = extensions.map((ext) => `${srcIndexPath}.${ext}`).find((file) => checkFilesExist(file));
   if (match) {
     return readFileSync(match, 'utf8');
   }
 
   throw new FlexPluginError('No index file was found in your src directory');
-}
+};
 
 /**
  * Checks how many plugins this single JS bundle is exporting
@@ -155,12 +152,13 @@ export const _checkPluginCount = () => {
   if (!match || match.length === 0) {
     loadPluginCountError(0);
 
-    return process.exit(1);
+    exit(1);
+    return;
   }
   if (match.length > 1) {
     loadPluginCountError(match.length);
 
-    return process.exit(1);
+    exit(1);
   }
 };
 
@@ -180,7 +178,7 @@ export const _setPluginDir = (...args: string[]) => {
   if (plugin && checkFilesExist(plugin.dir)) {
     setCwd(plugin.dir);
   }
-}
+};
 
 /**
  * Runs pre-start/build checks
@@ -191,7 +189,11 @@ const preScriptCheck = async (...args: string[]) => {
   addCWDNodeModule(...args);
 
   _setPluginDir(...args);
-  const resetPluginDirectory = await checkPluginConfigurationExists(basename(process.cwd()), process.cwd(), args.includes(FLAG_MULTI_PLUGINS));
+  const resetPluginDirectory = await checkPluginConfigurationExists(
+    basename(process.cwd()),
+    process.cwd(),
+    args.includes(FLAG_MULTI_PLUGINS),
+  );
   if (resetPluginDirectory) {
     _setPluginDir(...args);
   }
@@ -200,6 +202,7 @@ const preScriptCheck = async (...args: string[]) => {
   _validateTypescriptProject();
 };
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(preScriptCheck);
 
 export default preScriptCheck;

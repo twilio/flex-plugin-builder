@@ -24,7 +24,7 @@ describe('BuildClient', () => {
       const sid = 'ZE00000000000000000000000000000000';
 
       try {
-        // tslint:disable-next-line
+        // eslint-disable-next-line no-new
         new BuildClient(auth, sid);
       } catch (e) {
         expect(e.message).toContain('not valid');

@@ -1,4 +1,6 @@
+/* eslint-disable camelcase */
 import { Credential } from 'flex-dev-utils';
+
 import BaseClient from '../baseClient';
 import ConfigurationClient from '../configurations';
 
@@ -199,7 +201,7 @@ describe('ConfigurationClient', () => {
         ui_version: '',
       };
 
-      const get = jest.spyOn(client, 'get').mockResolvedValue(config);
+      jest.spyOn(client, 'get').mockResolvedValue(config);
       const dependencies = await client.getUIDependencies();
       expect(dependencies).toEqual({});
     });

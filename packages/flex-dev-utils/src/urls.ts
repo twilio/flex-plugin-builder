@@ -1,6 +1,8 @@
 import url from 'url';
-import address from 'address';
 import net from 'net';
+
+import address from 'address';
+
 import { isHTTPS } from './env';
 
 export interface ServiceUrl {
@@ -44,7 +46,7 @@ export const findPort = async (startPort: number = 3000): Promise<number> => {
     await Promise.all([_findPort(startPort)]);
     return startPort;
   } catch (e) {
-    return await findPort(startPort + 1);
+    return findPort(startPort + 1);
   }
 };
 
@@ -82,7 +84,6 @@ export const getLocalAndNetworkUrls = (port: number): InternalServiceUrls => {
   };
 };
 
-
 /**
  * Finds whether the port is available
  *
@@ -90,12 +91,14 @@ export const getLocalAndNetworkUrls = (port: number): InternalServiceUrls => {
  * @private
  */
 /* istanbul ignore next */
-const _findPort = (port: number) => {
+const _findPort = async (port: number) => {
   return new Promise((resolve, reject) => {
     const server = net.createConnection({ port });
 
-    // If we can connect, port is not free
-    // If we cannot connect (i.e. on('error')), then port is free
+    /*
+     * If we can connect, port is not free
+     * If we cannot connect (i.e. on('error')), then port is free
+     */
     server
       .on('connect', () => {
         server.end();

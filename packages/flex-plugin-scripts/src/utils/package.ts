@@ -1,21 +1,11 @@
-import { resolveModulePath } from 'flex-dev-utils/dist/fs';
 import { join } from 'path';
 
-export const FLEX_PACKAGES: string[] = [
-  '@twilio/flex-ui',
-  'flex-plugin-scripts',
-  'flex-plugin',
-  'flex-dev-utils',
-];
+import { resolveModulePath } from 'flex-dev-utils/dist/fs';
+
+export const FLEX_PACKAGES: string[] = ['@twilio/flex-ui', 'flex-plugin-scripts', 'flex-plugin', 'flex-dev-utils'];
 
 /* istanbul ignore next */
-export const LIST_OF_PACKAGES: string[] = [
-  ...FLEX_PACKAGES,
-  'react',
-  'react-dom',
-  'redux',
-  'react-redux',
-];
+export const LIST_OF_PACKAGES: string[] = [...FLEX_PACKAGES, 'react', 'react-dom', 'redux', 'react-redux'];
 
 export interface PackageDetail {
   name: string;
@@ -31,24 +21,23 @@ export interface PackageDetail {
  */
 /* istanbul ignore next */
 export const getPackageDetails = (packages: string[]): PackageDetail[] => {
-    return packages
-        .map((name) => {
-            const detail: PackageDetail = {
-                name,
-                found: false,
-                package: {},
-            };
+  return packages.map((name) => {
+    const detail: PackageDetail = {
+      name,
+      found: false,
+      package: {},
+    };
 
-            try {
-                const resolvedPath = resolveModulePath(join(name, 'package.json'));
-                if (resolvedPath) {
-                    detail.package = require(resolvedPath);
-                    detail.found = true;
-                }
-            } catch (e) {
-                detail.found = false;
-            }
+    try {
+      const resolvedPath = resolveModulePath(join(name, 'package.json'));
+      if (resolvedPath) {
+        detail.package = require(resolvedPath);
+        detail.found = true;
+      }
+    } catch (e) {
+      detail.found = false;
+    }
 
-            return detail;
-        });
+    return detail;
+  });
 };

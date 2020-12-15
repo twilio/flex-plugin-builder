@@ -1,5 +1,7 @@
+/* eslint-disable camelcase */
 import { FlexPluginError } from 'flex-dev-utils';
 import * as fsScript from 'flex-dev-utils/dist/fs';
+
 import { Visibility } from '../../clients/serverless-types';
 import * as listScript from '../list';
 
@@ -32,7 +34,9 @@ describe('list', () => {
 
   describe('main script', () => {
     // @ts-ignore
-    const doList = jest.spyOn(listScript, '_doList').mockImplementation(() => { /* no-op */ });
+    const doList = jest.spyOn(listScript, '_doList').mockImplementation(() => {
+      /* no-op */
+    });
 
     afterAll(() => {
       doList.mockRestore();
@@ -80,7 +84,9 @@ describe('list', () => {
 
   describe('_doList', () => {
     // @ts-ignore
-    const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
+    const exit = jest.spyOn(process, 'exit').mockImplementation(() => {
+      /* no-op */
+    });
     const publicVersion = {
       path: '/plugins/plugin-test/0.1.0/bundle.js',
       visibility: 'public',

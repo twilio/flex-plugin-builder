@@ -9,13 +9,14 @@ import run from '../utils/run';
 const clear = async () => {
   logger.info('Clearing caches and stored credentials');
 
-  await progress('Removing stored credentials', async () => await clearCredentials());
+  await progress('Removing stored credentials', async () => clearCredentials());
 
   logger.newline();
   logger.info('✨  Successfully cleared all caches and stored credentials');
   logger.newline();
 };
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(clear);
 
 export default clear;

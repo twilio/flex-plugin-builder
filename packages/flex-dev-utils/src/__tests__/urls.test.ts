@@ -1,5 +1,6 @@
-import * as urls from '../urls';
 import address from 'address';
+
+import * as urls from '../urls';
 
 jest.mock('address');
 

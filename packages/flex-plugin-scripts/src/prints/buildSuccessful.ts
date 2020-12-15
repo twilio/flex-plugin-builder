@@ -1,7 +1,8 @@
 import { env, logger } from 'flex-dev-utils';
 import { Lifecycle } from 'flex-dev-utils/dist/env';
-import { Bundle } from '../scripts/build';
 import { getPaths } from 'flex-dev-utils/dist/fs';
+
+import { Bundle } from '../scripts/build';
 
 /**
  * Prints the successful message when a build has successfully compiled
@@ -23,12 +24,11 @@ export default (bundles: Bundle[], warnings?: string[]) => {
   logger.newline();
 
   logger.info(bundles.length, 'files were compiled:');
-  bundles
-    .forEach(bundle => {
-      const size = Math.round((bundle.size / 1024) * 10) / 10;
-      const path = `${logger.colors.gray('build')}/${bundle.name}`;
-      logger.info('\t', size, 'KB', '\t', path);
-    });
+  bundles.forEach((bundle) => {
+    const size = Math.round((bundle.size / 1024) * 10) / 10;
+    const path = `${logger.colors.gray('build')}/${bundle.name}`;
+    logger.info('\t', size, 'KB', '\t', path);
+  });
 
   // Build command invoked directly, and not as a predeploy script
   if (env.isLifecycle(Lifecycle.Build)) {
@@ -38,4 +38,4 @@ export default (bundles: Bundle[], warnings?: string[]) => {
     logger.newline();
     logger.installInfo('npm', 'run deploy');
   }
-}
+};

@@ -1,4 +1,6 @@
+/* eslint-disable camelcase */
 import { Credential } from 'flex-dev-utils';
+
 import BaseClient from '../baseClient';
 import ServiceClient from '../services';
 

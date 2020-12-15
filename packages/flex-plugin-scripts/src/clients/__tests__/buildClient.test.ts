@@ -1,4 +1,5 @@
 import { Credential } from 'flex-dev-utils';
+
 import BaseClient, { BaseClientOptions } from '../baseClient';
 import * as packageUtil from '../../utils/package';
 
@@ -10,6 +11,7 @@ describe('BaseClient', () => {
   const testBaseUrl = 'testBaseUrl';
 
   class Test extends BaseClient {
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
     constructor(authConfig: Credential, baseUrl: string, options?: BaseClientOptions) {
       super(authConfig, baseUrl, options);
     }
@@ -33,7 +35,7 @@ describe('BaseClient', () => {
     });
 
     it('should pass contentType as well', () => {
-      const client = new Test(credential, testBaseUrl, {contentType: 'application/json'});
+      const client = new Test(credential, testBaseUrl, { contentType: 'application/json' });
 
       expectConfig(client);
       expect(client.getConfig().contentType).toEqual('application/json');
@@ -42,31 +44,29 @@ describe('BaseClient', () => {
 
   describe('buildUserAgent', () => {
     it('should build a user agent', () => {
-      const packageDetailMock = jest
-        .spyOn(packageUtil, 'getPackageDetails')
-        .mockReturnValue([
-          {
+      jest.spyOn(packageUtil, 'getPackageDetails').mockReturnValue([
+        {
+          name: 'p1',
+          found: true,
+          package: {
             name: 'p1',
-            found: true,
-            package: {
-              name: 'p1',
-              version: '1.0',
-            },
+            version: '1.0',
           },
-          {
-            name: 'p2',
-            found: false,
-            package: {},
-          },
-          {
+        },
+        {
+          name: 'p2',
+          found: false,
+          package: {},
+        },
+        {
+          name: 'p3',
+          found: true,
+          package: {
             name: 'p3',
-            found: true,
-            package: {
-              name: 'p3',
-              version: '2.0.0',
-            },
+            version: '2.0.0',
           },
-        ]);
+        },
+      ]);
 
       const userAgent = BaseClient.getUserAgent(['p1', 'p2', 'p3']);
       expect(userAgent).toEqual('Flex Plugin Builder p1/1.0 p2/? p3/2.0.0');

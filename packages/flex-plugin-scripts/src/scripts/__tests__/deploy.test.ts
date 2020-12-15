@@ -1,4 +1,4 @@
-import { logger,  FlexPluginError, UserActionError } from 'flex-dev-utils';
+import { logger, FlexPluginError, UserActionError } from 'flex-dev-utils';
 import * as fsScript from 'flex-dev-utils/dist/fs';
 import * as inquirer from 'flex-dev-utils/dist/inquirer';
 
@@ -24,7 +24,8 @@ jest.mock('flex-dev-utils/dist/credentials', () => ({
 }));
 jest.mock('../../utils/runtime');
 
-// tslint:disable
+/* eslint-disable */
+const fs = require('flex-dev-utils/dist/fs');
 const Runtime = require('../../utils/runtime').default;
 const AccountClient = require('../../clients/accounts').default;
 const AssetClient = require('../../clients/assets').default;
@@ -32,8 +33,8 @@ const BuildClient = require('../../clients/builds').default;
 const DeploymentClient = require('../../clients/deployments').default;
 const ConfigurationClient = require('../../clients/configurations').default;
 const PluginsApiClient = require('../../clients/pluginsApi').default;
-const fs = require('flex-dev-utils/dist/fs');
-// tslint:enable
+/* eslint-enable */
+/* eslint-disable camelcase */
 
 describe('DeployScript', () => {
   const paths = {
@@ -63,17 +64,15 @@ describe('DeployScript', () => {
   };
 
   const getAccount = jest.fn().mockResolvedValue(accountObject);
-  const upload = jest.fn()
-    .mockImplementation((_: any, path: string) => {
-      if (path.indexOf('map') === -1) {
-        return Promise.resolve({sid: versionMapSid});
-      } else {
-        return Promise.resolve({sid: versionJSSid});
-      }
-    });
-  const existingBuild = {sid: buildSid, asset_versions: [], function_versions: []};
-  const createBuild = jest.fn().mockResolvedValue({sid: buildSid});
-  const createDeployment = jest.fn().mockResolvedValue({sid: deploymentSid});
+  const upload = jest.fn().mockImplementation(async (_: any, path: string) => {
+    if (path.indexOf('map') === -1) {
+      return Promise.resolve({ sid: versionMapSid });
+    }
+    return Promise.resolve({ sid: versionJSSid });
+  });
+  const existingBuild = { sid: buildSid, asset_versions: [], function_versions: [] };
+  const createBuild = jest.fn().mockResolvedValue({ sid: buildSid });
+  const createDeployment = jest.fn().mockResolvedValue({ sid: deploymentSid });
   const registerSid = jest.fn().mockResolvedValue(config);
   const getFlexUIVersion = jest.fn().mockResolvedValue(config);
   const getUIDependencies = jest.fn().mockResolvedValue(config);
@@ -83,7 +82,7 @@ describe('DeployScript', () => {
       sid: serviceSid,
       accountSid,
     },
-    environment: {sid: environmentSid, build_sid: buildSid, domain_name: 'test.twil.io'},
+    environment: { sid: environmentSid, build_sid: buildSid, domain_name: 'test.twil.io' },
     build: existingBuild,
   };
   Runtime.mockImplementation(() => runtime);
@@ -338,7 +337,7 @@ describe('DeployScript', () => {
   describe('_verifyPath', () => {
     it('should return be false if asset bundle path exists', () => {
       const build = {
-        asset_versions: [{path: '/baseUrl/bundle.js'}],
+        asset_versions: [{ path: '/baseUrl/bundle.js' }],
         function_versions: [],
       };
 
@@ -347,7 +346,7 @@ describe('DeployScript', () => {
 
     it('should return be false if asset bundle sourcemap path exists', () => {
       const build = {
-        asset_versions: [{path: '/baseUrl/bundle.js.map'}],
+        asset_versions: [{ path: '/baseUrl/bundle.js.map' }],
         function_versions: [],
       };
 
@@ -357,7 +356,7 @@ describe('DeployScript', () => {
     it('should return be false if function bundle sourcemap path exists', () => {
       const build = {
         asset_versions: [],
-        function_versions: [{path: '/baseUrl/bundle.js'}],
+        function_versions: [{ path: '/baseUrl/bundle.js' }],
       };
 
       expect(deployScript._verifyPath('/baseUrl', build as any)).toBeFalsy();
@@ -365,8 +364,8 @@ describe('DeployScript', () => {
 
     it('should return be true', () => {
       const build = {
-        asset_versions: [{path: '/baseUrl/anotherBundle.js'}],
-        function_versions: [{path: '/baseUrl/yetAnotherBundle.js'}],
+        asset_versions: [{ path: '/baseUrl/anotherBundle.js' }],
+        function_versions: [{ path: '/baseUrl/yetAnotherBundle.js' }],
       };
 
       expect(deployScript._verifyPath('/baseUrl', build as any)).toBeTruthy();
@@ -387,38 +386,32 @@ describe('DeployScript', () => {
 
     it('should ask for no confirmation if react version is correct', async () => {
       const confirm = jest.spyOn(inquirer, 'confirm');
-      const getPackageVersion = jest
-        .spyOn(fsScript, 'getPackageVersion')
-        .mockReturnValue('16.13.1');
+      const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.13.1');
 
       await deployScript._verifyFlexUIConfiguration('^1', dependencies, true);
 
-      expect(confirm).not.toHaveBeenCalled()
+      expect(confirm).not.toHaveBeenCalled();
       expect(getPackageVersion).toHaveBeenCalledTimes(2);
     });
 
     it('should confirm to allow deployment if react version is mismatched', async () => {
       const confirm = jest.spyOn(inquirer, 'confirm').mockResolvedValue(true);
-      const getPackageVersion = jest
-        .spyOn(fsScript, 'getPackageVersion')
-        .mockReturnValue('16.12.1');
+      const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.12.1');
 
       await deployScript._verifyFlexUIConfiguration('^1', dependencies, true);
 
-      expect(confirm).toHaveBeenCalledTimes(1)
+      expect(confirm).toHaveBeenCalledTimes(1);
       expect(getPackageVersion).toHaveBeenCalledTimes(3);
     });
 
     it('should reject confirm to allow deployment if react version is mismatched', async (done) => {
       const confirm = jest.spyOn(inquirer, 'confirm').mockResolvedValue(false);
-      const getPackageVersion = jest
-        .spyOn(fsScript, 'getPackageVersion')
-        .mockReturnValue('16.12.1');
+      const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.12.1');
 
       try {
         await deployScript._verifyFlexUIConfiguration('^1', dependencies, true);
       } catch (e) {
-        expect(confirm).toHaveBeenCalledTimes(1)
+        expect(confirm).toHaveBeenCalledTimes(1);
         expect(getPackageVersion).toHaveBeenCalledTimes(3);
         expect(e).toBeInstanceOf(UserActionError);
 
@@ -427,9 +420,7 @@ describe('DeployScript', () => {
     });
 
     it('should not throw any exceptions', async () => {
-      jest
-        .spyOn(fsScript, 'getPackageVersion')
-        .mockReturnValue('16.13.1');
+      jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.13.1');
 
       await deployScript._verifyFlexUIConfiguration('^1', dependencies, true);
       await deployScript._verifyFlexUIConfiguration('^1.1', dependencies, true);

@@ -1,0 +1,32 @@
+{
+  "extends": [
+    "twilio-ts"
+  ],
+  "parserOptions": {
+    "project": "./tsconfig.lint.json"
+  },
+  "rules": {
+    "prefer-promise-reject-errors": "off",
+    "@typescript-eslint/no-require-imports": "off",
+    "global-require": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/ban-types": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "import/no-named-as-default-member": "off",
+    "import/no-unused-modules": "off",
+    "no-use-before-define": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "prefer-named-capture-group": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/triple-slash-reference": "off",
+    "spaced-comment": [
+      "error",
+      "always",
+      {
+        "line": {
+          "markers": ["/"]
+        }
+      }
+    ]
+  }
+}

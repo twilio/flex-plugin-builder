@@ -211,7 +211,7 @@ describe('StartScript', () => {
         { local: [], remote: [plugin.name] },
         expect.anything(),
         expect.anything(),
-        onRemotePlugins
+        onRemotePlugins,
       );
     });
 

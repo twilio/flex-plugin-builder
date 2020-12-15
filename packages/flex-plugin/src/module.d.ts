@@ -1,13 +1,13 @@
 interface Window {
-	appConfig?: {},
+  appConfig?: Record<string, unknown>;
 }
 
 declare const Twilio: {
-	Flex: {
-		Plugins: {
-			init(FlexPlugin)
-		}
-	}
+  Flex: {
+    Plugins: {
+      init(FlexPlugin);
+    };
+  };
 };
 
 declare const __FPB_PLUGIN_UNIQUE_NAME: string;

@@ -8,7 +8,7 @@ import { printList } from 'flex-dev-utils/dist/prints';
  */
 export default (...extras: string[]) => {
   const nameColor = logger.coloredStrings.name;
-  const headline = logger.coloredStrings.headline;
+  const { headline } = logger.coloredStrings;
 
   logger.info(`Please follow these steps to possibly ${headline('fix')} this issue:`);
   const lines = [

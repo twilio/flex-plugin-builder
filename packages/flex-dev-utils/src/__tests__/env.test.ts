@@ -15,7 +15,7 @@ describe('env', () => {
 
     it('should return false', () => {
       expect(env.isTerminalPersisted()).toEqual(false);
-    })
+    });
   });
 
   describe('skipPreflightCheck', () => {
@@ -26,7 +26,7 @@ describe('env', () => {
 
     it('should return false', () => {
       expect(env.skipPreflightCheck()).toEqual(false);
-    })
+    });
   });
 
   describe('allowUnbundledReact', () => {
@@ -37,7 +37,7 @@ describe('env', () => {
 
     it('should return false', () => {
       expect(env.allowUnbundledReact()).toEqual(false);
-    })
+    });
   });
 
   describe('CI', () => {
@@ -48,7 +48,7 @@ describe('env', () => {
 
     it('should return false', () => {
       expect(env.isCI()).toEqual(false);
-    })
+    });
   });
 
   describe('debug', () => {
@@ -64,7 +64,7 @@ describe('env', () => {
 
     it('should return false', () => {
       expect(env.isDebug()).toEqual(false);
-    })
+    });
   });
 
   describe('trace', () => {
@@ -75,7 +75,7 @@ describe('env', () => {
 
     it('should return false', () => {
       expect(env.isTrace()).toEqual(false);
-    })
+    });
   });
 
   describe('accountSid', () => {
@@ -86,7 +86,7 @@ describe('env', () => {
 
     it('should return nothing', () => {
       expect(env.getAccountSid()).toEqual(undefined);
-    })
+    });
   });
 
   describe('authToken', () => {
@@ -97,7 +97,7 @@ describe('env', () => {
 
     it('should return nothing', () => {
       expect(env.getAuthToken()).toEqual(undefined);
-    })
+    });
   });
 
   describe('realm', () => {
@@ -108,7 +108,7 @@ describe('env', () => {
 
     it('should return nothing', () => {
       expect(env.getRealm()).toEqual(undefined);
-    })
+    });
   });
 
   describe('host', () => {
@@ -176,11 +176,13 @@ describe('env', () => {
 
   describe('lifeCycle', () => {
     it('should return babel env', () => {
+      // eslint-disable-next-line camelcase
       process.env.npm_lifecycle_event = Lifecycle.Test;
       expect(env.getLifecycle()).toEqual(Lifecycle.Test);
     });
 
     it('should return true for correct lifecycle', () => {
+      // eslint-disable-next-line camelcase
       process.env.npm_lifecycle_event = Lifecycle.Build;
       expect(env.isLifecycle(Lifecycle.Build)).toEqual(true);
     });
@@ -198,7 +200,7 @@ describe('env', () => {
 
     it('should return false', () => {
       expect(env.isHTTPS()).toEqual(false);
-    })
+    });
   });
 
   describe('SocketHost', () => {

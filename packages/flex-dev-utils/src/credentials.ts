@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 import { FlexPluginError } from './errors';
 import { prompt, choose, Question } from './inquirer';
 import env from './env';
@@ -39,22 +40,25 @@ export const getCredential = async (): Promise<Credential> => {
   let username;
   let password;
 
-  const missingCredentials = !((process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) || (process.env.TWILIO_API_KEY && process.env.TWILIO_API_SECRET));
+  const missingCredentials = !(
+    (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) ||
+    (process.env.TWILIO_API_KEY && process.env.TWILIO_API_SECRET)
+  );
   if (env.isCI() && missingCredentials) {
     throw new FlexPluginError('❌.  Running script in CI, but no AccountSid/AuthToken or API Key/Secret was provided');
   }
 
   // If both accountSid/authToken provided, then use that
   if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
-    if (!await validateAccountSid(process.env.TWILIO_ACCOUNT_SID)) {
+    if (!(await validateAccountSid(process.env.TWILIO_ACCOUNT_SID))) {
       throw new FlexPluginError('AccountSid is not valid.');
     }
 
     username = process.env.TWILIO_ACCOUNT_SID;
     password = process.env.TWILIO_AUTH_TOKEN;
-  // If both apiKey/secret provided, then use that
+    // If both apiKey/secret provided, then use that
   } else if (process.env.TWILIO_API_KEY && process.env.TWILIO_API_SECRET) {
-    if (!await validateApiKey(process.env.TWILIO_API_KEY)) {
+    if (!(await validateApiKey(process.env.TWILIO_API_KEY))) {
       throw new FlexPluginError('API Key is not valid.');
     }
 
@@ -90,8 +94,10 @@ export const clearCredentials = async (): Promise<void> => {
   }
 
   const credentials = await _getService();
-  const promises = credentials.map((cred) => _getKeychain().deletePassword(cred.account));
+  const promises = credentials.map(async (cred) => _getKeychain().deletePassword(cred.account));
   await Promise.all(promises);
+
+  return Promise.resolve();
 };
 
 /**
@@ -147,7 +153,7 @@ export const _getService = async (): Promise<KeychainCredential[]> => {
     return [];
   }
 
-  return await _getKeychain().findCredentials();
+  return _getKeychain().findCredentials();
 };
 
 /**

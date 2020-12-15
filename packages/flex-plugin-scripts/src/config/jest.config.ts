@@ -1,6 +1,7 @@
+import { join } from 'path';
+
 import { InitialOptions } from '@jest/types/build/Config';
 import { getPaths } from 'flex-dev-utils/dist/fs';
-import { join } from 'path';
 
 export { JestConfigurations } from 'flex-plugin-test';
 
@@ -12,4 +13,4 @@ export default (): Partial<InitialOptions> => {
     rootDir: getPaths().cwd,
     preset: join(require.resolve('flex-plugin-test'), '..', '..'),
   };
-}
+};

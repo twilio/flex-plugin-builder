@@ -1,15 +1,16 @@
-import index from '../index';
 import { logger } from 'flex-dev-utils';
 import * as fsScripts from 'flex-dev-utils/dist/fs';
 import { render as markedRender } from 'flex-dev-utils/dist/marked';
 import * as exit from 'flex-dev-utils/dist/exit';
+
+import index from '..';
 
 jest.mock('flex-dev-utils/dist/spawn');
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/marked');
 
 // tslint:disable
-const spawn = require('flex-dev-utils').spawn;
+const { spawn } = require('flex-dev-utils');
 // tslint:enable
 
 describe('index', () => {
@@ -24,7 +25,7 @@ describe('index', () => {
     jest.resetModules();
 
     // @ts-ignore
-    jest.spyOn(fsScripts, 'getPaths').mockReturnValue({ app: { name: pluginName }});
+    jest.spyOn(fsScripts, 'getPaths').mockReturnValue({ app: { name: pluginName } });
 
     delete require.cache[require.resolve('../index')];
   });
@@ -50,13 +51,7 @@ describe('index', () => {
     expect(runExit).toHaveBeenCalledTimes(1);
     expect(runExit).toHaveBeenCalledWith(0, ['build']);
     expect(spawn).toHaveBeenCalledTimes(1);
-    assertSpawn([
-      expect.stringContaining('build'),
-      expect.anything(),
-      '--name',
-      pluginName,
-      '--run-script',
-    ]);
+    assertSpawn([expect.stringContaining('build'), expect.anything(), '--name', pluginName, '--run-script']);
   });
 
   it('should run main script and pass other args', async () => {
@@ -67,14 +62,7 @@ describe('index', () => {
     expect(runExit).toHaveBeenCalledTimes(1);
     expect(runExit).toHaveBeenCalledWith(0, ['build', 'foo']);
     expect(spawn).toHaveBeenCalledTimes(1);
-    assertSpawn([
-      expect.stringContaining('build'),
-      'foo',
-      expect.anything(),
-      '--name',
-      pluginName,
-      '--run-script',
-    ]);
+    assertSpawn([expect.stringContaining('build'), 'foo', expect.anything(), '--name', pluginName, '--run-script']);
   });
 
   it('should set no-versioning', async () => {
@@ -85,13 +73,7 @@ describe('index', () => {
     expect(runExit).toHaveBeenCalledTimes(1);
     expect(runExit).toHaveBeenCalledWith(0, ['build']);
     expect(spawn).toHaveBeenCalledTimes(1);
-    assertSpawn([
-      expect.anything(),
-      '--disallow-versioning',
-      '--name',
-      pluginName,
-      '--run-script',
-    ]);
+    assertSpawn([expect.anything(), '--disallow-versioning', '--name', pluginName, '--run-script']);
   });
 
   it('should render doc', async () => {

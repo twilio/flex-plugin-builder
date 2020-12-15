@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { Credential } from 'flex-dev-utils';
 import * as fsScripts from 'flex-dev-utils/dist/fs';
 import * as random from 'flex-dev-utils/dist/random';
@@ -20,27 +21,27 @@ describe('EnvironmentClient', () => {
     domain_suffix: 'another-suffix',
   };
   const resourceWithMatch = {
-    environments: [ environmentMatch, environmentAnother ],
+    environments: [environmentMatch, environmentAnother],
   };
   const resourceWithNoMatch = {
-    environments: [ environmentAnother ],
+    environments: [environmentAnother],
   };
 
   const paths = {
     app: { name: 'plugin-test' },
-  }
+  };
 
   beforeEach(() => {
     jest.restoreAllMocks();
 
     // @ts-ignore
     jest.spyOn(fsScripts, 'getPaths').mockReturnValue(paths);
-  })
+  });
 
   describe('constructor', () => {
     it('should fail if incorrect serviceSid is provided', (done) => {
       try {
-        // tslint:disable-next-line
+        // eslint-disable-next-line no-new
         new EnvironmentClient(auth, 'ZFxxx');
       } catch (e) {
         expect(e.message).toContain('not valid');
@@ -143,10 +144,7 @@ describe('EnvironmentClient', () => {
         DomainSuffix: 'foo',
       });
       expect(randomString).toHaveBeenCalledTimes(1);
-      expect(randomString).toHaveBeenCalledWith(5, [
-        environmentMatch.domain_suffix,
-        environmentAnother.domain_suffix,
-      ]);
+      expect(randomString).toHaveBeenCalledWith(5, [environmentMatch.domain_suffix, environmentAnother.domain_suffix]);
       expect(environment).toEqual(environmentMatch);
 
       post.mockRestore();

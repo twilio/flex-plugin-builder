@@ -40,7 +40,7 @@ export const installDependencies = async (config: FlexPluginArguments): Promise<
 export const setupConfiguration = (config: FlexPluginArguments): FlexPluginArguments => {
   const name = config.name || '';
 
-  config.pluginClassName = upperFirst(camelCase(name)).replace('Plugin', '') + 'Plugin';
+  config.pluginClassName = `${upperFirst(camelCase(name)).replace('Plugin', '')}Plugin`;
   config.pluginNamespace = name.toLowerCase().replace('plugin-', '');
   config.runtimeUrl = config.runtimeUrl || 'http://localhost:3000';
   config.targetDirectory = resolveCwd(name);
@@ -59,5 +59,5 @@ export const setupConfiguration = (config: FlexPluginArguments): FlexPluginArgum
 export const downloadFromGitHub = async (url: string, dir: string) => {
   const info = await github.parseGitHubUrl(url);
 
-  return await github.downloadRepo(info, dir);
+  return github.downloadRepo(info, dir);
 };

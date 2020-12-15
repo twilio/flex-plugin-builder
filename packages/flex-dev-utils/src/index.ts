@@ -1,10 +1,12 @@
+/* eslint-disable import/no-unused-modules */
+
 export { default as fs } from './fs';
 export { default as lodash } from './lodash';
 export { default as updateNotifier } from './updateNotifier';
 export { default as progress } from './progress';
 export { default as logger } from './logger';
 export { default as boxen } from './boxen';
-export { default as strings } from './strings';
+export { default as strings, multilineString, singleLineString } from './strings';
 export { default as inquirer } from './inquirer';
 export { default as table } from './table';
 export { default as credentials, Credential, getCredential } from './credentials';

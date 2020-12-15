@@ -1,8 +1,9 @@
 import { env } from 'flex-dev-utils';
 import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 import { Configuration } from 'webpack-dev-server';
-import { WebpackType } from '../index';
 import { getPaths } from 'flex-dev-utils/dist/fs';
+
+import { WebpackType } from '..';
 
 /**
  * Returns the base {@link Configuration}
@@ -26,10 +27,7 @@ export const _getBase = (): Configuration => {
  * @private
  */
 export const _getStaticConfiguration = (config: Configuration): Configuration => {
-  config.contentBase =  [
-    getPaths().app.publicDir,
-    getPaths().scripts.devAssetsDir,
-  ];
+  config.contentBase = [getPaths().app.publicDir, getPaths().scripts.devAssetsDir];
   config.contentBasePublicPath = '/';
   config.historyApiFallback = {
     disableDotRule: true,
@@ -39,7 +37,7 @@ export const _getStaticConfiguration = (config: Configuration): Configuration =>
   config.watchContentBase = true;
 
   return config;
-}
+};
 
 /**
  * Returns the {@link Configuration} for JS type
@@ -60,7 +58,7 @@ export const _getJavaScriptConfiguration = (config: Configuration): Configuratio
   config.hot = true;
 
   return config;
-}
+};
 
 /**
  * Generates a webpack-dev configuration
@@ -77,4 +75,4 @@ export default (type: WebpackType) => {
   }
 
   return _getJavaScriptConfiguration(_getStaticConfiguration(config));
-}
+};

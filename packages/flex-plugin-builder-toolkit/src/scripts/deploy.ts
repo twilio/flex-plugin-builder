@@ -6,7 +6,7 @@ const preScriptCheck = require.resolve('flex-plugin-scripts/dist/scripts/pre-scr
 export type DeployOptions = {
   cwd: string;
   name: string;
-}
+};
 
 /**
  * Entry point for deploying a JS bundle
@@ -14,6 +14,6 @@ export type DeployOptions = {
  */
 // @ts-ignore
 export default async function run(options: DeployOptions): SpawnPromise {
-  await spawn('node', [preScriptCheck, '--run-script', '--core-cwd', options.cwd, '--cwd', options.cwd])
-  return spawn('node', [deployScriptPath, '--run-script', '--core-cwd', options.cwd, '--name', options.name])
+  await spawn('node', [preScriptCheck, '--run-script', '--core-cwd', options.cwd, '--cwd', options.cwd]);
+  return spawn('node', [deployScriptPath, '--run-script', '--core-cwd', options.cwd, '--name', options.name]);
 }

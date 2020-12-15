@@ -25,12 +25,11 @@ export default class DeploymentClient extends BaseClient {
    *
    * @param buildSid  the build sid
    */
-  public create = (buildSid: string): Promise<Deployment> => {
+  public create = async (buildSid: string): Promise<Deployment> => {
     if (!isSidOfType(buildSid, SidPrefix.BuildSid)) {
       throw new Error(`${buildSid} is not of type ${SidPrefix.BuildSid}`);
     }
 
-    return this.http
-      .post<Deployment>(DeploymentClient.BaseUri, {BuildSid: buildSid});
-  }
+    return this.http.post<Deployment>(DeploymentClient.BaseUri, { BuildSid: buildSid });
+  };
 }
