@@ -1,10 +1,11 @@
-import { AppPackageJson, PackageJson } from '../fs';
 import appModule from 'app-module-path';
-import * as fs from '../fs';
 import * as globby from 'globby';
+
+import { AppPackageJson, PackageJson } from '../fs';
+import * as fs from '../fs';
 import * as inquirer from '../inquirer';
 
-jest.mock('flex-plugins-utils-logger/dist/lib/inquirer')
+jest.mock('flex-plugins-utils-logger/dist/lib/inquirer');
 jest.mock('globby');
 jest.mock('app-module-path');
 
@@ -30,7 +31,7 @@ describe('fs', () => {
 
       const pkg = fs.readPackageJson('filePath');
 
-      expect(pkg).toEqual({version: 1});
+      expect(pkg).toEqual({ version: 1 });
       expect(readFileSync).toHaveBeenCalledTimes(1);
       expect(readFileSync).toHaveBeenCalledWith('filePath', 'utf8');
 
@@ -44,7 +45,7 @@ describe('fs', () => {
 
       const pkg = fs.readJsonFile('filePath');
 
-      expect(pkg).toEqual({version: 1});
+      expect(pkg).toEqual({ version: 1 });
       expect(readFileSync).toHaveBeenCalledTimes(1);
       expect(readFileSync).toHaveBeenCalledWith('filePath', 'utf8');
 
@@ -87,7 +88,7 @@ describe('fs', () => {
 
       const pkg = fs.readPackageJson('another-path');
 
-      expect(pkg).toEqual({version: 1});
+      expect(pkg).toEqual({ version: 1 });
       expect(readFileSync).toHaveBeenCalledTimes(1);
       expect(readFileSync).toHaveBeenCalledWith('another-path', 'utf8');
 
@@ -98,7 +99,9 @@ describe('fs', () => {
   describe('checkFilesExist', () => {
     it('loop through all files', () => {
       // @ts-ignore
-      const existsSync = jest.spyOn(fs.default, 'existsSync').mockImplementation(() => { /* no-op */ });
+      const existsSync = jest.spyOn(fs.default, 'existsSync').mockImplementation(() => {
+        /* no-op */
+      });
 
       fs.checkFilesExist('file1', 'file2');
       expect(existsSync).toHaveBeenCalledTimes(2);
@@ -109,11 +112,13 @@ describe('fs', () => {
 
   describe('updateAppVersion', () => {
     it('should update version', () => {
-      const pkgBefore = {...appPackage};
-      const pkgAfter: PackageJson = Object.assign({}, pkgBefore, {version: '2'});
+      const pkgBefore = { ...appPackage };
+      const pkgAfter: PackageJson = { ...pkgBefore, version: '2' };
 
       // @ts-ignore
-      const writeFileSync = jest.spyOn(fs.default, 'writeFileSync').mockImplementation(() => { /* no-op */ });
+      const writeFileSync = jest.spyOn(fs.default, 'writeFileSync').mockImplementation(() => {
+        /* no-op */
+      });
       // @ts-ignore
       const getPackageJsonPath = jest.spyOn(fs, 'getPackageJsonPath').mockReturnValue('package.json');
       const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockReturnValue(pkgBefore);
@@ -248,7 +253,7 @@ describe('fs', () => {
 
       mkdirpSync.mockReturnThis();
       writeFileSync.mockReturnThis();
-      readJsonFile.mockReturnValue({'plugins': []});
+      readJsonFile.mockReturnValue({ plugins: [] });
 
       // @ts-ignore
       getCliPaths.mockReturnValue(cliPath);
@@ -278,7 +283,7 @@ describe('fs', () => {
 
     it('should add the plugin to plugins.json if not found', async () => {
       checkFilesExist.mockReturnValue(true);
-      readJsonFile.mockReturnValue({'plugins': []});
+      readJsonFile.mockReturnValue({ plugins: [] });
       writeFileSync.mockReturnThis();
 
       const result = await fs.checkPluginConfigurationExists(name, dir);
@@ -286,13 +291,16 @@ describe('fs', () => {
       expect(checkFilesExist).toHaveBeenCalledTimes(1);
       expect(readJsonFile).toHaveBeenCalledTimes(1);
       expect(writeFileSync).toHaveBeenCalledTimes(1);
-      expect(writeFileSync).toHaveBeenCalledWith('test-dir-plugins', JSON.stringify({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]}, null, 2));
+      expect(writeFileSync).toHaveBeenCalledWith(
+        'test-dir-plugins',
+        JSON.stringify({ plugins: [{ name: 'plugin-test', dir: 'test-dir', port: 0 }] }, null, 2),
+      );
       expect(result).toEqual(true);
     });
 
     it('do nothing if plugin has same directory as an existing one', async () => {
       checkFilesExist.mockReturnValue(true);
-      readJsonFile.mockReturnValue({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]});
+      readJsonFile.mockReturnValue({ plugins: [{ name: 'plugin-test', dir: 'test-dir', port: 0 }] });
       writeFileSync.mockReturnThis();
 
       const result = await fs.checkPluginConfigurationExists(name, dir);
@@ -305,7 +313,7 @@ describe('fs', () => {
 
     it('change file path if user confirms', async () => {
       checkFilesExist.mockReturnValue(true);
-      readJsonFile.mockReturnValue({'plugins': [{name: 'plugin-test', dir: 'test-dirr', port: 0}]});
+      readJsonFile.mockReturnValue({ plugins: [{ name: 'plugin-test', dir: 'test-dirr', port: 0 }] });
       writeFileSync.mockReturnThis();
       confirm.mockResolvedValue(true);
 
@@ -316,13 +324,16 @@ describe('fs', () => {
       // expect(confirm).toHaveBeenCalledTimes(1);
       expect(readJsonFile).toHaveBeenCalledTimes(1);
       expect(writeFileSync).toHaveBeenCalledTimes(1);
-      expect(writeFileSync).toHaveBeenCalledWith('test-dir-plugins', JSON.stringify({'plugins': [{name: 'plugin-test', dir: 'test-dir', port: 0}]}, null, 2));
+      expect(writeFileSync).toHaveBeenCalledWith(
+        'test-dir-plugins',
+        JSON.stringify({ plugins: [{ name: 'plugin-test', dir: 'test-dir', port: 0 }] }, null, 2),
+      );
       expect(result).toEqual(true);
     });
 
     it('do not change file path, user did not confirm', async () => {
       checkFilesExist.mockReturnValue(true);
-      readJsonFile.mockReturnValue({'plugins': [{name: 'plugin-test', dir: 'test-dirr', port: 0}]});
+      readJsonFile.mockReturnValue({ plugins: [{ name: 'plugin-test', dir: 'test-dirr', port: 0 }] });
       writeFileSync.mockReturnThis();
       confirm.mockResolvedValue(false);
 
@@ -342,14 +353,12 @@ describe('fs', () => {
       version: '1.2.3',
       dependencies: {
         'flex-plugin-scripts': '1',
-        'flex-plugin': '2'
+        'flex-plugin': '2',
       },
     };
 
     it('should give cli paths', () => {
-      const readPackageJson = jest
-        .spyOn(fs, 'readPackageJson')
-        .mockReturnValue(validPackage);
+      const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockReturnValue(validPackage);
 
       // cli/ directory
       expect(fs.getCliPaths().dir).toEqual(expect.stringMatching('/.twilio-cli'));
@@ -394,18 +403,16 @@ describe('fs', () => {
     });
 
     it('should give you the paths', () => {
-      const readPackageJson = jest
-        .spyOn(fs, 'readPackageJson')
-        .mockReturnValue(validPackage);
+      const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockReturnValue(validPackage);
 
       // build/ directory
       expect(fs.getPaths().app.buildDir).toEqual(expect.stringMatching('build$'));
       expect(fs.getPaths().app.bundlePath).toContain('build');
       expect(fs.getPaths().app.bundlePath).toContain(validPackage.name);
-      expect(fs.getPaths().app.bundlePath).toEqual(expect.stringMatching('\.js$'));
+      expect(fs.getPaths().app.bundlePath).toEqual(expect.stringMatching('.js$'));
       expect(fs.getPaths().app.sourceMapPath).toContain('build');
       expect(fs.getPaths().app.sourceMapPath).toContain(validPackage.name);
-      expect(fs.getPaths().app.sourceMapPath).toEqual(expect.stringMatching('\.js\.map$'));
+      expect(fs.getPaths().app.sourceMapPath).toEqual(expect.stringMatching('.js.map$'));
 
       // cli/ directory
       expect(fs.getPaths().cli.dir).toEqual(expect.stringMatching('/.twilio-cli'));
@@ -422,14 +429,14 @@ describe('fs', () => {
       expect(fs.getPaths().app.flexUIDir).toContain('node_modules');
       expect(fs.getPaths().app.flexUIDir).toContain('@twilio/flex-ui');
       expect(fs.getPaths().app.flexUIPkgPath).toContain('@twilio/flex-ui');
-      expect(fs.getPaths().app.flexUIPkgPath).toEqual(expect.stringMatching('package\.json$'));
+      expect(fs.getPaths().app.flexUIPkgPath).toEqual(expect.stringMatching('package.json$'));
 
       // scripts
       expect(fs.getPaths().scripts.devAssetsDir).toContain('flex-plugin-scripts');
 
       // public/ directory
       expect(fs.getPaths().app.publicDir).toEqual(expect.stringMatching('public$'));
-      expect(fs.getPaths().app.appConfig).toEqual(expect.stringMatching('appConfig\.js$'));
+      expect(fs.getPaths().app.appConfig).toEqual(expect.stringMatching('appConfig.js$'));
 
       // env support
       expect(fs.getPaths().app.envPath).toEqual(expect.stringMatching('.env'));

@@ -1,0 +1,24 @@
+{
+  "extends": [
+    "twilio-ts"
+  ],
+  "parserOptions": {
+    "project": "./tsconfig.lint.json"
+  },
+  "rules": {
+    "no-use-before-define": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "prefer-named-capture-group": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/triple-slash-reference": "off",
+    "spaced-comment": [
+      "error",
+      "always",
+      {
+        "line": {
+          "markers": ["/"]
+        }
+      }
+    ]
+  }
+}

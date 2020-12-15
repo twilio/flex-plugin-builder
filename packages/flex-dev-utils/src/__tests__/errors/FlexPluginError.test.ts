@@ -1,4 +1,5 @@
 import { TwilioError } from 'flex-plugins-utils-exception';
+
 import FlexPluginError from '../../errors/FlexPluginError';
 import logger from '../../logger';
 import * as fs from '../../fs';
@@ -27,15 +28,14 @@ describe('FlexPluginError', () => {
   });
 
   it('should print details', () => {
-    jest.spyOn(fs, 'readAppPackageJson')
-      .mockReturnValue({
-        name: 'plugin-test',
-        version: '1.2.3',
-        dependencies: {
-          'flex-plugin': '2.0.0',
-          'flex-plugin-scripts': '3.0.0',
-        },
-      });
+    jest.spyOn(fs, 'readAppPackageJson').mockReturnValue({
+      name: 'plugin-test',
+      version: '1.2.3',
+      dependencies: {
+        'flex-plugin': '2.0.0',
+        'flex-plugin-scripts': '3.0.0',
+      },
+    });
 
     const err = new FlexPluginError();
 
@@ -44,8 +44,9 @@ describe('FlexPluginError', () => {
   });
 
   it('should not print any details if pkg is not found', () => {
-    jest.spyOn(fs, 'readPackageJson')
-      .mockImplementation(() => { throw new Error(); });
+    jest.spyOn(fs, 'readPackageJson').mockImplementation(() => {
+      throw new Error();
+    });
 
     const err = new FlexPluginError();
 

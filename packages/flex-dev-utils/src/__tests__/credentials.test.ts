@@ -7,10 +7,10 @@ jest.mock('../inquirer');
 jest.mock('../validators');
 jest.mock('../keychain');
 
-// tslint:disable
+/* eslint-disable */
 const inquirer = require('../inquirer');
 const validators = require('../validators');
-// tslint:enable
+/* eslint-enable */
 
 describe('credentials', () => {
   const accountSid = 'AC00000000000000000000000000000000';
@@ -122,9 +122,7 @@ describe('credentials', () => {
       process.env.TWILIO_ACCOUNT_SID = 'AB00000000000000000000000000000000';
       process.env.TWILIO_AUTH_TOKEN = authToken;
 
-      const validateAccountSid = jest
-        .spyOn(validators, 'validateAccountSid')
-        .mockResolvedValue(false);
+      const validateAccountSid = jest.spyOn(validators, 'validateAccountSid').mockResolvedValue(false);
       const _findCredential = jest.spyOn(credentials, '_findCredential');
 
       try {
@@ -141,9 +139,7 @@ describe('credentials', () => {
       process.env.TWILIO_API_KEY = 'SA00000000000000000000000000000000';
       process.env.TWILIO_API_SECRET = authToken;
 
-      const validateApiKey = jest
-        .spyOn(validators, 'validateApiKey')
-        .mockResolvedValue(false);
+      const validateApiKey = jest.spyOn(validators, 'validateApiKey').mockResolvedValue(false);
       const _findCredential = jest.spyOn(credentials, '_findCredential');
 
       try {
@@ -160,9 +156,7 @@ describe('credentials', () => {
       process.env.TWILIO_ACCOUNT_SID = accountSid;
       process.env.TWILIO_AUTH_TOKEN = authToken;
 
-      const validateAccountSid = jest
-        .spyOn(validators, 'validateAccountSid')
-        .mockResolvedValue(true);
+      const validateAccountSid = jest.spyOn(validators, 'validateAccountSid').mockResolvedValue(true);
       const _findCredential = jest.spyOn(credentials, '_findCredential');
 
       const creds = await credentials.getCredential();
@@ -171,7 +165,7 @@ describe('credentials', () => {
       expect(_findCredential).not.toHaveBeenCalled();
       expect(creds).toEqual({
         username: accountSid,
-        password: authToken
+        password: authToken,
       });
     });
 
@@ -179,9 +173,7 @@ describe('credentials', () => {
       process.env.TWILIO_API_KEY = apiKey;
       process.env.TWILIO_API_SECRET = apiSecret;
 
-      const validateApiKey = jest
-        .spyOn(validators, 'validateApiKey')
-        .mockResolvedValue(true);
+      const validateApiKey = jest.spyOn(validators, 'validateApiKey').mockResolvedValue(true);
       const _findCredential = jest.spyOn(credentials, '_findCredential');
 
       const creds = await credentials.getCredential();
@@ -190,7 +182,7 @@ describe('credentials', () => {
       expect(_findCredential).not.toHaveBeenCalled();
       expect(creds).toEqual({
         username: apiKey,
-        password: apiSecret
+        password: apiSecret,
       });
     });
 
@@ -199,9 +191,7 @@ describe('credentials', () => {
       process.env.TWILIO_API_KEY = apiKey;
       process.env.TWILIO_API_SECRET = apiSecret;
 
-      const validateApiKey = jest
-        .spyOn(validators, 'validateApiKey')
-        .mockResolvedValue(true);
+      const validateApiKey = jest.spyOn(validators, 'validateApiKey').mockResolvedValue(true);
       const _findCredential = jest.spyOn(credentials, '_findCredential');
 
       const creds = await credentials.getCredential();
@@ -210,38 +200,31 @@ describe('credentials', () => {
       expect(_findCredential).not.toHaveBeenCalled();
       expect(creds).toEqual({
         username: apiKey,
-        password: apiSecret
+        password: apiSecret,
       });
     });
 
     it('should not ask for API key or password if credentials exist', async () => {
-      jest
-        .spyOn(credentials, '_findCredential')
-        .mockImplementation(() => Promise.resolve(credential));
+      jest.spyOn(credentials, '_findCredential').mockImplementation(() => Promise.resolve(credential));
 
       const creds = await credentials.getCredential();
 
       expect(inquirer.prompt).not.toHaveBeenCalled();
       expect(creds).toEqual({
         username: accountSid,
-        password: authToken
+        password: authToken,
       });
     });
 
     it('should ask for credentials if nothing exists', async () => {
-      jest
-        .spyOn(credentials, '_findCredential')
-        .mockImplementation(() => Promise.resolve(null));
+      jest.spyOn(credentials, '_findCredential').mockImplementation(() => Promise.resolve(null));
 
-      jest
-        .spyOn(inquirer, 'prompt')
-        .mockImplementation((question: any) => {
-          if (question.type === 'input') {
-            return 'promptAccountSid';
-          } else {
-            return 'promptAuthToken';
-          }
-        });
+      jest.spyOn(inquirer, 'prompt').mockImplementation((question: any) => {
+        if (question.type === 'input') {
+          return 'promptAccountSid';
+        }
+        return 'promptAuthToken';
+      });
 
       const creds = await credentials.getCredential();
 
@@ -303,9 +286,7 @@ describe('credentials', () => {
     });
 
     it('should return null if credentials is empty', async () => {
-      jest
-        .spyOn(credentials, '_getService')
-        .mockImplementation(() => Promise.resolve([]));
+      jest.spyOn(credentials, '_getService').mockImplementation(() => Promise.resolve([]));
 
       const cred = await credentials._findCredential();
 
@@ -314,9 +295,7 @@ describe('credentials', () => {
     });
 
     it('should return single credential if only one exists', async () => {
-      jest
-        .spyOn(credentials, '_getService')
-        .mockImplementation(() => Promise.resolve([keyCredential]));
+      jest.spyOn(credentials, '_getService').mockImplementation(() => Promise.resolve([keyCredential]));
 
       const cred = await credentials._findCredential();
 
@@ -325,9 +304,7 @@ describe('credentials', () => {
     });
 
     it('should return null if bogus credentials exist', async () => {
-      jest
-        .spyOn(credentials, '_getService')
-        .mockImplementation(() => Promise.resolve([badCreds, badCreds]));
+      jest.spyOn(credentials, '_getService').mockImplementation(() => Promise.resolve([badCreds, badCreds]));
 
       const cred = await credentials._findCredential();
 
@@ -336,9 +313,7 @@ describe('credentials', () => {
     });
 
     it('should ask for you to choose if multiple credentials found', async () => {
-      jest
-        .spyOn(credentials, '_getService')
-        .mockImplementation(() => Promise.resolve([keyCredential, keyCredential]));
+      jest.spyOn(credentials, '_getService').mockImplementation(() => Promise.resolve([keyCredential, keyCredential]));
 
       const choose = jest.spyOn(inquirer, 'choose').mockResolvedValue(accountSid);
 
@@ -371,10 +346,10 @@ describe('credentials', () => {
 
   describe('_getKeychain', () => {
     it('should call the keychain', () => {
-        credentials._getKeychain();
+      credentials._getKeychain();
 
-        expect(getKeychain).toHaveBeenCalledTimes(1);
-        expect(getKeychain).toHaveBeenCalledWith(credentials.SERVICE_NAME);
+      expect(getKeychain).toHaveBeenCalledTimes(1);
+      expect(getKeychain).toHaveBeenCalledWith(credentials.SERVICE_NAME);
     });
   });
 

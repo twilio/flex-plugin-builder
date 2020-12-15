@@ -262,7 +262,11 @@ export const findGlobs = (...patterns: string[]) => {
  * @param promptForOverwrite  whether to prompt for overwrite
  * @return whether the plugin-directory was overwritten
  */
-export const checkPluginConfigurationExists = async (name: string, dir: string, promptForOverwrite = false): Promise<boolean> => {
+export const checkPluginConfigurationExists = async (
+  name: string,
+  dir: string,
+  promptForOverwrite = false,
+): Promise<boolean> => {
   const cliPaths = getCliPaths();
   if (!checkFilesExist(cliPaths.pluginsJsonPath)) {
     mkdirpSync(cliPaths.flexDir);
@@ -283,7 +287,10 @@ export const checkPluginConfigurationExists = async (name: string, dir: string, 
   }
 
   const answer = promptForOverwrite
-    ? await confirm(`You already have a plugin called ${plugin.name} located at ${plugin.dir}. Do you want to update it to ${dir}?`, 'N')
+    ? await confirm(
+        `You already have a plugin called ${plugin.name} located at ${plugin.dir}. Do you want to update it to ${dir}?`,
+        'N',
+      )
     : true;
 
   if (answer) {

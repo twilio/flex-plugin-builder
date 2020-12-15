@@ -1,10 +1,12 @@
-// Keytar is installed as an optional dependency
-// Try to load it here but do not fail if it fails to be required
-import { logger } from './index';
+/*
+ * Keytar is installed as an optional dependency
+ * Try to load it here but do not fail if it fails to be required
+ */
+import { logger } from '.';
 
 export interface KeychainCredential {
-  account: string,
-  password: string
+  account: string;
+  password: string;
 }
 
 export interface Keychain {
@@ -42,5 +44,5 @@ export default function (service: string): Keychain {
     deletePassword: (account: string) => keytar.deletePassword(service, account),
     findCredentials: () => keytar.findCredentials(service),
     setPassword: (account: string, password: string) => keytar.setPassword(service, account, password),
-  }
+  };
 }

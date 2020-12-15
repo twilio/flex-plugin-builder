@@ -1,3 +1,5 @@
+/* eslint-disable import/no-unused-modules */
+
 export { default as fs } from './fs';
 export { default as lodash } from './lodash';
 export { default as updateNotifier } from './updateNotifier';

@@ -28,6 +28,8 @@
     "build": "tsc",
     "clean": "rm -rf dist",
     "prepublish": "npm run build",
+    "lint": "eslint --ext ts src/",
+    "lint:fix": "npm run lint -- --fix",
     "test": "cd ../.. && jest packages/flex-dev-utils --color",
     "test:watch": "cd ../.. && jest packages/flex-dev-utils --watch --color"
   },

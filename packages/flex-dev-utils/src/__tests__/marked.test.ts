@@ -1,4 +1,5 @@
 import marked from 'marked';
+
 import logger from '../logger';
 
 const readFileSync = jest.fn();

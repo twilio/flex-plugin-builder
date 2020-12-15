@@ -7,10 +7,4 @@ import httpAdapter from 'axios/lib/adapters/http';
 import settle from 'axios/lib/core/settle';
 
 export default axios;
-export {
-  AxiosRequestConfig,
-  AxiosInstance,
-  MockAdapter,
-  httpAdapter,
-  settle,
-};
+export { AxiosRequestConfig, AxiosInstance, MockAdapter, httpAdapter, settle };

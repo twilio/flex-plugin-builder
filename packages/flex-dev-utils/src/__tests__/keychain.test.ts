@@ -18,13 +18,15 @@ describe('keychain', () => {
       const deletePassword = jest.fn();
       const setPassword = jest.fn();
       const _getKeytar = jest.spyOn(keychain, '_getKeytar').mockReturnValue({
-        findCredentials, deletePassword, setPassword
+        findCredentials,
+        deletePassword,
+        setPassword,
       });
 
       const instance = keychain.default('the-service-name');
-      await instance.deletePassword('password')
-      await instance.findCredentials()
-      await instance.setPassword('account', 'password')
+      await instance.deletePassword('password');
+      await instance.findCredentials();
+      await instance.setPassword('account', 'password');
 
       expect(_getKeytar).toHaveBeenCalledTimes(1);
       expect(deletePassword).toHaveBeenCalledTimes(1);
