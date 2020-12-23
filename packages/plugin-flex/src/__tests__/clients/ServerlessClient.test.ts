@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { ServiceListInstance } from 'twilio/lib/rest/serverless/v1/service';
+import { Logger } from '@oclif/errors';
 
 import { sinon } from '../framework';
 import ServerlessClient from '../../clients/ServerlessClient';
@@ -22,10 +23,14 @@ describe('ServerlessClient', () => {
       }),
     },
   });
+  const debug = sinon.stub();
+  // @ts-ignore
+  const logger: Logger = { debug } as Logger;
 
   // @ts-ignore
   const twilioClient = { get: getService, create: createService } as ServiceListInstance;
-  const client = new ServerlessClient(twilioClient);
+  // @ts-ignore
+  const client = new ServerlessClient(twilioClient, logger as Logger);
 
   beforeEach(() => {
     sinon.restore();

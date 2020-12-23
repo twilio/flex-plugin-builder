@@ -397,7 +397,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       this.twilioClient.flexApi.v1.configuration.get(),
       flexConfigOptions,
     );
-    this._serverlessClient = new ServerlessClient(this.twilioClient.serverless.v1.services);
+    this._serverlessClient = new ServerlessClient(this.twilioClient.serverless.v1.services, this._logger);
 
     if (!this.skipEnvironmentalSetup) {
       this.setupEnvironment();

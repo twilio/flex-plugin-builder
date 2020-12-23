@@ -6,6 +6,7 @@ import {
 import { BuildInstance, BuildListInstanceCreateOptions } from 'twilio/lib/rest/serverless/v1/service/build';
 import { TwilioApiError } from 'flex-plugins-utils-exception';
 import { EnvironmentInstance } from 'twilio/lib/rest/serverless/v1/service/environment';
+import { Logger } from 'flex-plugins-utils-logger';
 
 interface FileVersion {
   path: string;
@@ -32,8 +33,11 @@ export default class ServerlessClient {
 
   private client;
 
-  constructor(client: ServiceListInstance) {
+  private logger;
+
+  constructor(client: ServiceListInstance, logger: Logger) {
     this.client = client;
+    this.logger = logger;
   }
 
   /**
@@ -151,6 +155,8 @@ export default class ServerlessClient {
   private async createBuild(serviceSid: string, data: BuildListInstanceCreateOptions): Promise<BuildInstance> {
     return new Promise(async (resolve, reject) => {
       const newBuild = await this.client.get(serviceSid).builds.create(data);
+      this.logger.debug(`Created build ${newBuild.sid}`);
+
       const { sid } = newBuild;
 
       const timeoutId = setTimeout(() => {
@@ -167,6 +173,7 @@ export default class ServerlessClient {
 
       const intervalId = setInterval(async () => {
         const build = await this.client.get(serviceSid).builds.get(sid).fetch();
+        this.logger.debug(`Waiting for build status '${build.status}' to change to 'completed'`);
 
         if (build.status === 'failed') {
           clearInterval(intervalId);
