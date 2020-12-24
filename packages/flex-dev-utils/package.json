@@ -35,7 +35,7 @@
     "@k88/pipe-compose": "^2.1.1",
     "@types/inquirer": "^6.5.0",
     "app-module-path": "^2.2.0",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "axios-mock-adapter": "^1.17.0",
     "copy-template-dir": "^1.4.0",
     "execa": "^2.1.0",
