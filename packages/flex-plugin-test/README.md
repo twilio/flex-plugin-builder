@@ -4,7 +4,7 @@
 
 # Flex Plugin Test
 
-To be filled
+To be filled.
 
 ## Contributors
 
