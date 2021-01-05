@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-webpack",
-  "version": "4.3.17-alpha.0",
+  "version": "4.4.0-alpha.0",
   "description": "Flex Plugin Webpack and Webpack dev-server configurations",
   "keywords": [
     "flex",
@@ -48,7 +48,7 @@
     "babel-preset-react-app": "^9.1.2",
     "css-loader": "^3.6.0",
     "dotenv-webpack": "^4.0.0",
-    "flex-dev-utils": "^4.3.17-alpha.0",
+    "flex-dev-utils": "^4.4.0-alpha.0",
     "fork-ts-checker-webpack-plugin": "^4.1.6",
     "html-webpack-plugin": "^4.5.0",
     "node-ipc": "^9.1.1",

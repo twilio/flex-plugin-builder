@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-test",
-  "version": "4.3.17-alpha.0",
+  "version": "4.4.0-alpha.0",
   "description": "Flex Plugin default test framework that uses Jest Preset",
   "keywords": [
     "flex",
@@ -43,7 +43,7 @@
     "cheerio": "0.22.0",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1",
-    "flex-dev-utils": "^4.3.17-alpha.0",
+    "flex-dev-utils": "^4.4.0-alpha.0",
     "jest": "^26.4.2",
     "jest-environment-jsdom-fourteen": "^1.0.1",
     "jest-watch-typeahead": "^0.6.1",
