@@ -39,12 +39,6 @@ deploy:
     repo: twilio/flex-plugin-builder
     node_js: '10'
 
-branches:
-  only:
-  - main
-  - "/v\\d-beta/"
-  - "/^v\\d+\\.\\d+\\.\\d+.*$/"
-
 notifications:
   slack:
     rooms:
