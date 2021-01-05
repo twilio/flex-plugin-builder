@@ -42,7 +42,7 @@
     "babel-preset-react-app": "^9.1.2",
     "cheerio": "0.22.0",
     "enzyme": "^3.10.0",
-    "enzyme-adapter-react-16": "^1.14.0",
+    "enzyme-adapter-react-16": "^1",
     "flex-dev-utils": "^4.3.16-alpha.0",
     "jest": "^26.4.2",
     "jest-environment-jsdom-fourteen": "^1.0.1",
