@@ -6,6 +6,7 @@ import { Callback } from 'flex-dev-utils/dist/runner';
  *
  * @param callback
  */
+/* istanbul ignore next */
 export default async (callback: Callback) => {
   if (isRequiredScript()) {
     await runner(callback, ...process.argv.splice(2));
@@ -15,6 +16,7 @@ export default async (callback: Callback) => {
 /**
  * Returns true if module is required (i.e. not spawned)
  */
+/* istanbul ignore next */
 export const isRequiredScript = () => require.main === module.parent;
 
 /**
