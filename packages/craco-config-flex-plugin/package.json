@@ -1,6 +1,6 @@
 {
   "name": "craco-config-flex-plugin",
-  "version": "3.14.2",
+  "version": "3.14.5",
   "description": "Craco configs to bundle Twilio Flex plugins",
   "keywords": [
     "config",
@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "clean-webpack-plugin": "^2.0.2",
-    "flex-dev-utils": "^3.14.2",
+    "flex-dev-utils": "^3.14.5",
     "webpack": "4.42.0"
   },
   "devDependencies": {
