@@ -47,7 +47,8 @@
     "jest": "^26.4.2",
     "jest-environment-jsdom-fourteen": "^1.0.1",
     "jest-watch-typeahead": "^0.6.1",
-    "react-app-polyfill": "^1.0.6"
+    "react-app-polyfill": "^1.0.6",
+    "react-test-renderer": "^16"
   },
   "devDependencies": {
     "@jest/types": "^26.5.2"
