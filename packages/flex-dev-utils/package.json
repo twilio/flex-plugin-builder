@@ -37,7 +37,7 @@
     "@k88/pipe-compose": "^2.1.2",
     "address": "^1.1.2",
     "app-module-path": "^2.2.0",
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "axios-mock-adapter": "^1.19.0",
     "copy-template-dir": "^1.4.0",
     "flex-plugins-utils-exception": "^0.18.0",
