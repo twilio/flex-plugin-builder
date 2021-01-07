@@ -25,7 +25,7 @@
 
 ## Getting Started
 
-Flex Plugin Builder or a JavaScript library and requires [Node.js](https://nodejs.org/). We support Node >= 10.12 (and recommend the _even_ versions of Node only). This is a monorepo project managed by [lerna](https://github.com/lerna/lerna) for creating Twilio Flex plugins.
+Flex Plugin Builder requires [Node.js](https://nodejs.org/). We support Node >= 10.12 (and recommend the _even_ versions of Node). This is a monorepo project managed by [lerna](https://github.com/lerna/lerna) for creating Twilio Flex plugins.
 
 - [create-flex-plugin](packages/create-flex-plugin): The CLI tool to start a new Flex plugin project
 - [flex-plugin](packages/flex-plugin): Runtime dependency for Flex plugins

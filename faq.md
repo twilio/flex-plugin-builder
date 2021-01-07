@@ -19,4 +19,4 @@ npm ERR! this command with --force, or --legacy-peer-deps
 npm ERR! to accept an incorrect (and potentially broken) dependency resolution.
 ```
 
-To fix this problem, update your package.json and include `react-test-renderer` package and use the exact same version you've used for your `react` package.
+To fix this problem, update your package.json and include the `react-test-renderer` package and use the exact same version you've used for your `react` package.
