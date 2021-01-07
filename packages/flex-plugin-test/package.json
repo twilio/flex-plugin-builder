@@ -30,9 +30,9 @@
     "prebuild": "npm run clean",
     "build": "tsc",
     "clean": "rm -rf dist",
-    "prepublish": "npm run build",
     "lint": "eslint --ext ts src/",
     "lint:fix": "npm run lint -- --fix",
+    "prepublish": "npm run build",
     "test": "cd ../.. && jest packages/flex-plugin-test --color",
     "test:watch": "cd ../.. && jest packages/flex-plugin-test --watch --color"
   },
@@ -42,12 +42,13 @@
     "babel-preset-react-app": "^9.1.2",
     "cheerio": "0.22.0",
     "enzyme": "^3.10.0",
-    "enzyme-adapter-react-16": "^1.14.0",
+    "enzyme-adapter-react-16": "^1",
     "flex-dev-utils": "^4.3.17-beta.0",
     "jest": "^26.4.2",
     "jest-environment-jsdom-fourteen": "^1.0.1",
     "jest-watch-typeahead": "^0.6.1",
-    "react-app-polyfill": "^1.0.6"
+    "react-app-polyfill": "^1.0.6",
+    "react-test-renderer": "^16"
   },
   "devDependencies": {
     "@jest/types": "^26.5.2"

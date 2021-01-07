@@ -33,9 +33,9 @@
     "prebuild": "npm run clean",
     "build": "tsc",
     "clean": "rm -rf dist",
-    "prepublish": "npm run build",
     "lint": "eslint --ext ts src/",
     "lint:fix": "npm run lint -- --fix",
+    "prepublish": "npm run build",
     "test": "cd ../.. && jest packages/flex-plugin-scripts --color",
     "test:watch": "cd ../.. && jest packages/flex-plugin-scripts --watch --color"
   },
