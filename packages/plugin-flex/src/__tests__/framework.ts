@@ -105,7 +105,7 @@ export const pluginTest = test
           try {
             await fn(ctx.testCmd, ctx, resolve);
             if (fn.length < 3) {
-              resolve();
+              resolve(null);
             }
           } catch (e) {
             reject(e);

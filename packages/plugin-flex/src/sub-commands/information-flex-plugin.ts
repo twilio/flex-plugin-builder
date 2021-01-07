@@ -71,7 +71,7 @@ export default abstract class InformationFlexPlugin<T> extends FlexPlugin {
    * Fetches the resource
    * @abstract
    */
-  abstract async getResource(): Promise<T>;
+  abstract getResource(): Promise<T>;
 
   /**
    * Prints the information on the resource
