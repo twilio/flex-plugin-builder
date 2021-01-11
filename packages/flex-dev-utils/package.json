@@ -34,7 +34,7 @@
     "test:watch": "cd ../.. && jest packages/flex-dev-utils --watch --color"
   },
   "dependencies": {
-    "@k88/pipe-compose": "^2.1.2",
+    "@k88/pipe-compose": "^2.4.2",
     "address": "^1.1.2",
     "app-module-path": "^2.2.0",
     "axios": "^0.21.1",
