@@ -51,7 +51,6 @@
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-typescript": "^7.12.7",
     "@k88/lerna-travis": "^1.1.2",
-    "@k88/pipe-compose": "^2.1.2",
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.20",
     "babel-core": "7.0.0-bridge.0",
