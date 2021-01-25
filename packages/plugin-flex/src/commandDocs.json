@@ -1,109 +1,109 @@
 {
   "flexPlugin": {
     "flags": {
-      "clearTerminal": "Clears the terminal before running the command",
-      "json": "Outputs the result of the command as json string"
+      "clearTerminal": "Clears the terminal before running the command.",
+      "json": "Outputs the result of the command as json string."
     }
   },
   "build": {
-    "description": "Builds the Flex plugin and creates a JavaScript and sourcemap bundle"
+    "description": "Builds the Flex plugin and creates a JavaScript and sourcemap bundle."
   },
   "test": {
-    "description": "Runs the test suite"
+    "description": "Runs the test suite."
   },
   "start": {
-    "description": "Starts a dev-server to build the Flex plugin locally",
+    "description": "Starts a dev-server to build the Flex plugin locally.",
     "flags": {
-      "name": "The name of the plugin you would like to run. You can provide multiple to run them all concurrently in the dev-environment (in Pilot)",
-      "includeRemote": "Use this flag to include all remote plugins in your build (in Pilot)"
+      "name": "The name of the plugin you would like to run. You can provide multiple to run them all concurrently in the dev-environment (in Pilot).",
+      "includeRemote": "Use this flag to include all remote plugins in your build (in Pilot)."
     }
   },
   "deploy": {
-    "description": "Builds and deploys a new version of the Flex plugin to your Flex application",
+    "description": "Builds and deploys a new version of the Flex plugin to your Flex application.",
     "flags": {
-      "patch": "Publishes the version as a patch (SemVer); this is the default",
-      "minor": "Publishes the version as a minor (SemVer)",
-      "major": "Publishes the version as a major (SemVer)",
-      "version": "Publishes the version (SemVer)",
-      "public": "Publishes the plugin as a public Twilio Asset; default is private",
-      "changelog": "The changes (added/removed) made in this plugin version",
-      "description": "The description of this Flex plugin"
+      "patch": "Publishes the version as a patch (SemVer); this is the default.",
+      "minor": "Publishes the version as a minor (SemVer).",
+      "major": "Publishes the version as a major (SemVer).",
+      "version": "Publishes the version (SemVer).",
+      "public": "Publishes the plugin as a public Twilio Asset; default is private.",
+      "changelog": "The changes (added/removed) made in this plugin version.",
+      "description": "The description of this Flex plugin."
     }
   },
   "createConfiguration": {
-    "description": "Creates a Flex Plugin Configuration",
+    "description": "Creates a Flex Plugin Configuration.",
     "flags": {
-      "new": "Creates a new Flex Plugin Configuration, otherwise will append to existing active Configuration",
-      "name": "The friendly name of the Flex Plugin Configuration",
-      "plugin": "The plugin to install, formatted as pluginName@version. Use additional --plugin to provide other plugins to install",
+      "new": "Creates a new Flex Plugin Configuration, otherwise will append to existing active Configuration.",
+      "name": "The friendly name of the Flex Plugin Configuration.",
+      "plugin": "The plugin to enable, formatted as pluginName@version. You may use pluginName@latest as a shortcut for enabling the latest version of the plugin. Use additional --plugin to provide other plugins to enable.",
       "description": "The description of this Flex Plugin Configuration"
     },
     "defaults": {
-      "description": "The description of this Flex Plugin Configuration"
+      "description": "The description of this Flex Plugin Configuration."
     }
   },
   "release": {
-    "description": "Creates a Flex Plugin Release. Enables the plugins (passed as params or via the Flex Configuration) on your Flex application",
+    "description": "Creates a Flex Plugin Release. Enables the plugins (passed as params or via the Flex Configuration) on your Flex application.",
     "flags": {
-      "configurationSid": "The Flex Plugin Configuration SID to release; other options are not required when using this option"
+      "configurationSid": "The Flex Plugin Configuration SID to release; other options are not required when using this option."
     }
   },
   "diff": {
-    "description": "Finds the diff between two Flex Plugin Configurations",
+    "description": "Finds the diff between two Flex Plugin Configurations.",
     "args": {
-      "id1": "The first Flex Plugin Configuration SID",
-      "id2": "The second Flex Plugin Configuration SID"
+      "id1": "The first Flex Plugin Configuration SID.",
+      "id2": "The second Flex Plugin Configuration SID."
     }
   },
   "describeConfiguration": {
-    "description": "Provides details of the Flex Plugin Configuration like status, description and its associated Plugins",
+    "description": "Provides details of the Flex Plugin Configuration like status, description and its associated Plugins.",
     "flags": {
-      "sid": "The Flex Plugin Configuration SID"
+      "sid": "The Flex Plugin Configuration SID."
     }
   },
   "describePlugin": {
-    "description": "Provides details of the Flex Plugin like status, description and its Flex Plugin Versions",
+    "description": "Provides details of the Flex Plugin like status, description and its Flex Plugin Versions.",
     "flags": {
-      "name": "The name of the Flex Plugin to describe"
+      "name": "The name of the Flex Plugin to describe."
     }
   },
   "describePluginVersion": {
-    "description": "Provides details of the Flex Plugin Version like changelog, status and the url of the plugin package",
+    "description": "Provides details of the Flex Plugin Version like changelog, status and the url of the plugin package.",
     "flags": {
-      "name": "The Flex Plugin name of the Plugin Version to describe",
-      "version": "The Flex Plugin Version to describe"
+      "name": "The Flex Plugin name of the Plugin Version to describe.",
+      "version": "The Flex Plugin Version to describe."
     }
   },
   "describeRelease": {
-    "description": "Provides details of the Flex Plugin Release like the underlying Plugin Configuration and Plugins",
+    "description": "Provides details of the Flex Plugin Release like the underlying Plugin Configuration and Plugins.",
     "flags": {
-      "sid": "The Flex Plugin Release SID to describe",
-      "active": ""
+      "sid": "The Flex Plugin Release SID to describe.",
+      "active": "The most recent release to describe."
     }
   },
   "listConfigurations": {
-    "description": "Lists the Flex Plugin Configuration on the account"
+    "description": "Lists the Flex Plugin Configuration on the account."
   },
   "listPluginVersions": {
-    "description": "Lists the Flex Plugin Versions on the account",
+    "description": "Lists the Flex Plugin Versions on the account.",
     "flags": {
-      "name": "The plugin name to list its versions"
+      "name": "The plugin name to list its versions."
     }
   },
   "listPlugins": {
-    "description": "Lists the Flex Plugins on the account"
+    "description": "Lists the Flex Plugins on the account."
   },
   "listReleases": {
-    "description": "Lists the Flex Releases on the account"
+    "description": "Lists the Flex Releases on the account."
   },
   "upgradePlugin": {
-    "description": "Upgrades your plugin to use the latest version of the Plugin CLI",
+    "description": "Upgrades your plugin to use the latest version of the Plugin CLI.",
     "flags": {
-      "install": "If set, will install the dependencies",
-      "beta": "If set, will upgrade to the latest beta version",
-      "yes": "If set, will answer yes to all prompts",
-      "yarn": "Use yarn for installation",
-      "removeLegacyPlugin": "Deletes legacy plugin bundle hosted on Twilio Assets (deployed via plugin builder v3)"
+      "install": "If set, will install the dependencies.",
+      "beta": "If set, will upgrade to the latest beta version.",
+      "yes": "If set, will answer yes to all prompts.",
+      "yarn": "Use yarn for installation.",
+      "removeLegacyPlugin": "Deletes legacy plugin bundle hosted on Twilio Assets (deployed via plugin builder v3)."
     }
   }
 }
