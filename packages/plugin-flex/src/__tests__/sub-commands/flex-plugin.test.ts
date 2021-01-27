@@ -121,8 +121,21 @@ describe('SubCommands/FlexPlugin', () => {
       expect(process.env.SKIP_CREDENTIALS_SAVING).to.equal('true');
       expect(process.env.TWILIO_ACCOUNT_SID).to.not.be.empty;
       expect(process.env.TWILIO_AUTH_TOKEN).to.not.be.empty;
+      expect(process.env.DEBUG).to.be.undefined;
     })
     .it('should call setEnvironment');
+
+  start(['-l', 'debug'])
+    .setup(async (cmd) => {
+      sinon.stub(cmd, 'isPluginFolder').returns(true);
+      sinon.stub(cmd, 'doRun').resolves();
+
+      await cmd.run();
+    })
+    .test(() => {
+      expect(process.env.DEBUG).to.equal('true');
+    })
+    .it('should set debug env to true');
 
   start()
     .setup(async (cmd) => {

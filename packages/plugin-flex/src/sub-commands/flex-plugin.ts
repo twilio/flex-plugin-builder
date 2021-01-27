@@ -471,6 +471,10 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     process.env.SKIP_CREDENTIALS_SAVING = 'true';
     process.env.TWILIO_ACCOUNT_SID = this.twilioClient.username;
     process.env.TWILIO_AUTH_TOKEN = this.twilioClient.password;
+
+    if (this._flags['cli-log-level'] === 'debug') {
+      process.env.DEBUG = 'true';
+    }
   }
 
   /**
