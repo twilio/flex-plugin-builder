@@ -1,14 +1,12 @@
 /* eslint-disable camelcase */
 import { Diff } from 'flex-plugins-api-toolkit';
 
-import { expect, createTest } from '../../../framework';
+import createTest from '../../../framework';
 import FlexPluginsDiff from '../../../../commands/flex/plugins/diff';
 
 describe('Commands/FlexPluginsDeploy', () => {
   const configId1 = 'FJ00000000000000000000000000001';
   const configId2 = 'FJ00000000000000000000000000002';
-
-  const { sinon, start } = createTest(FlexPluginsDiff);
 
   const prefix = FlexPluginsDiff.pluginDiffPrefix;
   const diffs: Diff = {
@@ -63,32 +61,32 @@ describe('Commands/FlexPluginsDeploy', () => {
     },
   };
 
-  afterEach(() => {
-    sinon.restore();
+  beforeEach(() => {
+    jest.resetAllMocks();
   });
 
   it('should have flag as own property', () => {
-    expect(FlexPluginsDiff.hasOwnProperty('flags')).to.equal(true);
+    expect(FlexPluginsDiff.hasOwnProperty('flags')).toEqual(true);
   });
 
-  start([configId1, configId2])
-    .setup(async (instance) => {
-      sinon.stub(instance, 'getDiffs').returns(Promise.resolve(diffs));
-      sinon.stub(instance, 'printDiff').returnsThis();
-      sinon.stub(instance, 'printHeader').returnsThis();
-    })
-    .test(async (instance) => {
-      await instance.doRun();
-      expect(instance.getDiffs).to.have.been.calledOnce;
-      expect(instance.printHeader).to.have.been.calledOnce;
-      expect(instance.printHeader).to.have.been.calledWith('Plugins');
-      expect(instance.printDiff).to.have.been.callCount(6);
-      expect(instance.printDiff).to.have.been.calledWith(diffs.configuration[0]);
-      expect(instance.printDiff).to.have.been.calledWith(diffs.configuration[1]);
-      expect(instance.printDiff).to.have.been.calledWith(diffs.plugins['plugin-one'][0], prefix);
-      expect(instance.printDiff).to.have.been.calledWith(diffs.plugins['plugin-one'][1], prefix);
-      expect(instance.printDiff).to.have.been.calledWith(diffs.plugins['plugin-added'][0], prefix);
-      expect(instance.printDiff).to.have.been.calledWith(diffs.plugins['plugin-deleted'][0], prefix);
-    })
-    .it('should call toolkit and get the diff');
+  it('should call toolkit and get the diff', async () => {
+    const cmd = await createTest(FlexPluginsDiff)(configId1, configId2);
+
+    jest.spyOn(cmd, 'getDiffs').mockResolvedValue(diffs);
+    jest.spyOn(cmd, 'printDiff').mockReturnThis();
+    jest.spyOn(cmd, 'printHeader').mockReturnThis();
+
+    await cmd.doRun();
+
+    expect(cmd.getDiffs).toHaveBeenCalledTimes(1);
+    expect(cmd.printHeader).toHaveBeenCalledTimes(1);
+    expect(cmd.printHeader).toHaveBeenCalledWith('Plugins');
+    expect(cmd.printDiff).toHaveBeenCalledTimes(6);
+    expect(cmd.printDiff).toHaveBeenCalledWith(diffs.configuration[0]);
+    expect(cmd.printDiff).toHaveBeenCalledWith(diffs.configuration[1]);
+    expect(cmd.printDiff).toHaveBeenCalledWith(diffs.plugins['plugin-one'][0], prefix);
+    expect(cmd.printDiff).toHaveBeenCalledWith(diffs.plugins['plugin-one'][1], prefix);
+    expect(cmd.printDiff).toHaveBeenCalledWith(diffs.plugins['plugin-added'][0], prefix);
+    expect(cmd.printDiff).toHaveBeenCalledWith(diffs.plugins['plugin-deleted'][0], prefix);
+  });
 });

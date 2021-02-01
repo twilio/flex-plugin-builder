@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { CLIParseError } from '@oclif/parser/lib/errors';
 
 import * as parser from '../../utils/parser';
@@ -15,12 +14,12 @@ describe('Utils/Parser', () => {
     };
     const trimmed = parser._trim(obj);
 
-    expect(trimmed.str1).to.equal('needs trimming');
-    expect(trimmed.str2).to.equal('needs trimming');
-    expect(trimmed.str3).to.equal('is good');
-    expect(trimmed.num).to.equal(123);
-    expect(trimmed.bool).to.equal(true);
-    expect(trimmed.obj).to.eql({});
+    expect(trimmed.str1).toEqual('needs trimming');
+    expect(trimmed.str2).toEqual('needs trimming');
+    expect(trimmed.str3).toEqual('is good');
+    expect(trimmed.num).toEqual(123);
+    expect(trimmed.bool).toEqual(true);
+    expect(trimmed.obj).toEqual({});
   });
 
   describe('_validate', () => {
@@ -77,8 +76,8 @@ describe('Utils/Parser', () => {
         // @ts-ignore
         parser._validate(flags, options);
       } catch (e) {
-        expect(e).to.be.instanceOf(CLIParseError);
-        expect(e.message).to.contain('cannot be empty');
+        expect(e).toBeInstanceOf(CLIParseError);
+        expect(e.message).toContain('cannot be empty');
         done();
       }
     });
@@ -98,9 +97,9 @@ describe('Utils/Parser', () => {
         // @ts-ignore
         parser._validate(flags, options);
       } catch (e) {
-        expect(e).to.be.instanceOf(CLIParseError);
-        expect(e.message).to.contain('must be at least');
-        expect(e.message).to.contain(`${options.str.min}`);
+        expect(e).toBeInstanceOf(CLIParseError);
+        expect(e.message).toContain('must be at least');
+        expect(e.message).toContain(`${options.str.min}`);
         done();
       }
     });
@@ -120,9 +119,9 @@ describe('Utils/Parser', () => {
         // @ts-ignore
         parser._validate(flags, options);
       } catch (e) {
-        expect(e).to.be.instanceOf(CLIParseError);
-        expect(e.message).to.contain('cannot be longer');
-        expect(e.message).to.contain(`${options.str.max}`);
+        expect(e).toBeInstanceOf(CLIParseError);
+        expect(e.message).toContain('cannot be longer');
+        expect(e.message).toContain(`${options.str.max}`);
         done();
       }
     });

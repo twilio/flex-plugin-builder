@@ -1,34 +1,30 @@
-import { expect, createTest } from '../../../framework';
+import createTest from '../../../framework';
 import FlexPluginsTest from '../../../../commands/flex/plugins/test';
 
 describe('Commands/FlexPluginsTest', () => {
-  const { sinon, start } = createTest(FlexPluginsTest);
-
-  afterEach(() => {
-    sinon.restore();
+  beforeEach(() => {
+    jest.resetAllMocks();
   });
 
   it('should have flag as own property', () => {
-    expect(FlexPluginsTest.hasOwnProperty('flags')).to.equal(true);
+    expect(FlexPluginsTest.hasOwnProperty('flags')).toEqual(true);
   });
 
-  start()
-    .setup((cmd) => {
-      sinon.stub(cmd, 'builderVersion').get(() => 4);
-      sinon.stub(cmd, 'runScript').returnsThis();
-    })
-    .test(async (cmd) => {
-      await cmd.doRun();
+  it('should run test script', async () => {
+    const cmd = await createTest(FlexPluginsTest)();
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
 
-      expect(cmd.runScript).to.have.been.calledTwice;
-      expect(cmd.runScript).to.have.been.calledWith('pre-script-check');
-      expect(cmd.runScript).to.have.been.calledWith('test', ['--env=jsdom']);
-    })
-    .it('should run test script');
+    await cmd.doRun();
 
-  start()
-    .test(async (cmd) => {
-      expect(cmd.checkCompatibility).to.equal(true);
-    })
-    .it('should have compatibility set');
+    expect(cmd.runScript).toHaveBeenCalledTimes(2);
+    expect(cmd.runScript).toHaveBeenCalledWith('pre-script-check');
+    expect(cmd.runScript).toHaveBeenCalledWith('test', ['--env=jsdom']);
+  });
+
+  it('should have compatibility set', async () => {
+    const cmd = await createTest(FlexPluginsTest)();
+
+    expect(cmd.checkCompatibility).toEqual(true);
+  });
 });

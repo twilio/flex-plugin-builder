@@ -1,20 +1,21 @@
 /* eslint-disable camelcase */
 import { CLIParseError } from '@oclif/parser/lib/errors';
 
-import { expect, createTest } from '../../../framework';
+import createTest, { getPrintMethod, mockGetPkg, mockGetter, mockPrintMethod } from '../../../framework';
 import FlexPluginsDeploy, { parseVersionInput } from '../../../../commands/flex/plugins/deploy';
 import { TwilioCliError } from '../../../../exceptions';
 import ServerlessClient from '../../../../clients/ServerlessClient';
 
 describe('Commands/FlexPluginsDeploy', () => {
-  const { sinon, start: _start } = createTest(FlexPluginsDeploy);
+  const serviceSid = 'ZS00000000000000000000000000000';
+  const serviceSid2 = 'ZS00000000000000000000000000001';
   const defaultChangelog = 'sample changlog';
   const pkg = {
     name: 'test-package',
     description: 'the package json description',
   };
   const deployResult = {
-    serviceSid: 'ZS00000000000000000000000000000',
+    serviceSid,
     accountSid: 'AC00000000000000000000000000000',
     environmentSid: 'ZE00000000000000000000000000000',
     domainName: 'ruby-fox-123.twil.io',
@@ -42,47 +43,56 @@ describe('Commands/FlexPluginsDeploy', () => {
     date_updated: '2020',
   };
 
-  const getServerlessSid = sinon.mock().atLeast(1);
-  const hasLegacy = sinon.mock().atLeast(1);
+  const getServerlessSid = jest.fn();
+  const hasLegacy = jest.fn();
 
-  afterEach(() => {
-    sinon.restore();
+  beforeEach(() => {
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
   });
 
-  const start = (args?: string[]) => {
-    args = args ? args : [];
+  const getCommand = async (...args: string[]) => {
+    getServerlessSid.mockResolvedValue(null);
+    hasLegacy.mockResolvedValue(false);
 
-    return _start(['--changelog', defaultChangelog, ...args]).setup(async (cmd) => {
-      getServerlessSid.resetHistory();
-      hasLegacy.resetHistory();
-      getServerlessSid.returns(Promise.resolve(null));
-      hasLegacy.returns(Promise.resolve(false));
+    const cmd = await createTest(FlexPluginsDeploy)('--changelog', defaultChangelog, ...args);
 
-      sinon.stub(cmd, 'builderVersion').get(() => 4);
-      sinon.stub(cmd, 'isPluginFolder').returns(true);
-      sinon.stub(cmd, 'doRun').returnsThis();
-      sinon.stub(cmd, 'pkg').get(() => pkg);
-      sinon.stub(cmd, 'flexConfigurationClient').get(() => ({
-        getServerlessSid,
-      }));
-      sinon.stub(cmd, 'serverlessClient').get(() => ({
-        hasLegacy,
-      }));
-      await cmd.run();
-    });
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
+    jest.spyOn(cmd, 'doRun').mockReturnThis();
+
+    mockGetPkg(cmd, pkg);
+    mockGetter(cmd, 'flexConfigurationClient', { getServerlessSid });
+    mockGetter(cmd, 'serverlessClient', { hasLegacy });
+
+    await cmd.run();
+
+    return cmd;
+  };
+
+  const getPluginVersionsCommand = async (changelog?: string) => {
+    const args = [];
+    if (changelog) {
+      args.push('--changelog', changelog);
+    }
+
+    const cmd = await getCommand(...args);
+    jest.spyOn(cmd.pluginVersionsClient, 'create').mockResolvedValue(pluginVersionResource);
+
+    return cmd;
   };
 
   describe('parseVersionInput', () => {
     it('should parse semver', () => {
-      ['1.0.0', '1.0.0-rc.1'].forEach((s) => expect(parseVersionInput(s)).to.equal(s));
+      ['1.0.0', '1.0.0-rc.1'].forEach((s) => expect(parseVersionInput(s)).toEqual(s));
     });
 
     it('should throw error if invalid semver', (done) => {
       try {
         parseVersionInput('not-a-semver');
       } catch (e) {
-        expect(e instanceof CLIParseError).to.equal(true);
-        expect(e.message).to.contain('valid SemVer');
+        expect(e instanceof CLIParseError).toEqual(true);
+        expect(e.message).toContain('valid SemVer');
         done();
       }
     });
@@ -91,376 +101,305 @@ describe('Commands/FlexPluginsDeploy', () => {
       try {
         parseVersionInput('0.0.0');
       } catch (e) {
-        expect(e instanceof CLIParseError).to.equal(true);
-        expect(e.message).to.contain('cannot be');
+        expect(e instanceof CLIParseError).toEqual(true);
+        expect(e.message).toContain('cannot be');
         done();
       }
     });
   });
 
   it('should have flag as own property', () => {
-    expect(FlexPluginsDeploy.hasOwnProperty('flags')).to.equal(true);
+    expect(FlexPluginsDeploy.hasOwnProperty('flags')).toEqual(true);
   });
 
-  start(['--major'])
-    .test(async (cmd) => {
-      expect(cmd.bumpLevel).to.equal('major');
-    })
-    .it('should get major bump level');
+  it('should get major bump level', async () => {
+    const cmd = await getCommand('--major');
 
-  start(['--minor'])
-    .test(async (cmd) => {
-      expect(cmd.bumpLevel).to.equal('minor');
-    })
-    .it('should get minor bump level');
+    expect(cmd.bumpLevel).toEqual('major');
+  });
 
-  start(['--patch'])
-    .test(async (cmd) => {
-      expect(cmd.bumpLevel).to.equal('patch');
-    })
-    .it('should get patch bump level');
+  it('should get minor bump level', async () => {
+    const cmd = await getCommand('--minor');
 
-  start()
-    .test(async (cmd) => {
-      expect(cmd.bumpLevel).to.equal('patch');
-    })
-    .it('should get patch bump level without any flags');
+    expect(cmd.bumpLevel).toEqual('minor');
+  });
 
-  const pluginVersionsTest = (changelog?: string) => {
-    const flags = [];
-    if (changelog) {
-      flags.push('--changelog', changelog);
-    }
+  it('should get patch bump level', async () => {
+    const cmd = await getCommand('--patch');
 
-    return start(flags).setup(async (cmd) => {
-      sinon.stub(cmd.pluginVersionsClient, 'create').resolves(pluginVersionResource);
+    expect(cmd.bumpLevel).toEqual('patch');
+  });
+
+  it('should get patch bump level without any flags', async () => {
+    const cmd = await getCommand();
+
+    expect(cmd.bumpLevel).toEqual('patch');
+  });
+
+  it('should call registerPluginVersion without any changelog', async () => {
+    const cmd = await getPluginVersionsCommand();
+    const result = await cmd.registerPluginVersion(deployResult);
+
+    expect(result).toEqual(pluginVersionResource);
+    expect(cmd.pluginVersionsClient.create).toHaveBeenCalledTimes(1);
+    expect(cmd.pluginVersionsClient.create).toHaveBeenCalledWith(pkg.name, {
+      Version: deployResult.nextVersion,
+      PluginUrl: deployResult.pluginUrl,
+      Private: !deployResult.isPublic,
+      Changelog: defaultChangelog,
     });
-  };
+  });
 
-  pluginVersionsTest()
-    .test(async (cmd) => {
-      const result = await cmd.registerPluginVersion(deployResult);
+  it('should call registerPluginVersion with changelog', async () => {
+    const cmd = await getPluginVersionsCommand('the-changelog');
 
-      expect(result).to.equal(pluginVersionResource);
-      expect(cmd.pluginVersionsClient.create).to.have.been.calledOnce;
-      expect(cmd.pluginVersionsClient.create).to.have.been.calledWith(pkg.name, {
-        Version: deployResult.nextVersion,
-        PluginUrl: deployResult.pluginUrl,
-        Private: !deployResult.isPublic,
-        Changelog: defaultChangelog,
-      });
-    })
-    .it('should call registerPluginVersion without any changelog');
+    const result = await cmd.registerPluginVersion(deployResult);
 
-  pluginVersionsTest('the-changelog')
-    .test(async (cmd) => {
-      const result = await cmd.registerPluginVersion(deployResult);
+    expect(result).toEqual(pluginVersionResource);
+    expect(cmd.pluginVersionsClient.create).toHaveBeenCalledTimes(1);
+    expect(cmd.pluginVersionsClient.create).toHaveBeenCalledWith(pkg.name, {
+      Version: deployResult.nextVersion,
+      PluginUrl: deployResult.pluginUrl,
+      Private: !deployResult.isPublic,
+      Changelog: 'the-changelog',
+    });
+  });
 
-      expect(result).to.equal(pluginVersionResource);
-      expect(cmd.pluginVersionsClient.create).to.have.been.calledOnce;
-      expect(cmd.pluginVersionsClient.create).to.have.been.calledWith(pkg.name, {
-        Version: deployResult.nextVersion,
-        PluginUrl: deployResult.pluginUrl,
-        Private: !deployResult.isPublic,
-        Changelog: 'the-changelog',
-      });
-    })
-    .it('should call registerPluginVersion with changelog');
+  it('should call registerPlugin', async () => {
+    const cmd = await getCommand();
 
-  start()
-    .setup(async (cmd) => {
-      sinon.stub(cmd.pluginsClient, 'upsert').resolves(pluginResource);
-    })
-    .test(async (cmd) => {
-      const result = await cmd.registerPlugin();
+    jest.spyOn(cmd.pluginsClient, 'upsert').mockResolvedValue(pluginResource);
 
-      expect(result).to.equal(pluginResource);
-      expect(cmd.pluginsClient.upsert).to.have.been.calledOnce;
-      expect(cmd.pluginsClient.upsert).to.have.been.calledWith({
-        UniqueName: pkg.name,
-        FriendlyName: pkg.name,
-        Description: '',
-      });
-    })
-    .it('should call registerPlugin');
+    const result = await cmd.registerPlugin();
 
-  start(['--description', 'some description'])
-    .setup(async (cmd) => {
-      sinon.stub(cmd.pluginsClient, 'upsert').resolves(pluginResource);
-    })
-    .test(async (cmd) => {
-      const result = await cmd.registerPlugin();
+    expect(result).toEqual(pluginResource);
+    expect(cmd.pluginsClient.upsert).toHaveBeenCalledTimes(1);
+    expect(cmd.pluginsClient.upsert).toHaveBeenCalledWith({
+      UniqueName: pkg.name,
+      FriendlyName: pkg.name,
+      Description: '',
+    });
+  });
 
-      expect(result).to.equal(pluginResource);
-      expect(cmd.pluginsClient.upsert).to.have.been.calledOnce;
-      expect(cmd.pluginsClient.upsert).to.have.been.calledWith({
-        UniqueName: pkg.name,
-        FriendlyName: pkg.name,
-        Description: 'some description',
-      });
-    })
-    .it('should call registerPlugin with custom description');
+  it('should call registerPlugin with custom description', async () => {
+    const cmd = await getCommand('--description', 'some description');
 
-  start()
-    .setup((cmd) => {
-      sinon.stub(cmd.pluginsClient, 'get').rejects();
-      sinon.stub(cmd.pluginVersionsClient, 'latest');
-    })
-    .test(async (cmd) => {
+    jest.spyOn(cmd.pluginsClient, 'upsert').mockResolvedValue(pluginResource);
+    const result = await cmd.registerPlugin();
+
+    expect(result).toEqual(pluginResource);
+    expect(cmd.pluginsClient.upsert).toHaveBeenCalledTimes(1);
+    expect(cmd.pluginsClient.upsert).toHaveBeenCalledWith({
+      UniqueName: pkg.name,
+      FriendlyName: pkg.name,
+      Description: 'some description',
+    });
+  });
+
+  it('should validate brand new plugin', async () => {
+    const cmd = await getCommand();
+
+    jest.spyOn(cmd.pluginsClient, 'get').mockRejectedValue(new TwilioCliError());
+    jest.spyOn(cmd.pluginVersionsClient, 'latest');
+
+    await cmd.validatePlugin();
+
+    expect(cmd.pluginsClient.get).toHaveBeenCalledTimes(1);
+    expect(cmd.pluginsClient.get).toHaveBeenCalledWith(pkg.name);
+    expect(cmd.pluginVersionsClient.latest).not.toHaveBeenCalled();
+
+    // @ts-ignore
+    const args = cmd.scriptArgs;
+    expect(args[0]).toEqual('version');
+    expect(args[1]).toEqual('0.0.1');
+    expect(args[2]).toEqual('--pilot-plugins-api');
+  });
+
+  it('should validate plugin as a minor bump', async () => {
+    const cmd = await getCommand('--minor');
+
+    jest.spyOn(cmd.pluginsClient, 'get').mockResolvedValue(pluginResource);
+    jest.spyOn(cmd.pluginVersionsClient, 'latest').mockResolvedValue(pluginVersionResource);
+    await cmd.validatePlugin();
+
+    expect(cmd.pluginsClient.get).toHaveBeenCalledTimes(1);
+    expect(cmd.pluginsClient.get).toHaveBeenCalledWith(pkg.name);
+    expect(cmd.pluginVersionsClient.latest).toHaveBeenCalledTimes(1);
+    expect(cmd.pluginVersionsClient.latest).toHaveBeenCalledWith(pkg.name);
+
+    // @ts-ignore
+    const args = cmd.scriptArgs;
+    expect(args[0]).toEqual('version');
+    expect(args[1]).toEqual('2.1.0');
+    expect(args[2]).toEqual('--pilot-plugins-api');
+  });
+
+  it('should invalidate plugin because next version is smaller', async (done) => {
+    const cmd = await getCommand('--version', '0.0.1');
+
+    jest.spyOn(cmd.pluginsClient, 'get').mockResolvedValue(pluginResource);
+    jest.spyOn(cmd.pluginVersionsClient, 'latest').mockResolvedValue(pluginVersionResource);
+
+    try {
       await cmd.validatePlugin();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TwilioCliError);
+      expect(e.message).toContain('version 0.0.1 must be greater than 2.0.0');
+      expect(cmd.pluginsClient.get).toHaveBeenCalledTimes(1);
+      expect(cmd.pluginsClient.get).toHaveBeenCalledWith(pkg.name);
+      expect(cmd.pluginVersionsClient.latest).toHaveBeenCalledTimes(1);
+      expect(cmd.pluginVersionsClient.latest).toHaveBeenCalledWith(pkg.name);
 
-      expect(cmd.pluginsClient.get).to.have.been.calledOnce;
-      expect(cmd.pluginsClient.get).to.have.been.calledWith(pkg.name);
-      expect(cmd.pluginVersionsClient.latest).to.not.have.been.called;
+      done();
+    }
+  });
 
-      // @ts-ignore
-      const args = cmd.scriptArgs;
-      expect(args[0]).to.equal('version');
-      expect(args[1]).to.equal('0.0.1');
-      expect(args[2]).to.equal('--pilot-plugins-api');
-    })
-    .it('should validate brand new plugin');
+  it('should do nothing if no serviceSid is found', async () => {
+    const cmd = await getCommand();
 
-  start(['--minor'])
-    .setup((cmd) => {
-      sinon.stub(cmd.pluginsClient, 'get').resolves(pluginResource);
-      sinon.stub(cmd.pluginVersionsClient, 'latest').resolves(pluginVersionResource);
-    })
-    .test(async (cmd) => {
-      await cmd.validatePlugin();
+    getServerlessSid.mockResolvedValue(null);
 
-      expect(cmd.pluginsClient.get).to.have.been.calledOnce;
-      expect(cmd.pluginsClient.get).to.have.been.calledWith(pkg.name);
-      expect(cmd.pluginVersionsClient.latest).to.have.been.calledOnce;
-      expect(cmd.pluginVersionsClient.latest).to.have.been.calledWith(pkg.name);
+    await cmd.checkForLegacy();
 
-      // @ts-ignore
-      const args = cmd.scriptArgs;
-      expect(args[0]).to.equal('version');
-      expect(args[1]).to.equal('2.1.0');
-      expect(args[2]).to.equal('--pilot-plugins-api');
-    })
-    .it('should validate plugin as a minor bump');
+    expect(cmd.flexConfigurationClient.getServerlessSid).toHaveBeenCalledTimes(1);
+    expect(cmd.serverlessClient.hasLegacy).not.toHaveBeenCalled();
+  });
 
-  start(['--version', '0.0.1'])
-    .setup((cmd) => {
-      sinon.stub(cmd.pluginsClient, 'get').resolves(pluginResource);
-      sinon.stub(cmd.pluginVersionsClient, 'latest').resolves(pluginVersionResource);
-    })
-    .test(async (cmd, _, done) => {
-      try {
-        await cmd.validatePlugin();
-      } catch (e) {
-        expect(e).to.be.instanceOf(TwilioCliError);
-        expect(e.message).to.contain('version 0.0.1 must be greater than 2.0.0');
-        expect(cmd.pluginsClient.get).to.have.been.calledOnce;
-        expect(cmd.pluginsClient.get).to.have.been.calledWith(pkg.name);
-        expect(cmd.pluginVersionsClient.latest).to.have.been.calledOnce;
-        expect(cmd.pluginVersionsClient.latest).to.have.been.calledWith(pkg.name);
+  it('should print nothing if no legacy plugin is found', async () => {
+    const cmd = await getCommand();
 
-        done();
-      }
-    })
-    .it('should invalidate plugin because next version is smaller');
+    getServerlessSid.mockResolvedValue(serviceSid2);
+    hasLegacy.mockResolvedValue(false);
 
-  start()
-    .setup(() => {
-      getServerlessSid.returns(Promise.resolve(null));
-    })
-    .test(async (cmd) => {
-      await cmd.checkForLegacy();
+    mockPrintMethod(cmd, 'warnHasLegacy');
 
-      expect(cmd.flexConfigurationClient.getServerlessSid).to.have.been.calledOnce;
-      expect(cmd.serverlessClient.hasLegacy).not.to.have.been.called;
-    })
-    .it('should do nothing if no serviceSid is found');
+    await cmd.checkForLegacy();
 
-  start()
-    .setup((cmd) => {
-      getServerlessSid.returns(Promise.resolve('ZSxxx'));
-      hasLegacy.returns(Promise.resolve(false));
-      // @ts-ignore
-      sinon.stub(cmd.prints, 'warnHasLegacy');
-    })
-    .test(async (cmd) => {
-      await cmd.checkForLegacy();
+    expect(cmd.flexConfigurationClient.getServerlessSid).toHaveBeenCalledTimes(1);
+    expect(cmd.serverlessClient.hasLegacy).toHaveBeenCalledTimes(1);
+    expect(cmd.serverlessClient.hasLegacy).toHaveBeenCalledWith(serviceSid2, pkg.name);
+    expect(getPrintMethod(cmd, 'warnHasLegacy')).not.toHaveBeenCalled();
+  });
 
-      expect(cmd.flexConfigurationClient.getServerlessSid).to.have.been.calledOnce;
-      expect(cmd.serverlessClient.hasLegacy).to.have.been.calledOnce;
-      expect(cmd.serverlessClient.hasLegacy).to.have.been.calledWith('ZSxxx', pkg.name);
-      // @ts-ignore
-      expect(cmd.prints.warnHasLegacy).not.to.have.been.called;
-    })
-    .it('should print nothing if no legacy plugin is found');
+  it('should print warning if legacy plugin found', async () => {
+    const cmd = await getCommand();
 
-  start()
-    .setup((cmd) => {
-      getServerlessSid.returns(Promise.resolve('ZSxxx'));
-      hasLegacy.returns(Promise.resolve(true));
-      // @ts-ignore
-      sinon.stub(cmd.prints, 'warnHasLegacy');
-    })
-    .test(async (cmd) => {
-      await cmd.checkForLegacy();
+    getServerlessSid.mockResolvedValue(serviceSid2);
+    hasLegacy.mockResolvedValue(true);
 
-      expect(cmd.flexConfigurationClient.getServerlessSid).to.have.been.calledOnce;
-      expect(cmd.serverlessClient.hasLegacy).to.have.been.calledOnce;
-      expect(cmd.serverlessClient.hasLegacy).to.have.been.calledWith('ZSxxx', pkg.name);
-      // @ts-ignore
-      expect(cmd.prints.warnHasLegacy).to.have.been.calledOnce;
-    })
-    .it('should print warning if legacy plugin found');
+    mockPrintMethod(cmd, 'warnHasLegacy');
 
-  start()
-    .setup((cmd) => {
-      getServerlessSid.returns(Promise.resolve('ZS123'));
+    await cmd.checkForLegacy();
 
-      const getService = sinon.mock().atLeast(1);
-      const getOrCreateDefaultService = sinon.mock().atLeast(1);
-      const updateServiceName = sinon.mock().atLeast(1);
-      const unregisterServerlessSid = sinon.mock().atLeast(1);
-      const registerServerlessSid = sinon.mock().atLeast(1);
-      getService.returns(
-        Promise.resolve({
-          friendlyName: ServerlessClient.NewService.friendlyName,
-        }),
-      );
+    expect(cmd.flexConfigurationClient.getServerlessSid).toHaveBeenCalledTimes(1);
+    expect(cmd.serverlessClient.hasLegacy).toHaveBeenCalledTimes(1);
+    expect(cmd.serverlessClient.hasLegacy).toHaveBeenCalledWith(serviceSid2, pkg.name);
+    expect(getPrintMethod(cmd, 'warnHasLegacy')).toHaveBeenCalledTimes(1);
+  });
 
-      sinon.stub(cmd, 'serverlessClient').get(() => ({
-        getService,
-        updateServiceName,
-        getOrCreateDefaultService,
-      }));
-      sinon.stub(cmd, 'flexConfigurationClient').get(() => ({
-        getServerlessSid,
-        unregisterServerlessSid,
-        registerServerlessSid,
-      }));
-    })
-    .test(async (cmd) => {
-      await cmd.checkServerlessInstance();
+  it('should do nothing if service already exists and has correct name', async () => {
+    const cmd = await getCommand();
 
-      expect(cmd.flexConfigurationClient.getServerlessSid).to.have.been.calledOnce;
-      expect(cmd.serverlessClient.getService).to.have.been.calledOnce;
-      expect(cmd.serverlessClient.updateServiceName).not.to.have.been.called;
-      expect(cmd.serverlessClient.getOrCreateDefaultService).not.to.have.been.called;
-      expect(cmd.flexConfigurationClient.registerServerlessSid).not.to.have.been.called;
-      expect(cmd.flexConfigurationClient.unregisterServerlessSid).not.to.have.been.called;
-    })
-    .it('should do nothing if service already exists and has correct name');
+    getServerlessSid.mockResolvedValue(serviceSid);
+    mockGetter(cmd, 'serverlessClient', {
+      getService: jest.fn().mockResolvedValue({ friendlyName: ServerlessClient.NewService.friendlyName }),
+      updateServiceName: jest.fn(),
+      getOrCreateDefaultService: jest.fn(),
+    });
+    mockGetter(cmd, 'flexConfigurationClient', {
+      getServerlessSid,
+      unregisterServerlessSid: jest.fn(),
+      registerServerlessSid: jest.fn(),
+    });
+    await cmd.checkServerlessInstance();
 
-  start()
-    .setup((cmd) => {
-      getServerlessSid.returns(Promise.resolve('ZS123'));
+    expect(cmd.flexConfigurationClient.getServerlessSid).toHaveBeenCalledTimes(1);
+    expect(cmd.serverlessClient.getService).toHaveBeenCalledTimes(1);
+    expect(cmd.serverlessClient.updateServiceName).not.toHaveBeenCalled();
+    expect(cmd.serverlessClient.getOrCreateDefaultService).not.toHaveBeenCalled();
+    expect(cmd.flexConfigurationClient.registerServerlessSid).not.toHaveBeenCalled();
+    expect(cmd.flexConfigurationClient.unregisterServerlessSid).not.toHaveBeenCalled();
+  });
 
-      const getService = sinon.mock().atLeast(1);
-      const getOrCreateDefaultService = sinon.mock().atLeast(1);
-      const updateServiceName = sinon.mock().atLeast(1);
-      const unregisterServerlessSid = sinon.mock().atLeast(1);
-      const registerServerlessSid = sinon.mock().atLeast(1);
+  it('should do update service name', async () => {
+    const cmd = await getCommand();
 
-      getService.returns(
-        Promise.resolve({
-          friendlyName: 'something else',
-        }),
-      );
+    getServerlessSid.mockResolvedValue(serviceSid);
+    mockGetter(cmd, 'serverlessClient', {
+      getService: jest.fn().mockResolvedValue({ friendlyName: 'something else' }),
+      updateServiceName: jest.fn(),
+      getOrCreateDefaultService: jest.fn(),
+    });
+    mockGetter(cmd, 'flexConfigurationClient', {
+      getServerlessSid,
+      unregisterServerlessSid: jest.fn(),
+      registerServerlessSid: jest.fn(),
+    });
 
-      sinon.stub(cmd, 'serverlessClient').get(() => ({
-        getService,
-        updateServiceName,
-        getOrCreateDefaultService,
-      }));
-      sinon.stub(cmd, 'flexConfigurationClient').get(() => ({
-        getServerlessSid,
-        unregisterServerlessSid,
-        registerServerlessSid,
-      }));
-    })
-    .test(async (cmd) => {
-      await cmd.checkServerlessInstance();
+    await cmd.checkServerlessInstance();
 
-      expect(cmd.flexConfigurationClient.getServerlessSid).to.have.been.calledOnce;
-      expect(cmd.serverlessClient.getService).to.have.been.calledOnce;
-      expect(cmd.serverlessClient.updateServiceName).to.have.been.calledOnce;
-      expect(cmd.serverlessClient.getOrCreateDefaultService).not.to.have.been.called;
-      expect(cmd.flexConfigurationClient.registerServerlessSid).not.to.have.been.called;
-      expect(cmd.flexConfigurationClient.unregisterServerlessSid).not.to.have.been.called;
-    })
-    .it('should do update service name');
+    expect(cmd.flexConfigurationClient.getServerlessSid).toHaveBeenCalledTimes(1);
+    expect(cmd.serverlessClient.getService).toHaveBeenCalledTimes(1);
+    expect(cmd.serverlessClient.updateServiceName).toHaveBeenCalledTimes(1);
+    expect(cmd.serverlessClient.getOrCreateDefaultService).not.toHaveBeenCalled();
+    expect(cmd.flexConfigurationClient.registerServerlessSid).not.toHaveBeenCalled();
+    expect(cmd.flexConfigurationClient.unregisterServerlessSid).not.toHaveBeenCalled();
+  });
 
-  start()
-    .setup((cmd) => {
-      getServerlessSid.returns(Promise.resolve(null));
-      const getService = sinon.mock().atLeast(1);
-      const getOrCreateDefaultService = sinon.mock().atLeast(1);
-      const updateServiceName = sinon.mock().atLeast(1);
-      const unregisterServerlessSid = sinon.mock().atLeast(1);
-      const registerServerlessSid = sinon.mock().atLeast(1);
-      getOrCreateDefaultService.returns(Promise.resolve({ sid: 'ZS456' }));
+  it('should create new service', async () => {
+    const cmd = await getCommand();
 
-      sinon.stub(cmd, 'serverlessClient').get(() => ({
-        getService,
-        updateServiceName,
-        getOrCreateDefaultService,
-      }));
-      sinon.stub(cmd, 'flexConfigurationClient').get(() => ({
-        getServerlessSid,
-        unregisterServerlessSid,
-        registerServerlessSid,
-      }));
-    })
-    .test(async (cmd) => {
-      await cmd.checkServerlessInstance();
+    getServerlessSid.mockResolvedValue(null);
+    mockGetter(cmd, 'serverlessClient', {
+      getService: jest.fn(),
+      updateServiceName: jest.fn(),
+      getOrCreateDefaultService: jest.fn().mockResolvedValue({ sid: serviceSid2 }),
+    });
+    mockGetter(cmd, 'flexConfigurationClient', {
+      getServerlessSid,
+      unregisterServerlessSid: jest.fn(),
+      registerServerlessSid: jest.fn(),
+    });
 
-      expect(cmd.flexConfigurationClient.getServerlessSid).to.have.been.calledOnce;
-      expect(cmd.serverlessClient.getService).not.to.have.been.called;
-      expect(cmd.serverlessClient.updateServiceName).not.to.have.been.called;
-      expect(cmd.serverlessClient.getOrCreateDefaultService).to.have.been.calledOnce;
-      expect(cmd.flexConfigurationClient.registerServerlessSid).to.have.been.calledOnce;
-      expect(cmd.flexConfigurationClient.registerServerlessSid).to.have.been.calledWith('ZS456');
-      expect(cmd.flexConfigurationClient.unregisterServerlessSid).not.to.have.been.called;
-    })
-    .it('should create new service');
+    await cmd.checkServerlessInstance();
 
-  start()
-    .setup((cmd) => {
-      getServerlessSid.returns(Promise.resolve('ZS123'));
-      const getService = sinon.mock().atLeast(1);
-      const getOrCreateDefaultService = sinon.mock().atLeast(1);
-      const updateServiceName = sinon.mock().atLeast(1);
-      const unregisterServerlessSid = sinon.mock().atLeast(1);
-      const registerServerlessSid = sinon.mock().atLeast(1);
-      getOrCreateDefaultService.returns(Promise.resolve({ sid: 'ZS456' }));
-      getService.rejects(new TwilioCliError());
+    expect(cmd.flexConfigurationClient.getServerlessSid).toHaveBeenCalledTimes(1);
+    expect(cmd.serverlessClient.getService).not.toHaveBeenCalled();
+    expect(cmd.serverlessClient.updateServiceName).not.toHaveBeenCalled();
+    expect(cmd.serverlessClient.getOrCreateDefaultService).toHaveBeenCalledTimes(1);
+    expect(cmd.flexConfigurationClient.registerServerlessSid).toHaveBeenCalledTimes(1);
+    expect(cmd.flexConfigurationClient.registerServerlessSid).toHaveBeenCalledWith(serviceSid2);
+    expect(cmd.flexConfigurationClient.unregisterServerlessSid).not.toHaveBeenCalled();
+  });
 
-      sinon.stub(cmd, 'serverlessClient').get(() => ({
-        getService,
-        updateServiceName,
-        getOrCreateDefaultService,
-      }));
-      sinon.stub(cmd, 'flexConfigurationClient').get(() => ({
-        getServerlessSid,
-        unregisterServerlessSid,
-        registerServerlessSid,
-      }));
-    })
-    .test(async (cmd) => {
-      await cmd.checkServerlessInstance();
+  it('should re-create new service', async () => {
+    const cmd = await getCommand();
 
-      expect(cmd.flexConfigurationClient.getServerlessSid).to.have.been.calledOnce;
-      expect(cmd.serverlessClient.getService).to.have.been.calledOnce;
-      expect(cmd.serverlessClient.updateServiceName).not.to.have.been.called;
-      expect(cmd.serverlessClient.getOrCreateDefaultService).to.have.been.calledOnce;
-      expect(cmd.flexConfigurationClient.registerServerlessSid).to.have.been.calledOnce;
-      expect(cmd.flexConfigurationClient.registerServerlessSid).to.have.been.calledWith('ZS456');
-      expect(cmd.flexConfigurationClient.unregisterServerlessSid).to.have.been.calledOnce;
-      expect(cmd.flexConfigurationClient.unregisterServerlessSid).to.have.been.calledWith('ZS123');
-    })
-    .it('should re-create new service');
+    mockGetter(cmd, 'serverlessClient', {
+      getService: jest.fn().mockRejectedValue(new TwilioCliError()),
+      updateServiceName: jest.fn(),
+      getOrCreateDefaultService: jest.fn().mockResolvedValue({ sid: serviceSid2 }),
+    });
+    mockGetter(cmd, 'flexConfigurationClient', {
+      getServerlessSid: jest.fn().mockResolvedValue(serviceSid),
+      unregisterServerlessSid: jest.fn(),
+      registerServerlessSid: jest.fn(),
+    });
+    await cmd.checkServerlessInstance();
 
-  start()
-    .test(async (cmd) => {
-      expect(cmd.checkCompatibility).to.equal(true);
-    })
-    .it('should have compatibility set');
+    expect(cmd.flexConfigurationClient.getServerlessSid).toHaveBeenCalledTimes(1);
+    expect(cmd.serverlessClient.getService).toHaveBeenCalledTimes(1);
+    expect(cmd.serverlessClient.updateServiceName).not.toHaveBeenCalled();
+    expect(cmd.serverlessClient.getOrCreateDefaultService).toHaveBeenCalledTimes(1);
+    expect(cmd.flexConfigurationClient.registerServerlessSid).toHaveBeenCalledTimes(1);
+    expect(cmd.flexConfigurationClient.registerServerlessSid).toHaveBeenCalledWith(serviceSid2);
+    expect(cmd.flexConfigurationClient.unregisterServerlessSid).toHaveBeenCalledTimes(1);
+    expect(cmd.flexConfigurationClient.unregisterServerlessSid).toHaveBeenCalledWith(serviceSid);
+  });
+
+  it('should have compatibility set', async () => {
+    const cmd = await getCommand();
+
+    expect(cmd.checkCompatibility).toEqual(true);
+  });
 });

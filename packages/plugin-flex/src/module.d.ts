@@ -107,3 +107,9 @@ declare module '@twilio/cli-core/src/services/config' {
 
   export { Config, ConfigData, ConfigDataProfile }
 }
+
+declare module '@twilio/cli-core/src/services/secure-storage' {
+  import { SecureStorage } from '@twilio/cli-core/src/services/secure-storage';
+
+  export { SecureStorage }
+}

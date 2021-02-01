@@ -1,296 +1,276 @@
-import { expect, createTest } from '../framework';
+import createTest, { mockGetPkg } from '../framework';
 import FlexPlugin from '../../sub-commands/flex-plugin';
 import * as fs from '../../utils/fs';
 import { TwilioCliError } from '../../exceptions';
 
 describe('SubCommands/FlexPlugin', () => {
   const { env } = process;
-  const { sinon, start } = createTest(FlexPlugin);
 
   beforeEach(() => {
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
+
     process.env = { ...env };
   });
 
-  afterEach(() => {
-    sinon.restore();
-  });
-
   it('should have flag as own property', () => {
-    expect(FlexPlugin.hasOwnProperty('flags')).to.equal(true);
+    expect(FlexPlugin.hasOwnProperty('flags')).toEqual(true);
   });
 
-  start()
-    .setup(() => {
-      sinon.stub(fs, 'filesExist').returns(false);
-    })
-    .test((cmd) => {
-      const result = cmd.isPluginFolder();
+  it('should test isPluginFolder to be false if no package.json is found', async () => {
+    const cmd = await createTest(FlexPlugin)();
 
-      expect(result).to.equal(false);
-      expect(fs.filesExist).to.have.been.calledOnce;
-    })
-    .it('should test isPluginFolder to be false if no package.json is found');
+    jest.spyOn(fs, 'filesExist').mockReturnValue(false);
 
-  start()
-    .setup((cmd) => {
-      sinon.stub(fs, 'filesExist').returns(true);
-      sinon.stub(cmd, 'pkg').get(() => ({
-        dependencies: {},
-        devDependencies: {
-          'flex-plugin-scripts': '',
-        },
-      }));
-    })
-    .test((cmd) => {
-      const result = cmd.isPluginFolder();
+    const result = cmd.isPluginFolder();
 
-      expect(result).to.equal(false);
-      expect(fs.filesExist).to.have.been.calledOnce;
-    })
-    .it('should test isPluginFolder to be false if one scripts not found in package.json');
+    expect(result).toEqual(false);
+    expect(fs.filesExist).toHaveBeenCalledTimes(1);
+  });
 
-  start()
-    .setup((cmd) => {
-      sinon.stub(fs, 'filesExist').returns(true);
-      sinon.stub(cmd, 'pkg').get(() => ({
-        dependencies: {
-          'flex-plugin-scripts': '',
-          '@twilio/flex-ui': '',
-        },
-        devDependencies: {},
-      }));
-    })
-    .test((cmd) => {
-      const result = cmd.isPluginFolder();
+  it('should test isPluginFolder to be false if one scripts not found in package.json', async () => {
+    const cmd = await createTest(FlexPlugin)();
 
-      expect(result).to.equal(true);
-      expect(fs.filesExist).to.have.been.calledOnce;
-    })
-    .it('should test isPluginFolder to be true if both scripts found in dependencies');
+    jest.spyOn(fs, 'filesExist').mockReturnValue(true);
+    mockGetPkg(cmd, {
+      dependencies: {},
+      devDependencies: {
+        'flex-plugin-scripts': '',
+      },
+    });
 
-  start()
-    .setup((cmd) => {
-      sinon.stub(fs, 'filesExist').returns(true);
-      sinon.stub(cmd, 'pkg').get(() => ({
-        dependencies: {},
-        devDependencies: {
-          'flex-plugin-scripts': '',
-          '@twilio/flex-ui': '',
-        },
-      }));
-    })
-    .test((cmd) => {
-      const result = cmd.isPluginFolder();
+    const result = cmd.isPluginFolder();
 
-      expect(result).to.equal(true);
-      expect(fs.filesExist).to.have.been.calledOnce;
-    })
-    .it('should test isPluginFolder to be true if both scripts found in devDependencies');
+    expect(result).toEqual(false);
+    expect(fs.filesExist).toHaveBeenCalledTimes(1);
+  });
 
-  start()
-    .setup(async () => {
-      sinon.stub(fs, 'filesExist').returns(false);
-    })
-    .test((cmd) => {
-      const result = cmd.isPluginFolder();
+  it('should test isPluginFolder to be true if both scripts found in dependencies', async () => {
+    const cmd = await createTest(FlexPlugin)();
 
-      expect(result).to.equal(false);
-      expect(fs.filesExist).to.have.been.calledOnce;
-    })
-    .it('should test isPluginFolder to be false');
+    jest.spyOn(fs, 'filesExist').mockReturnValue(true);
+    mockGetPkg(cmd, {
+      dependencies: {
+        'flex-plugin-scripts': '',
+        '@twilio/flex-ui': '',
+      },
+      devDependencies: {},
+    });
 
-  start()
-    .test(async (cmd, _, done) => {
-      try {
-        await cmd.doRun();
-      } catch (e) {
-        expect(e.message).to.contain(' must be implemented');
-        done();
-      }
-    })
-    .it('should tet doRun throws exception');
+    const result = cmd.isPluginFolder();
 
-  start()
-    .setup(async (cmd) => {
-      sinon.stub(cmd, 'isPluginFolder').returns(true);
-      sinon.stub(cmd, 'doRun').resolves();
+    expect(result).toEqual(true);
+    expect(fs.filesExist).toHaveBeenCalledTimes(1);
+  });
 
+  it('should test isPluginFolder to be true if both scripts found in devDependencies', async () => {
+    const cmd = await createTest(FlexPlugin)();
+
+    jest.spyOn(fs, 'filesExist').mockReturnValue(true);
+    mockGetPkg(cmd, {
+      dependencies: {},
+      devDependencies: {
+        'flex-plugin-scripts': '',
+        '@twilio/flex-ui': '',
+      },
+    });
+
+    const result = cmd.isPluginFolder();
+
+    expect(result).toEqual(true);
+    expect(fs.filesExist).toHaveBeenCalledTimes(1);
+  });
+
+  it('should test isPluginFolder to be false', async () => {
+    const cmd = await createTest(FlexPlugin)();
+
+    jest.spyOn(fs, 'filesExist').mockReturnValue(false);
+
+    const result = cmd.isPluginFolder();
+
+    expect(result).toEqual(false);
+    expect(fs.filesExist).toHaveBeenCalledTimes(1);
+  });
+
+  it('should tet doRun throws exception', async (done) => {
+    const cmd = await createTest(FlexPlugin)();
+
+    try {
+      await cmd.doRun();
+    } catch (e) {
+      expect(e.message).toContain(' must be implemented');
+      done();
+    }
+  });
+
+  it('should call setEnvironment', async () => {
+    const cmd = await createTest(FlexPlugin)();
+
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
+    jest.spyOn(cmd, 'doRun').mockResolvedValue('any');
+
+    await cmd.run();
+
+    expect(process.env.SKIP_CREDENTIALS_SAVING).toEqual('true');
+    expect(process.env.TWILIO_ACCOUNT_SID).toBeDefined();
+    expect(process.env.TWILIO_AUTH_TOKEN).toBeDefined();
+    expect(process.env.DEBUG).toBeUndefined();
+  });
+
+  it('should set debug env to true', async () => {
+    const cmd = await createTest(FlexPlugin)('-l', 'debug');
+
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
+    jest.spyOn(cmd, 'doRun').mockResolvedValue('any');
+
+    await cmd.run();
+
+    expect(process.env.DEBUG).toEqual('true');
+  });
+
+  it('should run the main command successfully', async () => {
+    const cmd = await createTest(FlexPlugin)();
+
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
+    jest.spyOn(cmd, 'setupEnvironment').mockReturnThis();
+    jest.spyOn(cmd, 'doRun').mockResolvedValue(null);
+
+    await cmd.run();
+
+    expect(cmd.pluginsApiToolkit).toBeDefined();
+    expect(cmd.pluginsClient).toBeDefined();
+    expect(cmd.pluginVersionsClient).toBeDefined();
+    expect(cmd.configurationsClient).toBeDefined();
+
+    expect(cmd.isPluginFolder).toHaveBeenCalledTimes(1);
+    expect(cmd.setupEnvironment).toHaveBeenCalledTimes(1);
+    expect(cmd.doRun).toHaveBeenCalledTimes(1);
+  });
+
+  it('should return raw format', async () => {
+    const cmd = await createTest(FlexPlugin)('--json');
+
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
+    jest.spyOn(cmd, 'setupEnvironment').mockReturnThis();
+    jest.spyOn(cmd, 'doRun').mockResolvedValue({ object: 'result' });
+
+    await cmd.run();
+
+    // @ts-ignore
+    expect(cmd._logger.info).toHaveBeenCalledWith('{"object":"result"}');
+  });
+
+  it('should not return raw format', async () => {
+    const cmd = await createTest(FlexPlugin)();
+    // []
+
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
+    jest.spyOn(cmd, 'setupEnvironment').mockReturnThis();
+    jest.spyOn(cmd, 'doRun').mockResolvedValue({ object: 'result' });
+
+    await cmd.run();
+
+    // @ts-ignore
+    expect(cmd._logger.info).not.toHaveBeenCalledWith('{"object":"result"}');
+  });
+
+  it('should throw exception if script needs to run in plugin directory but is not', async (done) => {
+    const cmd = await createTest(FlexPlugin)();
+
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
+    jest.spyOn(cmd, 'doRun').mockResolvedValue(null);
+
+    try {
       await cmd.run();
-    })
-    .test(() => {
-      expect(process.env.SKIP_CREDENTIALS_SAVING).to.equal('true');
-      expect(process.env.TWILIO_ACCOUNT_SID).to.not.be.empty;
-      expect(process.env.TWILIO_AUTH_TOKEN).to.not.be.empty;
-      expect(process.env.DEBUG).to.be.undefined;
-    })
-    .it('should call setEnvironment');
+    } catch (e) {
+      expect(e instanceof TwilioCliError).toEqual(true);
+      expect(e.message).toContain('flex plugin directory');
+      done();
+    }
+  });
 
-  start(['-l', 'debug'])
-    .setup(async (cmd) => {
-      sinon.stub(cmd, 'isPluginFolder').returns(true);
-      sinon.stub(cmd, 'doRun').resolves();
+  it('should return null for builderVersion if script is not found', async () => {
+    const cmd = await createTest(FlexPlugin)();
 
-      await cmd.run();
-    })
-    .test(() => {
-      expect(process.env.DEBUG).to.equal('true');
-    })
-    .it('should set debug env to true');
+    jest.spyOn(fs, 'readJSONFile').mockReturnValue({
+      devDependencies: {},
+      dependencies: {},
+    });
 
-  start()
-    .setup(async (cmd) => {
-      sinon.stub(cmd, 'isPluginFolder').returns(true);
-      sinon.stub(cmd, 'setupEnvironment');
-      sinon.stub(cmd, 'doRun').resolves();
+    expect(cmd.builderVersion).toBeNull();
+  });
 
-      await cmd.run();
-    })
-    .test((cmd) => {
-      expect(cmd.pluginsApiToolkit).to.be.exist;
-      expect(cmd.pluginsClient).to.be.exist;
-      expect(cmd.pluginVersionsClient).to.be.exist;
-      expect(cmd.configurationsClient).to.be.exist;
+  it('should return version from dependencies', async () => {
+    const cmd = await createTest(FlexPlugin)();
 
-      expect(cmd.isPluginFolder).to.have.been.calledOnce;
-      expect(cmd.setupEnvironment).to.have.been.calledOnce;
-      expect(cmd.doRun).to.have.been.calledOnce;
-    })
-    .it('should run the main command successfully');
+    jest.spyOn(fs, 'readJSONFile').mockReturnValue({
+      devDependencies: {},
+      dependencies: {
+        'flex-plugin-scripts': '1.2.3',
+      },
+    });
 
-  start(['--json'])
-    .setup(async (cmd) => {
-      sinon.stub(cmd, 'isPluginFolder').returns(true);
-      sinon.stub(cmd, 'setupEnvironment');
-      sinon.stub(cmd, 'doRun').resolves({ object: 'result' });
+    expect(cmd.builderVersion).toEqual(1);
+  });
 
-      await cmd.run();
-    })
-    .test((cmd) => {
-      // @ts-ignore
-      expect(cmd._logger.info).to.have.been.calledWith('{"object":"result"}');
-    })
-    .it('should return raw format');
+  it('should return version from devDependencies', async () => {
+    const cmd = await createTest(FlexPlugin)();
 
-  start([])
-    .setup(async (cmd) => {
-      sinon.stub(cmd, 'isPluginFolder').returns(true);
-      sinon.stub(cmd, 'setupEnvironment');
-      sinon.stub(cmd, 'doRun').resolves({ object: 'result' });
+    jest.spyOn(fs, 'readJSONFile').mockReturnValue({
+      devDependencies: {
+        'flex-plugin-scripts': '^2.3.4-beta.0',
+      },
+      dependencies: {},
+    });
 
-      await cmd.run();
-    })
-    .test((cmd) => {
-      // @ts-ignore
-      expect(cmd._logger.info).not.to.have.been.calledWith('{"object":"result"}');
-    })
-    .it('should not return raw format');
+    expect(cmd.builderVersion).toEqual(2);
+  });
 
-  start()
-    .setup(async (cmd) => {
-      sinon.stub(cmd, 'isPluginFolder').returns(false);
-      sinon.stub(cmd, 'doRun').resolves();
-    })
-    .test(async (cmd, _, done) => {
-      try {
-        await cmd.run();
-      } catch (e) {
-        expect(e instanceof TwilioCliError).to.equal(true);
-        expect(e.message).to.contain('flex plugin directory');
-        done();
-      }
-    })
-    .it('should throw exception if script needs to run in plugin directory but is not');
+  it('should return null if invalid version', async () => {
+    const cmd = await createTest(FlexPlugin)();
 
-  start()
-    .setup(async () => {
-      sinon.stub(fs, 'readJSONFile').returns({
-        devDependencies: {},
-        dependencies: {},
-      });
-    })
-    .test(async (cmd) => {
-      expect(cmd.builderVersion).to.be.null;
-    })
-    .it('should return null for builderVersion if script is not found');
+    jest.spyOn(fs, 'readJSONFile').mockReturnValue({
+      devDependencies: {
+        'flex-plugin-scripts': 'not-a-semver',
+      },
+      dependencies: {},
+    });
 
-  start()
-    .setup(async () => {
-      sinon.stub(fs, 'readJSONFile').returns({
-        devDependencies: {},
-        dependencies: {
-          'flex-plugin-scripts': '1.2.3',
-        },
-      });
-    })
-    .test(async (cmd) => {
-      expect(cmd.builderVersion).to.equal(1);
-    })
-    .it('should return version from dependencies');
+    expect(cmd.builderVersion).toBeNull();
+  });
 
-  start()
-    .setup(async () => {
-      sinon.stub(fs, 'readJSONFile').returns({
-        devDependencies: {
-          'flex-plugin-scripts': '^2.3.4-beta.0',
-        },
-        dependencies: {},
-      });
-    })
-    .test(async (cmd) => {
-      expect(cmd.builderVersion).to.equal(2);
-    })
-    .it('should return version from devDependencies');
+  it('should quit if builder version is incorrect', async () => {
+    const cmd = await createTest(FlexPlugin)();
 
-  start()
-    .setup(async () => {
-      sinon.stub(fs, 'readJSONFile').returns({
-        devDependencies: {
-          'flex-plugin-scripts': 'not-a-semver',
-        },
-        dependencies: {},
-      });
-    })
-    .test(async (cmd) => {
-      expect(cmd.builderVersion).to.be.null;
-    })
-    .it('should return null if invalid version');
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(3);
+    jest.spyOn(cmd, 'checkCompatibility', 'get').mockReturnValue(true);
+    jest.spyOn(cmd, 'exit').mockReturnThis();
+    jest.spyOn(cmd, 'doRun').mockReturnThis();
 
-  start()
-    .setup(async (cmd) => {
-      sinon.stub(cmd, 'isPluginFolder').returns(true);
-      sinon.stub(cmd, 'builderVersion').get(() => 3);
-      sinon.stub(cmd, 'checkCompatibility').get(() => true);
-      sinon.stub(cmd, 'exit').returnsThis();
-      sinon.stub(cmd, 'doRun').resolves();
+    await cmd.run();
+    // @ts-ignore
+    expect(cmd.exit).toHaveBeenCalledTimes(1);
+    expect(cmd.exit).toHaveBeenCalledWith(1);
+  });
 
-      await cmd.run();
-    })
-    .test((cmd) => {
-      // @ts-ignore
-      expect(cmd.exit).to.have.been.calledOnce;
-      expect(cmd.exit).to.have.been.calledWith(1);
-    })
-    .it('should quit if builder version is incorrect');
+  it('should not quit if builder version is correct', async () => {
+    const cmd = await createTest(FlexPlugin)();
 
-  start()
-    .setup(async (cmd) => {
-      sinon.stub(cmd, 'isPluginFolder').returns(true);
-      sinon.stub(cmd, 'builderVersion').get(() => 4);
-      sinon.stub(cmd, 'checkCompatibility').get(() => true);
-      sinon.stub(cmd, 'exit').returnsThis();
-      sinon.stub(cmd, 'doRun').resolves();
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'checkCompatibility', 'get').mockReturnValue(true);
+    jest.spyOn(cmd, 'exit').mockReturnThis();
+    jest.spyOn(cmd, 'doRun').mockReturnThis();
 
-      await cmd.run();
-    })
-    .test((cmd) => {
-      // @ts-ignore
-      expect(cmd.exit).not.to.have.been.called;
-    })
-    .it('should not quit if builder version is correct');
+    await cmd.run();
+    // @ts-ignore
+    expect(cmd.exit).not.toHaveBeenCalled();
+  });
 
-  start()
-    .test(async (cmd) => {
-      expect(cmd.checkCompatibility).to.equal(false);
-    })
-    .it('should have compatibility set to false');
+  it('should have compatibility set to false', async () => {
+    const cmd = await createTest(FlexPlugin)();
+
+    expect(cmd.checkCompatibility).toEqual(false);
+  });
 });

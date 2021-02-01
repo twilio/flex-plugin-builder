@@ -1,19 +1,20 @@
-import { expect } from 'chai';
 import { ServiceListInstance } from 'twilio/lib/rest/serverless/v1/service';
 import { Logger } from '@oclif/errors';
 
-import { sinon } from '../framework';
 import ServerlessClient from '../../clients/ServerlessClient';
 
 describe('ServerlessClient', () => {
   const serviceSid = 'ZS00000000000000000000000000000000';
   const pluginName = 'plugin-name';
+  const mainPath = '/some/path';
+  const anotherPath = '/another/path';
+  const pluginPath = `/plugins/${pluginName}/0.0.0/bundle.js`;
 
-  const listEnv = sinon.stub();
-  const getBuild = sinon.stub();
-  const getService = sinon.stub();
-  const createService = sinon.stub();
-  getService.returns({
+  const listEnv = jest.fn();
+  const getBuild = jest.fn();
+  const getService = jest.fn();
+  const createService = jest.fn();
+  getService.mockReturnValue({
     environments: {
       list: listEnv,
     },
@@ -23,7 +24,7 @@ describe('ServerlessClient', () => {
       }),
     },
   });
-  const debug = sinon.stub();
+  const debug = jest.fn();
   // @ts-ignore
   const logger: Logger = { debug } as Logger;
 
@@ -33,112 +34,80 @@ describe('ServerlessClient', () => {
   const client = new ServerlessClient(twilioClient, logger as Logger);
 
   beforeEach(() => {
-    sinon.restore();
+    jest.resetAllMocks();
   });
 
   describe('getLegacyAsset', () => {
     it('should return false ', async () => {
       const build = {
-        assetVersions: [
-          {
-            path: '/some/path',
-          },
-          {
-            path: 'another-path',
-          },
-        ],
+        assetVersions: [{ path: mainPath }, { path: anotherPath }],
       };
 
       // @ts-ignore
-      expect(client.getLegacyAsset(build, pluginName)).to.equal(undefined);
+      expect(client.getLegacyAsset(build, pluginName)).toEqual(undefined);
     });
 
     it('should return true', async () => {
       const build = {
-        assetVersions: [
-          {
-            path: `/plugins/${pluginName}/0.0.0/bundle.js`,
-          },
-          {
-            path: 'another-path',
-          },
-        ],
+        assetVersions: [{ path: pluginPath }, { path: anotherPath }],
       };
       // @ts-ignore
-      expect(client.getLegacyAsset(build, pluginName)).to.equal(build.assetVersions[0]);
+      expect(client.getLegacyAsset(build, pluginName)).toEqual(build.assetVersions[0]);
     });
   });
 
   describe('hasLegacy', () => {
     it('should return false if no build is found', async () => {
       // @ts-ignore
-      sinon.stub(client, 'getBuildAndEnvironment').returns(Promise.resolve({}));
+      jest.spyOn(client, 'getBuildAndEnvironment').mockResolvedValue({});
 
       const result = await client.hasLegacy(serviceSid, pluginName);
 
-      expect(result).to.equal(false);
+      expect(result).toEqual(false);
       // @ts-ignore
       const { getBuildAndEnvironment } = client;
-      expect(getBuildAndEnvironment).to.have.been.calledOnce;
-      expect(getBuildAndEnvironment).to.have.been.calledWith(serviceSid, pluginName);
+      expect(getBuildAndEnvironment).toHaveBeenCalledTimes(1);
+      expect(getBuildAndEnvironment).toHaveBeenCalledWith(serviceSid, pluginName);
     });
 
     it('should return false if no bundle is found', async () => {
       const build = {
-        assetVersions: [
-          {
-            path: '/some/path',
-          },
-          {
-            path: 'another-path',
-          },
-        ],
+        assetVersions: [{ path: mainPath }, { path: anotherPath }],
       };
       // @ts-ignore
-      sinon.stub(client, 'getBuildAndEnvironment').returns(Promise.resolve({ build }));
+      jest.spyOn(client, 'getBuildAndEnvironment').mockResolvedValue({ build });
 
       const result = await client.hasLegacy(serviceSid, pluginName);
 
-      expect(result).to.equal(false);
+      expect(result).toEqual(false);
     });
 
     it('should return true', async () => {
       const build = {
-        assetVersions: [
-          {
-            path: `/plugins/${pluginName}/0.0.0/bundle.js`,
-          },
-          {
-            path: 'another-path',
-          },
-        ],
+        assetVersions: [{ path: pluginPath }, { path: anotherPath }],
       };
       // @ts-ignore
-      sinon.stub(client, 'getBuildAndEnvironment').returns(Promise.resolve({ build }));
+      jest.spyOn(client, 'getBuildAndEnvironment').mockResolvedValue({ build });
 
       const result = await client.hasLegacy(serviceSid, pluginName);
 
-      expect(result).to.equal(true);
+      expect(result).toEqual(true);
     });
   });
 
   describe('getOrCreateDefaultService', () => {
-    beforeEach(() => {
-      createService.reset();
-    });
-
     it('should return existing service', async () => {
       const service1 = { uniqueName: 'default' };
       const service2 = { uniqueName: 'anotherName' };
 
       // @ts-ignore
-      sinon.stub(client, 'listServices').returns(Promise.resolve([service1, service2]));
+      jest.spyOn(client, 'listServices').mockResolvedValue([service1, service2]);
 
       const service = await client.getOrCreateDefaultService();
 
-      expect(service).to.eql(service1);
-      expect(client.listServices).to.have.been.calledOnce;
-      expect(createService).not.to.have.been.called;
+      expect(service).toEqual(service1);
+      expect(client.listServices).toHaveBeenCalledTimes(1);
+      expect(createService).not.toHaveBeenCalled();
     });
 
     it('should not find service and instead create a new service', async () => {
@@ -147,30 +116,30 @@ describe('ServerlessClient', () => {
       const newService = { uniqueName: 'default' };
 
       // @ts-ignore
-      sinon.stub(client, 'listServices').returns(Promise.resolve([service1, service2]));
-      createService.returns(Promise.resolve(newService));
+      jest.spyOn(client, 'listServices').mockResolvedValue([service1, service2]);
+      createService.mockResolvedValue(newService);
 
       const service = await client.getOrCreateDefaultService();
 
-      expect(service).to.eql(newService);
-      expect(client.listServices).to.have.been.calledOnce;
-      expect(createService).to.have.been.calledOnce;
-      expect(createService).to.have.been.calledWith(ServerlessClient.NewService);
+      expect(service).toEqual(newService);
+      expect(client.listServices).toHaveBeenCalledTimes(1);
+      expect(createService).toHaveBeenCalledTimes(1);
+      expect(createService).toHaveBeenCalledWith(ServerlessClient.NewService);
     });
 
     it('should create a new service because no services have been found', async () => {
       const newService = { uniqueName: 'default' };
 
       // @ts-ignore
-      sinon.stub(client, 'listServices').returns(Promise.resolve([]));
-      createService.returns(Promise.resolve(newService));
+      jest.spyOn(client, 'listServices').mockResolvedValue([]);
+      createService.mockResolvedValue(newService);
 
       const service = await client.getOrCreateDefaultService();
 
-      expect(service).to.eql(newService);
-      expect(client.listServices).to.have.been.calledOnce;
-      expect(createService).to.have.been.calledOnce;
-      expect(createService).to.have.been.calledWith(ServerlessClient.NewService);
+      expect(service).toEqual(newService);
+      expect(client.listServices).toHaveBeenCalledTimes(1);
+      expect(createService).toHaveBeenCalledTimes(1);
+      expect(createService).toHaveBeenCalledWith(ServerlessClient.NewService);
     });
   });
 });

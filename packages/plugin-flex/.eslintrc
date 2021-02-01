@@ -1,7 +1,6 @@
 {
   "extends": [
-    "twilio-ts",
-    "twilio-mocha"
+    "twilio-ts"
   ],
   "parserOptions": {
     "ecmaVersion": 2018,

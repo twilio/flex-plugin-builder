@@ -1,12 +1,12 @@
 import * as pluginBuilderStartScript from 'flex-plugin-scripts/dist/scripts/start';
 
-import { expect, createTest } from '../../../framework';
+import createTest, { mockGetPkg } from '../../../framework';
 import FlexPluginsStart from '../../../../commands/flex/plugins/start';
 import { TwilioCliError } from '../../../../exceptions';
 import * as fs from '../../../../utils/fs';
 
 describe('Commands/FlexPluginsStart', () => {
-  const { sinon, start } = createTest(FlexPluginsStart);
+  // const { sinon, start } = createTest(FlexPluginsStart);
   const pkg = {
     name: 'plugin-testOne',
     dependencies: {
@@ -37,236 +37,224 @@ describe('Commands/FlexPluginsStart', () => {
     ],
   };
 
-  let findPortAvailablePort = sinon.stub(pluginBuilderStartScript, 'findPortAvailablePort');
+  let findPortAvailablePort = jest.spyOn(pluginBuilderStartScript, 'findPortAvailablePort');
 
-  afterEach(() => {
-    sinon.restore();
+  beforeEach(() => {
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
 
-    findPortAvailablePort = sinon.stub(pluginBuilderStartScript, 'findPortAvailablePort');
+    findPortAvailablePort = jest.spyOn(pluginBuilderStartScript, 'findPortAvailablePort');
   });
 
   it('should have flag as own property', () => {
-    expect(FlexPluginsStart.hasOwnProperty('flags')).to.equal(true);
+    expect(FlexPluginsStart.hasOwnProperty('flags')).toEqual(true);
   });
 
-  start()
-    .setup((cmd) => {
-      sinon.stub(cmd, 'builderVersion').get(() => 4);
-      sinon.stub(cmd, 'runScript').returnsThis();
-      sinon.stub(cmd, 'spawnScript').returnsThis();
-      sinon.stub(cmd, 'isPluginFolder').returns(true);
-      sinon.stub(cmd, 'pkg').get(() => pkg);
-      sinon.stub(cmd, 'pluginsConfig').get(() => config);
-      sinon.stub(fs, 'readJSONFile').returns(pkg);
-      findPortAvailablePort.returns(Promise.resolve(100));
-    })
-    .test(async (cmd) => {
-      await cmd.doRun();
+  it('should run start script for the directory plugin', async () => {
+    const cmd = await createTest(FlexPluginsStart)();
 
-      expect(cmd.pluginsConfig).to.equal(config);
-      expect(cmd.runScript).to.have.been.calledThrice;
-      expect(cmd.runScript).to.have.been.calledWith('start', ['flex', '--name', pkg.name]);
-      expect(cmd.runScript).to.have.been.calledWith('pre-start-check', ['--name', pkg.name]);
-      expect(cmd.runScript).to.have.been.calledWith('pre-script-check', ['--name', pkg.name]);
-      expect(cmd.spawnScript).to.have.been.calledWith('start', ['plugin', '--name', pkg.name, '--port', '100']);
-    })
-    .it('should run start script for the directory plugin');
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
+    mockGetPkg(cmd, pkg);
+    jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
+    jest.spyOn(fs, 'readJSONFile').mockReturnValue(pkg);
+    findPortAvailablePort.mockResolvedValue(100);
 
-  start()
-    .setup((cmd) => {
-      sinon.stub(cmd, 'builderVersion').get(() => 4);
-      sinon.stub(cmd, 'runScript').returnsThis();
-      sinon.stub(cmd, 'spawnScript').returnsThis();
-      sinon.stub(cmd, 'isPluginFolder').returns(true);
-      sinon.stub(cmd, 'pkg').get(() => badVersionPkg);
-      sinon.stub(cmd, 'pkg').get(() => badVersionPkg);
-      sinon.stub(cmd, 'pluginsConfig').get(() => config);
-      sinon.stub(fs, 'readJSONFile').returns(badVersionPkg);
-      findPortAvailablePort.returns(Promise.resolve(100));
-    })
-    .test(async (cmd) => {
-      try {
-        await cmd.run();
-      } catch (e) {
-        expect(e).to.be.instanceOf(TwilioCliError);
-        expect(e.message).to.contain('is not compatible');
-        expect(cmd._flags.name).to.be.undefined;
-        expect(cmd._flags['include-remote']).to.be.undefined;
-        expect(cmd.runScript).have.been.calledTwice;
-        expect(cmd.runScript).to.have.been.calledWith('pre-start-check', ['--name', badVersionPkg.name]);
-        expect(cmd.runScript).to.have.been.calledWith('pre-script-check', ['--name', badVersionPkg.name]);
-        expect(cmd.spawnScript).not.to.have.been.called;
-      }
-    })
-    .it('should error due to bad versioning');
+    await cmd.doRun();
 
-  start()
-    .setup((cmd) => {
-      sinon.stub(cmd, 'builderVersion').get(() => 4);
-      sinon.stub(cmd, 'runScript').returnsThis();
-      sinon.stub(cmd, 'spawnScript').returnsThis();
-      sinon.stub(cmd, 'isPluginFolder').returns(true);
-      sinon.stub(cmd, 'pkg').get(() => badPluginsPkg);
-      sinon.stub(cmd, 'pluginsConfig').get(() => config);
-      findPortAvailablePort.returns(Promise.resolve(100));
-    })
-    .test(async (cmd) => {
-      try {
-        await cmd.run();
-      } catch (e) {
-        expect(e).to.be.instanceOf(TwilioCliError);
-        expect(e.message).to.contain('was not found');
-        expect(cmd._flags.name).to.be.undefined;
-        expect(cmd._flags['include-remote']).to.be.undefined;
-        expect(cmd.runScript).have.been.calledTwice;
-        expect(cmd.runScript).to.have.been.calledWith('pre-start-check', ['--name', badPluginsPkg.name]);
-        expect(cmd.runScript).to.have.been.calledWith('pre-script-check', ['--name', badPluginsPkg.name]);
-        expect(cmd.spawnScript).not.to.have.been.called;
-      }
-    })
-    .it('should error due to not being in the plugins.json file');
+    expect(cmd.pluginsConfig).toEqual(config);
+    expect(cmd.runScript).toHaveBeenCalledTimes(3);
+    expect(cmd.runScript).toHaveBeenCalledWith('start', ['flex', '--name', pkg.name]);
+    expect(cmd.runScript).toHaveBeenCalledWith('pre-start-check', ['--name', pkg.name]);
+    expect(cmd.runScript).toHaveBeenCalledWith('pre-script-check', ['--name', pkg.name]);
+    expect(cmd.spawnScript).toHaveBeenCalledWith('start', ['plugin', '--name', pkg.name, '--port', '100']);
+  });
 
-  start(['--name', 'plugin-testOne', '--name', 'plugin-testTwo', '--include-remote'])
-    .setup(async (cmd) => {
-      sinon.stub(cmd, 'builderVersion').get(() => 4);
-      sinon.stub(cmd, 'runScript').returnsThis();
-      sinon.stub(cmd, 'spawnScript').returnsThis();
-      sinon.stub(cmd, 'isPluginFolder').returns(false);
-      sinon.stub(cmd, 'pluginsConfig').get(() => config);
-      sinon.stub(fs, 'readJSONFile').returns(pkg);
-      findPortAvailablePort.returns(Promise.resolve(100));
-    })
-    .test(async (cmd) => {
+  it('should error due to bad versioning', async () => {
+    const cmd = await createTest(FlexPluginsStart)();
+
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
+    mockGetPkg(cmd, badVersionPkg);
+    jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
+    jest.spyOn(fs, 'readJSONFile').mockReturnValue(badVersionPkg);
+    findPortAvailablePort.mockResolvedValue(100);
+
+    try {
       await cmd.run();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TwilioCliError);
+      expect(e.message).toContain('is not compatible');
+      expect(cmd._flags.name).toBeUndefined();
+      expect(cmd._flags['include-remote']).toBeUndefined();
+      expect(cmd.runScript).toHaveBeenCalledTimes(2);
+      expect(cmd.runScript).toHaveBeenCalledWith('pre-start-check', ['--name', badVersionPkg.name]);
+      expect(cmd.runScript).toHaveBeenCalledWith('pre-script-check', ['--name', badVersionPkg.name]);
+      expect(cmd.spawnScript).not.toHaveBeenCalled();
+    }
+  });
 
-      expect(cmd._flags.name.includes('plugin-testOne'));
-      expect(cmd._flags.name.includes('plugin-testTwo'));
-      expect(cmd._flags.name.length).to.equal(2);
-      expect(cmd._flags['include-remote']).to.be.true;
-    })
-    .it('should read the name and include-remote flags');
+  it('should error due to not being in the plugins.json file', async () => {
+    const cmd = await createTest(FlexPluginsStart)();
 
-  start(['--name', 'plugin-testOne'])
-    .setup(async (cmd) => {
-      sinon.stub(cmd, 'builderVersion').get(() => 4);
-      sinon.stub(cmd, 'runScript').returnsThis();
-      sinon.stub(cmd, 'spawnScript').returnsThis();
-      sinon.stub(cmd, 'isPluginFolder').returns(false);
-      sinon.stub(cmd, 'pluginsConfig').get(() => config);
-      sinon.stub(fs, 'readJSONFile').returns(pkg);
-      findPortAvailablePort.returns(Promise.resolve(100));
-    })
-    .test(async (cmd) => {
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
+    mockGetPkg(cmd, badPluginsPkg);
+    jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
+    findPortAvailablePort.mockResolvedValue(100);
+
+    try {
       await cmd.run();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TwilioCliError);
+      expect(e.message).toContain('was not found');
+      expect(cmd._flags.name).toBeUndefined();
+      expect(cmd._flags['include-remote']).toBeUndefined();
+      expect(cmd.runScript).toHaveBeenCalledTimes(2);
+      expect(cmd.runScript).toHaveBeenCalledWith('pre-start-check', ['--name', badPluginsPkg.name]);
+      expect(cmd.runScript).toHaveBeenCalledWith('pre-script-check', ['--name', badPluginsPkg.name]);
+      expect(cmd.spawnScript).not.toHaveBeenCalled();
+    }
+  });
 
-      expect(cmd._flags.name.includes('plugin-testOne'));
-      expect(cmd._flags.name.length).to.equal(1);
-      expect(cmd._flags['include-remote']).to.be.undefined;
-    })
-    .it('should process the one plugin');
+  it('should read the name and include-remote flags', async () => {
+    const cmd = await createTest(FlexPluginsStart)(
+      '--name',
+      'plugin-testOne',
+      '--name',
+      'plugin-testTwo',
+      '--include-remote',
+    );
 
-  start(['--name', 'plugin-testOne@remote'])
-    .setup(async (cmd) => {
-      sinon.stub(cmd, 'runScript').returnsThis();
-      sinon.stub(cmd, 'spawnScript').returnsThis();
-      sinon.stub(cmd, 'isPluginFolder').returns(false);
-    })
-    .test(async (cmd) => {
-      try {
-        await cmd.run();
-      } catch (e) {
-        expect(e).to.be.instanceOf(TwilioCliError);
-        expect(e.message).to.contain('at least one local plugin');
-        expect(cmd.runScript).not.to.have.been.called;
-        expect(cmd.spawnScript).not.to.have.been.called;
-      }
-    })
-    .it('should throw an error for no local plugins');
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
+    jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
+    jest.spyOn(fs, 'readJSONFile').mockReturnValue(pkg);
+    findPortAvailablePort.mockResolvedValue(100);
 
-  start([''])
-    .setup(async (cmd) => {
-      sinon.stub(cmd, 'builderVersion').get(() => 4);
-      sinon.stub(cmd, 'runScript').returnsThis();
-      sinon.stub(cmd, 'spawnScript').returnsThis();
-      sinon.stub(cmd, 'isPluginFolder').returns(false);
-      sinon.stub(cmd, 'pluginsConfig').get(() => config);
-    })
-    .test(async (cmd) => {
-      try {
-        await cmd.run();
-      } catch (e) {
-        expect(e).to.be.instanceOf(TwilioCliError);
-        expect(e.message).to.contain('not a flex plugin');
-        expect(cmd._flags.name).to.be.undefined;
-        expect(cmd._flags['include-remote']).to.be.undefined;
-      }
-    })
-    .it('should throw an error if not in a plugin directory and no plugins given');
+    await cmd.run();
 
-  start()
-    .test(async (cmd) => {
-      expect(cmd.checkCompatibility).to.equal(true);
-    })
-    .it('should have compatibility set');
+    expect(cmd._flags.name.includes('plugin-testOne'));
+    expect(cmd._flags.name.includes('plugin-testTwo'));
+    expect(cmd._flags.name.length).toEqual(2);
+    expect(cmd._flags['include-remote']).toEqual(true);
+  });
 
-  start(['--name', 'plugin-testOne', '--name', 'plugin-testTwo'])
-    .setup(async (cmd) => {
-      sinon.stub(cmd, 'isPluginFolder');
-    })
-    .test(async (cmd) => {
-      // @ts-ignore
-      expect(cmd.isMultiPlugin()).to.equal(true);
-      expect(cmd.isPluginFolder).not.to.have.been.called;
-    })
-    .it('should return true if multiple plugins are provided');
+  it('should process the one plugin', async () => {
+    const cmd = await createTest(FlexPluginsStart)('--name', 'plugin-testOne');
 
-  start(['--include-remote'])
-    .setup(async (cmd) => {
-      sinon.stub(cmd, 'isPluginFolder');
-    })
-    .test(async (cmd) => {
-      // @ts-ignore
-      expect(cmd.isMultiPlugin()).to.equal(true);
-      expect(cmd.isPluginFolder).not.to.have.been.called;
-    })
-    .it('should return true if include-remote is set');
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
+    jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
+    jest.spyOn(fs, 'readJSONFile').mockReturnValue(pkg);
+    findPortAvailablePort.mockResolvedValue(100);
 
-  start([])
-    .setup(async (cmd) => {
-      sinon.stub(cmd, 'isPluginFolder').returns(false);
-    })
-    .test(async (cmd) => {
-      // @ts-ignore
-      expect(cmd.isMultiPlugin()).to.equal(false);
-      expect(cmd.isPluginFolder).not.to.have.been.called;
-    })
-    .it('should return false if no plugins');
+    await cmd.run();
 
-  start(['--name', 'plugin-sample'])
-    .setup(async (cmd) => {
-      sinon.stub(cmd, 'isPluginFolder').returns(false);
-      sinon.stub(cmd, 'pkg').get(() => ({
-        name: 'plugin-sample',
-      }));
-    })
-    .test(async (cmd) => {
-      // @ts-ignore
-      expect(cmd.isMultiPlugin()).to.equal(false);
-      expect(cmd.isPluginFolder).to.have.been.calledOnce;
-    })
-    .it('should return false if plugin directory is set but is the same as the --name');
+    expect(cmd._flags.name.includes('plugin-testOne'));
+    expect(cmd._flags.name.length).toEqual(1);
+    expect(cmd._flags['include-remote']).toBeUndefined();
+  });
 
-  start(['--name', 'plugin-sample'])
-    .setup(async (cmd) => {
-      sinon.stub(cmd, 'isPluginFolder').returns(true);
-      sinon.stub(cmd, 'pkg').get(() => ({
-        name: 'plugin-another',
-      }));
-    })
-    .test(async (cmd) => {
-      // @ts-ignore
-      expect(cmd.isMultiPlugin()).to.equal(true);
-      expect(cmd.isPluginFolder).to.have.been.calledOnce;
-    })
-    .it('should return true if plugin directory is and is different');
+  it('should throw an error for no local plugins', async () => {
+    const cmd = await createTest(FlexPluginsStart)('--name', 'plugin-testOne@remote');
+
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
+
+    try {
+      await cmd.run();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TwilioCliError);
+      expect(e.message).toContain('at least one local plugin');
+      expect(cmd.runScript).not.toHaveBeenCalled();
+      expect(cmd.spawnScript).not.toHaveBeenCalled();
+    }
+  });
+
+  it('should throw an error if not in a plugin directory and no plugins given', async () => {
+    const cmd = await createTest(FlexPluginsStart)('');
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
+    jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
+
+    try {
+      await cmd.run();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TwilioCliError);
+      expect(e.message).toContain('not a flex plugin');
+      expect(cmd._flags.name).toBeUndefined();
+      expect(cmd._flags['include-remote']).toBeUndefined();
+    }
+  });
+
+  it('should have compatibility set', async () => {
+    const cmd = await createTest(FlexPluginsStart)();
+
+    expect(cmd.checkCompatibility).toEqual(true);
+  });
+
+  it('should return true if multiple plugins are provided', async () => {
+    const cmd = await createTest(FlexPluginsStart)('--name', 'plugin-testOne', '--name', 'plugin-testTwo');
+
+    jest.spyOn(cmd, 'isPluginFolder');
+
+    // @ts-ignore
+    expect(cmd.isMultiPlugin()).toEqual(true);
+    expect(cmd.isPluginFolder).not.toHaveBeenCalled();
+  });
+
+  it('should return true if include-remote is set', async () => {
+    const cmd = await createTest(FlexPluginsStart)('--include-remote');
+
+    jest.spyOn(cmd, 'isPluginFolder');
+
+    // @ts-ignore
+    expect(cmd.isMultiPlugin()).toEqual(true);
+    expect(cmd.isPluginFolder).not.toHaveBeenCalled();
+  });
+
+  it('should return false if no plugins', async () => {
+    const cmd = await createTest(FlexPluginsStart)();
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
+
+    // @ts-ignore
+    expect(cmd.isMultiPlugin()).toEqual(false);
+    expect(cmd.isPluginFolder).not.toHaveBeenCalled();
+  });
+
+  it('should return false if plugin directory is set but is the same as the --name', async () => {
+    const cmd = await createTest(FlexPluginsStart)('--name', 'plugin-sample');
+
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
+    mockGetPkg(cmd, { name: 'plugin-sample' });
+
+    // @ts-ignore
+    expect(cmd.isMultiPlugin()).toEqual(false);
+    expect(cmd.isPluginFolder).toHaveBeenCalledTimes(1);
+  });
+
+  it('should return true if plugin directory is and is different', async () => {
+    const cmd = await createTest(FlexPluginsStart)('--name', 'plugin-sample');
+
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
+    mockGetPkg(cmd, { name: 'plugin-another' });
+
+    // @ts-ignore
+    expect(cmd.isMultiPlugin()).toEqual(true);
+    expect(cmd.isPluginFolder).toHaveBeenCalledTimes(1);
+  });
 });

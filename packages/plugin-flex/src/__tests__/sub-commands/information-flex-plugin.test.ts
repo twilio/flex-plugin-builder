@@ -1,6 +1,6 @@
 import { TwilioApiError } from 'flex-plugins-utils-exception';
 
-import { expect, createTest } from '../framework';
+import createTest from '../framework';
 import InformationFlexPlugin from '../../sub-commands/information-flex-plugin';
 
 describe('SubCommands/InformationFlexPlugin', () => {
@@ -24,67 +24,59 @@ describe('SubCommands/InformationFlexPlugin', () => {
   }
 
   const { env } = process;
-  const { sinon, start } = createTest(SamplePlugin);
 
   beforeEach(() => {
+    jest.resetAllMocks();
     process.env = { ...env };
   });
 
-  afterEach(() => {
-    sinon.restore();
-  });
-
   it('should have flag as own property', () => {
-    expect(InformationFlexPlugin.hasOwnProperty('flags')).to.equal(true);
+    expect(InformationFlexPlugin.hasOwnProperty('flags')).toEqual(true);
   });
 
-  start()
-    .setup((cmd) => {
-      sinon.spy(cmd, 'notFound');
-      sinon.spy(cmd, 'print');
-      sinon.spy(cmd, 'getResource');
-    })
-    .test(async (cmd) => {
-      await cmd.doRun();
+  it('should call getResource and then print result', async () => {
+    const cmd = await createTest(SamplePlugin)();
 
-      expect(cmd.print).to.have.been.called;
-      expect(cmd.getResource).to.have.been.called;
-      expect(cmd.notFound).not.to.have.been.called;
-      expect(cmd.print).to.have.been.calledWith(resource);
-    })
-    .it('should call getResource and then print result');
+    jest.spyOn(cmd, 'notFound');
+    jest.spyOn(cmd, 'print');
+    jest.spyOn(cmd, 'getResource');
 
-  start()
-    .setup((cmd) => {
-      sinon.spy(cmd, 'notFound');
-      sinon.spy(cmd, 'print');
-      sinon.stub(cmd, 'getResource').rejects(new TwilioApiError(20404, 'error-message', 404));
-      sinon.stub(cmd, 'exit');
-    })
-    .test(async (cmd) => {
-      await cmd.doRun();
+    await cmd.doRun();
 
-      expect(cmd.print).not.to.have.been.called;
-      expect(cmd.getResource).to.have.been.called;
-      expect(cmd.notFound).to.have.been.called;
-      expect(cmd.exit).to.have.been.called;
-      expect(cmd.exit).to.have.been.calledWith(1);
-    })
-    .it('should call notFound if getResource throws error not-found');
+    expect(cmd.print).toHaveBeenCalledTimes(1);
+    expect(cmd.getResource).toHaveBeenCalledTimes(1);
+    expect(cmd.notFound).not.toHaveBeenCalledTimes(1);
+    expect(cmd.print).toHaveBeenCalledWith(resource);
+  });
 
-  start(['--json'])
-    .setup((cmd) => {
-      sinon.spy(cmd, 'notFound');
-      sinon.spy(cmd, 'print');
-      sinon.spy(cmd, 'getResource');
-    })
-    .test(async (cmd) => {
-      const result = await cmd.doRun();
+  it('should call notFound if getResource throws error not-found', async () => {
+    const cmd = await createTest(SamplePlugin)();
 
-      expect(cmd.print).not.to.have.been.called;
-      expect(cmd.getResource).to.have.been.called;
-      expect(cmd.notFound).not.to.have.been.called;
-      expect(result).to.equal(resource);
-    })
-    .it('should should return --json if flag is set');
+    jest.spyOn(cmd, 'notFound');
+    jest.spyOn(cmd, 'print');
+    jest.spyOn(cmd, 'getResource').mockRejectedValue(new TwilioApiError(20404, 'error-message', 404));
+    jest.spyOn(cmd, 'exit').mockReturnThis();
+    await cmd.doRun();
+
+    expect(cmd.print).not.toHaveBeenCalledTimes(1);
+    expect(cmd.getResource).toHaveBeenCalledTimes(1);
+    expect(cmd.notFound).toHaveBeenCalledTimes(1);
+    expect(cmd.exit).toHaveBeenCalledTimes(1);
+    expect(cmd.exit).toHaveBeenCalledWith(1);
+  });
+
+  it('should should return --json if flag is set', async () => {
+    const cmd = await createTest(SamplePlugin)('--json');
+
+    jest.spyOn(cmd, 'notFound');
+    jest.spyOn(cmd, 'print');
+    jest.spyOn(cmd, 'getResource');
+
+    const result = await cmd.doRun();
+
+    expect(cmd.print).not.toHaveBeenCalledTimes(1);
+    expect(cmd.getResource).toHaveBeenCalledTimes(1);
+    expect(cmd.notFound).not.toHaveBeenCalledTimes(1);
+    expect(result).toEqual(resource);
+  });
 });
