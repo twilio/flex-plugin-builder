@@ -11,6 +11,8 @@
     "prefer-named-capture-group": "off",
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/triple-slash-reference": "off",
+    "sonarjs/no-duplicate-string": "warn",
+    "sonarjs/cognitive-complexity": "warn",
     "spaced-comment": [
       "error",
       "always",

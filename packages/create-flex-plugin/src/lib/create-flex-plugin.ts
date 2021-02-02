@@ -115,11 +115,9 @@ export const createFlexPlugin = async (config: FlexPluginArguments): Promise<voi
   await checkPluginConfigurationExists(config.name, config.targetDirectory);
 
   // Install NPM dependencies
-  if (config.install) {
-    if (!(await _install(config))) {
-      logger.error('Failed to install dependencies. Please run `npm install` manually.');
-      config.install = false;
-    }
+  if (config.install && !(await _install(config))) {
+    logger.error('Failed to install dependencies. Please run `npm install` manually.');
+    config.install = false;
   }
 
   finalMessage(config);
