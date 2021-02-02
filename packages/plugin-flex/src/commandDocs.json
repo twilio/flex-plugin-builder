@@ -35,7 +35,9 @@
     "flags": {
       "new": "Creates a new Flex Plugin Configuration, otherwise will append to existing active Configuration.",
       "name": "The friendly name of the Flex Plugin Configuration.",
-      "plugin": "The plugin to enable, formatted as pluginName@version. You may use pluginName@latest as a shortcut for enabling the latest version of the plugin. Use additional --plugin to provide other plugins to enable.",
+      "plugin": "Alias for --enable-plugin.",
+      "enablePlugin": "The plugin to enable, formatted as pluginName@version. You may use pluginName@latest as a shortcut for enabling the latest version of the plugin. Use additional --enable-plugin to provide other plugins to enable.",
+      "disablePlugin": "The plugin to disable, formatted as pluginName. Use additional --disable-plugin to provide other plugins to disable.",
       "description": "The description of this Flex Plugin Configuration"
     },
     "defaults": {

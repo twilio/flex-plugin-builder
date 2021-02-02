@@ -1,18 +1,17 @@
 import { progress } from 'flex-plugins-utils-logger';
 import { CreateConfigurationOption } from 'flex-plugins-api-toolkit';
-import { IOptionFlag } from '@oclif/command/lib/flags';
 
 import * as flags from '../utils/flags';
 import FlexPlugin, { FlexPluginFlags } from './flex-plugin';
 import { createConfiguration as createConfigurationDocs } from '../commandDocs.json';
 
-type Required = { required: true };
 type Multiple = { multiple: true };
 
 export interface CreateConfigurationFlags extends FlexPluginFlags {
   new: boolean;
   name?: string;
-  plugin?: string[];
+  'disable-plugin'?: string[];
+  'enable-plugin'?: string[];
   description?: string;
 }
 
@@ -23,10 +22,21 @@ export const nameFlag = {
   max: 100,
 };
 
-export const pluginFlag: Partial<IOptionFlag<string[]>> & Required & Multiple = {
-  description: createConfigurationDocs.flags.plugin,
+export const enablePluginFlag: Partial<flags.IOptionFlag<string[]>> & Multiple = {
+  description: createConfigurationDocs.flags.enablePlugin,
   multiple: true,
-  required: true,
+  required: false,
+  alias: 'plugin',
+};
+
+export const aliasEnablePluginFlag: Partial<flags.IOptionFlag<string[]>> & Multiple = { ...enablePluginFlag };
+delete aliasEnablePluginFlag.alias;
+aliasEnablePluginFlag.description = createConfigurationDocs.flags.plugin;
+
+export const disablePluginFlag: Partial<flags.IOptionFlag<string[]>> & Multiple = {
+  description: createConfigurationDocs.flags.disablePlugin,
+  multiple: true,
+  required: false,
 };
 
 export const descriptionFlag = {
@@ -50,7 +60,9 @@ export default abstract class CreateConfiguration extends FlexPlugin {
       description: createConfigurationDocs.flags.new,
     }),
     name: flags.string(nameFlag),
-    plugin: flags.string(pluginFlag),
+    plugin: flags.string(aliasEnablePluginFlag),
+    'enable-plugin': flags.string(enablePluginFlag),
+    'disable-plugin': flags.string(disablePluginFlag),
     description: flags.string(descriptionFlag),
   };
 
@@ -68,11 +80,18 @@ export default abstract class CreateConfiguration extends FlexPlugin {
   private async createConfiguration() {
     const option: CreateConfigurationOption = {
       name: this._flags.name as string,
-      addPlugins: this._flags.plugin as string[],
+      addPlugins: [],
+      removePlugins: [],
       description: this._flags.description || '',
     };
     if (!this._flags.new) {
       option.fromConfiguration = 'active';
+    }
+    if (this._flags['enable-plugin']) {
+      option.addPlugins = this._flags['enable-plugin'] as string[];
+    }
+    if (this._flags['disable-plugin']) {
+      option.removePlugins = this._flags['disable-plugin'] as string[];
     }
 
     return this.pluginsApiToolkit.createConfiguration(option);

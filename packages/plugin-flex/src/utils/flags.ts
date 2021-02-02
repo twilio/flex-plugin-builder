@@ -4,15 +4,21 @@
  */
 
 import { flags as OclifFlags } from '@oclif/command';
-import { Default, Definition, IOptionFlag } from '@oclif/parser/lib/flags';
+import { Default, Definition, IOptionFlag as OClifIOptionFlag } from '@oclif/parser/lib/flags';
 
 /**
  * Extension of the flag({}) options by adding min/max for type string
  */
-export interface SizeIOptionFlag<T extends string | string[] | undefined> extends IOptionFlag<T> {
+export interface SizeIOptionFlag<T extends string | string[] | undefined> extends OClifIOptionFlag<T> {
   min?: number;
   max?: number;
 }
+
+export interface AliasIOptionFlag<T extends string | string[] | undefined> extends OClifIOptionFlag<T> {
+  alias?: string;
+}
+
+export type IOptionFlag<T extends string | string[] | undefined> = SizeIOptionFlag<T> & AliasIOptionFlag<T>;
 
 /**
  * Taken from https://github.com/oclif/parser/blob/master/src/flags.ts#L47
@@ -22,8 +28,8 @@ interface StringDefinition extends Definition<string> {
   (
     options: {
       multiple: true;
-    } & Partial<SizeIOptionFlag<string[]>>,
-  ): SizeIOptionFlag<string[]>;
+    } & Partial<IOptionFlag<string[]>>,
+  ): IOptionFlag<string[]>;
   (
     options: (
       | {
@@ -33,9 +39,9 @@ interface StringDefinition extends Definition<string> {
           default: Default<string>;
         }
     ) &
-      Partial<SizeIOptionFlag<string>>,
-  ): SizeIOptionFlag<string>;
-  (options?: Partial<SizeIOptionFlag<string>>): SizeIOptionFlag<string | undefined>;
+      Partial<IOptionFlag<string>>,
+  ): IOptionFlag<string>;
+  (options?: Partial<SizeIOptionFlag<string>>): IOptionFlag<string | undefined>;
 }
 
 const flags = { ...OclifFlags };

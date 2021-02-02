@@ -4,7 +4,13 @@ import { RequiredFlagError } from '@oclif/parser/lib/errors';
 
 import { createDescription } from '../../../utils/general';
 import { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
-import CreateConfiguration, { nameFlag, pluginFlag, descriptionFlag } from '../../../sub-commands/create-configuration';
+import CreateConfiguration, {
+  nameFlag,
+  enablePluginFlag,
+  descriptionFlag,
+  disablePluginFlag,
+  aliasEnablePluginFlag,
+} from '../../../sub-commands/create-configuration';
 import { release as releaseDocs } from '../../../commandDocs.json';
 
 /**
@@ -25,7 +31,17 @@ export default class FlexPluginsRelease extends CreateConfiguration {
       exclusive: ['configuration-sid'],
     }),
     plugin: flags.string({
-      ...pluginFlag,
+      ...aliasEnablePluginFlag,
+      required: false,
+      exclusive: ['configuration-sid'],
+    }),
+    'enable-plugin': flags.string({
+      ...enablePluginFlag,
+      required: false,
+      exclusive: ['configuration-sid'],
+    }),
+    'disable-plugin': flags.string({
+      ...disablePluginFlag,
       required: false,
       exclusive: ['configuration-sid'],
     }),
@@ -81,7 +97,7 @@ export default class FlexPluginsRelease extends CreateConfiguration {
       return parse.flags;
     }
 
-    ['plugin', 'description', 'name'].forEach((key) => {
+    ['description', 'name'].forEach((key) => {
       if (!parse.flags[key]) {
         throw new RequiredFlagError({
           flag: FlexPluginsRelease.flags[key],
@@ -93,6 +109,18 @@ export default class FlexPluginsRelease extends CreateConfiguration {
         });
       }
     });
+
+    const hasChange = ['enable-plugin', 'disable-plugin'].some((x) => parse.flags[x]);
+    if (!hasChange) {
+      throw new RequiredFlagError({
+        flag: FlexPluginsRelease.flags['enable-plugin'],
+        parse: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          input: {} as any,
+          output: parse,
+        },
+      });
+    }
 
     return parse.flags;
   }

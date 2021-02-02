@@ -126,4 +126,125 @@ describe('Utils/Parser', () => {
       }
     });
   });
+
+  describe('_prepareFlags', () => {
+    it('should duplicate alias', () => {
+      const options = {
+        flags: {
+          str: {
+            required: true,
+            name: 'original',
+            alias: 'duplicate',
+          },
+        },
+      };
+
+      // @ts-ignore
+      const updated = parser._prepareFlags(options);
+      expect(Object.keys(options.flags)).toHaveLength(2);
+      // @ts-ignore
+      expect(updated.flags.str).toEqual(options.flags.str);
+      // @ts-ignore
+      expect(updated.flags.duplicate).toEqual(options.flags.str);
+    });
+
+    it('should not duplicate if non exists', () => {
+      const options = {
+        flags: {
+          str: {
+            required: true,
+            name: 'original',
+          },
+        },
+      };
+
+      // @ts-ignore
+      const updated = parser._prepareFlags(options);
+
+      // @ts-ignore
+      expect(Object.keys(updated.flags)).toHaveLength(1);
+      // @ts-ignore
+      expect(updated.flags.str).toEqual(options.flags.str);
+    });
+  });
+
+  describe('_combineFlags', () => {
+    const alias = 'alias-key';
+    const original = 'original-key';
+
+    it('should do nothing if no duplicate exists', () => {
+      const parsed = {
+        flags: {
+          str: [original],
+        },
+      };
+      const options = {
+        flags: {
+          str: {
+            required: true,
+          },
+        },
+      };
+
+      // @ts-ignore
+      const combined = parser._combineFlags(parsed, options);
+
+      expect(combined.flags.str).toEqual([original]);
+    });
+
+    it('should copy over duplicate to the main', () => {
+      const parsed = {
+        flags: {
+          duplicate: [alias],
+        },
+      };
+      const options = {
+        flags: {
+          str: {
+            required: true,
+            alias: 'duplicate',
+          },
+          duplicate: {
+            required: true,
+            alias: 'duplicate',
+          },
+        },
+      };
+
+      // @ts-ignore
+      const combined = parser._combineFlags(parsed, options);
+
+      expect(Object.keys(combined.flags)).toHaveLength(1);
+      // @ts-ignore
+      expect(combined.flags.str).toEqual([alias]);
+    });
+
+    it('should merge both', () => {
+      const parsed = {
+        flags: {
+          str: [original],
+          duplicate: [alias],
+        },
+      };
+      const options = {
+        flags: {
+          str: {
+            required: true,
+            alias: 'duplicate',
+          },
+          duplicate: {
+            required: true,
+            alias: 'duplicate',
+          },
+        },
+      };
+
+      // @ts-ignore
+      const combined = parser._combineFlags(parsed, options);
+
+      expect(Object.keys(combined.flags)).toHaveLength(1);
+      // @ts-ignore
+      expect(combined.flags.str).toEqual([original, alias]);
+    });
+  });
 });
