@@ -92,13 +92,15 @@ describe('@twilio/flex-plugin', () => {
   });
 
   describe('loadPlugin', () => {
+    const warnMsg = 'This version of Flex does not appear to support plugins.';
+
     it('should log a warning when `Twilio` namespace is not available', () => {
       // @ts-ignore
       global.Twilio = undefined;
       loadPlugin(TestPlugin);
 
       // eslint-disable-next-line no-console
-      expect(console.warn).toHaveBeenCalledWith('This version of Flex does not appear to support plugins.');
+      expect(console.warn).toHaveBeenCalledWith(warnMsg);
     });
 
     it('should log a warning when `Flex` does not exists in Twilio object', () => {
@@ -107,7 +109,7 @@ describe('@twilio/flex-plugin', () => {
       loadPlugin(TestPlugin);
 
       // eslint-disable-next-line no-console
-      expect(console.warn).toHaveBeenCalledWith('This version of Flex does not appear to support plugins.');
+      expect(console.warn).toHaveBeenCalledWith(warnMsg);
     });
 
     it('should log a warning `Plugins` does not exists in `Twilio.Flex`', () => {
@@ -118,7 +120,7 @@ describe('@twilio/flex-plugin', () => {
       loadPlugin(TestPlugin);
 
       // eslint-disable-next-line no-console
-      expect(console.warn).toHaveBeenCalledWith('This version of Flex does not appear to support plugins.');
+      expect(console.warn).toHaveBeenCalledWith(warnMsg);
     });
 
     it('should initialize the `Twilio.Flex` plugins', () => {
