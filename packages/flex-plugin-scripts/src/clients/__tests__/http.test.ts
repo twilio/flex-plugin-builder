@@ -6,6 +6,10 @@ import FormData from 'form-data';
 import HttpClient, { HttpConfig } from '../http';
 
 describe('HttpClient', () => {
+  const applicationJson = 'application/json';
+  const resultStr = 'the-result';
+  const payloadStr = 'the-payload';
+
   const CONFIG: HttpConfig = {
     baseURL: 'https://test.com',
     auth: {
@@ -35,12 +39,12 @@ describe('HttpClient', () => {
 
     it('should return json for map files', () => {
       const contentType = HttpClient.getContentType('foo.map');
-      expect(contentType).toEqual('application/json');
+      expect(contentType).toEqual(applicationJson);
     });
 
     it('should return json for map files for multi dots', () => {
       const contentType = HttpClient.getContentType('foo.js.map');
-      expect(contentType).toEqual('application/json');
+      expect(contentType).toEqual(applicationJson);
     });
 
     it('should return octet for unknown extensions', () => {
@@ -60,13 +64,13 @@ describe('HttpClient', () => {
     });
 
     it('should set contentType as application/json', () => {
-      config.contentType = 'application/json';
+      config.contentType = applicationJson;
       const http = new HttpClient(config);
 
       // @ts-ignore
       expect(http.jsonPOST).toBeTruthy();
       // @ts-ignore
-      expect(http.client.defaults.headers['Content-Type']).toEqual('application/json');
+      expect(http.client.defaults.headers['Content-Type']).toEqual(applicationJson);
     });
 
     it('should set user agent when defined', () => {
@@ -88,11 +92,11 @@ describe('HttpClient', () => {
       const httpClient = new HttpClient(config);
       // @ts-ignore
       const { client } = httpClient;
-      const get = jest.spyOn(client, 'get').mockResolvedValue({ data: 'the-result' });
+      const get = jest.spyOn(client, 'get').mockResolvedValue({ data: resultStr });
 
       const response = await httpClient.get('the-uri');
 
-      expect(response).toEqual('the-result');
+      expect(response).toEqual(resultStr);
       expect(get).toHaveBeenCalledTimes(1);
       expect(get).toHaveBeenCalledWith('the-uri');
     });
@@ -131,34 +135,34 @@ describe('HttpClient', () => {
       const httpClient = new HttpClient(config);
       // @ts-ignore
       const { client } = httpClient;
-      const post = jest.spyOn(client, 'post').mockResolvedValue({ data: 'the-result' });
+      const post = jest.spyOn(client, 'post').mockResolvedValue({ data: resultStr });
 
-      const response = await httpClient.post('the-uri', { payload: 'the-payload' });
+      const response = await httpClient.post('the-uri', { payload: payloadStr });
 
-      expect(response).toEqual('the-result');
+      expect(response).toEqual(resultStr);
       expect(post).toHaveBeenCalledTimes(1);
       expect(post).toHaveBeenCalledWith('the-uri', 'payload=the-payload');
     });
 
     it('should post as application/json', async () => {
-      config.contentType = 'application/json';
+      config.contentType = applicationJson;
       const httpClient = new HttpClient(config);
       // @ts-ignore
       const { client } = httpClient;
-      const post = jest.spyOn(client, 'post').mockResolvedValue({ data: 'the-result' });
+      const post = jest.spyOn(client, 'post').mockResolvedValue({ data: resultStr });
 
-      const response = await httpClient.post('the-uri', { payload: 'the-payload' });
+      const response = await httpClient.post('the-uri', { payload: payloadStr });
 
-      expect(response).toEqual('the-result');
+      expect(response).toEqual(resultStr);
       expect(post).toHaveBeenCalledTimes(1);
-      expect(post).toHaveBeenCalledWith('the-uri', { payload: 'the-payload' });
+      expect(post).toHaveBeenCalledWith('the-uri', { payload: payloadStr });
     });
   });
 
   describe('list', () => {
     it('list should call get method', async () => {
       const client = new HttpClient(config);
-      const data = { result: 'the-result' };
+      const data = { result: resultStr };
       const get = jest.spyOn(client, 'get').mockResolvedValue([data]);
 
       const result = await client.list('the-uri');

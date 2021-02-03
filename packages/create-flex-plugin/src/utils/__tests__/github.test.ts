@@ -6,13 +6,16 @@ import * as github from '../github';
 
 describe('github', () => {
   let mockAxios: MockAdapter;
+  const org = 'twilio';
+  const branch = 'master';
+  const repo = 'flex-plugin-builder';
   const gitHubUrl = 'https://github.com/twilio/flex-plugin-builder';
   const apiGithubUrlTemplated = 'https://api.github.com/repos/twilio/flex-plugin-builder/contents/template?ref=master';
   const apiGithubUrl = 'https://api.github.com/repos/twilio/flex-plugin-builder/contents?ref=master';
   const githubInfo = {
-    ref: 'master',
-    owner: 'twilio',
-    repo: 'flex-plugin-builder',
+    ref: branch,
+    owner: org,
+    repo,
   };
 
   const paths = {
@@ -34,17 +37,18 @@ describe('github', () => {
   });
 
   describe('parseGitHubUrl', () => {
-    const branchesWithMaster = [{ name: 'master' }, { name: 'feature-branch' }];
-    const branchesWithMain = [{ name: 'main' }, { name: 'feature-branch' }];
-    const branchesWithNeither = [{ name: 'something-else' }, { name: 'feature-branch' }];
+    const anotherBranch = 'feature-branch';
+    const branchesWithMaster = [{ name: branch }, { name: anotherBranch }];
+    const branchesWithMain = [{ name: 'main' }, { name: anotherBranch }];
+    const branchesWithNeither = [{ name: 'something-else' }, { name: anotherBranch }];
 
     it('should get repo with master ref', async () => {
       mockAxios.onGet().reply(async () => Promise.resolve([200, branchesWithMaster]));
       const resp = await github.parseGitHubUrl(gitHubUrl);
 
-      expect(resp.ref).toEqual('master');
-      expect(resp.repo).toEqual('flex-plugin-builder');
-      expect(resp.owner).toEqual('twilio');
+      expect(resp.ref).toEqual(branch);
+      expect(resp.repo).toEqual(repo);
+      expect(resp.owner).toEqual(org);
     });
 
     it('should get repo with main ref', async () => {
@@ -52,8 +56,8 @@ describe('github', () => {
       const resp = await github.parseGitHubUrl(gitHubUrl);
 
       expect(resp.ref).toEqual('main');
-      expect(resp.repo).toEqual('flex-plugin-builder');
-      expect(resp.owner).toEqual('twilio');
+      expect(resp.repo).toEqual(repo);
+      expect(resp.owner).toEqual(org);
     });
 
     it('should reject because main/main is not found', async (done) => {
@@ -70,8 +74,8 @@ describe('github', () => {
       const resp = await github.parseGitHubUrl(`${gitHubUrl}/tree/some-ref`);
 
       expect(resp.ref).toEqual('some-ref');
-      expect(resp.repo).toEqual('flex-plugin-builder');
-      expect(resp.owner).toEqual('twilio');
+      expect(resp.repo).toEqual(repo);
+      expect(resp.owner).toEqual(org);
     });
 
     it('should fail to parse', async (done) => {
@@ -181,6 +185,7 @@ describe('github', () => {
   });
 
   describe('_downloadDir', () => {
+    const githubUrl = 'github.com/twilio/template/';
     const _downloadFile = jest.spyOn(github, '_downloadFile').mockResolvedValue(undefined);
 
     afterAll(() => {
@@ -211,7 +216,7 @@ describe('github', () => {
       ];
 
       mockAxios.onGet().reply(async () => Promise.resolve([200, resp]));
-      await github._downloadDir(apiGithubUrlTemplated, '/dir', 'github.com/twilio/template/');
+      await github._downloadDir(apiGithubUrlTemplated, '/dir', githubUrl);
 
       expect(_downloadFile).toHaveBeenCalledTimes(2);
       expect(_downloadFile).toHaveBeenNthCalledWith(1, resp[0].download_url, '/dir/file1.js');
@@ -238,7 +243,7 @@ describe('github', () => {
         }
         return Promise.resolve([200, secondResp]);
       });
-      await github._downloadDir(apiGithubUrlTemplated, '/dir', 'github.com/twilio/template/');
+      await github._downloadDir(apiGithubUrlTemplated, '/dir', githubUrl);
 
       expect(_downloadFile).toHaveBeenCalledTimes(1);
       expect(_downloadFile).toHaveBeenNthCalledWith(1, secondResp[0].download_url, '/dir/file2.js');
@@ -255,7 +260,7 @@ describe('github', () => {
       mockAxios.onGet().reply(async () => Promise.resolve([200, resp]));
 
       try {
-        await github._downloadDir(apiGithubUrlTemplated, '/dir', 'github.com/twilio/template/');
+        await github._downloadDir(apiGithubUrlTemplated, '/dir', githubUrl);
       } catch (e) {
         expect(e.message).toContain('Unexpected content type');
         done();

@@ -6,6 +6,7 @@ import * as run from '../run';
 jest.mock('flex-dev-utils/dist/logger');
 
 describe('run', () => {
+  const runFlag = '--run-script';
   // @ts-ignore
   const exit = jest.spyOn(process, 'exit').mockImplementation(() => {
     /* no-op */
@@ -37,7 +38,7 @@ describe('run', () => {
   });
 
   it('should run successfully', async () => {
-    process.argv.push('--run-script');
+    process.argv.push(runFlag);
     const cb = jest.fn();
     await run.default(cb);
 
@@ -45,7 +46,7 @@ describe('run', () => {
   });
 
   it('should log normal error if not a FlexPluginError', async () => {
-    process.argv.push('--run-script');
+    process.argv.push(runFlag);
     const err = new Error('error-message');
     const cb = jest.fn().mockImplementation(() => {
       throw err;
@@ -60,7 +61,7 @@ describe('run', () => {
   });
 
   it('should log FlexPluginError print', async () => {
-    process.argv.push('--run-script');
+    process.argv.push(runFlag);
     const err = new FlexPluginError('another-error');
     const print = jest.spyOn(err, 'print');
     const details = jest.spyOn(err, 'details');
@@ -77,7 +78,7 @@ describe('run', () => {
   });
 
   it('should also log details of FlexPluginError', async () => {
-    process.argv.push('--run-script');
+    process.argv.push(runFlag);
     const err = new FlexPluginError('another-error');
     const print = jest.spyOn(err, 'print');
     const details = jest.spyOn(err, 'details');

@@ -14,6 +14,7 @@ jest.mock('../../prints/typescriptNotInstalled');
 jest.mock('../../prints/loadPluginCountError');
 
 describe('PreScriptCheck', () => {
+  const pluginDir = '/path/to/plugin-dir';
   const paths = {
     scripts: {
       tsConfigPath: 'test-ts-config-path',
@@ -70,7 +71,7 @@ describe('PreScriptCheck', () => {
       _checkPluginCount.mockReturnValue(undefined);
       checkPluginConfigurationExists.mockReturnThis();
       _setPluginDir.mockReturnThis();
-      cwd.mockReturnValue('/path/to/plugin-dir');
+      cwd.mockReturnValue(pluginDir);
     });
 
     afterAll(() => {
@@ -94,7 +95,7 @@ describe('PreScriptCheck', () => {
       await preScriptCheck.default();
 
       expectCalled(false, false);
-      expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-dir', '/path/to/plugin-dir', false);
+      expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-dir', pluginDir, false);
       expect(_setPluginDir).toHaveBeenCalledTimes(2);
     });
 
@@ -102,7 +103,7 @@ describe('PreScriptCheck', () => {
       await preScriptCheck.default(preScriptCheck.FLAG_MULTI_PLUGINS);
 
       expectCalled(false, false);
-      expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-dir', '/path/to/plugin-dir', true);
+      expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-dir', pluginDir, true);
       expect(_setPluginDir).toHaveBeenCalledTimes(2);
     });
 

@@ -1,6 +1,10 @@
 import * as keychain from '../keychain';
 
 describe('keychain', () => {
+  const serviceName = 'the-service-name';
+  const account = 'the-account';
+  const password = 'the-password';
+
   beforeEach(() => {
     jest.resetAllMocks();
     jest.resetModules();
@@ -23,18 +27,18 @@ describe('keychain', () => {
         setPassword,
       });
 
-      const instance = keychain.default('the-service-name');
-      await instance.deletePassword('password');
+      const instance = keychain.default(serviceName);
+      await instance.deletePassword(password);
       await instance.findCredentials();
-      await instance.setPassword('account', 'password');
+      await instance.setPassword(account, password);
 
       expect(_getKeytar).toHaveBeenCalledTimes(1);
       expect(deletePassword).toHaveBeenCalledTimes(1);
-      expect(deletePassword).toHaveBeenCalledWith('the-service-name', 'password');
+      expect(deletePassword).toHaveBeenCalledWith(serviceName, password);
       expect(findCredentials).toHaveBeenCalledTimes(1);
-      expect(findCredentials).toHaveBeenCalledWith('the-service-name');
+      expect(findCredentials).toHaveBeenCalledWith(serviceName);
       expect(setPassword).toHaveBeenCalledTimes(1);
-      expect(setPassword).toHaveBeenCalledWith('the-service-name', 'account', 'password');
+      expect(setPassword).toHaveBeenCalledWith(serviceName, account, password);
     });
   });
 });

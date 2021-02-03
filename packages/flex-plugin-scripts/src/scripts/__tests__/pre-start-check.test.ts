@@ -10,13 +10,14 @@ jest.mock('flex-dev-utils/dist/logger');
 jest.mock('../../prints/appConfigMissing');
 
 describe('PreStartCheck', () => {
+  const appConfigPath = 'appConfig.js';
   const paths = {
     app: {
       version: '1.0.0',
       name: 'plugin-test',
       dir: 'test-dir',
       nodeModulesDir: 'test-node-modules',
-      appConfig: 'appConfig.js',
+      appConfig: appConfigPath,
     },
   };
 
@@ -65,7 +66,7 @@ describe('PreStartCheck', () => {
       preStartCheck._checkAppConfig();
 
       expect(existSync).toHaveBeenCalledTimes(1);
-      expect(existSync).toHaveBeenCalledWith(expect.stringContaining('appConfig.js'));
+      expect(existSync).toHaveBeenCalledWith(expect.stringContaining(appConfigPath));
       expect(prints.appConfigMissing).toHaveBeenCalledTimes(1);
       expect(exit).toHaveBeenCalledTimes(1);
       expect(exit).toHaveBeenCalledWith(1);
@@ -79,7 +80,7 @@ describe('PreStartCheck', () => {
       preStartCheck._checkAppConfig();
 
       expect(existSync).toHaveBeenCalledTimes(1);
-      expect(existSync).toHaveBeenCalledWith(expect.stringContaining('appConfig.js'));
+      expect(existSync).toHaveBeenCalledWith(expect.stringContaining(appConfigPath));
       expect(prints.appConfigMissing).not.toHaveBeenCalled();
       expect(exit).not.toHaveBeenCalled();
 

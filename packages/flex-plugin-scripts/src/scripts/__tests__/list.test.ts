@@ -16,6 +16,8 @@ const pluginVersions = require('../../prints/pluginVersions').default;
 /* eslint-enable */
 
 describe('list', () => {
+  const twilUrl = 'test.twil.io';
+  const privateOnly = '--private-only';
   const paths = {
     app: {
       name: 'plugin-test',
@@ -44,11 +46,11 @@ describe('list', () => {
 
     it('should quit if both --public-only and --private-only is provided', async (done) => {
       try {
-        await listScript.default('--public-only', '--private-only');
+        await listScript.default('--public-only', privateOnly);
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(e.message).toContain('cannot use --public-only');
-        expect(e.message).toContain('--private-only');
+        expect(e.message).toContain(privateOnly);
         done();
       }
     });
@@ -68,7 +70,7 @@ describe('list', () => {
     });
 
     it('should call doList as public', async () => {
-      await listScript.default('--private-only');
+      await listScript.default(privateOnly);
 
       expect(doList).toHaveBeenCalledTimes(1);
       expect(doList).toHaveBeenCalledWith([Visibility.Protected], 'asc');
@@ -104,7 +106,7 @@ describe('list', () => {
     beforeEach(() => {
       getRuntime.mockImplementation(() => ({
         // eslint-disable-next-line camelcase
-        environment: { domain_name: 'test.twil.io' },
+        environment: { domain_name: twilUrl },
         // eslint-disable-next-line camelcase
         build: { asset_versions: assetVersions },
       }));
@@ -137,28 +139,28 @@ describe('list', () => {
       await listScript._doList([Visibility.Public, Visibility.Protected]);
 
       expect(pluginVersions).toHaveBeenCalledTimes(1);
-      expect(pluginVersions).toHaveBeenCalledWith('test.twil.io', [publicVersion, privateVersion], 'asc');
+      expect(pluginVersions).toHaveBeenCalledWith(twilUrl, [publicVersion, privateVersion], 'asc');
     });
 
     it('should filter out plugin-test only in desc', async () => {
       await listScript._doList([Visibility.Public, Visibility.Protected], 'desc');
 
       expect(pluginVersions).toHaveBeenCalledTimes(1);
-      expect(pluginVersions).toHaveBeenCalledWith('test.twil.io', [publicVersion, privateVersion], 'desc');
+      expect(pluginVersions).toHaveBeenCalledWith(twilUrl, [publicVersion, privateVersion], 'desc');
     });
 
     it('should filter out public plugin-test ', async () => {
       await listScript._doList([Visibility.Public]);
 
       expect(pluginVersions).toHaveBeenCalledTimes(1);
-      expect(pluginVersions).toHaveBeenCalledWith('test.twil.io', [publicVersion], 'asc');
+      expect(pluginVersions).toHaveBeenCalledWith(twilUrl, [publicVersion], 'asc');
     });
 
     it('should filter out private plugin-test ', async () => {
       await listScript._doList([Visibility.Protected]);
 
       expect(pluginVersions).toHaveBeenCalledTimes(1);
-      expect(pluginVersions).toHaveBeenCalledWith('test.twil.io', [privateVersion], 'asc');
+      expect(pluginVersions).toHaveBeenCalledWith(twilUrl, [privateVersion], 'asc');
     });
   });
 });

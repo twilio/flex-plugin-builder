@@ -10,13 +10,16 @@ export type StartOptions = {
   name: string;
 };
 
+const runScriptFlag = '--run-script';
+const coreCwdFlag = '--core-cwd';
+
 /**
  * Entry point for starting a dev-server
  * @param options
  */
 // @ts-ignore
 export default async function run(options: StartOptions): SpawnPromise {
-  await spawn('node', [preStartCheck, '--run-script', '--core-cwd', options.cwd, '--cwd', options.cwd]);
-  await spawn('node', [preScriptCheck, '--run-script', '--core-cwd', options.cwd, '--cwd', options.cwd]);
-  return spawn('node', [startScriptPath, '--run-script', '--core-cwd', options.cwd, '--name', options.name]);
+  await spawn('node', [preStartCheck, runScriptFlag, coreCwdFlag, options.cwd, '--cwd', options.cwd]);
+  await spawn('node', [preScriptCheck, runScriptFlag, coreCwdFlag, options.cwd, '--cwd', options.cwd]);
+  return spawn('node', [startScriptPath, runScriptFlag, coreCwdFlag, options.cwd, '--name', options.name]);
 }

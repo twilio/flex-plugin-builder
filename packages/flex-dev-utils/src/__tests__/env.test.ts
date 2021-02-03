@@ -8,72 +8,72 @@ describe('env', () => {
   });
 
   describe('terminalPersisted', () => {
-    it('should return true', () => {
+    it('isTerminalPersisted should return true', () => {
       process.env.PERSIST_TERMINAL = 'true';
       expect(env.isTerminalPersisted()).toEqual(true);
     });
 
-    it('should return false', () => {
+    it('isTerminalPersisted should return false', () => {
       expect(env.isTerminalPersisted()).toEqual(false);
     });
   });
 
   describe('skipPreflightCheck', () => {
-    it('should return true', () => {
+    it('skipPreflightCheck should return true', () => {
       process.env.SKIP_PREFLIGHT_CHECK = 'true';
       expect(env.skipPreflightCheck()).toEqual(true);
     });
 
-    it('should return false', () => {
+    it('skipPreflightCheck should return false', () => {
       expect(env.skipPreflightCheck()).toEqual(false);
     });
   });
 
   describe('allowUnbundledReact', () => {
-    it('should return true', () => {
+    it('allowUnbundledReact should return true', () => {
       process.env.UNBUNDLED_REACT = 'true';
       expect(env.allowUnbundledReact()).toEqual(true);
     });
 
-    it('should return false', () => {
+    it('allowUnbundledReact should return false', () => {
       expect(env.allowUnbundledReact()).toEqual(false);
     });
   });
 
   describe('CI', () => {
-    it('should return true', () => {
+    it('isCI should return true', () => {
       process.env.CI = 'true';
       expect(env.isCI()).toEqual(true);
     });
 
-    it('should return false', () => {
+    it('isCI should return false', () => {
       expect(env.isCI()).toEqual(false);
     });
   });
 
   describe('debug', () => {
-    it('should return true', () => {
+    it('isDebug should return true', () => {
       process.env.DEBUG = 'true';
       expect(env.isDebug()).toEqual(true);
     });
 
-    it('should return with trace true', () => {
+    it('isDebug should return with trace true', () => {
       process.env.TRACE = 'true';
       expect(env.isDebug()).toEqual(true);
     });
 
-    it('should return false', () => {
+    it('isDebug should return false', () => {
       expect(env.isDebug()).toEqual(false);
     });
   });
 
   describe('trace', () => {
-    it('should return true', () => {
+    it('isTrace should return true', () => {
       process.env.TRACE = 'true';
       expect(env.isTrace()).toEqual(true);
     });
 
-    it('should return false', () => {
+    it('isTrace should return false', () => {
       expect(env.isTrace()).toEqual(false);
     });
   });
@@ -84,7 +84,7 @@ describe('env', () => {
       expect(env.getAccountSid()).toEqual('ACxxx');
     });
 
-    it('should return nothing', () => {
+    it('getAccountSid should return nothing', () => {
       expect(env.getAccountSid()).toEqual(undefined);
     });
   });
@@ -95,7 +95,7 @@ describe('env', () => {
       expect(env.getAuthToken()).toEqual('abc123');
     });
 
-    it('should return nothing', () => {
+    it('getAuthToken should return nothing', () => {
       expect(env.getAuthToken()).toEqual(undefined);
     });
   });
@@ -106,7 +106,7 @@ describe('env', () => {
       expect(env.getRealm()).toEqual('dev');
     });
 
-    it('should return nothing', () => {
+    it('getRealm should return nothing', () => {
       expect(env.getRealm()).toEqual(undefined);
     });
   });
@@ -117,7 +117,7 @@ describe('env', () => {
       expect(env.getHost()).toEqual('1.2.3.4');
     });
 
-    it('should return nothing', () => {
+    it('getHost should return nothing', () => {
       expect(env.getHost()).toEqual(undefined);
     });
 
@@ -163,7 +163,7 @@ describe('env', () => {
       expect(env.getBabelEnv()).toEqual('test');
     });
 
-    it('should return nothing', () => {
+    it('getBabelEnv should return nothing', () => {
       expect(env.getBabelEnv()).toEqual(undefined);
     });
 
@@ -210,7 +210,7 @@ describe('env', () => {
       expect(env.getWDSSocketHost()).toEqual('1.2.3.4.5');
     });
 
-    it('should return nothing', () => {
+    it('getWDSSocketHost should return nothing', () => {
       expect(env.getWDSSocketHost()).toEqual(undefined);
     });
 

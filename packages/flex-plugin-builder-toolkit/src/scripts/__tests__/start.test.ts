@@ -5,6 +5,10 @@ import startToolkit from '../start';
 jest.mock('flex-dev-utils');
 
 describe('StartToolkit', () => {
+  const runFlag = '--run-script';
+  const coreCwd = '--core-cwd';
+  const cwd = 'the-cwd';
+
   it('should invoke the start script', async () => {
     const spawn = jest.spyOn(devUtils, 'spawn').mockReturnThis();
 
@@ -13,25 +17,25 @@ describe('StartToolkit', () => {
     expect(spawn).toHaveBeenCalledTimes(3);
     expect(spawn).toHaveBeenCalledWith('node', [
       expect.stringContaining('pre-script-check'),
-      '--run-script',
-      '--core-cwd',
-      'the-cwd',
+      runFlag,
+      coreCwd,
+      cwd,
       '--cwd',
-      'the-cwd',
+      cwd,
     ]);
     expect(spawn).toHaveBeenCalledWith('node', [
       expect.stringContaining('pre-start-check'),
-      '--run-script',
-      '--core-cwd',
-      'the-cwd',
+      runFlag,
+      coreCwd,
+      cwd,
       '--cwd',
-      'the-cwd',
+      cwd,
     ]);
     expect(spawn).toHaveBeenCalledWith('node', [
       expect.stringContaining('start'),
-      '--run-script',
-      '--core-cwd',
-      'the-cwd',
+      runFlag,
+      coreCwd,
+      cwd,
       '--name',
       'the-name',
     ]);
