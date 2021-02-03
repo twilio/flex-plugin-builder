@@ -232,14 +232,14 @@ describe('fs', () => {
   });
 
   describe('checkPluginConfigurationExists', () => {
-    const pluginJsonPath = 'test-dir-plugins';
+    const pluginsJsonPath = 'test-dir-plugins';
     const name = pluginName;
     const dir = 'test-dir';
     const anotherDir = 'another-dir';
     const cliPath = {
       dir,
       flexDir: 'test-dir-flex',
-      pluginsJsonPath: pluginJsonPath,
+      pluginsJsonPath,
     };
 
     let checkFilesExist = jest.spyOn(fs, 'checkFilesExist');
@@ -271,7 +271,7 @@ describe('fs', () => {
       await fs.checkPluginConfigurationExists(name, dir);
 
       expect(checkFilesExist).toHaveBeenCalledTimes(1);
-      expect(checkFilesExist).toHaveBeenCalledWith(pluginJsonPath);
+      expect(checkFilesExist).toHaveBeenCalledWith(pluginsJsonPath);
       expect(mkdirpSync).toHaveBeenCalledTimes(1);
       expect(mkdirpSync).toHaveBeenCalledWith('test-dir-flex');
     });
@@ -282,7 +282,7 @@ describe('fs', () => {
       const result = await fs.checkPluginConfigurationExists(name, dir);
 
       expect(checkFilesExist).toHaveBeenCalledTimes(1);
-      expect(checkFilesExist).toHaveBeenCalledWith(pluginJsonPath);
+      expect(checkFilesExist).toHaveBeenCalledWith(pluginsJsonPath);
       expect(mkdirpSync).not.toHaveBeenCalled();
       expect(result).toEqual(true);
     });
@@ -298,7 +298,7 @@ describe('fs', () => {
       expect(readJsonFile).toHaveBeenCalledTimes(1);
       expect(writeFileSync).toHaveBeenCalledTimes(1);
       expect(writeFileSync).toHaveBeenCalledWith(
-        pluginJsonPath,
+        pluginsJsonPath,
         JSON.stringify({ plugins: [{ name: pluginName, dir, port: 0 }] }, null, 2),
       );
       expect(result).toEqual(true);
@@ -331,7 +331,7 @@ describe('fs', () => {
       expect(readJsonFile).toHaveBeenCalledTimes(1);
       expect(writeFileSync).toHaveBeenCalledTimes(1);
       expect(writeFileSync).toHaveBeenCalledWith(
-        pluginJsonPath,
+        pluginsJsonPath,
         JSON.stringify({ plugins: [{ name: pluginName, dir, port: 0 }] }, null, 2),
       );
       expect(result).toEqual(true);
