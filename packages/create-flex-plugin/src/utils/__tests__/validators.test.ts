@@ -8,6 +8,7 @@ jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/inquirer');
 
 describe('validators', () => {
+  const pluginName = 'plugin-test';
   const accountSid = 'AC00000000000000000000000000000000';
   const url = 'https://twilio.com';
 
@@ -47,7 +48,7 @@ describe('validators', () => {
       const prompt = jest.spyOn(inquirer, 'prompt');
 
       await validators.default({
-        name: 'plugin-test',
+        name: pluginName,
         accountSid,
       } as any);
 
@@ -58,7 +59,7 @@ describe('validators', () => {
       const prompt = jest.spyOn(inquirer, 'prompt');
 
       await validators.default({
-        name: 'plugin-test',
+        name: pluginName,
       } as any);
 
       expect(prompt).not.toHaveBeenCalled();
@@ -68,7 +69,7 @@ describe('validators', () => {
       const prompt = jest.spyOn(inquirer, 'prompt').mockResolvedValue(accountSid);
 
       const config = await validators.default({
-        name: 'plugin-test',
+        name: pluginName,
         accountSid: 'abcd',
       } as any);
 
@@ -80,7 +81,7 @@ describe('validators', () => {
       const prompt = jest.spyOn(inquirer, 'prompt');
 
       await validators.default({
-        name: 'plugin-test',
+        name: pluginName,
         accountSid,
         template: 'github.com/twilio/flex-plugin',
       } as any);
@@ -92,7 +93,7 @@ describe('validators', () => {
       const prompt = jest.spyOn(inquirer, 'prompt').mockResolvedValue(url);
 
       const config = await validators.default({
-        name: 'plugin-test',
+        name: pluginName,
         accountSid,
         template: 'incorrect-url',
       } as any);

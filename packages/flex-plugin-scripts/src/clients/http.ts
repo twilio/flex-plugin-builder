@@ -6,6 +6,8 @@ import axios, { AxiosInstance, AxiosRequestConfig, httpAdapter, settle } from 'f
 import { logger, env, Credential } from 'flex-dev-utils';
 import FormData from 'form-data';
 
+const applicationUrlEncoded = 'application/x-www-form-urlencoded';
+const applicationJson = 'application/json';
 export type ContentType = 'application/x-www-form-urlencoded' | 'application/json';
 export interface HttpConfig {
   baseURL: string;
@@ -32,7 +34,7 @@ export default class Http {
 
   constructor(config: HttpConfig) {
     this.config = config;
-    this.jsonPOST = config.contentType === 'application/json';
+    this.jsonPOST = config.contentType === applicationJson;
     this.client = axios.create({
       baseURL: config.baseURL,
       auth: {
@@ -40,7 +42,7 @@ export default class Http {
         password: config.auth.password,
       },
       headers: {
-        'Content-Type': config.contentType ? config.contentType : 'application/x-www-form-urlencoded',
+        'Content-Type': config.contentType ? config.contentType : applicationUrlEncoded,
       },
     });
 
@@ -63,7 +65,7 @@ export default class Http {
     if (ext === 'js') {
       return 'application/javascript';
     } else if (ext === 'map') {
-      return 'application/json';
+      return applicationJson;
     }
 
     return 'application/octet-stream';

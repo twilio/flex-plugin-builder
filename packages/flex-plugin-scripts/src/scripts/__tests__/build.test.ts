@@ -18,6 +18,7 @@ describe('BuildScript', () => {
     name: 'test-bundle',
     size: 12345,
   };
+  const errorMsg = 'some-error';
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -58,13 +59,13 @@ describe('BuildScript', () => {
     });
 
     it('should fail to build', async () => {
-      const _getBundle = jest.spyOn(buildScript, '_runWebpack').mockRejectedValue('some-error');
+      const _getBundle = jest.spyOn(buildScript, '_runWebpack').mockRejectedValue(errorMsg);
 
       await buildScript.default();
       expect(_getBundle).toHaveBeenCalledTimes(1);
       expect(prints.buildSuccessful).not.toHaveBeenCalled();
       expect(prints.buildFailure).toHaveBeenCalledTimes(1);
-      expect(prints.buildFailure).toHaveBeenCalledWith('some-error');
+      expect(prints.buildFailure).toHaveBeenCalledWith(errorMsg);
       expect(exit).toHaveBeenCalledTimes(1);
       expect(exit).toHaveBeenCalledWith(1);
 
@@ -87,7 +88,7 @@ describe('BuildScript', () => {
     });
 
     it('should reject on compile error', async () => {
-      const toJson = jest.fn().mockReturnValue({ errors: 'some-error' });
+      const toJson = jest.fn().mockReturnValue({ errors: errorMsg });
       const stats = {
         toJson,
         hasErrors: () => true,
@@ -98,7 +99,7 @@ describe('BuildScript', () => {
 
       expect(toJson).toHaveBeenCalledTimes(1);
       expect(reject).toHaveBeenCalledTimes(1);
-      expect(reject).toHaveBeenCalledWith('some-error');
+      expect(reject).toHaveBeenCalledWith(errorMsg);
       expect(resolve).not.toHaveBeenCalled();
     });
 

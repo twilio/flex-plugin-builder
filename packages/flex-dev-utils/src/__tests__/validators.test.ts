@@ -2,35 +2,35 @@ import * as validators from '../validators';
 
 describe('validators', () => {
   describe('isInputNotEmpty', () => {
-    it('should return false', async () => {
+    it('isInputNotEmpty should return false', async () => {
       expect(await validators.isInputNotEmpty('')).toBeFalsy();
     });
 
-    it('should return true', async () => {
+    it('isInputNotEmpty should return true', async () => {
       expect(await validators.isInputNotEmpty('1')).toBeTruthy();
     });
   });
 
   describe('validateAccountSid', () => {
-    it('should return false', async () => {
+    it('validateAccountSid should return false', async () => {
       expect(await validators.validateAccountSid('')).toBeFalsy();
       expect(await validators.validateAccountSid('AC0000000000000000000000000000000')).toEqual(expect.any(String));
       expect(await validators.validateAccountSid('AB00000000000000000000000000000000')).toEqual(expect.any(String));
     });
 
-    it('should return true', async () => {
+    it('validateAccountSid should return true', async () => {
       expect(await validators.validateAccountSid('AC00000000000000000000000000000000')).toBeTruthy();
     });
   });
 
   describe('validateApiSid', () => {
-    it('should return false', async () => {
+    it('validateApiKey should return false', async () => {
       expect(await validators.validateApiKey('')).toBeFalsy();
       expect(await validators.validateApiKey('SK0000000000000000000000000000000')).toEqual(expect.any(String));
       expect(await validators.validateApiKey('SA0000000000000000000000000000000')).toEqual(expect.any(String));
     });
 
-    it('should return true', async () => {
+    it('validateApiKey should return true', async () => {
       expect(await validators.validateApiKey('SK00000000000000000000000000000000')).toBeTruthy();
     });
   });

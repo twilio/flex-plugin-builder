@@ -6,13 +6,14 @@ import * as random from 'flex-dev-utils/dist/random';
 import EnvironmentClient from '../environments';
 
 describe('EnvironmentClient', () => {
+  const pluginName = 'plugin-test';
   const auth: Credential = {
     username: 'ACxxx',
     password: 'abc',
   };
   const environmentMatch = {
     sid: 'ZE00000000000000000000000000000000',
-    unique_name: 'plugin-test',
+    unique_name: pluginName,
     domain_suffix: 'some-suffix',
   };
   const environmentAnother = {
@@ -28,7 +29,7 @@ describe('EnvironmentClient', () => {
   };
 
   const paths = {
-    app: { name: 'plugin-test' },
+    app: { name: pluginName },
   };
 
   beforeEach(() => {
@@ -140,7 +141,7 @@ describe('EnvironmentClient', () => {
 
       expect(post).toHaveBeenCalledTimes(1);
       expect(post).toHaveBeenCalledWith(EnvironmentClient.BaseUri, {
-        UniqueName: 'plugin-test',
+        UniqueName: pluginName,
         DomainSuffix: 'foo',
       });
       expect(randomString).toHaveBeenCalledTimes(1);

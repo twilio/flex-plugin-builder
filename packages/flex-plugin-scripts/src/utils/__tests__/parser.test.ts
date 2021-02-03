@@ -4,13 +4,15 @@ import { FlexPluginError } from 'flex-dev-utils';
 import * as parserScripts from '../parser';
 
 describe('parser', () => {
+  const pluginName = 'plugin-test';
+
   beforeEach(() => {
     jest.resetAllMocks();
     jest.resetModules();
   });
 
   describe('parseUserInputPlugins', () => {
-    const plugin = { name: 'plugin-test', dir: 'test-dir', port: 0 };
+    const plugin = { name: pluginName, dir: 'test-dir', port: 0 };
     const readPluginsJson = jest.spyOn(fs, 'readPluginsJson');
 
     beforeEach(() => {
@@ -18,17 +20,17 @@ describe('parser', () => {
     });
 
     it('should return the local plugins only if found', () => {
-      const result = parserScripts.parseUserInputPlugins(true, ...['--name', 'plugin-test']);
+      const result = parserScripts.parseUserInputPlugins(true, ...['--name', pluginName]);
 
       expect(readPluginsJson).toHaveBeenCalledTimes(1);
-      expect(result).toEqual([{ name: 'plugin-test', remote: false }]);
+      expect(result).toEqual([{ name: pluginName, remote: false }]);
     });
 
     it('should always return the remote plugins', () => {
       const result = parserScripts.parseUserInputPlugins(true, ...['--name', 'plugin-test@remote']);
 
       expect(readPluginsJson).toHaveBeenCalledTimes(1);
-      expect(result).toEqual([{ name: 'plugin-test', remote: true }]);
+      expect(result).toEqual([{ name: pluginName, remote: true }]);
     });
 
     it('should throw an error if local plugin is not found', (done) => {

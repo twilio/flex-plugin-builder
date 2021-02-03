@@ -36,6 +36,8 @@ export interface CLIFlexConfiguration {
 
 export default fs;
 
+const packageJsonStr = 'package.json';
+
 /**
  * This is an alias for require. Useful for mocking out in tests
  * @param filePath  the file to require
@@ -184,7 +186,7 @@ export const checkFilesExist = (...files: string[]): boolean => {
 /**
  * Gets package.json path
  */
-export const getPackageJsonPath = (): string => path.join(getCwd(), 'package.json');
+export const getPackageJsonPath = (): string => path.join(getCwd(), packageJsonStr);
 
 /**
  * Reads app package.json from the rootDir.
@@ -447,7 +449,7 @@ export const getPaths = () => {
       dir: cwd,
       name: pkgName,
       version: pkgVersion,
-      pkgPath: resolveCwd('package.json'),
+      pkgPath: resolveCwd(packageJsonStr),
       jestConfigPath: resolveCwd('jest.config.js'),
       webpackConfigPath: resolveCwd('webpack.config.js'),
       devServerConfigPath: resolveCwd('webpack.dev.js'),
@@ -475,7 +477,7 @@ export const getPaths = () => {
       // node_modules/*,
       nodeModulesDir,
       flexUIDir,
-      flexUIPkgPath: resolveRelative(flexUIDir, 'package.json'),
+      flexUIPkgPath: resolveRelative(flexUIDir, packageJsonStr),
 
       // public/*
       publicDir,
@@ -484,13 +486,13 @@ export const getPaths = () => {
       // dependencies
       dependencies: {
         react: {
-          version: readPackageJson(resolveRelative(nodeModulesDir, 'react', 'package.json')).version,
+          version: readPackageJson(resolveRelative(nodeModulesDir, 'react', packageJsonStr)).version,
         },
         reactDom: {
-          version: readPackageJson(resolveRelative(nodeModulesDir, 'react-dom', 'package.json')).version,
+          version: readPackageJson(resolveRelative(nodeModulesDir, 'react-dom', packageJsonStr)).version,
         },
         flexUI: {
-          version: readPackageJson(resolveRelative(nodeModulesDir, '@twilio/flex-ui', 'package.json')).version,
+          version: readPackageJson(resolveRelative(nodeModulesDir, '@twilio/flex-ui', packageJsonStr)).version,
         },
       },
     },
@@ -513,9 +515,9 @@ export const getDependencyVersion = (pkgName: string): string => {
     return _require(`${pkgName}/package.json`).version;
   } catch {
     try {
-      return _require(resolveRelative(getPaths().app.nodeModulesDir, pkgName, 'package.json')).version;
+      return _require(resolveRelative(getPaths().app.nodeModulesDir, pkgName, packageJsonStr)).version;
     } catch {
-      return _require(resolveRelative(getPaths().scripts.nodeModulesDir, pkgName, 'package.json')).version;
+      return _require(resolveRelative(getPaths().scripts.nodeModulesDir, pkgName, packageJsonStr)).version;
     }
   }
 };
@@ -526,7 +528,7 @@ export const getDependencyVersion = (pkgName: string): string => {
  */
 /* istanbul ignore next */
 export const getPackageVersion = (name: string): string => {
-  const installedPath = resolveRelative(getPaths().app.nodeModulesDir, name, 'package.json');
+  const installedPath = resolveRelative(getPaths().app.nodeModulesDir, name, packageJsonStr);
 
   return readPackageJson(installedPath).version;
 };

@@ -7,14 +7,18 @@ import * as pluginServerScript from '../pluginServer';
 jest.mock('flex-dev-utils/dist/logger');
 
 describe('pluginServer', () => {
+  const pluginName = 'plugin-test';
+  const pluginDir = 'the-dir';
+  const defaultPluginName = 'default-plugin';
+
   const paths = {
     app: {
-      name: 'default-plugin',
+      name: defaultPluginName,
     },
   };
 
   const pkg: fsScript.PackageJson = {
-    name: 'default-plugin',
+    name: defaultPluginName,
     version: '1.2.3',
     dependencies: {},
   };
@@ -27,12 +31,11 @@ describe('pluginServer', () => {
   });
 
   describe('_getLocalPlugin', () => {
-    const pluginName = 'plugin-test';
-    const plugin = { name: pluginName, dir: 'test-dir', port: 0 };
+    const plugin = { name: pluginName, dir: pluginDir, port: 0 };
     jest.spyOn(fsScript, 'readPluginsJson').mockReturnValue({ plugins: [plugin] });
 
     it('should find the plugin', () => {
-      expect(pluginServerScript._getLocalPlugin('plugin-test')).toEqual(plugin);
+      expect(pluginServerScript._getLocalPlugin(pluginName)).toEqual(plugin);
     });
 
     it('should not find the plugin', () => {
@@ -41,10 +44,9 @@ describe('pluginServer', () => {
   });
 
   describe(' _getLocalPlugins', () => {
-    const pluginName = 'plugin-test';
     const readPluginsJson = jest
       .spyOn(fsScript, 'readPluginsJson')
-      .mockReturnValue({ plugins: [{ name: pluginName, dir: 'test-dir', port: 0 }] });
+      .mockReturnValue({ plugins: [{ name: pluginName, dir: pluginDir, port: 0 }] });
 
     it('should return the plugin if found', () => {
       const result = pluginServerScript._getLocalPlugins(3000, [pluginName]);
@@ -71,7 +73,7 @@ describe('pluginServer', () => {
 
   describe('_mergePlugins', () => {
     it('should return both remote and local plugins', () => {
-      const localPlugin = { name: 'default-plugin', phase: 3 } as pluginServerScript.Plugin;
+      const localPlugin = { name: defaultPluginName, phase: 3 } as pluginServerScript.Plugin;
       const remotePluginOne = { name: 'plugin-remote-1', phase: 3 } as pluginServerScript.Plugin;
       const remotePluginTwo = { name: 'plugin-remote-2', phase: 3 } as pluginServerScript.Plugin;
 
@@ -79,7 +81,7 @@ describe('pluginServer', () => {
       jest.spyOn(fsScript, 'readPackageJson').mockReturnValue(pkg);
       jest
         .spyOn(fsScript, 'readPluginsJson')
-        .mockReturnValue({ plugins: [{ name: 'test-name', dir: 'test-dir', port: 0 }] });
+        .mockReturnValue({ plugins: [{ name: 'test-name', dir: pluginDir, port: 0 }] });
 
       const plugins = pluginServerScript._mergePlugins([localPlugin], [remotePluginOne, remotePluginTwo]);
 
@@ -95,7 +97,7 @@ describe('pluginServer', () => {
       jest.spyOn(fsScript, 'readPackageJson').mockReturnValue(pkg);
       jest
         .spyOn(fsScript, 'readPluginsJson')
-        .mockReturnValue({ plugins: [{ name: 'test-name', dir: 'test-dir', port: 0 }] });
+        .mockReturnValue({ plugins: [{ name: 'test-name', dir: pluginDir, port: 0 }] });
 
       const plugins = pluginServerScript._mergePlugins([localPlugin], [remotePluginOne, remotePluginTwo]);
 
@@ -168,7 +170,7 @@ describe('pluginServer', () => {
         .mockReturnValue([{ name: 'plugin-1' }, { name: 'plugin-2' }] as pluginServerScript.Plugin[]);
       jest
         .spyOn(fsScript, 'readPluginsJson')
-        .mockReturnValue({ plugins: [{ name: 'plugin-1', dir: 'test-dir', port: 0 }] });
+        .mockReturnValue({ plugins: [{ name: 'plugin-1', dir: pluginDir, port: 0 }] });
 
       await pluginServerScript._startServer(plugins, config, onRemotePlugins)(req, resp);
 
@@ -193,7 +195,7 @@ describe('pluginServer', () => {
       const _mergePlugins = jest.spyOn(pluginServerScript, '_mergePlugins');
       jest
         .spyOn(fsScript, 'readPluginsJson')
-        .mockReturnValue({ plugins: [{ name: 'test-name', dir: 'test-dir', port: 0 }] });
+        .mockReturnValue({ plugins: [{ name: 'test-name', dir: pluginDir, port: 0 }] });
 
       await pluginServerScript._startServer(plugins, config, onRemotePlugins)(req, resp);
 

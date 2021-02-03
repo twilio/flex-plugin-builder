@@ -20,6 +20,7 @@ const AppPluginsJsonPath = '/plugins/json/path';
 const AppPkgPath = '/plugins/pkg/path';
 
 describe('StartScript', () => {
+  const pluginName = 'plugin-test';
   const isTSProject = jest.fn();
   const paths = {
     cli: {
@@ -59,7 +60,7 @@ describe('StartScript', () => {
       expect(getDefaultPort).toHaveBeenCalledWith(port.toString());
       expect(_startDevServer).toHaveBeenCalledTimes(1);
       expect(parseUserInputPlugins).toHaveBeenCalledTimes(1);
-      expect(_startDevServer).toHaveBeenCalledWith([{ name: 'plugin-test', remote: false }], {
+      expect(_startDevServer).toHaveBeenCalledWith([{ name: pluginName, remote: false }], {
         port,
         type,
         remoteAll: false,
@@ -70,7 +71,7 @@ describe('StartScript', () => {
       findPort.mockResolvedValue(port);
       getDefaultPort.mockReturnValue(port);
       _startDevServer.mockReturnThis();
-      readPluginsJson.mockReturnValue({ plugins: [{ name: 'plugin-test', dir: 'test-dir', port: 0 }] });
+      readPluginsJson.mockReturnValue({ plugins: [{ name: pluginName, dir: 'test-dir', port: 0 }] });
       writeJSONFile.mockReturnThis();
       _updatePluginPort.mockReturnThis();
       setCwd.mockReturnThis();
@@ -88,7 +89,7 @@ describe('StartScript', () => {
     });
 
     it('should start dev-server', async () => {
-      parseUserInputPlugins.mockReturnValue([{ name: 'plugin-test', remote: false }]);
+      parseUserInputPlugins.mockReturnValue([{ name: pluginName, remote: false }]);
 
       await startScripts.default();
 
@@ -96,7 +97,7 @@ describe('StartScript', () => {
     });
 
     it('should start static html page', async () => {
-      parseUserInputPlugins.mockReturnValue([{ name: 'plugin-test', remote: false }]);
+      parseUserInputPlugins.mockReturnValue([{ name: pluginName, remote: false }]);
 
       await startScripts.default(...['flex']);
 
@@ -104,9 +105,9 @@ describe('StartScript', () => {
     });
 
     it('should start plugin', async () => {
-      parseUserInputPlugins.mockReturnValue([{ name: 'plugin-test', remote: false }]);
+      parseUserInputPlugins.mockReturnValue([{ name: pluginName, remote: false }]);
 
-      await startScripts.default(...['plugin', '--name', 'plugin-test']);
+      await startScripts.default(...['plugin', '--name', pluginName]);
 
       assertTest(configScripts.WebpackType.JavaScript);
       expect(readPluginsJson).toHaveBeenCalledTimes(1);
@@ -128,13 +129,13 @@ describe('StartScript', () => {
 
   describe('updatePluginsPort', () => {
     const port = 1234;
-    const plugin = { name: 'plugin-test', dir: 'test-dir', port: 0 };
+    const plugin = { name: pluginName, dir: 'test-dir', port: 0 };
     const readPluginsJson = jest.spyOn(fs, 'readPluginsJson');
     const writeJSONFile = jest.spyOn(fs, 'writeJSONFile');
     const parseUserInputPlugins = jest.spyOn(parserUtils, 'parseUserInputPlugins');
 
     beforeEach(() => {
-      parseUserInputPlugins.mockReturnValue([{ name: 'plugin-test', remote: false }]);
+      parseUserInputPlugins.mockReturnValue([{ name: pluginName, remote: false }]);
       readPluginsJson.mockReturnValue({ plugins: [plugin] });
       writeJSONFile.mockReturnThis();
     });
