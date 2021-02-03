@@ -79,13 +79,4 @@ export const validateGitHubUrl = (url: string): string | boolean => {
   return true;
 };
 
-/**
- * Validates the plugin name starts with `plugin-`
- * @param name {string} the plugin name
- * @return {boolean} whether the plugin is valid
- */
-export const isValidPluginName = (name: string): boolean => {
-  return /^plugin-\S.*/.test(name);
-};
-
 export default {};

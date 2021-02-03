@@ -35,20 +35,6 @@ describe('validators', () => {
     });
   });
 
-  describe('isValidPluginName', () => {
-    it('should be valid plugin names', () => {
-      const names = ['plugin-foo', 'plugin-foo-bar', 'plugin-2', 'plugin-foo_bar'];
-
-      names.map(validators.isValidPluginName).forEach((resp) => expect(resp).toBeTruthy());
-    });
-
-    it('should be an invalid plugin names', () => {
-      const names = ['plugin', 'plugin-', 'name', 'name-plugin'];
-
-      names.map(validators.isValidPluginName).forEach((resp) => expect(resp).toBeFalsy());
-    });
-  });
-
   describe('isValidUrl', () => {
     it('should be valid URL', () => {
       const data = [
