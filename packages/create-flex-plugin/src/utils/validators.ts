@@ -1,7 +1,6 @@
 import { prompt } from 'flex-dev-utils/dist/inquirer';
-import { logger, ValidationError } from 'flex-dev-utils';
 import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
-import { isValidPluginName, isValidUrl, validateAccountSid, validateGitHubUrl } from 'flex-dev-utils/dist/validators';
+import { isValidUrl, validateAccountSid, validateGitHubUrl } from 'flex-dev-utils/dist/validators';
 
 import { FlexPluginArguments } from '../lib/create-flex-plugin';
 
@@ -39,12 +38,6 @@ export const _promptForTemplateUrl = async (): Promise<string> => {
  */
 const validate = async (config: FlexPluginArguments): Promise<FlexPluginArguments> => {
   config.name = config.name || '';
-
-  if (!isValidPluginName(config.name)) {
-    const coloredName = logger.coloredStrings.name;
-    const msg = `Invalid plugin name ${coloredName(config.name)}; plugin name must start with plugin-`;
-    throw new ValidationError(msg);
-  }
 
   if (config.accountSid && !isSidOfType(config.accountSid, SidPrefix.AccountSid)) {
     config.accountSid = await _promptForAccountSid();

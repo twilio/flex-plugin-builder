@@ -34,16 +34,6 @@ describe('validators', () => {
   });
 
   describe('validate', () => {
-    it('should error out if plugin name is not valid', async () => {
-      try {
-        await validators.default({} as any);
-      } catch (e) {
-        expect(e).toBeInstanceOf(FlexPluginError);
-        expect(e.message).toContain('Invalid plugin name');
-        expect(e.message).toContain('start with plugin-');
-      }
-    });
-
     it('should not ask for an accountSid if already specified', async () => {
       const prompt = jest.spyOn(inquirer, 'prompt');
 

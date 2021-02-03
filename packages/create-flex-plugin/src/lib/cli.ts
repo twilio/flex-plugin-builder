@@ -7,7 +7,7 @@ const usage = multilineString(
   'Creates a new Twilio Flex Plugin project',
   '',
   'Arguments:',
-  'name\tName of your plugin. Needs to start with plugin-',
+  'name\tName of your plugin.',
 );
 
 export interface CLIArguments {
