@@ -32,10 +32,7 @@
     "clean": "rm -rf dist",
     "lint": "eslint --ext ts src/",
     "lint:fix": "npm run lint -- --fix",
-    "prepack": "oclif-dev manifest && npm run replace-doc",
-    "postpack": "rm -f oclif.manifest.json",
     "prepublish": "npm run build",
-    "replace-doc": "cp docs/README.md README.md && oclif-dev readme",
     "test": "cd ../.. && jest packages/flex-plugin-webpack --color",
     "test:watch": "cd ../.. && jest packages/flex-plugin-webpack --watch --color"
   },
