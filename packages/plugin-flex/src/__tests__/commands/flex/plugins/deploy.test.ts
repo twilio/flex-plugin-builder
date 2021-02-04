@@ -1,9 +1,11 @@
 /* eslint-disable camelcase */
 import { CLIParseError } from '@oclif/parser/lib/errors';
+import { TwilioCliError } from 'flex-dev-utils';
+import { PluginVersionResource } from 'flex-plugins-api-client/dist/clients/pluginVersions';
+import { PluginResource } from 'flex-plugins-api-client';
 
 import createTest, { getPrintMethod, mockGetPkg, mockGetter, mockPrintMethod } from '../../../framework';
 import FlexPluginsDeploy, { parseVersionInput } from '../../../../commands/flex/plugins/deploy';
-import { TwilioCliError } from '../../../../exceptions';
 import ServerlessClient from '../../../../clients/ServerlessClient';
 
 describe('Commands/FlexPluginsDeploy', () => {
@@ -23,22 +25,24 @@ describe('Commands/FlexPluginsDeploy', () => {
     nextVersion: '2.0.0',
     pluginUrl: 'https://ruby-fox-123.twil.io/plugin-url',
   };
-  const pluginVersionResource = {
+  const pluginVersionResource: PluginVersionResource = {
     sid: 'FV00000000000000000000000000000',
     account_sid: 'AC00000000000000000000000000000',
     plugin_sid: 'FP00000000000000000000000000000',
     version: deployResult.nextVersion,
     plugin_url: deployResult.pluginUrl,
     private: !deployResult.isPublic,
+    archived: false,
     changelog: 'the changelog',
     date_created: '2020',
   };
-  const pluginResource = {
+  const pluginResource: PluginResource = {
     sid: 'FP00000000000000000000000000000',
     account_sid: 'AC00000000000000000000000000000',
     unique_name: 'plugin-name',
     description: 'plugin description',
     friendly_name: 'plugin friendly name',
+    archived: false,
     date_created: '2020',
     date_updated: '2020',
   };

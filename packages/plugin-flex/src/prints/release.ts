@@ -1,9 +1,9 @@
-import { Logger } from 'flex-plugins-utils-logger';
+import { Logger } from 'flex-dev-utils';
 
 /**
  * Successful release
  */
-export const releaseSuccessful = (logger: Logger) => (configurationSid: string) => {
+const releaseSuccessful = (logger: Logger) => (configurationSid: string) => {
   logger.newline();
   logger.success(`🚀 Configuration **${configurationSid}** was successfully enabled.`);
   logger.newline();
@@ -13,6 +13,7 @@ export const releaseSuccessful = (logger: Logger) => (configurationSid: string) 
   logger.newline();
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export default (logger: Logger) => ({
   releaseSuccessful: releaseSuccessful(logger),
 });

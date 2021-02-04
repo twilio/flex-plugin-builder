@@ -1,15 +1,20 @@
 import { PluginVersionResource } from 'flex-plugins-api-client/dist/clients/pluginVersions';
-import { progress } from 'flex-plugins-utils-logger';
 import semver from 'semver';
 import { DeployResult } from 'flex-plugin-scripts/dist/scripts/deploy';
 import { CLIParseError } from '@oclif/parser/lib/errors';
+import { TwilioCliError, progress } from 'flex-dev-utils';
+import { PluginResource } from 'flex-plugins-api-client';
 
 import * as flags from '../../../utils/flags';
-import { TwilioCliError } from '../../../exceptions';
 import { createDescription, instanceOf } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { deploy as deployDocs } from '../../../commandDocs.json';
 import ServerlessClient from '../../../clients/ServerlessClient';
+
+interface ValidatePlugin {
+  currentVersion: string;
+  nextVersion: string;
+}
 
 /**
  * Parses the version input
@@ -72,6 +77,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     }),
   };
 
+  // @ts-ignore
   private prints;
 
   private nextVersion?: string = undefined;
@@ -86,7 +92,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
   /**
    * @override
    */
-  async doRun() {
+  async doRun(): Promise<void> {
     await this.checkServerlessInstance();
     await this.checkForLegacy();
 
@@ -126,7 +132,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
    * Validates that the provided next plugin version is valid
    * @returns {Promise<void>}
    */
-  async validatePlugin() {
+  async validatePlugin(): Promise<ValidatePlugin> {
     let currentVersion = '0.0.0';
 
     try {
@@ -164,7 +170,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
    * Registers a plugin with Plugins API
    * @returns {Promise}
    */
-  async registerPlugin() {
+  async registerPlugin(): Promise<PluginResource> {
     return this.pluginsClient.upsert({
       UniqueName: this.pkg.name,
       FriendlyName: this.pkg.name,
@@ -177,7 +183,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
    * @param deployResult
    * @returns {Promise}
    */
-  async registerPluginVersion(deployResult: DeployResult) {
+  async registerPluginVersion(deployResult: DeployResult): Promise<PluginVersionResource> {
     return this.pluginVersionsClient.create(this.pkg.name, {
       Version: deployResult.nextVersion,
       PluginUrl: deployResult.pluginUrl,
@@ -189,7 +195,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
   /**
    * Checks whether a Serverless instance exists or not. If not, will create one
    */
-  async checkServerlessInstance() {
+  async checkServerlessInstance(): Promise<void> {
     const serviceSid = await this.flexConfigurationClient.getServerlessSid();
     if (serviceSid) {
       try {
@@ -213,7 +219,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
   /**
    * Checks to see if a legacy plugin exist
    */
-  async checkForLegacy() {
+  async checkForLegacy(): Promise<void> {
     const serviceSid = await this.flexConfigurationClient.getServerlessSid();
     if (serviceSid) {
       const hasLegacy = await this.serverlessClient.hasLegacy(serviceSid, this.pkg.name);

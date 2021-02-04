@@ -63,7 +63,7 @@ export const _validate = <F, A>(flags: F, options: Parser.flags.Input<F>, parse?
  * Prepares the options for parsing
  * @param options
  */
-export const _prepareFlags = <F>(options?: Input<F>) => {
+export const _prepareFlags = <F>(options?: Input<F>): Input<F> | undefined => {
   if (!options) {
     return options;
   }

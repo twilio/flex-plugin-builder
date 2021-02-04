@@ -1,5 +1,5 @@
-import { progress } from 'flex-plugins-utils-logger';
-import { CreateConfigurationOption } from 'flex-plugins-api-toolkit';
+import { progress } from 'flex-dev-utils';
+import { CreateConfigurationOption, CreateConfiguration as ICreateConfiguration } from 'flex-plugins-api-toolkit';
 
 import * as flags from '../utils/flags';
 import FlexPlugin, { FlexPluginFlags } from './flex-plugin';
@@ -7,7 +7,7 @@ import { createConfiguration as createConfigurationDocs } from '../commandDocs.j
 
 type Multiple = { multiple: true };
 
-export interface CreateConfigurationFlags extends FlexPluginFlags {
+interface CreateConfigurationFlags extends FlexPluginFlags {
   new: boolean;
   name?: string;
   'disable-plugin'?: string[];
@@ -69,7 +69,7 @@ export default abstract class CreateConfiguration extends FlexPlugin {
   /**
    * Performs the actual task of validating and creating configuration. This method is also usd by release script.
    */
-  protected async doCreateConfiguration() {
+  protected async doCreateConfiguration(): Promise<ICreateConfiguration> {
     return progress(`Creating configuration`, async () => this.createConfiguration(), false);
   }
 
@@ -77,7 +77,7 @@ export default abstract class CreateConfiguration extends FlexPlugin {
    * Registers a configuration with Plugins API
    * @returns {Promise}
    */
-  private async createConfiguration() {
+  private async createConfiguration(): Promise<ICreateConfiguration> {
     const option: CreateConfigurationOption = {
       name: this._flags.name as string,
       addPlugins: [],

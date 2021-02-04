@@ -1,8 +1,6 @@
 module.exports = {
   collectCoverage: false,
-  setupFiles: [
-    '<rootDir>/jest.setup.js'
-  ],
+  setupFiles: ['<rootDir>/jest.setup.js'],
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   collectCoverageFrom: [
@@ -18,19 +16,16 @@ module.exports = {
     '!<rootDir>/packages/flex-plugin-scripts/src/config/**/*.ts',
     '!<rootDir>/packages/flex-plugin-webpack/src/**/*.ts',
   ],
-  testMatch: [
-    '<rootDir>/packages/**/*.test.ts'
-  ],
+  testMatch: ['<rootDir>/packages/**/*.test.ts'],
   transform: {
-    '^.+\\.js?$': '<rootDir>/node_modules/babel-jest'
+    '^.+\\.js?$': '<rootDir>/node_modules/babel-jest',
   },
-  testPathIgnorePatterns: [
-    '/node_modules/',
-  ],
-  coveragePathIgnorePatterns: [
-    '/node_modules/',
-  ],
-  modulePathIgnorePatterns: [
-    '<rootDir>/packages/create-flex-plugin/templates/'
-  ]
+  testPathIgnorePatterns: ['/node_modules/'],
+  coveragePathIgnorePatterns: ['/node_modules/'],
+  modulePathIgnorePatterns: ['<rootDir>/packages/create-flex-plugin/templates/'],
+  globals: {
+    'ts-jest': {
+      tsconfig: '<rootDir>/tsconfig.json',
+    },
+  },
 };

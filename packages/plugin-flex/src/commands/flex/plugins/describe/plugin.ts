@@ -23,21 +23,21 @@ export default class FlexPluginsDescribePlugin extends InformationFlexPlugin<Des
   /**
    * @override
    */
-  async getResource() {
+  async getResource(): Promise<DescribePlugin> {
     return this.pluginsApiToolkit.describePlugin({ name: this._flags.name });
   }
 
   /**
    * @override
    */
-  notFound() {
+  notFound(): void {
     this._logger.info(`!!Plugin **${this._flags.name}** was not found.!!`);
   }
 
   /**
    * @override
    */
-  print(plugin: DescribePlugin) {
+  print(plugin: DescribePlugin): void {
     this.printHeader('SID', plugin.sid);
     this.printHeader('Name', plugin.name);
     this.printHeader('Status', plugin.isActive);

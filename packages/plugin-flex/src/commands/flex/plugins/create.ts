@@ -13,6 +13,8 @@ interface YArgs {
 /**
  * Creates a new Flex plugin
  */
+// @ts-ignore
+// eslint-disable-next-line import/no-unused-modules
 export default class FlexPluginsCreate extends baseCommands.TwilioClientCommand {
   static description = createDescription(CreateFlexPlugin.description);
 
@@ -40,7 +42,7 @@ export default class FlexPluginsCreate extends baseCommands.TwilioClientCommand 
    * @param yargs   the yargs flags
    * @returns the OClif args
    */
-  static parseYargs(yargs: YArgs) {
+  static parseYargs(yargs: YArgs): YArgs {
     return Object.keys(yargs).reduce((result, key) => {
       const arg = yargs[key];
       const flagType = arg.type || 'string';
@@ -62,7 +64,7 @@ export default class FlexPluginsCreate extends baseCommands.TwilioClientCommand 
    * @param args      the args
    * @returns {Array}
    */
-  static toArgv(args: string[]) {
+  static toArgv(args: string[]): string[] {
     return Object.keys(args).reduce((result: string[], key: string) => {
       result.push(`--${key}`, args[key]);
 
@@ -75,7 +77,8 @@ export default class FlexPluginsCreate extends baseCommands.TwilioClientCommand 
    *
    * @returns {Promise<void>}
    */
-  async run() {
+  async run(): Promise<void> {
+    // @ts-ignore
     const { flags: instanceFlags, args } = this.parse(FlexPluginsCreate);
     const createFlexPlugin = new CreateFlexPlugin();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -85,7 +88,7 @@ export default class FlexPluginsCreate extends baseCommands.TwilioClientCommand 
     await createFlexPlugin.parse(...scriptArgs);
   }
 
-  async runCommand() {
+  async runCommand(): Promise<void> {
     return this.run();
   }
 }

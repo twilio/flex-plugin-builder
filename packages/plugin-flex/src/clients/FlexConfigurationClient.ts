@@ -1,7 +1,6 @@
 import phin from 'phin';
 import { ConfigurationContext, ConfigurationInstance } from 'twilio/lib/rest/flexApi/v1/configuration';
-
-import { TwilioCliError } from '../exceptions';
+import { TwilioCliError } from 'flex-dev-utils';
 
 export interface FlexConfigurationClientOptions {
   accountSid: string;
@@ -14,7 +13,7 @@ export interface FlexConfigurationClientOptions {
  * Wrapper Twilio Flex Configuration Public API
  */
 export default class FlexConfigurationClient {
-  private client;
+  private client: ConfigurationContext;
 
   private options: FlexConfigurationClientOptions;
 

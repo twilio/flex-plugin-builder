@@ -1,17 +1,15 @@
+/* eslint-disable sonarjs/no-identical-functions */
 import { join } from 'path';
 
 import rimraf from 'rimraf';
 import semver from 'semver';
 import packageJson from 'package-json';
-import { progress } from 'flex-plugins-utils-logger';
 import { flags } from '@oclif/parser';
-import spawn from 'flex-plugins-utils-spawn';
-import { TwilioApiError } from 'flex-plugins-utils-exception';
+import { TwilioApiError, TwilioCliError, spawn, progress } from 'flex-dev-utils';
 
 import FlexPlugin, { ConfigData, PkgCallback, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { createDescription, instanceOf } from '../../../utils/general';
 import { upgradePlugin as upgradePluginDoc } from '../../../commandDocs.json';
-import { TwilioCliError } from '../../../exceptions';
 import {
   calculateSha256,
   copyFile,
@@ -92,6 +90,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     'flex-plugin',
   ];
 
+  // @ts-ignore
   private prints;
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
@@ -137,7 +136,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   /**
    * Upgrade from v1 to v4
    */
-  async upgradeFromV1() {
+  async upgradeFromV1(): Promise<void> {
     this.prints.scriptStarted('v1');
 
     await this.cleanupScaffold();
@@ -157,7 +156,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   /**
    * Upgrade from v2 to v4
    */
-  async upgradeFromV2() {
+  async upgradeFromV2(): Promise<void> {
     this.prints.scriptStarted('v2');
 
     await this.cleanupScaffold();
@@ -178,7 +177,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   /**
    * Upgrade from v3 to v4
    */
-  async upgradeFromV3() {
+  async upgradeFromV3(): Promise<void> {
     this.prints.scriptStarted('v3');
 
     await this.cleanupScaffold();
@@ -200,7 +199,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   /**
    * Upgrades the packages to the latest version
    */
-  async upgradeToLatest() {
+  async upgradeToLatest(): Promise<void> {
     this.prints.upgradeToLatest();
 
     await this.updatePackageJson(this.getDependencyUpdates());
@@ -209,7 +208,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   /**
    * Removes craco.config.js file
    */
-  async cleanupScaffold() {
+  async cleanupScaffold(): Promise<void> {
     await progress('Cleaning up the scaffold', async () => {
       let warningLogged = false;
 
@@ -272,7 +271,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
    * @param dependencies  the list of dependencies to modify - can also be used to update to the latest
    * @param custom        a custom callback for modifying package.json
    */
-  async updatePackageJson(dependencies: DependencyUpdates, custom?: PkgCallback) {
+  async updatePackageJson(dependencies: DependencyUpdates, custom?: PkgCallback): Promise<void> {
     await progress('Updating package dependencies', async () => {
       const { pkg } = this;
       dependencies.remove.forEach((name) => delete pkg.dependencies[name]);
@@ -317,7 +316,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
    * Removes scripts from the package.json
    * @param scripts the scripts remove
    */
-  async removePackageScripts(scripts: ScriptsToRemove[]) {
+  async removePackageScripts(scripts: ScriptsToRemove[]): Promise<void> {
     await progress('Removing package scripts', async () => {
       const { pkg } = this;
       scripts.forEach((script) => {
@@ -341,7 +340,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   /**
    * Cleans up node_modules and lockfiles
    */
-  async cleanupNodeModules() {
+  async cleanupNodeModules(): Promise<void> {
     await progress('Cleaning up node_modules and lock files', async () => {
       await rimraf.sync(join(this.cwd, 'node_modules'));
       await rimraf.sync(join(this.cwd, 'package-lock.json'));
@@ -352,7 +351,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   /**
    * Runs npm install if flag is set
    */
-  async npmInstall() {
+  async npmInstall(): Promise<void> {
     if (!this._flags.install) {
       return;
     }
@@ -377,7 +376,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   /**
    * Removes the legacy plugin
    */
-  async removeLegacyPlugin() {
+  async removeLegacyPlugin(): Promise<void> {
     const { name } = this.pkg;
     await this.prints.removeLegacyNotification(name, this._flags.yes);
 
@@ -427,7 +426,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   /**
    * Returns the flex-plugin-scripts version from the plugin
    */
-  get pkgVersion() {
+  get pkgVersion(): number | undefined {
     const pkg =
       this.pkg.dependencies['flex-plugin-scripts'] ||
       this.pkg.devDependencies['flex-plugin-scripts'] ||

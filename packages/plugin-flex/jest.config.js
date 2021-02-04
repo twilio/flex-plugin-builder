@@ -1,11 +1,17 @@
+const base = require('./../../jest.config.base');
+const pkg = require('./package');
+
+pkg.name = 'plugin-flex';
+
 module.exports = {
-  collectCoverage: false,
-  preset: 'ts-jest',
-  collectCoverageFrom: ['<rootDir>/src/**/*.ts', '!<rootDir>/src/__tests__/framework.ts'],
-  testMatch: ['<rootDir>/src/**/*.test.ts'],
-  transform: {
-    '^.+\\.js?$': '<rootDir>/node_modules/babel-jest',
+  ...base,
+  name: pkg.name,
+  displayName: pkg.name,
+  rootDir: '../..',
+  testMatch: [`<rootDir>/packages/${pkg.name}/**/*.test.ts`],
+  globals: {
+    'ts-jest': {
+      tsconfig: `<rootDir>/packages/${pkg.name}/tsconfig.json`,
+    },
   },
-  testPathIgnorePatterns: ['/node_modules/'],
-  coveragePathIgnorePatterns: ['/node_modules/'],
 };

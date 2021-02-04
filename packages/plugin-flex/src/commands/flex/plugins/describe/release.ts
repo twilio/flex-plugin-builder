@@ -1,5 +1,5 @@
 import { flags } from '@oclif/command';
-import { TwilioApiError } from 'flex-plugins-utils-exception';
+import { TwilioApiError } from 'flex-dev-utils';
 import { DescribeRelease } from 'flex-plugins-api-toolkit';
 
 import { createDescription } from '../../../../utils/general';

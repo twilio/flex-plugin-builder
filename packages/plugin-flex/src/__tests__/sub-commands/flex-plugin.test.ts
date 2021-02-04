@@ -1,7 +1,8 @@
+import { TwilioCliError } from 'flex-dev-utils';
+
 import createTest, { mockGetPkg } from '../framework';
 import FlexPlugin from '../../sub-commands/flex-plugin';
 import * as fs from '../../utils/fs';
-import { TwilioCliError } from '../../exceptions';
 
 describe('SubCommands/FlexPlugin', () => {
   const { env } = process;
@@ -78,17 +79,6 @@ describe('SubCommands/FlexPlugin', () => {
     const result = cmd.isPluginFolder();
 
     expect(result).toEqual(true);
-    expect(fs.filesExist).toHaveBeenCalledTimes(1);
-  });
-
-  it('should test isPluginFolder to be false', async () => {
-    const cmd = await createTest(FlexPlugin)();
-
-    jest.spyOn(fs, 'filesExist').mockReturnValue(false);
-
-    const result = cmd.isPluginFolder();
-
-    expect(result).toEqual(false);
     expect(fs.filesExist).toHaveBeenCalledTimes(1);
   });
 

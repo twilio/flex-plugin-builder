@@ -2,11 +2,11 @@ import { flags } from '@oclif/command';
 import { findPortAvailablePort, StartScript } from 'flex-plugin-scripts/dist/scripts/start';
 import { FLAG_MULTI_PLUGINS } from 'flex-plugin-scripts/dist/scripts/pre-script-check';
 import semver from 'semver';
+import { TwilioCliError } from 'flex-dev-utils';
 
 import { createDescription } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { readJSONFile } from '../../../utils/fs';
-import { TwilioCliError } from '../../../exceptions';
 import { start as startDocs } from '../../../commandDocs.json';
 
 const baseFlags = { ...FlexPlugin.flags };
@@ -43,7 +43,7 @@ export default class FlexPluginsStart extends FlexPlugin {
   /**
    * @override
    */
-  async doRun() {
+  async doRun(): Promise<void> {
     const flexArgs: string[] = [];
     const pluginNames: string[] = [];
 
@@ -95,7 +95,7 @@ export default class FlexPluginsStart extends FlexPlugin {
    * Checks the plugin
    * @param pluginName  the plugin name
    */
-  async checkPlugin(pluginName: string) {
+  async checkPlugin(pluginName: string): Promise<void> {
     const preScriptArgs = ['--name', pluginName];
     if (this.isMultiPlugin()) {
       preScriptArgs.push(`--${MULTI_PLUGINS_PILOT}`);
@@ -136,7 +136,7 @@ export default class FlexPluginsStart extends FlexPlugin {
    * Returns true if we are running multiple plugins
    * @private
    */
-  private isMultiPlugin() {
+  private isMultiPlugin(): boolean {
     if (this._flags['include-remote']) {
       return true;
     }

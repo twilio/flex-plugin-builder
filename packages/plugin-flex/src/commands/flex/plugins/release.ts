@@ -1,4 +1,4 @@
-import { progress } from 'flex-plugins-utils-logger';
+import { progress } from 'flex-dev-utils';
 import { flags } from '@oclif/command';
 import { RequiredFlagError } from '@oclif/parser/lib/errors';
 
@@ -52,6 +52,7 @@ export default class FlexPluginsRelease extends CreateConfiguration {
     }),
   };
 
+  // @ts-ignore
   private prints;
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
@@ -64,7 +65,7 @@ export default class FlexPluginsRelease extends CreateConfiguration {
   /**
    * @override
    */
-  async doRun() {
+  async doRun(): Promise<void> {
     if (this._flags['configuration-sid']) {
       await this.doCreateRelease(this._flags['configuration-sid']);
     } else {

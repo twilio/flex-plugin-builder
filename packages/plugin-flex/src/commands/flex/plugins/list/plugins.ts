@@ -17,7 +17,7 @@ export default class FlexPluginsListPlugins extends InformationFlexPlugin<ListPl
   /**
    * @override
    */
-  async getResource() {
+  async getResource(): Promise<ListPlugins[]> {
     const result = await this.pluginsApiToolkit.listPlugins({});
 
     return result.plugins;
@@ -26,14 +26,14 @@ export default class FlexPluginsListPlugins extends InformationFlexPlugin<ListPl
   /**
    * @override
    */
-  notFound() {
+  notFound(): void {
     this._logger.info(`!!No plugins where not found.!!`);
   }
 
   /**
    * @override
    */
-  print(plugins: ListPlugins[]) {
+  print(plugins: ListPlugins[]): void {
     const activePlugins = plugins.filter((p) => p.isActive);
     const inactivePlugins = plugins.filter((p) => !p.isActive);
 

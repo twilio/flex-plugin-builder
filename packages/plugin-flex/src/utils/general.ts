@@ -10,7 +10,7 @@ export const _runInformation = 'This command needs to be invoked inside a plugin
  * @param {boolean} inDirectory  whether this command should be invoked inside a plugin directory or not
  * @returns {string} the updated command
  */
-export const createDescription = (description: string, inDirectory: boolean = true) => {
+export const createDescription = (description: string, inDirectory: boolean = true): string => {
   description = `${description.trim().replace(/\.$/, '')}.`;
   if (!inDirectory) {
     return description;
@@ -46,7 +46,7 @@ export const instanceOf = <T>(instance: Object, klass: Constructable<T>): boolea
  * Exits the application
  * @param exitCode  the exit code
  */
-export const exit = (exitCode = 1) => {
+export const exit = (exitCode = 1): never => {
   // eslint-disable-next-line no-process-exit
   process.exit(exitCode);
 };

@@ -1,4 +1,4 @@
-import { Logger } from 'flex-plugins-utils-logger';
+import { Logger } from 'flex-dev-utils';
 
 /**
  * Prints error about incompatibility
@@ -9,6 +9,7 @@ const incompatibleVersion = (logger: Logger) => (name: string, version: number |
   logger.info('Run {{$ twilio flex:plugins:upgrade-plugin \\-\\-beta \\-\\-install}} to upgrade your plugin.');
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export default (logger: Logger) => ({
   incompatibleVersion: incompatibleVersion(logger),
 });

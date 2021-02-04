@@ -1,4 +1,4 @@
-import { Logger, singleLineString, boxen, confirm, coloredStrings } from 'flex-plugins-utils-logger';
+import { Logger, singleLineString, boxen, confirm, coloredStrings } from 'flex-dev-utils';
 
 import { exit } from '../utils/general';
 
@@ -166,6 +166,7 @@ const warningPluginNotInAPI = (logger: Logger) => (pluginName: string) => {
   logger.info(`Run {{$ twilio flex:plugins:upgrade-plugin --remove-legacy-plugin}} again after to finish migration.`);
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export default (logger: Logger) => ({
   upgradeNotification: upgradeNotification(logger),
   scriptStarted: scriptStarted(logger),

@@ -23,14 +23,14 @@ export default class FlexPluginsDescribeConfiguration extends InformationFlexPlu
   /**
    * @override
    */
-  async getResource() {
+  async getResource(): Promise<DescribeConfiguration> {
     return this.pluginsApiToolkit.describeConfiguration({ sid: this._flags.sid });
   }
 
   /**
    * @override
    */
-  notFound() {
+  notFound(): void {
     this._logger.info(`!!Configuration **${this._flags.sid}** was not found.!!`);
   }
 

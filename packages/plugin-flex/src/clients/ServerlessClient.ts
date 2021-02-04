@@ -4,9 +4,8 @@ import {
   ServiceListInstanceCreateOptions,
 } from 'twilio/lib/rest/serverless/v1/service';
 import { BuildInstance, BuildListInstanceCreateOptions } from 'twilio/lib/rest/serverless/v1/service/build';
-import { TwilioApiError } from 'flex-plugins-utils-exception';
+import { TwilioApiError, Logger } from 'flex-dev-utils';
 import { EnvironmentInstance } from 'twilio/lib/rest/serverless/v1/service/environment';
-import { Logger } from 'flex-plugins-utils-logger';
 
 interface FileVersion {
   path: string;
@@ -31,9 +30,9 @@ export default class ServerlessClient {
 
   static pollingIntervalMsec = 500;
 
-  private client;
+  private client: ServiceListInstance;
 
-  private logger;
+  private logger: Logger;
 
   constructor(client: ServiceListInstance, logger: Logger) {
     this.client = client;
@@ -160,7 +159,7 @@ export default class ServerlessClient {
       const { sid } = newBuild;
 
       const timeoutId = setTimeout(() => {
-        // eslint-disable-next-line no-use-before-define
+        // eslint-disable-next-line no-use-before-define, @typescript-eslint/no-use-before-define
         clearInterval(intervalId);
         reject(
           new TwilioApiError(

@@ -17,7 +17,7 @@ export default class FlexPluginsListConfigurations extends InformationFlexPlugin
   /**
    * @override
    */
-  async getResource() {
+  async getResource(): Promise<ListConfigurations[]> {
     const result = await this.pluginsApiToolkit.listConfigurations({});
 
     return result.configurations;
@@ -26,14 +26,14 @@ export default class FlexPluginsListConfigurations extends InformationFlexPlugin
   /**
    * @override
    */
-  notFound() {
+  notFound(): void {
     this._logger.info(`!!No configurations where not found.!!`);
   }
 
   /**
    * @override
    */
-  print(configurations: ListConfigurations[]) {
+  print(configurations: ListConfigurations[]): void {
     const list = this.sortByActive(configurations);
 
     list.forEach((configuration) => {

@@ -17,7 +17,7 @@ export default class FlexPluginsListPlugins extends InformationFlexPlugin<ListRe
   /**
    * @override
    */
-  async getResource() {
+  async getResource(): Promise<ListReleases[]> {
     const result = await this.pluginsApiToolkit.listReleases({});
 
     return result.releases;
@@ -26,14 +26,14 @@ export default class FlexPluginsListPlugins extends InformationFlexPlugin<ListRe
   /**
    * @override
    */
-  notFound() {
+  notFound(): void {
     this._logger.info(`!!No releases where not found.!!`);
   }
 
   /**
    * @override
    */
-  print(releases: ListReleases[]) {
+  print(releases: ListReleases[]): void {
     releases.forEach((release) => {
       this.printVersion(release.sid);
       this.printPretty(release);

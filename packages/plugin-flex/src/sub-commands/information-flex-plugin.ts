@@ -1,4 +1,4 @@
-import { TwilioApiError } from 'flex-plugins-utils-exception';
+import { TwilioApiError } from 'flex-dev-utils';
 
 import FlexPlugin, { ConfigData, SecureStorage } from './flex-plugin';
 
@@ -23,7 +23,7 @@ export default abstract class InformationFlexPlugin<T> extends FlexPlugin {
   /**
    * @override
    */
-  async doRun() {
+  async doRun(): Promise<T | null> {
     try {
       const resource = await this.getResource();
       if (this.isJson) {
@@ -32,12 +32,10 @@ export default abstract class InformationFlexPlugin<T> extends FlexPlugin {
 
       this.print(resource);
     } catch (e) {
-      if (e.instanceOf && e.instanceOf(TwilioApiError)) {
-        if ((e as TwilioApiError).status === 404) {
-          this.notFound();
-          this.exit(1);
-          return null;
-        }
+      if (e.instanceOf && e.instanceOf(TwilioApiError) && (e as TwilioApiError).status === 404) {
+        this.notFound();
+        this.exit(1);
+        return null;
       }
 
       throw e;
@@ -50,7 +48,7 @@ export default abstract class InformationFlexPlugin<T> extends FlexPlugin {
    * Sorts an array of resource by its isActive property
    * @param list  the list to sort
    */
-  sortByActive<A extends IsActive>(list: A[]) {
+  sortByActive<A extends IsActive>(list: A[]): A[] {
     const active = list.find((r) => r.isActive);
     const inactive = list.filter((r) => !r.isActive);
     const sorted = [...inactive];

@@ -34,4 +34,4 @@ export const toSentenceCase = (key: string): string => {
  * Returns true if value is null or undefined
  * @param value the value to check
  */
-export const isNullOrUndefined = (value?: NullUndefined | Primitive) => value === undefined || value === null;
+export const isNullOrUndefined = (value?: NullUndefined | Primitive): boolean => value === undefined || value === null;

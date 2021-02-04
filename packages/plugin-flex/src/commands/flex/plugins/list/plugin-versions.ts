@@ -23,7 +23,7 @@ export default class FlexPluginsListPluginVersions extends InformationFlexPlugin
   /**
    * @override
    */
-  async getResource() {
+  async getResource(): Promise<ListPluginVersions[]> {
     const result = await this.pluginsApiToolkit.listPluginVersions({ name: this._flags.name });
 
     return result.plugin_versions;
@@ -32,14 +32,14 @@ export default class FlexPluginsListPluginVersions extends InformationFlexPlugin
   /**
    * @override
    */
-  notFound() {
+  notFound(): void {
     this._logger.info(`!!Plugin **${this._flags.name}** was not found.!!`);
   }
 
   /**
    * @override
    */
-  print(versions: ListPluginVersions[]) {
+  print(versions: ListPluginVersions[]): void {
     const list = this.sortByActive(versions);
 
     this.printHeader('Plugin Name', this._flags.name);

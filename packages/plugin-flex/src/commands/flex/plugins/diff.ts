@@ -1,8 +1,9 @@
 import { Difference } from 'flex-plugins-api-toolkit/dist/tools/diff';
+import { TwilioCliError } from 'flex-dev-utils';
+import { Diff } from 'flex-plugins-api-toolkit';
 
 import { createDescription } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
-import { TwilioCliError } from '../../../exceptions';
 import { isNullOrUndefined } from '../../../utils/strings';
 import { diff as diffDocs } from '../../../commandDocs.json';
 
@@ -10,7 +11,7 @@ import { diff as diffDocs } from '../../../commandDocs.json';
  * Configuration sid parser
  * @param input the input from the CLI
  */
-export const parser = (input: string) => {
+const parser = (input: string): string => {
   if (input === 'active') {
     return input;
   }
@@ -59,7 +60,7 @@ export default class FlexPluginsDiff extends FlexPlugin {
   /**
    * @override
    */
-  async doRun() {
+  async doRun(): Promise<void> {
     const diffs = await this.getDiffs();
 
     const oldSidText = diffs.activeSid === diffs.oldSid ? `${diffs.oldSid} (active)` : diffs.oldSid;
@@ -94,7 +95,7 @@ export default class FlexPluginsDiff extends FlexPlugin {
   /**
    * Finds the diff
    */
-  async getDiffs() {
+  async getDiffs(): Promise<Diff> {
     // if only one argument is provided, it's because you are comparing "active to configId"
     const { id1, id2 } = this._args;
     return this.pluginsApiToolkit.diff({
@@ -109,7 +110,7 @@ export default class FlexPluginsDiff extends FlexPlugin {
    * @param diff    the diff to print
    * @param prefix  the prefix to add to each entry
    */
-  printDiff<T>(diff: Difference<T>, prefix: string = '') {
+  printDiff<T>(diff: Difference<T>, prefix: string = ''): void {
     const path = diff.path as string;
     const before = diff.before as string;
     const after = diff.after as string;

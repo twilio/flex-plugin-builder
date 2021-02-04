@@ -22,7 +22,7 @@ export default class FlexPluginsCreateConfiguration extends CreateConfiguration 
   /**
    * @override
    */
-  async doRun() {
+  async doRun(): Promise<void> {
     const config = await this.doCreateConfiguration();
 
     this._logger.newline();

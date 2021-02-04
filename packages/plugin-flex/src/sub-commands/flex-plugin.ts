@@ -1,8 +1,6 @@
 import { join } from 'path';
 import { homedir } from 'os';
 
-import spawn from 'flex-plugins-utils-spawn';
-import { Logger } from 'flex-plugins-utils-logger';
 import PluginsApiToolkit from 'flex-plugins-api-toolkit';
 import { baseCommands, services } from '@twilio/cli-core';
 import {
@@ -12,7 +10,7 @@ import {
   ConfigurationsClient,
   ReleasesClient,
 } from 'flex-plugins-api-client';
-import { TwilioError } from 'flex-plugins-utils-exception';
+import { TwilioError, spawn, Logger, SpawnPromise, NotImplementedError, TwilioCliError } from 'flex-dev-utils';
 import dayjs from 'dayjs';
 import * as Errors from '@oclif/errors';
 import mkdirp from 'mkdirp';
@@ -23,7 +21,6 @@ import semver from 'semver/preload';
 import parser from '../utils/parser';
 import * as flags from '../utils/flags';
 import { filesExist, readJSONFile, readJsonFile, writeJSONFile } from '../utils/fs';
-import { NotImplementedError, TwilioCliError } from '../exceptions';
 import { exit, instanceOf } from '../utils/general';
 import { toSentenceCase } from '../utils/strings';
 import prints from '../prints';
@@ -45,13 +42,13 @@ export interface FlexPluginFlags {
   region?: string;
 }
 
-export interface FlexConfigurationPlugin {
+interface FlexConfigurationPlugin {
   name: string;
   dir: string;
   port: number;
 }
 
-export interface CLIFlexConfiguration {
+interface CLIFlexConfiguration {
   plugins: FlexConfigurationPlugin[];
 }
 
@@ -68,6 +65,8 @@ export type PkgCallback = (input: Pkg) => Pkg;
 
 const baseFlag = { ...baseCommands.TwilioClientCommand.flags };
 delete baseFlag['cli-output-format'];
+
+const packageJsonStr = 'package.json';
 
 /**
  * Base class for all flex-plugin * scripts.
@@ -142,7 +141,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     this.skipEnvironmentalSetup = false;
     this._logger = new Logger({ isQuiet: false, markdown: true });
     // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
-    this.version = require(join(this.pluginRootDir, 'package.json')).version;
+    this.version = require(join(this.pluginRootDir, packageJsonStr)).version;
 
     if (!this.opts.strict) {
       // @ts-ignore
@@ -156,10 +155,10 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * Returns the version from the package.json if found, otherwise returns undefined
    * @param pkg
    */
-  public static getPackageVersion(pkg: string) {
+  public static getPackageVersion(pkg: string): string {
     try {
       // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
-      return require(join(pkg, 'package.json')).version;
+      return require(join(pkg, packageJsonStr)).version;
     } catch (e) {
       return 'undefined';
     }
@@ -170,7 +169,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @param key
    */
   /* istanbul ignore next */
-  public static getHeader(key: string) {
+  public static getHeader(key: string): string {
     return toSentenceCase(key);
   }
 
@@ -179,7 +178,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @param timestamp
    */
   /* istanbul ignore next */
-  public static parseDate(timestamp: string) {
+  public static parseDate(timestamp: string): string {
     return dayjs(timestamp).format('MMM DD, YYYY H:mm:ssA');
   }
 
@@ -189,7 +188,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @param value
    */
   /* istanbul ignore next */
-  public static getValue(key: string, value: string | boolean) {
+  public static getValue(key: string, value: string | boolean): string {
     key = key.toLowerCase();
 
     if (FlexPlugin.DATE_FIELDS.includes(key)) {
@@ -210,8 +209,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * Checks the dir is a Flex plugin
    * @returns {boolean}
    */
-  isPluginFolder() {
-    if (!filesExist(this.cwd, 'package.json')) {
+  isPluginFolder(): boolean {
+    if (!filesExist(this.cwd, packageJsonStr)) {
       return false;
     }
     const { pkg } = this;
@@ -226,7 +225,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @returns {object}
    */
   get pkg(): Pkg {
-    return readJSONFile<Pkg>(this.cwd, 'package.json');
+    return readJSONFile<Pkg>(this.cwd, packageJsonStr);
   }
 
   /**
@@ -251,7 +250,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * Gets an instantiated {@link PluginsApiToolkit}
    * @returns {PluginsApiToolkit}
    */
-  get pluginsApiToolkit() {
+  get pluginsApiToolkit(): PluginsApiToolkit {
     if (!this._pluginsApiToolkit) {
       throw new TwilioCliError('PluginsApiToolkit is not initialized yet');
     }
@@ -263,7 +262,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * Gets an instantiated {@link PluginsClient}
    * @returns {PluginsClient}
    */
-  get pluginsClient() {
+  get pluginsClient(): PluginsClient {
     if (!this._pluginsClient) {
       throw new TwilioCliError('PluginsClient is not initialized yet');
     }
@@ -275,7 +274,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * Gets an instantiated {@link PluginsClient}
    * @returns {PluginsClient}
    */
-  get pluginVersionsClient() {
+  get pluginVersionsClient(): PluginVersionsClient {
     if (!this._pluginVersionsClient) {
       throw new TwilioCliError('PluginVersionsClient is not initialized yet');
     }
@@ -287,7 +286,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * Gets an instantiated {@link ConfigurationsClient}
    * @returns {ConfigurationsClient}
    */
-  get configurationsClient() {
+  get configurationsClient(): ConfigurationsClient {
     if (!this._configurationsClient) {
       throw new TwilioCliError('ConfigurationsClient is not initialized yet');
     }
@@ -299,7 +298,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * Gets an instantiated {@link ReleasesClient}
    * @returns {ReleasesClient}
    */
-  get releasesClient() {
+  get releasesClient(): ReleasesClient {
     if (!this._releasesClient) {
       throw new TwilioCliError('ReleasesClient is not initialized yet');
     }
@@ -311,7 +310,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * Gets an instantiated {@link FlexConfigurationClient}
    * @returns {FlexConfigurationClient}
    */
-  get flexConfigurationClient() {
+  get flexConfigurationClient(): FlexConfigurationClient {
     if (!this._flexConfigurationClient) {
       throw new TwilioCliError('flexConfigurationClient is not initialized yet');
     }
@@ -323,7 +322,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * Gets an instantiated {@link ServerlessClient}
    * @returns {ServerlessClient}
    */
-  get serverlessClient() {
+  get serverlessClient(): ServerlessClient {
     if (!this._serverlessClient) {
       throw new TwilioCliError('serverlessClient is not initialized yet');
     }
@@ -335,7 +334,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * The main run command
    * @override
    */
-  async run() {
+  async run(): Promise<void> {
     await super.run();
     this.logger.debug(`Using Flex Plugins Config File: ${this.pluginsConfigPath}`);
 
@@ -418,7 +417,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * Catches any thrown exception
    * @param error
    */
-  async catch(error: Error) {
+  async catch(error: Error): Promise<void> {
     if (instanceOf(error, TwilioError)) {
       this._logger.error(error.message);
     } else if (instanceOf(error, Errors.CLIError)) {
@@ -433,7 +432,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @alias for run
    */
   /* istanbul ignore next */
-  async runCommand() {
+  async runCommand(): Promise<void> {
     return this.run();
   }
 
@@ -459,7 +458,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @param argv arguments to pass to the script
    */
   /* istanbul ignore next */
-  async spawnScript(scriptName: string, argv = this.scriptArgs) {
+  // @ts-ignore
+  async spawnScript(scriptName: string, argv = this.scriptArgs): SpawnPromise {
     const scriptPath = require.resolve(`flex-plugin-scripts/dist/scripts/${scriptName}`);
     return spawn('node', [scriptPath, ...argv, '--run-script', '--core-cwd', this.pluginRootDir]);
   }
@@ -467,7 +467,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   /**
    * Setups the environment. This must run after run command
    */
-  setupEnvironment() {
+  setupEnvironment(): void {
     process.env.SKIP_CREDENTIALS_SAVING = 'true';
     process.env.TWILIO_ACCOUNT_SID = this.twilioClient.username;
     process.env.TWILIO_AUTH_TOKEN = this.twilioClient.password;
@@ -484,7 +484,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    */
   /* istanbul ignore next */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  printPretty<O extends { [key: string]: any }>(object: O, ...ignoreList: (keyof O)[]) {
+  printPretty<O extends { [key: string]: any }>(object: O, ...ignoreList: (keyof O)[]): void {
     Object.keys(object)
       .filter((key) => !ignoreList.includes(key))
       .forEach((key) => {
@@ -498,7 +498,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @param value the value
    */
   /* istanbul ignore next */
-  printHeader(key: string, value?: string | boolean) {
+  printHeader(key: string, value?: string | boolean): void {
     if (value === undefined) {
       this._logger.info(`**[[${FlexPlugin.getHeader(key)}:]]**`);
     } else {
@@ -512,7 +512,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @param otherKeys
    */
   /* istanbul ignore next */
-  printVersion(key: string, ...otherKeys: string[]) {
+  printVersion(key: string, ...otherKeys: string[]): void {
     if (otherKeys.length) {
       this._logger.info(`**@@${key}@@** ${otherKeys.join('')}`);
     } else {
@@ -550,14 +550,14 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   /**
    * Whether this is a JSON response
    */
-  get isJson() {
+  get isJson(): boolean {
     return this._flags.json;
   }
 
   /**
-   * Get the cli plugin configuartion
+   * Get the cli plugin configuration
    */
-  get pluginsConfig() {
+  get pluginsConfig(): CLIFlexConfiguration {
     mkdirp.sync(join(this.cliRootDir, 'flex'));
     if (!filesExist(this.pluginsConfigPath)) {
       writeJSONFile({ plugins: [] }, this.pluginsConfigPath);
@@ -568,7 +568,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   /**
    * Returns the pluginsConfigPath
    */
-  get pluginsConfigPath() {
+  get pluginsConfigPath(): string {
     return join(this.cliRootDir, 'flex', 'plugins.json');
   }
 

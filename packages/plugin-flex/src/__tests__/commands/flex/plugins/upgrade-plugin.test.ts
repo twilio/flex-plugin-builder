@@ -1,7 +1,6 @@
-import { TwilioApiError } from 'flex-plugins-utils-exception';
+import { TwilioApiError, TwilioCliError } from 'flex-dev-utils';
 
 import createTest, { getPrintMethod, implementFileExists, mockGetPkg, mockPrintMethod } from '../../../framework';
-import { TwilioCliError } from '../../../../exceptions';
 import FlexPluginsUpgradePlugin from '../../../../commands/flex/plugins/upgrade-plugin';
 import * as fs from '../../../../utils/fs';
 

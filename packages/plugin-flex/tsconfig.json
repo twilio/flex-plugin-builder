@@ -1,32 +1,10 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "lib",
+    "outDir": "dist",
     "baseUrl": ".",
     "rootDir": "src",
-    "module": "commonjs",
-    "target": "es2017",
-    "sourceMap": true,
-    "moduleResolution": "node",
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": false,
-    "skipLibCheck": true,
-    "declaration": true,
     "esModuleInterop": true,
-    "downlevelIteration": true,
-    "resolveJsonModule": true,
-    "types" : [
-      "node",
-      "jest"
-    ]
-  },
-  "exclude": [
-    "node_modules",
-    "src/__tests__/",
-    "**/*.test.ts",
-    "**/*.spec.ts",
-    "lib",
-    "coverage"
-  ]
+    "target": "es2017"
+  }
 }
