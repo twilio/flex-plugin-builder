@@ -48,9 +48,11 @@
   },
   "devDependencies": {
     "@twilio/flex-ui": "^1",
+    "@types/tmp": "^0.2.0",
     "@types/yargs": "^13.0.11",
     "flex-plugin": "^4.3.18-beta.0",
-    "flex-plugin-scripts": "^4.3.19-beta.0"
+    "flex-plugin-scripts": "^4.3.19-beta.0",
+    "tmp": "^0.2.1"
   },
   "gitHead": "cb92593ce13da010d82f488d974d7f372d973af8"
 }

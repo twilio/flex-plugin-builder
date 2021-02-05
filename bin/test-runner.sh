@@ -1,27 +1,24 @@
 #!/bin/bash
 
+# Test runner for running jest one by one and collect the overall coverage at the end
+#
+# To run a single test (or a pattern) you can use:
+# $ ./node_modules/.bin/jest --config ./packages/THE_PACKAGE/jest.config.js ./packages/THE_PACKAGE/path/tp/file/or/dir
+
 jest=./node_modules/.bin/jest
 nyc=./node_modules/.bin/nyc
 
 rm -rf ./coverage
-mkdir -p ./coverage/partial
-
-${jest} ./packages/flex-plugin-scripts --config ./packages/flex-plugin-scripts/jest.config.js --coverage --color
-mv ./coverage/coverage-final.json "./coverage/partial/flex-plugin-scripts.json"
-
-
-${jest} ./packages/flex-dev-utils --config ./packages/flex-dev-utils/jest.config.js --coverage --color
-mv ./coverage/coverage-final.json "./coverage/partial/flex-dev-utils.json"
-
-
-${nyc} report -t ./coverage/partial --report-dir ./coverage --reporter=html --reporter=lcov
-
-exit 0
 
 for dir in ./packages/* ; do
   pkg=$(basename "${dir}")
 
-  ${jest} ./packages/"${pkg}" --config "./packages/${pkg}/jest.config.js" --coverage --color
-  mv ./coverage/coverage-final.json "./coverage/${pkg}.json"
+  if [ ]
+  #${jest} ./packages/"${pkg}" --config "./packages/${pkg}/jest.config.js" --color "$@"
+  # Comment the previous line and uncomment this line to check for memory leak
+   node --expose-gc --trace-warnings ${jest} ./packages/"${pkg}" --config "./packages/${pkg}/jest.config.js" -i --runInBand --logHeapUsage
+
+  #mv ./coverage/coverage-final.json "./coverage/${pkg}.json"
 done
 
+#${nyc} report -t ./coverage --report-dir ./coverage --reporter=html --reporter=lcov

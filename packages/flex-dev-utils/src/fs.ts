@@ -5,7 +5,6 @@ import { promisify } from 'util';
 
 import globby from 'globby';
 import mkdirp from 'mkdirp';
-import tmp from 'tmp';
 import rimRaf from 'rimraf';
 import appModule from 'app-module-path';
 
@@ -253,11 +252,6 @@ export const copyTemplateDir = async (source: string, target: string, variables:
 };
 
 /**
- * Create a tmp directory
- */
-export const tmpDirSync = tmp.dirSync;
-
-/**
  * rm -rf sync script
  */
 export const rmRfSync = rimRaf.sync;
@@ -379,8 +373,25 @@ export const resolveModulePath = (pkg: string, ...paths: string[]): string | fal
   }
 };
 
-// eslint-disable-next-line import/no-unused-modules
-export { DirResult as TmpDirResult } from 'tmp';
+/* istanbul ignore next */
+export const _getFlexPluginScripts = (): string => {
+  const flexPluginScriptPath = resolveModulePath('flex-plugin-scripts');
+  if (flexPluginScriptPath === false) {
+    throw new Error('Could not resolve flex-plugin-scripts');
+  }
+
+  return path.join(path.dirname(flexPluginScriptPath), '..');
+};
+
+/* istanbul ignore next */
+export const _getFlexPluginWebpackPath = (scriptsNodeModulesDir: string): string => {
+  const flexPluginWebpackPath = resolveModulePath('flex-plugin-webpack', scriptsNodeModulesDir);
+  if (flexPluginWebpackPath === false) {
+    throw new Error(`Could not resolve flex-plugin-webpack`);
+  }
+
+  return path.join(path.dirname(flexPluginWebpackPath), '..');
+};
 
 /**
  * Returns the paths to all modules and directories used in the plugin-builder
@@ -389,13 +400,7 @@ export { DirResult as TmpDirResult } from 'tmp';
 export const getPaths = () => {
   const cwd = getCwd();
   const nodeModulesDir = resolveCwd('node_modules');
-
-  const flexPluginScriptPath = resolveModulePath('flex-plugin-scripts');
-  if (flexPluginScriptPath === false) {
-    throw new Error('Could not resolve flex-plugin-scripts');
-  }
-
-  const scriptsDir = path.join(path.dirname(flexPluginScriptPath), '..');
+  const scriptsDir = _getFlexPluginScripts();
   const scriptsNodeModulesDir = resolveRelative(scriptsDir, 'node_modules');
   const devAssetsDir = resolveRelative(scriptsDir, 'dev_assets');
   const publicDir = resolveCwd('public');
@@ -403,12 +408,7 @@ export const getPaths = () => {
   const srcDir = resolveCwd('src');
   const flexUIDir = resolveRelative(nodeModulesDir, '@twilio/flex-ui');
   const tsConfigPath = resolveCwd('tsconfig.json');
-
-  const flexPluginWebpackPath = resolveModulePath('flex-plugin-webpack', scriptsNodeModulesDir);
-  if (flexPluginWebpackPath === false) {
-    throw new Error(`Could not resolve flex-plugin-webpack`);
-  }
-  const webpackDir = path.join(path.dirname(flexPluginWebpackPath), '..');
+  const webpackDir = _getFlexPluginWebpackPath(scriptsNodeModulesDir);
 
   // package.json information
   let pkgName = '';

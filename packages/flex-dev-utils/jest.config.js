@@ -1,9 +1,7 @@
-const base = require('./../../tmp');
+const base = require('./../../jest.base.js');
 const pkg = require('./package');
 
-const config = {
+module.exports = {
   rootDir: '.',
   ...base(pkg),
 };
-
-module.exports = config;

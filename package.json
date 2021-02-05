@@ -30,10 +30,10 @@
     "release:alpha": "lerna-travis-release alpha",
     "release:beta": "lerna-travis-release beta",
     "release:public": "lerna-travis-release public",
-    "test": "jest --color",
-    "test:ci": "jest --clearCache && jest --no-cache --silent --coverage --color --maxWorkers=2",
-    "test:coverage": "jest --color --coverage",
-    "test:watch": "jest --watchAll --color"
+    "test": "./bin/test-runner.sh",
+    "pretest:ci": "jest --clearCache",
+    "test:ci": "npm run test -- --no-cache --coverage --color --maxWorkers=2",
+    "test:watch": "npm run test -- --watchAll"
   },
   "husky": {
     "hooks": {
