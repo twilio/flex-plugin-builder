@@ -2,8 +2,9 @@ import fs from 'fs';
 import { resolve, join } from 'path';
 
 import { logger, progress, FlexPluginError } from 'flex-dev-utils';
-import { copyTemplateDir, tmpDirSync, TmpDirResult, checkPluginConfigurationExists } from 'flex-dev-utils/dist/fs';
+import { copyTemplateDir, checkPluginConfigurationExists } from 'flex-dev-utils/dist/fs';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
+import { dirSync as tmpDirSync, DirResult as TmpDirResult } from 'tmp';
 
 import { setupConfiguration, installDependencies, downloadFromGitHub } from './commands';
 import { CLIArguments } from './cli';

@@ -1,17 +1,22 @@
-const base = require('./../../jest.config.base');
+const base = require('./../../jest.base');
 const pkg = require('./package');
 
 pkg.name = 'plugin-flex';
 
 module.exports = {
-  ...base,
-  name: pkg.name,
-  displayName: pkg.name,
-  rootDir: '../..',
-  testMatch: [`<rootDir>/packages/${pkg.name}/**/*.test.ts`],
+  rootDir: '.',
+  ...base(pkg),
   globals: {
     'ts-jest': {
-      tsconfig: `<rootDir>/packages/${pkg.name}/tsconfig.json`,
+      tsconfig: `<rootDir>/tsconfig.json`,
+    },
+  },
+  coverageThreshold: {
+    global: {
+      statements: 63,
+      branches: 61,
+      lines: 64,
+      functions: 50,
     },
   },
 };

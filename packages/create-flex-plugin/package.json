@@ -36,6 +36,7 @@
     "prebuild": "npm run clean",
     "build": "tsc",
     "clean": "rm -rf dist",
+    "prepublish": "npm run build",
     "lint": "eslint --ext ts src/",
     "lint:fix": "npm run lint -- --fix",
     "test": "cd ../.. && jest packages/create-flex-plugin --color",
@@ -44,10 +45,12 @@
   "dependencies": {
     "esm": "^3.2.25",
     "flex-dev-utils": "^4.3.19-beta.0",
+    "tmp": "^0.2.1",
     "yargs": "^14.2.3"
   },
   "devDependencies": {
     "@twilio/flex-ui": "^1",
+    "@types/tmp": "^0.2.0",
     "@types/yargs": "^13.0.11",
     "flex-plugin": "^4.3.18-beta.0",
     "flex-plugin-scripts": "^4.3.19-beta.0"
