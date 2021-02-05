@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Test runner for running jest one by one and collect the overall coverage at the end
 
 jest=./node_modules/.bin/jest
