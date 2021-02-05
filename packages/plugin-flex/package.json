@@ -11,11 +11,13 @@
     "flex plugins api",
     "oclif-plugin"
   ],
-  "homepage": "https://github.com/twilio-labs/plugin-flex",
-  "bugs": "https://github.com/twilio-labs/plugin-flex/issues",
+  "homepage": "https://github.com/twilio/flex-plugin-builder",
+  "bugs": {
+    "url": "https://github.com/twilio/flex-plugin-builder/issues"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/twilio-labs/plugin-flex.git"
+    "url": "git+https://github.com/twilio/flex-plugin-builder.git"
   },
   "license": "MIT",
   "author": "Twilio @twilio",
