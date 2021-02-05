@@ -44,6 +44,7 @@ export default class FlexPluginsDescribeRelease extends InformationFlexPlugin<De
   /**
    * @override
    */
+  /* istanbul ignore next */
   notFound() {
     this._logger.info(`!!Release **${this._flags.sid || 'active'}** was not found.!!`);
   }
@@ -51,6 +52,7 @@ export default class FlexPluginsDescribeRelease extends InformationFlexPlugin<De
   /**
    * @override
    */
+  /* istanbul ignore next */
   print(release: DescribeRelease) {
     this.printHeader('Sid', release.sid);
     this.printHeader('Status', release.isActive);
@@ -76,6 +78,7 @@ export default class FlexPluginsDescribeRelease extends InformationFlexPlugin<De
   /**
    * Parses the flags passed to this command
    */
+  /* istanbul ignore next */
   get _flags() {
     return this.parse(FlexPluginsDescribeRelease).flags;
   }

@@ -30,6 +30,7 @@ export default class FlexPluginsDescribePlugin extends InformationFlexPlugin<Des
   /**
    * @override
    */
+  /* istanbul ignore next */
   notFound(): void {
     this._logger.info(`!!Plugin **${this._flags.name}** was not found.!!`);
   }
@@ -37,6 +38,7 @@ export default class FlexPluginsDescribePlugin extends InformationFlexPlugin<Des
   /**
    * @override
    */
+  /* istanbul ignore next */
   print(plugin: DescribePlugin): void {
     this.printHeader('SID', plugin.sid);
     this.printHeader('Name', plugin.name);
@@ -59,6 +61,7 @@ export default class FlexPluginsDescribePlugin extends InformationFlexPlugin<Des
   /**
    * Parses the flags passed to this command
    */
+  /* istanbul ignore next */
   get _flags() {
     return this.parse(FlexPluginsDescribePlugin).flags;
   }

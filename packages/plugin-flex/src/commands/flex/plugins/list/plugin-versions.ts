@@ -32,6 +32,7 @@ export default class FlexPluginsListPluginVersions extends InformationFlexPlugin
   /**
    * @override
    */
+  /* istanbul ignore next */
   notFound(): void {
     this._logger.info(`!!Plugin **${this._flags.name}** was not found.!!`);
   }
@@ -39,6 +40,7 @@ export default class FlexPluginsListPluginVersions extends InformationFlexPlugin
   /**
    * @override
    */
+  /* istanbul ignore next */
   print(versions: ListPluginVersions[]): void {
     const list = this.sortByActive(versions);
 
@@ -59,6 +61,7 @@ export default class FlexPluginsListPluginVersions extends InformationFlexPlugin
   /**
    * Parses the flags passed to this command
    */
+  /* istanbul ignore next */
   get _flags() {
     return this.parse(FlexPluginsListPluginVersions).flags;
   }
