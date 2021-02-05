@@ -14,7 +14,7 @@ before_install:
 
 before_script:
   - npm install --no-package-lock
-  - NODE_OPTIONS="--max-old-space-size=8192"
+  - NODE_OPTIONS="--max-old-space-size=16384"
 
 script:
   - npm run lint
