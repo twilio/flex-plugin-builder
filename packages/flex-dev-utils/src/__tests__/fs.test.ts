@@ -9,6 +9,10 @@ jest.mock('globby');
 jest.mock('app-module-path');
 
 describe('fs', () => {
+  const flexPluginScripts = 'flex-plugin-scripts';
+  const flexPluginWebpack = 'flex-plugin-webpack';
+  const flexPluginScriptsPath = `/path/to/${flexPluginScripts}`;
+  const flexPluginWebpackPath = `/path/to/${flexPluginWebpack}`;
   const pluginName = 'plugin-test';
   const fileContent = '{"version":1}';
 
@@ -16,7 +20,7 @@ describe('fs', () => {
     version: '1',
     name: pluginName,
     dependencies: {
-      'flex-plugin-scripts': '1',
+      [flexPluginScripts]: '1',
       'flex-plugin': '2',
     },
   };
@@ -353,12 +357,59 @@ describe('fs', () => {
     });
   });
 
+  describe('_getFlexPluginScripts', () => {
+    it('should resolve path', () => {
+      const thePath = 'the/path';
+      const resolveModulePath = jest.spyOn(fs, 'resolveModulePath').mockReturnValue(thePath);
+
+      fs._getFlexPluginScripts();
+
+      expect(resolveModulePath).toHaveBeenCalledTimes(1);
+      expect(resolveModulePath).toHaveBeenCalledWith(flexPluginScripts);
+    });
+
+    it('should throw exception if package not found', (done) => {
+      jest.spyOn(fs, 'resolveModulePath').mockReturnValue(false);
+
+      try {
+        fs._getFlexPluginScripts();
+      } catch (e) {
+        expect(e.message).toContain(`resolve ${flexPluginScripts}`);
+        done();
+      }
+    });
+  });
+
+  describe('_getFlexPluginWebpackPath', () => {
+    it('should resolve path', () => {
+      const thePath = 'the/path';
+      const theModule = 'the/module';
+      const resolveModulePath = jest.spyOn(fs, 'resolveModulePath').mockReturnValue(thePath);
+
+      fs._getFlexPluginWebpackPath(theModule);
+
+      expect(resolveModulePath).toHaveBeenCalledTimes(1);
+      expect(resolveModulePath).toHaveBeenCalledWith(flexPluginWebpack, theModule);
+    });
+
+    it('should throw exception if package not found', (done) => {
+      jest.spyOn(fs, 'resolveModulePath').mockReturnValue(false);
+
+      try {
+        fs._getFlexPluginWebpackPath('path');
+      } catch (e) {
+        expect(e.message).toContain(`resolve ${flexPluginWebpack}`);
+        done();
+      }
+    });
+  });
+
   describe('getPaths', () => {
     const validPackage = {
       name: pluginName,
       version: '1.2.3',
       dependencies: {
-        'flex-plugin-scripts': '1',
+        [flexPluginScripts]: '1',
         'flex-plugin': '2',
       },
     };
@@ -376,7 +427,7 @@ describe('fs', () => {
 
     it('should throw exception if flexPluginScriptPath is not found', (done) => {
       jest.spyOn(fs, 'resolveModulePath').mockImplementation((pkg) => {
-        if (pkg === 'flex-plugin-scripts') {
+        if (pkg === flexPluginScripts) {
           return false;
         }
 
@@ -386,14 +437,14 @@ describe('fs', () => {
       try {
         fs.getPaths();
       } catch (e) {
-        expect(e.message).toContain('resolve flex-plugin-scripts');
+        expect(e.message).toContain(`resolve ${flexPluginScripts}`);
         done();
       }
     });
 
     it('should throw exception if flexPluginWebpackPath is not found', (done) => {
       jest.spyOn(fs, 'resolveModulePath').mockImplementation((pkg) => {
-        if (pkg === 'flex-plugin-webpack') {
+        if (pkg === flexPluginWebpack) {
           return false;
         }
 
@@ -403,74 +454,87 @@ describe('fs', () => {
       try {
         fs.getPaths();
       } catch (e) {
-        expect(e.message).toContain('resolve flex-plugin-webpack');
+        expect(e.message).toContain(`resolve ${flexPluginWebpack}`);
         done();
       }
     });
 
     it('should give you the paths', () => {
+      const _getFlexPluginScripts = jest.spyOn(fs, '_getFlexPluginScripts').mockReturnValue(flexPluginScriptsPath);
+      const _getFlexPluginWebpackPath = jest
+        .spyOn(fs, '_getFlexPluginWebpackPath')
+        .mockReturnValue(flexPluginWebpackPath);
       const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockReturnValue(validPackage);
+      const thePaths = fs.getPaths();
+
+      expect(_getFlexPluginScripts).toHaveBeenCalledTimes(1);
+      expect(_getFlexPluginWebpackPath).toHaveBeenCalledTimes(1);
 
       // build/ directory
-      expect(fs.getPaths().app.buildDir).toEqual(expect.stringMatching('build$'));
-      expect(fs.getPaths().app.bundlePath).toContain('build');
-      expect(fs.getPaths().app.bundlePath).toContain(validPackage.name);
-      expect(fs.getPaths().app.bundlePath).toEqual(expect.stringMatching('.js$'));
-      expect(fs.getPaths().app.sourceMapPath).toContain('build');
-      expect(fs.getPaths().app.sourceMapPath).toContain(validPackage.name);
-      expect(fs.getPaths().app.sourceMapPath).toEqual(expect.stringMatching('.js.map$'));
+      expect(thePaths.app.buildDir).toEqual(expect.stringMatching('build$'));
+      expect(thePaths.app.bundlePath).toContain('build');
+      expect(thePaths.app.bundlePath).toContain(validPackage.name);
+      expect(thePaths.app.bundlePath).toEqual(expect.stringMatching('.js$'));
+      expect(thePaths.app.sourceMapPath).toContain('build');
+      expect(thePaths.app.sourceMapPath).toContain(validPackage.name);
+      expect(thePaths.app.sourceMapPath).toEqual(expect.stringMatching('.js.map$'));
 
       // cli/ directory
-      expect(fs.getPaths().cli.dir).toEqual(expect.stringMatching('/.twilio-cli'));
-      expect(fs.getPaths().cli.flexDir).toContain('/.twilio-cli/flex');
-      expect(fs.getPaths().cli.pluginsJsonPath).toEqual(expect.stringMatching('plugins.json'));
+      expect(thePaths.cli.dir).toEqual(expect.stringMatching('/.twilio-cli'));
+      expect(thePaths.cli.flexDir).toContain('/.twilio-cli/flex');
+      expect(thePaths.cli.pluginsJsonPath).toEqual(expect.stringMatching('plugins.json'));
 
       // src/ directory
-      expect(fs.getPaths().app.srcDir).toEqual(expect.stringMatching('src$'));
-      expect(fs.getPaths().app.entryPath).toContain('src');
-      expect(fs.getPaths().app.entryPath).toEqual(expect.stringMatching('index$'));
+      expect(thePaths.app.srcDir).toEqual(expect.stringMatching('src$'));
+      expect(thePaths.app.entryPath).toContain('src');
+      expect(thePaths.app.entryPath).toEqual(expect.stringMatching('index$'));
 
       // node_modules/ directory
-      expect(fs.getPaths().app.nodeModulesDir).toEqual(expect.stringMatching('node_modules$'));
-      expect(fs.getPaths().app.flexUIDir).toContain('node_modules');
-      expect(fs.getPaths().app.flexUIDir).toContain('@twilio/flex-ui');
-      expect(fs.getPaths().app.flexUIPkgPath).toContain('@twilio/flex-ui');
-      expect(fs.getPaths().app.flexUIPkgPath).toEqual(expect.stringMatching('package.json$'));
+      expect(thePaths.app.nodeModulesDir).toEqual(expect.stringMatching('node_modules$'));
+      expect(thePaths.app.flexUIDir).toContain('node_modules');
+      expect(thePaths.app.flexUIDir).toContain('@twilio/flex-ui');
+      expect(thePaths.app.flexUIPkgPath).toContain('@twilio/flex-ui');
+      expect(thePaths.app.flexUIPkgPath).toEqual(expect.stringMatching('package.json$'));
 
       // scripts
-      expect(fs.getPaths().scripts.devAssetsDir).toContain('flex-plugin-scripts');
+      expect(thePaths.scripts.devAssetsDir).toContain(flexPluginScriptsPath);
 
       // public/ directory
-      expect(fs.getPaths().app.publicDir).toEqual(expect.stringMatching('public$'));
-      expect(fs.getPaths().app.appConfig).toEqual(expect.stringMatching('appConfig.js$'));
+      expect(thePaths.app.publicDir).toEqual(expect.stringMatching('public$'));
+      expect(thePaths.app.appConfig).toEqual(expect.stringMatching('appConfig.js$'));
 
       // env support
-      expect(fs.getPaths().app.envPath).toEqual(expect.stringMatching('.env'));
-      expect(fs.getPaths().app.envExamplePath).toEqual(expect.stringMatching('.env.example'));
-      expect(fs.getPaths().app.envDefaultsPath).toEqual(expect.stringMatching('.env.defaults'));
+      expect(thePaths.app.envPath).toEqual(expect.stringMatching('.env'));
+      expect(thePaths.app.envExamplePath).toEqual(expect.stringMatching('.env.example'));
+      expect(thePaths.app.envDefaultsPath).toEqual(expect.stringMatching('.env.defaults'));
 
       // dependencies
-      expect(fs.getPaths().app.dependencies.react.version).toEqual('1.2.3');
-      expect(fs.getPaths().app.dependencies.reactDom.version).toEqual('1.2.3');
-      expect(fs.getPaths().app.dependencies.flexUI.version).toEqual('1.2.3');
+      expect(thePaths.app.dependencies.react.version).toEqual('1.2.3');
+      expect(thePaths.app.dependencies.reactDom.version).toEqual('1.2.3');
+      expect(thePaths.app.dependencies.flexUI.version).toEqual('1.2.3');
 
       // package.json
-      expect(fs.getPaths().app.name).toEqual(pluginName);
-      expect(fs.getPaths().app.version).toEqual('1.2.3');
+      expect(thePaths.app.name).toEqual(pluginName);
+      expect(thePaths.app.version).toEqual('1.2.3');
 
       // typescript
-      expect(fs.getPaths().app.tsConfigPath).toContain('tsconfig.json');
-      expect(fs.getPaths().app.isTSProject()).toEqual(true);
+      expect(thePaths.app.tsConfigPath).toContain('tsconfig.json');
+      expect(thePaths.app.isTSProject()).toEqual(true);
 
       // setup tests
-      expect(fs.getPaths().app.setupTestsPaths).toHaveLength(2);
-      expect(fs.getPaths().app.setupTestsPaths[0]).toContain('setupTests.js');
-      expect(fs.getPaths().app.setupTestsPaths[0]).not.toContain('src');
-      expect(fs.getPaths().app.setupTestsPaths[1]).toContain('setupTests.js');
-      expect(fs.getPaths().app.setupTestsPaths[1]).toContain('src');
+      expect(thePaths.app.setupTestsPaths).toHaveLength(2);
+      expect(thePaths.app.setupTestsPaths[0]).toContain('setupTests.js');
+      expect(thePaths.app.setupTestsPaths[0]).not.toContain('src');
+      expect(thePaths.app.setupTestsPaths[1]).toContain('setupTests.js');
+      expect(thePaths.app.setupTestsPaths[1]).toContain('src');
+
+      // webpack
+      expect(thePaths.webpack.dir).toContain(flexPluginWebpackPath);
+      expect(thePaths.webpack.nodeModulesDir).toContain(flexPluginWebpackPath);
+      expect(thePaths.webpack.nodeModulesDir).toContain('node_modules');
 
       // others
-      expect(fs.getPaths().assetBaseUrlTemplate).toContain('plugin-test/%PLUGIN_VERSION%');
+      expect(thePaths.assetBaseUrlTemplate).toContain('plugin-test/%PLUGIN_VERSION%');
 
       readPackageJson.mockRestore();
     });
