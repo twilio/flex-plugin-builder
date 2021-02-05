@@ -30,6 +30,7 @@ export default class FlexPluginsDescribeConfiguration extends InformationFlexPlu
   /**
    * @override
    */
+  /* istanbul ignore next */
   notFound(): void {
     this._logger.info(`!!Configuration **${this._flags.sid}** was not found.!!`);
   }
@@ -37,6 +38,7 @@ export default class FlexPluginsDescribeConfiguration extends InformationFlexPlu
   /**
    * @override
    */
+  /* istanbul ignore next */
   print(configuration: DescribeConfiguration): void {
     this.printHeader('SID', configuration.sid);
     this.printHeader('Name', configuration.name);
@@ -56,6 +58,7 @@ export default class FlexPluginsDescribeConfiguration extends InformationFlexPlu
   /**
    * Parses the flags passed to this command
    */
+  /* istanbul ignore next */
   get _flags() {
     return this.parse(FlexPluginsDescribeConfiguration).flags;
   }
