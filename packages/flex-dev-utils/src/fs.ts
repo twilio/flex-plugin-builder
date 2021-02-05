@@ -373,7 +373,9 @@ export const resolveModulePath = (pkg: string, ...paths: string[]): string | fal
   }
 };
 
-/* istanbul ignore next */
+/**
+ * Returns the path to flex-plugin-scripts
+ */
 export const _getFlexPluginScripts = (): string => {
   const flexPluginScriptPath = resolveModulePath('flex-plugin-scripts');
   if (flexPluginScriptPath === false) {
@@ -383,7 +385,9 @@ export const _getFlexPluginScripts = (): string => {
   return path.join(path.dirname(flexPluginScriptPath), '..');
 };
 
-/* istanbul ignore next */
+/**
+ * Returns the path to flex-plugin-webpack
+ */
 export const _getFlexPluginWebpackPath = (scriptsNodeModulesDir: string): string => {
   const flexPluginWebpackPath = resolveModulePath('flex-plugin-webpack', scriptsNodeModulesDir);
   if (flexPluginWebpackPath === false) {

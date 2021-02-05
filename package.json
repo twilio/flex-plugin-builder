@@ -31,8 +31,8 @@
     "release:beta": "lerna-travis-release beta",
     "release:public": "lerna-travis-release public",
     "test": "./bin/test-runner.sh",
-    "pretest:ci": "jest --clearCache",
-    "test:ci": "npm run test -- --no-cache --coverage --color --maxWorkers=2",
+    "test:one": "npm run test -- $@",
+    "test:ci": "jest --clearCache && npm run test -- --no-cache",
     "test:watch": "npm run test -- --watchAll"
   },
   "husky": {

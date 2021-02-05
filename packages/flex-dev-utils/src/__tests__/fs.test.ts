@@ -9,6 +9,10 @@ jest.mock('globby');
 jest.mock('app-module-path');
 
 describe('fs', () => {
+  const flexPluginScripts = 'flex-plugin-scripts';
+  const flexPluginWebpack = 'flex-plugin-webpack';
+  const flexPluginScriptsPath = `/path/to/${flexPluginScripts}`;
+  const flexPluginWebpackPath = `/path/to/${flexPluginWebpack}`;
   const pluginName = 'plugin-test';
   const fileContent = '{"version":1}';
 
@@ -16,7 +20,7 @@ describe('fs', () => {
     version: '1',
     name: pluginName,
     dependencies: {
-      'flex-plugin-scripts': '1',
+      [flexPluginScripts]: '1',
       'flex-plugin': '2',
     },
   };
@@ -353,12 +357,59 @@ describe('fs', () => {
     });
   });
 
+  describe('_getFlexPluginScripts', () => {
+    it('should resolve path', () => {
+      const thePath = 'the/path';
+      const resolveModulePath = jest.spyOn(fs, 'resolveModulePath').mockReturnValue(thePath);
+
+      fs._getFlexPluginScripts();
+
+      expect(resolveModulePath).toHaveBeenCalledTimes(1);
+      expect(resolveModulePath).toHaveBeenCalledWith(flexPluginScripts);
+    });
+
+    it('should throw exception if package not found', (done) => {
+      jest.spyOn(fs, 'resolveModulePath').mockReturnValue(false);
+
+      try {
+        fs._getFlexPluginScripts();
+      } catch (e) {
+        expect(e.message).toContain(`resolve ${flexPluginScripts}`);
+        done();
+      }
+    });
+  });
+
+  describe('_getFlexPluginWebpackPath', () => {
+    it('should resolve path', () => {
+      const thePath = 'the/path';
+      const theModule = 'the/module';
+      const resolveModulePath = jest.spyOn(fs, 'resolveModulePath').mockReturnValue(thePath);
+
+      fs._getFlexPluginWebpackPath(theModule);
+
+      expect(resolveModulePath).toHaveBeenCalledTimes(1);
+      expect(resolveModulePath).toHaveBeenCalledWith(flexPluginWebpack, theModule);
+    });
+
+    it('should throw exception if package not found', (done) => {
+      jest.spyOn(fs, 'resolveModulePath').mockReturnValue(false);
+
+      try {
+        fs._getFlexPluginWebpackPath('path');
+      } catch (e) {
+        expect(e.message).toContain(`resolve ${flexPluginWebpack}`);
+        done();
+      }
+    });
+  });
+
   describe('getPaths', () => {
     const validPackage = {
       name: pluginName,
       version: '1.2.3',
       dependencies: {
-        'flex-plugin-scripts': '1',
+        [flexPluginScripts]: '1',
         'flex-plugin': '2',
       },
     };
@@ -376,7 +427,7 @@ describe('fs', () => {
 
     it('should throw exception if flexPluginScriptPath is not found', (done) => {
       jest.spyOn(fs, 'resolveModulePath').mockImplementation((pkg) => {
-        if (pkg === 'flex-plugin-scripts') {
+        if (pkg === flexPluginScripts) {
           return false;
         }
 
@@ -386,14 +437,14 @@ describe('fs', () => {
       try {
         fs.getPaths();
       } catch (e) {
-        expect(e.message).toContain('resolve flex-plugin-scripts');
+        expect(e.message).toContain(`resolve ${flexPluginScripts}`);
         done();
       }
     });
 
     it('should throw exception if flexPluginWebpackPath is not found', (done) => {
       jest.spyOn(fs, 'resolveModulePath').mockImplementation((pkg) => {
-        if (pkg === 'flex-plugin-webpack') {
+        if (pkg === flexPluginWebpack) {
           return false;
         }
 
@@ -403,18 +454,21 @@ describe('fs', () => {
       try {
         fs.getPaths();
       } catch (e) {
-        expect(e.message).toContain('resolve flex-plugin-webpack');
+        expect(e.message).toContain(`resolve ${flexPluginWebpack}`);
         done();
       }
     });
 
     it('should give you the paths', () => {
-      const _getFlexPluginScripts = jest.spyOn(fs, '_getFlexPluginScripts').mockReturnValue('flex-plugin-scripts');
+      const _getFlexPluginScripts = jest.spyOn(fs, '_getFlexPluginScripts').mockReturnValue(flexPluginScriptsPath);
       const _getFlexPluginWebpackPath = jest
         .spyOn(fs, '_getFlexPluginWebpackPath')
-        .mockReturnValue('flex-plugin-webpack');
+        .mockReturnValue(flexPluginWebpackPath);
       const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockReturnValue(validPackage);
       const thePaths = fs.getPaths();
+
+      expect(_getFlexPluginScripts).toHaveBeenCalledTimes(1);
+      expect(_getFlexPluginWebpackPath).toHaveBeenCalledTimes(1);
 
       // build/ directory
       expect(thePaths.app.buildDir).toEqual(expect.stringMatching('build$'));
@@ -443,7 +497,7 @@ describe('fs', () => {
       expect(thePaths.app.flexUIPkgPath).toEqual(expect.stringMatching('package.json$'));
 
       // scripts
-      expect(thePaths.scripts.devAssetsDir).toContain('flex-plugin-scripts');
+      expect(thePaths.scripts.devAssetsDir).toContain(flexPluginScriptsPath);
 
       // public/ directory
       expect(thePaths.app.publicDir).toEqual(expect.stringMatching('public$'));
@@ -474,12 +528,15 @@ describe('fs', () => {
       expect(thePaths.app.setupTestsPaths[1]).toContain('setupTests.js');
       expect(thePaths.app.setupTestsPaths[1]).toContain('src');
 
+      // webpack
+      expect(thePaths.webpack.dir).toContain(flexPluginWebpackPath);
+      expect(thePaths.webpack.nodeModulesDir).toContain(flexPluginWebpackPath);
+      expect(thePaths.webpack.nodeModulesDir).toContain('node_modules');
+
       // others
       expect(thePaths.assetBaseUrlTemplate).toContain('plugin-test/%PLUGIN_VERSION%');
 
       readPackageJson.mockRestore();
-      _getFlexPluginScripts.mockRestore();
-      _getFlexPluginWebpackPath.mockRestore();
     });
   });
 

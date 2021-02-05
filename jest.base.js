@@ -1,10 +1,10 @@
 const defaultOptions = {
   coverageThreshold: {
     global: {
-      branches: 10,
-      functions: 10,
-      lines: 10,
-      statements: 10,
+      statements: 100,
+      branches: 100,
+      lines: 100,
+      functions: 100,
     },
   },
 };
@@ -22,7 +22,7 @@ module.exports = (pkg, options) => {
       '<rootDir>/src/**/*.ts',
       '!<rootDir>/src/**/*.d.ts',
       '!<rootDir>/src/**/*.test.ts',
-      '!<rootDir>/src/index.ts',
+      '!<rootDir>/src/**/index.ts',
       '!<rootDir>/src/**/prints/**/*.ts',
     ],
     setupFiles: ['<rootDir>/../../jest.setup.js'],
