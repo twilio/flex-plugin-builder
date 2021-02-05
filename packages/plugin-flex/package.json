@@ -27,7 +27,7 @@
     "README.md"
   ],
   "scripts": {
-    "prebuild": "npm run clean && ls -al && ls -al node_modules",
+    "prebuild": "npm run clean",
     "build": "tsc",
     "clean": "rm -rf dist",
     "lint": "eslint --ext ts src/",
