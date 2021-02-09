@@ -4,6 +4,11 @@
 
 set -e
 
+if [ "$TRAVIS_EVENT_TYPE" != "cron" ] ; then
+  echo "Nightly builds can only be invoked via Travis CRON jobs"
+  exit 1
+fi
+
 lerna="./node_modules/.bin/lerna"
 
 function getJsonValue() {
