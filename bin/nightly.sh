@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Does a nightly build and publishes to npm
+# Publishes a nightly build of plugin-builder
 
 set -e
 
@@ -37,5 +37,3 @@ ${lerna} publish \
     --yes \
     --pre-dist-tag nightly \
     "${nightlyVersion}"
-
-
