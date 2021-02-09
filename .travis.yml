@@ -30,14 +30,21 @@ before_deploy:
   - npm set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
 
 deploy:
-  provider: script
-  script: npm run publish
-  skip_cleanup: true
-  on:
-    tags: true
-    branch: main
-    repo: twilio/flex-plugin-builder
-    node_js: '10'
+  - provider: script
+    script: npm run publish
+    skip_cleanup: true
+    on:
+      tags: true
+      branch: main
+      repo: twilio/flex-plugin-builder
+      node_js: '10'
+  - provider: script
+    script: ./bin/nightly.sh
+    skip_cleanup: true
+    on:
+      branch: v4-beta
+      condition: $TRAVIS_EVENT_TYPE = cron
+      node_js: '10'
 
 branches:
   only:
