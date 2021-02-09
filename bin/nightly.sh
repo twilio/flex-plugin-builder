@@ -19,9 +19,18 @@ minor="${semver[1]}"
 patch="${semver[2]}"
 id=`echo $(date '+%Y%m%d')`
 nightlyVersion="${major}.${minor}.${patch}-nightly.${id}"
-echo $nightlyVersion
 
+# Re-build package
 npm run build
-${lerna} publish --force-publish="*" --skip-git --no-git-tag-version --no-push --yes --pre-dist-tag nightly "${nightlyVersion}"
+
+# Publish nightly build
+${lerna} publish \
+    --force-publish="*" \
+    --skip-git \
+    --no-git-tag-version \
+    --no-push \
+    --yes \
+    --pre-dist-tag nightly \
+    "${nightlyVersion}"
 
 
