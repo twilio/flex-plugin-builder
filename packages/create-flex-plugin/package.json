@@ -34,7 +34,7 @@
   ],
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "tsc",
+    "build": "../../node_modules/.bin/tsc",
     "clean": "rm -rf dist",
     "prepublish": "npm run build",
     "lint": "eslint --ext ts src/",
