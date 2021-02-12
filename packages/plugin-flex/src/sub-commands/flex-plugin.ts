@@ -356,6 +356,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     }
 
     const pluginServiceOptions: PluginServiceHttpOption = {
+      setUserAgent: true,
       caller: 'twilio-cli',
       packages: {
         'flex-plugin-scripts': FlexPlugin.getPackageVersion('flex-plugin-scripts'),
