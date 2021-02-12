@@ -5,7 +5,7 @@ set -e
 oclif='node_modules/.bin/oclif-dev'
 
 echo "Travis is of type $TRAVIS_EVENT_TYPE"
-if [ "$TRAVIS_EVENT_TYPE" != "cron" ] ; then
+if [ "$TRAVIS_EVENT_TYPE" == "cron" ] ; then
   echo "Skipping doc update on nightly build"
   exit 0
 fi
