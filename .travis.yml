@@ -17,6 +17,7 @@ before_script:
   - NODE_OPTIONS="--max-old-space-size=8192"
 
 script:
+  - echo "Travis event is of type ${TRAVIS_EVENT_TYPE}"
   - npm run lint
   - CI= npm run test:ci
   - npm run build
