@@ -34,7 +34,7 @@
     "clean": "rm -rf dist",
     "lint": "eslint --ext ts src/",
     "lint:fix": "npm run lint -- --fix",
-    "prepack": "if [[ ${TRAVIS_EVENT_TYPE} == \"cron\" ]]; then echo 'skipping doc update on nightly build' ; else oclif-dev manifest && npm run replace-doc ; fi",
+    "prepack": "./bin/prepack",
     "postpack": "rm -f oclif.manifest.json",
     "prepublish": "npm run build",
     "replace-doc": "cp docs/README.md README.md && oclif-dev readme",
