@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+lernaTravisPublish='node_modules/.bin/lerna-travis-publish'
+
+if [[ ${TRAVIS_EVENT_TYPE} == "cron" ]] ; then
+  echo 'skipping publishing on nightly';
+  exit 0
+fi
+
+${lernaTravisPublish}

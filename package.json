@@ -26,7 +26,7 @@
     "postinstall": "npm run bootstrap",
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint:fix",
-    "publish": "if [[ ${TRAVIS_EVENT_TYPE} == \"cron\" ]] ; then echo 'skipping publishing on nightly'; else lerna-travis-publish ; fi",
+    "publish": "./bin/publish",
     "release:alpha": "lerna-travis-release alpha",
     "release:beta": "lerna-travis-release beta",
     "release:public": "lerna-travis-release public",
