@@ -48,7 +48,7 @@
     "@oclif/parser": "^3.8.5",
     "@twilio/cli-core": "^5.15.1",
     "create-flex-plugin": "^4.3.19-beta.0",
-    "dayjs": "^1.10.2",
+    "dayjs": "^1.10.4",
     "flex-plugin-scripts": "^4.3.19-beta.0",
     "flex-plugins-api-client": "^0.22.2",
     "flex-plugins-api-toolkit": "^0.22.2",

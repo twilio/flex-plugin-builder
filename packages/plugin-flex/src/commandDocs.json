@@ -107,5 +107,24 @@
       "yarn": "Use yarn for installation.",
       "removeLegacyPlugin": "Deletes legacy plugin bundle hosted on Twilio Assets (deployed via plugin builder v3)."
     }
+  },
+  "archivePlugin": {
+    "description": "Archives a Flex Plugin.",
+    "flags": {
+      "name": "The name of the Flex Plugin to archive."
+    }
+  },
+  "archivePluginVersion": {
+    "description": "Archives a Flex Plugin Version.",
+    "flags": {
+      "name": "The Flex Plugin name of the Plugin Version to archive.",
+      "version": "The Flex Plugin Version to archive."
+    }
+  },
+  "archiveConfiguration": {
+    "description": "Archives a Flex Plugin Configuration.",
+    "flags": {
+      "sid": "The Flex Plugin Configuration SID to archive."
+    }
   }
 }
