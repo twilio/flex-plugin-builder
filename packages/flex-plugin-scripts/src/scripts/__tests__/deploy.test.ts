@@ -88,6 +88,8 @@ describe('DeployScript', () => {
   };
   Runtime.mockImplementation(() => runtime);
 
+  const OLD_ENV = process.env;
+
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -99,6 +101,8 @@ describe('DeployScript', () => {
     BuildClient.mockImplementation(() => ({ create: createBuild }));
     DeploymentClient.mockImplementation(() => ({ create: createDeployment }));
     ConfigurationClient.mockImplementation(() => ({ registerSid, getFlexUIVersion, getUIDependencies }));
+
+    process.env = { ...OLD_ENV };
   });
 
   describe('default', () => {
@@ -290,8 +294,7 @@ describe('DeployScript', () => {
       checkFilesExist.mockRestore();
     });
 
-    it('should quit if duplicate route is found if in CI', async (done) => {
-      const OLD_ENV = process.env;
+    it('should quit if duplicate route is found and in CI', async (done) => {
       process.env.CI = 'true';
       const options = {
         isPublic: true,
@@ -312,7 +315,29 @@ describe('DeployScript', () => {
 
       checkFilesExist.mockRestore();
       verifyPath.mockRestore();
-      process.env = OLD_ENV;
+    });
+
+    it('should return the existing asset if duplicate route is found, user does not want to overwite, and not in CI', async () => {
+      process.env.CI = 'false';
+      const options = {
+        isPublic: true,
+        overwrite: false,
+        isPluginsPilot: false,
+        disallowVersioning: false,
+      };
+      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
+      const _getAccount = jest.spyOn(deployScript, '_getAccount').mockReturnThis();
+      const _verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(false);
+      const deploySuccessful = jest.spyOn(prints, 'deploySuccessful');
+
+      await deployScript._doDeploy('1.0.0', options);
+
+      expect(_getAccount).toHaveBeenCalledTimes(0);
+      expect(deploySuccessful).toHaveBeenCalledTimes(0);
+
+      checkFilesExist.mockRestore();
+      _verifyPath.mockRestore();
+      _getAccount.mockRestore();
     });
 
     it('should deploy and write a success message', async () => {
