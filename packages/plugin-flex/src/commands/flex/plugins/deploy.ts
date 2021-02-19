@@ -137,6 +137,10 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     this.prints.deploySuccessful(this.pkg.name, pluginVersion.private ? 'private' : 'public', deployedData);
   }
 
+  /**
+   * Checks if there is already an uploaded asset with the same version and prompts user with an option to override if so
+   * @returns {Promise<boolean>}
+   */
   async hasCollisionAndOverwrite(): Promise<boolean> {
     const credentials = await getCredential();
     const runtime = await getRuntime(credentials);
