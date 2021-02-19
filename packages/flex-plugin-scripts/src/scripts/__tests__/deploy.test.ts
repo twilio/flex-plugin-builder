@@ -290,7 +290,9 @@ describe('DeployScript', () => {
       checkFilesExist.mockRestore();
     });
 
-    it('should quit if duplicate route is found', async (done) => {
+    it('should quit if duplicate route is found if in CI', async (done) => {
+      const OLD_ENV = process.env;
+      process.env.CI = 'true';
       const options = {
         isPublic: true,
         overwrite: false,
@@ -310,6 +312,7 @@ describe('DeployScript', () => {
 
       checkFilesExist.mockRestore();
       verifyPath.mockRestore();
+      process.env = OLD_ENV;
     });
 
     it('should deploy and write a success message', async () => {

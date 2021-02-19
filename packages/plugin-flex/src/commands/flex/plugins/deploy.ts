@@ -142,6 +142,10 @@ export default class FlexPluginsDeploy extends FlexPlugin {
    * @returns {Promise<boolean>}
    */
   async hasCollisionAndOverwrite(): Promise<boolean> {
+    if (env.isCI()) {
+      return false;
+    }
+
     const credentials = await getCredential();
     const runtime = await getRuntime(credentials);
     if (!runtime.environment) {
@@ -151,21 +155,14 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     const pluginBaseUrl = getPaths().assetBaseUrlTemplate.replace('%PLUGIN_VERSION%', this.nextVersion as string);
     const collision = runtime.build ? !_verifyPath(pluginBaseUrl, runtime.build) : false;
 
-    if (collision && !env.isCI()) {
-      const answer = await confirm(
-        'Plugin package has already been uploaded previously for this version of the plugin. Would you like to overwrite it?',
-        'N',
-      );
-
-      if (answer) {
-        return true;
-      }
-
-      const pluginUrl = `https://${runtime.environment.domain_name}${pluginBaseUrl}/bundle.js`;
-      throw new FlexPluginError(`You already have a plugin with the same version: ${pluginUrl}`);
+    if (!collision) {
+      return false;
     }
 
-    return false;
+    return confirm(
+      'Plugin package has already been uploaded previously for this version of the plugin. Would you like to overwrite it?',
+      'N',
+    );
   }
 
   /**

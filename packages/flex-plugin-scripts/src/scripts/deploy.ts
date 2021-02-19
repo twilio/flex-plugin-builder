@@ -1,4 +1,13 @@
-import { logger, semver, progress, FlexPluginError, UserActionError, Credential, getCredential } from 'flex-dev-utils';
+import {
+  logger,
+  semver,
+  progress,
+  FlexPluginError,
+  UserActionError,
+  Credential,
+  getCredential,
+  env,
+} from 'flex-dev-utils';
 import { ReleaseType } from 'flex-dev-utils/dist/semver';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { checkFilesExist, updateAppVersion, getPackageVersion, getPaths } from 'flex-dev-utils/dist/fs';
@@ -187,7 +196,7 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
           logger.newline();
           logger.warning('Plugin already exists and the flag --overwrite is going to overwrite this plugin.');
         }
-      } else {
+      } else if (env.isCI()) {
         throw new FlexPluginError(`You already have a plugin with the same version: ${pluginUrl}`);
       }
     }
@@ -232,6 +241,20 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
     return data;
   });
 
+  const deployResult = {
+    serviceSid: runtime.service.sid,
+    accountSid: runtime.service.account_sid,
+    environmentSid: runtime.environment.sid,
+    domainName: runtime.environment.domain_name,
+    isPublic: options.isPublic,
+    nextVersion,
+    pluginUrl,
+  };
+
+  if (routeCollision && !options.overwrite) {
+    return deployResult;
+  }
+
   // Register service sid with Config service
   await progress('Registering plugin with Flex', async () => {
     await configurationClient.registerSid(runtime.service.sid);
@@ -249,15 +272,7 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
 
   deploySuccessful(pluginUrl, options.isPublic, await _getAccount(runtime, credentials));
 
-  return {
-    serviceSid: runtime.service.sid,
-    accountSid: runtime.service.account_sid,
-    environmentSid: runtime.environment.sid,
-    domainName: runtime.environment.domain_name,
-    isPublic: options.isPublic,
-    nextVersion,
-    pluginUrl,
-  };
+  return deployResult;
 };
 
 const deploy = async (...argv: string[]): Promise<DeployResult> => {
