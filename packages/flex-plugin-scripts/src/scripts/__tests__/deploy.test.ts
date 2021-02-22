@@ -375,6 +375,30 @@ describe('DeployScript', () => {
       _getAccount.mockRestore();
     });
 
+    it('should overwrite the existing asset if the caller is the CLI, duplicate route is found, user does want to overwite, and not in CI', async () => {
+      process.env.CI = 'false';
+      const options = {
+        isPluginsCli: true,
+        isPublic: true,
+        overwrite: true,
+        isPluginsPilot: false,
+        disallowVersioning: false,
+      };
+      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
+      const _getAccount = jest.spyOn(deployScript, '_getAccount').mockReturnThis();
+      const _verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(false);
+      const deploySuccessful = jest.spyOn(prints, 'deploySuccessful');
+
+      await deployScript._doDeploy('1.0.0', options);
+
+      expect(_getAccount).toHaveBeenCalledTimes(1);
+      expect(deploySuccessful).toHaveBeenCalledTimes(1);
+
+      checkFilesExist.mockRestore();
+      _verifyPath.mockRestore();
+      _getAccount.mockRestore();
+    });
+
     it('should deploy and write a success message', async () => {
       const options = {
         isPluginsCli: false,
