@@ -133,7 +133,7 @@ export const mockGetPkg = (cmd: FlexPlugin, obj: Record<string, unknown>) => {
  * @param cmd the command
  * @param method the print method to mock
  */
-export const mockPrintMethod = <C extends FlexPlugin>(cmd: C, method: string) => {
+export const mockPrintMethod = <C extends FlexPlugin>(cmd: C, method: string): void => {
   // @ts-ignore
   jest.spyOn(cmd.prints, method).mockReturnThis();
 };

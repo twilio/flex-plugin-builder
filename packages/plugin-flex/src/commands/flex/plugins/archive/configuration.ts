@@ -1,4 +1,5 @@
 import { Configuration } from 'flex-plugins-api-toolkit';
+import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import * as flags from '../../../../utils/flags';
 import ArchiveResource from '../../../../sub-commands/archive-resource';
@@ -34,7 +35,8 @@ export default class FlexPluginsArchiveConfiguration extends ArchiveResource<Con
   /**
    * @override
    */
-  get _flags() {
+  /* istanbul ignore next */
+  get _flags(): OutputFlags<typeof FlexPluginsArchiveConfiguration.flags> {
     return this.parse(FlexPluginsArchiveConfiguration).flags;
   }
 }

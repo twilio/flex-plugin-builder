@@ -1,4 +1,4 @@
-import { TwilioApiError } from 'flex-plugins-utils-exception';
+import { TwilioApiError } from 'flex-dev-utils';
 
 import FlexPlugin, { ConfigData, SecureStorage } from './flex-plugin';
 import { instanceOf } from '../utils/general';
@@ -21,7 +21,7 @@ export default abstract class ArchiveResource<T extends Archivable> extends Flex
   /**
    * @override
    */
-  async doRun() {
+  async doRun(): Promise<void> {
     const name = this.getName();
 
     try {

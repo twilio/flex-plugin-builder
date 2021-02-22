@@ -1,4 +1,5 @@
 import { PluginVersion } from 'flex-plugins-api-toolkit';
+import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import * as flags from '../../../../utils/flags';
 import ArchiveResource from '../../../../sub-commands/archive-resource';
@@ -38,7 +39,8 @@ export default class FlexPluginsArchivePluginVersion extends ArchiveResource<Plu
   /**
    * @override
    */
-  get _flags() {
+  /* istanbul ignore next */
+  get _flags(): OutputFlags<typeof FlexPluginsArchivePluginVersion.flags> {
     return this.parse(FlexPluginsArchivePluginVersion).flags;
   }
 }

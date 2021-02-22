@@ -1,14 +1,14 @@
 import { Logger } from 'flex-dev-utils';
 
-export const archivedSuccessfully = (logger: Logger) => (name: string) => {
+const archivedSuccessfully = (logger: Logger) => (name: string): void => {
   logger.info(`**${name}** was successfully archived.`);
 };
 
-export const archivedFailed = (logger: Logger) => (name: string) => {
+const archivedFailed = (logger: Logger) => (name: string): void => {
   logger.info(`--Could not archive **${name}**; please try again later.--`);
 };
 
-export const alreadyArchived = (logger: Logger) => (name: string) => {
+const alreadyArchived = (logger: Logger) => (name: string): void => {
   logger.info(`!!**${name}** is already archived.!!`);
 };
 
