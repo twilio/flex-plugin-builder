@@ -117,9 +117,11 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       false,
     );
 
-    const hasCollisionAndOverwrite = await this.hasCollisionAndOverwrite();
-    if (hasCollisionAndOverwrite) {
-      args.push('--overwrite');
+    if (!env.isCI) {
+      const hasCollisionAndOverwrite = await this.hasCollisionAndOverwrite();
+      if (hasCollisionAndOverwrite) {
+        args.push('--overwrite');
+      }
     }
 
     const deployedData: DeployResult = await progress(
