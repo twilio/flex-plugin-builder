@@ -13,12 +13,12 @@ describe('SubCommands/ArchiveResource', () => {
     isArchived: true,
     name: 'resource-name',
   };
-  const doArchie = jest.fn();
+  const doArchive = jest.fn();
   const getName = jest.fn();
 
   class Plugin extends ArchiveResource<Resource> {
     async doArchive(): Promise<Resource> {
-      return doArchie();
+      return doArchive();
     }
 
     getName(): string {
@@ -44,10 +44,10 @@ describe('SubCommands/ArchiveResource', () => {
     const cmd = await createTest(Plugin)();
 
     mockPrints(cmd);
-    doArchie.mockResolvedValue(resource);
+    doArchive.mockResolvedValue(resource);
     await cmd.doRun();
 
-    expect(doArchie).toHaveBeenCalledTimes(1);
+    expect(doArchive).toHaveBeenCalledTimes(1);
     expect(getName).toHaveBeenCalledTimes(1);
 
     // @ts-ignore
@@ -58,10 +58,10 @@ describe('SubCommands/ArchiveResource', () => {
     const cmd = await createTest(Plugin)();
 
     mockPrints(cmd);
-    doArchie.mockResolvedValue({ ...resource, isArchived: false });
+    doArchive.mockResolvedValue({ ...resource, isArchived: false });
     await cmd.doRun();
 
-    expect(doArchie).toHaveBeenCalledTimes(1);
+    expect(doArchive).toHaveBeenCalledTimes(1);
     expect(getName).toHaveBeenCalledTimes(1);
 
     // @ts-ignore
@@ -74,10 +74,10 @@ describe('SubCommands/ArchiveResource', () => {
     const cmd = await createTest(Plugin)();
 
     mockPrints(cmd);
-    doArchie.mockRejectedValue(new TwilioApiError(400, '', 400));
+    doArchive.mockRejectedValue(new TwilioApiError(400, '', 400));
     await cmd.doRun();
 
-    expect(doArchie).toHaveBeenCalledTimes(1);
+    expect(doArchive).toHaveBeenCalledTimes(1);
     expect(getName).toHaveBeenCalledTimes(1);
 
     // @ts-ignore
@@ -91,12 +91,12 @@ describe('SubCommands/ArchiveResource', () => {
     const msg = 'some other message';
 
     mockPrints(cmd);
-    doArchie.mockRejectedValue(new TwilioApiError(400, msg, 500));
+    doArchive.mockRejectedValue(new TwilioApiError(400, msg, 500));
 
     try {
       await cmd.doRun();
     } catch (e) {
-      expect(doArchie).toHaveBeenCalledTimes(1);
+      expect(doArchive).toHaveBeenCalledTimes(1);
       expect(getName).toHaveBeenCalledTimes(1);
 
       // @ts-ignore
