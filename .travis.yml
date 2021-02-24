@@ -43,7 +43,6 @@ deploy:
     script: ./bin/nightly.sh
     skip_cleanup: true
     on:
-      tags: false
       branch: v4-beta
       condition: $TRAVIS_EVENT_TYPE = cron
       node_js: '10'
@@ -51,7 +50,6 @@ deploy:
     script: ./bin/dev.sh
     skip_cleanup: true
     on:
-      tags: false
       branch: v4-beta
       condition: $TRAVIS_EVENT_TYPE = push
       node_js: 10
