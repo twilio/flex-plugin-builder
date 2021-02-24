@@ -14,6 +14,20 @@ if [ -v "$TRAVIS_TAG" ] ; then
   exit 0
 fi
 
+function getJsonValue() {
+  KEY=$1
+  num=$2
+  awk -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/'$KEY'\042/){print $(i+1)}}}' | tr -d '"' | sed -n ${num}p
+}
+
+currentVersion=$(cat ./lerna.json | getJsonValue 'version' |  cut -f1 -d"-")
+semver=( ${currentVersion//./ } )
+major="${semver[0]}"
+minor="${semver[1]}"
+patch="${semver[2]}"
+id=`echo $(date '+%Y%m%d%M')`
+devVersion="${major}.${minor}.${patch}-dev.${id}"
+
 # Re-build package
 npm run build
 
@@ -24,6 +38,5 @@ node_modules/.bin/lerna publish \
     --no-git-tag-version \
     --no-push \
     --pre-dist-tag dev \
-    --preid dev \
     --yes \
-    prerelease
+    "${devVersion}"

@@ -32,6 +32,6 @@ npm run build
     --skip-git \
     --no-git-tag-version \
     --no-push \
-    --yes \
     --pre-dist-tag nightly \
+    --yes \
     "${nightlyVersion}"
