@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { CLIParseError } from '@oclif/parser/lib/errors';
-import { TwilioCliError } from 'flex-dev-utils';
+import { TwilioCliError, FlexPluginError } from 'flex-dev-utils';
 import * as credentials from 'flex-dev-utils/dist/credentials';
 import * as runtime from 'flex-plugin-scripts/dist/utils/runtime';
 import * as fs from 'flex-dev-utils/dist/fs';
@@ -443,6 +443,32 @@ describe('Commands/FlexPluginsDeploy', () => {
     await cmd.hasCollisionAndOverwrite();
 
     expect(getCredential).toHaveBeenCalledTimes(1);
+  });
+
+  it('should throw error if runtime environment not found when checking for collision if not in CI', async () => {
+    process.env.CI = 'false';
+    const cmd = await getCommand();
+    const getCredential = jest
+      .spyOn(credentials, 'getCredential')
+      .mockResolvedValue({ username: 'user', password: 'pass' });
+
+    // @ts-ignore
+    jest.spyOn(runtime, 'default').mockResolvedValue({});
+    // @ts-ignore
+    jest.spyOn(fs, 'readPackageJson').mockReturnValue({
+      version: '1.0.0',
+      name: 'plugin-test',
+    });
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
+    try {
+      await cmd.hasCollisionAndOverwrite();
+    } catch (e) {
+      expect(e).toBeInstanceOf(FlexPluginError);
+      expect(e.message).toContain('No Runtime environment was found');
+      expect(getCredential).toHaveBeenCalledTimes(1);
+    }
   });
 
   it('should not check for collision if in CI', async () => {
