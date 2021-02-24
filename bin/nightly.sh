@@ -9,8 +9,6 @@ if [ "$TRAVIS_EVENT_TYPE" != "cron" ] ; then
   exit 1
 fi
 
-lerna="./node_modules/.bin/lerna"
-
 function getJsonValue() {
   KEY=$1
   num=$2
@@ -29,7 +27,7 @@ nightlyVersion="${major}.${minor}.${patch}-nightly.${id}"
 npm run build
 
 # Publish nightly build
-${lerna} publish \
+./node_modules/.bin/lerna publish \
     --force-publish="*" \
     --skip-git \
     --no-git-tag-version \

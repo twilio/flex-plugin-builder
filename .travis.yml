@@ -36,16 +36,25 @@ deploy:
     skip_cleanup: true
     on:
       tags: true
-      branch: main
+      branch: v4-beta
       repo: twilio/flex-plugin-builder
       node_js: '10'
   - provider: script
     script: ./bin/nightly.sh
     skip_cleanup: true
     on:
+      tags: false
       branch: v4-beta
       condition: $TRAVIS_EVENT_TYPE = cron
       node_js: '10'
+  - provider: script
+    script: ./bin/dev.sh
+    skip_cleanup: true
+    on:
+      tags: false
+      branch: v4-beta
+      condition: $TRAVIS_EVENT_TYPE = push
+      node_js: 10
 
 branches:
   only:
