@@ -242,6 +242,11 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
     return data;
   });
 
+  // Register service sid with Config service
+  await progress('Registering plugin with Flex', async () => {
+    await configurationClient.registerSid(runtime.service.sid);
+  });
+
   const deployResult = {
     serviceSid: runtime.service.sid,
     accountSid: runtime.service.account_sid,
@@ -255,11 +260,6 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
   if (routeCollision && !options.overwrite) {
     return deployResult;
   }
-
-  // Register service sid with Config service
-  await progress('Registering plugin with Flex', async () => {
-    await configurationClient.registerSid(runtime.service.sid);
-  });
 
   // Create a build, and poll regularly until build is complete
   await progress('Deploying a new build of your Twilio Runtime', async () => {
