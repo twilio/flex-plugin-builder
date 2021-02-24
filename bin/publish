@@ -2,11 +2,14 @@
 
 set -e
 
-lernaTravisPublish='node_modules/.bin/lerna-travis-publish'
+if [ -z "$TRAVIS_TAG" ] ; then
+  echo 'Publish must happen on a tagged release'
+  exit 1
+fi
 
-if [[ ${TRAVIS_EVENT_TYPE} == "cron" ]] ; then
+if [ "${TRAVIS_EVENT_TYPE}" == "cron" ] ; then
   echo 'skipping publishing on nightly';
   exit 0
 fi
 
-${lernaTravisPublish}
+node_modules/.bin/lerna-travis-publish
