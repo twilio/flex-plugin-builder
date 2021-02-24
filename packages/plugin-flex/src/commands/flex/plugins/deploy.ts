@@ -1,8 +1,11 @@
 import { PluginVersionResource } from 'flex-plugins-api-client/dist/clients/pluginVersions';
 import semver from 'semver';
-import { DeployResult } from 'flex-plugin-scripts/dist/scripts/deploy';
+import { DeployResult, _verifyPath } from 'flex-plugin-scripts/dist/scripts/deploy';
+import getRuntime from 'flex-plugin-scripts/dist/utils/runtime';
 import { CLIParseError } from '@oclif/parser/lib/errors';
-import { TwilioCliError, progress } from 'flex-dev-utils';
+import { FlexPluginError, TwilioCliError, progress, getCredential, env } from 'flex-dev-utils';
+import { getPaths } from 'flex-dev-utils/dist/fs';
+import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { PluginResource } from 'flex-plugins-api-client';
 
 import * as flags from '../../../utils/flags';
@@ -113,6 +116,12 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       },
       false,
     );
+
+    const hasCollisionAndOverwrite = await this.hasCollisionAndOverwrite();
+    if (hasCollisionAndOverwrite) {
+      args.push('--overwrite');
+    }
+
     const deployedData: DeployResult = await progress(
       `Uploading ${name}`,
       async () => this.runScript('deploy', [...this.scriptArgs, ...args]),
@@ -126,6 +135,34 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     );
 
     this.prints.deploySuccessful(this.pkg.name, pluginVersion.private ? 'private' : 'public', deployedData);
+  }
+
+  /**
+   * Checks if there is already an uploaded asset with the same version and prompts user with an option to override if so
+   * @returns {Promise<boolean>}
+   */
+  async hasCollisionAndOverwrite(): Promise<boolean> {
+    if (env.isCI()) {
+      return false;
+    }
+
+    const credentials = await getCredential();
+    const runtime = await getRuntime(credentials);
+    if (!runtime.environment) {
+      throw new FlexPluginError('No Runtime environment was found');
+    }
+
+    const pluginBaseUrl = getPaths().assetBaseUrlTemplate.replace('%PLUGIN_VERSION%', this.nextVersion as string);
+    const collision = runtime.build ? !_verifyPath(pluginBaseUrl, runtime.build) : false;
+
+    if (!collision) {
+      return false;
+    }
+
+    return confirm(
+      'Plugin package has already been uploaded previously for this version of the plugin. Would you like to overwrite it?',
+      'N',
+    );
   }
 
   /**

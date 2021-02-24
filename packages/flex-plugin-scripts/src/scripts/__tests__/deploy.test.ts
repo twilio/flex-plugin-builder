@@ -88,6 +88,8 @@ describe('DeployScript', () => {
   };
   Runtime.mockImplementation(() => runtime);
 
+  const OLD_ENV = process.env;
+
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -99,6 +101,8 @@ describe('DeployScript', () => {
     BuildClient.mockImplementation(() => ({ create: createBuild }));
     DeploymentClient.mockImplementation(() => ({ create: createDeployment }));
     ConfigurationClient.mockImplementation(() => ({ registerSid, getFlexUIVersion, getUIDependencies }));
+
+    process.env = { ...OLD_ENV };
   });
 
   describe('default', () => {
@@ -158,6 +162,7 @@ describe('DeployScript', () => {
       await deployScript.default('major');
 
       expectDoDeployCalled('2.0.0', {
+        isPluginsCli: false,
         isPublic: false,
         overwrite: false,
         isPluginsPilot: false,
@@ -169,6 +174,7 @@ describe('DeployScript', () => {
       await deployScript.default('minor');
 
       expectDoDeployCalled('1.1.0', {
+        isPluginsCli: false,
         isPublic: false,
         overwrite: false,
         isPluginsPilot: false,
@@ -180,6 +186,7 @@ describe('DeployScript', () => {
       await deployScript.default('patch');
 
       expectDoDeployCalled('1.0.1', {
+        isPluginsCli: false,
         isPublic: false,
         overwrite: false,
         isPluginsPilot: false,
@@ -191,6 +198,7 @@ describe('DeployScript', () => {
       await deployScript.default('version', 'custom-version');
 
       expectDoDeployCalled('custom-version', {
+        isPluginsCli: false,
         isPublic: false,
         overwrite: false,
         isPluginsPilot: false,
@@ -202,6 +210,7 @@ describe('DeployScript', () => {
       await deployScript.default('major', '--public');
 
       expectDoDeployCalled('2.0.0', {
+        isPluginsCli: false,
         isPublic: true,
         overwrite: false,
         isPluginsPilot: false,
@@ -220,6 +229,7 @@ describe('DeployScript', () => {
       await deployScript.default('major', '--pilot-plugins-api');
 
       expectDoDeployCalled('2.0.0', {
+        isPluginsCli: false,
         isPublic: false,
         overwrite: false,
         isPluginsPilot: true,
@@ -231,6 +241,7 @@ describe('DeployScript', () => {
   describe('_doDeploy', () => {
     it('should quit if running the pilot program but not have the flag set', async (done) => {
       const options = {
+        isPluginsCli: false,
         isPublic: true,
         overwrite: false,
         isPluginsPilot: true,
@@ -254,6 +265,7 @@ describe('DeployScript', () => {
 
     it('should run if pilot feature enabled', async () => {
       const options = {
+        isPluginsCli: false,
         isPublic: true,
         overwrite: false,
         isPluginsPilot: true,
@@ -272,6 +284,7 @@ describe('DeployScript', () => {
 
     it('should quit if build does not exist', async (done) => {
       const options = {
+        isPluginsCli: false,
         isPublic: true,
         overwrite: false,
         isPluginsPilot: false,
@@ -290,8 +303,10 @@ describe('DeployScript', () => {
       checkFilesExist.mockRestore();
     });
 
-    it('should quit if duplicate route is found', async (done) => {
+    it('should quit if duplicate route is found and in CI', async (done) => {
+      process.env.CI = 'true';
       const options = {
+        isPluginsCli: true,
         isPublic: true,
         overwrite: false,
         isPluginsPilot: false,
@@ -312,8 +327,81 @@ describe('DeployScript', () => {
       verifyPath.mockRestore();
     });
 
+    it('should quit if duplicate route is found and caller is not the CLI', async (done) => {
+      process.env.CI = 'false';
+      const options = {
+        isPluginsCli: false,
+        isPublic: true,
+        overwrite: false,
+        isPluginsPilot: false,
+        disallowVersioning: false,
+      };
+      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
+      const verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(false);
+
+      try {
+        await deployScript._doDeploy('1.0.0', options);
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+        expect(e.message).toContain('You already have a plugin');
+        done();
+      }
+
+      checkFilesExist.mockRestore();
+      verifyPath.mockRestore();
+    });
+
+    it('should return the existing asset if the caller is the CLI, duplicate route is found, user does not want to overwite, and not in CI', async () => {
+      process.env.CI = 'false';
+      const options = {
+        isPluginsCli: true,
+        isPublic: true,
+        overwrite: false,
+        isPluginsPilot: false,
+        disallowVersioning: false,
+      };
+      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
+      const _getAccount = jest.spyOn(deployScript, '_getAccount').mockReturnThis();
+      const _verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(false);
+      const deploySuccessful = jest.spyOn(prints, 'deploySuccessful');
+
+      await deployScript._doDeploy('1.0.0', options);
+
+      expect(_getAccount).toHaveBeenCalledTimes(0);
+      expect(deploySuccessful).toHaveBeenCalledTimes(0);
+
+      checkFilesExist.mockRestore();
+      _verifyPath.mockRestore();
+      _getAccount.mockRestore();
+    });
+
+    it('should overwrite the existing asset if the caller is the CLI, duplicate route is found, user does want to overwite, and not in CI', async () => {
+      process.env.CI = 'false';
+      const options = {
+        isPluginsCli: true,
+        isPublic: true,
+        overwrite: true,
+        isPluginsPilot: false,
+        disallowVersioning: false,
+      };
+      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
+      const _getAccount = jest.spyOn(deployScript, '_getAccount').mockReturnThis();
+      const _verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(false);
+      const deploySuccessful = jest.spyOn(prints, 'deploySuccessful');
+
+      await deployScript._doDeploy('1.0.0', options);
+
+      expect(_getAccount).toHaveBeenCalledTimes(1);
+      expect(deploySuccessful).toHaveBeenCalledTimes(1);
+
+      checkFilesExist.mockRestore();
+      _verifyPath.mockRestore();
+      _getAccount.mockRestore();
+    });
+
     it('should deploy and write a success message', async () => {
       const options = {
+        isPluginsCli: false,
         isPublic: true,
         overwrite: true,
         isPluginsPilot: false,

@@ -1,12 +1,20 @@
 /* eslint-disable camelcase */
 import { CLIParseError } from '@oclif/parser/lib/errors';
-import { TwilioCliError } from 'flex-dev-utils';
+import { TwilioCliError, FlexPluginError } from 'flex-dev-utils';
+import * as credentials from 'flex-dev-utils/dist/credentials';
+import * as runtime from 'flex-plugin-scripts/dist/utils/runtime';
+import * as fs from 'flex-dev-utils/dist/fs';
 import { PluginVersionResource } from 'flex-plugins-api-client/dist/clients/pluginVersions';
 import { PluginResource } from 'flex-plugins-api-client';
 
 import createTest, { getPrintMethod, mockGetPkg, mockGetter, mockPrintMethod } from '../../../framework';
 import FlexPluginsDeploy, { parseVersionInput } from '../../../../commands/flex/plugins/deploy';
 import ServerlessClient from '../../../../clients/ServerlessClient';
+
+jest.mock('flex-dev-utils/dist/credentials');
+jest.mock('flex-plugin-scripts/dist/utils/runtime');
+jest.mock('flex-dev-utils/dist/fs');
+jest.mock('flex-dev-utils/dist/updateNotifier');
 
 describe('Commands/FlexPluginsDeploy', () => {
   const serviceSid = 'ZS00000000000000000000000000000';
@@ -46,13 +54,21 @@ describe('Commands/FlexPluginsDeploy', () => {
     date_created: '2020',
     date_updated: '2020',
   };
+  const paths = {
+    app: {
+      version: '1.0.0',
+    },
+    assetBaseUrlTemplate: 'template',
+  };
 
   const getServerlessSid = jest.fn();
   const hasLegacy = jest.fn();
+  const OLD_ENV = process.env;
 
   beforeEach(() => {
     jest.resetAllMocks();
     jest.restoreAllMocks();
+    process.env = { ...OLD_ENV };
   });
 
   const getCommand = async (...args: string[]) => {
@@ -405,5 +421,73 @@ describe('Commands/FlexPluginsDeploy', () => {
     const cmd = await getCommand();
 
     expect(cmd.checkCompatibility).toEqual(true);
+  });
+
+  it('should check for collision if not in CI', async () => {
+    process.env.CI = 'false';
+    const cmd = await getCommand();
+    const getCredential = jest
+      .spyOn(credentials, 'getCredential')
+      .mockResolvedValue({ username: 'user', password: 'pass' });
+
+    // @ts-ignore
+    jest.spyOn(runtime, 'default').mockResolvedValue({ environment: { sid: 'sid' } });
+    // @ts-ignore
+    jest.spyOn(fs, 'readPackageJson').mockReturnValue({
+      version: '1.0.0',
+      name: 'plugin-test',
+    });
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
+    await cmd.hasCollisionAndOverwrite();
+
+    expect(getCredential).toHaveBeenCalledTimes(1);
+  });
+
+  it('should throw error if runtime environment not found when checking for collision if not in CI', async () => {
+    process.env.CI = 'false';
+    const cmd = await getCommand();
+    const getCredential = jest
+      .spyOn(credentials, 'getCredential')
+      .mockResolvedValue({ username: 'user', password: 'pass' });
+
+    // @ts-ignore
+    jest.spyOn(runtime, 'default').mockResolvedValue({});
+    // @ts-ignore
+    jest.spyOn(fs, 'readPackageJson').mockReturnValue({
+      version: '1.0.0',
+      name: 'plugin-test',
+    });
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
+    try {
+      await cmd.hasCollisionAndOverwrite();
+    } catch (e) {
+      expect(e).toBeInstanceOf(FlexPluginError);
+      expect(e.message).toContain('No Runtime environment was found');
+      expect(getCredential).toHaveBeenCalledTimes(1);
+    }
+  });
+
+  it('should not check for collision if in CI', async () => {
+    process.env.CI = 'true';
+    const cmd = await getCommand();
+    const getCredential = jest.spyOn(credentials, 'getCredential');
+
+    // @ts-ignore
+    jest.spyOn(runtime, 'default').mockResolvedValue({ environment: { sid: 'sid' } });
+    // @ts-ignore
+    jest.spyOn(fs, 'readPackageJson').mockReturnValue({
+      version: '1.0.0',
+      name: 'plugin-test',
+    });
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
+    await cmd.hasCollisionAndOverwrite();
+
+    expect(getCredential).toHaveBeenCalledTimes(0);
   });
 });

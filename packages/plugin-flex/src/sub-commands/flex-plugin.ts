@@ -447,6 +447,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     const extra = [];
     if (scriptName !== 'test') {
       extra.push('--core-cwd', this.pluginRootDir);
+      extra.push('--plugins-cli', this.pluginRootDir);
     }
 
     // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
@@ -462,7 +463,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   // @ts-ignore
   async spawnScript(scriptName: string, argv = this.scriptArgs): SpawnPromise {
     const scriptPath = require.resolve(`flex-plugin-scripts/dist/scripts/${scriptName}`);
-    return spawn('node', [scriptPath, ...argv, '--run-script', '--core-cwd', this.pluginRootDir]);
+    return spawn('node', [scriptPath, ...argv, '--run-script', '--core-cwd', '--plugins-cli', this.pluginRootDir]);
   }
 
   /**
