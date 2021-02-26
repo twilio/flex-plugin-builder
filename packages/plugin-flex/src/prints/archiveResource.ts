@@ -12,6 +12,7 @@ const alreadyArchived = (logger: Logger) => (name: string, message: string): voi
   logger.info(`!!Cannot archive ${name} because ${message.toLowerCase()}!!`);
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export default (logger: Logger) => ({
   archivedSuccessfully: archivedSuccessfully(logger),
   archivedFailed: archivedFailed(logger),

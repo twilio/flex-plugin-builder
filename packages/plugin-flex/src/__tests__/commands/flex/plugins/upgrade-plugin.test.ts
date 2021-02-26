@@ -1,7 +1,8 @@
 import { TwilioApiError, TwilioCliError } from 'flex-dev-utils';
 
+import { Pkg } from '../../../../sub-commands/flex-plugin';
 import createTest, { getPrintMethod, implementFileExists, mockGetPkg, mockPrintMethod } from '../../../framework';
-import FlexPluginsUpgradePlugin from '../../../../commands/flex/plugins/upgrade-plugin';
+import FlexPluginsUpgradePlugin, { DependencyUpdates } from '../../../../commands/flex/plugins/upgrade-plugin';
 import * as fs from '../../../../utils/fs';
 
 describe('Commands/FlexPluginsStart', () => {
@@ -270,5 +271,137 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd.serverlessClient.hasLegacy).toHaveBeenCalledTimes(1);
     expect(cmd.serverlessClient.hasLegacy).toHaveBeenCalledWith(serverlessSid, expect.any(String));
     expect(cmd.serverlessClient.removeLegacy).toHaveBeenCalledTimes(1);
+  });
+
+  describe('updatePackageJson', () => {
+    const _pkg: Pkg = {
+      name: 'test-package',
+      version: '1.2.3',
+      scripts: {},
+      devDependencies: {},
+      dependencies: {},
+    };
+
+    it('should remove dependencies', async () => {
+      const cmd = await removeLegacyPlugin();
+
+      const pkg = {
+        ..._pkg,
+        dependencies: {
+          package1: '1.0.0',
+          package2: '2.0.0',
+        },
+        devDependencies: {
+          package3: '3.0.0',
+          package4: '4.0.0',
+        },
+      };
+      const depUpdate: DependencyUpdates = {
+        remove: ['package1', 'package3'],
+        devDeps: {},
+        deps: {},
+      };
+      jest.spyOn(cmd, 'pkg', 'get').mockReturnValue(pkg);
+      jest.spyOn(fs, 'writeJSONFile').mockReturnThis();
+
+      await cmd.updatePackageJson(depUpdate);
+
+      expect(fs.writeJSONFile).toHaveBeenCalledTimes(1);
+      expect(pkg.dependencies).toEqual({ package2: '2.0.0' });
+      expect(pkg.devDependencies).toEqual({ package4: '4.0.0' });
+      expect(fs.writeJSONFile).toHaveBeenCalledWith(pkg, expect.any(String), 'package.json');
+    });
+
+    it('should add provided version', async () => {
+      const cmd = await removeLegacyPlugin();
+
+      const pkg = {
+        ..._pkg,
+        dependencies: {
+          package1: '1.0.0',
+        },
+        devDependencies: {
+          package3: '3.0.0',
+        },
+      };
+      const depUpdate: DependencyUpdates = {
+        remove: [],
+        devDeps: {
+          package3: '3.1.0',
+          package4: '4.0.0',
+        },
+        deps: {
+          package1: '1.1.0',
+          package2: '2.0.0',
+        },
+      };
+      jest.spyOn(cmd, 'pkg', 'get').mockReturnValue(pkg);
+      jest.spyOn(fs, 'writeJSONFile').mockReturnThis();
+
+      await cmd.updatePackageJson(depUpdate);
+
+      expect(pkg.dependencies).toEqual({ package1: '1.1.0', package2: '2.0.0' });
+      expect(pkg.devDependencies).toEqual({ package3: '3.1.0', package4: '4.0.0' });
+    });
+
+    it('should add package relative to another', async () => {
+      const cmd = await removeLegacyPlugin();
+
+      const pkg = {
+        ..._pkg,
+        dependencies: {
+          package1: '1.0.0',
+        },
+        devDependencies: {
+          package3: '3.0.0',
+        },
+      };
+      const depUpdate: DependencyUpdates = {
+        remove: [],
+        devDeps: {
+          package4: 'package3 || 4.1.1',
+        },
+        deps: {
+          package2: 'package1 || 2.1.1',
+        },
+      };
+      jest.spyOn(cmd, 'pkg', 'get').mockReturnValue(pkg);
+      jest.spyOn(fs, 'writeJSONFile').mockReturnThis();
+
+      await cmd.updatePackageJson(depUpdate);
+
+      expect(pkg.dependencies).toEqual({ package1: '1.0.0', package2: '1.0.0' });
+      expect(pkg.devDependencies).toEqual({ package3: '3.0.0', package4: '3.0.0' });
+    });
+
+    it('should add package from the default value if match not found', async () => {
+      const cmd = await removeLegacyPlugin();
+
+      const pkg = {
+        ..._pkg,
+        dependencies: {
+          package1: '1.0.0',
+        },
+        devDependencies: {
+          package3: '3.0.0',
+        },
+      };
+      const depUpdate: DependencyUpdates = {
+        remove: [],
+        devDeps: {
+          package4: 'packageUnknown || 4.1.1',
+        },
+        deps: {
+          package2: 'packageUnknown || 2.1.1',
+        },
+      };
+      jest.spyOn(cmd, 'pkg', 'get').mockReturnValue(pkg);
+      jest.spyOn(fs, 'writeJSONFile').mockReturnThis();
+
+      await cmd.updatePackageJson(depUpdate);
+
+      expect(pkg.dependencies).toEqual({ package1: '1.0.0', package2: '2.1.1' });
+      expect(pkg.devDependencies).toEqual({ package3: '3.0.0', package4: '4.1.1' });
+    });
   });
 });

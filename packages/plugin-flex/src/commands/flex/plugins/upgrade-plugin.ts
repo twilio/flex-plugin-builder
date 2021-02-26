@@ -6,6 +6,7 @@ import semver from 'semver';
 import packageJson from 'package-json';
 import { flags } from '@oclif/parser';
 import { TwilioApiError, TwilioCliError, spawn, progress } from 'flex-dev-utils';
+import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import FlexPlugin, { ConfigData, PkgCallback, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { createDescription, instanceOf } from '../../../utils/general';
@@ -27,7 +28,7 @@ interface ScriptsToRemove {
   post?: string;
 }
 
-interface DependencyUpdates {
+export interface DependencyUpdates {
   remove: string[];
   deps: Record<string, string>;
   devDeps: Record<string, string>;
@@ -109,7 +110,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   /**
    * @override
    */
-  async doRun() {
+  async doRun(): Promise<void> {
     if (this._flags['remove-legacy-plugin']) {
       await this.removeLegacyPlugin();
       this.prints.removeLegacyPluginSucceeded(this.pkg.name);
@@ -278,6 +279,8 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
    * @param custom        a custom callback for modifying package.json
    */
   async updatePackageJson(dependencies: DependencyUpdates, custom?: PkgCallback): Promise<void> {
+    this._logger.debug('Updating package dependencies to', dependencies);
+
     await progress('Updating package dependencies', async () => {
       const { pkg } = this;
       dependencies.remove.forEach((name) => delete pkg.dependencies[name]);
@@ -287,9 +290,32 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       const addDep = async (deps: Record<string, string>, record: Record<string, string>) => {
         for (const dep in deps) {
           if (deps.hasOwnProperty(dep)) {
+            const version = deps[dep];
+            this._logger.debug(`Adding dependency ${dep}@${version}`);
+
+            /*
+             * Conditional allows us to set the dep version from another field
+             * i.e. "react-dom": "react || 16.5.2"
+             * set react-dom value to the version of react, if exists, otherwise 16.5.2
+             */
+            const conditional = version.split('||').map((str) => str.trim());
+            if (conditional.length === 2) {
+              const match = conditional.find((str) => pkg.dependencies[str] || pkg.devDependencies[str]);
+              if (match) {
+                record[dep] = pkg.dependencies[match] || pkg.devDependencies[match];
+                continue;
+              }
+
+              const fallbackVersion = conditional.find((str) => semver.valid(str));
+              if (fallbackVersion) {
+                record[dep] = fallbackVersion;
+                continue;
+              }
+            }
+
             // If we have provided a specific version, use that
-            if (deps[dep] !== '*') {
-              record[dep] = deps[dep];
+            if (version !== '*') {
+              record[dep] = version;
               continue;
             }
 
@@ -422,10 +448,12 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       remove: FlexPluginsUpgradePlugin.packagesToRemove,
       deps: {
         'flex-plugin-scripts': '*',
+        react: 'react || 16.5.2',
+        'react-dom': 'react || 16.5.2',
       },
       devDeps: {
         '@twilio/flex-ui': '^1',
-        'react-test-renderer': '16.5.2',
+        'react-test-renderer': 'react || 16.5.2',
       },
     };
   }
@@ -449,7 +477,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   /**
    * Parses the flags passed to this command
    */
-  get _flags() {
+  get _flags(): OutputFlags<typeof FlexPluginsUpgradePlugin.flags> {
     return this.parse(FlexPluginsUpgradePlugin).flags;
   }
 }
