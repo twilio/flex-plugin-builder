@@ -3,6 +3,7 @@ import { findPortAvailablePort, StartScript } from 'flex-plugin-scripts/dist/scr
 import { FLAG_MULTI_PLUGINS } from 'flex-plugin-scripts/dist/scripts/pre-script-check';
 import semver from 'semver';
 import { TwilioCliError } from 'flex-dev-utils';
+import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import { createDescription } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
@@ -121,7 +122,7 @@ export default class FlexPluginsStart extends FlexPlugin {
   /**
    * Parses the flags passed to this command
    */
-  get _flags() {
+  get _flags(): OutputFlags<typeof FlexPluginsStart.flags> {
     return this.parse(FlexPluginsStart).flags;
   }
 

@@ -52,7 +52,7 @@ interface CLIFlexConfiguration {
   plugins: FlexConfigurationPlugin[];
 }
 
-interface Pkg {
+export interface Pkg {
   name: string;
   version: string;
   dependencies: Record<string, string>;
