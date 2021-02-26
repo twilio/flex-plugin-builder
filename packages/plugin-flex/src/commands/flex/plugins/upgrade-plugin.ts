@@ -54,6 +54,12 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     beta: flags.boolean({
       description: upgradePluginDoc.flags.beta,
     }),
+    dev: flags.boolean({
+      description: upgradePluginDoc.flags.dev,
+    }),
+    nightly: flags.boolean({
+      description: upgradePluginDoc.flags.nightly,
+    }),
     yarn: flags.boolean({
       description: upgradePluginDoc.flags.yarn,
     }),
@@ -419,6 +425,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       },
       devDeps: {
         '@twilio/flex-ui': '^1',
+        'react-test-renderer': '16.5.2',
       },
     };
   }
