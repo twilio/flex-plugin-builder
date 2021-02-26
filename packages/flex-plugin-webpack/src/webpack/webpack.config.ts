@@ -510,7 +510,7 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
     globalObject: 'this',
   };
   config.bail = isProd;
-  config.devtool = 'hidden-source-map';
+  config.devtool = isProd ? 'hidden-source-map' : 'source-map';
   config.optimization = _getOptimization(environment);
   config.node = {
     module: 'empty',

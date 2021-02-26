@@ -80,6 +80,20 @@ describe('WebpackConfiguration', () => {
   });
 
   describe('_getJavaScriptConfiguration', () => {
+    it('should test devtool field', () => {
+      // @ts-ignore
+      jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+      jest.spyOn(webpackConfig, '_getJavaScriptEntries').mockReturnValue([]);
+      jest.spyOn(webpackConfig, '_getOptimization').mockReturnValue({});
+      jest.spyOn(webpackConfig, '_getJSPlugins').mockReturnValue([]);
+
+      const configProd = webpackConfig._getJavaScriptConfiguration({}, Environment.Production);
+      const configDev = webpackConfig._getJavaScriptConfiguration({}, Environment.Development);
+
+      expect(configProd.devtool).toEqual('hidden-source-map');
+      expect(configDev.devtool).toEqual('source-map');
+    });
+
     it('should get production config', () => {
       // @ts-ignore
       jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
