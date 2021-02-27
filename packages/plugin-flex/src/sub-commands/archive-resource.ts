@@ -7,7 +7,15 @@ interface Archivable {
   isArchived: boolean;
 }
 
+const baseFlags = { ...FlexPlugin.flags };
+// @ts-ignore
+delete baseFlags.json;
+
 export default abstract class ArchiveResource<T extends Archivable> extends FlexPlugin {
+  static flags = {
+    ...baseFlags,
+  };
+
   // @ts-ignore
   private prints;
 
@@ -33,7 +41,7 @@ export default abstract class ArchiveResource<T extends Archivable> extends Flex
       }
     } catch (e) {
       if (instanceOf(e, TwilioApiError) && e.status === 400) {
-        this.prints.alreadyArchived(name);
+        this.prints.alreadyArchived(name, e.message);
       } else {
         throw e;
       }

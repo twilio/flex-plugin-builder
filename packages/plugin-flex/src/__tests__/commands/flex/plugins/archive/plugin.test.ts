@@ -40,7 +40,6 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
   it('should get name', async () => {
     const cmd = await createCmd();
 
-    expect(cmd.getName()).toContain('Plugin');
     expect(cmd.getName()).toContain(plugin.name);
   });
 });
