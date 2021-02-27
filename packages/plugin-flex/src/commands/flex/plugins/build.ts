@@ -15,7 +15,7 @@ export default class FlexPluginsBuild extends FlexPlugin {
   static description = createDescription(buildDocs.description, true);
 
   static flags = {
-    ...FlexPlugin.flags,
+    ...baseFlags,
   };
 
   /**

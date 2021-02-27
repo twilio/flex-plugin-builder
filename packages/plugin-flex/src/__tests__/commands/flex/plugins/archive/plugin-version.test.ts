@@ -45,7 +45,7 @@ describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
   it('should get name', async () => {
     const cmd = await createCmd();
 
-    expect(cmd.getName()).toContain('Plugin Version');
+    expect(cmd.getName()).toContain(pluginName);
     expect(cmd.getName()).toContain(pluginVersion.version);
   });
 });

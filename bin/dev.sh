@@ -25,7 +25,7 @@ semver=( ${currentVersion//./ } )
 major="${semver[0]}"
 minor="${semver[1]}"
 patch="${semver[2]}"
-id=`echo $(date '+%Y%m%d%M')`
+id=`echo $(date '+%Y%m%d%H%M')`
 devVersion="${major}.${minor}.${patch}-dev.${id}"
 
 # Re-build package

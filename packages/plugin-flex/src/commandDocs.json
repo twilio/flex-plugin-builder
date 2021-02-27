@@ -111,20 +111,20 @@
     }
   },
   "archivePlugin": {
-    "description": "Archives a Flex Plugin.",
+    "description": "Archives a Flex Plugin. Archived Plugins cannot be enabled on your Flex application and cannot be undone. Exercise extreme caution when using this command.",
     "flags": {
       "name": "The name of the Flex Plugin to archive."
     }
   },
   "archivePluginVersion": {
-    "description": "Archives a Flex Plugin Version.",
+    "description": "Archives a Flex Plugin Version. Archived Plugin Versions cannot be enabled on your Flex application and cannot be undone. Exercise extreme caution when using this command.",
     "flags": {
       "name": "The Flex Plugin name of the Plugin Version to archive.",
       "version": "The Flex Plugin Version to archive."
     }
   },
   "archiveConfiguration": {
-    "description": "Archives a Flex Plugin Configuration.",
+    "description": "Archives a Flex Plugin Configuration. Archived Plugin Configurations cannot be deployed to your Flex application and cannot be undone. Exercise extreme caution when using this command.",
     "flags": {
       "sid": "The Flex Plugin Configuration SID to archive."
     }
