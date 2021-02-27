@@ -7,6 +7,7 @@ import { FlexPluginError, TwilioCliError, progress, getCredential, env } from 'f
 import { getPaths } from 'flex-dev-utils/dist/fs';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { PluginResource } from 'flex-plugins-api-client';
+import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import * as flags from '../../../utils/flags';
 import { createDescription, instanceOf } from '../../../utils/general';
@@ -282,8 +283,11 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     return 'patch';
   }
 
+  /**
+   * Parses the flags passed to this command
+   */
   /* istanbul ignore next */
-  get _flags() {
+  get _flags(): OutputFlags<typeof FlexPluginsDeploy.flags> {
     return this.parse(FlexPluginsDeploy).flags;
   }
 

@@ -1,3 +1,5 @@
+import { OutputFlags } from '@oclif/parser/lib/parse';
+
 import { createDescription } from '../../../utils/general';
 import FlexPlugin from '../../../sub-commands/flex-plugin';
 import { build as buildDocs } from '../../../commandDocs.json';
@@ -25,7 +27,11 @@ export default class FlexPluginsBuild extends FlexPlugin {
     await this.runScript('build');
   }
 
-  get _flags() {
+  /**
+   * Parses the flags passed to this command
+   */
+  /* istanbul ignore next */
+  get _flags(): OutputFlags<typeof FlexPluginsBuild.flags> {
     return this.parse(FlexPluginsBuild).flags;
   }
 

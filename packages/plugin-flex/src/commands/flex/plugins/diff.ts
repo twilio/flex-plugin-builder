@@ -1,6 +1,7 @@
 import { Difference } from 'flex-plugins-api-toolkit/dist/tools/diff';
 import { TwilioCliError } from 'flex-dev-utils';
 import { Diff } from 'flex-plugins-api-toolkit';
+import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import { createDescription } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
@@ -128,8 +129,11 @@ export default class FlexPluginsDiff extends FlexPlugin {
     }
   }
 
+  /**
+   * Parses the flags passed to this command
+   */
   /* istanbul ignore next */
-  get _flags() {
+  get _flags(): OutputFlags<typeof FlexPluginsDiff.flags> {
     return this.parse(FlexPluginsDiff).flags;
   }
 

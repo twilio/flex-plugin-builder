@@ -12,6 +12,7 @@ const alreadyArchived = (logger: Logger) => (name: string): void => {
   logger.info(`!!**${name}** is already archived.!!`);
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export default (logger: Logger) => ({
   archivedSuccessfully: archivedSuccessfully(logger),
   archivedFailed: archivedFailed(logger),

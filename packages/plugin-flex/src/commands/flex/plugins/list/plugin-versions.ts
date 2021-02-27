@@ -1,5 +1,6 @@
 import { ListPluginVersions } from 'flex-plugins-api-toolkit/dist/scripts';
 import { flags } from '@oclif/command';
+import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import { createDescription } from '../../../../utils/general';
 import InformationFlexPlugin from '../../../../sub-commands/information-flex-plugin';
@@ -62,7 +63,7 @@ export default class FlexPluginsListPluginVersions extends InformationFlexPlugin
    * Parses the flags passed to this command
    */
   /* istanbul ignore next */
-  get _flags() {
+  get _flags(): OutputFlags<typeof FlexPluginsListPluginVersions.flags> {
     return this.parse(FlexPluginsListPluginVersions).flags;
   }
 }
