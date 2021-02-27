@@ -5,13 +5,12 @@ import * as flags from '../../../../utils/flags';
 import ArchiveResource from '../../../../sub-commands/archive-resource';
 import { createDescription } from '../../../../utils/general';
 import { archivePluginVersion as archivePluginVersionDocs } from '../../../../commandDocs.json';
-import FlexPlugin from '../../../../sub-commands/flex-plugin';
 
 export default class FlexPluginsArchivePluginVersion extends ArchiveResource<PluginVersion> {
   static description = createDescription(archivePluginVersionDocs.description, false);
 
   static flags = {
-    ...FlexPlugin.flags,
+    ...ArchiveResource.flags,
     name: flags.string({
       description: archivePluginVersionDocs.flags.name,
       required: true,
@@ -33,7 +32,8 @@ export default class FlexPluginsArchivePluginVersion extends ArchiveResource<Plu
    * @override
    */
   getName(): string {
-    return `Plugin Version ${this._flags.version}`;
+    const { version, name } = this._flags;
+    return `**${name}@${version}**`;
   }
 
   /**
