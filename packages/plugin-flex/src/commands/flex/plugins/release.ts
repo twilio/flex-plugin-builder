@@ -1,6 +1,7 @@
 import { progress } from 'flex-dev-utils';
 import { flags } from '@oclif/command';
 import { RequiredFlagError } from '@oclif/parser/lib/errors';
+import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import { createDescription } from '../../../utils/general';
 import { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
@@ -92,7 +93,10 @@ export default class FlexPluginsRelease extends CreateConfiguration {
     return this.pluginsApiToolkit.release({ configurationSid });
   }
 
-  get _flags() {
+  /**
+   * Parses the flags passed to this command
+   */
+  get _flags(): OutputFlags<typeof FlexPluginsRelease.flags> {
     const parse = this.parse(FlexPluginsRelease);
     if (parse.flags['configuration-sid']) {
       return parse.flags;

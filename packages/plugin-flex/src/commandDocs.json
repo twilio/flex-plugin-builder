@@ -103,6 +103,8 @@
     "flags": {
       "install": "If set, will install the dependencies.",
       "beta": "If set, will upgrade to the latest beta version.",
+      "dev": "If set, will upgrade to the latest dev version.",
+      "nightly": "If set, will upgrade to the latest nightly version.",
       "yes": "If set, will answer yes to all prompts.",
       "yarn": "Use yarn for installation.",
       "removeLegacyPlugin": "Deletes legacy plugin bundle hosted on Twilio Assets (deployed via plugin builder v3)."

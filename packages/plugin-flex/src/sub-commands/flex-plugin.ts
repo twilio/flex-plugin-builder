@@ -52,7 +52,7 @@ interface CLIFlexConfiguration {
   plugins: FlexConfigurationPlugin[];
 }
 
-interface Pkg {
+export interface Pkg {
   name: string;
   version: string;
   dependencies: Record<string, string>;
@@ -473,6 +473,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     process.env.SKIP_CREDENTIALS_SAVING = 'true';
     process.env.TWILIO_ACCOUNT_SID = this.twilioClient.username;
     process.env.TWILIO_AUTH_TOKEN = this.twilioClient.password;
+    process.env.TWILIO_PROFILE = this.currentProfile.id;
 
     if (this._flags['cli-log-level'] === 'debug') {
       process.env.DEBUG = 'true';
