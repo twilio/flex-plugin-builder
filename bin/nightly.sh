@@ -19,7 +19,7 @@ currentVersion=$(cat ./lerna.json | getJsonValue 'version' |  cut -f1 -d"-")
 semver=( ${currentVersion//./ } )
 major="${semver[0]}"
 minor="${semver[1]}"
-patch="${semver[2]}"
+patch=$((semver[2] + 1))
 id=`echo $(date '+%Y%m%d')`
 nightlyVersion="${major}.${minor}.${patch}-nightly.${id}"
 
