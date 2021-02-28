@@ -45,7 +45,7 @@
     "flex-plugins-utils-spawn": "^0.18.2",
     "globby": "^11.0.2",
     "lodash": "^4.17.21",
-    "marked": "^1.2.9",
+    "marked": "^2.0.1",
     "marked-terminal": "^4.1.0",
     "mkdirp": "^1.0.4",
     "net": "^1.0.2",

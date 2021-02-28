@@ -22,12 +22,10 @@
   "types": "dist/index.d.ts",
   "directories": {
     "lib": "src",
-    "bin": "bin",
     "test": "__tests__"
   },
   "files": [
-    "dist",
-    "bin"
+    "dist"
   ],
   "scripts": {
     "prebuild": "npm run clean",
