@@ -43,23 +43,23 @@
     "flex-plugins-utils-exception": "^0.18.0",
     "flex-plugins-utils-logger": "^0.18.0",
     "flex-plugins-utils-spawn": "^0.18.2",
-    "globby": "^11.0.1",
-    "lodash": "^4.17.20",
-    "marked": "^1.2.2",
+    "globby": "^11.0.2",
+    "lodash": "^4.17.21",
+    "marked": "^1.2.9",
     "marked-terminal": "^4.1.0",
     "mkdirp": "^1.0.4",
     "net": "^1.0.2",
-    "open": "^7.3.0",
+    "open": "^7.4.2",
     "rimraf": "^3.0.2",
     "semver": "^7.3.4",
-    "update-notifier": "^5.0.1",
+    "update-notifier": "^5.1.0",
     "url": "^0.11.0",
     "util": "^0.12.3"
   },
   "devDependencies": {
     "@types/app-module-path": "^2.2.0",
-    "@types/lodash": "^4.14.165",
-    "@types/marked": "^1.1.1",
+    "@types/lodash": "^4.14.168",
+    "@types/marked": "^1.2.2",
     "@types/marked-terminal": "^3.1.1",
     "@types/mkdirp": "^1.0.1",
     "@types/rimraf": "^3.0.0",
@@ -67,7 +67,7 @@
     "@types/update-notifier": "^5.0.0"
   },
   "optionalDependencies": {
-    "keytar": "^7.2.0"
+    "keytar": "^7.4.0"
   },
   "gitHead": "cb92593ce13da010d82f488d974d7f372d973af8"
 }
