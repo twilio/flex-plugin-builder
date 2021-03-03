@@ -31,8 +31,7 @@ export default (errors: any[]): void => {
   const pkgName = logger.colors.red.bold(getPaths().app.name);
 
   if (env.isCLI()) {
-    logger.newline();
-    logger.newline();
+    logger.newline(2);
   }
   logger.error(`Failed to compile plugin ${pkgName}.`);
   logger.newline();
