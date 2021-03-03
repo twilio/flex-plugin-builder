@@ -162,7 +162,6 @@ describe('DeployScript', () => {
       await deployScript.default('major');
 
       expectDoDeployCalled('2.0.0', {
-        isPluginsCli: false,
         isPublic: false,
         overwrite: false,
         isPluginsPilot: false,
@@ -174,7 +173,6 @@ describe('DeployScript', () => {
       await deployScript.default('minor');
 
       expectDoDeployCalled('1.1.0', {
-        isPluginsCli: false,
         isPublic: false,
         overwrite: false,
         isPluginsPilot: false,
@@ -186,7 +184,6 @@ describe('DeployScript', () => {
       await deployScript.default('patch');
 
       expectDoDeployCalled('1.0.1', {
-        isPluginsCli: false,
         isPublic: false,
         overwrite: false,
         isPluginsPilot: false,
@@ -198,7 +195,6 @@ describe('DeployScript', () => {
       await deployScript.default('version', 'custom-version');
 
       expectDoDeployCalled('custom-version', {
-        isPluginsCli: false,
         isPublic: false,
         overwrite: false,
         isPluginsPilot: false,
@@ -210,7 +206,6 @@ describe('DeployScript', () => {
       await deployScript.default('major', '--public');
 
       expectDoDeployCalled('2.0.0', {
-        isPluginsCli: false,
         isPublic: true,
         overwrite: false,
         isPluginsPilot: false,
@@ -229,7 +224,6 @@ describe('DeployScript', () => {
       await deployScript.default('major', '--pilot-plugins-api');
 
       expectDoDeployCalled('2.0.0', {
-        isPluginsCli: false,
         isPublic: false,
         overwrite: false,
         isPluginsPilot: true,
@@ -241,7 +235,6 @@ describe('DeployScript', () => {
   describe('_doDeploy', () => {
     it('should quit if running the pilot program but not have the flag set', async (done) => {
       const options = {
-        isPluginsCli: false,
         isPublic: true,
         overwrite: false,
         isPluginsPilot: true,
@@ -265,7 +258,6 @@ describe('DeployScript', () => {
 
     it('should run if pilot feature enabled', async () => {
       const options = {
-        isPluginsCli: false,
         isPublic: true,
         overwrite: false,
         isPluginsPilot: true,
@@ -284,7 +276,6 @@ describe('DeployScript', () => {
 
     it('should quit if build does not exist', async (done) => {
       const options = {
-        isPluginsCli: false,
         isPublic: true,
         overwrite: false,
         isPluginsPilot: false,
@@ -306,7 +297,6 @@ describe('DeployScript', () => {
     it('should quit if duplicate route is found and in CI', async (done) => {
       process.env.CI = 'true';
       const options = {
-        isPluginsCli: true,
         isPublic: true,
         overwrite: false,
         isPluginsPilot: false,
@@ -330,7 +320,6 @@ describe('DeployScript', () => {
     it('should quit if duplicate route is found and caller is not the CLI', async (done) => {
       process.env.CI = 'false';
       const options = {
-        isPluginsCli: false,
         isPublic: true,
         overwrite: false,
         isPluginsPilot: false,
@@ -353,8 +342,8 @@ describe('DeployScript', () => {
 
     it('should return the existing asset if the caller is the CLI, duplicate route is found, user does not want to overwite, and not in CI', async () => {
       process.env.CI = 'false';
+      process.env.FLEX_PLUGINS_CLI = 'true';
       const options = {
-        isPluginsCli: true,
         isPublic: true,
         overwrite: false,
         isPluginsPilot: false,
@@ -377,8 +366,8 @@ describe('DeployScript', () => {
 
     it('should overwrite the existing asset if the caller is the CLI, duplicate route is found, user does want to overwite, and not in CI', async () => {
       process.env.CI = 'false';
+      process.env.FLEX_PLUGINS_CLI = 'true';
       const options = {
-        isPluginsCli: true,
         isPublic: true,
         overwrite: true,
         isPluginsPilot: false,
@@ -401,7 +390,6 @@ describe('DeployScript', () => {
 
     it('should deploy and write a success message', async () => {
       const options = {
-        isPluginsCli: false,
         isPublic: true,
         overwrite: true,
         isPluginsPilot: false,
