@@ -2,13 +2,14 @@ import { ListConfigurations } from 'flex-plugins-api-toolkit/dist/scripts';
 
 import { createDescription } from '../../../../utils/general';
 import InformationFlexPlugin from '../../../../sub-commands/information-flex-plugin';
-import { listConfigurations as listConfigurationsDocs } from '../../../../commandDocs.json';
 
 /**
  * Lists the Flex Plugin Configurations
  */
 export default class FlexPluginsListConfigurations extends InformationFlexPlugin<ListConfigurations[]> {
-  static description = createDescription(listConfigurationsDocs.description, false);
+  static topicName = 'flex:plugins:list:configurations';
+
+  static description = createDescription(FlexPluginsListConfigurations.topic.description, false);
 
   static flags = {
     ...InformationFlexPlugin.flags,

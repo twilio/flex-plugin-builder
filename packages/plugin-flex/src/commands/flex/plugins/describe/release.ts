@@ -6,22 +6,23 @@ import { OutputFlags } from '@oclif/parser/lib/parse';
 import { createDescription } from '../../../../utils/general';
 import FlexPlugin from '../../../../sub-commands/flex-plugin';
 import InformationFlexPlugin from '../../../../sub-commands/information-flex-plugin';
-import { describeRelease as describeReleaseDocs } from '../../../../commandDocs.json';
 
 /**
  * Describes the Flex Plugin Release
  */
 export default class FlexPluginsDescribeRelease extends InformationFlexPlugin<DescribeRelease> {
-  static description = createDescription(describeReleaseDocs.description, false);
+  static topicName = 'flex:plugins:describe:release';
+
+  static description = createDescription(FlexPluginsDescribeRelease.topic.description, false);
 
   static flags = {
     ...FlexPlugin.flags,
     sid: flags.string({
-      description: describeReleaseDocs.flags.sid,
+      description: FlexPluginsDescribeRelease.topic.flags.sid,
       exclusive: ['active'],
     }),
     active: flags.boolean({
-      description: describeReleaseDocs.flags.active,
+      description: FlexPluginsDescribeRelease.topic.flags.active,
       exclusive: ['sid'],
     }),
   };
@@ -29,7 +30,7 @@ export default class FlexPluginsDescribeRelease extends InformationFlexPlugin<De
   /**
    * @override
    */
-  async getResource() {
+  async getResource(): Promise<DescribeRelease> {
     if (this._flags.active) {
       const release = await this.releasesClient.active();
       if (!release) {

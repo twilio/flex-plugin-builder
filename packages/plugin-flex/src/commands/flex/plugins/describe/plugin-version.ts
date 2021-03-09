@@ -5,22 +5,23 @@ import { OutputFlags } from '@oclif/parser/lib/parse';
 import { createDescription } from '../../../../utils/general';
 import FlexPlugin from '../../../../sub-commands/flex-plugin';
 import InformationFlexPlugin from '../../../../sub-commands/information-flex-plugin';
-import { describePluginVersion as describePluginVersionDocs } from '../../../../commandDocs.json';
 
 /**
  * Describes Flex Plugin Version
  */
 export default class FlexPluginsDescribePluginVersion extends InformationFlexPlugin<DescribePluginVersion> {
-  static description = createDescription(describePluginVersionDocs.description, false);
+  static topicName = 'flex:plugins:describe:plugin-version';
+
+  static description = createDescription(FlexPluginsDescribePluginVersion.topic.description, false);
 
   static flags = {
     ...FlexPlugin.flags,
     name: flags.string({
-      description: describePluginVersionDocs.flags.name,
+      description: FlexPluginsDescribePluginVersion.topic.flags.name,
       required: true,
     }),
     version: flags.string({
-      description: describePluginVersionDocs.flags.version,
+      description: FlexPluginsDescribePluginVersion.topic.flags.version,
       required: true,
     }),
   };

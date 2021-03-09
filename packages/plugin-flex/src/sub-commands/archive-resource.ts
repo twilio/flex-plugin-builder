@@ -1,7 +1,7 @@
 import { TwilioApiError } from 'flex-dev-utils';
 
 import FlexPlugin, { ConfigData, SecureStorage } from './flex-plugin';
-import { instanceOf } from '../utils/general';
+import { createDescription, instanceOf } from '../utils/general';
 
 interface Archivable {
   isArchived: boolean;
@@ -12,6 +12,10 @@ const baseFlags = { ...FlexPlugin.flags };
 delete baseFlags.json;
 
 export default abstract class ArchiveResource<T extends Archivable> extends FlexPlugin {
+  static topicName = 'flex:plugins:archive';
+
+  static description = createDescription(ArchiveResource.topic.description, true);
+
   static flags = {
     ...baseFlags,
   };

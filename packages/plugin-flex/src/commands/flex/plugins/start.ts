@@ -8,7 +8,6 @@ import { OutputFlags } from '@oclif/parser/lib/parse';
 import { createDescription } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { readJSONFile } from '../../../utils/fs';
-import { start as startDocs } from '../../../commandDocs.json';
 
 const baseFlags = { ...FlexPlugin.flags };
 // @ts-ignore
@@ -20,16 +19,18 @@ const MULTI_PLUGINS_PILOT = FLAG_MULTI_PLUGINS.substring(2);
  * Starts the dev-server for building and iterating on a plugin bundle
  */
 export default class FlexPluginsStart extends FlexPlugin {
-  static description = createDescription(startDocs.description, false);
+  static topicName = 'flex:plugins:start';
+
+  static description = createDescription(FlexPluginsStart.topic.description, false);
 
   static flags = {
     ...baseFlags,
     name: flags.string({
-      description: startDocs.flags.name,
+      description: FlexPluginsStart.topic.flags.name,
       multiple: true,
     }),
     'include-remote': flags.boolean({
-      description: startDocs.flags.includeRemote,
+      description: FlexPluginsStart.topic.flags.includeRemote,
     }),
   };
 
