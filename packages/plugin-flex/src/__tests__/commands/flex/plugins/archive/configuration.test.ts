@@ -40,4 +40,11 @@ describe('Commands/Archive/FlexPluginsArchiveConfiguration', () => {
 
     expect(cmd.getName()).toContain(configuration.sid);
   });
+
+  it('should get resource type', async () => {
+    const cmd = await createCmd();
+
+    expect(cmd.getResourceType()).toContain('Flex');
+    expect(cmd.getResourceType()).toContain('Configuration');
+  });
 });
