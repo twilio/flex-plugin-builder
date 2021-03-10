@@ -30,7 +30,7 @@ export interface OclifConfig {
  */
 export const getTopic = (topicName: string): OClifTopic => {
   const pkg = readJsonFile<Pkg>(__dirname, '../../package.json');
-  if (!pkg || !pkg.oclif || !pkg.oclif.topics[topicName]) {
+  if (!pkg?.oclif?.topics[topicName]) {
     return {
       description: 'No description available',
       flags: {},
