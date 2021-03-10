@@ -159,9 +159,6 @@
           "removeLegacyPlugin": "Deletes legacy plugin bundle hosted on Twilio Assets (deployed via plugin builder v3)."
         }
       },
-
-
-
       "flex:plugins:archive": {
         "description": "Archives a Flex Plugin, Version or Configuration. Archived entities cannot be deployed to your Flex application and cannot be undone. Exercise extreme caution when using this command."
       },
@@ -184,8 +181,6 @@
           "version": "The Flex Plugin Version to archive."
         }
       },
-
-
       "flex:plugins:describe": {
         "description": "Provides details of the Flex Plugin, Version, Configuration or Release."
       },
@@ -215,15 +210,9 @@
           "active": "The most recent release to describe."
         }
       },
-
-
-
-
-
       "flex:plugins:list": {
         "description": "Lists the Flex Plugins, Versions, Configurations or Releases on the account."
       },
-
       "flex:plugins:list:configurations": {
         "description": "Lists the Flex Plugin Configuration on the account."
       },
