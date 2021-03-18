@@ -1,7 +1,7 @@
-import { TwilioApiError } from 'flex-dev-utils';
+import { TwilioApiError, confirm } from 'flex-dev-utils';
 
 import FlexPlugin, { ConfigData, SecureStorage } from './flex-plugin';
-import { instanceOf } from '../utils/general';
+import { createDescription, instanceOf } from '../utils/general';
 
 interface Archivable {
   isArchived: boolean;
@@ -12,6 +12,10 @@ const baseFlags = { ...FlexPlugin.flags };
 delete baseFlags.json;
 
 export default abstract class ArchiveResource<T extends Archivable> extends FlexPlugin {
+  static topicName = 'flex:plugins:archive';
+
+  static description = createDescription(ArchiveResource.topic.description, true);
+
   static flags = {
     ...baseFlags,
   };
@@ -30,7 +34,15 @@ export default abstract class ArchiveResource<T extends Archivable> extends Flex
    * @override
    */
   async doRun(): Promise<void> {
-    const name = this.getName();
+    const name = `**${this.getName()}**`;
+    const doArchive = await confirm(
+      `Are you sure you want to archive ${this.getResourceType()} ${this.getName()}? Once archived, it cannot be undone.`,
+      'N',
+    );
+    if (!doArchive) {
+      this.exit(0);
+      return;
+    }
 
     try {
       const result = await this.doArchive();
@@ -57,4 +69,6 @@ export default abstract class ArchiveResource<T extends Archivable> extends Flex
    * Returns the identifier name
    */
   abstract getName(): string;
+
+  abstract getResourceType(): string;
 }

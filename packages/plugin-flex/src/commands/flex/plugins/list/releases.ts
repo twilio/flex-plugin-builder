@@ -2,13 +2,14 @@ import { ListReleases } from 'flex-plugins-api-toolkit/dist/scripts';
 
 import { createDescription } from '../../../../utils/general';
 import InformationFlexPlugin from '../../../../sub-commands/information-flex-plugin';
-import { listReleases as listReleasesDocs } from '../../../../commandDocs.json';
 
 /**
  * Lists the Flex Plugin Releases
  */
 export default class FlexPluginsListPlugins extends InformationFlexPlugin<ListReleases[]> {
-  static description = createDescription(listReleasesDocs.description, false);
+  static topicName = 'flex:plugins:list:releases';
+
+  static description = createDescription(FlexPluginsListPlugins.topic.description, false);
 
   static flags = {
     ...InformationFlexPlugin.flags,

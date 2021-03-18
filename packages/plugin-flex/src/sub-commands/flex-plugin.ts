@@ -10,7 +10,7 @@ import {
   ConfigurationsClient,
   ReleasesClient,
 } from 'flex-plugins-api-client';
-import { TwilioError, spawn, Logger, SpawnPromise, NotImplementedError, TwilioCliError } from 'flex-dev-utils';
+import { TwilioError, spawn, Logger, SpawnPromise, NotImplementedError, TwilioCliError, env } from 'flex-dev-utils';
 import dayjs from 'dayjs';
 import * as Errors from '@oclif/errors';
 import mkdirp from 'mkdirp';
@@ -24,9 +24,9 @@ import { filesExist, readJSONFile, readJsonFile, writeJSONFile } from '../utils/
 import { exit, instanceOf } from '../utils/general';
 import { toSentenceCase } from '../utils/strings';
 import prints from '../prints';
-import { flexPlugin as flexPluginDocs } from '../commandDocs.json';
 import FlexConfigurationClient, { FlexConfigurationClientOptions } from '../clients/FlexConfigurationClient';
 import ServerlessClient from '../clients/ServerlessClient';
+import { getTopic, OclifConfig, OClifTopic } from '../utils';
 
 interface FlexPluginOption {
   strict: boolean;
@@ -59,6 +59,7 @@ export interface Pkg {
   devDependencies: Record<string, string>;
   scripts: Record<string, string>;
   browserslist?: Record<string, string>;
+  oclif?: OclifConfig;
 }
 
 export type PkgCallback = (input: Pkg) => Pkg;
@@ -73,13 +74,22 @@ const packageJsonStr = 'package.json';
  * This will ensure the script is running on a Flex-plugin project, otherwise will throw an error
  */
 export default class FlexPlugin extends baseCommands.TwilioClientCommand {
+  static topicName = 'flex:plugins';
+
+  /**
+   * Getter for the topic
+   */
+  public static get topic(): OClifTopic {
+    return getTopic(this.topicName || '');
+  }
+
   static flags = {
     ...baseFlag,
     json: flags.boolean({
-      description: flexPluginDocs.flags.json,
+      description: FlexPlugin.topic.flags.json,
     }),
     'clear-terminal': flags.boolean({
-      description: flexPluginDocs.flags.clearTerminal,
+      description: FlexPlugin.topic.flags.clearTerminal,
     }),
     region: flags.enum({
       options: ['dev', 'stage'],
@@ -225,7 +235,11 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @returns {object}
    */
   get pkg(): Pkg {
-    return readJSONFile<Pkg>(this.cwd, packageJsonStr);
+    const pkg = readJSONFile<Pkg>(this.cwd, packageJsonStr);
+    pkg.devDependencies = pkg.devDependencies || {};
+    pkg.dependencies = pkg.dependencies || {};
+
+    return pkg;
   }
 
   /**
@@ -447,7 +461,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     const extra = [];
     if (scriptName !== 'test') {
       extra.push('--core-cwd', this.pluginRootDir);
-      extra.push('--plugins-cli', this.pluginRootDir);
+      env.setCLI();
     }
 
     // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
@@ -463,7 +477,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   // @ts-ignore
   async spawnScript(scriptName: string, argv = this.scriptArgs): SpawnPromise {
     const scriptPath = require.resolve(`flex-plugin-scripts/dist/scripts/${scriptName}`);
-    return spawn('node', [scriptPath, ...argv, '--run-script', '--core-cwd', '--plugins-cli', this.pluginRootDir]);
+    env.setCLI();
+    return spawn('node', [scriptPath, ...argv, '--run-script', '--core-cwd', this.pluginRootDir]);
   }
 
   /**

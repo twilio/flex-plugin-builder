@@ -42,4 +42,11 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
 
     expect(cmd.getName()).toContain(plugin.name);
   });
+
+  it('should get resource type', async () => {
+    const cmd = await createCmd();
+
+    expect(cmd.getResourceType()).toContain('Flex');
+    expect(cmd.getResourceType()).toContain('Plugin');
+  });
 });

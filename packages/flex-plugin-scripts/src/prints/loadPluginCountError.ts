@@ -1,10 +1,11 @@
-import { logger } from 'flex-dev-utils';
+import { logger, env } from 'flex-dev-utils';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
 
 export default (count: number): void => {
   const { bold } = logger.colors;
   const { link } = logger.coloredStrings;
 
+  env.setQuiet(false);
   logger.error('There must be one and only one plugin loaded in each Flex plugin.');
   logger.newline();
   logger.info(
@@ -16,4 +17,5 @@ export default (count: number): void => {
     ),
   );
   logger.newline();
+  env.setQuiet(true);
 };

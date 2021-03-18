@@ -5,49 +5,44 @@ import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import { createDescription } from '../../../utils/general';
 import { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
-import CreateConfiguration, {
-  nameFlag,
-  enablePluginFlag,
-  descriptionFlag,
-  disablePluginFlag,
-  aliasEnablePluginFlag,
-} from '../../../sub-commands/create-configuration';
-import { release as releaseDocs } from '../../../commandDocs.json';
+import CreateConfiguration from '../../../sub-commands/create-configuration';
 
 /**
  * Creates a Flex Plugin Configuration and releases and sets it to active
  */
 export default class FlexPluginsRelease extends CreateConfiguration {
-  static description = createDescription(releaseDocs.description, false);
+  static topicName = 'flex:plugins:release';
+
+  static description = createDescription(FlexPluginsRelease.topic.description, false);
 
   public static flags = {
     ...CreateConfiguration.flags,
     'configuration-sid': flags.string({
-      description: releaseDocs.flags.configurationSid,
+      description: FlexPluginsRelease.topic.flags.configurationSid,
       exclusive: ['description', 'name', 'new'],
     }),
     name: flags.string({
-      ...nameFlag,
+      ...CreateConfiguration.nameFlag,
       required: false,
       exclusive: ['configuration-sid'],
     }),
     plugin: flags.string({
-      ...aliasEnablePluginFlag,
+      ...CreateConfiguration.aliasEnablePluginFlag,
       required: false,
       exclusive: ['configuration-sid'],
     }),
     'enable-plugin': flags.string({
-      ...enablePluginFlag,
+      ...CreateConfiguration.enablePluginFlag,
       required: false,
       exclusive: ['configuration-sid'],
     }),
     'disable-plugin': flags.string({
-      ...disablePluginFlag,
+      ...CreateConfiguration.disablePluginFlag,
       required: false,
       exclusive: ['configuration-sid'],
     }),
     description: flags.string({
-      ...descriptionFlag,
+      ...CreateConfiguration.descriptionFlag,
       required: false,
       exclusive: ['configuration-sid'],
     }),
@@ -75,7 +70,7 @@ export default class FlexPluginsRelease extends CreateConfiguration {
     }
   }
 
-  async doCreateRelease(configurationSid: string) {
+  async doCreateRelease(configurationSid: string): Promise<void> {
     await progress(
       `Enabling configuration **${configurationSid}**`,
       async () => this.createRelease(configurationSid),

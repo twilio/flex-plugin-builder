@@ -4,15 +4,16 @@ import { OutputFlags } from '@oclif/parser/lib/parse';
 import * as flags from '../../../../utils/flags';
 import ArchiveResource from '../../../../sub-commands/archive-resource';
 import { createDescription } from '../../../../utils/general';
-import { archiveConfiguration as archiveConfigurationDocs } from '../../../../commandDocs.json';
 
 export default class FlexPluginsArchiveConfiguration extends ArchiveResource<Configuration> {
-  static description = createDescription(archiveConfigurationDocs.description, false);
+  static topicName = 'flex:plugins:archive:configuration';
+
+  static description = createDescription(FlexPluginsArchiveConfiguration.topic.description, false);
 
   static flags = {
     ...ArchiveResource.flags,
     sid: flags.string({
-      description: archiveConfigurationDocs.flags.sid,
+      description: FlexPluginsArchiveConfiguration.topic.flags.sid,
       required: true,
     }),
   };
@@ -28,7 +29,14 @@ export default class FlexPluginsArchiveConfiguration extends ArchiveResource<Con
    * @override
    */
   getName(): string {
-    return `**${this._flags.sid}**`;
+    return this._flags.sid;
+  }
+
+  /**
+   * @override
+   */
+  getResourceType(): string {
+    return 'Flex Configuration';
   }
 
   /**

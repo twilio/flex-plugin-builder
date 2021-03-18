@@ -26,7 +26,9 @@ export const persistTerminal = (): string => (process.env.PERSIST_TERMINAL = 'tr
 export const skipPreflightCheck = (): boolean => process.env.SKIP_PREFLIGHT_CHECK === 'true';
 export const isTerminalPersisted = (): boolean => process.env.PERSIST_TERMINAL === 'true';
 export const allowUnbundledReact = (): boolean => process.env.UNBUNDLED_REACT === 'true';
-export const setQuiet = (): string => (process.env.QUIET = 'true');
+export const setQuiet = (isQuiet: boolean = true): string => (process.env.QUIET = String(isQuiet));
+export const isCLI = (): boolean => process.env.FLEX_PLUGINS_CLI === 'true';
+export const setCLI = (): string => (process.env.FLEX_PLUGINS_CLI = 'true');
 export const isCI = (): boolean => process.env.CI === 'true';
 export const isTrace = (): boolean => process.env.TRACE === 'true';
 export const isDebug = (): boolean => process.env.DEBUG === 'true' || isTrace();
@@ -65,6 +67,8 @@ export default {
   allowUnbundledReact,
   isTerminalPersisted,
   setQuiet,
+  isCLI,
+  setCLI,
   isCI,
   isDebug,
   isTrace,
