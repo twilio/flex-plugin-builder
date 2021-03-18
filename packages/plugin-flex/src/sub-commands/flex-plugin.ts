@@ -457,7 +457,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @param argv        arguments to pass to the script
    */
   /* istanbul ignore next */
-  async runScript(scriptName: string, argv = this.scriptArgs) {
+  async runScript<T>(scriptName: string, argv = this.scriptArgs): Promise<T> {
     const extra = [];
     if (scriptName !== 'test') {
       extra.push('--core-cwd', this.pluginRootDir);
@@ -492,6 +492,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
     if (this._flags['cli-log-level'] === 'debug') {
       process.env.DEBUG = 'true';
+      process.env.PERSIST_TERMINAL = 'true';
     }
   }
 
