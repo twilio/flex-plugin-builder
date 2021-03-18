@@ -2,6 +2,7 @@ import { progress } from 'flex-dev-utils';
 import { flags } from '@oclif/command';
 import { RequiredFlagError } from '@oclif/parser/lib/errors';
 import { OutputFlags } from '@oclif/parser/lib/parse';
+import { Release } from 'flex-plugins-api-toolkit';
 
 import { createDescription } from '../../../utils/general';
 import { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
@@ -84,7 +85,7 @@ export default class FlexPluginsRelease extends CreateConfiguration {
    * Registers a configuration with Plugins API
    * @returns {Promise}
    */
-  async createRelease(configurationSid: string) {
+  async createRelease(configurationSid: string): Promise<Release> {
     return this.pluginsApiToolkit.release({ configurationSid });
   }
 
