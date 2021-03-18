@@ -33,7 +33,14 @@ export default class FlexPluginsArchivePluginVersion extends ArchiveResource<Plu
    */
   getName(): string {
     const { version, name } = this._flags;
-    return `**${name}@${version}**`;
+    return `${name}@${version}`;
+  }
+
+  /**
+   * @override
+   */
+  getResourceType(): string {
+    return 'Flex Plugin Version';
   }
 
   /**

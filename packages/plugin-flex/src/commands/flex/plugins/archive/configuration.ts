@@ -28,7 +28,14 @@ export default class FlexPluginsArchiveConfiguration extends ArchiveResource<Con
    * @override
    */
   getName(): string {
-    return `**${this._flags.sid}**`;
+    return this._flags.sid;
+  }
+
+  /**
+   * @override
+   */
+  getResourceType(): string {
+    return 'Flex Configuration';
   }
 
   /**

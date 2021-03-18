@@ -263,4 +263,32 @@ describe('SubCommands/FlexPlugin', () => {
 
     expect(cmd.checkCompatibility).toEqual(false);
   });
+
+  describe('pkg', () => {
+    it('should set default empty object if devDep or dep not set', async () => {
+      const cmd = await createTest(FlexPlugin)();
+
+      jest.spyOn(fs, 'readJSONFile').mockReturnValue({
+        devDependencies: null,
+        dependencies: null,
+      });
+
+      expect(cmd.pkg.dependencies).toEqual({});
+      expect(cmd.pkg.devDependencies).toEqual({});
+    });
+
+    it('should have devDep and dep', async () => {
+      const cmd = await createTest(FlexPlugin)();
+
+      const dep = { package1: '123' };
+      const devDep = { package2: '234' };
+      jest.spyOn(fs, 'readJSONFile').mockReturnValue({
+        devDependencies: devDep,
+        dependencies: dep,
+      });
+
+      expect(cmd.pkg.dependencies).toEqual(dep);
+      expect(cmd.pkg.devDependencies).toEqual(devDep);
+    });
+  });
 });
