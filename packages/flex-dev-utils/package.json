@@ -34,7 +34,7 @@
     "test:watch": "cd ../.. && jest packages/flex-dev-utils --watch --color"
   },
   "dependencies": {
-    "@k88/pipe-compose": "^2.4.2",
+    "@k88/pipe-compose": "^2.4.3",
     "address": "^1.1.2",
     "app-module-path": "^2.2.0",
     "axios": "^0.21.1",
@@ -43,23 +43,23 @@
     "flex-plugins-utils-exception": "^0.19.0",
     "flex-plugins-utils-logger": "^0.19.0",
     "flex-plugins-utils-spawn": "^0.19.0",
-    "globby": "^11.0.1",
-    "lodash": "^4.17.20",
-    "marked": "^1.2.2",
-    "marked-terminal": "^4.1.0",
+    "globby": "^11.0.2",
+    "lodash": "^4.17.21",
+    "marked": "^2.0.1",
+    "marked-terminal": "^4.1.1",
     "mkdirp": "^1.0.4",
     "net": "^1.0.2",
-    "open": "^7.3.0",
+    "open": "^8.0.3",
     "rimraf": "^3.0.2",
     "semver": "^7.3.4",
-    "update-notifier": "^5.0.1",
+    "update-notifier": "^5.1.0",
     "url": "^0.11.0",
     "util": "^0.12.3"
   },
   "devDependencies": {
     "@types/app-module-path": "^2.2.0",
-    "@types/lodash": "^4.14.165",
-    "@types/marked": "^1.1.1",
+    "@types/lodash": "^4.14.168",
+    "@types/marked": "^2.0.0",
     "@types/marked-terminal": "^3.1.1",
     "@types/mkdirp": "^1.0.1",
     "@types/rimraf": "^3.0.0",
@@ -67,7 +67,7 @@
     "@types/update-notifier": "^5.0.0"
   },
   "optionalDependencies": {
-    "keytar": "^7.2.0"
+    "keytar": "^7.4.0"
   },
   "gitHead": "cb92593ce13da010d82f488d974d7f372d973af8"
 }

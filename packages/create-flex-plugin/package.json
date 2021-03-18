@@ -36,9 +36,9 @@
     "prebuild": "npm run clean",
     "build": "../../node_modules/.bin/tsc",
     "clean": "rm -rf dist",
-    "prepublish": "npm run build",
     "lint": "eslint --ext ts src/",
     "lint:fix": "npm run lint -- --fix",
+    "prepublish": "npm run build",
     "test": "cd ../.. && jest packages/create-flex-plugin --color",
     "test:watch": "cd ../.. && jest packages/create-flex-plugin --watch --color"
   },
@@ -46,12 +46,12 @@
     "esm": "^3.2.25",
     "flex-dev-utils": "^4.5.0-beta.0",
     "tmp": "^0.2.1",
-    "yargs": "^14.2.3"
+    "yargs": "^16.2.0"
   },
   "devDependencies": {
     "@twilio/flex-ui": "^1",
     "@types/tmp": "^0.2.0",
-    "@types/yargs": "^13.0.11",
+    "@types/yargs": "^16.0.0",
     "flex-plugin": "^4.4.0-beta.0",
     "flex-plugin-scripts": "^4.5.0-beta.0"
   },
