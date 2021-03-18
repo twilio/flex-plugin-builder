@@ -1,4 +1,4 @@
-import { logger } from 'flex-dev-utils';
+import { logger, env } from 'flex-dev-utils';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
 
 const { link } = logger.coloredStrings;
@@ -12,6 +12,7 @@ export default (): void => {
 
   const scriptName = nameColor('flex-plugin-scripts');
 
+  env.setQuiet(false);
   logger.newline();
   logger.error('There might be a problem with your project file hierarchy.');
   logger.newline();
@@ -29,4 +30,5 @@ export default (): void => {
   );
 
   logger.newline();
+  env.setQuiet(true);
 };

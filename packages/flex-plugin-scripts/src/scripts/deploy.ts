@@ -25,7 +25,6 @@ import getRuntime from '../utils/runtime';
 const allowedBumps = ['major', 'minor', 'patch', 'version'];
 
 export interface Options {
-  isPluginsCli: boolean;
   isPublic: boolean;
   overwrite: boolean;
   disallowVersioning: boolean;
@@ -197,7 +196,7 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
           logger.newline();
           logger.warning('Plugin already exists and the flag --overwrite is going to overwrite this plugin.');
         }
-      } else if (env.isCI() || !options.isPluginsCli) {
+      } else if (env.isCI() || !env.isCLI()) {
         throw new FlexPluginError(`You already have a plugin with the same version: ${pluginUrl}`);
       }
     }
@@ -284,7 +283,6 @@ const deploy = async (...argv: string[]): Promise<DeployResult> => {
   let nextVersion = argv[1] as string;
   const bump = argv[0];
   const opts: Options = {
-    isPluginsCli: argv.includes('--plugins-cli'),
     isPublic: argv.includes('--public'),
     overwrite: argv.includes('--overwrite') || disallowVersioning,
     isPluginsPilot: argv.includes('--pilot-plugins-api'),
