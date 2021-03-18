@@ -29,7 +29,14 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
    * @override
    */
   getName(): string {
-    return `**${this._flags.name}**`;
+    return this._flags.name;
+  }
+
+  /**
+   * @override
+   */
+  getResourceType(): string {
+    return 'Flex Plugin';
   }
 
   /**

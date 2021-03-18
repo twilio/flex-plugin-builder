@@ -235,7 +235,11 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @returns {object}
    */
   get pkg(): Pkg {
-    return readJSONFile<Pkg>(this.cwd, packageJsonStr);
+    const pkg = readJSONFile<Pkg>(this.cwd, packageJsonStr);
+    pkg.devDependencies = pkg.devDependencies || {};
+    pkg.dependencies = pkg.dependencies || {};
+
+    return pkg;
   }
 
   /**
