@@ -40,6 +40,28 @@ describe('env', () => {
     });
   });
 
+  describe('setQuiet', () => {
+    it('setQuiet should return true', () => {
+      expect(env.setQuiet()).toEqual('true');
+      expect(env.setQuiet(true)).toEqual('true');
+    });
+
+    it('setQuiet should return false', () => {
+      expect(env.setQuiet(false)).toEqual('false');
+    });
+  });
+
+  describe('CLI', () => {
+    it('isCLI should return true', () => {
+      process.env.FLEX_PLUGINS_CLI = 'true';
+      expect(env.isCLI()).toEqual(true);
+    });
+
+    it('isCLI should return false', () => {
+      expect(env.isCLI()).toEqual(false);
+    });
+  });
+
   describe('CI', () => {
     it('isCI should return true', () => {
       process.env.CI = 'true';

@@ -1,4 +1,4 @@
-import { logger } from 'flex-dev-utils';
+import { logger, env } from 'flex-dev-utils';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
 
 import preFlightByPass from './preFlightByPass';
@@ -18,6 +18,7 @@ export default (flexUIVersion: string, packageName: string, version: string, ski
   const flexUIName = nameColor('@twilio/flex-ui');
   const minFlexUIVersion = nameColor('1.19.0');
 
+  env.setQuiet(false);
   logger.newline();
   logger.error('There might be a problem with your project dependency tree.');
   logger.newline();
@@ -42,4 +43,5 @@ export default (flexUIVersion: string, packageName: string, version: string, ski
 
   preFlightByPass(skip);
   logger.newline();
+  env.setQuiet(true);
 };
