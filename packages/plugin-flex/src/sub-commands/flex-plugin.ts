@@ -10,7 +10,7 @@ import {
   ConfigurationsClient,
   ReleasesClient,
 } from 'flex-plugins-api-client';
-import { TwilioError, spawn, Logger, SpawnPromise, NotImplementedError, TwilioCliError } from 'flex-dev-utils';
+import { TwilioError, spawn, Logger, SpawnPromise, NotImplementedError, TwilioCliError, env } from 'flex-dev-utils';
 import dayjs from 'dayjs';
 import * as Errors from '@oclif/errors';
 import mkdirp from 'mkdirp';
@@ -457,7 +457,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     const extra = [];
     if (scriptName !== 'test') {
       extra.push('--core-cwd', this.pluginRootDir);
-      extra.push('--plugins-cli', this.pluginRootDir);
+      env.setCLI();
     }
 
     // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
@@ -473,7 +473,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   // @ts-ignore
   async spawnScript(scriptName: string, argv = this.scriptArgs): SpawnPromise {
     const scriptPath = require.resolve(`flex-plugin-scripts/dist/scripts/${scriptName}`);
-    return spawn('node', [scriptPath, ...argv, '--run-script', '--core-cwd', '--plugins-cli', this.pluginRootDir]);
+    env.setCLI();
+    return spawn('node', [scriptPath, ...argv, '--run-script', '--core-cwd', this.pluginRootDir]);
   }
 
   /**

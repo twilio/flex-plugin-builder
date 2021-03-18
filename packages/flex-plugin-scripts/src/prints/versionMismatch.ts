@@ -1,4 +1,4 @@
-import { logger } from 'flex-dev-utils';
+import { logger, env } from 'flex-dev-utils';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
 
 import instructionToReinstall from './instructionToReinstall';
@@ -20,6 +20,7 @@ export default (packageName: string, installedVersion: string, requiredVersion: 
   const flexUIName = nameColor('@twilio/flex-ui');
   const scriptName = nameColor('flex-plugin-scripts');
 
+  env.setQuiet(false);
   logger.newline();
   logger.error(singleLineString('There might be a problem with your project dependency tree.'));
   logger.newline();
@@ -39,4 +40,5 @@ export default (packageName: string, installedVersion: string, requiredVersion: 
 
   preFlightByPass(skip);
   logger.newline();
+  env.setQuiet(true);
 };
