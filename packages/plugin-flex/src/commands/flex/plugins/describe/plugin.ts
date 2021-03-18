@@ -5,18 +5,19 @@ import { OutputFlags } from '@oclif/parser/lib/parse';
 import { createDescription } from '../../../../utils/general';
 import FlexPlugin from '../../../../sub-commands/flex-plugin';
 import InformationFlexPlugin from '../../../../sub-commands/information-flex-plugin';
-import { describePlugin as describePluginDocs } from '../../../../commandDocs.json';
 
 /**
  * Describe the Flex Plugin
  */
 export default class FlexPluginsDescribePlugin extends InformationFlexPlugin<DescribePlugin> {
-  static description = createDescription(describePluginDocs.description, false);
+  static topicName = 'flex:plugins:describe:plugin';
+
+  static description = createDescription(FlexPluginsDescribePlugin.topic.description, false);
 
   static flags = {
     ...FlexPlugin.flags,
     name: flags.string({
-      description: describePluginDocs.flags.name,
+      description: FlexPluginsDescribePlugin.topic.flags.name,
       required: true,
     }),
   };

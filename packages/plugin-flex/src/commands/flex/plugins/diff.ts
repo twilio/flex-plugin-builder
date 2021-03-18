@@ -6,7 +6,6 @@ import { OutputFlags } from '@oclif/parser/lib/parse';
 import { createDescription } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { isNullOrUndefined } from '../../../utils/strings';
-import { diff as diffDocs } from '../../../commandDocs.json';
 
 /**
  * Configuration sid parser
@@ -32,19 +31,21 @@ delete baseFlags.json;
  * Finds the difference between two Flex Plugin Configuration
  */
 export default class FlexPluginsDiff extends FlexPlugin {
+  static topicName = 'flex:plugins:diff';
+
   static pluginDiffPrefix = '..│.. ';
 
-  static description = createDescription(diffDocs.description, false);
+  static description = createDescription(FlexPluginsDiff.topic.description, false);
 
   static args = [
     {
-      description: diffDocs.args.id1,
+      description: FlexPluginsDiff.topic.args.id1,
       name: 'id1',
       required: true,
       parse: parser,
     },
     {
-      description: diffDocs.args.id2,
+      description: FlexPluginsDiff.topic.args.id2,
       name: 'id2',
       arse: parser,
     },

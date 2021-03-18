@@ -12,7 +12,6 @@ import { OutputFlags } from '@oclif/parser/lib/parse';
 import * as flags from '../../../utils/flags';
 import { createDescription, instanceOf } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
-import { deploy as deployDocs } from '../../../commandDocs.json';
 import ServerlessClient from '../../../clients/ServerlessClient';
 
 interface ValidatePlugin {
@@ -45,38 +44,40 @@ delete baseFlags.json;
  * Builds and then deploys the Flex Plugin
  */
 export default class FlexPluginsDeploy extends FlexPlugin {
-  static description = createDescription(deployDocs.description, true);
+  static topicName = 'flex:plugins:deploy';
+
+  static description = createDescription(FlexPluginsDeploy.topic.description, true);
 
   static flags = {
     ...baseFlags,
     patch: flags.boolean({
-      description: deployDocs.flags.patch,
+      description: FlexPluginsDeploy.topic.flags.patch,
       exclusive: ['minor', 'major', 'version'],
     }),
     minor: flags.boolean({
-      description: deployDocs.flags.minor,
+      description: FlexPluginsDeploy.topic.flags.minor,
       exclusive: ['patch', 'major', 'version'],
     }),
     major: flags.boolean({
-      description: deployDocs.flags.major,
+      description: FlexPluginsDeploy.topic.flags.major,
       exclusive: ['patch', 'minor', 'version'],
     }),
     version: flags.string({
-      description: deployDocs.flags.version,
+      description: FlexPluginsDeploy.topic.flags.version,
       exclusive: ['patch', 'minor', 'major'],
       parse: parseVersionInput,
     }),
     public: flags.boolean({
-      description: deployDocs.flags.public,
+      description: FlexPluginsDeploy.topic.flags.public,
       default: false,
     }),
     changelog: flags.string({
-      description: deployDocs.flags.changelog,
+      description: FlexPluginsDeploy.topic.flags.changelog,
       required: true,
       max: 1000,
     }),
     description: flags.string({
-      description: deployDocs.flags.description,
+      description: FlexPluginsDeploy.topic.flags.description,
       max: 500,
     }),
   };

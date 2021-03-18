@@ -10,7 +10,6 @@ import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import FlexPlugin, { ConfigData, PkgCallback, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { createDescription, instanceOf } from '../../../utils/general';
-import { upgradePlugin as upgradePluginDoc } from '../../../commandDocs.json';
 import {
   calculateSha256,
   copyFile,
@@ -42,30 +41,32 @@ delete baseFlags.json;
  * Starts the dev-server for building and iterating on a plugin bundle
  */
 export default class FlexPluginsUpgradePlugin extends FlexPlugin {
-  static description = createDescription(upgradePluginDoc.description, false);
+  static topicName = 'flex:plugins:upgrade-plugin';
+
+  static description = createDescription(FlexPluginsUpgradePlugin.topic.description, false);
 
   static flags = {
     ...baseFlags,
     'remove-legacy-plugin': flags.boolean({
-      description: upgradePluginDoc.flags.removeLegacyPlugin,
+      description: FlexPluginsUpgradePlugin.topic.flags.removeLegacyPlugin,
     }),
     install: flags.boolean({
-      description: upgradePluginDoc.flags.install,
+      description: FlexPluginsUpgradePlugin.topic.flags.install,
     }),
     beta: flags.boolean({
-      description: upgradePluginDoc.flags.beta,
+      description: FlexPluginsUpgradePlugin.topic.flags.beta,
     }),
     dev: flags.boolean({
-      description: upgradePluginDoc.flags.dev,
+      description: FlexPluginsUpgradePlugin.topic.flags.dev,
     }),
     nightly: flags.boolean({
-      description: upgradePluginDoc.flags.nightly,
+      description: FlexPluginsUpgradePlugin.topic.flags.nightly,
     }),
     yarn: flags.boolean({
-      description: upgradePluginDoc.flags.yarn,
+      description: FlexPluginsUpgradePlugin.topic.flags.yarn,
     }),
     yes: flags.boolean({
-      description: upgradePluginDoc.flags.yes,
+      description: FlexPluginsUpgradePlugin.topic.flags.yes,
     }),
   };
 

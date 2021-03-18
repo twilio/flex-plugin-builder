@@ -4,19 +4,20 @@ import { OutputFlags } from '@oclif/parser/lib/parse';
 import * as flags from '../../../../utils/flags';
 import ArchiveResource from '../../../../sub-commands/archive-resource';
 import { createDescription } from '../../../../utils/general';
-import { archivePluginVersion as archivePluginVersionDocs } from '../../../../commandDocs.json';
 
 export default class FlexPluginsArchivePluginVersion extends ArchiveResource<PluginVersion> {
-  static description = createDescription(archivePluginVersionDocs.description, false);
+  static topicName = 'flex:plugins:archive:plugin-version';
+
+  static description = createDescription(FlexPluginsArchivePluginVersion.topic.description, false);
 
   static flags = {
     ...ArchiveResource.flags,
     name: flags.string({
-      description: archivePluginVersionDocs.flags.name,
+      description: FlexPluginsArchivePluginVersion.topic.flags.name,
       required: true,
     }),
     version: flags.string({
-      description: archivePluginVersionDocs.flags.version,
+      description: FlexPluginsArchivePluginVersion.topic.flags.version,
       required: true,
     }),
   };

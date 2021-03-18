@@ -24,9 +24,9 @@ import { filesExist, readJSONFile, readJsonFile, writeJSONFile } from '../utils/
 import { exit, instanceOf } from '../utils/general';
 import { toSentenceCase } from '../utils/strings';
 import prints from '../prints';
-import { flexPlugin as flexPluginDocs } from '../commandDocs.json';
 import FlexConfigurationClient, { FlexConfigurationClientOptions } from '../clients/FlexConfigurationClient';
 import ServerlessClient from '../clients/ServerlessClient';
+import { getTopic, OclifConfig, OClifTopic } from '../utils';
 
 interface FlexPluginOption {
   strict: boolean;
@@ -59,6 +59,7 @@ export interface Pkg {
   devDependencies: Record<string, string>;
   scripts: Record<string, string>;
   browserslist?: Record<string, string>;
+  oclif?: OclifConfig;
 }
 
 export type PkgCallback = (input: Pkg) => Pkg;
@@ -73,13 +74,22 @@ const packageJsonStr = 'package.json';
  * This will ensure the script is running on a Flex-plugin project, otherwise will throw an error
  */
 export default class FlexPlugin extends baseCommands.TwilioClientCommand {
+  static topicName = 'flex:plugins';
+
+  /**
+   * Getter for the topic
+   */
+  public static get topic(): OClifTopic {
+    return getTopic(this.topicName || '');
+  }
+
   static flags = {
     ...baseFlag,
     json: flags.boolean({
-      description: flexPluginDocs.flags.json,
+      description: FlexPlugin.topic.flags.json,
     }),
     'clear-terminal': flags.boolean({
-      description: flexPluginDocs.flags.clearTerminal,
+      description: FlexPlugin.topic.flags.clearTerminal,
     }),
     region: flags.enum({
       options: ['dev', 'stage'],
