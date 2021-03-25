@@ -21,18 +21,18 @@ describe('SubCommands/FlexPlugin', () => {
   it('should test isPluginFolder to be false if no package.json is found', async () => {
     const cmd = await createTest(FlexPlugin)();
 
-    const checkAFileExist = jest.spyOn(fs, 'checkAFileExist').mockReturnValue(false);
+    const checkAFileExists = jest.spyOn(fs, 'checkAFileExists').mockReturnValue(false);
 
     const result = cmd.isPluginFolder();
 
     expect(result).toEqual(false);
-    expect(checkAFileExist).toHaveBeenCalledTimes(1);
+    expect(checkAFileExists).toHaveBeenCalledTimes(1);
   });
 
   it('should test isPluginFolder to be false if one scripts not found in package.json', async () => {
     const cmd = await createTest(FlexPlugin)();
 
-    const checkAFileExist = jest.spyOn(fs, 'checkAFileExist').mockReturnValue(true);
+    const checkAFileExists = jest.spyOn(fs, 'checkAFileExists').mockReturnValue(true);
     mockGetPkg(cmd, {
       dependencies: {},
       devDependencies: {
@@ -43,13 +43,13 @@ describe('SubCommands/FlexPlugin', () => {
     const result = cmd.isPluginFolder();
 
     expect(result).toEqual(false);
-    expect(checkAFileExist).toHaveBeenCalledTimes(1);
+    expect(checkAFileExists).toHaveBeenCalledTimes(1);
   });
 
   it('should test isPluginFolder to be true if both scripts found in dependencies', async () => {
     const cmd = await createTest(FlexPlugin)();
 
-    const checkAFileExist = jest.spyOn(fs, 'checkAFileExist').mockReturnValue(true);
+    const checkAFileExists = jest.spyOn(fs, 'checkAFileExists').mockReturnValue(true);
     mockGetPkg(cmd, {
       dependencies: {
         'flex-plugin-scripts': '',
@@ -61,13 +61,13 @@ describe('SubCommands/FlexPlugin', () => {
     const result = cmd.isPluginFolder();
 
     expect(result).toEqual(true);
-    expect(checkAFileExist).toHaveBeenCalledTimes(1);
+    expect(checkAFileExists).toHaveBeenCalledTimes(1);
   });
 
   it('should test isPluginFolder to be true if both scripts found in devDependencies', async () => {
     const cmd = await createTest(FlexPlugin)();
 
-    const checkAFileExist = jest.spyOn(fs, 'checkAFileExist').mockReturnValue(true);
+    const checkAFileExists = jest.spyOn(fs, 'checkAFileExists').mockReturnValue(true);
     mockGetPkg(cmd, {
       dependencies: {},
       devDependencies: {
@@ -79,7 +79,7 @@ describe('SubCommands/FlexPlugin', () => {
     const result = cmd.isPluginFolder();
 
     expect(result).toEqual(true);
-    expect(checkAFileExist).toHaveBeenCalledTimes(1);
+    expect(checkAFileExists).toHaveBeenCalledTimes(1);
   });
 
   it('should tet doRun throws exception', async (done) => {

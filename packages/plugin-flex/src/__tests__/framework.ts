@@ -168,7 +168,7 @@ export const mockGetter = <C extends FlexPlugin, P extends keyof C, M extends C[
  * @param output
  */
 export const implementFileExists = (...output: string[]): void => {
-  jest.spyOn(fs, 'checkAFileExist').mockImplementation((...input: string[]) => {
+  jest.spyOn(fs, 'checkAFileExists').mockImplementation((...input: string[]) => {
     return input.length === output.length && input.every((item, index) => output[index] === item);
   });
 };

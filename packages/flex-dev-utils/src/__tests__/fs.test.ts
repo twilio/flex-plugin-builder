@@ -167,11 +167,11 @@ describe('fs', () => {
     });
   });
 
-  describe('checkAFileExist', () => {
+  describe('checkAFileExists', () => {
     it('should check a file', () => {
       const existsSync = jest.spyOn(fs.default, 'existsSync').mockReturnValue(true);
 
-      expect(fs.checkAFileExist('path1', 'path2')).toEqual(true);
+      expect(fs.checkAFileExists('path1', 'path2')).toEqual(true);
       expect(existsSync).toHaveBeenCalledTimes(1);
       expect(existsSync).toHaveBeenCalledWith('path1/path2');
     });

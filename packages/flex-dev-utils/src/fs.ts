@@ -231,7 +231,7 @@ export const copyFile = (srcPaths: string[], destPaths: string[]): void =>
  *
  * @param paths the paths to the file
  */
-export const checkAFileExist = (...paths: string[]): boolean => existsSync(path.join(...paths));
+export const checkAFileExists = (...paths: string[]): boolean => existsSync(path.join(...paths));
 
 /**
  * Gets package.json path
