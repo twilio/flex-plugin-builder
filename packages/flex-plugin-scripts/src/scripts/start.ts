@@ -68,7 +68,7 @@ export const _updatePluginPort = (port: number, name: string): void => {
     }
   });
 
-  writeJSONFile(getPaths().cli.pluginsJsonPath, config);
+  writeJSONFile(config, getPaths().cli.pluginsJsonPath);
 };
 
 /**

@@ -1,8 +1,8 @@
 import { TwilioCliError } from 'flex-dev-utils';
+import * as fs from 'flex-dev-utils/dist/fs';
 
 import createTest, { mockGetPkg } from '../framework';
 import FlexPlugin from '../../sub-commands/flex-plugin';
-import * as fs from '../../utils/fs';
 
 describe('SubCommands/FlexPlugin', () => {
   const { env } = process;
@@ -21,18 +21,18 @@ describe('SubCommands/FlexPlugin', () => {
   it('should test isPluginFolder to be false if no package.json is found', async () => {
     const cmd = await createTest(FlexPlugin)();
 
-    jest.spyOn(fs, 'filesExist').mockReturnValue(false);
+    const checkAFileExist = jest.spyOn(fs, 'checkAFileExist').mockReturnValue(false);
 
     const result = cmd.isPluginFolder();
 
     expect(result).toEqual(false);
-    expect(fs.filesExist).toHaveBeenCalledTimes(1);
+    expect(checkAFileExist).toHaveBeenCalledTimes(1);
   });
 
   it('should test isPluginFolder to be false if one scripts not found in package.json', async () => {
     const cmd = await createTest(FlexPlugin)();
 
-    jest.spyOn(fs, 'filesExist').mockReturnValue(true);
+    const checkAFileExist = jest.spyOn(fs, 'checkAFileExist').mockReturnValue(true);
     mockGetPkg(cmd, {
       dependencies: {},
       devDependencies: {
@@ -43,13 +43,13 @@ describe('SubCommands/FlexPlugin', () => {
     const result = cmd.isPluginFolder();
 
     expect(result).toEqual(false);
-    expect(fs.filesExist).toHaveBeenCalledTimes(1);
+    expect(checkAFileExist).toHaveBeenCalledTimes(1);
   });
 
   it('should test isPluginFolder to be true if both scripts found in dependencies', async () => {
     const cmd = await createTest(FlexPlugin)();
 
-    jest.spyOn(fs, 'filesExist').mockReturnValue(true);
+    const checkAFileExist = jest.spyOn(fs, 'checkAFileExist').mockReturnValue(true);
     mockGetPkg(cmd, {
       dependencies: {
         'flex-plugin-scripts': '',
@@ -61,13 +61,13 @@ describe('SubCommands/FlexPlugin', () => {
     const result = cmd.isPluginFolder();
 
     expect(result).toEqual(true);
-    expect(fs.filesExist).toHaveBeenCalledTimes(1);
+    expect(checkAFileExist).toHaveBeenCalledTimes(1);
   });
 
   it('should test isPluginFolder to be true if both scripts found in devDependencies', async () => {
     const cmd = await createTest(FlexPlugin)();
 
-    jest.spyOn(fs, 'filesExist').mockReturnValue(true);
+    const checkAFileExist = jest.spyOn(fs, 'checkAFileExist').mockReturnValue(true);
     mockGetPkg(cmd, {
       dependencies: {},
       devDependencies: {
@@ -79,7 +79,7 @@ describe('SubCommands/FlexPlugin', () => {
     const result = cmd.isPluginFolder();
 
     expect(result).toEqual(true);
-    expect(fs.filesExist).toHaveBeenCalledTimes(1);
+    expect(checkAFileExist).toHaveBeenCalledTimes(1);
   });
 
   it('should tet doRun throws exception', async (done) => {
@@ -182,7 +182,7 @@ describe('SubCommands/FlexPlugin', () => {
   it('should return null for builderVersion if script is not found', async () => {
     const cmd = await createTest(FlexPlugin)();
 
-    jest.spyOn(fs, 'readJSONFile').mockReturnValue({
+    jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {},
       dependencies: {},
     });
@@ -193,7 +193,7 @@ describe('SubCommands/FlexPlugin', () => {
   it('should return version from dependencies', async () => {
     const cmd = await createTest(FlexPlugin)();
 
-    jest.spyOn(fs, 'readJSONFile').mockReturnValue({
+    jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {},
       dependencies: {
         'flex-plugin-scripts': '1.2.3',
@@ -206,7 +206,7 @@ describe('SubCommands/FlexPlugin', () => {
   it('should return version from devDependencies', async () => {
     const cmd = await createTest(FlexPlugin)();
 
-    jest.spyOn(fs, 'readJSONFile').mockReturnValue({
+    jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {
         'flex-plugin-scripts': '^2.3.4-beta.0',
       },
@@ -219,7 +219,7 @@ describe('SubCommands/FlexPlugin', () => {
   it('should return null if invalid version', async () => {
     const cmd = await createTest(FlexPlugin)();
 
-    jest.spyOn(fs, 'readJSONFile').mockReturnValue({
+    jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {
         'flex-plugin-scripts': 'not-a-semver',
       },
@@ -268,7 +268,7 @@ describe('SubCommands/FlexPlugin', () => {
     it('should set default empty object if devDep or dep not set', async () => {
       const cmd = await createTest(FlexPlugin)();
 
-      jest.spyOn(fs, 'readJSONFile').mockReturnValue({
+      jest.spyOn(fs, 'readJsonFile').mockReturnValue({
         devDependencies: null,
         dependencies: null,
       });
@@ -282,7 +282,7 @@ describe('SubCommands/FlexPlugin', () => {
 
       const dep = { package1: '123' };
       const devDep = { package2: '234' };
-      jest.spyOn(fs, 'readJSONFile').mockReturnValue({
+      jest.spyOn(fs, 'readJsonFile').mockReturnValue({
         devDependencies: devDep,
         dependencies: dep,
       });

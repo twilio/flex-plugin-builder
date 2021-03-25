@@ -3,6 +3,15 @@ import { join } from 'path';
 
 import rimraf from 'rimraf';
 import semver from 'semver';
+import {
+  checkAFileExist,
+  readFileSync,
+  writeFile,
+  writeJSONFile,
+  copyFile,
+  removeFile,
+  calculateSha256,
+} from 'flex-dev-utils/dist/fs';
 import packageJson from 'package-json';
 import { flags } from '@oclif/parser';
 import { TwilioApiError, TwilioCliError, spawn, progress } from 'flex-dev-utils';
@@ -10,15 +19,6 @@ import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import FlexPlugin, { ConfigData, PkgCallback, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { createDescription, instanceOf } from '../../../utils/general';
-import {
-  calculateSha256,
-  copyFile,
-  fileExists,
-  readFile,
-  removeFile,
-  writeFile,
-  writeJSONFile,
-} from '../../../utils/fs';
 
 interface ScriptsToRemove {
   name: string;
@@ -220,7 +220,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     await progress('Cleaning up the scaffold', async () => {
       let warningLogged = false;
 
-      if (fileExists(this.cwd, 'craco.config.js')) {
+      if (checkAFileExist(this.cwd, 'craco.config.js')) {
         const sha = await calculateSha256(this.cwd, 'craco.config.js');
         if (sha === FlexPluginsUpgradePlugin.cracoConfigSha) {
           removeFile(this.cwd, 'craco.config.js');
@@ -232,7 +232,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
 
       const publicFiles = ['index.html', 'pluginsService.js', 'plugins.json', 'plugins.local.build.json'];
       publicFiles.forEach((file) => {
-        if (fileExists(this.cwd, 'public', file)) {
+        if (checkAFileExist(this.cwd, 'public', file)) {
           removeFile(this.cwd, 'public', file);
         }
       });
@@ -245,14 +245,14 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         copyFile([require.resolve('create-flex-plugin'), '..', '..', 'templates', 'core', file], [this.cwd, file]);
       });
 
-      if (fileExists(this.cwd, 'public', 'appConfig.js')) {
+      if (checkAFileExist(this.cwd, 'public', 'appConfig.js')) {
         const newLines: string[] = [];
         const ignoreLines = [
           '// set to /plugins.json for local dev',
           '// set to /plugins.local.build.json for testing your build',
           '// set to "" for the default live plugin loader',
         ];
-        readFile(this.cwd, 'public', 'appConfig.js')
+        readFileSync(this.cwd, 'public', 'appConfig.js')
           .split('\n')
           .forEach((line: string) => {
             if (ignoreLines.includes(line) || line.startsWith('var pluginServiceUrl')) {

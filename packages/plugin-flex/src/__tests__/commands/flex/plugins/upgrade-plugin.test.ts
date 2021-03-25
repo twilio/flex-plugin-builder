@@ -1,9 +1,9 @@
 import { TwilioApiError, TwilioCliError } from 'flex-dev-utils';
+import * as fs from 'flex-dev-utils/dist/fs';
 
 import { Pkg } from '../../../../sub-commands/flex-plugin';
 import createTest, { getPrintMethod, implementFileExists, mockGetPkg, mockPrintMethod } from '../../../framework';
 import FlexPluginsUpgradePlugin, { DependencyUpdates } from '../../../../commands/flex/plugins/upgrade-plugin';
-import * as fs from '../../../../utils/fs';
 
 describe('Commands/FlexPluginsStart', () => {
   const serverlessSid = 'ZS00000000000000000000000000000000';
@@ -89,7 +89,7 @@ describe('Commands/FlexPluginsStart', () => {
         postCommandWithPost: 'post some command with post',
       },
     });
-    jest.spyOn(fs, 'writeJSONFile').mockReturnThis();
+    const writeJSONFile = jest.spyOn(fs, 'writeJSONFile').mockReturnThis();
 
     await cmd.removePackageScripts([
       { name: 'commandToBeRemoved', it: 'some random command1' },
@@ -102,8 +102,8 @@ describe('Commands/FlexPluginsStart', () => {
       { name: 'commandWithPostModified', it: 'some command with post', post: 'original command' },
       { name: 'commandModifiedWithPostModified', it: 'original command', post: 'post command' },
     ]);
-    expect(fs.writeJSONFile).toHaveBeenCalledTimes(1);
-    expect(fs.writeJSONFile).toHaveBeenCalledWith(
+    expect(writeJSONFile).toHaveBeenCalledTimes(1);
+    expect(writeJSONFile).toHaveBeenCalledWith(
       { scripts: expect.objectContaining(untouchedScripts) },
       expect.any(String),
       expect.any(String),
@@ -119,14 +119,14 @@ describe('Commands/FlexPluginsStart', () => {
     cmd.cwd = 'cwd';
     mockPrintMethod(cmd, 'cannotRemoveCraco');
     implementFileExists('cwd', 'craco.config.js');
-    jest.spyOn(fs, 'calculateSha256').mockResolvedValue(sha);
+    const calculateSha256 = jest.spyOn(fs, 'calculateSha256').mockResolvedValue(sha);
+    const removeFile = jest.spyOn(fs, 'removeFile').mockReturnThis();
     jest.spyOn(fs, 'copyFile').mockReturnThis();
-    jest.spyOn(fs, 'removeFile').mockReturnThis();
 
     await cmd.cleanupScaffold();
 
-    expect(fs.calculateSha256).toHaveBeenCalledTimes(1);
-    expect(fs.removeFile).toHaveBeenCalledTimes(1);
+    expect(calculateSha256).toHaveBeenCalledTimes(1);
+    expect(removeFile).toHaveBeenCalledTimes(1);
     expect(getPrintMethod(cmd, 'cannotRemoveCraco')).not.toHaveBeenCalled();
   });
 
@@ -137,14 +137,14 @@ describe('Commands/FlexPluginsStart', () => {
     cmd.cwd = 'cwd';
     mockPrintMethod(cmd, 'cannotRemoveCraco');
     implementFileExists('cwd', 'craco.config.js');
-    jest.spyOn(fs, 'calculateSha256').mockResolvedValue('abc123');
+    const calculateSha256 = jest.spyOn(fs, 'calculateSha256').mockResolvedValue('abc123');
+    const removeFile = jest.spyOn(fs, 'removeFile').mockReturnThis();
     jest.spyOn(fs, 'copyFile').mockReturnThis();
-    jest.spyOn(fs, 'removeFile').mockReturnThis();
 
     await cmd.cleanupScaffold();
 
-    expect(fs.calculateSha256).toHaveBeenCalledTimes(1);
-    expect(fs.removeFile).not.toHaveBeenCalled();
+    expect(calculateSha256).toHaveBeenCalledTimes(1);
+    expect(removeFile).not.toHaveBeenCalled();
     expect(getPrintMethod(cmd, 'cannotRemoveCraco')).toHaveBeenCalledTimes(1);
   });
 
@@ -157,13 +157,13 @@ describe('Commands/FlexPluginsStart', () => {
     implementFileExists('cwd', 'public', 'appConfig.js');
     jest.spyOn(fs, 'calculateSha256').mockResolvedValue('abc123');
     jest.spyOn(fs, 'copyFile').mockReturnThis();
-    jest.spyOn(fs, 'writeFile').mockReturnThis();
-    jest.spyOn(fs, 'readFile').mockReturnValue('line1\nurl: pluginServiceUrl\nline2');
+    const writeFile = jest.spyOn(fs, 'writeFile').mockReturnThis();
+    jest.spyOn(fs, 'readFileSync').mockReturnValue('line1\nurl: pluginServiceUrl\nline2');
 
     await cmd.cleanupScaffold();
 
-    expect(fs.writeFile).toHaveBeenCalledTimes(1);
-    expect(fs.writeFile).toHaveBeenCalledWith("line1\nurl: '/plugins'\nline2", 'cwd', 'public', 'appConfig.js');
+    expect(writeFile).toHaveBeenCalledTimes(1);
+    expect(writeFile).toHaveBeenCalledWith("line1\nurl: '/plugins'\nline2", 'cwd', 'public', 'appConfig.js');
 
     expect(getPrintMethod(cmd, 'updatePluginUrl')).not.toHaveBeenCalled();
   });
@@ -178,13 +178,13 @@ describe('Commands/FlexPluginsStart', () => {
     implementFileExists('cwd', 'public', 'appConfig.js');
     jest.spyOn(fs, 'calculateSha256').mockResolvedValue('abc123');
     jest.spyOn(fs, 'copyFile').mockReturnThis();
-    jest.spyOn(fs, 'writeFile').mockReturnThis();
-    jest.spyOn(fs, 'readFile').mockReturnValue(appConfig as string);
+    const writeFile = jest.spyOn(fs, 'writeFile').mockReturnThis();
+    jest.spyOn(fs, 'readFileSync').mockReturnValue(appConfig as string);
 
     await cmd.cleanupScaffold();
 
-    expect(fs.writeFile).toHaveBeenCalledTimes(1);
-    expect(fs.writeFile).toHaveBeenCalledWith(appConfig, 'cwd', 'public', 'appConfig.js');
+    expect(writeFile).toHaveBeenCalledTimes(1);
+    expect(writeFile).toHaveBeenCalledWith(appConfig, 'cwd', 'public', 'appConfig.js');
     expect(getPrintMethod(cmd, 'updatePluginUrl')).toHaveBeenCalledTimes(1);
   });
 

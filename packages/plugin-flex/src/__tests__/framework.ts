@@ -5,8 +5,8 @@ import OClifConfig from '@oclif/config';
 import { Config, ConfigData } from '@twilio/cli-core/src/services/config';
 import tmp, { DirResult } from 'tmp';
 import { Logger } from 'flex-dev-utils';
+import * as fs from 'flex-dev-utils/dist/fs';
 
-import * as fs from '../utils/fs';
 import FlexPlugin from '../sub-commands/flex-plugin';
 
 interface Context {
@@ -158,7 +158,7 @@ export const mockGetter = <C extends FlexPlugin, P extends keyof C, M extends C[
   cmd: C,
   property: P,
   methods: Partial<M>,
-) => {
+): void => {
   // @ts-ignore
   jest.spyOn(cmd, property, 'get').mockReturnValue(methods);
 };
@@ -167,8 +167,8 @@ export const mockGetter = <C extends FlexPlugin, P extends keyof C, M extends C[
  * Mocks fileExists by implementing that input and output match exactly
  * @param output
  */
-export const implementFileExists = (...output: string[]) => {
-  jest.spyOn(fs, 'fileExists').mockImplementation((...input: string[]) => {
+export const implementFileExists = (...output: string[]): void => {
+  jest.spyOn(fs, 'checkAFileExist').mockImplementation((...input: string[]) => {
     return input.length === output.length && input.every((item, index) => output[index] === item);
   });
 };

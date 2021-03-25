@@ -1,9 +1,9 @@
 import * as pluginBuilderStartScript from 'flex-plugin-scripts/dist/scripts/start';
 import { TwilioCliError } from 'flex-dev-utils';
+import * as fs from 'flex-dev-utils/dist/fs';
 
 import createTest, { mockGetPkg } from '../../../framework';
 import FlexPluginsStart from '../../../../commands/flex/plugins/start';
-import * as fs from '../../../../utils/fs';
 
 describe('Commands/FlexPluginsStart', () => {
   const preStartCheck = 'pre-start-check';
@@ -64,7 +64,7 @@ describe('Commands/FlexPluginsStart', () => {
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     mockGetPkg(cmd, pkg);
     jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
-    jest.spyOn(fs, 'readJSONFile').mockReturnValue(pkg);
+    jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
     findPortAvailablePort.mockResolvedValue(100);
 
     await cmd.doRun();
@@ -86,7 +86,7 @@ describe('Commands/FlexPluginsStart', () => {
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     mockGetPkg(cmd, badVersionPkg);
     jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
-    jest.spyOn(fs, 'readJSONFile').mockReturnValue(badVersionPkg);
+    jest.spyOn(fs, 'readJsonFile').mockReturnValue(badVersionPkg);
     findPortAvailablePort.mockResolvedValue(100);
 
     try {
@@ -142,7 +142,7 @@ describe('Commands/FlexPluginsStart', () => {
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
     jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
-    jest.spyOn(fs, 'readJSONFile').mockReturnValue(pkg);
+    jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
     findPortAvailablePort.mockResolvedValue(100);
 
     await cmd.run();
@@ -161,7 +161,7 @@ describe('Commands/FlexPluginsStart', () => {
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
     jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
-    jest.spyOn(fs, 'readJSONFile').mockReturnValue(pkg);
+    jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
     findPortAvailablePort.mockResolvedValue(100);
 
     await cmd.run();

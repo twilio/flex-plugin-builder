@@ -1,5 +1,6 @@
+import { readJsonFile } from 'flex-dev-utils/dist/fs';
+
 import { Pkg } from '../sub-commands/flex-plugin';
-import { readJsonFile } from './fs';
 
 export interface OClifTopic {
   description: string;

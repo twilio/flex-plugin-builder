@@ -1,7 +1,8 @@
-import fs from 'fs';
+import fs, { copyFileSync, createReadStream, existsSync, unlinkSync, writeFileSync } from 'fs';
 import * as path from 'path';
 import os, { homedir } from 'os';
 import { promisify } from 'util';
+import crypto from 'crypto';
 
 import globby from 'globby';
 import mkdirp from 'mkdirp';
@@ -32,6 +33,8 @@ export interface FlexConfigurationPlugin {
 export interface CLIFlexConfiguration {
   plugins: FlexConfigurationPlugin[];
 }
+
+export type JsonObject<T> = { [K in keyof T]: T[K] };
 
 export default fs;
 
@@ -125,12 +128,18 @@ export const setCoreCwd = (p: string): void => {
 export const getCoreCwd = (): string => internalCoreCwd;
 
 /**
+ * Reads the file
+ * @param filePaths  the file paths
+ */
+export const readFileSync = (...filePaths: string[]): string => fs.readFileSync(path.join(...filePaths), 'utf8');
+
+/**
  * Reads a JSON file (Templated)
  *
- * @param filePath  the file path to read
+ * @param filePaths  the file paths to read
  */
-export const readJsonFile = <T>(filePath: string): T => {
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+export const readJsonFile = <T>(...filePaths: string[]): T => {
+  return JSON.parse(readFileSync(...filePaths));
 };
 
 /**
@@ -158,12 +167,17 @@ export const readPluginsJson = (): CLIFlexConfiguration =>
   readJsonFile<CLIFlexConfiguration>(getCliPaths().pluginsJsonPath);
 
 /**
- * Writes an object as a JSON string to the file
- * @param pth the path to write to
- * @param obj the object to write
+ * Writes string to file
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
-export const writeJSONFile = (pth: string, obj: object): void => fs.writeFileSync(pth, JSON.stringify(obj, null, 2));
+export const writeFile = (str: string, ...paths: string[]): void => writeFileSync(path.join(...paths), str);
+
+/**
+ * Writes an object as a JSON string to the file
+ * @param obj the object to write
+ * @param paths the path to write to
+ */
+export const writeJSONFile = <T>(obj: JsonObject<T>, ...paths: string[]): void =>
+  writeFile(JSON.stringify(obj, null, 2), ...paths);
 
 // The OS root directory
 const rootDir = os.platform() === 'win32' ? getCwd().split(path.sep)[0] : '/';
@@ -181,6 +195,43 @@ const promiseCopyTempDir = promisify(_require('copy-template-dir'));
 export const checkFilesExist = (...files: string[]): boolean => {
   return files.map(fs.existsSync).every((resp) => resp);
 };
+
+/**
+ * Calculates the sha of a file
+ * @param paths
+ */
+/* istanbul ignore next */
+export const calculateSha256 = async (...paths: string[]): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const shasum = crypto.createHash('sha256');
+    const stream = createReadStream(path.join(...paths));
+
+    stream.on('data', (data) => shasum.update(data));
+    stream.on('error', (err) => reject(err));
+    stream.on('end', () => resolve(shasum.digest('hex')));
+  });
+};
+
+/**
+ * Removes a file
+ * @param paths
+ */
+export const removeFile = (...paths: string[]): void => unlinkSync(path.join(...paths));
+
+/**
+ * Copies from from src to dest
+ * @param srcPaths
+ * @param destPaths
+ */
+export const copyFile = (srcPaths: string[], destPaths: string[]): void =>
+  copyFileSync(path.join(...srcPaths), path.join(...destPaths));
+
+/**
+ * Checks the provided file exists
+ *
+ * @param paths the paths to the file
+ */
+export const checkAFileExist = (...paths: string[]): boolean => existsSync(path.join(...paths));
 
 /**
  * Gets package.json path
@@ -226,12 +277,6 @@ export const findUp = (dir: string, file: string): string => {
 
   return findUp(path.resolve(resolved, '..'), file);
 };
-
-/**
- * Reads the file
- * @param filePath  the file path
- */
-export const readFileSync = (filePath: string): string => fs.readFileSync(filePath, 'utf8');
 
 /**
  * mkdir -p wrapper
@@ -295,7 +340,7 @@ export const checkPluginConfigurationExists = async (
   const cliPaths = getCliPaths();
   if (!checkFilesExist(cliPaths.pluginsJsonPath)) {
     mkdirpSync(cliPaths.flexDir);
-    writeJSONFile(cliPaths.pluginsJsonPath, { plugins: [] });
+    writeJSONFile({ plugins: [] }, cliPaths.pluginsJsonPath);
   }
 
   const config = readPluginsJson();
@@ -303,7 +348,7 @@ export const checkPluginConfigurationExists = async (
 
   if (!plugin) {
     config.plugins.push({ name, dir, port: 0 });
-    writeJSONFile(cliPaths.pluginsJsonPath, config);
+    writeJSONFile(config, cliPaths.pluginsJsonPath);
     return true;
   }
 
@@ -320,7 +365,7 @@ export const checkPluginConfigurationExists = async (
 
   if (answer) {
     plugin.dir = dir;
-    writeJSONFile(cliPaths.pluginsJsonPath, config);
+    writeJSONFile(config, cliPaths.pluginsJsonPath);
     return true;
   }
 

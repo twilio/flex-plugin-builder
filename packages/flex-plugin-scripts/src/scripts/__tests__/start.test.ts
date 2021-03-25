@@ -15,20 +15,17 @@ jest.mock('flex-dev-utils/dist/fs');
 jest.mock('flex-dev-utils/dist/urls');
 jest.mock('flex-dev-utils/dist/env');
 
-const CliPath = '/cli/plugins/path';
-const AppPluginsJsonPath = '/plugins/json/path';
-const AppPkgPath = '/plugins/pkg/path';
-
 describe('StartScript', () => {
+  const cliPath = '/cli/plugins/path';
   const pluginName = 'plugin-test';
   const isTSProject = jest.fn();
   const paths = {
     cli: {
-      pluginsJsonPath: CliPath,
+      pluginsJsonPath: cliPath,
     },
     app: {
-      pluginsJsonPath: AppPluginsJsonPath,
-      pkgPath: AppPkgPath,
+      pluginsJsonPath: '/plugins/json/path',
+      pkgPath: '/plugins/pkg/path',
       isTSProject,
     },
   };
@@ -150,14 +147,14 @@ describe('StartScript', () => {
       startScripts._updatePluginPort(port, plugin.name);
 
       expect(writeJSONFile).toHaveBeenCalledTimes(1);
-      expect(writeJSONFile).toHaveBeenCalledWith(CliPath, { plugins: [{ ...plugin, port }] });
+      expect(writeJSONFile).toHaveBeenCalledWith({ plugins: [{ ...plugin, port }] }, cliPath);
     });
 
     it('should not update the plugin port', () => {
       startScripts._updatePluginPort(port, 'unknown-plugin');
 
       expect(writeJSONFile).toHaveBeenCalledTimes(1);
-      expect(writeJSONFile).toHaveBeenCalledWith(CliPath, { plugins: [{ ...plugin }] });
+      expect(writeJSONFile).toHaveBeenCalledWith({ plugins: [{ ...plugin }] }, cliPath);
     });
   });
 

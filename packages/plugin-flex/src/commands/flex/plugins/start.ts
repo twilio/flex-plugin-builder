@@ -3,11 +3,11 @@ import { findPortAvailablePort, StartScript } from 'flex-plugin-scripts/dist/scr
 import { FLAG_MULTI_PLUGINS } from 'flex-plugin-scripts/dist/scripts/pre-script-check';
 import semver from 'semver';
 import { TwilioCliError } from 'flex-dev-utils';
+import { readJsonFile } from 'flex-dev-utils/dist/fs';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import { createDescription } from '../../../utils/general';
-import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
-import { readJSONFile } from '../../../utils/fs';
+import FlexPlugin, { ConfigData, Pkg, SecureStorage } from '../../../sub-commands/flex-plugin';
 
 const baseFlags = { ...FlexPlugin.flags };
 // @ts-ignore
@@ -113,7 +113,7 @@ export default class FlexPluginsStart extends FlexPlugin {
 
     // Verify plugin's flex-plugin-scripts is v4
     const pkgDir = `${plugin.dir}/package.json`;
-    const pkg = readJSONFile(pkgDir);
+    const pkg = readJsonFile<Pkg>(pkgDir);
     let scriptVersion = semver.coerce(pkg.dependencies['flex-plugin-scripts']);
     if (!scriptVersion) {
       scriptVersion = semver.coerce(pkg.devDependencies['flex-plugin-scripts']);
