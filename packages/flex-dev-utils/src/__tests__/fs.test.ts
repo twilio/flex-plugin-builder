@@ -115,6 +115,68 @@ describe('fs', () => {
     });
   });
 
+  describe('writeFile', () => {
+    it('should join paths', () => {
+      const writeFileSync = jest.spyOn(fs.default, 'writeFileSync').mockImplementation(() => {
+        /* no-op */
+      });
+
+      fs.writeFile('the-str', 'path1', 'path2');
+      expect(writeFileSync).toHaveBeenCalledTimes(1);
+      expect(writeFileSync).toHaveBeenCalledWith('path1/path2', 'the-str');
+    });
+  });
+
+  describe('writeJSONFile', () => {
+    it('should write JSON file', () => {
+      const writeFile = jest.spyOn(fs, 'writeFile').mockImplementation(() => {
+        /* no-op */
+      });
+
+      fs.writeJSONFile({ key1: 'value1' }, 'path1', 'path2');
+      // Leave this formatted like this! This is a formatted JSON string test
+      const str = `{
+  \"key1\": \"value1\"
+}`;
+      expect(writeFile).toHaveBeenCalledTimes(1);
+      expect(writeFile).toHaveBeenCalledWith(str, 'path1', 'path2');
+    });
+  });
+
+  describe('removeFile', () => {
+    it('should remove file', () => {
+      const unlinkSync = jest.spyOn(fs.default, 'unlinkSync').mockImplementation(() => {
+        /* no-op */
+      });
+
+      fs.removeFile('path1', 'path2');
+      expect(unlinkSync).toHaveBeenCalledTimes(1);
+      expect(unlinkSync).toHaveBeenCalledWith('path1/path2');
+    });
+  });
+
+  describe('copyFile', () => {
+    it('should copy file', () => {
+      const copyFileSync = jest.spyOn(fs.default, 'copyFileSync').mockImplementation(() => {
+        /* no-op */
+      });
+
+      fs.copyFile(['path1', 'path2'], ['path3', 'path4']);
+      expect(copyFileSync).toHaveBeenCalledTimes(1);
+      expect(copyFileSync).toHaveBeenCalledWith('path1/path2', 'path3/path4');
+    });
+  });
+
+  describe('checkAFileExists', () => {
+    it('should check a file', () => {
+      const existsSync = jest.spyOn(fs.default, 'existsSync').mockReturnValue(true);
+
+      expect(fs.checkAFileExists('path1', 'path2')).toEqual(true);
+      expect(existsSync).toHaveBeenCalledTimes(1);
+      expect(existsSync).toHaveBeenCalledWith('path1/path2');
+    });
+  });
+
   describe('updateAppVersion', () => {
     it('should update version', () => {
       const pkgBefore = { ...appPackage };

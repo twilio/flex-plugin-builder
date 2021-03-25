@@ -2,6 +2,7 @@ import { join } from 'path';
 import { homedir } from 'os';
 
 import PluginsApiToolkit from 'flex-plugins-api-toolkit';
+import { checkAFileExists, readJsonFile, writeJSONFile } from 'flex-dev-utils/dist/fs';
 import { baseCommands, services } from '@twilio/cli-core';
 import {
   PluginServiceHTTPClient,
@@ -20,7 +21,6 @@ import semver from 'semver/preload';
 
 import parser from '../utils/parser';
 import * as flags from '../utils/flags';
-import { filesExist, readJSONFile, readJsonFile, writeJSONFile } from '../utils/fs';
 import { exit, instanceOf } from '../utils/general';
 import { toSentenceCase } from '../utils/strings';
 import prints from '../prints';
@@ -220,7 +220,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @returns {boolean}
    */
   isPluginFolder(): boolean {
-    if (!filesExist(this.cwd, packageJsonStr)) {
+    if (!checkAFileExists(this.cwd, packageJsonStr)) {
       return false;
     }
     const { pkg } = this;
@@ -235,7 +235,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @returns {object}
    */
   get pkg(): Pkg {
-    const pkg = readJSONFile<Pkg>(this.cwd, packageJsonStr);
+    const pkg = readJsonFile<Pkg>(this.cwd, packageJsonStr);
     pkg.devDependencies = pkg.devDependencies || {};
     pkg.dependencies = pkg.dependencies || {};
 
@@ -578,7 +578,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    */
   get pluginsConfig(): CLIFlexConfiguration {
     mkdirp.sync(join(this.cliRootDir, 'flex'));
-    if (!filesExist(this.pluginsConfigPath)) {
+    if (!checkAFileExists(this.pluginsConfigPath)) {
       writeJSONFile({ plugins: [] }, this.pluginsConfigPath);
     }
     return readJsonFile<CLIFlexConfiguration>(this.pluginsConfigPath);

@@ -1,4 +1,5 @@
-import * as fs from '../../utils/fs';
+import * as fs from 'flex-dev-utils/dist/fs';
+
 import * as config from '../../utils/config';
 
 describe('Utils/Config', () => {
