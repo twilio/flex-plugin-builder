@@ -1,4 +1,4 @@
-import { TwilioError, TwilioCliError } from '../../errors';
+import { TwilioError, TwilioCliError } from '../..';
 
 describe('TwilioCliError', () => {
   beforeEach(() => {
