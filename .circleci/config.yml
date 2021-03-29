@@ -49,7 +49,7 @@ workflows:
       - pr-validator:
           matrix:
             parameters:
-              node-version: [lts, node10, node12]
+              node-version: [node10]
 
 
 
