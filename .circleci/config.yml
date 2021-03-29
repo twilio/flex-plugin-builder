@@ -1,0 +1,15 @@
+version: 2.1
+
+jobs:
+  pr-validator:
+    docker:
+      - image: circleci/node:10
+    steps:
+      - run:
+          name: "Test"
+          command: echo "1"
+
+workflows:
+  ci:
+    jobs:
+      - pr-validator
