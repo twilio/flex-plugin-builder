@@ -1,15 +1,58 @@
 version: 2.1
 
+executors:
+  lts:
+    docker:
+      - image: cimg/node:lts
+  node10:
+    docker:
+      - image: cimg/node:10.24
+  node12:
+    docker:
+      - image: cimg/node:12.21
+
+commands:
+  install-dependencies:
+    description: "Install node dependencies"
+    steps:
+      - run: npm install
+  install-libscret:
+    description: "Install libsecret"
+    steps:
+      - run: sudo apt-get update
+      - run: sudo apt-get install -y libsecret-1-dev
+
 jobs:
   pr-validator:
-    docker:
-      - image: circleci/node:10
+    resource_class: large
+    environment:
+      NODE_OPTIONS: --max-old-space-size=8192
+      CI: ""
+    parameters:
+      node-version:
+        type: executor
+    executor: << parameters.node-version >>  
     steps:
+      - checkout
+      - install-libscret
+      - install-dependencies
       - run:
-          name: "Test"
-          command: echo "1"
-
+          name: "Running linter"
+          command: npm run lint
+      - run:
+          name: "Running unit tests"
+          command: npm run test:ci
+    
 workflows:
   ci:
     jobs:
-      - pr-validator
+      - pr-validator:
+          matrix:
+            parameters:
+              node-version: [lts, node10, node12]
+          filters:
+            branches:
+              only: (^main$)|(^v[1-9]\-beta$)
+
+
+
