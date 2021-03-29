@@ -1,7 +1,15 @@
 version: 2.1
-orbs:
-  node: circleci/node@3.0.0
+
+jobs:
+  pr-validator:
+    docker:
+      - image: circleci/node:10
+    steps:
+      - run:
+          name: "Test"
+          command: echo "1"
+
 workflows:
-  node-tests:
+  ci:
     jobs:
-      - node/test
+      - pr-validator
