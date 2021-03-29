@@ -1,13 +1,47 @@
-import env, { Environment, Lifecycle } from '../env';
+import * as env from '../env';
 
 describe('env', () => {
   const OLD_ENV = process.env;
+  const manager = {
+    configuration: {
+      logLevel: '',
+    },
+  };
 
   beforeEach(() => {
     process.env = { ...OLD_ENV };
+    manager.configuration.logLevel = '';
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).Twilio = {
+      Flex: {
+        Manager: {
+          getInstance: () => manager,
+        },
+      },
+    };
+
+    jest.restoreAllMocks();
   });
 
-  describe('terminalPersisted', () => {
+  describe('persistTerminal', () => {
+    it('should set the terminal to persist', () => {
+      delete process.env.PERSIST_TERMINAL;
+      env.persistTerminal();
+
+      expect(process.env.PERSIST_TERMINAL).toEqual('true');
+    });
+
+    it('should not set env if not node', () => {
+      jest.spyOn(env, 'isNode').mockReturnValue(false);
+      delete process.env.PERSIST_TERMINAL;
+      env.persistTerminal();
+
+      expect(process.env.PERSIST_TERMINAL).toBeUndefined();
+    });
+  });
+
+  describe('isTerminalPersisted', () => {
     it('isTerminalPersisted should return true', () => {
       process.env.PERSIST_TERMINAL = 'true';
       expect(env.isTerminalPersisted()).toEqual(true);
@@ -15,6 +49,77 @@ describe('env', () => {
 
     it('isTerminalPersisted should return false', () => {
       expect(env.isTerminalPersisted()).toEqual(false);
+    });
+  });
+
+  describe('debug', () => {
+    it('debug should return true', () => {
+      process.env.DEBUG = 'true';
+      expect(env.isDebug()).toEqual(true);
+    });
+
+    it('should return with trace true', () => {
+      process.env.TRACE = 'true';
+      expect(env.isDebug()).toEqual(true);
+    });
+
+    it('debug should return false', () => {
+      expect(env.isDebug()).toEqual(false);
+    });
+
+    it('should return true because twilio config is set', () => {
+      jest.spyOn(env, 'isNode').mockReturnValue(false);
+      manager.configuration.logLevel = 'debug';
+
+      expect(env.isDebug()).toEqual(true);
+    });
+
+    it('should return false because twilio config is set', () => {
+      jest.spyOn(env, 'isNode').mockReturnValue(false);
+      manager.configuration.logLevel = 'info';
+
+      expect(env.isDebug()).toEqual(false);
+    });
+
+    it('should return false because no twilio env is st', () => {
+      jest.spyOn(env, 'isNode').mockReturnValue(false);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (window as any).Twilio;
+
+      expect(env.isDebug()).toEqual(false);
+    });
+  });
+
+  describe('trace', () => {
+    it('trace should return true', () => {
+      process.env.TRACE = 'true';
+      expect(env.isTrace()).toEqual(true);
+    });
+
+    it('trace should return false', () => {
+      expect(env.isTrace()).toEqual(false);
+    });
+
+    it('should return true because twilio config is set', () => {
+      jest.spyOn(env, 'isNode').mockReturnValue(false);
+      manager.configuration.logLevel = 'trace';
+
+      expect(env.isTrace()).toEqual(true);
+    });
+
+    it('should return false because twilio config is set', () => {
+      jest.spyOn(env, 'isNode').mockReturnValue(false);
+      manager.configuration.logLevel = 'info';
+
+      expect(env.isTrace()).toEqual(false);
+    });
+
+    it('should return false because no twilio env is st', () => {
+      jest.spyOn(env, 'isNode').mockReturnValue(false);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (window as any).Twilio;
+
+      expect(env.isTrace()).toEqual(false);
     });
   });
 
@@ -40,63 +145,58 @@ describe('env', () => {
     });
   });
 
-  describe('setQuiet', () => {
-    it('setQuiet should return true', () => {
-      expect(env.setQuiet()).toEqual('true');
-      expect(env.setQuiet(true)).toEqual('true');
+  describe('quiet', () => {
+    it('should return true', () => {
+      process.env.QUIET = 'true';
+      expect(env.isQuiet()).toEqual(true);
     });
 
-    it('setQuiet should return false', () => {
-      expect(env.setQuiet(false)).toEqual('false');
+    it('should return false', () => {
+      expect(env.isQuiet()).toEqual(false);
+    });
+
+    it('should set quiet', () => {
+      expect(env.isQuiet()).toEqual(false);
+      env.setQuiet();
+      expect(env.isQuiet()).toEqual(true);
+      env.setQuiet(false);
+      expect(env.isQuiet()).toEqual(false);
+      env.setQuiet(true);
+      expect(env.isQuiet()).toEqual(true);
+    });
+  });
+
+  describe('getRealm', () => {
+    it('should return realm', () => {
+      process.env.REALM = 'stage';
+
+      expect(env.getRealm()).toEqual('stage');
+    });
+  });
+
+  describe('setRealm', () => {
+    it('should set realm', () => {
+      expect(env.getRealm()).toBeUndefined();
+      env.setRealm('stage');
+      expect(env.getRealm()).toEqual('stage');
     });
   });
 
   describe('CLI', () => {
-    it('isCLI should return true', () => {
+    it('should return true', () => {
       process.env.FLEX_PLUGINS_CLI = 'true';
+
       expect(env.isCLI()).toEqual(true);
     });
 
-    it('isCLI should return false', () => {
+    it('should return false', () => {
       expect(env.isCLI()).toEqual(false);
     });
-  });
 
-  describe('CI', () => {
-    it('isCI should return true', () => {
-      process.env.CI = 'true';
-      expect(env.isCI()).toEqual(true);
-    });
-
-    it('isCI should return false', () => {
-      expect(env.isCI()).toEqual(false);
-    });
-  });
-
-  describe('debug', () => {
-    it('isDebug should return true', () => {
-      process.env.DEBUG = 'true';
-      expect(env.isDebug()).toEqual(true);
-    });
-
-    it('isDebug should return with trace true', () => {
-      process.env.TRACE = 'true';
-      expect(env.isDebug()).toEqual(true);
-    });
-
-    it('isDebug should return false', () => {
-      expect(env.isDebug()).toEqual(false);
-    });
-  });
-
-  describe('trace', () => {
-    it('isTrace should return true', () => {
-      process.env.TRACE = 'true';
-      expect(env.isTrace()).toEqual(true);
-    });
-
-    it('isTrace should return false', () => {
-      expect(env.isTrace()).toEqual(false);
+    it('should set CLI', () => {
+      expect(env.isCLI()).toEqual(false);
+      env.setCLI();
+      expect(env.isCLI()).toEqual(true);
     });
   });
 
@@ -119,17 +219,6 @@ describe('env', () => {
 
     it('getAuthToken should return nothing', () => {
       expect(env.getAuthToken()).toEqual(undefined);
-    });
-  });
-
-  describe('realm', () => {
-    it('should return realm', () => {
-      process.env.REALM = 'dev';
-      expect(env.getRealm()).toEqual('dev');
-    });
-
-    it('getRealm should return nothing', () => {
-      expect(env.getRealm()).toEqual(undefined);
     });
   });
 
@@ -174,8 +263,8 @@ describe('env', () => {
     });
 
     it('should set node env', () => {
-      env.setNodeEnv(Environment.Development);
-      expect(env.getNodeEnv()).toEqual(Environment.Development);
+      env.setNodeEnv(env.Environment.Development);
+      expect(env.getNodeEnv()).toEqual(env.Environment.Development);
     });
   });
 
@@ -191,26 +280,26 @@ describe('env', () => {
 
     it('should set babel env', () => {
       expect(env.getBabelEnv()).toEqual(undefined);
-      env.setBabelEnv(Environment.Development);
-      expect(env.getBabelEnv()).toEqual(Environment.Development);
+      env.setBabelEnv(env.Environment.Development);
+      expect(env.getBabelEnv()).toEqual(env.Environment.Development);
     });
   });
 
   describe('lifeCycle', () => {
     it('should return babel env', () => {
       // eslint-disable-next-line camelcase
-      process.env.npm_lifecycle_event = Lifecycle.Test;
-      expect(env.getLifecycle()).toEqual(Lifecycle.Test);
+      process.env.npm_lifecycle_event = env.Lifecycle.Test;
+      expect(env.getLifecycle()).toEqual(env.Lifecycle.Test);
     });
 
     it('should return true for correct lifecycle', () => {
       // eslint-disable-next-line camelcase
-      process.env.npm_lifecycle_event = Lifecycle.Build;
-      expect(env.isLifecycle(Lifecycle.Build)).toEqual(true);
+      process.env.npm_lifecycle_event = env.Lifecycle.Build;
+      expect(env.isLifecycle(env.Lifecycle.Build)).toEqual(true);
     });
 
     it('should return false for lifecycle', () => {
-      expect(env.isLifecycle(Lifecycle.Build)).toEqual(false);
+      expect(env.isLifecycle(env.Lifecycle.Build)).toEqual(false);
     });
   });
 

@@ -1,10 +1,9 @@
 import https from 'https';
 
-import { logger, FlexPluginError, exit } from 'flex-dev-utils';
+import { logger, FlexPluginError, exit, env } from 'flex-dev-utils';
 import { Request, Response } from 'express-serve-static-core';
 import { FlexConfigurationPlugin, readPluginsJson } from 'flex-dev-utils/dist/fs';
 import { Configuration } from 'webpack-dev-server';
-import { isHTTPS } from 'flex-dev-utils/dist/env';
 
 import { remotePluginNotFound } from '../prints';
 
@@ -43,7 +42,7 @@ export const _getLocalPlugin = (name: string): FlexConfigurationPlugin | undefin
  */
 // eslint-disable-next-line import/no-unused-modules
 export const _getLocalPlugins = (port: number, names: string[]): Plugin[] => {
-  const protocol = `http${isHTTPS() ? 's' : ''}://`;
+  const protocol = `http${env.isHTTPS() ? 's' : ''}://`;
 
   return names.map((name) => {
     const match = _getLocalPlugin(name);

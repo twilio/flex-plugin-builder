@@ -1,0 +1,42 @@
+{
+  "name": "flex-plugins-utils-exception",
+  "version": "4.5.0-beta.0",
+  "description": "Flex Plugins Exceptions",
+  "keywords": [
+    "flex",
+    "flex plugins",
+    "flex plugins exception"
+  ],
+  "homepage": "https://github.com/twilio/flex-plugin-builder",
+  "bugs": {
+    "url": "https://github.com/twilio/flex-plugin-builder/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio/flex-plugin-builder.git"
+  },
+  "license": "MIT",
+  "author": "Kousha Talebian <k@ousha.me>",
+  "contributors": [
+    "Kousha Talebian <k@ousha.me>"
+  ],
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "directories": {
+    "lib": "src",
+    "test": "__tests__"
+  },
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "../../node_modules/.bin/tsc",
+    "clean": "rm -rf dist",
+    "lint": "eslint --ext ts src/",
+    "lint:fix": "npm run lint -- --fix",
+    "prepublish": "npm run build",
+    "test": "cd ../.. && jest packages/flex-dev-utils --color",
+    "test:watch": "cd ../.. && jest packages/flex-dev-utils --watch --color"
+  }
+}

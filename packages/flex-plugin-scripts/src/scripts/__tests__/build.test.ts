@@ -1,4 +1,4 @@
-import * as env from 'flex-dev-utils/dist/env';
+import env, { Environment } from 'flex-dev-utils/dist/env';
 import * as fs from 'flex-dev-utils/dist/fs';
 
 import * as buildScript from '../build';
@@ -33,9 +33,9 @@ describe('BuildScript', () => {
       await buildScript.default();
 
       expect(env.setBabelEnv).toHaveBeenCalledTimes(1);
-      expect(env.setBabelEnv).toHaveBeenCalledWith(env.Environment.Production);
+      expect(env.setBabelEnv).toHaveBeenCalledWith(Environment.Production);
       expect(env.setNodeEnv).toHaveBeenCalledTimes(1);
-      expect(env.setNodeEnv).toHaveBeenCalledWith(env.Environment.Production);
+      expect(env.setNodeEnv).toHaveBeenCalledWith(Environment.Production);
 
       expect(updateAppVersion).not.toHaveBeenCalled();
       expect(_getBundle).toHaveBeenCalledTimes(1);
