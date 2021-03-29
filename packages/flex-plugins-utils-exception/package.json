@@ -36,7 +36,7 @@
     "lint": "eslint --ext ts src/",
     "lint:fix": "npm run lint -- --fix",
     "prepublish": "npm run build",
-    "test": "cd ../.. && jest packages/flex-dev-utils --color",
-    "test:watch": "cd ../.. && jest packages/flex-dev-utils --watch --color"
+    "test": "cd ../.. && jest packages/flex-plugins-utils-exception --color",
+    "test:watch": "cd ../.. && jest packages/flex-plugins-utils-exception --watch --color"
   }
 }
