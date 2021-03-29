@@ -50,9 +50,7 @@ workflows:
           matrix:
             parameters:
               node-version: [lts, node10, node12]
-          filters:
-            branches:
-              only: (^main$)|(^v[1-9]\-beta$)|(^circleci\-project\-setup$)
+
 
 
 
