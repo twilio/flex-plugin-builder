@@ -42,6 +42,13 @@ jobs:
       - run:
           name: "Running unit tests"
           command: npm run test:ci
+      - when:
+          condition:
+            equal: [parameters.node-version, ltd]
+          steps:
+            - run: echo "my custom command"
+
+
     
 workflows:
   ci:
