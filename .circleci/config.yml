@@ -8,6 +8,9 @@ executors:
     docker:
       - image: cimg/node:<< parameters.tag >>
 
+orbs:
+  slack: circleci/slack@4.3.3
+
 commands:
   install-dependencies:
     steps:
@@ -61,6 +64,13 @@ jobs:
             - run:
                 name: "CODECOV"
                 command: npm run coverage -- --token=$CODECOV_TOKEN
+      - slack/notify:
+          event: fail
+          channel: ci-flexperience
+      - slack/notify:
+          event: pass
+          channel: ci-flexperience
+
     
 workflows:
   ci:
@@ -69,6 +79,5 @@ workflows:
           matrix:
             parameters:
               node-version: [lts]
-
 
 # node-version: [lts, "10.24", "12.21"]
