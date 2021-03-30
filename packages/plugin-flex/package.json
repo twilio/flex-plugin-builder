@@ -147,7 +147,7 @@
           "id2": "The second Flex Plugin Configuration SID."
         }
       },
-      "upgrade-plugin": {
+      "flex:plugins:upgrade-plugin": {
         "description": "Upgrades your plugin to use the latest version of the Plugin CLI.",
         "flags": {
           "install": "If set, will install the dependencies.",
