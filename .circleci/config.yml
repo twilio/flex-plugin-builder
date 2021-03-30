@@ -44,7 +44,7 @@ jobs:
           command: npm run test:ci
       - when:
           condition:
-            equal: [parameters.node-version, ltd]
+            equal: [parameters.node-version, lts]
           steps:
             - run: echo "my custom command"
 
