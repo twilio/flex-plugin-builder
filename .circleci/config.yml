@@ -60,7 +60,7 @@ jobs:
           steps:
             - run:
                 name: "CODECOV"
-                command: echo "my custom command"
+                command: npm run coverage -- --token=$CODECOV_TOKEN
     
 workflows:
   ci:
@@ -68,4 +68,7 @@ workflows:
       - pr-validator:
           matrix:
             parameters:
-              node-version: [lts, "10.24", "12.21"]
+              node-version: [lts]
+
+
+# node-version: [lts, "10.24", "12.21"]
