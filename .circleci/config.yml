@@ -7,34 +7,33 @@ executors:
         type: string
     docker:
       - image: cimg/node:<< parameters.tag >>
-  # lts:
-  #   docker:
-  #     - image: cimg/node:lts
-  # node10:
-  #   docker:
-  #     - image: cimg/node:10.24
-  # node12:
-  #   docker:
-  #     - image: cimg/node:12.21
 
 commands:
   install-dependencies:
-    description: "Install node dependencies"
     steps:
-      - run: npm install
+      - run:
+          name: "Install project dependencies"
+          command: npm i
+  apt-update:
+    steps:
+      - run:
+          name: "APT update"
+          command: sudo apt-get update
   install-libscret:
-    description: "Install libsecret"
     steps:
-      - run: sudo apt-get update
-      - run: sudo apt-get install -y libsecret-1-dev
+      - run:
+          name: "Fetch and install libsecret"
+          command: sudo apt-get install -y libsecret-1-dev
   run-unit-tests:
-    description: "Run Unit Tests"
     steps:
-      - run: npm run test:ci
+      - run:
+          name: "Run unit tests"
+          command: npm run test:ci
   run-linter:
-    description: "Run linter"
     steps:
-      - run: npm run lint
+      - run:
+          name: "Run linter"
+          command: npm run lint
 
 jobs:
   pr-validator:
@@ -50,10 +49,11 @@ jobs:
       tag: << parameters.node-version >>  
     steps:
       - checkout
+      - apt-update
       - install-libscret
       - install-dependencies
+      - run-linter      
       - run-unit-tests
-      - run-linter
       - when:
           condition:
             equal: [<< parameters.node-version >>, lts]
@@ -61,11 +61,6 @@ jobs:
             - run:
                 name: "CODECOV"
                 command: echo "my custom command"
-      - run: 
-          name: "After codecov"
-          command: echo "after codecov"          
-
-
     
 workflows:
   ci:
@@ -73,4 +68,4 @@ workflows:
       - pr-validator:
           matrix:
             parameters:
-              node-version: [lts]
+              node-version: [lts, "10.24", "12.21"]
