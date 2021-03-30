@@ -1,15 +1,21 @@
 version: 2.1
 
 executors:
-  lts:
+  node:
+    parameters:
+      tag:
+        type: string
     docker:
-      - image: cimg/node:lts
-  node10:
-    docker:
-      - image: cimg/node:10.24
-  node12:
-    docker:
-      - image: cimg/node:12.21
+      - image: cimg/node:<< parameters.tag >>
+  # lts:
+  #   docker:
+  #     - image: cimg/node:lts
+  # node10:
+  #   docker:
+  #     - image: cimg/node:10.24
+  # node12:
+  #   docker:
+  #     - image: cimg/node:12.21
 
 commands:
   install-dependencies:
@@ -21,6 +27,14 @@ commands:
     steps:
       - run: sudo apt-get update
       - run: sudo apt-get install -y libsecret-1-dev
+  run-unit-tests:
+    description: "Run Unit Tests"
+    steps:
+      - run: npm run test:ci
+  run-linter:
+    description: "Run linter"
+    steps:
+      - run: npm run lint
 
 jobs:
   pr-validator:
@@ -30,21 +44,16 @@ jobs:
       CI: ""
     parameters:
       node-version:
-        type: executor
-    executor: << parameters.node-version >>  
+        type: string
+    executor:
+      name: node
+      tag: << parameters.node-version >>  
     steps:
-      # - checkout
-      # - install-libscret
-      # - install-dependencies
-      # - run:
-      #     name: "Running linter"
-      #     command: npm run lint
-      # - run:
-      #     name: "Running unit tests"
-      #     command: npm run test:ci
-      - run: 
-          name: "echo param"
-          command: echo << parameters.node-version >>
+      - checkout
+      - install-libscret
+      - install-dependencies
+      - run-unit-tests
+      - run-linter
       - when:
           condition:
             equal: [<< parameters.node-version >>, lts]
@@ -65,7 +74,3 @@ workflows:
           matrix:
             parameters:
               node-version: [lts]
-
-
-
-
