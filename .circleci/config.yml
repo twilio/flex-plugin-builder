@@ -33,15 +33,18 @@ jobs:
         type: executor
     executor: << parameters.node-version >>  
     steps:
-      - checkout
-      - install-libscret
-      - install-dependencies
-      - run:
-          name: "Running linter"
-          command: npm run lint
-      - run:
-          name: "Running unit tests"
-          command: npm run test:ci
+      # - checkout
+      # - install-libscret
+      # - install-dependencies
+      # - run:
+      #     name: "Running linter"
+      #     command: npm run lint
+      # - run:
+      #     name: "Running unit tests"
+      #     command: npm run test:ci
+      - run: 
+          name: "echo param"
+          command: echo << parameters.node-version >>
       - when:
           condition:
             equal: [<< parameters.node-version >>, lts]
