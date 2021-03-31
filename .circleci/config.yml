@@ -8,9 +8,6 @@ executors:
     docker:
       - image: cimg/node:<< parameters.tag >>
 
-orbs:
-  slack: circleci/slack@3.4.2
-
 commands:
   install-dependencies:
     steps:
@@ -54,7 +51,7 @@ jobs:
       - checkout
       - apt-update
       - install-libscret
-      - install-dependencies
+      # - install-dependencies
       - run:
           name: "I will fail"
           command: exit 1
@@ -80,6 +77,7 @@ workflows:
             - run:
                 name: Post step
                 command: echo "post-step"
+                when: on_fail
             # - when: on_fail
             #   steps:
             # - slack/notify:
