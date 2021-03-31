@@ -11,6 +11,13 @@ executors:
 orbs:
   slack: circleci/slack@3.4.2
 
+slack-fail-post-step: &slack-fail-post-step
+  post-steps:
+    - slack/status:
+          mentions: $CIRCLE_USERNAME
+          failure_message: "Failed to validate pull request $CI_PULL_REQUEST"
+          success_message: ":tada: Build passed $CIRCLE_BUILD_URL $CI_PULL_REQUEST"
+
 commands:
   install-dependencies:
     steps:
@@ -64,9 +71,10 @@ jobs:
             - run:
                 name: "CODECOV"
                 command: npm run coverage -- --token=$CODECOV_TOKEN
-      - slack/status:
-          mentions: "kamolins"
-
+      - run:
+          name: Success
+          command: |
+            exit 0
     
 workflows:
   ci:
@@ -74,6 +82,8 @@ workflows:
       - pr-validator:
           matrix:
             parameters:
-              node-version: [lts]
+              node-version: [lts, "10.24"]
+          post-steps:
+            - slack/status
 
 # node-version: [lts, "10.24", "12.21"]
