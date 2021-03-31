@@ -17,7 +17,6 @@
     "url": "git+https://github.com/twilio/flex-plugin-builder.git"
   },
   "license": "MIT",
-  "author": "Kousha Talebian <ktalebian@twilio.com>",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
@@ -62,6 +61,4 @@
   },
   "engines": {
     "node": ">=10.12.0"
-  },
-  "gitHead": "cb92593ce13da010d82f488d974d7f372d973af8"
 }

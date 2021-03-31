@@ -19,19 +19,16 @@
     "url": "git+https://github.com/twilio/flex-plugin-builder.git"
   },
   "license": "MIT",
-  "author": "Kousha Talebian <k@ousha.me>",
-  "contributors": [
-    "Kousha Talebian <k@ousha.me>"
-  ],
-  "files": [
-    "dist"
-  ],
+  "author": "Flex Runtime <flex-runtime@twilio.com>",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "directories": {
     "lib": "src",
     "test": "__tests__"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "prebuild": "npm run clean",
     "build": "../../node_modules/.bin/tsc",
@@ -44,13 +41,12 @@
   },
   "dependencies": {
     "flex-plugin-utils-http": "^4.5.0-beta.0",
-    "flex-plugins-utils-exception": "^4.5.0-beta.0",
     "flex-plugins-utils-env": "^4.5.0-beta.0",
+    "flex-plugins-utils-exception": "^4.5.0-beta.0",
     "flex-plugins-utils-logger": "^4.5.0-beta.0",
     "lodash.upperfirst": "^4.3.1",
     "url-join": "^4.0.1"
   },
-  "gitHead": "58a29ff6cd88c72561af45c2fe53b4996d3b2ccc",
   "devDependencies": {
     "@types/lodash.upperfirst": "^4.3.6",
     "@types/url-join": "^4.0.0"
