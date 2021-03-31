@@ -52,9 +52,12 @@ jobs:
       tag: << parameters.node-version >>  
     steps:
       - checkout
-      # - apt-update
-      # - install-libscret
-      # - install-dependencies
+      - apt-update
+      - install-libscret
+      - install-dependencies
+      - run:
+          name: "I will fail"
+          command: exit 1
       # - run-linter      
       # - run-unit-tests
       # - when:
@@ -64,9 +67,7 @@ jobs:
       #       - run:
       #           name: "CODECOV"
       #           command: npm run coverage -- --token=$CODECOV_TOKEN
-      - run:
-          name: "I will fail"
-          command: exit 1
+
     
 workflows:
   ci:
