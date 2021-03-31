@@ -19,7 +19,7 @@ commands:
       - run:
           name: "APT update"
           command: sudo apt-get update
-  install-libscret:
+  install-prerequisites:
     steps:
       - run:
           name: "Fetch and install libsecret"
@@ -50,7 +50,7 @@ jobs:
     steps:
       - checkout
       - apt-update
-      - install-libscret
+      - install-prerequisites
       - install-dependencies
       - run-linter      
       - run-unit-tests
@@ -68,7 +68,7 @@ workflows:
       - pr-validator:
           matrix:
             parameters:
-              node-version: [lts, "10.24", "12.21"]
+              node-version: ["10", "12", "14", lts]
           filters:
             branches:
               only: /^(main|v[1-9]?[0-9]-beta|circleci-project-setup)$/
