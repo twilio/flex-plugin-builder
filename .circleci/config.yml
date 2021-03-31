@@ -49,8 +49,8 @@ jobs:
       tag: << parameters.node-version >>  
     steps:
       - checkout
-      - apt-update
-      - install-libscret
+      # - apt-update
+      # - install-libscret
       # - install-dependencies
       - run:
           name: "I will fail"
@@ -76,7 +76,7 @@ workflows:
           post-steps:
             - run:
                 name: Post step
-                command: curl -X POST -H "Content-type:application/json" --data "{'text':'hi $CIRCLE_USERNAME'}" $SLACK_WEBHOOK
+                command: curl -X POST -H "Content-type:application/json" --data "{"mrkdwn":true,"text":"error"}" $SLACK_WEBHOOK
                 when: on_fail
             # - when: on_fail
             #   steps:
