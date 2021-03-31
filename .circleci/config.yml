@@ -76,7 +76,7 @@ workflows:
           post-steps:
             - run:
                 name: Post step
-                command: echo "post-step"
+                command: curl -X POST -H "Content-type:application/json" --data "{'text':'hi $CIRCLE_USERNAME'}" $SLACK_WEBHOOK
                 when: on_fail
             # - when: on_fail
             #   steps:
