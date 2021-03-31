@@ -76,16 +76,16 @@ workflows:
           matrix:
             parameters:
               node-version: ["10.24"]
-          # post-steps:
-          #   - when: on_fail
-          #     steps:
-            # - slack/notify:
-            #     color: "#F9DD42"
-            #     include_job_number_field: false
-            #     include_project_field: false
-            #     title: I am a title of a failed build
-            #     message: I am a message of a failed build
-            #     footer: I am a footer of a failed build
+          post-steps:
+            - when: on_fail
+              steps:
+            - slack/notify:
+                color: "#F9DD42"
+                include_job_number_field: false
+                include_project_field: false
+                title: I am a title of a failed build
+                message: I am a message of a failed build
+                footer: I am a footer of a failed build
 
 
 # node-version: [lts, "10.24", "12.21"]
