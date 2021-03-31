@@ -78,7 +78,7 @@ workflows:
               node-version: [lts, "10.24", "12.21"]
           filters:
             branches:
-              only: main|v[1-9]?[0-9]-beta|circleci-project-setup
+              only: /^(main|v[1-9]?[0-9]-beta|circleci-project-setup)$/
           post-steps:
             - run:
                 name: Post step
