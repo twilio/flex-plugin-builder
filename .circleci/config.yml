@@ -37,7 +37,7 @@ commands:
 
 jobs:
   pr-validator:
-    resource_class: xlarge
+    resource_class: small
     environment:
       NODE_OPTIONS: --max-old-space-size=14336
       CI: ""
@@ -76,7 +76,7 @@ workflows:
           post-steps:
             - run:
                 name: Post step
-                command: curl -X POST -H "Content-type:application/json" --data "{"mrkdwn":true,"text":"error"}" $SLACK_WEBHOOK
+                command: curl -X POST -H "Content-type:application/json" --data "{'text':'error', 'mrkdwn':true}" $SLACK_WEBHOOK
                 when: on_fail
             # - when: on_fail
             #   steps:
