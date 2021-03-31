@@ -72,11 +72,11 @@ workflows:
       - pr-validator:
           matrix:
             parameters:
-              node-version: ["10.24"]
+              node-version: [lts, "10.24"]
           post-steps:
             - run:
                 name: Post step
-                command: curl -X POST -H "Content-type:application/json" --data "{'text':'<@CIRCLE_USERNAME> <$CIRCLE_PULL_REQUEST|Pull requests> validation has failed. View <$CIRCLE_JOB|build>.', 'mrkdwn':true}" $SLACK_WEBHOOK
+                command: curl -X POST -H "Content-type:application/json" --data "{'text':'<@$CIRCLE_USERNAME> <$CIRCLE_PULL_REQUEST|Pull requests> validation has failed. View <$CIRCLE_BUILD_URL|build>.', 'mrkdwn':true}" $SLACK_WEBHOOK
                 when: on_fail
             # - when: on_fail
             #   steps:
