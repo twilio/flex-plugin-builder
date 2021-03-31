@@ -1,0 +1,56 @@
+{
+  "name": "flex-plugins-api-toolkit",
+  "version": "4.5.0-beta.0",
+  "description": "Flex Plugins API Toolkit",
+  "keywords": [
+    "flex",
+    "flex plugins",
+    "flex plugins api",
+    "flex plugins api toolkit",
+    "flex plugins toolkit",
+    "plugins"
+  ],
+  "homepage": "https://github.com/twilio/flex-plugin-builder",
+  "bugs": {
+    "url": "https://github.com/twilio/flex-plugin-builder/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio/flex-plugin-builder.git"
+  },
+  "license": "MIT",
+  "author": "Kousha Talebian <k@ousha.me>",
+  "contributors": [
+    "Kousha Talebian <k@ousha.me>"
+  ],
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "directories": {
+    "lib": "src",
+    "test": "__tests__"
+  },
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "../../node_modules/.bin/tsc",
+    "clean": "rm -rf dist",
+    "lint": "eslint --ext ts src/",
+    "lint:fix": "npm run lint -- --fix",
+    "prepublish": "npm run build",
+    "test": "cd ../.. && jest packages/flex-plugins-api-toolkit --color",
+    "test:watch": "cd ../.. && jest packages/flex-plugins-api-toolkit --watch --color"
+  },
+  "dependencies": {
+    "flex-plugins-api-client": "^4.5.0-beta.0",
+    "flex-plugins-utils-env": "^4.5.0-beta.0",
+    "flex-plugin-utils-http": "^4.5.0-beta.0",
+    "flex-plugins-utils-exception": "^4.5.0-beta.0",
+    "lodash.clonedeep": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/lodash.clonedeep": "^4.5.6"
+  },
+  "gitHead": "58a29ff6cd88c72561af45c2fe53b4996d3b2ccc"
+}
