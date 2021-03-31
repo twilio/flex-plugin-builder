@@ -9,7 +9,7 @@ executors:
       - image: cimg/node:<< parameters.tag >>
 
 orbs:
-  slack: circleci/slack@4.3.3
+  slack: circleci/slack@3.4.2
 
 commands:
   install-dependencies:
@@ -52,35 +52,21 @@ jobs:
       tag: << parameters.node-version >>  
     steps:
       - checkout
-      - apt-update
-      - install-libscret
-      - install-dependencies
-      - run-linter      
-      - run-unit-tests
-      - when:
-          condition:
-            equal: [<< parameters.node-version >>, lts]
-          steps:
-            - run:
-                name: "CODECOV"
-                command: npm run coverage -- --token=$CODECOV_TOKEN
-      - slack/notify:
-          custom: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "plain_text",
-                      "text": "*Hi Runtime :tada:*",
-                      "emoji": true
-                    }
-                  ]
-                }
-              ]
-            }
-          event: always
+      # - apt-update
+      # - install-libscret
+      # - install-dependencies
+      # - run-linter      
+      # - run-unit-tests
+      # - when:
+      #     condition:
+      #       equal: [<< parameters.node-version >>, lts]
+      #     steps:
+      #       - run:
+      #           name: "CODECOV"
+      #           command: npm run coverage -- --token=$CODECOV_TOKEN
+      - run:
+          name: "I will fail"
+          command: exit 1
     
 workflows:
   ci:
@@ -89,5 +75,16 @@ workflows:
           matrix:
             parameters:
               node-version: ["10.24"]
+          post-steps:
+            - when: on_fail
+              steps:
+            - slack/notify:
+                color: "#F9DD42"
+                include_job_number_field: false
+                include_project_field: false
+                title: I am a title of a failed build
+                message: I am a message of a failed build
+                footer: I am a footer of a failed build
+
 
 # node-version: [lts, "10.24", "12.21"]
