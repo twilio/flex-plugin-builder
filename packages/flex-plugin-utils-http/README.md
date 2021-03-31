@@ -4,4 +4,4 @@
 
 # Flex Plugins Utils HTTP
 
-An HTTP wrapper used within Flex Plugins projects
+An HTTP wrapper used within Flex Plugins projects.
