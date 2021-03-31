@@ -37,7 +37,7 @@ commands:
 
 jobs:
   pr-validator:
-    resource_class: small
+    resource_class: xlarge
     environment:
       NODE_OPTIONS: --max-old-space-size=14336
       CI: ""
@@ -48,9 +48,6 @@ jobs:
       name: node
       tag: << parameters.node-version >>  
     steps:
-      - run:
-          name: "Expected to fail"
-          command: exit 1
       - checkout
       - apt-update
       - install-libscret
@@ -71,8 +68,7 @@ workflows:
       - pr-validator:
           matrix:
             parameters:
-              node-version: [lts]
-              # node-version: [lts, "10.24", "12.21"]
+              node-version: [lts, "10.24", "12.21"]
           filters:
             branches:
               only: /^(main|v[1-9]?[0-9]-beta|circleci-project-setup)$/
