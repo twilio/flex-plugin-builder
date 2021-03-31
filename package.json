@@ -32,7 +32,7 @@
     "release:beta": "lerna-travis-release beta",
     "release:public": "lerna-travis-release public",
     "test": "./bin/test-runner.sh",
-    "test:ci": "jest --clearCache && npm run test -- --no-cache",
+    "test:ci": "jest --clearCache && npm run test -- --no-cache --coverage",
     "test:one": "npm run test -- $@",
     "test:watch": "npm run test -- --watchAll"
   },
