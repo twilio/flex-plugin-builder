@@ -36,19 +36,15 @@ commands:
           command: npm run lint
 
 jobs:
-  test:
+  slack-notify:
     resource_class: small
     steps:
        - checkout
-    parameters:
-      node-version:
-        type: string
     executor:
       name: node
-      tag: << parameters.node-version >>
-
+      tag: lts
   pr-validator:
-    resource_class: small
+    resource_class: xlarge
     environment:
       NODE_OPTIONS: --max-old-space-size=14336
       CI: ""
@@ -60,47 +56,31 @@ jobs:
       tag: << parameters.node-version >>  
     steps:
       - checkout
-      # - apt-update
-      # - install-libscret
-      # - install-dependencies
-      - run:
-          name: "I will fail"
-          command: exit 1
-      # - run-linter      
-      # - run-unit-tests
-      # - when:
-      #     condition:
-      #       equal: [<< parameters.node-version >>, lts]
-      #     steps:
-      #       - run:
-      #           name: "CODECOV"
-      #           command: npm run coverage -- --token=$CODECOV_TOKEN
+      - apt-update
+      - install-libscret
+      - install-dependencies
+      - run-linter      
+      - run-unit-tests
+      - when:
+          condition:
+            equal: [<< parameters.node-version >>, lts]
+          steps:
+            - run:
+                name: "CODECOV"
+                command: npm run coverage -- --token=$CODECOV_TOKEN
 
-    
 workflows:
-  ci:
+  validate:
     jobs:
       - pr-validator:
           matrix:
             parameters:
-              node-version: [lts, "10.24"]
+              node-version: [lts, "10.24", "12.21"]
           filters:
             branches:
-              only: circleci-project-setup
+              only: ^(main|v[1-9]?[0-9]-beta)$
           post-steps:
             - run:
                 name: Post step
                 command: curl -X POST -H "Content-type:application/json" --data "{'text':'<@$CIRCLE_USERNAME> <$CIRCLE_PULL_REQUEST|Pull requests> validation has failed. View <$CIRCLE_BUILD_URL|build>.', 'mrkdwn':true}" $SLACK_WEBHOOK
                 when: on_fail
-            # - when: on_fail
-            #   steps:
-            # - slack/notify:
-            #     color: "#F9DD42"
-            #     include_job_number_field: false
-            #     include_project_field: false
-            #     title: I am a title of a failed build
-            #     message: I am a message of a failed build
-            #     footer: I am a footer of a failed build
-
-
-# node-version: [lts, "10.24", "12.21"]
