@@ -79,5 +79,5 @@ workflows:
           post-steps:
             - run:
                 name: Send Slack notification
-                command: curl -X POST -H "Content-type:application/json" --data "{'text':'Project\:$CIRCLE_PROJECT_REPONAME <$CIRCLE_PULL_REQUEST|Pull requests> validation has failed. View <$CIRCLE_BUILD_URL|build>.', 'mrkdwn':true}" $SLACK_WEBHOOK
+                command: curl -X POST -H "Content-type:application/json" --data "{'text':'$CIRCLE_PROJECT_REPONAME <$CIRCLE_PULL_REQUEST|Pull requests> validation has failed. View <$CIRCLE_BUILD_URL|build>.', 'mrkdwn':true}" $SLACK_WEBHOOK
                 when: on_fail
