@@ -37,9 +37,9 @@ commands:
 
 jobs:
   pr-validator:
-    resource_class: xlarge
+    resource_class: large
     environment:
-      NODE_OPTIONS: --max-old-space-size=14336
+      NODE_OPTIONS: --max-old-space-size=8192
       CI: ""
     parameters:
       node-version:
@@ -68,7 +68,7 @@ workflows:
       - pr-validator:
           matrix:
             parameters:
-              node-version: ["10", "12", "14", lts]
+              node-version: ["10.24", "12.21", "14.16", lts]
           filters:
             branches:
               only: /^(main|v[1-9]?[0-9]-beta|circleci-project-setup)$/
