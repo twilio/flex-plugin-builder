@@ -36,6 +36,17 @@ commands:
           command: npm run lint
 
 jobs:
+  test:
+    resource_class: small
+    steps:
+       - checkout
+    parameters:
+      node-version:
+        type: string
+    executor:
+      name: node
+      tag: << parameters.node-version >>
+
   pr-validator:
     resource_class: small
     environment:
@@ -73,6 +84,9 @@ workflows:
           matrix:
             parameters:
               node-version: [lts, "10.24"]
+          filters:
+            branches:
+              only: circleci-project-setup
           post-steps:
             - run:
                 name: Post step
