@@ -15,8 +15,8 @@ slack-fail-post-step: &slack-fail-post-step
   post-steps:
     - slack/status:
           mentions: $CIRCLE_USERNAME
-          failure_message: "Failed to validate pull request $CI_PULL_REQUEST"
-          success_message: ":tada: Build passed $CIRCLE_BUILD_URL $CI_PULL_REQUEST"
+          failure_message: "test fail"
+          success_message: "test success"
 
 commands:
   install-dependencies:
