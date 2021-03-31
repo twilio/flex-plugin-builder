@@ -9,14 +9,7 @@ executors:
       - image: cimg/node:<< parameters.tag >>
 
 orbs:
-  slack: circleci/slack@3.4.2
-
-slack-fail-post-step: &slack-fail-post-step
-  post-steps:
-    - slack/status:
-          mentions: $CIRCLE_USERNAME
-          failure_message: "test fail"
-          success_message: "test success"
+  slack: circleci/slack@4.3.3
 
 commands:
   install-dependencies:
@@ -71,10 +64,23 @@ jobs:
             - run:
                 name: "CODECOV"
                 command: npm run coverage -- --token=$CODECOV_TOKEN
-      - run:
-          name: Success
-          command: |
-            exit 0
+      - slack/notify:
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "plain_text",
+                      "text": "*Hi Runtime :tada:*",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
+          event: always
     
 workflows:
   ci:
@@ -82,8 +88,6 @@ workflows:
       - pr-validator:
           matrix:
             parameters:
-              node-version: [lts, "10.24"]
-          post-steps:
-            - slack/status
+              node-version: ["10.24"]
 
 # node-version: [lts, "10.24", "12.21"]
