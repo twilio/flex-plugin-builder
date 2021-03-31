@@ -20,7 +20,7 @@
     "url": "git+https://github.com/twilio/flex-plugin-builder.git"
   },
   "license": "MIT",
-  "author": "Twilio @twilio",
+  "author": "Flex Runtime <flex-runtime@twilio.com>",
   "files": [
     "/oclif.manifest.json",
     "/dist",
