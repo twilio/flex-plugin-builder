@@ -80,5 +80,5 @@ workflows:
             - run:
                 name: Send Slack notification
                 command: |
-                         curl -X POST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - $CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/pr-validator-/''}*. View <$CIRCLE_BUILD_URL|build>. cc: <@$CIRCLE_USERNAME>', 'mrkdwn':true}" $SLACK_WEBHOOK
+                         curl -X POST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - $CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/pr-validator-/''}*. View <$CIRCLE_BUILD_URL|build>. cc: <@$kamolins>', 'mrkdwn':true}" $SLACK_WEBHOOK
                 when: on_fail
