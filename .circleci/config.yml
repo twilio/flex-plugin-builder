@@ -36,13 +36,6 @@ commands:
           command: npm run lint
 
 jobs:
-  slack-notify:
-    resource_class: small
-    steps:
-       - checkout
-    executor:
-      name: node
-      tag: lts
   pr-validator:
     resource_class: xlarge
     environment:
@@ -55,6 +48,9 @@ jobs:
       name: node
       tag: << parameters.node-version >>  
     steps:
+      - run:
+          name: "Fail on purpose"
+          command: exit 1
       - checkout
       - apt-update
       - install-libscret
@@ -66,7 +62,7 @@ jobs:
             equal: [<< parameters.node-version >>, lts]
           steps:
             - run:
-                name: "CODECOV"
+                name: CODECOV
                 command: npm run coverage -- --token=$CODECOV_TOKEN
 
 workflows:
@@ -75,7 +71,7 @@ workflows:
       - pr-validator:
           matrix:
             parameters:
-              node-version: [lts, "10.24", "12.21"]
+              node-version: [lts]
           filters:
             branches:
               only: /^(main|v[1-9]?[0-9]-beta|circleci-project-setup)$/
