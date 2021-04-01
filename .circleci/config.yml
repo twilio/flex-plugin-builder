@@ -1,0 +1,80 @@
+version: 2.1
+
+executors:
+  node:
+    parameters:
+      tag:
+        type: string
+    docker:
+      - image: cimg/node:<< parameters.tag >>
+
+commands:
+  install-dependencies:
+    steps:
+      - run:
+          name: "Install project dependencies"
+          command: npm i
+  apt-update:
+    steps:
+      - run:
+          name: "APT update"
+          command: sudo apt-get update
+  install-prerequisites:
+    steps:
+      - run:
+          name: "Fetch and install libsecret"
+          command: sudo apt-get install -y libsecret-1-dev
+  run-unit-tests:
+    steps:
+      - run:
+          name: "Run unit tests"
+          command: npm run test:ci
+  run-linter:
+    steps:
+      - run:
+          name: "Run linter"
+          command: npm run lint
+
+jobs:
+  pr-validator:
+    resource_class: xlarge
+    environment:
+      NODE_OPTIONS: --max-old-space-size=14336
+      CI: ""
+    parameters:
+      node-version:
+        type: string
+    executor:
+      name: node
+      tag: << parameters.node-version >>  
+    steps:
+      - checkout
+      - apt-update
+      - install-prerequisites
+      - install-dependencies
+      - run-linter      
+      - run-unit-tests
+      - when:
+          condition:
+            equal: [<< parameters.node-version >>, lts]
+          steps:
+            - run:
+                name: "CODECOV"
+                command: npm run coverage -- --token=$CODECOV_TOKEN
+
+workflows:
+  validate:
+    jobs:
+      - pr-validator:
+          matrix:
+            parameters:
+              node-version: ["10.24", "12.21", "14.16", lts]
+          filters:
+            branches:
+              only: /^(main|v[1-9]?[0-9]-beta)$/
+          post-steps:
+            - run:
+                name: Send Slack notification
+                command: |
+                         curl -X POST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - $CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/pr-validator-/''}*. View <$CIRCLE_BUILD_URL|build>. cc: <@$CIRCLE_USERNAME>', 'mrkdwn':true}" $SLACK_WEBHOOK
+                when: on_fail
