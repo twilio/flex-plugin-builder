@@ -14,16 +14,14 @@ commands:
       - run:
           name: "Install project dependencies"
           command: npm i
-  apt-update:
-    steps:
-      - run:
-          name: "APT update"
-          command: sudo apt-get update
   install-prerequisites:
     steps:
       - run:
           name: "Fetch and install libsecret"
           command: sudo apt-get install -y libsecret-1-dev
+      - run:
+          name: "APT update"
+          command: sudo apt-get update
   run-unit-tests:
     steps:
       - run:
