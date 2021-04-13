@@ -1,4 +1,4 @@
-import { TwilioCliError } from 'flex-dev-utils';
+import { TwilioCliError, env as utilsEnv } from 'flex-dev-utils';
 import * as fs from 'flex-dev-utils/dist/fs';
 
 import createTest, { mockGetPkg } from '../framework';
@@ -262,6 +262,50 @@ describe('SubCommands/FlexPlugin', () => {
     const cmd = await createTest(FlexPlugin)();
 
     expect(cmd.checkCompatibility).toEqual(false);
+  });
+
+  describe('setupEnvironment', () => {
+    const username = 'test-username';
+    const password = 'test-password';
+    const id = 'testProfile';
+
+    const setupMocks = (cmd: FlexPlugin) => {
+      // @ts-ignore
+      cmd.currentProfile = { id };
+      // @ts-ignore
+      jest.spyOn(cmd, 'twilioClient', 'get').mockReturnValue({ username, password });
+      jest.spyOn(utilsEnv, 'setTwilioProfile');
+      jest.spyOn(utilsEnv, 'setDebug');
+      jest.spyOn(utilsEnv, 'persistTerminal');
+    };
+
+    it('should setup environment', async () => {
+      const cmd = await createTest(FlexPlugin)();
+      setupMocks(cmd);
+
+      cmd.setupEnvironment();
+      expect(process.env.SKIP_CREDENTIALS_SAVING).toEqual('true');
+      expect(process.env.TWILIO_ACCOUNT_SID).toEqual(username);
+      expect(process.env.TWILIO_AUTH_TOKEN).toEqual(password);
+      expect(utilsEnv.setTwilioProfile).toHaveBeenCalledTimes(1);
+      expect(utilsEnv.setTwilioProfile).toHaveBeenCalledWith(id);
+      expect(utilsEnv.setDebug).not.toHaveBeenCalled();
+      expect(utilsEnv.persistTerminal).not.toHaveBeenCalled();
+    });
+
+    it('should setup environment as debug level', async () => {
+      const cmd = await createTest(FlexPlugin)('-l', 'debug');
+      setupMocks(cmd);
+
+      cmd.setupEnvironment();
+      expect(process.env.SKIP_CREDENTIALS_SAVING).toEqual('true');
+      expect(process.env.TWILIO_ACCOUNT_SID).toEqual(username);
+      expect(process.env.TWILIO_AUTH_TOKEN).toEqual(password);
+      expect(utilsEnv.setTwilioProfile).toHaveBeenCalledTimes(1);
+      expect(utilsEnv.setTwilioProfile).toHaveBeenCalledWith(id);
+      expect(utilsEnv.setDebug).toHaveBeenCalledTimes(1);
+      expect(utilsEnv.persistTerminal).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('pkg', () => {
