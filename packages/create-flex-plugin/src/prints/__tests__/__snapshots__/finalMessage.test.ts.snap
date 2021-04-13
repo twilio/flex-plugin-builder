@@ -5,20 +5,20 @@ exports[`finalMessage should render a yarn setup message to the console 1`] = `
 
 
 [1m[32mSetup:[39m[22m
-$ cd undefined/
-$ yarn
+$ cd plugin-final-message/
+$ yarn install
 
 [1m[32mDevelopment:[39m[22m
-$ cd undefined/
-$ yarn start
+$ cd plugin-final-message/
+$ twilio flex:plugins:start
 
 [1m[32mBuild Command:[39m[22m
-$ cd undefined/
-$ yarn build
+$ cd plugin-final-message/
+$ twilio flex:plugins:build
 
 [1m[32mDeploy Command:[39m[22m
-$ cd undefined/
-$ yarn deploy
+$ cd plugin-final-message/
+$ twilio flex:plugins:deploy
 
 For more info check the README.md file or go to:
 ➡ https://www.twilio.com/docs/flex"
@@ -29,16 +29,16 @@ exports[`finalMessage should render an instruction message skipping the setup st
 
 
 [1m[32mDevelopment:[39m[22m
-$ cd undefined/
-$ npm start
+$ cd plugin-final-message/
+$ twilio flex:plugins:start
 
 [1m[32mBuild Command:[39m[22m
-$ cd undefined/
-$ npm run build
+$ cd plugin-final-message/
+$ twilio flex:plugins:build
 
 [1m[32mDeploy Command:[39m[22m
-$ cd undefined/
-$ npm run deploy
+$ cd plugin-final-message/
+$ twilio flex:plugins:deploy
 
 For more info check the README.md file or go to:
 ➡ https://www.twilio.com/docs/flex"
@@ -49,20 +49,20 @@ exports[`finalMessage should render an npm setup message to the console 1`] = `
 
 
 [1m[32mSetup:[39m[22m
-$ cd undefined/
+$ cd plugin-final-message/
 $ npm install
 
 [1m[32mDevelopment:[39m[22m
-$ cd undefined/
-$ npm start
+$ cd plugin-final-message/
+$ twilio flex:plugins:start
 
 [1m[32mBuild Command:[39m[22m
-$ cd undefined/
-$ npm run build
+$ cd plugin-final-message/
+$ twilio flex:plugins:build
 
 [1m[32mDeploy Command:[39m[22m
-$ cd undefined/
-$ npm run deploy
+$ cd plugin-final-message/
+$ twilio flex:plugins:deploy
 
 For more info check the README.md file or go to:
 ➡ https://www.twilio.com/docs/flex"

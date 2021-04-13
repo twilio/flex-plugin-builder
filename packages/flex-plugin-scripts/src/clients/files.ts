@@ -1,21 +1,23 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
-import FormData from 'form-data';
 import { createReadStream } from 'fs';
 import { basename } from 'path';
+
+import { Credential } from 'flex-dev-utils';
+import FormData from 'form-data';
 import { isSidOfType } from 'flex-dev-utils/dist/sids';
 
 import BaseClient from './baseClient';
 import Http from './http';
-import { FileVisibility, Version, File } from './serverless-types';
+import { FileVisibility, File } from './serverless-types';
 import ServiceClient from './services';
 
 type FileTypes = 'Functions' | 'Assets';
 
-export  default abstract class FilesClient extends BaseClient {
+export default abstract class FilesClient extends BaseClient {
   protected serviceSid: string;
+
   private readonly fileType: FileTypes;
 
-  protected constructor(auth: AuthConfig, fileType: FileTypes,  serviceSid: string) {
+  protected constructor(auth: Credential, fileType: FileTypes, serviceSid: string) {
     super(auth, `${ServiceClient.getBaseUrl()}/Services/${serviceSid}`);
 
     if (!isSidOfType(serviceSid, 'ZS')) {
@@ -36,7 +38,12 @@ export  default abstract class FilesClient extends BaseClient {
    * @param isProtected   whether to upload this file as Public or Protected
    */
   /* istanbul ignore next */
-  public upload = async (friendlyName: string, uri: string, localFilePath: string, isProtected: boolean = true) => {
+  public upload = async (
+    friendlyName: string,
+    uri: string,
+    localFilePath: string,
+    isProtected: boolean = true,
+  ): Promise<File> => {
     const file = await this._create(friendlyName);
 
     const contentConfig = {
@@ -52,15 +59,14 @@ export  default abstract class FilesClient extends BaseClient {
     const url = `${baseUrl}/Services/${this.serviceSid}/${this.fileType}/${file.sid}/Versions`;
 
     return this.http.upload(url, form);
-  }
+  };
 
   /**
    * Creates a new {@link File}
    * @param friendlyName  the friendly name of the file
    * @private
    */
-  private _create = (friendlyName: string): Promise<File> => {
-    return this.http
-      .post<File>(this.fileType, {FriendlyName: friendlyName});
-  }
+  private _create = async (friendlyName: string): Promise<File> => {
+    return this.http.post<File>(this.fileType, { FriendlyName: friendlyName });
+  };
 }

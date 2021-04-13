@@ -1,39 +1,128 @@
+import env, { Environment } from 'flex-dev-utils/dist/env';
+import * as fs from 'flex-dev-utils/dist/fs';
+
 import * as buildScript from '../build';
-import * as run from '../../utils/run';
+import * as prints from '../../prints';
 
-jest.mock('../../utils/craco');
-jest.mock('../../utils/require');
+jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/env');
+jest.mock('../../prints/buildSuccessful');
+jest.mock('../../prints/buildFailure');
 
-// tslint:disable
-const craco = require('../../utils/craco').default;
-// tslint:enable
-
-describe('build', () => {
-  const exit = jest.spyOn(run, 'exit').mockReturnValue();
+describe('BuildScript', () => {
+  // @ts-ignore
+  const exit = jest.spyOn(process, 'exit').mockReturnThis(() => {
+    /* no-op */
+  });
+  const bundle: buildScript.Bundle = {
+    name: 'test-bundle',
+    size: 12345,
+  };
+  const errorMsg = 'some-error';
 
   beforeEach(() => {
     jest.resetAllMocks();
-    jest.resetModules();
+    jest.resetAllMocks();
   });
 
-  const expectCalled = (exitCode: number, ...args: string[]) => {
-    expect(craco).toHaveBeenCalledTimes(1);
-    expect(craco).toHaveBeenCalledWith('build', ...args);
-    expect(exit).toHaveBeenCalledTimes(1);
-    expect(exit).toHaveBeenCalledWith(exitCode, args);
-  };
+  describe('default', () => {
+    it('should build successfully', async () => {
+      const updateAppVersion = jest.spyOn(fs, 'updateAppVersion').mockReturnThis();
+      const _getBundle = jest.spyOn(buildScript, '_runWebpack').mockResolvedValue({ warnings: [], bundles: [bundle] });
 
-  it('should call craco', async () => {
-    craco.mockResolvedValue(0);
+      await buildScript.default();
 
-    await buildScript.default();
-    expectCalled(0);
+      expect(env.setBabelEnv).toHaveBeenCalledTimes(1);
+      expect(env.setBabelEnv).toHaveBeenCalledWith(Environment.Production);
+      expect(env.setNodeEnv).toHaveBeenCalledTimes(1);
+      expect(env.setNodeEnv).toHaveBeenCalledWith(Environment.Production);
+
+      expect(updateAppVersion).not.toHaveBeenCalled();
+      expect(_getBundle).toHaveBeenCalledTimes(1);
+      expect(prints.buildSuccessful).toHaveBeenCalledTimes(1);
+      expect(prints.buildFailure).not.toHaveBeenCalled();
+      expect(exit).not.toHaveBeenCalled();
+
+      _getBundle.mockRestore();
+    });
+
+    it('should update appVersion if provided', async () => {
+      const updateAppVersion = jest.spyOn(fs, 'updateAppVersion').mockReturnThis();
+      const _getBundle = jest.spyOn(buildScript, '_runWebpack').mockResolvedValue({ warnings: [], bundles: [bundle] });
+
+      await buildScript.default('--version', '1.2.3');
+
+      expect(updateAppVersion).toHaveBeenCalledTimes(1);
+      expect(updateAppVersion).toHaveBeenCalledWith('1.2.3');
+
+      _getBundle.mockRestore();
+    });
+
+    it('should fail to build', async () => {
+      const _getBundle = jest.spyOn(buildScript, '_runWebpack').mockRejectedValue(errorMsg);
+
+      await buildScript.default();
+      expect(_getBundle).toHaveBeenCalledTimes(1);
+      expect(prints.buildSuccessful).not.toHaveBeenCalled();
+      expect(prints.buildFailure).toHaveBeenCalledTimes(1);
+      expect(prints.buildFailure).toHaveBeenCalledWith(errorMsg);
+      expect(exit).toHaveBeenCalledTimes(1);
+      expect(exit).toHaveBeenCalledWith(1);
+
+      _getBundle.mockRestore();
+    });
   });
 
-  it('should call craco with args', async () => {
-    craco.mockResolvedValue(0);
+  describe('_handler', () => {
+    const resolve = jest.fn();
+    const reject = jest.fn();
 
-    await buildScript.default('arg1', 'arg2');
-    expectCalled(0, 'arg1', 'arg2');
+    it('should reject on webpack error', async () => {
+      const err = new Error('foo');
+      // @ts-ignore
+      await buildScript._handler(resolve, reject)(err, null);
+
+      expect(reject).toHaveBeenCalledTimes(1);
+      expect(reject).toHaveBeenCalledWith(err);
+      expect(resolve).not.toHaveBeenCalled();
+    });
+
+    it('should reject on compile error', async () => {
+      const toJson = jest.fn().mockReturnValue({ errors: errorMsg });
+      const stats = {
+        toJson,
+        hasErrors: () => true,
+      };
+
+      // @ts-ignore
+      await buildScript._handler(resolve, reject)(null, stats);
+
+      expect(toJson).toHaveBeenCalledTimes(1);
+      expect(reject).toHaveBeenCalledTimes(1);
+      expect(reject).toHaveBeenCalledWith(errorMsg);
+      expect(resolve).not.toHaveBeenCalled();
+    });
+
+    it('should compile successfully', async () => {
+      const toJson = jest.fn().mockReturnValue({
+        assets: [bundle],
+        warnings: [],
+      });
+      const stats = {
+        toJson,
+        hasErrors: () => false,
+      };
+
+      // @ts-ignore
+      await buildScript._handler(resolve, reject)(null, stats);
+
+      expect(toJson).toHaveBeenCalledTimes(2);
+      expect(reject).not.toHaveBeenCalled();
+      expect(resolve).toHaveBeenCalledTimes(1);
+      expect(resolve).toHaveBeenCalledWith({
+        bundles: [bundle],
+        warnings: [],
+      });
+    });
   });
 });

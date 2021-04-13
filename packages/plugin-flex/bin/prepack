@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+if [ -z "$TRAVIS_TAG" ] ; then
+  echo 'Prepack is on tagged commits only'
+  exit 0
+fi
+
+node_modules/.bin/oclif-dev manifest
+npm run replace-doc

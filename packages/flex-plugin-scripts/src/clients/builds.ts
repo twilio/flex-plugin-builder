@@ -1,5 +1,4 @@
-import { logger } from 'flex-dev-utils/dist';
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential, logger } from 'flex-dev-utils';
 import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
 
 import BaseClient from './baseClient';
@@ -9,16 +8,19 @@ import ServiceClient from './services';
 export interface BuildData {
   FunctionVersions: string[];
   AssetVersions: string[];
+  // eslint-disable-next-line @typescript-eslint/ban-types
   Dependencies: object;
 }
 
 export default class BuildClient extends BaseClient {
   public static BaseUri = 'Builds';
+
   private static timeoutMsec: number = 60000;
+
   private static pollingIntervalMsec: number = 500;
 
-  constructor(auth: AuthConfig, serviceSid: string) {
-    super(auth,  `${ServiceClient.getBaseUrl()}/Services/${serviceSid}`);
+  constructor(auth: Credential, serviceSid: string) {
+    super(auth, `${ServiceClient.getBaseUrl()}/Services/${serviceSid}`);
 
     if (!isSidOfType(serviceSid, SidPrefix.ServiceSid)) {
       throw new Error(`ServiceSid ${serviceSid} is not valid`);
@@ -31,12 +33,13 @@ export default class BuildClient extends BaseClient {
    *
    * @param data  the build data
    */
-  public create = (data: BuildData): Promise<Build> => {
+  public create = async (data: BuildData): Promise<Build> => {
     return new Promise(async (resolve, reject) => {
       const newBuild = await this._create(data);
-      const sid = newBuild.sid;
+      const { sid } = newBuild;
 
       const timeoutId = setTimeout(() => {
+        // eslint-disable-next-line no-use-before-define, @typescript-eslint/no-use-before-define
         clearInterval(intervalId);
         reject('Timeout while waiting for new Twilio Runtime build status to change to complete.');
       }, BuildClient.timeoutMsec);
@@ -62,21 +65,20 @@ export default class BuildClient extends BaseClient {
         }
       }, BuildClient.pollingIntervalMsec);
     });
-  }
+  };
 
   /**
    * Fetches a build by buildSid
    *
    * @param sid  the build sid to fetch
    */
-  public get = (sid: string): Promise<Build> => {
+  public get = async (sid: string): Promise<Build> => {
     if (!isSidOfType(sid, SidPrefix.BuildSid)) {
       throw new Error(`${sid} is not of type ${SidPrefix.BuildSid}`);
     }
 
-    return this.http
-      .get<Build>(`${BuildClient.BaseUri}/${sid}`);
-  }
+    return this.http.get<Build>(`${BuildClient.BaseUri}/${sid}`);
+  };
 
   /**
    * Creates a new instance of build
@@ -84,8 +86,7 @@ export default class BuildClient extends BaseClient {
    * @param data  the build data
    * @private
    */
-  private _create = (data: BuildData): Promise<Build> => {
-    return this.http
-      .post<Build>(BuildClient.BaseUri, data);
-  }
+  private _create = async (data: BuildData): Promise<Build> => {
+    return this.http.post<Build>(BuildClient.BaseUri, data);
+  };
 }

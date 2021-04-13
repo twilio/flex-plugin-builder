@@ -1,4 +1,4 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential } from 'flex-dev-utils';
 
 import FileClient from '../files';
 import BaseClient from '../baseClient';
@@ -7,7 +7,7 @@ jest.mock('../baseClient');
 
 describe('FileClient', () => {
   const serviceSid = 'ZS00000000000000000000000000000000';
-  const auth = {} as AuthConfig;
+  const auth = {} as Credential;
 
   class Test extends FileClient {
     constructor(sid: string) {
@@ -23,7 +23,7 @@ describe('FileClient', () => {
   describe('constructor', () => {
     it('should throw error if invalid sid is provided', (done) => {
       try {
-        // tslint:disable-next-line
+        // eslint-disable-next-line no-new
         new Test('ZSxxx');
       } catch (e) {
         expect(e.message).toContain('not valid');
@@ -33,7 +33,7 @@ describe('FileClient', () => {
     });
 
     it('should instantiate', () => {
-      // tslint:disable-next-line
+      // eslint-disable-next-line no-new
       new Test(serviceSid);
       expect(BaseClient).toHaveBeenCalledTimes(1);
     });

@@ -1,12 +1,15 @@
-const base = require('./../../jest.config.base');
+const base = require('./../../jest.base.js');
 const pkg = require('./package');
 
 module.exports = {
-  ...base,
-  name: pkg.name,
-  displayName: pkg.name,
-  rootDir: '../..',
-  testMatch: [
-    `<rootDir>/packages/${pkg.name}/**/*.test.ts`
-  ],
+  rootDir: '.',
+  ...base(pkg),
+  coverageThreshold: {
+    global: {
+      statements: 95,
+      branches: 88,
+      lines: 96,
+      functions: 93,
+    },
+  },
 };

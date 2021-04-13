@@ -1,9 +1,11 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+/* eslint-disable camelcase */
+import { Credential } from 'flex-dev-utils';
+
 import BaseClient from '../baseClient';
 import ServiceClient from '../services';
 
 describe('ServiceClient', () => {
-  const auth: AuthConfig = {
+  const auth: Credential = {
     username: 'AC00000000000000000000000000000000',
     password: 'abc',
   };

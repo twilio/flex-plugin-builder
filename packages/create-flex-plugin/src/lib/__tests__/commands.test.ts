@@ -1,19 +1,14 @@
-import { join } from 'path';
-
-import { GitHubInfo } from '../../utils/github';
 import * as commands from '../commands';
 import { FlexPluginArguments } from '../create-flex-plugin';
 import * as github from '../../utils/github';
 
 jest.mock('flex-dev-utils/dist/spawn');
 
-// tslint:disable
-const pkg = require(join(process.cwd(), 'packages/create-flex-plugin/package.json'));
-const spawn = require('flex-dev-utils').spawn;
-// tslint:enable
+/* eslint-disable */
+const { spawn } = require('flex-dev-utils');
+/* eslint-enable */
 
 describe('commands', () => {
-
   beforeEach(() => {
     jest.resetAllMocks();
     jest.resetModules();
@@ -84,20 +79,15 @@ describe('commands', () => {
   describe('setupConfiguration', () => {
     it('should check the basics', () => {
       const config = { name: 'plugin-name' } as FlexPluginArguments;
-      const _getPluginJsonContent = jest.spyOn(commands, '_getPluginJsonContent');
       const result = commands.setupConfiguration(config);
 
       expect(result.pluginClassName).toEqual('NamePlugin');
       expect(result.pluginNamespace).toEqual('name');
       expect(result.targetDirectory).toEqual(expect.stringContaining('plugin-name'));
-      expect(_getPluginJsonContent).toHaveBeenCalledTimes(1);
-      expect(_getPluginJsonContent).toHaveBeenCalledWith(config);
-
-      _getPluginJsonContent.mockRestore();
     });
 
     it('name should be set to empty string', () => {
-      const config = { } as FlexPluginArguments;
+      const config = {} as FlexPluginArguments;
 
       const result = commands.setupConfiguration(config);
       expect(result.pluginClassName).toEqual('Plugin');
@@ -106,17 +96,13 @@ describe('commands', () => {
 
   describe('downloadFromGitHub', () => {
     it('should download from GitHub', async () => {
-      const info: GitHubInfo = {
+      const info: github.GitHubInfo = {
         owner: 'twilio',
         repo: 'twilio-repo',
         ref: 'ref',
       };
-      const parseGitHubUrl = jest
-        .spyOn(github, 'parseGitHubUrl')
-        .mockResolvedValue(info);
-      const downloadRepo = jest
-        .spyOn(github, 'downloadRepo')
-        .mockResolvedValue(null);
+      const parseGitHubUrl = jest.spyOn(github, 'parseGitHubUrl').mockResolvedValue(info);
+      const downloadRepo = jest.spyOn(github, 'downloadRepo').mockResolvedValue();
 
       await commands.downloadFromGitHub('the-url', 'the-dir');
 
@@ -127,24 +113,6 @@ describe('commands', () => {
 
       parseGitHubUrl.mockRestore();
       downloadRepo.mockRestore();
-    });
-  });
-
-  describe('_getPluginJsonContent', () => {
-    it('should return the content', () => {
-      const config = {
-        name: 'the-name',
-        pluginClassName: 'the-class-name',
-        flexSdkVersion: '1.2.3',
-      } as FlexPluginArguments;
-
-      const resp = commands._getPluginJsonContent(config);
-
-      expect(resp).toHaveLength(1);
-      expect(resp[0].name).toEqual(config.name);
-      expect(resp[0].version).toEqual('0.0.0');
-      expect(resp[0].class).toEqual(config.pluginClassName);
-      expect(resp[0].src).toEqual(expect.stringContaining(config.name as string));
     });
   });
 });

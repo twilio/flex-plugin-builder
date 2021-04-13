@@ -6,9 +6,7 @@ jest.mock('flex-dev-utils/dist/logger');
 
 describe('clear', () => {
   it('should clear credentials', async () => {
-    const clearCredentials = jest
-      .spyOn(credentials, 'clearCredentials')
-      .mockResolvedValue();
+    const clearCredentials = jest.spyOn(credentials, 'clearCredentials').mockResolvedValue();
 
     await clearScript.default();
 

@@ -1,4 +1,7 @@
+/* eslint-disable camelcase */
 import { FlexPluginError } from 'flex-dev-utils';
+import * as fsScript from 'flex-dev-utils/dist/fs';
+
 import { Visibility } from '../../clients/serverless-types';
 import * as listScript from '../list';
 
@@ -6,26 +9,36 @@ jest.mock('../../prints/pluginVersions');
 jest.mock('../../utils/runtime');
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/credentials');
-jest.mock('../../utils/paths', () => ({
-  packageName: 'plugin-test',
-}));
 
-// tslint:disable
+/* eslint-disable */
 const getRuntime = require('../../utils/runtime').default;
 const pluginVersions = require('../../prints/pluginVersions').default;
-// tslint:enable
+/* eslint-enable */
 
 describe('list', () => {
+  const twilUrl = 'test.twil.io';
+  const privateOnly = '--private-only';
+  const paths = {
+    app: {
+      name: 'plugin-test',
+    },
+  };
+
   process.env.TWILIO_API_KEY = 'SK00000000000000000000000000000000';
   process.env.TWILIO_API_SECRET = 'abc123';
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // @ts-ignore
+    jest.spyOn(fsScript, 'getPaths').mockReturnValue(paths);
   });
 
   describe('main script', () => {
     // @ts-ignore
-    const doList = jest.spyOn(listScript, '_doList').mockImplementation(() => { /* no-op */ });
+    const doList = jest.spyOn(listScript, '_doList').mockImplementation(() => {
+      /* no-op */
+    });
 
     afterAll(() => {
       doList.mockRestore();
@@ -33,11 +46,11 @@ describe('list', () => {
 
     it('should quit if both --public-only and --private-only is provided', async (done) => {
       try {
-        await listScript.default('--public-only', '--private-only');
+        await listScript.default('--public-only', privateOnly);
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(e.message).toContain('cannot use --public-only');
-        expect(e.message).toContain('--private-only');
+        expect(e.message).toContain(privateOnly);
         done();
       }
     });
@@ -46,34 +59,36 @@ describe('list', () => {
       await listScript.default();
 
       expect(doList).toHaveBeenCalledTimes(1);
-      expect(doList).toHaveBeenCalledWith(['public', 'protected'], 'asc');
+      expect(doList).toHaveBeenCalledWith([Visibility.Public, Visibility.Protected], 'asc');
     });
 
     it('should call doList as public', async () => {
       await listScript.default('--public-only');
 
       expect(doList).toHaveBeenCalledTimes(1);
-      expect(doList).toHaveBeenCalledWith(['public'], 'asc');
+      expect(doList).toHaveBeenCalledWith([Visibility.Public], 'asc');
     });
 
     it('should call doList as public', async () => {
-      await listScript.default('--private-only');
+      await listScript.default(privateOnly);
 
       expect(doList).toHaveBeenCalledTimes(1);
-      expect(doList).toHaveBeenCalledWith(['protected'], 'asc');
+      expect(doList).toHaveBeenCalledWith([Visibility.Protected], 'asc');
     });
 
     it('should call doList in desc', async () => {
       await listScript.default('--desc');
 
       expect(doList).toHaveBeenCalledTimes(1);
-      expect(doList).toHaveBeenCalledWith(['public', 'protected'], 'desc');
+      expect(doList).toHaveBeenCalledWith([Visibility.Public, Visibility.Protected], 'desc');
     });
   });
 
   describe('_doList', () => {
     // @ts-ignore
-    const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
+    const exit = jest.spyOn(process, 'exit').mockImplementation(() => {
+      /* no-op */
+    });
     const publicVersion = {
       path: '/plugins/plugin-test/0.1.0/bundle.js',
       visibility: 'public',
@@ -90,7 +105,9 @@ describe('list', () => {
 
     beforeEach(() => {
       getRuntime.mockImplementation(() => ({
-        environment: { domain_name: 'test.twil.io' },
+        // eslint-disable-next-line camelcase
+        environment: { domain_name: twilUrl },
+        // eslint-disable-next-line camelcase
         build: { asset_versions: assetVersions },
       }));
     });
@@ -109,6 +126,7 @@ describe('list', () => {
 
     it('should not print table if assets is empty', async () => {
       getRuntime.mockImplementation(() => ({
+        // eslint-disable-next-line camelcase
         build: { asset_versions: [] },
       }));
 
@@ -121,28 +139,28 @@ describe('list', () => {
       await listScript._doList([Visibility.Public, Visibility.Protected]);
 
       expect(pluginVersions).toHaveBeenCalledTimes(1);
-      expect(pluginVersions).toHaveBeenCalledWith('test.twil.io', [publicVersion, privateVersion], 'asc');
+      expect(pluginVersions).toHaveBeenCalledWith(twilUrl, [publicVersion, privateVersion], 'asc');
     });
 
     it('should filter out plugin-test only in desc', async () => {
       await listScript._doList([Visibility.Public, Visibility.Protected], 'desc');
 
       expect(pluginVersions).toHaveBeenCalledTimes(1);
-      expect(pluginVersions).toHaveBeenCalledWith('test.twil.io', [publicVersion, privateVersion], 'desc');
+      expect(pluginVersions).toHaveBeenCalledWith(twilUrl, [publicVersion, privateVersion], 'desc');
     });
 
     it('should filter out public plugin-test ', async () => {
       await listScript._doList([Visibility.Public]);
 
       expect(pluginVersions).toHaveBeenCalledTimes(1);
-      expect(pluginVersions).toHaveBeenCalledWith('test.twil.io', [publicVersion], 'asc');
+      expect(pluginVersions).toHaveBeenCalledWith(twilUrl, [publicVersion], 'asc');
     });
 
     it('should filter out private plugin-test ', async () => {
       await listScript._doList([Visibility.Protected]);
 
       expect(pluginVersions).toHaveBeenCalledTimes(1);
-      expect(pluginVersions).toHaveBeenCalledWith('test.twil.io', [privateVersion], 'asc');
+      expect(pluginVersions).toHaveBeenCalledWith(twilUrl, [privateVersion], 'asc');
     });
   });
 });

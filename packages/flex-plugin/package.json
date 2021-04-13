@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin",
-  "version": "3.14.2",
+  "version": "4.6.0-beta.0",
   "description": "Runtime for Flex plugins",
   "keywords": [
     "builder",
@@ -17,31 +17,27 @@
     "url": "git+https://github.com/twilio/flex-plugin-builder.git"
   },
   "license": "MIT",
-  "author": "Kousha Talebian <ktalebian@twilio.com>",
-  "files": [
-    "dist",
-    "bin"
-  ],
+  "author": "Flex Runtime <flex-runtime@twilio.com>",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "bin": {
-    "flex-check-start": "./bin/check-start"
-  },
   "directories": {
     "lib": "src",
-    "bin": "bin",
     "test": "__tests__"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "tsc",
+    "build": "../../node_modules/.bin/tsc",
     "clean": "rm -rf dist",
+    "lint": "eslint --ext ts src/",
+    "lint:fix": "npm run lint -- --fix",
     "prepublish": "npm run build",
     "test": "cd ../.. && jest packages/flex-plugin --color",
     "test:watch": "cd ../.. && jest packages/flex-plugin --watch --color"
   },
   "devDependencies": {
     "@twilio/flex-ui": "^1"
-  },
-  "gitHead": "741e95edbfa78da5f862ec7cfe7d032e842606a4"
+  }
 }

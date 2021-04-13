@@ -1,1 +1,1 @@
-export { logger as default } from 'flex-plugins-utils-logger';
+export { logger as default, Logger, coloredStrings } from 'flex-plugins-utils-logger';

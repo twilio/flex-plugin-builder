@@ -1,4 +1,4 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential } from 'flex-dev-utils';
 import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
 
 import BaseClient from './baseClient';
@@ -8,7 +8,7 @@ import ServiceClient from './services';
 export default class DeploymentClient extends BaseClient {
   public static BaseUri = 'Deployments';
 
-  constructor(auth: AuthConfig, serviceSid: string, environmentSid: string) {
+  constructor(auth: Credential, serviceSid: string, environmentSid: string) {
     super(auth, `${ServiceClient.getBaseUrl()}/Services/${serviceSid}/Environments/${environmentSid}`);
 
     if (!isSidOfType(serviceSid, 'ZS')) {
@@ -25,12 +25,11 @@ export default class DeploymentClient extends BaseClient {
    *
    * @param buildSid  the build sid
    */
-  public create = (buildSid: string): Promise<Deployment> => {
+  public create = async (buildSid: string): Promise<Deployment> => {
     if (!isSidOfType(buildSid, SidPrefix.BuildSid)) {
       throw new Error(`${buildSid} is not of type ${SidPrefix.BuildSid}`);
     }
 
-    return this.http
-      .post<Deployment>(DeploymentClient.BaseUri, {BuildSid: buildSid});
-  }
+    return this.http.post<Deployment>(DeploymentClient.BaseUri, { BuildSid: buildSid });
+  };
 }

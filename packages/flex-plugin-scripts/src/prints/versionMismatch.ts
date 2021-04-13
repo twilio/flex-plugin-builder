@@ -1,4 +1,4 @@
-import { logger } from 'flex-dev-utils';
+import { logger, env } from 'flex-dev-utils';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
 
 import instructionToReinstall from './instructionToReinstall';
@@ -12,18 +12,17 @@ import preFlightByPass from './preFlightByPass';
  * @param requiredVersion   the required version
  * @param skip              whether the developer is opting to skip
  */
-export default (packageName: string, installedVersion: string, requiredVersion: string, skip: boolean) => {
+export default (packageName: string, installedVersion: string, requiredVersion: string, skip: boolean): void => {
   const nameColor = logger.coloredStrings.name;
-  const headline = logger.coloredStrings.headline;
-  const red = logger.colors.red;
+  const { headline } = logger.coloredStrings;
+  const { red } = logger.colors;
 
   const flexUIName = nameColor('@twilio/flex-ui');
   const scriptName = nameColor('flex-plugin-scripts');
 
+  env.setQuiet(false);
   logger.newline();
-  logger.error(singleLineString(
-    'There might be a problem with your project dependency tree.',
-  ));
+  logger.error(singleLineString('There might be a problem with your project dependency tree.'));
   logger.newline();
 
   logger.info(`The ${flexUIName} requires the following package:`);
@@ -37,10 +36,9 @@ export default (packageName: string, installedVersion: string, requiredVersion: 
   logger.info('Managing this package yourself is known to cause issues in production environments.');
   logger.newline();
 
-  instructionToReinstall(
-    `Remove ${nameColor(packageName)} from your ${nameColor('package.json')} file`,
-  );
+  instructionToReinstall(`Remove ${nameColor(packageName)} from your ${nameColor('package.json')} file`);
 
   preFlightByPass(skip);
   logger.newline();
+  env.setQuiet(true);
 };
