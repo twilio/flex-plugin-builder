@@ -24,6 +24,41 @@ describe('env', () => {
     jest.restoreAllMocks();
   });
 
+  describe('setTwilioProfile', () => {
+    const profile = 'the-profile';
+
+    it('should set the profile', () => {
+      delete process.env.TWILIO_PROFILE;
+      env.setTwilioProfile(profile);
+
+      expect(process.env.TWILIO_PROFILE).toEqual(profile);
+    });
+
+    it('should not set the profile env if not node', () => {
+      jest.spyOn(env, 'isNode').mockReturnValue(false);
+      delete process.env.TWILIO_PROFILE;
+      env.setTwilioProfile(profile);
+
+      expect(process.env.TWILIO_PROFILE).toBeUndefined();
+    });
+  });
+
+  describe('getTwilioProfile', () => {
+    it('should get the profile', () => {
+      process.env.TWILIO_PROFILE = 'profile-name';
+      const profile = env.getTwilioProfile();
+
+      expect(profile).toEqual('profile-name');
+    });
+
+    it('should return undefined if no profile found', () => {
+      delete process.env.TWILIO_PROFILE;
+      const profile = env.getTwilioProfile();
+
+      expect(profile).toBeUndefined();
+    });
+  });
+
   describe('persistTerminal', () => {
     it('should set the terminal to persist', () => {
       delete process.env.PERSIST_TERMINAL;
@@ -53,6 +88,35 @@ describe('env', () => {
   });
 
   describe('debug', () => {
+    it('should set debug mode to true', () => {
+      delete process.env.DEBUG;
+      env.setDebug(true);
+
+      expect(process.env.DEBUG).toEqual('true');
+    });
+
+    it('should set debug mode to false', () => {
+      delete process.env.DEBUG;
+      env.setDebug(false);
+
+      expect(process.env.DEBUG).toEqual('false');
+    });
+
+    it('should set debug mode to default', () => {
+      delete process.env.DEBUG;
+      env.setDebug();
+
+      expect(process.env.DEBUG).toEqual('true');
+    });
+
+    it('should not set debug if not node', () => {
+      jest.spyOn(env, 'isNode').mockReturnValue(false);
+      delete process.env.DEBUG;
+      env.setDebug(true);
+
+      expect(process.env.DEBUG).toBeUndefined();
+    });
+
     it('debug should return true', () => {
       process.env.DEBUG = 'true';
       expect(env.isDebug()).toEqual(true);

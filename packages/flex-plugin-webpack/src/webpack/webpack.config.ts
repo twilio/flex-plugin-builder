@@ -21,8 +21,8 @@ import webpack, {
   RuleSetRule,
   SourceMapDevToolPlugin,
 } from 'webpack';
-import DotenvWebpackPlugin from 'dotenv-webpack';
 
+import { getSanitizedProcessEnv } from './clientVariables';
 import { WebpackType } from '..';
 import Optimization = webpack.Options.Optimization;
 
@@ -227,7 +227,6 @@ export const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
  */
 export const _getBasePlugins = (environment: Environment): Plugin[] => {
   const plugins: Plugin[] = [];
-  const appPaths = getPaths().app;
 
   const flexUIVersion = getDependencyVersion('@twilio/flex-ui');
   const reactVersion = getDependencyVersion('react');
@@ -258,18 +257,7 @@ export const _getBasePlugins = (environment: Environment): Plugin[] => {
     }
   }
 
-  plugins.push(new DefinePlugin(defined));
-
-  // Support .env file if provided
-  if (appPaths.hasEnvFile()) {
-    plugins.push(
-      new DotenvWebpackPlugin({
-        path: appPaths.envPath,
-        safe: appPaths.hasEnvExampleFile(),
-        defaults: appPaths.hasEnvDefaultsPath(),
-      }),
-    );
-  }
+  plugins.push(new DefinePlugin({ ...defined, ...getSanitizedProcessEnv() }));
 
   return plugins;
 };

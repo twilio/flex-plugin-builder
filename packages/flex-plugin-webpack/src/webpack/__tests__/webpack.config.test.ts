@@ -1,13 +1,13 @@
 import * as webpack from 'webpack';
 import { Environment } from 'flex-dev-utils/dist/env';
-import DotenvWebpackPlugin from 'dotenv-webpack';
 import * as fs from 'flex-dev-utils/dist/fs';
 
 import * as webpackConfig from '../webpack.config';
+import * as clientVariables from '../clientVariables';
 import { WebpackType } from '../..';
 
 jest.mock('flex-dev-utils/dist/fs');
-jest.mock('dotenv-webpack');
+jest.mock('webpack/lib/DefinePlugin');
 
 describe('WebpackConfiguration', () => {
   const isTSProject = jest.fn();
@@ -20,6 +20,7 @@ describe('WebpackConfiguration', () => {
     },
     app: {
       name: 'test',
+      version: '1.2.3',
       buildDir: 'the/build/dir',
       publicDir: 'the/public/dir',
       isTSProject,
@@ -39,6 +40,9 @@ describe('WebpackConfiguration', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.resetModules();
+
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
   });
 
   describe('default', () => {
@@ -81,8 +85,6 @@ describe('WebpackConfiguration', () => {
 
   describe('_getJavaScriptConfiguration', () => {
     it('should test devtool field', () => {
-      // @ts-ignore
-      jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
       jest.spyOn(webpackConfig, '_getJavaScriptEntries').mockReturnValue([]);
       jest.spyOn(webpackConfig, '_getOptimization').mockReturnValue({});
       jest.spyOn(webpackConfig, '_getJSPlugins').mockReturnValue([]);
@@ -95,8 +97,6 @@ describe('WebpackConfiguration', () => {
     });
 
     it('should get production config', () => {
-      // @ts-ignore
-      jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
       const _getJavaScriptEntries = jest.spyOn(webpackConfig, '_getJavaScriptEntries').mockReturnValue([]);
       const _getOptimization = jest.spyOn(webpackConfig, '_getOptimization').mockReturnValue({});
       const _getJSPlugins = jest.spyOn(webpackConfig, '_getJSPlugins').mockReturnValue([]);
@@ -116,8 +116,6 @@ describe('WebpackConfiguration', () => {
     });
 
     it('should get development config', () => {
-      // @ts-ignore
-      jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
       const _getJavaScriptEntries = jest.spyOn(webpackConfig, '_getJavaScriptEntries').mockReturnValue([]);
       const _getOptimization = jest.spyOn(webpackConfig, '_getOptimization').mockReturnValue({});
       const _getJSPlugins = jest.spyOn(webpackConfig, '_getJSPlugins').mockReturnValue([]);
@@ -162,62 +160,78 @@ describe('WebpackConfiguration', () => {
   });
 
   describe('_getBasePlugins', () => {
+    const depVersions = {
+      'flex-plugin-scripts': '1.0.0',
+      'flex-plugin': '1.1.0',
+      '@twilio/flex-ui': '1.2.0',
+      react: '1.3.0',
+      'react-dom': '1.4.0',
+    };
+
+    const mockGetDependencyVersion = () => {
+      jest.spyOn(fs, 'getDependencyVersion').mockImplementation((name) => depVersions[name]);
+    };
+    const verifyInternalDefinition = () => {
+      expect(webpack.DefinePlugin).toHaveBeenCalledWith(
+        expect.objectContaining({
+          __FPB_PLUGIN_UNIQUE_NAME: `'${paths.app.name}'`,
+          __FPB_PLUGIN_VERSION: `'${paths.app.version}'`,
+          __FPB_FLEX_PLUGIN_SCRIPTS_VERSION: `'${depVersions['flex-plugin-scripts']}'`,
+          __FPB_FLEX_PLUGIN_VERSION: `'${depVersions['flex-plugin']}'`,
+          __FPB_FLEX_UI_VERSION: `'${depVersions['@twilio/flex-ui']}'`,
+          __FPB_REACT_VERSION: `'${depVersions.react}'`,
+          __FPB_REACT_DOM_VERSION: `'${depVersions['react-dom']}'`,
+          __FPB_CRACO_CONFIG_FLEX_PLUGIN_VERSION: `'N/A'`,
+        }),
+      );
+    };
+
     beforeEach(() => {
       // @ts-ignore
-      DotenvWebpackPlugin.mockReset();
+      webpack.DefinePlugin.mockReset();
     });
 
-    it('should not set DotenvWebpackPlugin if no .env file is found', () => {
-      hasEnvFile.mockReturnValue(false);
-      const config = webpackConfig._getBase(Environment.Development);
+    it('should call DefinePlugin for internal definitions', () => {
+      mockGetDependencyVersion();
+      const plugins = webpackConfig._getBasePlugins(Environment.Development);
 
-      const plugins = config.plugins || [];
-      const plugin = plugins.find((p) => p.constructor.name === DotenvWebpackPlugin.name);
+      expect(webpack.DefinePlugin).toHaveBeenCalledTimes(1);
+      verifyInternalDefinition();
 
-      expect(plugin).toBeUndefined();
-      expect(DotenvWebpackPlugin).not.toHaveBeenCalled();
-    });
-
-    it('should set DotenvWebpackPlugin with no .example or .defaults files', () => {
-      hasEnvFile.mockReturnValue(true);
-      hasEnvExampleFile.mockReturnValue(false);
-      hasEnvDefaultsPath.mockReturnValue(false);
-      const config = webpackConfig._getBase(Environment.Development);
-
-      const plugins = config.plugins || [];
-      const plugin = plugins.find((p) => p.constructor.name === DotenvWebpackPlugin.name);
-
+      const plugin = plugins.find((p) => p.constructor.name === webpack.DefinePlugin.name);
       expect(plugin).toBeDefined();
-      expect(DotenvWebpackPlugin).toHaveBeenCalledTimes(1);
-      expect(DotenvWebpackPlugin).toHaveBeenCalledWith({ safe: false, defaults: false });
     });
 
-    it('should set DotenvWebpackPlugin with .example but no .defaults files', () => {
-      hasEnvFile.mockReturnValue(true);
-      hasEnvExampleFile.mockReturnValue(true);
-      hasEnvDefaultsPath.mockReturnValue(false);
-      const config = webpackConfig._getBase(Environment.Development);
+    it('should add client variables', () => {
+      const variables = {
+        sample: 'variable',
+        test: 'name',
+      };
+      mockGetDependencyVersion();
+      jest.spyOn(clientVariables, 'getSanitizedProcessEnv').mockReturnValue({ 'process.env': variables });
 
-      const plugins = config.plugins || [];
-      const plugin = plugins.find((p) => p.constructor.name === DotenvWebpackPlugin.name);
+      const plugins = webpackConfig._getBasePlugins(Environment.Development);
 
+      expect(webpack.DefinePlugin).toHaveBeenCalledTimes(1);
+      expect(webpack.DefinePlugin).toHaveBeenCalledWith(
+        expect.objectContaining({
+          'process.env': variables,
+        }),
+      );
+      verifyInternalDefinition();
+
+      const plugin = plugins.find((p) => p.constructor.name === webpack.DefinePlugin.name);
       expect(plugin).toBeDefined();
-      expect(DotenvWebpackPlugin).toHaveBeenCalledTimes(1);
-      expect(DotenvWebpackPlugin).toHaveBeenCalledWith({ safe: true, defaults: false });
     });
+  });
 
-    it('should set DotenvWebpackPlugin with .example and .defaults files', () => {
-      hasEnvFile.mockReturnValue(true);
-      hasEnvExampleFile.mockReturnValue(true);
-      hasEnvDefaultsPath.mockReturnValue(true);
-      const config = webpackConfig._getBase(Environment.Development);
+  describe('_getStaticConfiguration', () => {
+    it('should add static plugins', () => {
+      jest.spyOn(webpackConfig, '_getStaticPlugins').mockReturnValue([]);
+      webpackConfig._getStaticConfiguration({}, Environment.Development);
 
-      const plugins = config.plugins || [];
-      const plugin = plugins.find((p) => p.constructor.name === DotenvWebpackPlugin.name);
-
-      expect(plugin).toBeDefined();
-      expect(DotenvWebpackPlugin).toHaveBeenCalledTimes(1);
-      expect(DotenvWebpackPlugin).toHaveBeenCalledWith({ safe: true, defaults: true });
+      expect(webpackConfig._getStaticPlugins).toHaveBeenCalledTimes(1);
+      expect(webpackConfig._getStaticPlugins).toHaveBeenCalledWith(Environment.Development);
     });
   });
 });

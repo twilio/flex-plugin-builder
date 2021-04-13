@@ -64,6 +64,21 @@ export const isWin32 = (): boolean => isNode() && process.platform === 'win32';
 export const isCI = (): boolean => isNode() && process.env.CI === 'true';
 
 /**
+ * Sets the Twilio Profile
+ * @param profile the profile to set
+ */
+export const setTwilioProfile = (profile: string): void => {
+  if (isNode()) {
+    process.env.TWILIO_PROFILE = profile;
+  }
+};
+
+/**
+ * Returns the Twilio Profile
+ */
+export const getTwilioProfile = (): string | undefined => process.env.TWILIO_PROFILE;
+
+/**
  * Sets the environment to persist the terminal
  */
 export const persistTerminal = (): void => {
@@ -114,6 +129,15 @@ export const isTrace = (): boolean => {
   }
 
   return false;
+};
+
+/**
+ * Sets the debug mode
+ */
+export const setDebug = (isDebug: boolean = true): void => {
+  if (isNode()) {
+    process.env.DEBUG = String(isDebug);
+  }
 };
 
 /**
@@ -180,11 +204,14 @@ export default {
   skipPreflightCheck,
   allowUnbundledReact,
   isTerminalPersisted,
+  setTwilioProfile,
+  getTwilioProfile,
   isQuiet,
   setQuiet,
   isCLI,
   setCLI,
   isCI,
+  setDebug,
   isDebug,
   isTrace,
   getAccountSid,
