@@ -17,11 +17,11 @@ commands:
   install-prerequisites:
     steps:
       - run:
-          name: "Fetch and install libsecret"
-          command: sudo apt-get install -y libsecret-1-dev
-      - run:
           name: "APT update"
           command: sudo apt-get update
+      - run:
+          name: "Fetch and install libsecret"
+          command: sudo apt-get install -y libsecret-1-dev
   run-unit-tests:
     steps:
       - run:
