@@ -52,7 +52,7 @@ describe('index', () => {
     expect(runExit).toHaveBeenCalledTimes(1);
     expect(runExit).toHaveBeenCalledWith(0, ['build']);
     expect(spawn).toHaveBeenCalledTimes(1);
-    assertSpawn([expect.stringContaining('build'), expect.anything(), '--name', pluginName, runFlag]);
+    assertSpawn([expect.stringContaining('build'), '--disallow-versioning', '--name', pluginName, runFlag]);
   });
 
   it('should run main script and pass other args', async () => {
