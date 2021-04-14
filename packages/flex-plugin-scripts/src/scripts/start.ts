@@ -1,4 +1,4 @@
-import { env, logger } from 'flex-dev-utils';
+import { env, exit, logger } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { addCWDNodeModule, getPaths, readPluginsJson, setCwd, writeJSONFile } from 'flex-dev-utils/dist/fs';
@@ -6,19 +6,22 @@ import { findPort, getDefaultPort } from 'flex-dev-utils/dist/urls';
 import {
   compiler,
   compilerRenderer,
-  pluginServer,
-  Plugin,
   emitCompileComplete,
+  emitDevServerCrashed,
   IPCType,
   onIPCServerMessage,
+  Plugin,
+  pluginServer,
   startIPCClient,
   startIPCServer,
   webpackDevServer,
+  OnDevServerCrashedPayload,
 } from 'flex-plugin-webpack';
 
 import getConfiguration, { ConfigurationType, WebpackType } from '../config';
 import run from '../utils/run';
 import { findFirstLocalPlugin, parseUserInputPlugins, UserInputPlugin } from '../utils/parser';
+import { serverCrashed } from '../prints';
 
 interface StartServerOptions {
   port: number;
@@ -72,6 +75,15 @@ export const _updatePluginPort = (port: number, name: string): void => {
 };
 
 /**
+ * Handles server crash
+ * @param payload
+ */
+export const _onServerCrash = (payload: OnDevServerCrashedPayload): void => {
+  serverCrashed(payload);
+  exit(1);
+};
+
+/**
  * Starts the webpack dev-server
  * @param port      the port the server is running on
  * @param plugins   the list of plugins user has requested
@@ -87,9 +99,8 @@ export const _startDevServer = async (
   const { type, port, remoteAll } = options;
   const isJavaScriptServer = type === WebpackType.JavaScript;
   const isStaticServer = type === WebpackType.Static;
-  const config = getConfiguration(ConfigurationType.Webpack, Environment.Development, type);
-  const devConfig = getConfiguration(ConfigurationType.DevServer, Environment.Development, type);
-
+  const config = await getConfiguration(ConfigurationType.Webpack, Environment.Development, type);
+  const devConfig = await getConfiguration(ConfigurationType.DevServer, Environment.Development, type);
   const localPlugins = plugins.filter((p) => !p.remote);
   const pluginRequest = {
     local: localPlugins.map((p) => p.name),
@@ -99,7 +110,6 @@ export const _startDevServer = async (
 
   // compiler render callbacks
   const { onCompile, onRemotePlugins } = compilerRenderer(port, pluginRequest.local, !isJavaScriptServer, hasRemote);
-
   // Setup plugin's server
   if (!isJavaScriptServer) {
     const pluginServerConfig = { port, remoteAll };
@@ -111,15 +121,21 @@ export const _startDevServer = async (
     startIPCServer();
     // start-flex will be listening to compilation errors emitted by start-plugin
     onIPCServerMessage(IPCType.onCompileComplete, onCompile);
+    onIPCServerMessage(IPCType.onDevServerCrashed, _onServerCrash);
   }
+
   // Start IPC Client
   if (isJavaScriptServer) {
     startIPCClient();
   }
 
-  // Pass either the default onCompile (for start-flex) or the event-emitter (for start-plugin)
-  const devCompiler = compiler(config, true, isJavaScriptServer ? emitCompileComplete : onCompile);
-  webpackDevServer(devCompiler, devConfig, type);
+  try {
+    // Pass either the default onCompile (for start-flex) or the event-emitter (for start-plugin)
+    const devCompiler = compiler(config, true, isJavaScriptServer ? emitCompileComplete : onCompile);
+    webpackDevServer(devCompiler, devConfig, type);
+  } catch (err) {
+    await emitDevServerCrashed(err);
+  }
 
   return {
     port,

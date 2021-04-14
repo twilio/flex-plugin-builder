@@ -55,8 +55,9 @@ export const _handler = (
 /* istanbul ignore next */
 // eslint-disable-next-line import/no-unused-modules
 export const _runWebpack = async (): Promise<BuildBundle> => {
-  return new Promise((resolve, reject) => {
-    webpack(getConfiguration(ConfigurationType.Webpack, Environment.Production)).run(_handler(resolve, reject));
+  return new Promise(async (resolve, reject) => {
+    const config = await getConfiguration(ConfigurationType.Webpack, Environment.Production);
+    webpack(config).run(_handler(resolve, reject));
   });
 };
 

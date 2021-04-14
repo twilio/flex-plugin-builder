@@ -11,6 +11,7 @@ interface Client {
 
 export enum IPCType {
   onCompileComplete = 'onCompileComplete',
+  onDevServerCrashed = 'onDevServerCrashed',
 }
 
 export interface OnCompileCompletePayload {
@@ -18,8 +19,16 @@ export interface OnCompileCompletePayload {
   appName: string;
 }
 
+export interface OnDevServerCrashedPayload {
+  exception: {
+    message: string;
+    stack?: string;
+  };
+}
+
 export interface IPCPayload {
   onCompileComplete: OnCompileCompletePayload;
+  onDevServerCrashed: OnDevServerCrashedPayload;
 }
 
 type MessageCallback<T extends IPCType> = (payload: IPCPayload[T]) => void;
@@ -72,12 +81,14 @@ export const _onServerMessage = (data: { payload: unknown; type: string }): void
     return;
   }
 
-  Object.keys(messageCallbacks).forEach((type) => {
-    if (messageCallbacks[type as IPCType]) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      messageCallbacks[type as IPCType]?.forEach((cb: MessageCallback<any>) => cb(data.payload));
-    }
-  });
+  Object.keys(messageCallbacks)
+    .filter((type) => type === data.type)
+    .forEach((type) => {
+      if (messageCallbacks[type as IPCType]) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        messageCallbacks[type as IPCType]?.forEach((cb: MessageCallback<any>) => cb(data.payload));
+      }
+    });
 };
 
 /**
@@ -148,3 +159,15 @@ export const onIPCServerMessage = <T extends IPCType>(type: T, callback: Message
  */
 export const emitCompileComplete = async (payload: OnCompileCompletePayload): Promise<void> =>
   _emitToServer(IPCType.onCompileComplete, payload);
+
+/**
+ * Emits a dev-server failed event
+ * @param error
+ */
+export const emitDevServerCrashed = async (error: Error): Promise<void> =>
+  _emitToServer(IPCType.onDevServerCrashed, {
+    exception: {
+      message: error.message,
+      stack: error.stack,
+    },
+  });

@@ -20,8 +20,10 @@ export { default as webpackDevServer } from './devServer/webpackDevServer';
 export { default as pluginServer, Plugin } from './devServer/pluginServer';
 export {
   emitCompileComplete,
+  emitDevServerCrashed,
   IPCType,
   onIPCServerMessage,
+  OnDevServerCrashedPayload,
   startIPCClient,
   startIPCServer,
 } from './devServer/ipcServer';

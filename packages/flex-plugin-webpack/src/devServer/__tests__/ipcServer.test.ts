@@ -27,6 +27,22 @@ describe('ipcServer', () => {
     expect(_emitToServer).toHaveBeenCalledWith(ipcServerScripts.IPCType.onCompileComplete, payload);
   });
 
+  it('should test emitDevServerCrashed', async () => {
+    const _emitToServer = jest.spyOn(ipcServerScripts, '_emitToServer').mockReturnThis();
+
+    const err = new Error('some-error');
+    const payload = {
+      exception: {
+        message: 'some-error',
+        stack: expect.any(String),
+      },
+    };
+    await ipcServerScripts.emitDevServerCrashed(err);
+
+    expect(_emitToServer).toHaveBeenCalledTimes(1);
+    expect(_emitToServer).toHaveBeenCalledWith(ipcServerScripts.IPCType.onDevServerCrashed, payload);
+  });
+
   it('should process queue on client connect', async () => {
     const _processEmitQueue = jest.spyOn(ipcServerScripts, '_processEmitQueue').mockReturnThis();
 

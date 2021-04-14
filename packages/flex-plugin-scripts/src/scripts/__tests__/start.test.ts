@@ -1,4 +1,5 @@
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
+import * as exit from 'flex-dev-utils/dist/exit';
 import * as fs from 'flex-dev-utils/dist/fs';
 import * as urlScripts from 'flex-dev-utils/dist/urls';
 import * as pluginServerScripts from 'flex-plugin-webpack/dist/devServer/pluginServer';
@@ -9,11 +10,13 @@ import * as compilerScripts from 'flex-plugin-webpack/dist/compiler';
 import * as parserUtils from '../../utils/parser';
 import * as startScripts from '../start';
 import * as configScripts from '../../config';
+import * as prints from '../../prints';
 
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/fs');
 jest.mock('flex-dev-utils/dist/urls');
 jest.mock('flex-dev-utils/dist/env');
+jest.mock('../../prints');
 
 describe('StartScript', () => {
   const cliPath = '/cli/plugins/path';
@@ -262,6 +265,25 @@ describe('StartScript', () => {
       await startScripts._startDevServer([plugin], { ...opts, type: configScripts.WebpackType.Complete });
       expect(compiler).toHaveBeenCalledTimes(1);
       expect(compiler).toHaveBeenCalledWith(expect.any(Object), true, defaultOnCompile);
+    });
+  });
+
+  describe('_onServerCrashed', () => {
+    it('should print message and exit', () => {
+      jest.spyOn(exit, 'default').mockReturnThis();
+
+      const payload = {
+        exception: {
+          message: 'the-message',
+          stack: 'the-line',
+        },
+      };
+      startScripts._onServerCrash(payload);
+
+      expect(prints.serverCrashed).toHaveBeenCalledTimes(1);
+      expect(prints.serverCrashed).toHaveBeenCalledWith(payload);
+      expect(exit.default).toHaveBeenCalledTimes(1);
+      expect(exit.default).toHaveBeenCalledWith(1);
     });
   });
 });
