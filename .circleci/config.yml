@@ -47,7 +47,6 @@ jobs:
       tag: << parameters.node-version >>  
     steps:
       - checkout
-      - apt-update
       - install-prerequisites
       - install-dependencies
       - run-linter      
