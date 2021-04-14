@@ -27,6 +27,7 @@ describe('index', () => {
 
     // @ts-ignore
     jest.spyOn(fsScripts, 'getPaths').mockReturnValue({ app: { name: pluginName } });
+    jest.spyOn(fsScripts, 'getCwd').mockReturnValue(`/home/user/plugins/${pluginName}`);
 
     delete require.cache[require.resolve('../index')];
   });
@@ -52,13 +53,7 @@ describe('index', () => {
     expect(runExit).toHaveBeenCalledTimes(1);
     expect(runExit).toHaveBeenCalledWith(0, ['build']);
     expect(spawn).toHaveBeenCalledTimes(1);
-    assertSpawn([
-      '/home/circleci/project/packages/flex-plugin-scripts/src/scripts/build.ts',
-      '--disallow-versioning',
-      '--name',
-      pluginName,
-      runFlag,
-    ]);
+    assertSpawn([expect.stringContaining('build'), '--disallow-versioning', '--name', pluginName, runFlag]);
   });
 
   it('should run main script and pass other args', async () => {
