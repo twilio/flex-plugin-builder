@@ -12,26 +12,31 @@ commands:
   install-dependencies:
     steps:
       - run:
-          name: "Install project dependencies"
+          name: "Install NPM Modules"
           command: npm i
   install-prerequisites:
     steps:
       - run:
-          name: "APT update"
+          name: "Update Package List"
           command: sudo apt-get update
       - run:
-          name: "Fetch and install libsecret"
+          name: "Install Packages"
           command: sudo apt-get install -y libsecret-1-dev
   run-unit-tests:
     steps:
       - run:
-          name: "Run unit tests"
+          name: "Run Unit Tests"
           command: npm run test:ci
   run-linter:
     steps:
       - run:
-          name: "Run linter"
+          name: "Run Linter"
           command: npm run lint
+  upload-coverage:
+    steps:
+      - run:
+          name: "Upload Code Coverage Report"
+          command: npm run coverage -- --token=$CODECOV_TOKEN
 
 jobs:
   pr-validator:
@@ -44,20 +49,18 @@ jobs:
         type: string
     executor:
       name: node
-      tag: << parameters.node-version >>  
+      tag: << parameters.node-version >>
     steps:
       - checkout
       - install-prerequisites
       - install-dependencies
-      - run-linter      
+      - run-linter
       - run-unit-tests
       - when:
           condition:
             equal: [<< parameters.node-version >>, lts]
           steps:
-            - run:
-                name: "CODECOV"
-                command: npm run coverage -- --token=$CODECOV_TOKEN
+            - upload-coverage
 
 workflows:
   validate:

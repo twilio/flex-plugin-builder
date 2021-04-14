@@ -21,7 +21,7 @@
     "audit": "lerna-audit",
     "bootstrap": "lerna bootstrap --no-ci",
     "build": "lerna run build",
-    "coverage": "codecov",
+    "coverage": "codecov --disable=gcov",
     "docs": "./bin/docs-generator.js",
     "postinstall": "npm run bootstrap",
     "lint": "lerna run lint",
