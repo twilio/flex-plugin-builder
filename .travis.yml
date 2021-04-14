@@ -22,9 +22,6 @@ script:
   - CI= npm run test:ci
   - npm run build
 
-after_success:
-  - codecov --token="$CODECOV_TOKEN"
-
 before_deploy:
   - npm config set access public
   - npm config set registry https://registry.npmjs.org
