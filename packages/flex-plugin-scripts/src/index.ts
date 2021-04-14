@@ -66,14 +66,6 @@ const spawnScript = async (...argv: string[]): Promise<void> => {
   addCWDNodeModule(...processArgs);
 
   // Backwards Compatibility 'npm run start'
-  // eslint-disable-next-line
-  console.log('printing things for debugging');
-  // eslint-disable-next-line
-  console.log(getCwd());
-  // eslint-disable-next-line
-  console.log(getPaths().app.name);
-  // eslint-disable-next-line
-  console.log(processArgs);
   if (getCwd().includes('plugin-') && !processArgs.includes(getPaths().app.name)) {
     processArgs.push('--name');
     processArgs.push(getPaths().app.name);
