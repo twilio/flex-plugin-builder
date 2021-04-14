@@ -52,7 +52,13 @@ describe('index', () => {
     expect(runExit).toHaveBeenCalledTimes(1);
     expect(runExit).toHaveBeenCalledWith(0, ['build']);
     expect(spawn).toHaveBeenCalledTimes(1);
-    assertSpawn([expect.stringContaining('build'), '--disallow-versioning', '--name', pluginName, runFlag]);
+    assertSpawn([
+      '/home/circleci/project/packages/flex-plugin-scripts/src/scripts/build.ts',
+      '--disallow-versioning',
+      '--name',
+      pluginName,
+      runFlag,
+    ]);
   });
 
   it('should run main script and pass other args', async () => {
