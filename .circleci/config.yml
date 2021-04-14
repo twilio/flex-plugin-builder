@@ -66,9 +66,6 @@ workflows:
           matrix:
             parameters:
               node-version: ["10.24", "12.21", "14.16", lts]
-          filters:
-            branches:
-              only: /^(main|v[1-9]?[0-9]-beta)$/
           post-steps:
             - run:
                 name: Send Slack notification
