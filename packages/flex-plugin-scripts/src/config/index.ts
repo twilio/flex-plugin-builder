@@ -8,6 +8,7 @@ import {
   WebpackType,
   WebpackConfigurations,
   WebpackDevConfigurations,
+  emitDevServerCrashed,
 } from 'flex-plugin-webpack';
 
 import jestFactory, { JestConfigurations } from './jest.config';
@@ -34,11 +35,11 @@ interface Configurations {
  * @param env   the environment
  * @param type  the webpack type
  */
-const getConfiguration = <T extends ConfigurationType>(
+const getConfiguration = async <T extends ConfigurationType>(
   name: T,
   env: Environment,
   type: WebpackType = WebpackType.Complete,
-): Configurations[T] => {
+): Promise<Configurations[T]> => {
   const args = {
     isProd: env === Environment.Production,
     isDev: env === Environment.Development,
@@ -52,7 +53,11 @@ const getConfiguration = <T extends ConfigurationType>(
     }
 
     if (checkFilesExist(getPaths().app.webpackConfigPath)) {
-      return require(getPaths().app.webpackConfigPath)(config, args);
+      try {
+        return require(getPaths().app.webpackConfigPath)(config, args);
+      } catch (exception) {
+        await emitDevServerCrashed(exception);
+      }
     }
 
     return config as Configurations[T];
@@ -66,7 +71,11 @@ const getConfiguration = <T extends ConfigurationType>(
     }
 
     if (checkFilesExist(getPaths().app.devServerConfigPath)) {
-      return require(getPaths().app.devServerConfigPath)(config, args);
+      try {
+        return require(getPaths().app.devServerConfigPath)(config, args);
+      } catch (exception) {
+        await emitDevServerCrashed(exception);
+      }
     }
 
     return config as Configurations[T];
