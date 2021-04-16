@@ -1,5 +1,7 @@
 /* eslint-disable import/no-unused-modules, @typescript-eslint/ban-types, @typescript-eslint/promise-function-async */
 
+import os from 'os';
+
 import execa from 'execa';
 import { logger, singleLineString } from 'flex-plugins-utils-logger';
 
@@ -27,7 +29,15 @@ export type SpawnPromise = SPromise<SpawnReturn>;
  * @param options   the spawn options
  */
 export const spawn = (cmd: string, args: string[], options: object = DefaultOptions): SpawnPromise => {
-  const spawnOptions = { ...{ shell: process.env.SHELL }, ...options };
+  const defaultOptions = {
+    shell: process.env.SHELL,
+  };
+  // see https://stackoverflow.com/questions/37459717/error-spawn-enoent-on-windows/37487465
+  if (os.platform() === 'win32') {
+    defaultOptions.shell = 'true';
+  }
+  const spawnOptions = { ...defaultOptions, ...options };
+
   const subProcess = execa(cmd, args, spawnOptions);
   const { cancel, kill } = subProcess;
 
@@ -58,6 +68,8 @@ export const spawn = (cmd: string, args: string[], options: object = DefaultOpti
       };
     })
     .catch((e) => {
+      logger.debug(e);
+
       return {
         exitCode: e.exitCode || 1,
         stderr: e.message || '',
