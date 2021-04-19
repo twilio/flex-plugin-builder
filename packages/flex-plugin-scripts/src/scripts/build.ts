@@ -1,11 +1,11 @@
 import { env, logger, exit, Callback } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
-import { addCWDNodeModule, updateAppVersion } from 'flex-dev-utils/dist/fs';
+import { addCWDNodeModule, getFileSizeInMB, getPaths, updateAppVersion } from 'flex-dev-utils/dist/fs';
 import { webpack, WebpackCompiler } from 'flex-plugin-webpack';
 
 import getConfiguration, { ConfigurationType } from '../config';
 import { setEnvironment } from '..';
-import { buildFailure, buildSuccessful } from '../prints';
+import { buildFailure, buildSuccessful, fileTooLarge } from '../prints';
 import run from '../utils/run';
 
 export interface Bundle {
@@ -22,6 +22,8 @@ interface BuildBundle {
   bundles: Bundle[];
 }
 
+const MAX_BUILD_SIZE_MB = 10;
+
 /**
  * Builds the JS and Sourcemap bundles
  * @private
@@ -30,7 +32,7 @@ interface BuildBundle {
 export const _handler = (
   resolve: Callback<BuildBundle>,
   reject: Callback<Error | string | string[]>,
-): WebpackCompiler.Handler => (err, stats) => {
+): WebpackCompiler.Handler => (err: Error, stats) => {
   if (err) {
     reject(err);
     return;
@@ -84,6 +86,13 @@ const build = async (...argv: string[]): Promise<void> => {
 
   try {
     const { warnings, bundles } = await _runWebpack();
+    const fileSize = getFileSizeInMB(getPaths().app.bundlePath);
+    if (fileSize >= MAX_BUILD_SIZE_MB) {
+      fileTooLarge(fileSize, MAX_BUILD_SIZE_MB);
+      exit(1, argv);
+      return;
+    }
+
     buildSuccessful(bundles, warnings);
   } catch (e) {
     buildFailure(e);

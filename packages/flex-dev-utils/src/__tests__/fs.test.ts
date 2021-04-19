@@ -45,6 +45,32 @@ describe('fs', () => {
     });
   });
 
+  describe('getSileSizeInBytes', () => {
+    it('should get file size', () => {
+      // @ts-ignore
+      const statSync = jest.spyOn(fs.default, 'statSync').mockReturnValue({ size: 123 });
+
+      const size = fs.getSileSizeInBytes('path', 'to', 'file.js');
+
+      expect(size).toEqual(123);
+      expect(statSync).toHaveBeenCalledTimes(1);
+      expect(statSync).toHaveBeenCalledWith('path/to/file.js');
+    });
+  });
+
+  describe('getFileSizeInMB', () => {
+    it('should get file size', () => {
+      // @ts-ignore
+      const statSync = jest.spyOn(fs.default, 'statSync').mockReturnValue({ size: 1024 * 1024 * 2 });
+
+      const size = fs.getFileSizeInMB('path', 'to', 'file.js');
+
+      expect(size).toEqual(2);
+      expect(statSync).toHaveBeenCalledTimes(1);
+      expect(statSync).toHaveBeenCalledWith('path/to/file.js');
+    });
+  });
+
   describe('readJsonFile', () => {
     it('should read package.json', () => {
       const readFileSync = jest.spyOn(fs.default, 'readFileSync').mockReturnValue(fileContent);

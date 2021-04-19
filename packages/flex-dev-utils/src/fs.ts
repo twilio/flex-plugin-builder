@@ -1,4 +1,4 @@
-import fs, { copyFileSync, createReadStream, existsSync, unlinkSync, writeFileSync } from 'fs';
+import fs, { copyFileSync, createReadStream, existsSync, unlinkSync, writeFileSync, statSync } from 'fs';
 import * as path from 'path';
 import os, { homedir } from 'os';
 import { promisify } from 'util';
@@ -68,6 +68,18 @@ export const _setRequirePaths = (requirePath: string): void => {
 export const readPackageJson = (filePath: string): PackageJson => {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 };
+
+/**
+ * Returns the file size in bytes
+ * @param filePaths the path to the file
+ */
+export const getSileSizeInBytes = (...filePaths: string[]): number => statSync(path.join(...filePaths)).size;
+
+/**
+ * Returns the file size in MB
+ * @param filePaths the path to file
+ */
+export const getFileSizeInMB = (...filePaths: string[]): number => getSileSizeInBytes(...filePaths) / (1024 * 1024);
 
 /**
  * Builds path relative to the given dir

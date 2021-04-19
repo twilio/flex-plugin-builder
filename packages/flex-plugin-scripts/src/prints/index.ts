@@ -13,3 +13,4 @@ export { default as jestNotInstalled } from './jestNotInstalled';
 export { default as unbundledReactMismatch } from './unbundledReactMismatch';
 export { default as loadPluginCountError } from './loadPluginCountError';
 export { default as serverCrashed } from './serverCrashed';
+export { default as fileTooLarge } from './fileTooLarge';
