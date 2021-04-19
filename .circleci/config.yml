@@ -49,14 +49,18 @@ commands:
 jobs:
   e2e-test:
     resource_class: xlarge
+    parameters:
+      package_version:
+        type: string
     environment:
       PACKAGE_VERSION: << parameters.package_version >>
-      NODE_VERSION: << parameters.node-version >>
+      NODE_VERSION: "lts"
     executor:
       name: node
-      tag: << parameters.node-version >>
+      tag: "lts"
     steps:
       - run-e2e-tests
+
   pr-validator:
     resource_class: xlarge
     environment:
@@ -89,7 +93,7 @@ workflows:
       - e2e-test:
           matrix:
             parameters:
-              node-version: [ "10.24", "12.21", "14.16", lts ]
+              package_version: [ << pipeline.parameters.package_version >> ]
   validate:
     jobs:
       - pr-validator:
