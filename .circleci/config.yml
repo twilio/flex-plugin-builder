@@ -32,6 +32,11 @@ commands:
       - run:
           name: "Run linter"
           command: npm run lint
+  e2e-test:
+    steps:
+      - run:
+          name: "Run e2e tests"
+          command: npm run build && npm start
 
 jobs:
   pr-validator:
@@ -44,12 +49,12 @@ jobs:
         type: string
     executor:
       name: node
-      tag: << parameters.node-version >>  
+      tag: << parameters.node-version >>
     steps:
       - checkout
       - install-prerequisites
       - install-dependencies
-      - run-linter      
+      - run-linter
       - run-unit-tests
       - when:
           condition:
