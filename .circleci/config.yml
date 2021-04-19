@@ -1,5 +1,13 @@
 version: 2.1
 
+parameters:
+  run_e2e_test:
+    default: false
+    type: boolean
+  package_version:
+    default: ''
+    type: string
+
 executors:
   node:
     parameters:
@@ -65,6 +73,13 @@ jobs:
                 command: npm run coverage -- --token=$CODECOV_TOKEN
 
 workflows:
+  test:
+    when: << pipeline.parameters.run_e2e_test >>
+    jobs:
+      - e2e-test:
+          matrix:
+            parameters:
+              node-version: [ "10.24", "12.21", "14.16", lts ]
   validate:
     jobs:
       - pr-validator:
