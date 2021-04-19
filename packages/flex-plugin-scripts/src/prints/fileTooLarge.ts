@@ -8,13 +8,13 @@ export default (size: number, max: number): void => {
   size = Math.round(size * 10) / 10;
 
   logger.newline();
-  logger.info(`--Plugin bundle size **${size}MB** exceeds allowed **${max}MB**.--`);
+  logger.info(`--Plugin bundle size **${size}MB** exceeds allowed limit of **${max}MB**.--`);
   logger.newline();
   logger.info('Consider the following optimization:');
 
   const lines = [
+    'Host your image files on Twilio Assets instead of bundling them with your plugin',
     'Use SVG instead of PNG/JPEG/GIF image formats',
-    'Host your image files on Twilio Assets and other CDN instead of bundling them',
   ];
   printList(...lines);
 
