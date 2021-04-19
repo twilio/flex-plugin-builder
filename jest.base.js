@@ -32,7 +32,7 @@ module.exports = (pkg, options) => {
     transform: {
       '^.+\\.js?$': '<rootDir>/../../node_modules/babel-jest',
     },
-    testPathIgnorePatterns: ['/node_modules/'],
+    testPathIgnorePatterns: ['/node_modules/', '<rootDir>/packages/flex-plugin-e2e-tests'],
     coveragePathIgnorePatterns: ['/node_modules/'],
     ...defaultOptions,
     ...options,
