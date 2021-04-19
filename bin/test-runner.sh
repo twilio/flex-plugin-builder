@@ -21,6 +21,9 @@ fi
 rm -rf ./coverage
 for dir in ./packages/* ; do
   pkg=$(basename "${dir}")
+  if [ "$pkg" == "flex-plugin-e2e-tests" ] ; then
+    continue
+  fi
 
   if [ -z "$EXPOSE_GC" ] ; then
     ${jest} ./packages/"${pkg}" --config "./packages/${pkg}/jest.config.js" --color --coverage "$@"
