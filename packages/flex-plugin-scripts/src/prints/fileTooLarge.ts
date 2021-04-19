@@ -10,7 +10,7 @@ export default (size: number, max: number): void => {
   logger.newline();
   logger.info(`--Plugin bundle size **${size}MB** exceeds allowed limit of **${max}MB**.--`);
   logger.newline();
-  logger.info('Consider the following optimization:');
+  logger.info('Consider the following optimizations:');
 
   const lines = [
     'Host your image files on Twilio Assets instead of bundling them with your plugin',
