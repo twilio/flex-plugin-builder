@@ -47,8 +47,7 @@ commands:
     steps:
       - run:
           name: "Run e2e tests"
-          command: cd packages/flex-plugin-e2e-tests && npm run build
-      - run: npm start
+          command: cd packages/flex-plugin-e2e-tests && npm run build && npm start
 
 jobs:
   e2e-test:
