@@ -3,7 +3,6 @@ import { TestSuite, TestParams } from '..';
 
 const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
   /* Sample test */
-  console.log(process.env);
 };
 
 export default testSuite;
