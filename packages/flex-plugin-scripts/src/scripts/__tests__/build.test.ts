@@ -8,8 +8,15 @@ jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/env');
 jest.mock('../../prints/buildSuccessful');
 jest.mock('../../prints/buildFailure');
+jest.mock('../../prints/fileTooLarge');
 
 describe('BuildScript', () => {
+  const paths = {
+    app: {
+      bundlePath: '/bundle/path/file.js',
+    },
+  };
+
   // @ts-ignore
   const exit = jest.spyOn(process, 'exit').mockReturnThis(() => {
     /* no-op */
@@ -23,10 +30,14 @@ describe('BuildScript', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     jest.resetAllMocks();
+
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
   });
 
   describe('default', () => {
     it('should build successfully', async () => {
+      const getFileSizeInMB = jest.spyOn(fs, 'getFileSizeInMB').mockReturnValue(1);
       const updateAppVersion = jest.spyOn(fs, 'updateAppVersion').mockReturnThis();
       const _getBundle = jest.spyOn(buildScript, '_runWebpack').mockResolvedValue({ warnings: [], bundles: [bundle] });
 
@@ -37,11 +48,30 @@ describe('BuildScript', () => {
       expect(env.setNodeEnv).toHaveBeenCalledTimes(1);
       expect(env.setNodeEnv).toHaveBeenCalledWith(Environment.Production);
 
+      expect(getFileSizeInMB).toHaveBeenCalledTimes(1);
+      expect(getFileSizeInMB).toHaveBeenCalledWith(paths.app.bundlePath);
       expect(updateAppVersion).not.toHaveBeenCalled();
       expect(_getBundle).toHaveBeenCalledTimes(1);
       expect(prints.buildSuccessful).toHaveBeenCalledTimes(1);
       expect(prints.buildFailure).not.toHaveBeenCalled();
+      expect(prints.fileTooLarge).not.toHaveBeenCalled();
       expect(exit).not.toHaveBeenCalled();
+
+      _getBundle.mockRestore();
+    });
+
+    it('should exit if bundle size is too large', async () => {
+      const getFileSizeInMB = jest.spyOn(fs, 'getFileSizeInMB').mockReturnValue(100);
+      const _getBundle = jest.spyOn(buildScript, '_runWebpack').mockResolvedValue({ warnings: [], bundles: [bundle] });
+
+      await buildScript.default();
+
+      expect(getFileSizeInMB).toHaveBeenCalledTimes(1);
+      expect(getFileSizeInMB).toHaveBeenCalledWith(paths.app.bundlePath);
+      expect(prints.buildSuccessful).not.toHaveBeenCalledTimes(1);
+      expect(prints.buildFailure).not.toHaveBeenCalled();
+      expect(prints.fileTooLarge).toHaveBeenCalledTimes(1);
+      expect(exit).toHaveBeenCalled();
 
       _getBundle.mockRestore();
     });
