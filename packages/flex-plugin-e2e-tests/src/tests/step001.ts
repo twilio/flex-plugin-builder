@@ -8,7 +8,7 @@ import spawn, { logResult } from '../utils/spawn';
 const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
   logger.info('Step 001 - Installing Twilio CLI and Plugins CLI');
 
-  const twilioCliResult = await spawn('npm', 'install', '-g', 'twilio-cli');
+  const twilioCliResult = await spawn('npm', 'install', '--prefix=$HOME/.local', '-g', 'twilio-cli');
   logResult(twilioCliResult);
 
   const pluginsCliResult = await spawn(
@@ -17,7 +17,6 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
     `@twilio-labs/plugin-flex@${params.packageVersion}`,
   );
   logResult(pluginsCliResult);
-
 };
 
 export default testSuite;

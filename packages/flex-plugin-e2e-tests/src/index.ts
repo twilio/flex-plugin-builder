@@ -2,8 +2,8 @@
 import { readdirSync, appendFileSync } from 'fs';
 
 import { logger } from 'flex-plugins-utils-logger';
-import spawn from './utils/spawn';
 
+import spawn , { logResult } from './utils/spawn';
 
 export interface TestParams {
   packageVersion: string;
@@ -31,8 +31,10 @@ const testParams: TestParams = {
   logger.info(`Running Plugins E2E Test with parameters:`);
   Object.keys(testParams).forEach((key) => logger.info(`- ${key}: ${testParams[key]}`));
   if (process.env.CI === 'true') {
-    await spawn('npm', 'set', 'prefix=/home/circleci/npm');
-    appendFileSync('/home/circleci/.bashrc', "\'export PATH=$HOME/circleci/npm/bin:$PATH\'");
+    logger.info('Setting home directory')
+    // const result = await spawn('npm', 'set', 'prefix=/home/circleci/npm');
+    // logResult(result);
+    // appendFileSync('/home/circleci/.bashrc', "'export PATH=$HOME/circleci/npm/bin:$PATH'");
   }
 
   for (let i = 0; i < testSuites.length; i++) {
@@ -46,5 +48,6 @@ const testParams: TestParams = {
     logger.error('Failed to run E2E tests');
     logger.info(e);
 
+    // eslint-disable-next-line no-process-exit
     process.exit(1);
   });
