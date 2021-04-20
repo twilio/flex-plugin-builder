@@ -4,7 +4,8 @@ import { readdirSync } from 'fs';
 import { logger } from 'flex-plugins-utils-logger';
 
 export interface TestParams {
-  version: string;
+  packageVersion: string;
+  nodeVersion: string;
 }
 export type TestSuite = (params: TestParams) => Promise<void>;
 
@@ -20,7 +21,8 @@ const testSuites = readdirSync(`${__dirname}/tests`)
   });
 
 const testParams: TestParams = {
-  version: '',
+  packageVersion: process.env.PACKAGE_VERSION as string,
+  nodeVersion: process.env.NODE_VERSION as string,
 };
 
 (async () => {

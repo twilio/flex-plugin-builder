@@ -1,5 +1,16 @@
 version: 2.1
 
+parameters:
+  run_e2e_test:
+    default: false
+    type: boolean
+  run_pr_validator:
+    default: true
+    type: boolean
+  package_version:
+    default: ''
+    type: string
+
 executors:
   node:
     parameters:
@@ -32,13 +43,30 @@ commands:
       - run:
           name: "Run linter"
           command: npm run lint
-  e2e-test:
+  run-e2e-tests:
     steps:
       - run:
           name: "Run e2e tests"
-          command: npm run build && npm start
+          command: cd packages/flex-plugin-e2e-tests && npm run build && npm start
 
 jobs:
+  e2e-test:
+    resource_class: xlarge
+    parameters:
+      package_version:
+        type: string
+    environment:
+      PACKAGE_VERSION: << parameters.package_version >>
+      NODE_VERSION: "lts"
+    executor:
+      name: node
+      tag: "lts"
+    steps:
+      - checkout
+      - install-prerequisites
+      - install-dependencies
+      - run-e2e-tests
+
   pr-validator:
     resource_class: xlarge
     environment:
@@ -65,7 +93,15 @@ jobs:
                 command: npm run coverage -- --token=$CODECOV_TOKEN
 
 workflows:
+  test:
+    when: << pipeline.parameters.run_e2e_test >>
+    jobs:
+      - e2e-test:
+          matrix:
+            parameters:
+              package_version: [ << pipeline.parameters.package_version >> ]
   validate:
+    when: << pipeline.parameters.run_pr_validator >>
     jobs:
       - pr-validator:
           matrix:
