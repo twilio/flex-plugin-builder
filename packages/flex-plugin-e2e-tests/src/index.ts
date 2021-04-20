@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, @typescript-eslint/prefer-for-of, global-require */
-import { readdirSync, appendFileSync } from 'fs';
+import { readdirSync } from 'fs';
 
 import { logger } from 'flex-plugins-utils-logger';
-
-import spawn , { logResult } from './utils/spawn';
 
 export interface TestParams {
   packageVersion: string;
@@ -30,12 +28,6 @@ const testParams: TestParams = {
 (async () => {
   logger.info(`Running Plugins E2E Test with parameters:`);
   Object.keys(testParams).forEach((key) => logger.info(`- ${key}: ${testParams[key]}`));
-  if (process.env.CI === 'true') {
-    logger.info('Setting home directory')
-    // const result = await spawn('npm', 'set', 'prefix=/home/circleci/npm');
-    // logResult(result);
-    // appendFileSync('/home/circleci/.bashrc', "'export PATH=$HOME/circleci/npm/bin:$PATH'");
-  }
 
   for (let i = 0; i < testSuites.length; i++) {
     await (require(`${__dirname}/tests/${testSuites[i]}`).default as TestSuite)(testParams);

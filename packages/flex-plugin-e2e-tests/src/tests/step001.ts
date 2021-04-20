@@ -13,6 +13,7 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
 
   const pluginsCliResult = await spawn(
     'twilio',
+    '--prefix=$HOME/.local',
     'plugins:install',
     `@twilio-labs/plugin-flex@${params.packageVersion}`,
   );
