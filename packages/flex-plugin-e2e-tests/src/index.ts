@@ -26,6 +26,9 @@ const testParams: TestParams = {
 };
 
 (async () => {
+  logger.info(`Running Plugins E2E Test with parameters:`);
+  Object.keys(testParams).forEach((key) => logger.info(`- ${key}: ${testParams[key]}`));
+
   for (let i = 0; i < testSuites.length; i++) {
     await (require(`${__dirname}/tests/${testSuites[i]}`).default as TestSuite)(testParams);
   }
