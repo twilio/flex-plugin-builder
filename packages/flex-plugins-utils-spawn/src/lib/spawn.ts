@@ -34,7 +34,8 @@ export const spawn = (cmd: string, args: string[], options: object = DefaultOpti
   };
   // see https://stackoverflow.com/questions/37459717/error-spawn-enoent-on-windows/37487465
   if (os.platform() === 'win32') {
-    defaultOptions.shell = 'true';
+    // @ts-ignore
+    defaultOptions.shell = true;
   }
   const spawnOptions = { ...defaultOptions, ...options };
 
