@@ -17,6 +17,7 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
     `@twilio-labs/plugin-flex@${params.packageVersion}`,
   );
   logResult(pluginsCliResult);
+
 };
 
 export default testSuite;

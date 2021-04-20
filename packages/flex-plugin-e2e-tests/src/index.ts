@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, @typescript-eslint/prefer-for-of, global-require */
-import { readdirSync } from 'fs';
+import { readdirSync, appendFileSync } from 'fs';
 
 import { logger } from 'flex-plugins-utils-logger';
+import spawn from './utils/spawn';
+
 
 export interface TestParams {
   packageVersion: string;
@@ -28,6 +30,10 @@ const testParams: TestParams = {
 (async () => {
   logger.info(`Running Plugins E2E Test with parameters:`);
   Object.keys(testParams).forEach((key) => logger.info(`- ${key}: ${testParams[key]}`));
+  if (process.env.CI === 'true') {
+    await spawn('npm', 'set', 'prefix=/home/circleci/npm');
+    appendFileSync('/home/circleci/.bashrc', "\'export PATH=$HOME/circleci/npm/bin:$PATH\'");
+  }
 
   for (let i = 0; i < testSuites.length; i++) {
     await (require(`${__dirname}/tests/${testSuites[i]}`).default as TestSuite)(testParams);
@@ -39,4 +45,6 @@ const testParams: TestParams = {
   .catch((e) => {
     logger.error('Failed to run E2E tests');
     logger.info(e);
+
+    process.exit(1);
   });
