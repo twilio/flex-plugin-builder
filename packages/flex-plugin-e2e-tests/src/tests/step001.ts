@@ -1,8 +1,8 @@
 /* eslint-disable import/no-unused-modules, no-console */
-import { TestSuite, TestParams } from '..';
-import spawn, { logResult } from '../utils/spawn';
 import { logger } from 'flex-plugins-utils-logger';
 
+import { TestSuite, TestParams } from '..';
+import spawn, { logResult } from '../utils/spawn';
 
 // Install Twilio CLI and Plugins CLI
 const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
@@ -11,7 +11,11 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
   const twilioCliResult = await spawn('npm', 'install', '-g', 'twilio-cli');
   logResult(twilioCliResult);
 
-  const pluginsCliResult = await spawn('twilio', 'plugins:install', `@twilio-labs/plugin-flex@${params.packageVersion}`);
+  const pluginsCliResult = await spawn(
+    'twilio',
+    'plugins:install',
+    `@twilio-labs/plugin-flex@${params.packageVersion}`,
+  );
   logResult(pluginsCliResult);
 };
 

@@ -15,18 +15,18 @@ interface SpawnResult {
 export default async (cmd: string, ...args: string[]): Promise<SpawnResult> => {
   return new Promise((resolve, reject) => {
     logger.info(`Running spawn command: **${cmd} ${args.join(' ')}**`);
-    const process = spawn(cmd, args);
+    const child = spawn(cmd, args);
 
     const stdoutArr: Buffer[] = [];
     const stderrArr: Buffer[] = [];
 
     // errors
-    process.on('error', reject);
-    process.stdin.on('error', reject);
-    process.stdout.on('error', reject);
-    process.stderr.setEncoding('utf8');
-    process.stderr.on('error', reject);
-    process.stderr.on('data', (data) => {
+    child.on('error', reject);
+    child.stdin.on('error', reject);
+    child.stdout.on('error', reject);
+    child.stderr.setEncoding('utf8');
+    child.stderr.on('error', reject);
+    child.stderr.on('data', (data) => {
       if (typeof data === 'string') {
         stderrArr.push(Buffer.from(data, 'utf-8'));
       } else {
@@ -35,7 +35,7 @@ export default async (cmd: string, ...args: string[]): Promise<SpawnResult> => {
     });
 
     // data
-    process.stdout.on('data', (data) => {
+    child.stdout.on('data', (data) => {
       if (typeof data === 'string') {
         stdoutArr.push(Buffer.from(data, 'utf-8'));
       } else {
@@ -43,7 +43,7 @@ export default async (cmd: string, ...args: string[]): Promise<SpawnResult> => {
       }
     });
 
-    process.on('close', (code) => {
+    child.on('close', (code) => {
       const stdout = Buffer.concat(stdoutArr).toString();
       const stderr = Buffer.concat(stderrArr).toString();
 
