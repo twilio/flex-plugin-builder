@@ -6,6 +6,10 @@ import { logger } from 'flex-plugins-utils-logger';
 export interface TestParams {
   packageVersion: string;
   nodeVersion: string;
+  homeDir: string;
+  plugin: {
+    name: string;
+  };
 }
 export type TestSuite = (params: TestParams) => Promise<void>;
 
@@ -20,14 +24,19 @@ const testSuites = readdirSync(`${__dirname}/tests`)
     return -1;
   });
 
+export const homeDir = `${process.env.HOME as string}/.local`;
 const testParams: TestParams = {
   packageVersion: process.env.PACKAGE_VERSION as string,
   nodeVersion: process.env.NODE_VERSION as string,
+  homeDir,
+  plugin: {
+    name: 'flex-e2e-tester-plugin',
+  },
 };
 
 (async () => {
   logger.info(`Running Plugins E2E Test with parameters:`);
-  Object.keys(testParams).forEach((key) => logger.info(`- ${key}: ${testParams[key]}`));
+  Object.keys(testParams).forEach((key) => logger.info(`- ${key}: ${JSON.stringify(testParams[key])}`));
 
   for (let i = 0; i < testSuites.length; i++) {
     await (require(`${__dirname}/tests/${testSuites[i]}`).default as TestSuite)(testParams);

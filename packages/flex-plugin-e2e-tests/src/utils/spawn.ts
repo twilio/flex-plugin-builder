@@ -2,6 +2,8 @@ import { spawn } from 'child_process';
 
 import { logger } from 'flex-plugins-utils-logger';
 
+import { homeDir } from '..';
+
 interface SpawnResult {
   stdout: string;
   stderr: string;
@@ -16,8 +18,9 @@ export default async (cmd: string, ...args: string[]): Promise<SpawnResult> => {
   return new Promise((resolve, reject) => {
     logger.info(`Running spawn command: **${cmd} ${args.join(' ')}**`);
     const child = spawn(cmd, args, {
+      cwd: homeDir,
       env: {
-        PATH: `${process.env.PATH}:/${process.env.HOME}/.local/bin`,
+        PATH: `${process.env.PATH}:/${homeDir}/bin`,
       },
     });
 
