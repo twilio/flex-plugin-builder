@@ -13,21 +13,21 @@ const _strictEqual = (doesEqual: boolean, actual: any, expected: any, msg?: stri
   }
 };
 
-const fileExists = (negate: boolean) => (paths: string[], msg?: string): void => {
-  _strictEqual(negate, true, fs.existsSync(path.join(...paths)), msg);
+const fileExists = (doesEqual: boolean) => (paths: string[], msg?: string): void => {
+  _strictEqual(doesEqual, true, fs.existsSync(path.join(...paths)), msg);
 };
 
-const jsonFileContains = (negate: boolean) => <T>(paths: string[], key: string, value: T, msg?: string) => {
-  _strictEqual(negate, value, get(JSON.parse(fs.readFileSync(path.join(...paths), 'utf-8')), key), msg);
+const jsonFileContains = (doesEqual: boolean) => <T>(paths: string[], key: string, value: T, msg?: string) => {
+  _strictEqual(doesEqual, value, get(JSON.parse(fs.readFileSync(path.join(...paths), 'utf-8')), key), msg);
 };
 
 export default {
-  strictEqual,
+  equal: strictEqual,
   fileExists: fileExists(true),
   jsonFileContains: jsonFileContains(true),
   not: {
     fileExists: fileExists(false),
     jsonFileContains: jsonFileContains(false),
-    strictEqual: notStrictEqual,
+    equal: notStrictEqual,
   },
 };
