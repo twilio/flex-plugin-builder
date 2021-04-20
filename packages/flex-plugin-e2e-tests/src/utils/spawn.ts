@@ -15,7 +15,11 @@ interface SpawnResult {
 export default async (cmd: string, ...args: string[]): Promise<SpawnResult> => {
   return new Promise((resolve, reject) => {
     logger.info(`Running spawn command: **${cmd} ${args.join(' ')}**`);
-    const child = spawn(cmd, args);
+    const child = spawn(cmd, args, {
+      env: {
+        PATH: `${process.env.PATH}:/${process.env.HOME}/.local/bin`,
+      },
+    });
 
     const stdoutArr: Buffer[] = [];
     const stderrArr: Buffer[] = [];

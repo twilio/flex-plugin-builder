@@ -3,8 +3,6 @@ import { readdirSync } from 'fs';
 
 import { logger } from 'flex-plugins-utils-logger';
 
-import spawn from './utils/spawn';
-
 export interface TestParams {
   packageVersion: string;
   nodeVersion: string;
@@ -30,7 +28,6 @@ const testParams: TestParams = {
 (async () => {
   logger.info(`Running Plugins E2E Test with parameters:`);
   Object.keys(testParams).forEach((key) => logger.info(`- ${key}: ${testParams[key]}`));
-  await spawn('export', 'PATH=$PATH:$HOME/.local/bin');
 
   for (let i = 0; i < testSuites.length; i++) {
     await (require(`${__dirname}/tests/${testSuites[i]}`).default as TestSuite)(testParams);
