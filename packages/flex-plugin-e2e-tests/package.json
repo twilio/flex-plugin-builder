@@ -34,7 +34,11 @@
     "test": "exit 0"
   },
   "dependencies": {
+    "lodash": "4.17.21",
     "flex-plugins-utils-logger": "^4.7.0-beta.0"
+  },
+  "devDependencies": {
+    "@types/lodash": "4.14.168"
   },
   "engines": {
     "node": ">=10.12.0"
