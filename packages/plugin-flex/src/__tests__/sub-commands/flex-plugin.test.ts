@@ -29,14 +29,14 @@ describe('SubCommands/FlexPlugin', () => {
     expect(checkAFileExists).toHaveBeenCalledTimes(1);
   });
 
-  it('should test isPluginFolder to be false if one scripts not found in package.json', async () => {
+  it('should test isPluginFolder to be false if package was not found in package.json', async () => {
     const cmd = await createTest(FlexPlugin)();
 
     const checkAFileExists = jest.spyOn(fs, 'checkAFileExists').mockReturnValue(true);
     mockGetPkg(cmd, {
       dependencies: {},
       devDependencies: {
-        'flex-plugin-scripts': '',
+        'not-a-valid-package': '',
       },
     });
 
@@ -46,13 +46,12 @@ describe('SubCommands/FlexPlugin', () => {
     expect(checkAFileExists).toHaveBeenCalledTimes(1);
   });
 
-  it('should test isPluginFolder to be true if both scripts found in dependencies', async () => {
+  it('should test isPluginFolder to be true if script is found in dependencies', async () => {
     const cmd = await createTest(FlexPlugin)();
 
     const checkAFileExists = jest.spyOn(fs, 'checkAFileExists').mockReturnValue(true);
     mockGetPkg(cmd, {
       dependencies: {
-        'flex-plugin-scripts': '',
         '@twilio/flex-ui': '',
       },
       devDependencies: {},

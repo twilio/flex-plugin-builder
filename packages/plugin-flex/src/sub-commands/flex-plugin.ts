@@ -225,9 +225,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     }
     const { pkg } = this;
 
-    return ['flex-plugin-scripts', '@twilio/flex-ui'].every(
-      (dep) => dep in pkg.dependencies || dep in pkg.devDependencies,
-    );
+    return ['@twilio/flex-ui'].every((dep) => dep in pkg.dependencies || dep in pkg.devDependencies);
   }
 
   /**
