@@ -17,13 +17,13 @@ npm run build
 
 # This is the sandbox environment created to test CLI installation and to create plugin. Remove before re-running a test
 rm -rf ~/.local
-npm start
+PACKAGE_VERSION="4.7.5-beta.0" npm start
 ```
 
 You can also run a specific step by using:
 
 ```bash
-npm start -- --step 2
+PACKAGE_VERSION="4.7.5-beta.0" npm start -- --step 2
 ```
 
 ## Contributors
