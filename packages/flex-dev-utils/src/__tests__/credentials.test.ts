@@ -47,6 +47,8 @@ describe('credentials', () => {
     });
 
     process.env = { ...OLD_ENV };
+    delete process.env.TWILIO_ACCOUNT_SID;
+    delete process.env.TWILIO_AUTH_TOKEN;
   });
 
   describe('_getService', () => {
