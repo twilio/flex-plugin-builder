@@ -12,7 +12,11 @@ export interface TestParams {
     dir: string;
   };
 }
-export type TestSuite = (params: TestParams) => Promise<void>;
+
+export interface TestSuite {
+  description: string;
+  (params: TestParams): Promise<void>;
+}
 
 const testSuites = readdirSync(`${__dirname}/tests`)
   .filter((f) => f.endsWith('.js'))
@@ -42,6 +46,16 @@ const getArg = (flag: string): string => {
   return process.argv[index + 1];
 };
 
+const runTest = async (step: number): Promise<void> => {
+  // Makes the step have leading 0s
+  const stepStr = '0'.repeat(Math.max(0, 3 - String(step).length)) + String(step);
+  const testFile = `step${stepStr}`;
+  const testSuite = require(`${__dirname}/tests/${testFile}`).default as TestSuite;
+
+  logger.info(`Step ${stepStr} - ${testSuite.description}`);
+  await testSuite(testParams);
+};
+
 (async () => {
   if (!existsSync(homeDir)) {
     mkdirSync(homeDir);
@@ -56,12 +70,13 @@ const getArg = (flag: string): string => {
    */
   if (!process.argv.includes('--step')) {
     for (let i = 0; i < testSuites.length; i++) {
-      await (require(`${__dirname}/tests/${testSuites[i]}`).default as TestSuite)(testParams);
+      await runTest(i + 1);
     }
     return;
   }
 
-  await (require(`${__dirname}/tests/step${getArg('--step')}`).default as TestSuite)(testParams);
+  const step = getArg('--step');
+  await runTest(parseInt(step, 10));
 })()
   .then(() => {
     logger.success('All E2E tests passed successfully');

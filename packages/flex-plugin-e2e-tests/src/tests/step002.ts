@@ -1,13 +1,9 @@
 /* eslint-disable import/no-unused-modules, sonarjs/no-duplicate-string */
-import { logger } from 'flex-plugins-utils-logger';
-
 import { TestSuite, TestParams } from '..';
 import { spawn, logResult, assertion } from '../utils';
 
 // Install Twilio CLI and Plugins CLI
 const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
-  logger.info('Step 002 - Creating a Plugin');
-
   const twilioCliResult = await spawn('twilio', ['flex:plugins:create', params.plugin.name]);
   logResult(twilioCliResult);
 
@@ -29,11 +25,12 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
   assertion.jsonFileContains(
     [params.plugin.dir, 'package.json'],
     "dependencies['flex-plugin-scripts']",
-    `^${params.packageVersion}`,
+    params.packageVersion,
   );
   assertion.jsonFileContains([params.plugin.dir, 'package.json'], "dependencies['react']", `16.5.2`);
   assertion.jsonFileContains([params.plugin.dir, 'package.json'], "dependencies['react-dom']", `16.5.2`);
   assertion.jsonFileContains([params.plugin.dir, 'package.json'], "devDependencies['react-test-renderer']", `16.5.2`);
 };
+testSuite.description = 'Creating a Plugin';
 
 export default testSuite;

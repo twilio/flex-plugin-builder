@@ -10,6 +10,9 @@ describe('env', () => {
 
   beforeEach(() => {
     process.env = { ...OLD_ENV };
+    delete process.env.TWILIO_ACCOUNT_SID;
+    delete process.env.TWILIO_AUTH_TOKEN;
+
     manager.configuration.logLevel = '';
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

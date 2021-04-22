@@ -6,6 +6,26 @@
 
 To be filled
 
+## Running Locally
+
+To run locally:
+
+```bash
+# cd into this package
+cd packages/flex-plugin-e2e-tests
+npm run build
+
+# This is the sandbox environment created to test CLI installation and to create plugin. Remove before re-running a test
+rm -rf ~/.local
+PACKAGE_VERSION="4.7.5-beta.0" npm start
+```
+
+You can also run a specific step by using:
+
+```bash
+PACKAGE_VERSION="4.7.5-beta.0" npm start -- --step 2
+```
+
 ## Contributors
 
 Thank you to all the lovely contributors to this project. Please check the main repository to see [all contributors](https://github.com/twilio/flex-plugin-builder#contributors).
