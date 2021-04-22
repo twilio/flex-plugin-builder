@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-builder-toolkit",
-  "version": "4.7.3-betabeta.0",
+  "version": "4.7.4-beta.0",
   "description": "Scripts to run, build and deploy Flex plugins",
   "keywords": [
     "flex",
@@ -35,7 +35,7 @@
     "test:watch": "cd ../.. && jest packages/flex-plugin-builder-toolkit --watch --color"
   },
   "dependencies": {
-    "flex-dev-utils": "^4.7.3-betabeta.0",
+    "flex-dev-utils": "^4.7.4-beta.0",
     "flex-plugin-scripts": "^4.3.6-beta.0"
   },
   "engines": {
