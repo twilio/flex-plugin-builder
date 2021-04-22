@@ -34,12 +34,15 @@
     "test": "exit 0"
   },
   "dependencies": {
+    "flex-plugins-api-client": "4.7.5-beta.0",
     "flex-plugins-utils-logger": "4.7.5-beta.0",
     "lodash": "4.17.21",
-    "replace-in-file": "^6.2.0"
+    "replace-in-file": "^6.2.0",
+    "semver": "^7.3.5"
   },
   "devDependencies": {
-    "@types/lodash": "4.14.168"
+    "@types/lodash": "4.14.168",
+    "@types/semver": "^7.3.4"
   },
   "engines": {
     "node": ">=10.12.0"

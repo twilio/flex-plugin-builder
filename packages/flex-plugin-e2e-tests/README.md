@@ -17,13 +17,19 @@ npm run build
 
 # This is the sandbox environment created to test CLI installation and to create plugin. Remove before re-running a test
 rm -rf ~/.local
-PACKAGE_VERSION="4.7.5-beta.0" npm start
+TWILIO_ACCOUNT_SID=ACxxx TWILIO_AUTH_TOKEN=123 PACKAGE_VERSION="4.7.5-beta.0" npm start
 ```
 
 You can also run a specific step by using:
 
 ```bash
-PACKAGE_VERSION="4.7.5-beta.0" npm start -- --step 2
+... npm start -- --step 2
+```
+
+To run multiple steps:
+
+```bash
+... npm start -- --step 2 --step 3 --step 10
 ```
 
 ## Contributors
