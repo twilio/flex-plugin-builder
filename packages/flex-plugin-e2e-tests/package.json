@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "flex-plugins-utils-logger": "^4.7.0-beta.0",
+    "replace-in-file": "^6.2.0",
     "lodash": "4.17.21"
   },
   "devDependencies": {

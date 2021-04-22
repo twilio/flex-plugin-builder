@@ -1,4 +1,4 @@
-import { spawn } from 'child_process';
+import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
 
 import { logger } from 'flex-plugins-utils-logger';
 
@@ -13,16 +13,21 @@ interface SpawnResult {
  * Promisified spawn
  * @param cmd the command to spawn
  * @param args the args to that command
+ * @param options spawn options to run
  */
-export default async (cmd: string, ...args: string[]): Promise<SpawnResult> => {
+export default async (cmd: string, args: string[], options?: SpawnOptionsWithoutStdio): Promise<SpawnResult> => {
   return new Promise((resolve, reject) => {
-    logger.info(`Running spawn command: **${cmd} ${args.join(' ')}**`);
-    const child = spawn(cmd, args, {
+    const defaultOptions = {
       cwd: homeDir,
       env: {
         PATH: `${process.env.PATH}:/${homeDir}/bin`,
       },
-    });
+    };
+    const spawnOptions = { ...defaultOptions, ...options };
+    logger.info(`Running spawn command: **${cmd} ${args.join(' ')}**`);
+    logger.debug(`Spawn options are **${JSON.stringify(options)}**`);
+
+    const child = spawn(cmd, args, spawnOptions);
 
     const stdoutArr: Buffer[] = [];
     const stderrArr: Buffer[] = [];
