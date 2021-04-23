@@ -38,5 +38,6 @@ node_modules/.bin/lerna publish \
     --no-git-tag-version \
     --no-push \
     --pre-dist-tag dev \
+    --exact \
     --yes \
     "${devVersion}"
