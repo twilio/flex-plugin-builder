@@ -1,4 +1,4 @@
-import { strictEqual, notStrictEqual } from 'assert';
+import { deepStrictEqual, notDeepStrictEqual } from 'assert';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -7,10 +7,15 @@ import { get } from 'lodash';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const _strictEqual = (doesEqual: boolean, actual: any, expected: any, msg?: string): void => {
   if (doesEqual) {
-    strictEqual(actual, expected, msg);
+    deepStrictEqual(actual, expected, msg);
   } else {
-    notStrictEqual(actual, expected, msg);
+    notDeepStrictEqual(actual, expected, msg);
   }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const equal = (doesEqual: boolean) => (actual: any, expected: any, msg?: string): void => {
+  _strictEqual(doesEqual, actual, expected, msg);
 };
 
 /**
@@ -27,6 +32,10 @@ const jsonFileContains = (doesEqual: boolean) => <T>(paths: string[], key: strin
   _strictEqual(doesEqual, value, get(JSON.parse(fs.readFileSync(path.join(...paths), 'utf-8')), key), msg);
 };
 
+const stringContains = (doesEqual: boolean) => (line: string, str: string, msg?: string) => {
+  _strictEqual(doesEqual, true, line.includes(str), msg);
+};
+
 /**
  * Checks whether the file contains the given string
  */
@@ -35,7 +44,7 @@ const fileContains = (doesEqual: boolean) => (paths: string[], value: string, ms
   const not = doesEqual ? ' not ' : ' ';
   msg = msg || `${file} does${not}contain ${value}`;
 
-  _strictEqual(doesEqual, true, fs.readFileSync(file, 'utf-8').includes(value), msg);
+  stringContains(doesEqual)(fs.readFileSync(file, 'utf-8'), value, msg);
 };
 
 /**
@@ -46,16 +55,18 @@ const dirIsEmpty = (doesEqual: boolean) => (paths: string[], msg?: string) => {
 };
 
 export default {
-  equal: strictEqual,
+  equal: equal(true),
   fileExists: fileExists(true),
   jsonFileContains: jsonFileContains(true),
   fileContains: fileContains(true),
   dirIsEmpty: dirIsEmpty(true),
+  stringContains: stringContains(true),
   not: {
     fileExists: fileExists(false),
     jsonFileContains: jsonFileContains(false),
     fileContains: fileContains(false),
     dirIsEmpty: dirIsEmpty(false),
-    equal: notStrictEqual,
+    stringContains: stringContains(false),
+    equal: equal(false),
   },
 };

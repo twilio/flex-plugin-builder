@@ -26,7 +26,7 @@ export default async (cmd: string, args: string[], options?: SpawnOptionsWithout
       },
     };
     const spawnOptions = { ...defaultOptions, ...options };
-    logger.info(`Running spawn command: **${cmd} ${args.join(' ')}**`);
+    logger.info(`Running spawn command: **${cmd} ${args.join(' ').replace(/-/g, '\\-')}**`);
     logger.debug(`Spawn options are **${JSON.stringify(options)}**`);
 
     const child = spawn(cmd, args, spawnOptions);
@@ -75,8 +75,8 @@ export default async (cmd: string, args: string[], options?: SpawnOptionsWithout
  * @param result the result to log
  */
 export const logResult = (result: SpawnResult): void => {
-  logger.info(result.stdout);
+  logger.info(result.stdout.replace(/-/g, '\\-'));
   if (result.stderr) {
-    logger.warning(result.stderr);
+    logger.warning(result.stderr.replace(/-/g, '\\-'));
   }
 };

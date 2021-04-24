@@ -3,6 +3,8 @@ import { readdirSync, existsSync, mkdirSync } from 'fs';
 
 import { logger } from 'flex-plugins-utils-logger';
 
+import { api } from './utils';
+
 export interface TestParams {
   packageVersion: string;
   nodeVersion: string;
@@ -10,7 +12,12 @@ export interface TestParams {
   plugin: {
     name: string;
     dir: string;
-  };
+  } & Partial<TestParamsBuilder>;
+}
+interface TestParamsBuilder {
+  newlineValue: string;
+  changelog: string;
+  version: string;
 }
 
 export interface TestSuite {
@@ -41,9 +48,18 @@ const testParams: TestParams = {
   },
 };
 
-const getArg = (flag: string): string => {
-  const index = process.argv.indexOf(flag);
-  return process.argv[index + 1];
+const getArgs = (flag: string): string[] => {
+  const _get = (...argv: string[]): string[] => {
+    const index = argv.indexOf(flag);
+    if (index === -1) {
+      return [];
+    }
+    const arg = argv[index + 1];
+
+    return [arg, ..._get(...argv.splice(index + 1))];
+  };
+
+  return _get(...process.argv);
 };
 
 const runTest = async (step: number): Promise<void> => {
@@ -63,6 +79,7 @@ const runTest = async (step: number): Promise<void> => {
 
   logger.info(`Running Plugins E2E Test with parameters:`);
   Object.keys(testParams).forEach((key) => logger.info(`- ${key}: ${JSON.stringify(testParams[key])}`));
+  await api.cleanup();
 
   /*
    * We can run a particular step by provide --step 002
@@ -75,8 +92,10 @@ const runTest = async (step: number): Promise<void> => {
     return;
   }
 
-  const step = getArg('--step');
-  await runTest(parseInt(step, 10));
+  const steps = getArgs('--step');
+  for (let i = 0; i < steps.length; i++) {
+    await runTest(parseInt(steps[i], 10));
+  }
 })()
   .then(() => {
     logger.success('All E2E tests passed successfully');
