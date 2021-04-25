@@ -37,10 +37,10 @@ commands:
   cmd_install-prerequisites:
     steps:
       - run:
-          name: "APT update"
+          name: "Apt-get update"
           command: sudo apt-get update
       - run:
-          name: "Fetch and install libsecret"
+          name: "Install libraries"
           command: sudo apt-get install -y libsecret-1-dev
   cmd_run-unit-tests:
     steps:
@@ -117,6 +117,7 @@ jobs:
       - checkout
       - cmd_install-prerequisites
       - cmd_install-dependencies
+      - cmd_setup_npm
       - cmd_run-publish:
           dist_tag: << parameters.dist_tag >>
           version_bump: << parameters.version_bump >>
