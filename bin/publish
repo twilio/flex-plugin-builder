@@ -56,8 +56,8 @@ if [ "${tag}" == "nightly" ] || [ "${tag}" == "dev" ] ; then
 fi
 
 # Run unit-tests one more time
-#npm run test
-#npm run build
+npm run test
+npm run build
 
 # Publishing
 echo -e "\n------------------------------------"
@@ -65,22 +65,19 @@ echo -e "-- Publishing as \033[1m${tag}\033[0m :: \033[1m${bump}\033[0m release 
 echo -e "-- Publishing as \033[1m${tag}\033[0m :: \033[1m${bump}\033[0m release --"
 echo -e "------------------------------------\n"
 
-# Exiting here to not actually publish while I build this script
-exit 1
-
-#if [ "${tag}" == "public" ] ; then
-#  ./node_modules/.bin/lerna publish \
-#    --force-publish="*" \
-#    --exact \
-#    --yes \
-#    "${bump}"
-#else
-#  ./node_modules/.bin/lerna publish \
-#    --force-publish="*" \
-#    --pre-dist-tag "${tag}" \
-#    --dist-tag "${tag}" \
-#    --exact \
-#    --yes \
-#    "${bump}"
-#fi
+if [ "${tag}" == "public" ] ; then
+  ./node_modules/.bin/lerna publish \
+    --force-publish="*" \
+    --exact \
+    --yes \
+    "${bump}"
+else
+  ./node_modules/.bin/lerna publish \
+    --force-publish="*" \
+    --pre-dist-tag "${tag}" \
+    --dist-tag "${tag}" \
+    --exact \
+    --yes \
+    "${bump}"
+fi
 
