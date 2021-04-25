@@ -15,12 +15,12 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
     to: params.plugin.newlineValue,
   });
 
-  const resource = await api.getLatestPluginVersion(params.plugin.name);
-  params.plugin.version = semver.inc(resource?.version || '0.0.0', 'patch') as string;
   const result = await spawn('twilio', ['flex:plugins:deploy', '--changelog', params.plugin.changelog, '--patch'], {
     cwd: params.plugin.dir,
   });
   logResult(result);
+  const resource = await api.getLatestPluginVersion(params.plugin.name);
+  params.plugin.version = semver.inc(resource?.version || '0.0.0', 'patch') as string;
 
   assertion.fileExists([params.plugin.dir, 'build', `${params.plugin.name}.js`]);
   assertion.fileContains([params.plugin.dir, 'build', `${params.plugin.name}.js`], params.plugin.newlineValue);
