@@ -22,20 +22,7 @@ script:
   - CI= npm run test:ci
   - npm run build
 
-before_deploy:
-  - npm config set access public
-  - npm config set registry https://registry.npmjs.org
-  - npm set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
-
 deploy:
-  - provider: script
-    script: npm run publish
-    skip_cleanup: true
-    on:
-      tags: true
-      branch: v4-beta
-      repo: twilio/flex-plugin-builder
-      node_js: '10'
   - provider: script
     script: ./bin/nightly.sh
     skip_cleanup: true

@@ -7,6 +7,15 @@ parameters:
   run_pr_validator:
     default: true
     type: boolean
+  run_npm_publish:
+    default: false
+    type: boolean
+  dist_tag:
+    default: 'alpha'
+    type: string
+  version_bump:
+    default: 'patch'
+    type: string
   package_version:
     default: ''
     type: string
@@ -20,12 +29,12 @@ executors:
       - image: cimg/node:<< parameters.tag >>
 
 commands:
-  install-dependencies:
+  cmd_install-dependencies:
     steps:
       - run:
           name: "Install project dependencies"
           command: npm i
-  install-prerequisites:
+  cmd_install-prerequisites:
     steps:
       - run:
           name: "APT update"
@@ -33,24 +42,48 @@ commands:
       - run:
           name: "Fetch and install libsecret"
           command: sudo apt-get install -y libsecret-1-dev
-  run-unit-tests:
+  cmd_run-unit-tests:
     steps:
       - run:
           name: "Run unit tests"
           command: npm run test:ci
-  run-linter:
+  cmd_run-linter:
     steps:
       - run:
           name: "Run linter"
           command: npm run lint
-  run-e2e-tests:
+  cmd_run-e2e-tests:
     steps:
       - run:
           name: "Run e2e tests"
           command: cd packages/flex-plugin-e2e-tests && npm run build && npm start
+  cmd_codecov:
+    steps:
+      - run:
+          name: "Codecov report"
+          command: npm run coverage -- --token=$CODECOV_TOKEN
+  cmd_setup_npm:
+    steps:
+      - run:
+          name: "Setting up npm"
+          command: |
+            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+            git config --global user.email $GITHUB_EMAIL
+            git config --global user.name $GITHUB_USER
+  cmd_run-publish:
+    parameters:
+      dist_tag:
+        type: string
+      version_bump:
+        type: string
+    steps:
+      - run:
+          name: "Publishing package"
+          command: |
+            npm run publish:<< parameters.dist_tag >> << parameters.version_bump >>
 
 jobs:
-  e2e-test:
+  job_e2e-test:
     resource_class: xlarge
     parameters:
       package_version:
@@ -63,11 +96,32 @@ jobs:
       tag: "lts"
     steps:
       - checkout
-      - install-prerequisites
-      - install-dependencies
-      - run-e2e-tests
+      - cmd_install-prerequisites
+      - cmd_install-dependencies
+      - cmd_run-e2e-tests
 
-  pr-validator:
+  job_npm-publish:
+    resource_class: xlarge
+    parameters:
+      dist_tag:
+        type: string
+      version_bump:
+        type: string
+    environment:
+      NODE_OPTIONS: --max-old-space-size=14336
+      CI: ""
+    executor:
+      name: node
+      tag: "lts"
+    steps:
+      - checkout
+      - cmd_install-prerequisites
+      - cmd_install-dependencies
+      - cmd_run-publish:
+          dist_tag: << parameters.dist_tag >>
+          version_bump: << parameters.version_bump >>
+
+  job_pr-validator:
     resource_class: xlarge
     environment:
       NODE_OPTIONS: --max-old-space-size=14336
@@ -80,30 +134,38 @@ jobs:
       tag: << parameters.node-version >>
     steps:
       - checkout
-      - install-prerequisites
-      - install-dependencies
-      - run-linter
-      - run-unit-tests
+      - cmd_install-prerequisites
+      - cmd_install-dependencies
+      - cmd_run-linter
+      - cmd_run-unit-tests
       - when:
           condition:
             equal: [<< parameters.node-version >>, lts]
           steps:
-            - run:
-                name: "CODECOV"
-                command: npm run coverage -- --token=$CODECOV_TOKEN
+            - cmd_codecov
 
 workflows:
   test:
     when: << pipeline.parameters.run_e2e_test >>
     jobs:
-      - e2e-test:
+      - job_e2e-test:
           matrix:
             parameters:
               package_version: [ << pipeline.parameters.package_version >> ]
+
+  publish:
+    when: << pipeline.parameters.run_npm_publish >>
+    jobs:
+      - job_npm-publish:
+          matrix:
+            parameters:
+              dist_tag: [ << pipeline.parameters.dist_tag >> ]
+              version_bump: [ << pipeline.parameters.version_bump >> ]
+
   validate:
     when: << pipeline.parameters.run_pr_validator >>
     jobs:
-      - pr-validator:
+      - job_pr-validator:
           matrix:
             parameters:
               node-version: ["10.24", "12.21", "14.16", lts]
