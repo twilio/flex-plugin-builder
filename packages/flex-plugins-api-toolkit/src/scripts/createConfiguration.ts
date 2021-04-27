@@ -9,6 +9,7 @@ import {
 } from 'flex-plugins-api-client';
 import { looksLikeSid } from 'flex-plugin-utils-http';
 import { TwilioError } from 'flex-plugins-utils-exception';
+import { logger } from 'flex-plugins-utils-logger';
 
 import { DeployPlugin } from './deploy';
 import { Script } from '.';
@@ -53,6 +54,10 @@ export default function createConfiguration(
   releasesClient: ReleasesClient,
 ): CreateConfigurationScript {
   return async (option: CreateConfigurationOption): Promise<CreateConfiguration> => {
+    logger.debug('Creating configuration with input', option);
+    console.log('creating options');
+    console.log(option);
+
     const pluginsValid = option.addPlugins.every((plugin) => {
       const match = plugin.match(pluginRegex);
       return match && match.groups && match.groups.name && match.groups.version;
@@ -60,6 +65,16 @@ export default function createConfiguration(
     if (!pluginsValid) {
       throw new TwilioError('Plugins must be of the format pluginName@version');
     }
+
+    // Change to sids
+    option.addPlugins = await Promise.all(
+      option.addPlugins.map(async (plugin) => {
+        const match = plugin.match(pluginRegex);
+        // @ts-ignore
+        const version = await pluginVersionClient.get(match.groups.name, match.groups.version);
+        return `${version.plugin_sid}@${version.sid}`;
+      }),
+    );
 
     const removeList: string[] = await Promise.all(
       (option.removePlugins || [])
@@ -77,7 +92,8 @@ export default function createConfiguration(
         })
         .filter(Boolean),
     );
-    const list: string[] = option.addPlugins;
+    const list: string[] = [];
+    // = option.addPlugins;
     if (option.fromConfiguration === 'active') {
       const release = await releasesClient.active();
       if (release) {
@@ -90,12 +106,44 @@ export default function createConfiguration(
     // Fetch existing installed plugins
     if (option.fromConfiguration) {
       const items = await configuredPluginClient.list(option.fromConfiguration);
+      list.push(...items.plugins.map((p) => `${p.plugin_sid}@${p.plugin_version_sid}`));
+      console.log('\nlist is', list);
+      option.addPlugins.forEach((a) => {
+        const index = list.findIndex((l) => a.split('@')[0] === l.split('@')[0]);
+        if (index > -1) {
+          list[index] = a;
+        } else {
+          list.push(a);
+        }
+      });
+
+      console.log('\nupdated list is', list);
+      if (process.env.FOO) {
+        process.exit(1);
+      }
+
       const existingPlugins = items.plugins
         .filter(
           (plugin) =>
             !list.some((p) => p.indexOf(`${plugin.unique_name}@`) !== -1 || p.indexOf(`${plugin.plugin_sid}@`) !== -1),
         )
         .map((p) => `${p.plugin_sid}@${p.plugin_version_sid}`);
+
+      // console.log('got existing plugins');
+      // console.log(existingPlugins);
+      // console.log(list);
+      //
+      // // replace inplace if changing version
+      // list.forEach((l, index) => {
+      //   const match = existingPlugins.find((e) => e.includes(l.split('@')[0]));
+      //   if (match) {
+      //     list[index] = match;
+      //   }
+      // });
+      // const remaining = existingPlugins.filter((e) => !list.find((l) => l.includes(e.split('@')[0])));
+      //
+      // console.log('list is now', list);
+      // console.log('remaining is now', remaining);
       list.push(...existingPlugins);
     }
 

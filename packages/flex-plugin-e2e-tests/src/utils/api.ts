@@ -38,7 +38,11 @@ const getPluginVersion = async (name: string, version: string): Promise<PluginVe
 };
 
 const getLatestPluginVersion = async (name: string): Promise<PluginVersionResource | null> => {
-  return versionsClient.latest(name);
+  try {
+    return versionsClient.latest(name);
+  } catch (e) {
+    return null;
+  }
 };
 
 const getPlugin = async (name: string): Promise<PluginResource> => {
