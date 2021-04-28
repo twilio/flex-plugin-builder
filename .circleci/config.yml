@@ -1,5 +1,12 @@
 version: 2.1
 
+prValidatorSteps: &prValidatorSteps
+  docker:
+    - image: felicianotech/docker-hugo:0.27.1
+  working_directory: ~/project
+
+
+
 parameters:
   run_e2e_test:
     default: false
@@ -18,6 +25,9 @@ executors:
         type: string
     docker:
       - image: cimg/node:<< parameters.tag >>
+
+orbs:
+  win: circleci/windows@2.2.0
 
 commands:
   install-dependencies:
@@ -50,7 +60,7 @@ commands:
           command: cd packages/flex-plugin-e2e-tests && npm run build && npm start
 
 jobs:
-  e2e-test:
+  job_e2e-test:
     resource_class: xlarge
     parameters:
       package_version:
@@ -67,7 +77,24 @@ jobs:
       - install-dependencies
       - run-e2e-tests
 
-  pr-validator:
+  job_pr-validator-win32:
+    environment:
+      NODE_OPTIONS: --max-old-space-size=14336
+      CI: ""
+    parameters:
+      shell:
+        type: string
+    executor:
+      name: win/default
+      shell: << parameters.shell >>
+    steps:
+      - checkout
+      - install-prerequisites
+      - install-dependencies
+      - run-linter
+      - run-unit-tests
+
+  job_pr-validator-node:
     resource_class: xlarge
     environment:
       NODE_OPTIONS: --max-old-space-size=14336
@@ -96,14 +123,18 @@ workflows:
   test:
     when: << pipeline.parameters.run_e2e_test >>
     jobs:
-      - e2e-test:
+      - job_e2e-test:
           matrix:
             parameters:
               package_version: [ << pipeline.parameters.package_version >> ]
   validate:
     when: << pipeline.parameters.run_pr_validator >>
     jobs:
-      - pr-validator:
+      - job_pr-validator-win32:
+          matrix:
+            parameters:
+                shell: [ "bash.exe" ]
+      - job_pr-validator-node:
           matrix:
             parameters:
               node-version: ["10.24", "12.21", "14.16", lts]
@@ -111,5 +142,5 @@ workflows:
             - run:
                 name: Send Slack notification
                 command: |
-                         curl -X POST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - $CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/pr-validator-/''}*. View <$CIRCLE_BUILD_URL|build>. cc: <@$CIRCLE_USERNAME>', 'mrkdwn':true}" $SLACK_WEBHOOK
+                         curl -X POST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - $CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}*. View <$CIRCLE_BUILD_URL|build>. cc: <@$CIRCLE_USERNAME>', 'mrkdwn':true}" $SLACK_WEBHOOK
                 when: on_fail
