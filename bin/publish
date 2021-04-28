@@ -2,14 +2,82 @@
 
 set -e
 
-if [ -z "$TRAVIS_TAG" ] ; then
-  echo 'Publish must happen on a tagged release'
-  exit 0
+function getJsonValue() {
+  KEY=$1
+  num=$2
+  awk -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/'"${KEY}"'\042/){print $(i+1)}}}' | tr -d '"' | sed -n "${num}"p
+}
+
+tag="${1}"
+bump="${2}"
+branch="${CIRCLE_BRANCH}"
+currentVersion=$(cat ./lerna.json | getJsonValue 'version' |  cut -f1 -d"-")
+semver=( ${currentVersion//./ } )
+major="${semver[0]}"
+minor="${semver[1]}"
+patch=$((semver[2] + 1))
+id=$(date '+%Y%m%d')
+
+# Verify arguments
+if [ -z "${tag}" ] ; then
+  echo "tag cannot be empty"
+  exit 1
+fi
+if [ "${tag}" != "beta" ] && [ "${tag}" != "alpha" ] && [ "${tag}" != "public" ] && [ "${tag}" != "dev" ] && [ "${tag}" != "nightly" ] ; then
+  echo "tag must be one of beta, alpha, public, dev, nightly"
+  exit 1
+fi
+if [ -z "${bump}" ] ; then
+  bump="patch";
+fi
+if [ "${bump}" != "patch" ] && [ "${bump}" != "minor" ] && [ "${bump}" != "major" ] ; then
+  echo "bump must be one of patch, minor, major"
+  exit 1
 fi
 
-if [ "${TRAVIS_EVENT_TYPE}" == "cron" ] ; then
-  echo 'skipping publishing on nightly';
-  exit 0
+# Verify tag and branch
+if [ "${tag}" == "public" ] && [ "${branch}" != "main" ] ; then
+  echo "Public release must be done on the main branch"
+  exit 1
+fi
+if [ "${tag}" == "beta" ] && [[ ! "${branch}" =~ ^v.-beta$ ]] ; then
+  echo "Beta release must be done on the v*-beta branch"
+  exit 1
 fi
 
-node_modules/.bin/lerna-travis-publish
+# Update bump level
+if [ "${tag}" != "public" ] ; then
+  bump="pre${bump}"
+fi
+
+# Nightly/dev get a timestamp in their version
+if [ "${tag}" == "nightly" ] || [ "${tag}" == "dev" ] ; then
+  bump="${major}.${minor}.${patch}-${tag}.${id}"
+fi
+
+# Run unit-tests one more time
+npm run test
+npm run build
+
+# Publishing
+echo -e "\n------------------------------------"
+echo -e "-- Publishing as \033[1m${tag}\033[0m :: \033[1m${bump}\033[0m release --"
+echo -e "-- Publishing as \033[1m${tag}\033[0m :: \033[1m${bump}\033[0m release --"
+echo -e "------------------------------------\n"
+
+if [ "${tag}" == "public" ] ; then
+  ./node_modules/.bin/lerna publish \
+    --force-publish="*" \
+    --exact \
+    --yes \
+    "${bump}"
+else
+  ./node_modules/.bin/lerna publish \
+    --force-publish="*" \
+    --pre-dist-tag "${tag}" \
+    --dist-tag "${tag}" \
+    --exact \
+    --yes \
+    "${bump}"
+fi
+
