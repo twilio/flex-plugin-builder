@@ -32,7 +32,7 @@
     "publish:dev": "./bin/publish dev patch",
     "publish:nightly": "./bin/publish nightly patch",
     "publish:public": "./bin/publish public $1",
-    "test": "./bin/test-runner.sh",
+    "test": "run-script-os",
     "test:windows": ".\\\"bin/test-runner.sh\"",
     "test:default": "./bin/test-runner.sh",
     "test:ci": "jest --clearCache && npm run test -- --no-cache --coverage",
