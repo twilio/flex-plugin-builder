@@ -32,7 +32,7 @@
     "publish:dev": "./bin/publish dev patch",
     "publish:nightly": "./bin/publish nightly patch",
     "publish:public": "./bin/publish public $1",
-    "test": "./bin/test-runner.sh",
+    "test": "\"bin/test-runner.sh\"",
     "test:ci": "jest --clearCache && npm run test -- --no-cache --coverage",
     "test:one": "npm run test -- $@",
     "test:watch": "npm run test -- --watchAll"
