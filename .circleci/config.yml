@@ -139,7 +139,6 @@ jobs:
     steps:
       - checkout
       - cmd_install-dependencies
-      - cmd_run-linter
       - cmd_run-unit-tests
 
   job_pr-validator-node:
