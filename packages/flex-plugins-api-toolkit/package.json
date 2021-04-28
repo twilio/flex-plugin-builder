@@ -31,7 +31,7 @@
   ],
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "../../node_modules/.bin/tsc",
+    "build": "cd ../.. && tsc -p \"packages/flex-plugins-api-toolkit/tsconfig.json\"",
     "clean": "rm -rf dist",
     "lint": "eslint --ext ts src/",
     "lint:fix": "npm run lint -- --fix",
