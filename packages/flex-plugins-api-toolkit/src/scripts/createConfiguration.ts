@@ -53,10 +53,18 @@ export default function createConfiguration(
   configuredPluginClient: ConfiguredPluginsClient,
   releasesClient: ReleasesClient,
 ): CreateConfigurationScript {
+  const getVersion = async (name: string, version: string) => {
+    const resource =
+      version === 'latest' ? await pluginVersionClient.latest(name) : await pluginVersionClient.get(name, version);
+    if (!resource) {
+      throw new TwilioError(`No plugin version was found for ${name}`);
+    }
+
+    return resource;
+  };
+
   return async (option: CreateConfigurationOption): Promise<CreateConfiguration> => {
     logger.debug('Creating configuration with input', option);
-    console.log('creating options');
-    console.log(option);
 
     const pluginsValid = option.addPlugins.every((plugin) => {
       const match = plugin.match(pluginRegex);
@@ -71,8 +79,13 @@ export default function createConfiguration(
       option.addPlugins.map(async (plugin) => {
         const match = plugin.match(pluginRegex);
         // @ts-ignore
-        const version = await pluginVersionClient.get(match.groups.name, match.groups.version);
-        return `${version.plugin_sid}@${version.sid}`;
+        const { name, version } = match.groups;
+
+        // this is checking whether the plugin exists - better for display error
+        await pluginClient.get(name);
+
+        const resource = await getVersion(name, version);
+        return `${resource.plugin_sid}@${resource.sid}`;
       }),
     );
 
@@ -107,7 +120,6 @@ export default function createConfiguration(
     if (option.fromConfiguration) {
       const items = await configuredPluginClient.list(option.fromConfiguration);
       list.push(...items.plugins.map((p) => `${p.plugin_sid}@${p.plugin_version_sid}`));
-      console.log('\nlist is', list);
       option.addPlugins.forEach((a) => {
         const index = list.findIndex((l) => a.split('@')[0] === l.split('@')[0]);
         if (index > -1) {
@@ -116,35 +128,8 @@ export default function createConfiguration(
           list.push(a);
         }
       });
-
-      console.log('\nupdated list is', list);
-      if (process.env.FOO) {
-        process.exit(1);
-      }
-
-      const existingPlugins = items.plugins
-        .filter(
-          (plugin) =>
-            !list.some((p) => p.indexOf(`${plugin.unique_name}@`) !== -1 || p.indexOf(`${plugin.plugin_sid}@`) !== -1),
-        )
-        .map((p) => `${p.plugin_sid}@${p.plugin_version_sid}`);
-
-      // console.log('got existing plugins');
-      // console.log(existingPlugins);
-      // console.log(list);
-      //
-      // // replace inplace if changing version
-      // list.forEach((l, index) => {
-      //   const match = existingPlugins.find((e) => e.includes(l.split('@')[0]));
-      //   if (match) {
-      //     list[index] = match;
-      //   }
-      // });
-      // const remaining = existingPlugins.filter((e) => !list.find((l) => l.includes(e.split('@')[0])));
-      //
-      // console.log('list is now', list);
-      // console.log('remaining is now', remaining);
-      list.push(...existingPlugins);
+    } else {
+      list.push(...option.addPlugins);
     }
 
     const plugins: CreateConfiguredPlugin[] = await Promise.all(
@@ -155,21 +140,13 @@ export default function createConfiguration(
           return {
             name,
             version,
-            plugin,
           };
         })
         .filter(({ name }) => !removeList.includes(name))
-        .map(async ({ name, version, plugin }) => {
+        .map(async ({ name, version }) => {
           // This checks plugin exists
           await pluginClient.get(name);
-
-          const versionResource =
-            version === 'latest'
-              ? await pluginVersionClient.latest(name)
-              : await pluginVersionClient.get(name, version);
-          if (!versionResource) {
-            throw new TwilioError(`No plugin version was found for ${plugin}`);
-          }
+          const versionResource = await getVersion(name, version);
 
           return { plugin_version: versionResource.sid, phase: 3 };
         }),

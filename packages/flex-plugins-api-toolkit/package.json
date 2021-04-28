@@ -37,7 +37,7 @@
     "lint:fix": "npm run lint -- --fix",
     "prepublish": "npm run build",
     "test": "cd ../.. && jest packages/flex-plugins-api-toolkit --color",
-    "test:watch": "cd ../.. && jest packages/flnpm ex-plugins-api-toolkit --watch --color"
+    "test:watch": "cd ../.. && jest packages/flex-plugins-api-toolkit --watch --color"
   },
   "dependencies": {
     "flex-plugin-utils-http": "4.7.5-beta.0",
