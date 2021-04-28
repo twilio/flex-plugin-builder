@@ -7,11 +7,13 @@
 const fs = require('fs');
 const path = require('path');
 const cp = require('child_process');
+const os = require('os');
 
 // These packages are ignored and no jest runs for them
 const ignorePackages = ['flex-plugin-e2e-tests'];
 
 // fs helper commands
+const isWin = () => os.platform() === 'win32';
 const exists = (src) => src && fs.existsSync(src);
 const isDirectory = (src) => exists(src) && fs.lstatSync(src).isDirectory();
 const isFile = (src) => exists(src) && fs.lstatSync(src).isFile();
@@ -39,8 +41,12 @@ const exposeGC = process.env.EXPOSE_GC;
 const rootDir = path.join(__dirname, '..');
 const coverageDir = path.join(rootDir, 'coverage');
 const pkgDir = path.join(rootDir, 'packages');
-const jestCli = path.join(rootDir, 'node_modules', '.bin', 'jest');
-const nycCli = path.join(rootDir, 'node_modules', '.bin', 'nyc');
+const jestCli = isWin()
+  ? path.join(rootDir, 'node_modules', 'jest', 'bin', 'jest.js')
+  : path.join(rootDir, 'node_modules', '.bin', 'jest');
+const nycCli = isWin()
+  ? path.join(rootDir, 'node_modules', 'nyc', 'bin', 'nyc.js')
+  : path.join(rootDir, 'node_modules', '.bin', 'nyc');
 let argv = process.argv.splice(2);
 
 // Runs jest for the given package
@@ -101,8 +107,8 @@ const packages = fs
   }
 
   await spawn('ls', ['-al', rootDir]);
-  await spawn('ls', ['-al', path.join(rootDir, 'node_modules')]);
-  await spawn('ls', ['-al', path.join(rootDir, 'node_modules', '.bin')]);
+  await spawn('ls', ['-al', path.join(rootDir, 'node_modules', 'jest')]);
+  await spawn('ls', ['-al', path.join(rootDir, 'node_modules', 'jest', 'bin')]);
 
   // Run jest for all packages
   for (let p = 0; p < packages.length; p++) {
