@@ -22,9 +22,14 @@ const isEmpty = (src) => exists(src) && isDirectory(src) && fs.readdirSync(src).
 // Promisified spawn command
 const spawn = async (cmd, args) => {
   return new Promise((resolve) => {
+    const env = { ...process.env };
+    if (isWin()) {
+      env.SHELL = true;
+    }
+
     const child = cp.spawn(cmd, args, {
       cwd: process.cwd(),
-      env: process.env,
+      env,
       stdio: 'inherit',
       encoding: 'utf-8',
     });
@@ -106,11 +111,7 @@ const packages = fs
     return;
   }
 
-  await spawn('ls', ['-al', rootDir]);
-  await spawn('ls', ['-al', path.join(rootDir, 'node_modules', 'jest')]);
-  await spawn('ls', ['-al', path.join(rootDir, 'node_modules', 'jest', 'bin')]);
-
-  // Run jest for all packages
+  // Run jest for all packagesc
   for (let p = 0; p < packages.length; p++) {
     await runJest(packages[p], ...argv);
   }
@@ -119,4 +120,7 @@ const packages = fs
   if (!isEmpty(coverageDir)) {
     await runNyc();
   }
-})();
+})().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
