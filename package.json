@@ -32,7 +32,9 @@
     "publish:dev": "./bin/publish dev patch",
     "publish:nightly": "./bin/publish nightly patch",
     "publish:public": "./bin/publish public $1",
-    "test": "\"bin/test-runner.sh\"",
+    "test": "./bin/test-runner.sh",
+    "test:win32": ".\\\"bin/test-runner.sh\"",
+    "test:default": "./bin/test-runner.sh",
     "test:ci": "jest --clearCache && npm run test -- --no-cache --coverage",
     "test:one": "npm run test -- $@",
     "test:watch": "npm run test -- --watchAll"
@@ -60,6 +62,7 @@
     "lerna-audit": "^1.3.2",
     "markdown-toc": "^1.2.0",
     "nyc": "^15.1.0",
+    "run-script-os": "^1.1.6",
     "ts-jest": "^26.5.5",
     "typescript": "^4.2.4",
     "ultra-runner": "^3.10.5"
