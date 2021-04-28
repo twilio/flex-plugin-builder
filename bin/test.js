@@ -100,6 +100,10 @@ const packages = fs
     return;
   }
 
+  await spawn('ls', ['-al', rootDir]);
+  await spawn('ls', ['-al', path.join(rootDir, 'node_modules')]);
+  await spawn('ls', ['-al', path.join(rootDir, 'node_modules', '.bin')]);
+
   // Run jest for all packages
   for (let p = 0; p < packages.length; p++) {
     await runJest(packages[p], ...argv);
