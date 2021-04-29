@@ -22,14 +22,12 @@ const isEmpty = (src) => exists(src) && isDirectory(src) && fs.readdirSync(src).
 // Promisified spawn command
 const spawn = async (cmd, args) => {
   return new Promise((resolve) => {
-    const env = { ...process.env };
-    if (isWin()) {
-      env.SHELL = true;
-    }
+    const shell = isWin() ? true : process.env.SHELL;
 
     const child = cp.spawn(cmd, args, {
       cwd: process.cwd(),
-      env,
+      env: process.env,
+      shell,
       stdio: 'inherit',
       encoding: 'utf-8',
     });
@@ -46,16 +44,22 @@ const exposeGC = process.env.EXPOSE_GC;
 const rootDir = path.join(__dirname, '..');
 const coverageDir = path.join(rootDir, 'coverage');
 const pkgDir = path.join(rootDir, 'packages');
-const jestCli = isWin()
-  ? path.join(rootDir, 'node_modules', 'jest', 'bin', 'jest.js')
-  : path.join(rootDir, 'node_modules', '.bin', 'jest');
-const nycCli = isWin()
-  ? path.join(rootDir, 'node_modules', 'nyc', 'bin', 'nyc.js')
-  : path.join(rootDir, 'node_modules', '.bin', 'nyc');
+/*
+ * const jestCli = isWin()
+ *   ? path.join(rootDir, 'node_modules', 'jest', 'bin', 'jest.js')
+ *   : path.join(rootDir, 'node_modules', '.bin', 'jest');
+ * const nycCli = isWin()
+ *   ? path.join(rootDir, 'node_modules', 'nyc', 'bin', 'nyc.js')
+ *   : path.join(rootDir, 'node_modules', '.bin', 'nyc');
+ */
+const jestCli = path.join(rootDir, 'node_modules', '.bin', 'jest');
+const nycCli = path.join(rootDir, 'node_modules', '.bin', 'nyc');
 let argv = process.argv.splice(2);
 
 // Runs jest for the given package
 const runJest = async (pkg, ...args) => {
+  const join = (...paths) => path.join(...paths).replace(/\\/g, '/');
+
   if (exposeGC) {
     await spawn('node', [
       '--expose-gc',
@@ -71,15 +75,11 @@ const runJest = async (pkg, ...args) => {
     return;
   }
 
-  await spawn(jestCli, [
-    path.join(pkgDir, pkg),
-    '--config',
-    path.join(pkgDir, pkg, 'jest.config.js'),
-    '--color',
-    '--coverage',
-    ...args,
-  ]);
-  await spawn('mv', [path.join(coverageDir, 'coverage-final.json'), path.join(coverageDir, `${pkg}.json`)]);
+  await spawn(jestCli, [join(pkgDir, pkg), '--config', join(pkgDir, pkg, 'jest.config.js'), '--color', ...args]);
+  const report = path.join(coverageDir, 'coverage-final.json');
+  if (exists(report)) {
+    await spawn('mv', [report, path.join(coverageDir, `${pkg}.json`)]);
+  }
 };
 
 // Runs NYC and combines coverage reporting
@@ -111,7 +111,7 @@ const packages = fs
     return;
   }
 
-  // Run jest for all packagesc
+  // Run jest for all packages
   for (let p = 0; p < packages.length; p++) {
     await runJest(packages[p], ...argv);
   }
