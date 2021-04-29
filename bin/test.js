@@ -19,7 +19,7 @@ const isWin = () => os.platform() === 'win32';
 const exists = (src) => src && fs.existsSync(src);
 const isDirectory = (src) => exists(src) && fs.lstatSync(src).isDirectory();
 const isFile = (src) => exists(src) && fs.lstatSync(src).isFile();
-const isEmpty = (src) => exists(src) && isDirectory(src) && fs.readdirSync(src).length !== 0;
+const isNotEmpty = (src) => exists(src) && isDirectory(src) && fs.readdirSync(src).length !== 0;
 
 // Promisified spawn command
 const spawn = async (cmd, args) => {
@@ -62,6 +62,7 @@ let argv = process.argv.splice(2);
 
 // Runs jest for the given package
 const runJest = async (location, pkg, ...args) => {
+  console.log('Running jest on package', pkg);
   const join = (...paths) => path.join(...paths).replace(/\\/g, '/');
 
   if (exposeGC) {
@@ -88,6 +89,8 @@ const runJest = async (location, pkg, ...args) => {
 
 // Runs NYC and combines coverage reporting
 const runNyc = async () => {
+  console.log('Generating coverage report');
+
   await spawn(nycCli, [
     'report',
     '-t',
@@ -123,7 +126,7 @@ const packages = fs
   }
 
   // Combine report
-  if (!isEmpty(coverageDir)) {
+  if (isNotEmpty(coverageDir)) {
     await runNyc();
   }
 })().catch((e) => {
