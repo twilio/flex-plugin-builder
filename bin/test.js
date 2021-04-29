@@ -127,7 +127,6 @@ const packages = fs
     await runNyc();
   }
 })().catch((e) => {
-  console.log('exit in catch');
   console.error('the error is', e);
 
   process.exit(1);
