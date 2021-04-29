@@ -43,6 +43,7 @@
     "flex-plugin-utils-http": "4.7.5-beta.0",
     "flex-plugins-api-client": "4.7.5-beta.0",
     "flex-plugins-utils-env": "4.7.5-beta.0",
+    "flex-plugins-utils-logger": "4.7.5-beta.0",
     "flex-plugins-utils-exception": "4.7.5-beta.0",
     "lodash.clonedeep": "^4.5.0"
   },

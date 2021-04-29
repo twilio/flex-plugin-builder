@@ -9,6 +9,7 @@ import {
 } from 'flex-plugins-api-client';
 import { looksLikeSid } from 'flex-plugin-utils-http';
 import { TwilioError } from 'flex-plugins-utils-exception';
+import { logger } from 'flex-plugins-utils-logger';
 
 import { DeployPlugin } from './deploy';
 import { Script } from '.';
@@ -52,7 +53,19 @@ export default function createConfiguration(
   configuredPluginClient: ConfiguredPluginsClient,
   releasesClient: ReleasesClient,
 ): CreateConfigurationScript {
+  const getVersion = async (name: string, version: string) => {
+    const resource =
+      version === 'latest' ? await pluginVersionClient.latest(name) : await pluginVersionClient.get(name, version);
+    if (!resource) {
+      throw new TwilioError(`No plugin version was found for ${name}`);
+    }
+
+    return resource;
+  };
+
   return async (option: CreateConfigurationOption): Promise<CreateConfiguration> => {
+    logger.debug('Creating configuration with input', option);
+
     const pluginsValid = option.addPlugins.every((plugin) => {
       const match = plugin.match(pluginRegex);
       return match && match.groups && match.groups.name && match.groups.version;
@@ -60,6 +73,21 @@ export default function createConfiguration(
     if (!pluginsValid) {
       throw new TwilioError('Plugins must be of the format pluginName@version');
     }
+
+    // Change to sids
+    option.addPlugins = await Promise.all(
+      option.addPlugins.map(async (plugin) => {
+        const match = plugin.match(pluginRegex);
+        // @ts-ignore
+        const { name, version } = match.groups;
+
+        // this is checking whether the plugin exists - better for display error
+        await pluginClient.get(name);
+
+        const resource = await getVersion(name, version);
+        return `${resource.plugin_sid}@${resource.sid}`;
+      }),
+    );
 
     const removeList: string[] = await Promise.all(
       (option.removePlugins || [])
@@ -77,7 +105,7 @@ export default function createConfiguration(
         })
         .filter(Boolean),
     );
-    const list: string[] = option.addPlugins;
+    const list: string[] = [];
     if (option.fromConfiguration === 'active') {
       const release = await releasesClient.active();
       if (release) {
@@ -90,13 +118,17 @@ export default function createConfiguration(
     // Fetch existing installed plugins
     if (option.fromConfiguration) {
       const items = await configuredPluginClient.list(option.fromConfiguration);
-      const existingPlugins = items.plugins
-        .filter(
-          (plugin) =>
-            !list.some((p) => p.indexOf(`${plugin.unique_name}@`) !== -1 || p.indexOf(`${plugin.plugin_sid}@`) !== -1),
-        )
-        .map((p) => `${p.plugin_sid}@${p.plugin_version_sid}`);
-      list.push(...existingPlugins);
+      list.push(...items.plugins.map((p) => `${p.plugin_sid}@${p.plugin_version_sid}`));
+      option.addPlugins.forEach((a) => {
+        const index = list.findIndex((l) => a.split('@')[0] === l.split('@')[0]);
+        if (index > -1) {
+          list[index] = a;
+        } else {
+          list.push(a);
+        }
+      });
+    } else {
+      list.push(...option.addPlugins);
     }
 
     const plugins: CreateConfiguredPlugin[] = await Promise.all(
@@ -107,21 +139,13 @@ export default function createConfiguration(
           return {
             name,
             version,
-            plugin,
           };
         })
         .filter(({ name }) => !removeList.includes(name))
-        .map(async ({ name, version, plugin }) => {
+        .map(async ({ name, version }) => {
           // This checks plugin exists
           await pluginClient.get(name);
-
-          const versionResource =
-            version === 'latest'
-              ? await pluginVersionClient.latest(name)
-              : await pluginVersionClient.get(name, version);
-          if (!versionResource) {
-            throw new TwilioError(`No plugin version was found for ${plugin}`);
-          }
+          const versionResource = await getVersion(name, version);
 
           return { plugin_version: versionResource.sid, phase: 3 };
         }),
