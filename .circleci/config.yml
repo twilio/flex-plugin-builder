@@ -28,6 +28,9 @@ executors:
     docker:
       - image: cimg/node:<< parameters.tag >>
 
+orbs:
+  win: circleci/windows@2.2.0
+
 commands:
   cmd_install-dependencies:
     steps:
@@ -122,7 +125,23 @@ jobs:
           dist_tag: << parameters.dist_tag >>
           version_bump: << parameters.version_bump >>
 
-  job_pr-validator:
+  job_pr-validator-win32:
+    environment:
+      NODE_OPTIONS: --max-old-space-size=14336
+      CI: ""
+    parameters:
+      shell:
+        type: string
+    executor:
+      name: win/default
+      shell: << parameters.shell >>
+      size: xlarge
+    steps:
+      - checkout
+      - cmd_install-dependencies
+      - cmd_run-unit-tests
+
+  job_pr-validator-node:
     resource_class: xlarge
     environment:
       NODE_OPTIONS: --max-old-space-size=14336
@@ -166,7 +185,11 @@ workflows:
   validate:
     when: << pipeline.parameters.run_pr_validator >>
     jobs:
-      - job_pr-validator:
+      - job_pr-validator-win32:
+          matrix:
+            parameters:
+                shell: [ "bash.exe" ]
+      - job_pr-validator-node:
           matrix:
             parameters:
               node-version: ["10.24", "12.21", "14.16", lts]
@@ -174,5 +197,5 @@ workflows:
             - run:
                 name: Send Slack notification
                 command: |
-                         curl -X POST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - $CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/pr-validator-/''}*. View <$CIRCLE_BUILD_URL|build>. cc: <@$CIRCLE_USERNAME>', 'mrkdwn':true}" $SLACK_WEBHOOK
+                         curl -X POST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - $CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}*. View <$CIRCLE_BUILD_URL|build>. cc: <@$CIRCLE_USERNAME>', 'mrkdwn':true}" $SLACK_WEBHOOK
                 when: on_fail

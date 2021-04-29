@@ -26,7 +26,7 @@
   ],
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "../../node_modules/.bin/tsc",
+    "build": "cd ../.. && tsc -p \"packages/flex-plugin-builder-toolkit/tsconfig.json\"",
     "clean": "rm -rf dist",
     "lint": "eslint --ext ts src/",
     "lint:fix": "npm run lint -- --fix",
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "flex-dev-utils": "4.7.5-beta.0",
-    "flex-plugin-scripts": "^4.3.6-beta.0"
+    "flex-plugin-scripts": "4.7.5-beta.0"
   },
   "engines": {
     "node": ">=10.12.0"
