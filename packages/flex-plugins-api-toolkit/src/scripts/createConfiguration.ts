@@ -106,7 +106,6 @@ export default function createConfiguration(
         .filter(Boolean),
     );
     const list: string[] = [];
-    // = option.addPlugins;
     if (option.fromConfiguration === 'active') {
       const release = await releasesClient.active();
       if (release) {
