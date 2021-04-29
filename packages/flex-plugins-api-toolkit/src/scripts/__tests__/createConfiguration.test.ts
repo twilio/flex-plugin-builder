@@ -118,23 +118,32 @@ describe('CreateConfigurationScript', () => {
     releasesClient,
   );
 
-  const defaultGetVersionMock = () => {
-    getVersion.mockImplementation(async (id) => {
+  const defaultGetVersionMock = (pluginVersion: PluginVersionResource = pluginVersion2) => {
+    getVersion.mockImplementation(async (id, version) => {
+      if (version === pluginVersion.sid) {
+        return Promise.resolve(pluginVersion);
+      }
       if (id === plugin1.sid || id === plugin1.unique_name) {
         return Promise.resolve(pluginVersion1);
       }
+      if (id === plugin2.sid || id === plugin2.unique_name) {
+        return Promise.resolve(pluginVersion2);
+      }
 
-      return Promise.resolve(pluginVersion2);
+      return Promise.resolve(pluginVersion);
     });
   };
 
-  const defaultGetPluginMock = () => {
+  const defaultGetPluginMock = (plugin = plugin2) => {
     getPlugin.mockImplementation(async (id) => {
       if (id === plugin1.sid || id === plugin1.unique_name) {
         return Promise.resolve(plugin1);
       }
+      if (id === plugin2.sid || id === plugin2.unique_name) {
+        return Promise.resolve(plugin2);
+      }
 
-      return Promise.resolve(plugin2);
+      return Promise.resolve(plugin);
     });
   };
 
@@ -185,7 +194,7 @@ describe('CreateConfigurationScript', () => {
     try {
       await script(option);
     } catch (e) {
-      expect(e).toEqual('plugin not found');
+      expect(e).toContain('plugin not found');
 
       expect(getPlugin).toHaveBeenCalledTimes(1);
       expect(getPlugin).toHaveBeenCalledWith(plugin1.unique_name);
@@ -211,7 +220,6 @@ describe('CreateConfigurationScript', () => {
       expect(e).toEqual('plugin version not found');
 
       expect(getPlugin).toHaveBeenCalledTimes(1);
-      expect(getPlugin).toHaveBeenCalledWith(plugin1.unique_name);
       expect(getVersion).toHaveBeenCalledTimes(1);
       expect(getVersion).toHaveBeenCalledWith(plugin1.unique_name, 'version1');
       expect(getLatestVersion).not.toHaveBeenCalled();
@@ -235,9 +243,9 @@ describe('CreateConfigurationScript', () => {
     } catch (e) {
       expect(e).toEqual('failed to create configuration');
 
-      expect(getPlugin).toHaveBeenCalledTimes(1);
-      expect(getPlugin).toHaveBeenCalledWith(plugin1.unique_name);
-      expect(getVersion).toHaveBeenCalledTimes(1);
+      expect(getPlugin).toHaveBeenCalledTimes(2);
+      expect(getPlugin).toHaveBeenCalledWith(plugin1.sid);
+      expect(getVersion).toHaveBeenCalledTimes(2);
       expect(getVersion).toHaveBeenCalledWith(plugin1.unique_name, 'version1');
       expect(getLatestVersion).not.toHaveBeenCalled();
       expect(create).toHaveBeenCalledTimes(1);
@@ -264,10 +272,9 @@ describe('CreateConfigurationScript', () => {
 
     const result = await script(option);
     expect(activeRelease).not.toHaveBeenCalled();
-    expect(getPlugin).toHaveBeenCalledTimes(2);
-    expect(getPlugin).toHaveBeenCalledWith(plugin1.unique_name);
+    expect(getPlugin).toHaveBeenCalledTimes(3);
     expect(getPlugin).toHaveBeenCalledWith(plugin1.sid);
-    expect(getVersion).toHaveBeenCalledTimes(2);
+    expect(getVersion).toHaveBeenCalledTimes(3);
     expect(getVersion).toHaveBeenCalledWith(plugin1.unique_name, 'version1');
     expect(getVersion).toHaveBeenCalledWith(plugin1.sid, pluginVersion1.sid);
     expect(getLatestVersion).not.toHaveBeenCalled();
@@ -316,12 +323,12 @@ describe('CreateConfigurationScript', () => {
 
     const result = await script(option);
     expect(activeRelease).toHaveBeenCalledTimes(1);
-    expect(getPlugin).toHaveBeenCalledTimes(4);
+    expect(getPlugin).toHaveBeenCalledTimes(5);
     expect(getPlugin).toHaveBeenCalledWith(configuredPlugin1.unique_name);
     expect(getPlugin).not.toHaveBeenCalledWith(configuredPlugin2.unique_name);
     expect(getPlugin).toHaveBeenCalledWith(configuredPlugin1.plugin_sid);
     expect(getPlugin).toHaveBeenCalledWith(configuredPlugin2.plugin_sid);
-    expect(getVersion).toHaveBeenCalledTimes(4);
+    expect(getVersion).toHaveBeenCalledTimes(5);
     expect(getVersion).toHaveBeenCalledWith(plugin1.unique_name, 'version1');
     expect(getVersion).toHaveBeenCalledWith(plugin1.sid, pluginVersion1.sid);
     expect(getVersion).not.toHaveBeenCalledWith(plugin2.unique_name, pluginVersion2.version);
@@ -331,8 +338,8 @@ describe('CreateConfigurationScript', () => {
     expect(create).toHaveBeenCalledWith({
       Name: requestObject.name,
       Plugins: [
-        { plugin_version: pluginVersion1.sid, phase: 3 },
         { plugin_version: pluginVersion2.sid, phase: 3 },
+        { plugin_version: pluginVersion1.sid, phase: 3 },
       ],
     });
     expect(listConfiguredPlugins).toHaveBeenCalledTimes(2);
@@ -375,6 +382,104 @@ describe('CreateConfigurationScript', () => {
     });
   });
 
+  it('should add new plugin at the end of list', async () => {
+    const plugin: PluginResource = {
+      ...plugin1,
+      sid: 'FP0000000000000000000000000000000a',
+      unique_name: 'new-plugin',
+    };
+    const pluginVersion: PluginVersionResource = {
+      ...pluginVersion1,
+      sid: 'FV0000000000000000000000000000000a',
+      plugin_sid: plugin.sid,
+    };
+
+    const option = {
+      addPlugins: [`new-plugin@${pluginVersion.sid}`],
+      fromConfiguration: 'active',
+      ...requestObject,
+    };
+    defaultGetVersionMock(pluginVersion);
+    create.mockResolvedValue(configuration);
+    defaultGetPluginMock(plugin);
+    activeRelease.mockResolvedValue(release);
+    defaultListConfigurationsMock();
+
+    await script(option);
+    expect(create).toHaveBeenCalledWith({
+      Name: requestObject.name,
+      Plugins: [
+        { plugin_version: pluginVersion2.sid, phase: 3 },
+        { plugin_version: pluginVersion.sid, phase: 3 },
+      ],
+    });
+  });
+
+  it('should update plugin-version in place', async () => {
+    const pluginVersion: PluginVersionResource = {
+      ...pluginVersion2,
+      sid: 'FV0000000000000000000000000000000a',
+    };
+    const option = {
+      addPlugins: [`plugin2@${pluginVersion.sid}`],
+      fromConfiguration: 'active',
+      ...requestObject,
+    };
+    defaultGetVersionMock(pluginVersion);
+    create.mockResolvedValue(configuration);
+    defaultGetPluginMock();
+    activeRelease.mockResolvedValue(release);
+    defaultListConfigurationsMock();
+
+    await script(option);
+    expect(create).toHaveBeenCalledWith({
+      Name: requestObject.name,
+      Plugins: [{ plugin_version: pluginVersion.sid, phase: 3 }],
+    });
+  });
+
+  it('should add plugins with --new as plugin1 then plugin2', async () => {
+    const option = {
+      addPlugins: [`${plugin1.unique_name}@${pluginVersion1.sid}`, `${plugin2.unique_name}@${pluginVersion2.sid}`],
+      ...requestObject,
+    };
+    defaultGetVersionMock();
+    create.mockResolvedValue(configuration);
+    defaultGetPluginMock();
+    activeRelease.mockResolvedValue(release);
+    defaultListConfigurationsMock();
+
+    await script(option);
+    expect(create).toHaveBeenCalledWith({
+      Name: requestObject.name,
+      Plugins: [
+        { plugin_version: pluginVersion1.sid, phase: 3 },
+        { plugin_version: pluginVersion2.sid, phase: 3 },
+      ],
+    });
+  });
+
+  it('should add plugins with --new as plugin2 then plugin1', async () => {
+    const option = {
+      addPlugins: [`${plugin2.unique_name}@${pluginVersion2.sid}`, `${plugin1.unique_name}@${pluginVersion1.sid}`],
+      ...requestObject,
+    };
+    defaultGetVersionMock();
+    create.mockResolvedValue(configuration);
+    defaultGetPluginMock();
+    activeRelease.mockResolvedValue(release);
+    defaultListConfigurationsMock();
+
+    await script(option);
+    expect(create).toHaveBeenCalledWith({
+      Name: requestObject.name,
+      Plugins: [
+        { plugin_version: pluginVersion2.sid, phase: 3 },
+        { plugin_version: pluginVersion1.sid, phase: 3 },
+      ],
+    });
+  });
+
   it('should create new configuration from given configuration', async () => {
     const option = {
       addPlugins: [`${plugin1.unique_name}@version1`],
@@ -389,12 +494,12 @@ describe('CreateConfigurationScript', () => {
 
     const result = await script(option);
     expect(activeRelease).not.toHaveBeenCalled();
-    expect(getPlugin).toHaveBeenCalledTimes(4);
+    expect(getPlugin).toHaveBeenCalledTimes(5);
     expect(getPlugin).toHaveBeenCalledWith(configuredPlugin1.unique_name);
     expect(getPlugin).not.toHaveBeenCalledWith(configuredPlugin2.unique_name);
     expect(getPlugin).toHaveBeenCalledWith(configuredPlugin1.plugin_sid);
     expect(getPlugin).toHaveBeenCalledWith(configuredPlugin2.plugin_sid);
-    expect(getVersion).toHaveBeenCalledTimes(4);
+    expect(getVersion).toHaveBeenCalledTimes(5);
     expect(getVersion).toHaveBeenCalledWith(plugin1.unique_name, 'version1');
     expect(getVersion).toHaveBeenCalledWith(plugin1.sid, pluginVersion1.sid);
     expect(getVersion).not.toHaveBeenCalledWith(plugin2.unique_name, pluginVersion2.version);
@@ -404,8 +509,8 @@ describe('CreateConfigurationScript', () => {
     expect(create).toHaveBeenCalledWith({
       Name: requestObject.name,
       Plugins: [
-        { plugin_version: pluginVersion1.sid, phase: 3 },
         { plugin_version: pluginVersion2.sid, phase: 3 },
+        { plugin_version: pluginVersion1.sid, phase: 3 },
       ],
     });
     expect(listConfiguredPlugins).toHaveBeenCalledTimes(2);
@@ -470,10 +575,10 @@ describe('CreateConfigurationScript', () => {
 
     const result = await script(option);
     expect(activeRelease).toHaveBeenCalledTimes(1);
-    expect(getPlugin).toHaveBeenCalledTimes(2);
+    expect(getPlugin).toHaveBeenCalledTimes(3);
     expect(getPlugin).toHaveBeenCalledWith(configuredPlugin1.unique_name);
     expect(getPlugin).toHaveBeenCalledWith(configuredPlugin1.plugin_sid);
-    expect(getVersion).toHaveBeenCalledTimes(2);
+    expect(getVersion).toHaveBeenCalledTimes(3);
     expect(getVersion).toHaveBeenCalledWith(plugin1.unique_name, 'version1');
     expect(getVersion).toHaveBeenCalledWith(plugin1.sid, pluginVersion1.sid);
     expect(getLatestVersion).not.toHaveBeenCalled();
@@ -521,8 +626,6 @@ describe('CreateConfigurationScript', () => {
     } catch (e) {
       // not really testing the rejection; just testing @latest is respected
 
-      expect(getPlugin).toHaveBeenCalledTimes(1);
-      expect(getPlugin).toHaveBeenCalledWith(plugin1.unique_name);
       expect(getVersion).not.toHaveBeenCalled();
       expect(getLatestVersion).toHaveBeenCalledTimes(1);
       expect(getLatestVersion).toHaveBeenCalledWith(plugin1.unique_name);
