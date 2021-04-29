@@ -33,6 +33,7 @@ const spawn = async (cmd, args) => {
     });
     child.on('exit', (code) => {
       if (code !== 0) {
+        console.error(`Spawn command ${cmd} ${args} exited with non zero status code ${code}`);
         process.exit(code);
       }
       resolve();
@@ -44,14 +45,6 @@ const exposeGC = process.env.EXPOSE_GC;
 const rootDir = path.join(__dirname, '..');
 const coverageDir = path.join(rootDir, 'coverage');
 const pkgDir = path.join(rootDir, 'packages');
-/*
- * const jestCli = isWin()
- *   ? path.join(rootDir, 'node_modules', 'jest', 'bin', 'jest.js')
- *   : path.join(rootDir, 'node_modules', '.bin', 'jest');
- * const nycCli = isWin()
- *   ? path.join(rootDir, 'node_modules', 'nyc', 'bin', 'nyc.js')
- *   : path.join(rootDir, 'node_modules', '.bin', 'nyc');
- */
 const jestCli = path.join(rootDir, 'node_modules', '.bin', 'jest');
 const nycCli = path.join(rootDir, 'node_modules', '.bin', 'nyc');
 let argv = process.argv.splice(2);
