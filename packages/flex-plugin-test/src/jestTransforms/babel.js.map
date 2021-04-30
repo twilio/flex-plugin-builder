@@ -1,1 +1,0 @@
-{"version":3,"file":"babel.js","sourceRoot":"","sources":["babel.ts"],"names":[],"mappings":";;;;;AAAA,0BAA0B;AAC1B,0DAAmC;AAEnC,MAAM,CAAC,OAAO,GAAG,oBAAS,CAAC,iBAAiB,CAAC;IAC3C,OAAO,EAAE,CAAC,OAAO,CAAC,OAAO,CAAC,wBAAwB,CAAC,CAAC;IACpD,OAAO,EAAE,KAAK;IACd,UAAU,EAAE,KAAK;CAClB,CAAC,CAAC"}
