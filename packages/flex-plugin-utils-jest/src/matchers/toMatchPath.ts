@@ -10,7 +10,7 @@ export class ToMatchPath extends AsymmetricMatcher<string> {
   }
 
   asymmetricMatch(expected: string): boolean {
-    return this.actual === path.normalize(expected);
+    return this.actual === path.normalize(expected).replace('C:', '');
   }
 
   match(expected: string): jest.CustomMatcherResult {
