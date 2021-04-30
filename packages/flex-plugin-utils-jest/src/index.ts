@@ -6,10 +6,12 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface Matchers<R> {
       toMatchPath: InstanceType<typeof matchers.ToMatchPath>['match'];
+      toMatchPathContaining: InstanceType<typeof matchers.ToMatchPathContaining>['match'];
     }
 
     interface Expect {
       toMatchPath: typeof matchers.toMatchPath;
+      toMatchPathContaining: typeof matchers.toMatchPathContaining;
     }
   }
 }

@@ -1,3 +1,4 @@
+/// <reference path="../module.d.ts" />
 import get from 'lodash.get';
 
 export type Realm = 'dev' | 'stage';

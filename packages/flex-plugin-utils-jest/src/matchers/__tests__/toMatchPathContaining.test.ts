@@ -1,42 +1,43 @@
 /* eslint-disable @typescript-eslint/no-namespace, @typescript-eslint/no-unused-vars */
-import toMatchPath from '../toMatchPath';
+import toMatchPathContaining from '../toMatchPathContaining';
 
 declare global {
   namespace jest {
     interface Matchers<R> {
-      toMatchPath: (expected: string) => jest.CustomMatcherResult;
+      toMatchPathContaining: (expected: string) => jest.CustomMatcherResult;
     }
     interface Expect {
       // @ts-ignore
-      toMatchPath: typeof toMatchPath;
+      toMatchPathContaining: typeof toMatchPathContaining;
     }
   }
 }
 
-describe('toMatchPath', () => {
+describe('toMatchPathContaining', () => {
   const path1 = '/path/to/file';
-  const path2 = '/path/to/another/file';
+  const path1Incomplete = 'to/file';
+  const path2 = 'another/file';
 
   expect.extend({
-    toMatchPath: (actual: string, expected: string) => toMatchPath(actual).match(expected),
+    toMatchPathContaining: (actual: string, expected: string) => toMatchPathContaining(actual).match(expected),
   });
 
   describe('symmetrically', () => {
     it('should test match path symmetrically', () => {
-      expect(path1).toMatchPath(path1);
+      expect(path1).toMatchPathContaining(path1Incomplete);
     });
 
     it('should test negative match path symmetrically', () => {
-      expect(path1).not.toMatchPath(path2);
+      expect(path1).not.toMatchPathContaining(path2);
     });
 
     it('should test match path fail symmetrically', (done) => {
       try {
-        expect(path1).toMatchPath(path2);
+        expect(path1).toMatchPathContaining(path2);
       } catch (e) {
         expect(e.constructor.name).toEqual('JestAssertionError');
-        expect(e.message).toContain('toMatchPath');
-        expect(e.message).not.toContain('not.toMatchPath');
+        expect(e.message).toContain('toMatchPathContaining');
+        expect(e.message).not.toContain('not.toMatchPathContaining');
         expect(e.message).toContain('Expected value to match');
         expect(e.message).toContain('Received');
         expect(e.message).toContain(path1);
@@ -48,10 +49,10 @@ describe('toMatchPath', () => {
 
     it('should test negate match path fail symmetrically', (done) => {
       try {
-        expect(path1).not.toMatchPath(path1);
+        expect(path1).not.toMatchPathContaining(path1);
       } catch (e) {
         expect(e.constructor.name).toEqual('JestAssertionError');
-        expect(e.message).toContain('not.toMatchPath');
+        expect(e.message).toContain('not.toMatchPathContaining');
         expect(e.message).toContain('Expected value not to match');
         expect(e.message).toContain('Received');
         expect(e.message).toContain(path1);
@@ -63,19 +64,19 @@ describe('toMatchPath', () => {
 
   describe('asymmetrically', () => {
     it('should test match path symmetrically', () => {
-      expect(path1).toEqual(expect.toMatchPath(path1));
+      expect(path1).toEqual(expect.toMatchPathContaining(path1Incomplete));
     });
 
     it('should test negative match path symmetrically', () => {
-      expect(path1).not.toEqual(expect.toMatchPath(path2));
+      expect(path1).not.toEqual(expect.toMatchPathContaining(path2));
     });
 
     it('should test match path fail symmetrically', (done) => {
       try {
-        expect(path1).toEqual(expect.toMatchPath(path2));
+        expect(path1).toEqual(expect.toMatchPathContaining(path2));
       } catch (e) {
         expect(e.constructor.name).toEqual('JestAssertionError');
-        expect(e.message).toContain(`toMatchPath<${path2}>`);
+        expect(e.message).toContain(`toMatchPathContaining<${path2}>`);
 
         done();
       }
@@ -83,10 +84,10 @@ describe('toMatchPath', () => {
 
     it('should test negate match path fail symmetrically', (done) => {
       try {
-        expect(path1).not.toEqual(expect.toMatchPath(path1));
+        expect(path1).not.toEqual(expect.toMatchPathContaining(path1Incomplete));
       } catch (e) {
         expect(e.constructor.name).toEqual('JestAssertionError');
-        expect(e.message).toContain(`toMatchPath<${path1}>`);
+        expect(e.message).toContain(`toMatchPathContaining<${path1Incomplete}>`);
 
         done();
       }
