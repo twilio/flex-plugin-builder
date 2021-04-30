@@ -1,0 +1,42 @@
+{
+  "name": "flex-plugin-utils-jest",
+  "version": "4.7.5-beta.0",
+  "description": "Flex Plugin E2E Tests framework",
+  "keywords": [
+    "flex",
+    "plugins",
+    "scripts",
+    "twilio",
+    "jest"
+  ],
+  "homepage": "https://github.com/twilio/flex-plugin-builder",
+  "bugs": {
+    "url": "https://github.com/twilio/flex-plugin-builder/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio/flex-plugin-builder.git"
+  },
+  "license": "MIT",
+  "author": "Flex Runtime <flex-runtime@twilio.com>",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "cd ../.. && tsc -p \"packages/flex-plugin-utils-jest/tsconfig.json\"",
+    "clean": "rm -rf dist",
+    "lint": "eslint --ext ts src/",
+    "lint:fix": "npm run lint -- --fix",
+    "prepublish": "npm run build",
+    "test": "exit 0"
+  },
+  "devDependencies": {
+    "jest-matcher-utils": "^26.6.2"
+  },
+  "engines": {
+    "node": ">=10.12.0"
+  }
+}

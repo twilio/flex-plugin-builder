@@ -219,8 +219,16 @@ describe('github', () => {
       await github._downloadDir(apiGithubUrlTemplated, '/dir', githubUrl);
 
       expect(_downloadFile).toHaveBeenCalledTimes(2);
-      expect(_downloadFile).toHaveBeenNthCalledWith(1, resp[0].download_url, '/dir/file1.js');
-      expect(_downloadFile).toHaveBeenNthCalledWith(2, resp[1].download_url, '/dir/file2.js');
+      expect(_downloadFile).toHaveBeenNthCalledWith(
+        1,
+        expect.toMatchPath(resp[0].download_url),
+        expect.toMatchPath('/dir/file1.js'),
+      );
+      expect(_downloadFile).toHaveBeenNthCalledWith(
+        2,
+        expect.toMatchPath(resp[1].download_url),
+        expect.toMatchPath('/dir/file2.js'),
+      );
     });
 
     it('should recursively download', async () => {
