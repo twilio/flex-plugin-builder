@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-utils-http",
-  "version": "4.7.5-beta.0",
+  "version": "4.7.6-beta.0",
   "description": "Flex Plugins HTTP",
   "keywords": [
     "flex",
@@ -40,9 +40,9 @@
   "dependencies": {
     "axios": "^0.21.1",
     "axios-cache-adapter": "^2.5.0",
-    "flex-plugins-utils-env": "4.7.5-beta.0",
-    "flex-plugins-utils-exception": "4.7.5-beta.0",
-    "flex-plugins-utils-logger": "4.7.5-beta.0",
+    "flex-plugins-utils-env": "4.7.6-beta.0",
+    "flex-plugins-utils-exception": "4.7.6-beta.0",
+    "flex-plugins-utils-logger": "4.7.6-beta.0",
     "qs": "^6.9.4",
     "util": "^0.12.3"
   },
