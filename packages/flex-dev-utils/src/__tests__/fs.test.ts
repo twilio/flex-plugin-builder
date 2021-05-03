@@ -1,3 +1,5 @@
+import path from 'path';
+
 import appModule from 'app-module-path';
 import * as globby from 'globby';
 
@@ -54,7 +56,7 @@ describe('fs', () => {
 
       expect(size).toEqual(123);
       expect(statSync).toHaveBeenCalledTimes(1);
-      expect(statSync).toHaveBeenCalledWith('path/to/file.js');
+      expect(statSync).toHaveBeenCalledWith(expect.toMatchPath('path/to/file.js'));
     });
   });
 
@@ -67,7 +69,7 @@ describe('fs', () => {
 
       expect(size).toEqual(2);
       expect(statSync).toHaveBeenCalledTimes(1);
-      expect(statSync).toHaveBeenCalledWith('path/to/file.js');
+      expect(statSync).toHaveBeenCalledWith(expect.toMatchPath('path/to/file.js'));
     });
   });
 
@@ -75,11 +77,11 @@ describe('fs', () => {
     it('should read package.json', () => {
       const readFileSync = jest.spyOn(fs.default, 'readFileSync').mockReturnValue(fileContent);
 
-      const pkg = fs.readJsonFile('filePath');
+      const pkg = fs.readJsonFile('file', 'path');
 
       expect(pkg).toEqual({ version: 1 });
       expect(readFileSync).toHaveBeenCalledTimes(1);
-      expect(readFileSync).toHaveBeenCalledWith('filePath', 'utf8');
+      expect(readFileSync).toHaveBeenCalledWith(expect.toMatchPath('file/path'), 'utf8');
 
       readFileSync.mockRestore();
     });
@@ -94,7 +96,7 @@ describe('fs', () => {
 
       expect(pkg).toEqual(appPackage);
       expect(readPackageJson).toHaveBeenCalledTimes(1);
-      expect(readPackageJson).toHaveBeenCalledWith('path');
+      expect(readPackageJson).toHaveBeenCalledWith(expect.toMatchPath('path'));
       expect(getPackageJsonPath).toHaveBeenCalledTimes(1);
 
       readPackageJson.mockRestore();
@@ -109,7 +111,7 @@ describe('fs', () => {
       const path = fs.getPackageJsonPath();
 
       expect(cwd).toHaveBeenCalledTimes(1);
-      expect(path).toEqual('test/package.json');
+      expect(path).toMatchPath('test/package.json');
 
       cwd.mockRestore();
     });
@@ -121,7 +123,7 @@ describe('fs', () => {
 
       expect(pkg).toEqual({ version: 1 });
       expect(readFileSync).toHaveBeenCalledTimes(1);
-      expect(readFileSync).toHaveBeenCalledWith('another-path', 'utf8');
+      expect(readFileSync).toHaveBeenCalledWith(expect.toMatchPath('another-path'), 'utf8');
 
       readFileSync.mockRestore();
     });
@@ -149,7 +151,7 @@ describe('fs', () => {
 
       fs.writeFile('the-str', 'path1', 'path2');
       expect(writeFileSync).toHaveBeenCalledTimes(1);
-      expect(writeFileSync).toHaveBeenCalledWith('path1/path2', 'the-str');
+      expect(writeFileSync).toHaveBeenCalledWith(expect.toMatchPath('path1/path2'), 'the-str');
     });
   });
 
@@ -177,7 +179,7 @@ describe('fs', () => {
 
       fs.removeFile('path1', 'path2');
       expect(unlinkSync).toHaveBeenCalledTimes(1);
-      expect(unlinkSync).toHaveBeenCalledWith('path1/path2');
+      expect(unlinkSync).toHaveBeenCalledWith(expect.toMatchPath('path1/path2'));
     });
   });
 
@@ -189,7 +191,7 @@ describe('fs', () => {
 
       fs.copyFile(['path1', 'path2'], ['path3', 'path4']);
       expect(copyFileSync).toHaveBeenCalledTimes(1);
-      expect(copyFileSync).toHaveBeenCalledWith('path1/path2', 'path3/path4');
+      expect(copyFileSync).toHaveBeenCalledWith(expect.toMatchPath('path1/path2'), expect.toMatchPath('path3/path4'));
     });
   });
 
@@ -199,7 +201,7 @@ describe('fs', () => {
 
       expect(fs.checkAFileExists('path1', 'path2')).toEqual(true);
       expect(existsSync).toHaveBeenCalledTimes(1);
-      expect(existsSync).toHaveBeenCalledWith('path1/path2');
+      expect(existsSync).toHaveBeenCalledWith(expect.toMatchPath('path1/path2'));
     });
   });
 
@@ -218,7 +220,7 @@ describe('fs', () => {
 
       fs.updateAppVersion('2');
       expect(writeFileSync).toHaveBeenCalledTimes(1);
-      expect(writeFileSync).toHaveBeenCalledWith('package.json', JSON.stringify(pkgAfter, null, 2));
+      expect(writeFileSync).toHaveBeenCalledWith(expect.toMatchPath('package.json'), JSON.stringify(pkgAfter, null, 2));
 
       writeFileSync.mockRestore();
       getPackageJsonPath.mockRestore();
@@ -233,7 +235,9 @@ describe('fs', () => {
     it('should find on one up', () => {
       const path = '/path1/path2/path3/foo';
       // @ts-ignore
-      const existsSync = jest.spyOn(fs.default, 'existsSync').mockImplementation((p) => p === path);
+      const existsSync = jest
+        .spyOn(fs.default, 'existsSync')
+        .mockImplementation((p) => p === global.utils.normalizePath(path));
 
       fs.findUp(findUpDir, fileName);
 
@@ -245,7 +249,9 @@ describe('fs', () => {
     it('should find on two up', () => {
       const path = '/path1/path2/foo';
       // @ts-ignore
-      const existsSync = jest.spyOn(fs.default, 'existsSync').mockImplementation((p) => p === path);
+      const existsSync = jest
+        .spyOn(fs.default, 'existsSync')
+        .mockImplementation((p) => p === global.utils.normalizePath(path));
 
       fs.findUp(findUpDir, fileName);
 
@@ -274,7 +280,7 @@ describe('fs', () => {
 
       expect(fs.resolveCwd('some-path')).toEqual('foo');
       expect(resolveRelative).toHaveBeenCalledTimes(1);
-      expect(resolveRelative).toHaveBeenCalledWith(expect.any(String), 'some-path');
+      expect(resolveRelative).toHaveBeenCalledWith(expect.any(String), expect.toMatchPath('some-path'));
 
       resolveRelative.mockRestore();
     });
@@ -282,31 +288,31 @@ describe('fs', () => {
 
   describe('resolveRelative', () => {
     it('should return dir if no paths passed', () => {
-      expect(fs.resolveRelative('the-dir')).toEqual('the-dir');
+      expect(fs.resolveRelative('the-dir')).toMatchPath('the-dir');
     });
 
     it('should build path with single item and no extension', () => {
-      expect(fs.resolveRelative('the-dir', 'the-sub')).toEqual('the-dir/the-sub');
+      expect(fs.resolveRelative('the-dir', 'the-sub')).toMatchPath('the-dir/the-sub');
     });
 
     it('should build path with single item that is extension', () => {
-      expect(fs.resolveRelative('the-file', '.extension')).toEqual('the-file.extension');
+      expect(fs.resolveRelative('the-file', '.extension')).toMatchPath('the-file.extension');
     });
 
     it('should build path with two items and no extension', () => {
-      expect(fs.resolveRelative('foo', 'bar', 'baz')).toEqual('foo/bar/baz');
+      expect(fs.resolveRelative('foo', 'bar', 'baz')).toMatchPath('foo/bar/baz');
     });
 
     it('should build path with two items and an extension', () => {
-      expect(fs.resolveRelative('foo', 'bar', '.baz')).toEqual('foo/bar.baz');
+      expect(fs.resolveRelative('foo', 'bar', '.baz')).toMatchPath('foo/bar.baz');
     });
 
     it('should build path with multiple items and no extension', () => {
-      expect(fs.resolveRelative('foo', 'bar', 'baz', 'test', 'it')).toEqual('foo/bar/baz/test/it');
+      expect(fs.resolveRelative('foo', 'bar', 'baz', 'test', 'it')).toMatchPath('foo/bar/baz/test/it');
     });
 
     it('should build path with multiple items and an extension', () => {
-      expect(fs.resolveRelative('foo', 'bar', 'baz', 'test', '.it')).toEqual('foo/bar/baz/test.it');
+      expect(fs.resolveRelative('foo', 'bar', 'baz', 'test', '.it')).toMatchPath('foo/bar/baz/test.it');
     });
   });
 
@@ -506,8 +512,8 @@ describe('fs', () => {
       const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockReturnValue(validPackage);
 
       // cli/ directory
-      expect(fs.getCliPaths().dir).toEqual(expect.stringMatching('/.twilio-cli'));
-      expect(fs.getCliPaths().flexDir).toContain('/.twilio-cli/flex');
+      expect(fs.getCliPaths().dir).toMatchPathContaining('/.twilio-cli');
+      expect(fs.getCliPaths().flexDir).toMatchPathContaining('/.twilio-cli/flex');
       expect(fs.getCliPaths().pluginsJsonPath).toEqual(expect.stringMatching('plugins.json'));
 
       readPackageJson.mockRestore();
@@ -568,8 +574,8 @@ describe('fs', () => {
       expect(thePaths.app.sourceMapPath).toEqual(expect.stringMatching('.js.map$'));
 
       // cli/ directory
-      expect(thePaths.cli.dir).toEqual(expect.stringMatching('/.twilio-cli'));
-      expect(thePaths.cli.flexDir).toContain('/.twilio-cli/flex');
+      expect(thePaths.cli.dir).toMatchPathContaining('/.twilio-cli');
+      expect(thePaths.cli.flexDir).toMatchPathContaining('/.twilio-cli/flex');
       expect(thePaths.cli.pluginsJsonPath).toEqual(expect.stringMatching('plugins.json'));
 
       // src/ directory
@@ -580,12 +586,12 @@ describe('fs', () => {
       // node_modules/ directory
       expect(thePaths.app.nodeModulesDir).toEqual(expect.stringMatching('node_modules$'));
       expect(thePaths.app.flexUIDir).toContain('node_modules');
-      expect(thePaths.app.flexUIDir).toContain('@twilio/flex-ui');
-      expect(thePaths.app.flexUIPkgPath).toContain('@twilio/flex-ui');
+      expect(thePaths.app.flexUIDir).toMatchPathContaining('@twilio/flex-ui');
+      expect(thePaths.app.flexUIPkgPath).toMatchPathContaining('@twilio/flex-ui');
       expect(thePaths.app.flexUIPkgPath).toEqual(expect.stringMatching('package.json$'));
 
       // scripts
-      expect(thePaths.scripts.devAssetsDir).toContain(flexPluginScriptsPath);
+      expect(thePaths.scripts.devAssetsDir).toMatchPathContaining(flexPluginScriptsPath);
 
       // public/ directory
       expect(thePaths.app.publicDir).toEqual(expect.stringMatching('public$'));
@@ -618,7 +624,7 @@ describe('fs', () => {
 
       // webpack
       expect(thePaths.webpack.dir).toContain(flexPluginWebpackPath);
-      expect(thePaths.webpack.nodeModulesDir).toContain(flexPluginWebpackPath);
+      expect(thePaths.webpack.nodeModulesDir).toMatchPathContaining(flexPluginWebpackPath);
       expect(thePaths.webpack.nodeModulesDir).toContain('node_modules');
 
       // others
@@ -719,7 +725,7 @@ describe('fs', () => {
       expect(result).toEqual(['glob']);
       expect(getCwd).toHaveBeenCalledTimes(1);
       expect(findGlobsIn).toHaveBeenCalledTimes(1);
-      expect(findGlobsIn).toHaveBeenCalledWith('/the/cwd/src', 'pattern1', 'pattern2');
+      expect(findGlobsIn).toHaveBeenCalledWith(expect.toMatchPathContaining('the/cwd/src'), 'pattern1', 'pattern2');
     });
   });
 });
