@@ -1,9 +1,17 @@
+/* eslint-disable @typescript-eslint/no-namespace, @typescript-eslint/no-unused-vars */
 import * as matchers from './matchers';
+import * as scripts from './utils';
+
+declare const utils: typeof scripts;
 
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace NodeJS {
+    interface Global {
+      utils: typeof scripts;
+    }
+  }
+
   namespace jest {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface Matchers<R> {
       toMatchPath: InstanceType<typeof matchers.ToMatchPath>['match'];
       toMatchPathContaining: InstanceType<typeof matchers.ToMatchPathContaining>['match'];
@@ -25,6 +33,8 @@ if (expect) {
       return extension;
     }, {});
   expect.extend(extensions);
+
+  global.utils = scripts;
 } else {
   // eslint-disable-next-line no-console
   console.error("Unable to find Jest's global expect");

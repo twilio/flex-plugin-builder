@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { AsymmetricMatcher } from './utils';
+import { AsymmetricMatcher } from './AsymmetricMatcher';
 
 export class ToMatchPathContaining extends AsymmetricMatcher<string> {
   constructor(actual: string, inverse: boolean = false) {

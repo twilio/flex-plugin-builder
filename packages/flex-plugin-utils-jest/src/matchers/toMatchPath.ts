@@ -1,6 +1,8 @@
 import path from 'path';
+import os from 'os';
 
-import { AsymmetricMatcher } from './utils';
+import { AsymmetricMatcher } from './AsymmetricMatcher';
+import * as utils from '../utils';
 
 export class ToMatchPath extends AsymmetricMatcher<string> {
   constructor(actual: string, inverse: boolean = false) {
@@ -10,7 +12,7 @@ export class ToMatchPath extends AsymmetricMatcher<string> {
   }
 
   asymmetricMatch(expected: string): boolean {
-    return this.actual === path.normalize(expected).replace('C:', '');
+    return this.actual === utils.normalizePath(expected);
   }
 
   match(expected: string): jest.CustomMatcherResult {
