@@ -1,6 +1,3 @@
-import path from 'path';
-import os from 'os';
-
 import { AsymmetricMatcher } from './AsymmetricMatcher';
 import * as utils from '../utils';
 

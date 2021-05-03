@@ -249,7 +249,9 @@ describe('fs', () => {
     it('should find on two up', () => {
       const path = '/path1/path2/foo';
       // @ts-ignore
-      const existsSync = jest.spyOn(fs.default, 'existsSync').mockImplementation((p) => p === path);
+      const existsSync = jest
+        .spyOn(fs.default, 'existsSync')
+        .mockImplementation((p) => p === global.utils.normalizePath(path));
 
       fs.findUp(findUpDir, fileName);
 
@@ -510,8 +512,8 @@ describe('fs', () => {
       const readPackageJson = jest.spyOn(fs, 'readPackageJson').mockReturnValue(validPackage);
 
       // cli/ directory
-      expect(fs.getCliPaths().dir).toEqual(expect.toMatchPathContaining('/.twilio-cli'));
-      expect(fs.getCliPaths().flexDir).toContain('/.twilio-cli/flex');
+      expect(fs.getCliPaths().dir).toMatchPathContaining('/.twilio-cli');
+      expect(fs.getCliPaths().flexDir).toMatchPathContaining('/.twilio-cli/flex');
       expect(fs.getCliPaths().pluginsJsonPath).toEqual(expect.stringMatching('plugins.json'));
 
       readPackageJson.mockRestore();
@@ -572,8 +574,8 @@ describe('fs', () => {
       expect(thePaths.app.sourceMapPath).toEqual(expect.stringMatching('.js.map$'));
 
       // cli/ directory
-      expect(thePaths.cli.dir).toEqual(expect.toMatchPathContaining('/.twilio-cli'));
-      expect(thePaths.cli.flexDir).toContain('/.twilio-cli/flex');
+      expect(thePaths.cli.dir).toMatchPathContaining('/.twilio-cli');
+      expect(thePaths.cli.flexDir).toMatchPathContaining('/.twilio-cli/flex');
       expect(thePaths.cli.pluginsJsonPath).toEqual(expect.stringMatching('plugins.json'));
 
       // src/ directory
@@ -584,12 +586,12 @@ describe('fs', () => {
       // node_modules/ directory
       expect(thePaths.app.nodeModulesDir).toEqual(expect.stringMatching('node_modules$'));
       expect(thePaths.app.flexUIDir).toContain('node_modules');
-      expect(thePaths.app.flexUIDir).toContain('@twilio/flex-ui');
-      expect(thePaths.app.flexUIPkgPath).toContain('@twilio/flex-ui');
+      expect(thePaths.app.flexUIDir).toMatchPathContaining('@twilio/flex-ui');
+      expect(thePaths.app.flexUIPkgPath).toMatchPathContaining('@twilio/flex-ui');
       expect(thePaths.app.flexUIPkgPath).toEqual(expect.stringMatching('package.json$'));
 
       // scripts
-      expect(thePaths.scripts.devAssetsDir).toContain(flexPluginScriptsPath);
+      expect(thePaths.scripts.devAssetsDir).toMatchPathContaining(flexPluginScriptsPath);
 
       // public/ directory
       expect(thePaths.app.publicDir).toEqual(expect.stringMatching('public$'));
@@ -622,7 +624,7 @@ describe('fs', () => {
 
       // webpack
       expect(thePaths.webpack.dir).toContain(flexPluginWebpackPath);
-      expect(thePaths.webpack.nodeModulesDir).toContain(flexPluginWebpackPath);
+      expect(thePaths.webpack.nodeModulesDir).toMatchPathContaining(flexPluginWebpackPath);
       expect(thePaths.webpack.nodeModulesDir).toContain('node_modules');
 
       // others
@@ -723,7 +725,7 @@ describe('fs', () => {
       expect(result).toEqual(['glob']);
       expect(getCwd).toHaveBeenCalledTimes(1);
       expect(findGlobsIn).toHaveBeenCalledTimes(1);
-      expect(findGlobsIn).toHaveBeenCalledWith(expect.toMatchPath('/the/cwd/src'), 'pattern1', 'pattern2');
+      expect(findGlobsIn).toHaveBeenCalledWith(expect.toMatchPathContaining('the/cwd/src'), 'pattern1', 'pattern2');
     });
   });
 });
