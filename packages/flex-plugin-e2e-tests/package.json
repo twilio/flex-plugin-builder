@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-e2e-tests",
-  "version": "4.7.6-beta.0",
+  "version": "4.7.7-beta.0",
   "description": "Flex Plugin E2E Tests framework",
   "keywords": [
     "flex",
@@ -34,8 +34,8 @@
     "test": "exit 0"
   },
   "dependencies": {
-    "flex-plugins-api-client": "4.7.6-beta.0",
-    "flex-plugins-utils-logger": "4.7.6-beta.0",
+    "flex-plugins-api-client": "4.7.7-beta.0",
+    "flex-plugins-utils-logger": "4.7.7-beta.0",
     "lodash": "4.17.21",
     "replace-in-file": "^6.2.0",
     "semver": "^7.3.5"
