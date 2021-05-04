@@ -40,12 +40,7 @@ const spawn = async (cmd, args) => {
     child.on('exit', (code) => {
       if (code !== 0) {
         console.error(`Spawn command ${cmd} ${args} exited with non zero status code ${code}`);
-        if (code === 1 && isWin()) {
-          console.warn('Temporally exiting with code 0 because Windows tests are still not complete');
-          process.exit(0);
-        } else {
-          process.exit(code);
-        }
+        process.exit(code);
       }
       resolve();
     });
