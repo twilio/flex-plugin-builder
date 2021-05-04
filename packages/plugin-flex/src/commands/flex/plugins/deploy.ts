@@ -194,7 +194,6 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     // Set the plugin version
     this.nextVersion = nextVersion;
     this.scriptArgs.push('version', nextVersion);
-    this.scriptArgs.push('--pilot-plugins-api');
     if (this._flags.public) {
       this.scriptArgs.push('--public');
     }
