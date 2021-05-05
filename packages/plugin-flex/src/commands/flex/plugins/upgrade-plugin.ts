@@ -137,7 +137,6 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     }
 
     const pkgJson = await this.getLatestVersionOfDep('flex-plugin-scripts', this._flags.beta);
-    console.log(pkgJson);
     const latestVersion = pkgJson ? semver.coerce(pkgJson.version as string)?.major : 0;
     if (currentPkgVersion !== latestVersion) {
       await this.cleanupNodeModules();
