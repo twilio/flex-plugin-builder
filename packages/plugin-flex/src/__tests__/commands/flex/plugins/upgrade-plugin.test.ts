@@ -7,6 +7,9 @@ import FlexPluginsUpgradePlugin, { DependencyUpdates } from '../../../../command
 
 describe('Commands/FlexPluginsStart', () => {
   const serverlessSid = 'ZS00000000000000000000000000000000';
+  const originalCommand = 'original command';
+  const cwdPath = 'cwd';
+  const appConfigPath = 'appConfig.js';
 
   const removeLegacyPlugin = async () => {
     const cmd = await createTest(FlexPluginsUpgradePlugin)();
@@ -109,14 +112,14 @@ describe('Commands/FlexPluginsStart', () => {
 
     await cmd.removePackageScripts([
       { name: 'commandToBeRemoved', it: 'some random command1' },
-      { name: 'commandModified', it: 'original command' },
-      { name: 'commandModified', it: 'original command' },
+      { name: 'commandModified', it: originalCommand },
+      { name: 'commandModified', it: originalCommand },
       { name: 'commandWithPre', it: 'some command with pre', pre: 'pre some command with pre' },
-      { name: 'commandWithPreModified', it: 'some command with pre', pre: 'original command' },
-      { name: 'commandModifiedWithPreModified', it: 'original command', pre: 'pre command' },
+      { name: 'commandWithPreModified', it: 'some command with pre', pre: originalCommand },
+      { name: 'commandModifiedWithPreModified', it: originalCommand, pre: 'pre command' },
       { name: 'commandWithPost', it: 'some command with post', post: 'post some command with post' },
-      { name: 'commandWithPostModified', it: 'some command with post', post: 'original command' },
-      { name: 'commandModifiedWithPostModified', it: 'original command', post: 'post command' },
+      { name: 'commandWithPostModified', it: 'some command with post', post: originalCommand },
+      { name: 'commandModifiedWithPostModified', it: originalCommand, post: 'post command' },
     ]);
     expect(writeJSONFile).toHaveBeenCalledTimes(1);
     expect(writeJSONFile).toHaveBeenCalledWith(
@@ -132,9 +135,9 @@ describe('Commands/FlexPluginsStart', () => {
     // @ts-ignore
     const sha = FlexPluginsUpgradePlugin.cracoConfigSha;
     // @ts-ignore
-    cmd.cwd = 'cwd';
+    cmd.cwd = cwdPath;
     mockPrintMethod(cmd, 'cannotRemoveCraco');
-    implementFileExists('cwd', 'craco.config.js');
+    implementFileExists(cwdPath, 'craco.config.js');
     const calculateSha256 = jest.spyOn(fs, 'calculateSha256').mockResolvedValue(sha);
     const removeFile = jest.spyOn(fs, 'removeFile').mockReturnThis();
     jest.spyOn(fs, 'copyFile').mockReturnThis();
@@ -150,9 +153,9 @@ describe('Commands/FlexPluginsStart', () => {
     const cmd = await createTest(FlexPluginsUpgradePlugin)();
 
     // @ts-ignore
-    cmd.cwd = 'cwd';
+    cmd.cwd = cwdPath;
     mockPrintMethod(cmd, 'cannotRemoveCraco');
-    implementFileExists('cwd', 'craco.config.js');
+    implementFileExists(cwdPath, 'craco.config.js');
     const calculateSha256 = jest.spyOn(fs, 'calculateSha256').mockResolvedValue('abc123');
     const removeFile = jest.spyOn(fs, 'removeFile').mockReturnThis();
     jest.spyOn(fs, 'copyFile').mockReturnThis();
@@ -168,9 +171,9 @@ describe('Commands/FlexPluginsStart', () => {
     const cmd = await createTest(FlexPluginsUpgradePlugin)();
 
     // @ts-ignore
-    cmd.cwd = 'cwd';
+    cmd.cwd = cwdPath;
     mockPrintMethod(cmd, 'updatePluginUrl');
-    implementFileExists('cwd', 'public', 'appConfig.js');
+    implementFileExists(cwdPath, 'public', appConfigPath);
     jest.spyOn(fs, 'calculateSha256').mockResolvedValue('abc123');
     jest.spyOn(fs, 'copyFile').mockReturnThis();
     const writeFile = jest.spyOn(fs, 'writeFile').mockReturnThis();
@@ -179,7 +182,7 @@ describe('Commands/FlexPluginsStart', () => {
     await cmd.cleanupScaffold();
 
     expect(writeFile).toHaveBeenCalledTimes(1);
-    expect(writeFile).toHaveBeenCalledWith("line1\nurl: '/plugins'\nline2", 'cwd', 'public', 'appConfig.js');
+    expect(writeFile).toHaveBeenCalledWith("line1\nurl: '/plugins'\nline2", cwdPath, 'public', appConfigPath);
 
     expect(getPrintMethod(cmd, 'updatePluginUrl')).not.toHaveBeenCalled();
   });
@@ -189,9 +192,9 @@ describe('Commands/FlexPluginsStart', () => {
     const appConfig = 'line1\nurl: something else\nline2';
 
     // @ts-ignore
-    cmd.cwd = 'cwd';
+    cmd.cwd = cwdPath;
     mockPrintMethod(cmd, 'updatePluginUrl');
-    implementFileExists('cwd', 'public', 'appConfig.js');
+    implementFileExists(cwdPath, 'public', appConfigPath);
     jest.spyOn(fs, 'calculateSha256').mockResolvedValue('abc123');
     jest.spyOn(fs, 'copyFile').mockReturnThis();
     const writeFile = jest.spyOn(fs, 'writeFile').mockReturnThis();
@@ -200,49 +203,8 @@ describe('Commands/FlexPluginsStart', () => {
     await cmd.cleanupScaffold();
 
     expect(writeFile).toHaveBeenCalledTimes(1);
-    expect(writeFile).toHaveBeenCalledWith(appConfig, 'cwd', 'public', 'appConfig.js');
+    expect(writeFile).toHaveBeenCalledWith(appConfig, cwdPath, 'public', appConfigPath);
     expect(getPrintMethod(cmd, 'updatePluginUrl')).toHaveBeenCalledTimes(1);
-  });
-
-  it('should call removeLegacyPlugin', async () => {
-    const cmd = await createTest(FlexPluginsUpgradePlugin)('--remove-legacy-plugin');
-
-    jest.spyOn(cmd, 'removeLegacyPlugin').mockReturnThis();
-
-    await cmd.doRun();
-
-    expect(cmd.removeLegacyPlugin).toHaveBeenCalledTimes(1);
-  });
-
-  it('should call not cleanupNodeModules if already latest version', async () => {
-    const cmd = await createTest(FlexPluginsUpgradePlugin)();
-    // @ts-ignore
-    jest.spyOn(cmd, 'getLatestVersionOfDep').mockResolvedValue({ version: '4.0.0' });
-    jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
-    // @ts-ignore
-    jest.spyOn(cmd.prints, 'upgradeNotification').mockReturnThis();
-    jest.spyOn(cmd, 'upgradeToLatest').mockReturnThis();
-    jest.spyOn(cmd, 'cleanupNodeModules').mockReturnThis();
-
-    await cmd.doRun();
-
-    expect(cmd.upgradeToLatest).toHaveBeenCalledTimes(1);
-    expect(cmd.cleanupNodeModules).not.toHaveBeenCalled();
-  });
-
-  it('should call cleanupNodeModules if not latest version', async () => {
-    const cmd = await createTest(FlexPluginsUpgradePlugin)();
-    // @ts-ignore
-    jest.spyOn(cmd, 'getLatestVersionOfDep').mockResolvedValue({ version: '3.0.0' });
-    jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
-    // @ts-ignore
-    jest.spyOn(cmd.prints, 'upgradeNotification').mockReturnThis();
-    jest.spyOn(cmd, 'upgradeToLatest').mockReturnThis();
-    jest.spyOn(cmd, 'cleanupNodeModules').mockReturnThis();
-
-    await cmd.doRun();
-
-    // expect(cmd.cleanupNodeModules).toHaveBeenCalledTimes(1);
   });
 
   it('should print warning about plugins-api registration required before remove-legacy', async () => {
@@ -302,6 +264,109 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd.serverlessClient.hasLegacy).toHaveBeenCalledTimes(1);
     expect(cmd.serverlessClient.hasLegacy).toHaveBeenCalledWith(serverlessSid, expect.any(String));
     expect(cmd.serverlessClient.removeLegacy).toHaveBeenCalledTimes(1);
+  });
+
+  describe('doRun', () => {
+    /**
+     * Mock for the .doRun methods
+     * @param cmd
+     */
+    const mockForDoRun = (cmd: FlexPluginsUpgradePlugin) => {
+      // @ts-ignore
+      jest.spyOn(cmd, 'getLatestVersionOfDep').mockResolvedValue({ version: '4.0.0' });
+      // @ts-ignore
+      jest.spyOn(cmd.prints, 'upgradeNotification').mockReturnThis();
+      jest.spyOn(cmd, 'upgradeFromV1').mockReturnThis();
+      jest.spyOn(cmd, 'upgradeFromV2').mockReturnThis();
+      jest.spyOn(cmd, 'upgradeFromV3').mockReturnThis();
+      jest.spyOn(cmd, 'upgradeToLatest').mockReturnThis();
+      jest.spyOn(cmd, 'cleanupNodeModules').mockReturnThis();
+    };
+
+    it('should call removeLegacyPlugin', async () => {
+      const cmd = await createTest(FlexPluginsUpgradePlugin)('--remove-legacy-plugin');
+
+      jest.spyOn(cmd, 'removeLegacyPlugin').mockReturnThis();
+
+      await cmd.doRun();
+
+      expect(cmd.removeLegacyPlugin).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call not cleanupNodeModules if already latest version', async () => {
+      const cmd = await createTest(FlexPluginsUpgradePlugin)();
+      mockForDoRun(cmd);
+      jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
+
+      await cmd.doRun();
+
+      expect(cmd.upgradeToLatest).toHaveBeenCalledTimes(1);
+      expect(cmd.cleanupNodeModules).not.toHaveBeenCalled();
+    });
+
+    it('should call cleanupNodeModules if not latest version', async () => {
+      const cmd = await createTest(FlexPluginsUpgradePlugin)();
+      mockForDoRun(cmd);
+      // @ts-ignore
+      jest.spyOn(cmd, 'getLatestVersionOfDep').mockResolvedValue({ version: '3.0.0' });
+      jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
+
+      await cmd.doRun();
+
+      expect(cmd.cleanupNodeModules).toHaveBeenCalledTimes(1);
+    });
+
+    it('should upgrade from v1', async () => {
+      const cmd = await createTest(FlexPluginsUpgradePlugin)();
+      mockForDoRun(cmd);
+      jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(1);
+
+      await cmd.doRun();
+
+      expect(cmd.upgradeFromV1).toHaveBeenCalledTimes(1);
+      expect(cmd.upgradeFromV2).not.toHaveBeenCalled();
+      expect(cmd.upgradeFromV3).not.toHaveBeenCalled();
+      expect(cmd.upgradeToLatest).not.toHaveBeenCalled();
+    });
+
+    it('should upgrade from v2', async () => {
+      const cmd = await createTest(FlexPluginsUpgradePlugin)();
+      mockForDoRun(cmd);
+      jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(2);
+
+      await cmd.doRun();
+
+      expect(cmd.upgradeFromV1).not.toHaveBeenCalled();
+      expect(cmd.upgradeFromV2).toHaveBeenCalledTimes(1);
+      expect(cmd.upgradeFromV3).not.toHaveBeenCalled();
+      expect(cmd.upgradeToLatest).not.toHaveBeenCalled();
+    });
+
+    it('should upgrade from v3', async () => {
+      const cmd = await createTest(FlexPluginsUpgradePlugin)();
+      mockForDoRun(cmd);
+      jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(3);
+
+      await cmd.doRun();
+
+      expect(cmd.upgradeFromV1).not.toHaveBeenCalled();
+      expect(cmd.upgradeFromV2).not.toHaveBeenCalled();
+      expect(cmd.upgradeFromV3).toHaveBeenCalledTimes(1);
+      expect(cmd.upgradeToLatest).not.toHaveBeenCalled();
+    });
+
+    it('should upgrade from v4', async () => {
+      const cmd = await createTest(FlexPluginsUpgradePlugin)();
+      mockForDoRun(cmd);
+      jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
+
+      await cmd.doRun();
+
+      expect(cmd.upgradeFromV1).not.toHaveBeenCalled();
+      expect(cmd.upgradeFromV2).not.toHaveBeenCalled();
+      expect(cmd.upgradeFromV3).not.toHaveBeenCalled();
+      expect(cmd.upgradeToLatest).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('updatePackageJson', () => {
