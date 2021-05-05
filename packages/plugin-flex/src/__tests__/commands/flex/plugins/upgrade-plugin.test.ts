@@ -1,12 +1,28 @@
-import { TwilioApiError, TwilioCliError } from 'flex-dev-utils';
+import { logger, TwilioApiError, TwilioCliError } from 'flex-dev-utils';
 import * as fs from 'flex-dev-utils/dist/fs';
 
+import * as prints from '../../../../prints/upgradePlugin';
 import { Pkg } from '../../../../sub-commands/flex-plugin';
 import createTest, { getPrintMethod, implementFileExists, mockGetPkg, mockPrintMethod } from '../../../framework';
 import FlexPluginsUpgradePlugin, { DependencyUpdates } from '../../../../commands/flex/plugins/upgrade-plugin';
 
 describe('Commands/FlexPluginsStart', () => {
   const serverlessSid = 'ZS00000000000000000000000000000000';
+  const removeLegacyPlugin = async () => {
+    const cmd = await createTest(FlexPluginsUpgradePlugin)();
+
+    jest.spyOn(cmd, 'exit').mockReturnThis();
+    mockPrintMethod(cmd, 'removeLegacyNotification');
+    mockPrintMethod(cmd, 'warningPluginNotInAPI');
+    mockPrintMethod(cmd, 'noLegacyPluginFound');
+
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
+    jest.spyOn(cmd, 'doRun').mockReturnThis();
+
+    await cmd.run();
+
+    return cmd;
+  };
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -198,21 +214,36 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd.removeLegacyPlugin).toHaveBeenCalledTimes(1);
   });
 
-  const removeLegacyPlugin = async () => {
+  it.only('should call not cleanupNodeModules if already latest version', async () => {
     const cmd = await createTest(FlexPluginsUpgradePlugin)();
+    // @ts-ignore
+    jest.spyOn(cmd, 'getLatestVersionOfDep').mockResolvedValue({ version: '4.0.0' });
+    jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
+    // @ts-ignore
+    jest.spyOn(prints, 'upgradeNotification').mockImplementation(() => {
+      console.log('hi');
+    });
+    jest.spyOn(cmd, 'upgradeToLatest').mockReturnThis();
+    jest.spyOn(cmd, 'cleanupNodeModules').mockReturnThis();
 
-    jest.spyOn(cmd, 'exit').mockReturnThis();
-    mockPrintMethod(cmd, 'removeLegacyNotification');
-    mockPrintMethod(cmd, 'warningPluginNotInAPI');
-    mockPrintMethod(cmd, 'noLegacyPluginFound');
+    await cmd.doRun();
 
-    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
-    jest.spyOn(cmd, 'doRun').mockReturnThis();
+    expect(cmd.upgradeToLatest).toHaveBeenCalledTimes(1);
+    expect(cmd.cleanupNodeModules).not.toHaveBeenCalled();
+  });
 
-    await cmd.run();
+  it('should call cleanupNodeModules if not latest version', async () => {
+    const cmd = await createTest(FlexPluginsUpgradePlugin)('--remove-legacy-plugin');
+    // @ts-ignore
+    jest.spyOn(cmd, 'getLatestVersionOfDep').mockResolvedValue({ version: '3.0.0' });
+    jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'removeLegacyPlugin').mockReturnThis();
+    jest.spyOn(cmd, 'cleanupNodeModules').mockReturnThis();
 
-    return cmd;
-  };
+    await cmd.doRun();
+
+    // expect(cmd.cleanupNodeModules).toHaveBeenCalledTimes(1);
+  });
 
   it('should print warning about plugins-api registration required before remove-legacy', async () => {
     const cmd = await removeLegacyPlugin();
