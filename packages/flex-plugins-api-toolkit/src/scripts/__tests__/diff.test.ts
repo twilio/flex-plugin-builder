@@ -1,9 +1,7 @@
 import {
   ConfigurationsClient,
   ConfiguredPluginsClient,
-  PluginsClient,
   PluginServiceHTTPClient,
-  PluginVersionsClient,
   ReleasesClient,
 } from 'flex-plugins-api-client';
 import { TwilioError, TwilioApiError } from 'flex-plugins-utils-exception';
@@ -18,8 +16,6 @@ describe('Diff', () => {
   const newSid = 'FJ0000000000000000000000000000001';
   const diff = { configuration: [], plugins: {}, activeSid: null, oldSid, newSid };
   const httpClient = new PluginServiceHTTPClient('username', 'password');
-  const pluginsClient = new PluginsClient(httpClient);
-  const versionsClient = new PluginVersionsClient(httpClient);
   const configurationsClient = new ConfigurationsClient(httpClient);
   const configuredPluginsClient = new ConfiguredPluginsClient(httpClient);
   const releasesClient = new ReleasesClient(httpClient);
@@ -53,13 +49,7 @@ describe('Diff', () => {
   it('should find diff between two configs', async () => {
     const config1 = { ...mockStore.describeConfiguration };
     const config2 = { ...mockStore.describeConfiguration, sid: newSid };
-    const script = diffScript(
-      pluginsClient,
-      versionsClient,
-      configurationsClient,
-      configuredPluginsClient,
-      releasesClient,
-    );
+    const script = diffScript(configurationsClient, configuredPluginsClient, releasesClient);
     defaultDescribeConfigurationMock(config1, config2);
 
     const theDiff = await script({ resource: 'configuration', oldIdentifier: config1.sid, newIdentifier: config2.sid });
@@ -78,13 +68,7 @@ describe('Diff', () => {
     const config2 = { ...mockStore.describeConfiguration, sid: newSid };
     const release = { ...mockStore.release, configuration_sid: config1.sid };
     active.mockResolvedValue(release);
-    const script = diffScript(
-      pluginsClient,
-      versionsClient,
-      configurationsClient,
-      configuredPluginsClient,
-      releasesClient,
-    );
+    const script = diffScript(configurationsClient, configuredPluginsClient, releasesClient);
     defaultDescribeConfigurationMock(config1, config2);
 
     const theDiff = await script({ resource: 'configuration', oldIdentifier: 'active', newIdentifier: config2.sid });
@@ -103,13 +87,7 @@ describe('Diff', () => {
     const config2 = { ...mockStore.describeConfiguration, sid: newSid };
     const release = { ...mockStore.release, configuration_sid: config2.sid };
     active.mockResolvedValue(release);
-    const script = diffScript(
-      pluginsClient,
-      versionsClient,
-      configurationsClient,
-      configuredPluginsClient,
-      releasesClient,
-    );
+    const script = diffScript(configurationsClient, configuredPluginsClient, releasesClient);
     defaultDescribeConfigurationMock(config1, config2);
 
     const theDiff = await script({ resource: 'configuration', oldIdentifier: config1.sid, newIdentifier: 'active' });
@@ -125,13 +103,7 @@ describe('Diff', () => {
 
   it('should throw exception if no active release found', async (done) => {
     active.mockResolvedValue(null);
-    const script = diffScript(
-      pluginsClient,
-      versionsClient,
-      configurationsClient,
-      configuredPluginsClient,
-      releasesClient,
-    );
+    const script = diffScript(configurationsClient, configuredPluginsClient, releasesClient);
 
     try {
       await script({ resource: 'configuration', oldIdentifier: 'active', newIdentifier: 'active' });
@@ -144,13 +116,7 @@ describe('Diff', () => {
 
   it('should throw exception if resource is incorrect', async (done) => {
     try {
-      const script = diffScript(
-        pluginsClient,
-        versionsClient,
-        configurationsClient,
-        configuredPluginsClient,
-        releasesClient,
-      );
+      const script = diffScript(configurationsClient, configuredPluginsClient, releasesClient);
       // @ts-ignore
       await script({ resource: 'unknown', oldIdentifier: '', newIdentifier: '' });
     } catch (e) {
