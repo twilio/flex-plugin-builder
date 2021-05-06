@@ -1,26 +1,50 @@
+os: linux
+
 language: node_js
 
 node_js:
+  - '14'
+  - '12'
   - '10'
+  - 'lts/*'
 
 before_install:
   - sudo apt-get update
   - sudo apt-get install -y libsecret-1-dev
 
 before_script:
-  - npm install
+  - npm install --no-package-lock
+  - NODE_OPTIONS="--max-old-space-size=8192"
 
 script:
+  - echo "Travis event is of type ${TRAVIS_EVENT_TYPE}"
   - npm run lint
   - CI= npm run test:ci
+  - npm run build
 
-after_success:
-  - codecov --token="$CODECOV_TOKEN"
+deploy:
+  - provider: script
+    script: ./bin/nightly.sh
+    skip_cleanup: true
+    on:
+      branch: v4-beta
+      condition: $TRAVIS_EVENT_TYPE = cron
+      node_js: '10'
+  - provider: script
+    script: ./bin/dev.sh
+    skip_cleanup: true
+    on:
+      branch: v4-beta
+      condition: $TRAVIS_EVENT_TYPE = push
+      node_js: 10
 
 branches:
-  except:
-  - /^v\d+\.\d+\.\d+$/
   only:
-  - master
   - main
-  - dev
+  - "/v\\d-beta/"
+  - "/^v\\d+\\.\\d+\\.\\d+.*$/"
+
+notifications:
+  slack:
+    rooms:
+      secure: CtvwCzLLCQXoUVh4N53aDc1Fd9ENeIQM618eSwffw+uVYZIJbfaI/SvUKxqm4fN2sha8BWAffFHrPrPt6mqdJcIzHrHUYDjEqRJ+Q/umq1bDEUGi2/UyTIThR6Kr/yOLRavSgBMi121m24gHHkAlwo0DMsLvAEgahrvPs+VY+hY0oeAK4Bfig2gw5DJysTeeU8uz5axXmHV6U+G//hFQTYoNuNJtp5q7m8wNSAzOrRRPExj3bdh2b51RxaLgBFDGW9r9ZX6uxd2tZ0W/T2dKb++vI3VqcMKdvKI5R1Ss7ysvBGAqbIYW9wXo0oGWseaDeBl6TJ2qf512iaADIU22GXmO07zAsrmEVyUrg9h4yk8Fc+Psf8VynKr5v6qI077fqRYA8y3hprzOyP3uO0QcEnTBNjhXkMHBixVt6bdDpILE4USLCrsLQ1CobuVuQ2Zi4jcEP+pgWXOM3DQldMghtyS1vPvmX82GWXknHMRp6YzA1n/Gfy2WE8sOFG1DjypYASCr9InSNxg8alPp6og7YM6jLZyypThaohAbebX0Uy6j7XvABr1g5NxpXJqc9CaOfLGt5VHZ9OfE+Dc4fxSNrqaeJ3GdHruu2BEnhllbrAUmrZ0wbDFtF2xyDSKH3cQEoz8o5Ey71rZTNuAoA5JOXM+fjj1X+napTwLWNj4Upeo=

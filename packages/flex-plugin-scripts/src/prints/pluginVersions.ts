@@ -19,28 +19,27 @@ const warningMsg = 'You plugin does not follow SemVer versioning; the list below
  * @param versions    the list of versions
  * @param order       the order to display the result
  */
-export default (domainName: string, versions: AssetVersion[], order: Order) => {
-  const list: DisplayList[] = versions
-    .map((version) => {
-      const match = version.path.match(VERSION_MATCH_REGEX);
+export default (domainName: string, versions: AssetVersion[], order: Order): void => {
+  const list: DisplayList[] = versions.map((version) => {
+    const match = version.path.match(VERSION_MATCH_REGEX);
 
-      return {
-        type: version.visibility === Visibility.Protected ? 'Private' : 'Public',
-        version: match ? match[1] : 'N/A',
-        url: `https://${domainName}${version.path}`,
-      };
-    });
+    return {
+      type: version.visibility === Visibility.Protected ? 'Private' : 'Public',
+      version: match ? match[1] : 'N/A',
+      url: `https://${domainName}${version.path}`,
+    };
+  });
 
   const isSemver = list.every((v) => semver.valid(v.version) !== null);
   let rows;
 
-  if (!isSemver) {
-    logger.warning(warningMsg);
-    rows = list;
-  } else {
+  if (isSemver) {
     const _list = list.map((v) => v.version);
     const sortedVersions = order === 'asc' ? semver.sort(_list) : semver.rsort(_list);
     rows = sortedVersions.map((version) => list.find((v) => v.version === version) as DisplayList);
+  } else {
+    logger.warning(warningMsg);
+    rows = list;
   }
 
   logger.newline();

@@ -25,20 +25,25 @@ describe('runner', () => {
   it('should catch exception and log error', async () => {
     const err = new Error('the-error');
 
-    await runner(() => { throw err; });
+    await runner(() => {
+      throw err;
+    });
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(1);
   });
 
   it('should call print', async () => {
-    jest.spyOn(fs, 'readPackageJson')
-      .mockImplementation(() => { throw new Error(); });
+    jest.spyOn(fs, 'readPackageJson').mockImplementation(() => {
+      throw new Error();
+    });
 
     const err = new FlexPluginError('some-error');
     jest.spyOn(err, 'print');
     jest.spyOn(err, 'details');
 
-    await runner(() => { throw err; });
+    await runner(() => {
+      throw err;
+    });
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(1);
     expect(err.print).toHaveBeenCalledTimes(1);
@@ -46,15 +51,18 @@ describe('runner', () => {
   });
 
   it('should call details', async () => {
-    jest.spyOn(fs, 'readPackageJson')
-      .mockImplementation(() => { throw new Error(); });
+    jest.spyOn(fs, 'readPackageJson').mockImplementation(() => {
+      throw new Error();
+    });
 
     const err = new FlexPluginError('some-error');
     jest.spyOn(err, 'print');
     jest.spyOn(err, 'details');
 
     process.env.DEBUG = 'true';
-    await runner(() => { throw err; });
+    await runner(() => {
+      throw err;
+    });
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(1);
     expect(err.print).toHaveBeenCalledTimes(1);

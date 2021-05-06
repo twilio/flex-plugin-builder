@@ -1,0 +1,53 @@
+{
+  "name": "flex-plugins-api-toolkit",
+  "version": "4.7.7-beta.0",
+  "description": "Flex Plugins API Toolkit",
+  "keywords": [
+    "flex",
+    "flex plugins",
+    "flex plugins api",
+    "flex plugins api toolkit",
+    "flex plugins toolkit",
+    "plugins"
+  ],
+  "homepage": "https://github.com/twilio/flex-plugin-builder",
+  "bugs": {
+    "url": "https://github.com/twilio/flex-plugin-builder/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio/flex-plugin-builder.git"
+  },
+  "license": "MIT",
+  "author": "Flex Runtime <flex-runtime@twilio.com>",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "directories": {
+    "lib": "src",
+    "test": "__tests__"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "cd ../.. && tsc -p \"packages/flex-plugins-api-toolkit/tsconfig.json\"",
+    "clean": "rm -rf dist",
+    "lint": "eslint --ext ts src/",
+    "lint:fix": "npm run lint -- --fix",
+    "prepublish": "npm run build",
+    "test": "cd ../.. && jest packages/flex-plugins-api-toolkit --color",
+    "test:watch": "cd ../.. && jest packages/flex-plugins-api-toolkit --watch --color"
+  },
+  "dependencies": {
+    "flex-plugin-utils-http": "4.7.7-beta.0",
+    "flex-plugins-api-client": "4.7.7-beta.0",
+    "flex-plugins-utils-env": "4.7.7-beta.0",
+    "flex-plugins-utils-exception": "4.7.7-beta.0",
+    "flex-plugins-utils-logger": "4.7.7-beta.0",
+    "lodash.clonedeep": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/lodash.clonedeep": "^4.5.6"
+  }
+}

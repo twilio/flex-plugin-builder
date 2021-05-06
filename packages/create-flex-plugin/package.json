@@ -1,6 +1,6 @@
 {
   "name": "create-flex-plugin",
-  "version": "3.14.5",
+  "version": "4.7.7-beta.0",
   "description": "Toolkit to create a new Twilio Flex plugin",
   "keywords": [
     "flex",
@@ -16,12 +16,7 @@
     "url": "git+https://github.com/twilio/flex-plugin-builder.git"
   },
   "license": "MIT",
-  "author": "Kousha Talebian <ktalebian@twilio.com>",
-  "files": [
-    "bin",
-    "dist",
-    "templates"
-  ],
+  "author": "Flex Runtime <flex-runtime@twilio.com>",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
@@ -32,24 +27,32 @@
     "bin": "bin",
     "test": "__tests__"
   },
+  "files": [
+    "bin",
+    "dist",
+    "templates"
+  ],
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "tsc",
+    "build": "cd ../.. && tsc -p \"packages/create-flex-plugin/tsconfig.json\"",
     "clean": "rm -rf dist",
+    "lint": "eslint --ext ts src/",
+    "lint:fix": "npm run lint -- --fix",
+    "prepublish": "npm run build",
     "test": "cd ../.. && jest packages/create-flex-plugin --color",
     "test:watch": "cd ../.. && jest packages/create-flex-plugin --watch --color"
   },
   "dependencies": {
     "esm": "^3.2.25",
-    "flex-dev-utils": "^3.14.5",
-    "yargs": "^14.2.3"
+    "flex-dev-utils": "4.7.7-beta.0",
+    "tmp": "^0.2.1",
+    "yargs": "^16.2.0"
   },
   "devDependencies": {
     "@twilio/flex-ui": "^1",
-    "@types/yargs": "^13.0.10",
-    "craco-config-flex-plugin": "^3.14.5",
-    "flex-plugin": "^3.14.2",
-    "flex-plugin-scripts": "^3.14.5"
-  },
-  "gitHead": "741e95edbfa78da5f862ec7cfe7d032e842606a4"
+    "@types/tmp": "^0.2.0",
+    "@types/yargs": "^16.0.0",
+    "flex-plugin": "4.7.7-beta.0",
+    "flex-plugin-scripts": "4.7.7-beta.0"
+  }
 }

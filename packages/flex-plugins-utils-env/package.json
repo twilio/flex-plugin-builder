@@ -1,0 +1,43 @@
+{
+  "name": "flex-plugins-utils-env",
+  "version": "4.7.7-beta.0",
+  "description": "Flex Plugins Environments",
+  "keywords": [
+    "flex",
+    "flex plugins",
+    "flex plugins env"
+  ],
+  "homepage": "https://github.com/twilio/flex-plugin-builder",
+  "bugs": {
+    "url": "https://github.com/twilio/flex-plugin-builder/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio/flex-plugin-builder.git"
+  },
+  "license": "MIT",
+  "author": "Flex Runtime <flex-runtime@twilio.com>",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "directories": {
+    "lib": "src",
+    "test": "__tests__"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "cd ../.. && tsc -p \"packages/flex-plugins-utils-env/tsconfig.json\"",
+    "clean": "rm -rf dist",
+    "lint": "eslint --ext ts src/",
+    "lint:fix": "npm run lint -- --fix",
+    "prepublish": "npm run build",
+    "test": "cd ../.. && jest packages/flex-plugins-utils-env --color",
+    "test:watch": "cd ../.. && jest packages/flex-plugins-utils-env --watch --color"
+  },
+  "dependencies": {
+    "@types/lodash.get": "^4.4.6",
+    "lodash.get": "^4.4.2"
+  }
+}

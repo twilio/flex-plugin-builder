@@ -1,4 +1,4 @@
-import { FlexPluginError } from './index';
+import { FlexPluginError } from '.';
 
 export default class UserActionError extends FlexPluginError {
   public readonly reason: string;

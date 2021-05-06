@@ -1,7 +1,5 @@
-import { acceptableAnswers, YNAnswer } from './inquirer';
 import { isSidOfType, SidPrefix } from './sids';
 
-// tslint:disable-next-line
 const URL_REGEX = /^(https?:\/\/)?(www\.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
 const GITHUB_REGEX = /github\.com/;
 
@@ -10,14 +8,14 @@ const GITHUB_REGEX = /github\.com/;
  *
  * @param input the input to validate
  */
-export const isInputNotEmpty = (input: string) => input && input.length > 0;
+export const isInputNotEmpty = (input: string): boolean => Boolean(input && input.length > 0);
 
 /**
  * Validates that the accountSid is valid
  *
  * @param str the accountSid
  */
-export const validateAccountSid = (str: string) => {
+export const validateAccountSid = (str: string): string | boolean => {
   if (!isInputNotEmpty(str)) {
     return false;
   }
@@ -34,7 +32,7 @@ export const validateAccountSid = (str: string) => {
  *
  * @param str the apiKey
  */
-export const validateApiKey = (str: string) => {
+export const validateApiKey = (str: string): string | boolean => {
   if (!isInputNotEmpty(str)) {
     return false;
   }
@@ -44,49 +42,6 @@ export const validateApiKey = (str: string) => {
   }
 
   return true;
-};
-
-/**
- * Validates that the URL is a GitHub URL
- *
- * @param url the URL to validate
- */
-export const validateGitHubUrl = (url: string) => {
-  if (!isValidUrl(url)) {
-    return 'Please enter a valid URL';
-  }
-
-  if (!isGitHubUrl(url)) {
-    return 'Only GitHub URLs are currently supported';
-  }
-
-  return true;
-};
-
-/**
- * Confirmation validator
- *
- * @param defaultAnswer
- */
-export const validateConfirmation = (defaultAnswer?: YNAnswer) => (input: string) => {
-  if (!input && defaultAnswer) {
-    input = defaultAnswer;
-  }
-
-  if (acceptableAnswers.includes(input.toLowerCase())) {
-    return true;
-  }
-
-  return 'Please answer with either "y" or "n"';
-};
-
-/**
- * Validates the plugin name starts with `plugin-`
- * @param name {string} the plugin name
- * @return {boolean} whether the plugin is valid
- */
-export const isValidPluginName = (name: string): boolean => {
-  return /^plugin-\S.*/.test(name);
 };
 
 /**
@@ -106,5 +61,22 @@ export const isValidUrl = (url: string): boolean => URL_REGEX.test(url);
  * @private
  */
 export const isGitHubUrl = (url: string): boolean => GITHUB_REGEX.test(url);
+
+/**
+ * Validates that the URL is a GitHub URL
+ *
+ * @param url the URL to validate
+ */
+export const validateGitHubUrl = (url: string): string | boolean => {
+  if (!isValidUrl(url)) {
+    return 'Please enter a valid URL';
+  }
+
+  if (!isGitHubUrl(url)) {
+    return 'Only GitHub URLs are currently supported';
+  }
+
+  return true;
+};
 
 export default {};

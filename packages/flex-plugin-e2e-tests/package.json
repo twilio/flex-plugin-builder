@@ -1,0 +1,50 @@
+{
+  "name": "flex-plugin-e2e-tests",
+  "version": "4.7.7-beta.0",
+  "description": "Flex Plugin E2E Tests framework",
+  "keywords": [
+    "flex",
+    "plugins",
+    "scripts",
+    "twilio"
+  ],
+  "homepage": "https://github.com/twilio/flex-plugin-builder",
+  "bugs": {
+    "url": "https://github.com/twilio/flex-plugin-builder/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio/flex-plugin-builder.git"
+  },
+  "license": "MIT",
+  "author": "Flex Runtime <flex-runtime@twilio.com>",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "cd ../.. && tsc -p \"packages/flex-plugin-e2e-tests/tsconfig.json\"",
+    "clean": "rm -rf dist",
+    "lint": "eslint --ext ts src/",
+    "lint:fix": "npm run lint -- --fix",
+    "prepublish": "npm run build",
+    "start": "node dist",
+    "test": "exit 0"
+  },
+  "dependencies": {
+    "flex-plugins-api-client": "4.7.7-beta.0",
+    "flex-plugins-utils-logger": "4.7.7-beta.0",
+    "lodash": "4.17.21",
+    "replace-in-file": "^6.2.0",
+    "semver": "^7.3.5"
+  },
+  "devDependencies": {
+    "@types/lodash": "4.14.168",
+    "@types/semver": "^7.3.4"
+  },
+  "engines": {
+    "node": ">=10.12.0"
+  }
+}

@@ -1,4 +1,4 @@
-import { logger } from 'flex-dev-utils';
+import { logger, env } from 'flex-dev-utils';
 import { printList } from 'flex-dev-utils/dist/prints';
 
 /**
@@ -6,10 +6,11 @@ import { printList } from 'flex-dev-utils/dist/prints';
  *
  * @param extras  any extra steps to include
  */
-export default (...extras: string[]) => {
+export default (...extras: string[]): void => {
   const nameColor = logger.coloredStrings.name;
-  const headline = logger.coloredStrings.headline;
+  const { headline } = logger.coloredStrings;
 
+  env.setQuiet(false);
   logger.info(`Please follow these steps to possibly ${headline('fix')} this issue:`);
   const lines = [
     `Delete your ${nameColor('node_modules')} directory`,
@@ -19,4 +20,5 @@ export default (...extras: string[]) => {
   ];
 
   printList(...lines);
+  env.setQuiet(true);
 };

@@ -1,5 +1,6 @@
-import { logger } from 'flex-dev-utils';
+import { logger, env } from 'flex-dev-utils';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
+
 import preFlightByPass from './preFlightByPass';
 
 /**
@@ -10,13 +11,14 @@ import preFlightByPass from './preFlightByPass';
  * @param version         the installed version
  * @param skip            whether the developer is opting to skip
  */
-export default (flexUIVersion: string, packageName: string, version: string, skip: boolean) => {
+export default (flexUIVersion: string, packageName: string, version: string, skip: boolean): void => {
   const nameColor = logger.coloredStrings.name;
-  const headline = logger.coloredStrings.headline;
+  const { headline } = logger.coloredStrings;
 
   const flexUIName = nameColor('@twilio/flex-ui');
   const minFlexUIVersion = nameColor('1.19.0');
 
+  env.setQuiet(false);
   logger.newline();
   logger.error('There might be a problem with your project dependency tree.');
   logger.newline();
@@ -26,10 +28,12 @@ export default (flexUIVersion: string, packageName: string, version: string, ski
   logger.info(`\t ${headline(`"${packageName}": "${version}"`)}`);
   logger.newline();
 
-  logger.info(singleLineString(
-    `However, unbundled React is only supported with ${flexUIName} version higher than `,
-    `${minFlexUIVersion}. You are currently running:`,
-  )) ;
+  logger.info(
+    singleLineString(
+      `However, unbundled React is only supported with ${flexUIName} version higher than `,
+      `${minFlexUIVersion}. You are currently running:`,
+    ),
+  );
   logger.newline();
   logger.info(`\t ${headline(`"@twilio/flex-ui": "${flexUIVersion}"`)}`);
   logger.newline();
@@ -39,4 +43,5 @@ export default (flexUIVersion: string, packageName: string, version: string, ski
 
   preFlightByPass(skip);
   logger.newline();
-}
+  env.setQuiet(true);
+};

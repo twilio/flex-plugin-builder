@@ -1,6 +1,6 @@
 {
   "name": "flex-dev-utils",
-  "version": "3.14.5",
+  "version": "4.7.7-beta.0",
   "description": "Common development utility for creating a Flex plugin",
   "keywords": [
     "flex",
@@ -17,55 +17,57 @@
     "url": "git+https://github.com/twilio/flex-plugin-builder.git"
   },
   "license": "MIT",
-  "author": "Kousha Talebian <ktalebian@twilio.com>",
+  "author": "Flex Runtime <flex-runtime@twilio.com>",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "tsc",
+    "build": "cd ../.. && tsc -p \"packages/flex-dev-utils/tsconfig.json\"",
     "clean": "rm -rf dist",
+    "lint": "eslint --ext ts src/",
+    "lint:fix": "npm run lint -- --fix",
     "prepublish": "npm run build",
-    "test": "cd ../.. && jest packages/flex-dev-utils",
-    "test:watch": "cd ../.. && jest packages/flex-dev-utils --watch"
+    "test": "cd ../.. && jest packages/flex-dev-utils --color",
+    "test:watch": "cd ../.. && jest packages/flex-dev-utils --watch --color"
   },
   "dependencies": {
-    "@k88/pipe-compose": "^2.1.2",
-    "@types/inquirer": "^6.5.0",
+    "@k88/pipe-compose": "^2.4.3",
+    "address": "^1.1.2",
     "app-module-path": "^2.2.0",
     "axios": "^0.21.1",
-    "axios-mock-adapter": "^1.18.2",
+    "axios-mock-adapter": "^1.19.0",
     "copy-template-dir": "^1.4.0",
-    "execa": "^2.1.0",
-    "flex-plugins-utils-exception": "^0.15.0",
-    "flex-plugins-utils-logger": "^0.15.0",
-    "inquirer": "7.3.3",
-    "lodash": "^4.17.20",
-    "marked": "^0.8.2",
-    "marked-terminal": "^3.3.0",
-    "mkdirp": "^0.5.5",
-    "open": "^6.4.0",
+    "flex-plugins-utils-env": "4.7.7-beta.0",
+    "flex-plugins-utils-exception": "4.7.7-beta.0",
+    "flex-plugins-utils-logger": "4.7.7-beta.0",
+    "flex-plugins-utils-spawn": "4.7.7-beta.0",
+    "globby": "^11.0.2",
+    "lodash": "^4.17.21",
+    "marked": "^2.0.1",
+    "marked-terminal": "^4.1.1",
+    "mkdirp": "^1.0.4",
+    "net": "^1.0.2",
+    "open": "^8.0.3",
     "rimraf": "^3.0.2",
-    "semver": "^7.3.2",
-    "tmp": "^0.2.1",
-    "update-notifier": "^3.0.1",
+    "semver": "^7.3.4",
+    "update-notifier": "^5.1.0",
+    "url": "^0.11.0",
     "util": "^0.12.3"
   },
   "devDependencies": {
     "@types/app-module-path": "^2.2.0",
-    "@types/lodash": "^4.14.161",
-    "@types/marked": "^0.7.4",
+    "@types/lodash": "^4.14.168",
+    "@types/marked": "^2.0.0",
     "@types/marked-terminal": "^3.1.1",
-    "@types/mkdirp": "^0.5.2",
-    "@types/rimraf": "^2.0.4",
-    "@types/semver": "^7.3.3",
-    "@types/tmp": "^0.2.0",
-    "@types/update-notifier": "^2.5.1"
+    "@types/mkdirp": "^1.0.1",
+    "@types/rimraf": "^3.0.0",
+    "@types/semver": "^7.3.4",
+    "@types/update-notifier": "^5.0.0"
   },
   "optionalDependencies": {
-    "keytar": "^6.0.1"
-  },
-  "gitHead": "741e95edbfa78da5f862ec7cfe7d032e842606a4"
+    "keytar": "^7.4.0"
+  }
 }

@@ -1,16 +1,17 @@
 import { TwilioError } from 'flex-plugins-utils-exception';
-import { PackageJson, readPackageJson } from '../fs';
+
+import { AppPackageJson, readAppPackageJson } from '../fs';
 import logger from '../logger';
 
 export default class FlexPluginError extends TwilioError {
-  private readonly pkg: PackageJson | null;
+  private readonly pkg: AppPackageJson | null;
 
   constructor(msg?: string) {
     /* istanbul ignore next */
     super(msg);
 
     try {
-      this.pkg = readPackageJson();
+      this.pkg = readAppPackageJson();
     } catch (e) {
       this.pkg = null;
     }
@@ -18,19 +19,15 @@ export default class FlexPluginError extends TwilioError {
     Object.setPrototypeOf(this, FlexPluginError.prototype);
   }
 
-  public print = () => {
+  public print = (): void => {
     logger.error(this.message);
-  }
+  };
 
-  public details = () => {
-    const headline = logger.coloredStrings.headline;
+  public details = (): void => {
+    const { headline } = logger.coloredStrings;
     if (this.pkg) {
       const deps = this.pkg.dependencies;
-      const names = [
-        'craco-config-flex-plugin',
-        'flex-plugin',
-        'flex-plugin-scripts',
-      ];
+      const names = ['flex-plugin', 'flex-plugin-scripts'];
 
       logger.newline();
       logger.info(`Your plugin ${this.pkg.name} is using the following versions:`);
@@ -38,5 +35,5 @@ export default class FlexPluginError extends TwilioError {
       names.forEach((name) => logger.info(`\t ${headline(`"${name}": "${deps[name]}"`)}`));
       logger.newline();
     }
-  }
+  };
 }

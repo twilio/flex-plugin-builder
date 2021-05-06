@@ -1,4 +1,6 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+/* eslint-disable camelcase */
+import { Credential } from 'flex-dev-utils';
+
 import BaseClient from '../baseClient';
 import ConfigurationClient from '../configurations';
 
@@ -6,7 +8,7 @@ describe('ConfigurationClient', () => {
   const serviceSid = 'ZS00000000000000000000000000000000';
   const anotherSid = 'ZS00000000000000000000000000000001';
   const accountSid = 'AC00000000000000000000000000000000';
-  const auth: AuthConfig = {
+  const auth: Credential = {
     username: accountSid,
     password: 'abc',
   };
@@ -199,7 +201,7 @@ describe('ConfigurationClient', () => {
         ui_version: '',
       };
 
-      const get = jest.spyOn(client, 'get').mockResolvedValue(config);
+      jest.spyOn(client, 'get').mockResolvedValue(config);
       const dependencies = await client.getUIDependencies();
       expect(dependencies).toEqual({});
     });

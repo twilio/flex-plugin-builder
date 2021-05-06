@@ -1,10 +1,10 @@
-import { FlexPluginError, logger, progress } from 'flex-dev-utils';
+import { logger, progress, Credential, getCredential, exit } from 'flex-dev-utils';
+import { FlexPluginError } from 'flex-dev-utils/dist/errors';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
-import { AuthConfig, getCredential } from 'flex-dev-utils/dist/credentials'; ;
+import { getPaths } from 'flex-dev-utils/dist/fs';
+
 import { EnvironmentClient } from '../clients';
 import { Runtime } from '../clients/serverless-types';
-
-import paths from '../utils/paths';
 import run from '../utils/run';
 import getRuntime from '../utils/runtime';
 
@@ -14,7 +14,7 @@ import getRuntime from '../utils/runtime';
  * @param credentials the credentials
  * @private
  */
-export const _getRuntime = async (credentials: AuthConfig): Promise<Runtime> => {
+export const _getRuntime = async (credentials: Credential): Promise<Runtime> => {
   const runtime = await getRuntime(credentials, true);
   const environmentClient = new EnvironmentClient(credentials, runtime.service.sid);
 
@@ -26,12 +26,15 @@ export const _getRuntime = async (credentials: AuthConfig): Promise<Runtime> => 
       service: runtime.service,
     };
   } catch (e) {
-    const pluginName = logger.colors.blue(paths.packageName);
+    const pluginName = logger.colors.blue(getPaths().app.name);
 
     logger.newline();
     logger.info(`⚠️  Plugin ${pluginName} was not found or was already removed.`);
 
-    return process.exit(0);
+    exit(0);
+
+    // This is to make TS happy
+    return {} as Runtime;
   }
 };
 
@@ -39,14 +42,14 @@ export const _getRuntime = async (credentials: AuthConfig): Promise<Runtime> => 
  * Performs the delete action
  * @private
  */
-export const _doRemove = async () => {
-  const pluginName = logger.colors.blue(paths.packageName);
+export const _doRemove = async (): Promise<void> => {
+  const pluginName = logger.colors.blue(getPaths().app.name);
   const credentials = await getCredential();
   const runtime = await _getRuntime(credentials);
   if (!runtime.environment) {
     throw new FlexPluginError('No Runtime environment was found');
   }
-  const environment = runtime.environment;
+  const { environment } = runtime;
 
   await progress(`Deleting plugin ${pluginName}`, async () => {
     const environmentClient = new EnvironmentClient(credentials, runtime.service.sid);
@@ -56,26 +59,29 @@ export const _doRemove = async () => {
   logger.newline();
   logger.info(`🎉️  Plugin ${pluginName} was successfully removed.`);
 
-  process.exit(0);
+  exit(0);
 };
 
 /**
  * Removes the plugin by deleting it's associated Environment
  */
-const remove = async () => {
-  logger.debug('Removing Flex plugin');
+const remove = async (): Promise<void> => {
+  logger.debug('Removing plugin');
 
-  const pluginName = logger.colors.blue(paths.packageName);
+  const pluginName = logger.colors.blue(getPaths().app.name);
   const question = `Are you sure you want to permanently remove plugin ${pluginName}?`;
   const answer = await confirm(question, 'N');
 
   if (!answer) {
-    return process.exit(0);
+    exit(0);
+    return;
   }
 
   await _doRemove();
 };
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(remove);
 
+// eslint-disable-next-line import/no-unused-modules
 export default remove;

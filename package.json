@@ -1,4 +1,5 @@
 {
+  "name": "flex-plugin-builder",
   "private": true,
   "homepage": "https://github.com/twilio/flex-plugin-builder#readme",
   "bugs": {
@@ -17,46 +18,51 @@
     "packages/*"
   ],
   "scripts": {
+    "audit": "lerna-audit",
     "bootstrap": "lerna bootstrap --no-ci",
     "build": "lerna run build",
     "coverage": "codecov",
     "docs": "./bin/docs-generator.js",
     "postinstall": "npm run bootstrap",
-    "lint": "tslint --project tsconfig.lint.json",
-    "lint:fix": "tslint --project tsconfig.lint.json --fix",
-    "test": "jest --color",
-    "test:ci": "jest --clearCache && jest --coverage --color",
-    "test:watch": "jest --watchAll --color",
-    "publish:next": "bin/publish",
-    "publish:public": "bin/publish public"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint",
-      "pre-push": "npm run test"
-    }
+    "lint": "lerna run lint",
+    "lint:fix": "lerna run lint:fix",
+    "prepare": "husky install",
+    "publish:alpha": "./bin/publish alpha $1",
+    "publish:beta": "./bin/publish beta $1",
+    "publish:dev": "./bin/publish dev patch",
+    "publish:nightly": "./bin/publish nightly patch",
+    "publish:public": "./bin/publish public $1",
+    "pretesst": "rimraf -rf coverage",
+    "test": "node bin/test.js",
+    "test:ci": "jest --clearCache && npm run test -- --no-cache --coverage",
+    "test:one": "npm run test -- $@",
+    "test:watch": "npm run test -- --watchAll"
   },
   "dependencies": {},
   "devDependencies": {
-    "@babel/cli": "^7.11.6",
-    "@babel/core": "^7.11.6",
-    "@babel/polyfill": "^7.11.5",
-    "@babel/preset-env": "^7.11.5",
-    "@babel/preset-typescript": "^7.10.4",
-    "@k88/pipe-compose": "^2.1.2",
-    "@types/jest": "^26.0.13",
-    "@types/node": "^13.13.17",
+    "@babel/cli": "^7.13.14",
+    "@babel/core": "^7.13.15",
+    "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.13.15",
+    "@babel/preset-typescript": "^7.13.0",
+    "@k88/lerna-travis": "^1.1.2",
+    "@types/jest": "^26.0.22",
+    "@types/node": "^14.14.41",
     "babel-core": "7.0.0-bridge.0",
-    "babel-jest": "^26.3.0",
+    "babel-jest": "^26.6.3",
     "babel-register": "^6.26.0",
-    "codecov": "^3.7.2",
+    "codecov": "^3.8.1",
+    "eslint": "^7.24.0",
+    "eslint-config-twilio-ts": "^1.34.2",
     "glob": "^7.1.6",
-    "husky": "^4.3.0",
-    "jest": "^26.4.2",
-    "lerna": "^3.22.1",
-    "ts-jest": "^26.3.0",
-    "tslint": "^6.1.3",
-    "tslint-react": "^5.0.0",
-    "typescript": "^3.9.7"
+    "husky": "^6.0.0",
+    "jest": "^26.6.3",
+    "lerna": "^4.0.0",
+    "lerna-audit": "^1.3.2",
+    "markdown-toc": "^1.2.0",
+    "nyc": "^15.1.0",
+    "ts-jest": "^26.5.5",
+    "typescript": "^4.2.4",
+    "ultra-runner": "^3.10.5"
   }
 }

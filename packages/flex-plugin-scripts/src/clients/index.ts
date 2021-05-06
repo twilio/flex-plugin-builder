@@ -4,3 +4,4 @@ export { default as EnvironmentClient } from './environments';
 export { default as BuildClient } from './builds';
 export { default as DeploymentClient } from './deployments';
 export { default as ConfigurationClient } from './configurations';
+export { default as PluginsApiClient } from './pluginsApi';

@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-scripts",
-  "version": "3.14.5",
+  "version": "4.7.7-beta.0",
   "description": "Scripts to run, build and deploy Flex plugins",
   "keywords": [
     "flex",
@@ -17,37 +17,50 @@
     "url": "git+https://github.com/twilio/flex-plugin-builder.git"
   },
   "license": "MIT",
-  "author": "Kousha Talebian <ktalebian@twilio.com>",
+  "author": "Flex Runtime <flex-runtime@twilio.com>",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "flex-plugin": "./bin/flex-plugin"
+  },
   "files": [
     "dist",
     "bin",
     "docs",
     "dev_assets"
   ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "bin": {
-    "flex-plugin": "./bin/flex-plugin"
-  },
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "tsc",
+    "build": "cd ../.. && tsc -p \"packages/flex-plugin-scripts/tsconfig.json\"",
     "clean": "rm -rf dist",
+    "lint": "eslint --ext ts src/",
+    "lint:fix": "npm run lint -- --fix",
     "prepublish": "npm run build",
-    "test": "cd ../.. && jest packages/flex-plugin-scripts",
-    "test:watch": "cd ../.. && jest packages/flex-plugin-scripts --watch"
+    "test": "cd ../.. && jest packages/flex-plugin-scripts --color",
+    "test:watch": "cd ../.. && jest packages/flex-plugin-scripts --watch --color"
   },
   "dependencies": {
-    "@craco/craco": "^5.6.4",
-    "core-js": "^2.6.5",
+    "@jest/types": "^26.6.2",
+    "@types/enzyme": "^3.10.8",
+    "@types/jest": "26.0.21",
+    "@types/node": "^14.14.35",
+    "@types/react": "^16.8.16",
+    "@types/react-dom": "^16.8.4",
+    "@types/react-redux": "5.0.21",
+    "emotion": "9.2.12",
     "esm": "^3.2.25",
-    "flex-dev-utils": "^3.14.5",
-    "form-data": "^2.5.1",
-    "querystring": "^0.2.0",
-    "react-test-renderer": "^16.13.1"
+    "flex-dev-utils": "4.7.7-beta.0",
+    "flex-plugin": "4.7.7-beta.0",
+    "flex-plugin-test": "4.7.7-beta.0",
+    "flex-plugin-webpack": "4.7.7-beta.0",
+    "form-data": "^4.0.0",
+    "jest": "26.6.3",
+    "prop-types": "^15.7.2",
+    "querystring": "^0.2.1",
+    "react": "^16",
+    "react-emotion": "9.2.12"
   },
-  "peerDependencies": {
-    "flex-plugin": "*"
-  },
-  "gitHead": "741e95edbfa78da5f862ec7cfe7d032e842606a4"
+  "engines": {
+    "node": ">=10.12.0"
+  }
 }

@@ -1,4 +1,6 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+/* eslint-disable camelcase */
+import { Credential } from 'flex-dev-utils';
+import * as fsScript from 'flex-dev-utils/dist/fs';
 
 import getRuntime from '../runtime';
 
@@ -7,27 +9,31 @@ jest.mock('../../clients/configurations');
 jest.mock('../../clients/environments');
 jest.mock('../../clients/services');
 jest.mock('flex-dev-utils/dist/credentials');
-jest.mock('../../utils/paths', () => ({
-  packageName: 'plugin-test',
-}));
 
-// tslint:disable
+/* eslint-disable */
 const ServiceClient: jest.Mock = require('../../clients/services').default;
 const EnvironmentClient: jest.Mock = require('../../clients/environments').default;
 const BuildClient: jest.Mock = require('../../clients/builds').default;
 const ConfigurationClient: jest.Mock = require('../../clients/configurations').default;
-// tslint:enable
+/* eslint-enable */
 
 describe('runtime', () => {
+  const paths = {
+    app: {
+      name: 'plugin-test',
+    },
+  };
+
   const serviceSid = 'ZS00000000000000000000000000000000';
   const environmentSid = 'ZE00000000000000000000000000000000';
   const buildSid = 'ZB00000000000000000000000000000000';
-  const service = {sid: serviceSid};
-  const environment = {sid: environmentSid};
-  const environmentWithBuild = {sid: environmentSid, build_sid: buildSid};
-  const build = {sid: buildSid};
+  const service = { sid: serviceSid };
+  const environment = { sid: environmentSid };
+  // eslint-disable-next-line camelcase
+  const environmentWithBuild = { sid: environmentSid, build_sid: buildSid };
+  const build = { sid: buildSid };
 
-  const auth: AuthConfig = {
+  const auth: Credential = {
     username: 'AC00000000000000000000000000000000',
     password: 'abc123',
   };
@@ -40,6 +46,9 @@ describe('runtime', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // @ts-ignore
+    jest.spyOn(fsScript, 'getPaths').mockReturnValue(paths);
   });
 
   const expectConfigurationClientCalled = () => {
@@ -79,10 +88,10 @@ describe('runtime', () => {
       getEnvironment.mockReturnValue(environment);
       configGetServiceSids.mockReturnValue([]);
 
-      ServiceClient.mockImplementation(() => ({getDefault: getServiceDefault}));
-      EnvironmentClient.mockImplementation(() => ({get: getEnvironment}));
-      BuildClient.mockImplementation(() => ({get: getBuild}));
-      ConfigurationClient.mockImplementation(() => ({getServiceSids: configGetServiceSids}));
+      ServiceClient.mockImplementation(() => ({ getDefault: getServiceDefault }));
+      EnvironmentClient.mockImplementation(() => ({ get: getEnvironment }));
+      BuildClient.mockImplementation(() => ({ get: getBuild }));
+      ConfigurationClient.mockImplementation(() => ({ getServiceSids: configGetServiceSids }));
 
       const runtime = await getRuntime(auth);
 
@@ -103,10 +112,10 @@ describe('runtime', () => {
       getBuild.mockReturnValue(build);
       configGetServiceSids.mockReturnValue([]);
 
-      ServiceClient.mockImplementation(() => ({getDefault: getServiceDefault}));
-      EnvironmentClient.mockImplementation(() => ({get: getEnvironment}));
-      BuildClient.mockImplementation(() => ({get: getBuild}));
-      ConfigurationClient.mockImplementation(() => ({getServiceSids: configGetServiceSids}));
+      ServiceClient.mockImplementation(() => ({ getDefault: getServiceDefault }));
+      EnvironmentClient.mockImplementation(() => ({ get: getEnvironment }));
+      BuildClient.mockImplementation(() => ({ get: getBuild }));
+      ConfigurationClient.mockImplementation(() => ({ getServiceSids: configGetServiceSids }));
 
       const runtime = await getRuntime(auth);
 
@@ -124,8 +133,8 @@ describe('runtime', () => {
       getServiceDefault.mockReturnValue(service);
       configGetServiceSids.mockReturnValue([]);
 
-      ServiceClient.mockImplementation(() => ({getDefault: getServiceDefault}));
-      ConfigurationClient.mockImplementation(() => ({getServiceSids: configGetServiceSids}));
+      ServiceClient.mockImplementation(() => ({ getDefault: getServiceDefault }));
+      ConfigurationClient.mockImplementation(() => ({ getServiceSids: configGetServiceSids }));
 
       const runtime = await getRuntime(auth, true);
 
@@ -144,8 +153,8 @@ describe('runtime', () => {
       serviceGet.mockReturnValue(service);
       configGetServiceSids.mockReturnValue([serviceSid]);
 
-      ServiceClient.mockImplementation(() => ({get: serviceGet}));
-      ConfigurationClient.mockImplementation(() => ({getServiceSids: configGetServiceSids}));
+      ServiceClient.mockImplementation(() => ({ get: serviceGet }));
+      ConfigurationClient.mockImplementation(() => ({ getServiceSids: configGetServiceSids }));
 
       const runtime = await getRuntime(auth, true);
 
