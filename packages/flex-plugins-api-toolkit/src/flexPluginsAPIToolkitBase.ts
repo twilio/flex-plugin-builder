@@ -108,30 +108,16 @@ export default class FlexPluginsAPIToolkitBase {
 
     this.listConfigurations = this.cloneArgs(listConfigurationsScript(configurationsClient, releasesClient));
     this.describeConfiguration = this.cloneArgs(
-      describeConfigurationScript(
-        pluginClient,
-        pluginVersionsClient,
-        configurationsClient,
-        configuredPluginsClient,
-        releasesClient,
-      ),
+      describeConfigurationScript(configurationsClient, configuredPluginsClient, releasesClient),
     );
     this.archiveConfiguration = this.cloneArgs(archiveConfiguration(configurationsClient));
 
     this.listReleases = this.cloneArgs(listReleasesScript(releasesClient));
     this.describeRelease = this.cloneArgs(
-      describeReleaseScript(
-        pluginClient,
-        pluginVersionsClient,
-        configurationsClient,
-        configuredPluginsClient,
-        releasesClient,
-      ),
+      describeReleaseScript(configurationsClient, configuredPluginsClient, releasesClient),
     );
 
-    this.diff = this.cloneArgs(
-      diffScript(pluginClient, pluginVersionsClient, configurationsClient, configuredPluginsClient, releasesClient),
-    );
+    this.diff = this.cloneArgs(diffScript(configurationsClient, configuredPluginsClient, releasesClient));
   }
 
   // Clones the arguments before passing them to the script

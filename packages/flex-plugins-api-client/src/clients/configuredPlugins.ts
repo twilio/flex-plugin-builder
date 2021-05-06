@@ -5,9 +5,14 @@ export interface ConfiguredPluginResource {
   plugin_version_sid: string;
   configuration_sid: string;
   unique_name: string;
+  description: string;
+  friendly_name: string;
+  plugin_archived: boolean;
   version: string;
+  changelog: string;
   plugin_url: string;
   phase: number;
+  plugin_version_archived: boolean;
   private: boolean;
   date_created: string;
 }
