@@ -1,7 +1,5 @@
 import {
   PluginServiceHTTPClient,
-  PluginsClient,
-  PluginVersionsClient,
   ConfigurationsClient,
   ConfiguredPluginsClient,
   ReleasesClient,
@@ -13,8 +11,6 @@ import * as describeConfigurationScript from '../describeConfiguration';
 
 describe('describeRelease', () => {
   const httpClient = new PluginServiceHTTPClient('username', 'password');
-  const pluginsClient = new PluginsClient(httpClient);
-  const pluginVersionsClient = new PluginVersionsClient(httpClient);
   const configurationsClient = new ConfigurationsClient(httpClient);
   const configuredPluginsClient = new ConfiguredPluginsClient(httpClient);
   const releaseClient = new ReleasesClient(httpClient);
@@ -24,13 +20,7 @@ describe('describeRelease', () => {
   const describeConfiguration = jest.fn();
   const internal = jest.spyOn(describeConfigurationScript, 'internalDescribeConfiguration');
 
-  const script = describeReleaseScript(
-    pluginsClient,
-    pluginVersionsClient,
-    configurationsClient,
-    configuredPluginsClient,
-    releaseClient,
-  );
+  const script = describeReleaseScript(configurationsClient, configuredPluginsClient, releaseClient);
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -71,12 +61,7 @@ describe('describeRelease', () => {
     expect(get).toHaveBeenCalledTimes(1);
     expect(get).toHaveBeenCalledWith(release.sid);
     expect(internal).toHaveBeenCalledTimes(1);
-    expect(internal).toHaveBeenCalledWith(
-      pluginsClient,
-      pluginVersionsClient,
-      configurationsClient,
-      configuredPluginsClient,
-    );
+    expect(internal).toHaveBeenCalledWith(configurationsClient, configuredPluginsClient);
     expect(describeConfiguration).toHaveBeenCalledTimes(1);
     expect(describeConfiguration).toHaveBeenCalledWith({ sid: release.configuration_sid }, release);
     expect(active).toHaveBeenCalledTimes(1);

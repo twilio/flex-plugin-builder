@@ -7,8 +7,8 @@ import { TestSuite, TestParams } from '..';
 
 // Install Twilio CLI and Plugins CLI
 const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
-  params.plugin.newlineValue = `This is a dismissible demo component ${new Date()}`;
-  params.plugin.changelog = `e2e test ${new Date()}`;
+  params.plugin.newlineValue = `This is a dismissible demo component ${Date.now()}`;
+  params.plugin.changelog = `e2e test ${Date.now()}`;
   await replaceInFile({
     files: joinPath(params.plugin.dir, 'src', 'components', 'CustomTaskList', 'CustomTaskList.jsx'),
     from: /This is a dismissible demo component.*/,

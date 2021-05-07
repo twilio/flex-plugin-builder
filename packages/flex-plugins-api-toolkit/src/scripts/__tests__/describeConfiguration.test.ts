@@ -1,9 +1,7 @@
 import {
   ConfigurationsClient,
   ConfiguredPluginsClient,
-  PluginsClient,
   PluginServiceHTTPClient,
-  PluginVersionsClient,
   ReleasesClient,
 } from 'flex-plugins-api-client';
 
@@ -12,43 +10,23 @@ import { configuration, plugin, version, release, installedPlugin, meta } from '
 
 describe('DescribeConfigurationScript', () => {
   const httpClient = new PluginServiceHTTPClient('username', 'password');
-  const pluginsClient = new PluginsClient(httpClient);
-  const versionsClient = new PluginVersionsClient(httpClient);
   const configurationsClient = new ConfigurationsClient(httpClient);
   const configuredPluginsClient = new ConfiguredPluginsClient(httpClient);
   const releasesClient = new ReleasesClient(httpClient);
 
   const getConfig = jest.spyOn(configurationsClient, 'get');
   const listInstalledPlugins = jest.spyOn(configuredPluginsClient, 'list');
-  const getPlugin = jest.spyOn(pluginsClient, 'get');
-  const getVersion = jest.spyOn(versionsClient, 'get');
   const getActiveRelease = jest.spyOn(releasesClient, 'active');
 
-  const script = describeConfigurationScript(
-    pluginsClient,
-    versionsClient,
-    configurationsClient,
-    configuredPluginsClient,
-    releasesClient,
-  );
+  const script = describeConfigurationScript(configurationsClient, configuredPluginsClient, releasesClient);
   const option = { sid: configuration.sid };
 
-  const expectEndpointsCalled = (withPlugins: boolean) => {
+  const expectEndpointsCalled = () => {
     expect(getConfig).toHaveBeenCalledTimes(1);
     expect(getConfig).toHaveBeenCalledWith(option.sid);
     expect(getActiveRelease).toHaveBeenCalledTimes(1);
     expect(listInstalledPlugins).toHaveBeenCalledTimes(1);
     expect(listInstalledPlugins).toHaveBeenCalledWith(option.sid);
-
-    if (withPlugins) {
-      expect(getPlugin).toHaveBeenCalledTimes(1);
-      expect(getPlugin).toHaveBeenCalledWith(plugin.sid);
-      expect(getVersion).toHaveBeenCalledTimes(1);
-      expect(getVersion).toHaveBeenCalledWith(plugin.sid, version.sid);
-    } else {
-      expect(getPlugin).not.toHaveBeenCalled();
-      expect(getVersion).not.toHaveBeenCalled();
-    }
   };
 
   const expectResult = (result: DescribeConfiguration, isActive: boolean, hasPlugins: boolean) => {
@@ -101,8 +79,6 @@ describe('DescribeConfigurationScript', () => {
       expect(getConfig).toHaveBeenCalledTimes(1);
       expect(getConfig).toHaveBeenCalledWith(option.sid);
       expect(getActiveRelease).toHaveBeenCalledTimes(1);
-      expect(getPlugin).not.toHaveBeenCalled();
-      expect(getVersion).not.toHaveBeenCalled();
       expect(listInstalledPlugins).not.toHaveBeenCalled();
 
       done();
@@ -115,32 +91,28 @@ describe('DescribeConfigurationScript', () => {
 
     const result = await script(option);
 
-    expectEndpointsCalled(false);
+    expectEndpointsCalled();
     expectResult(result, false, false);
   });
 
   it('should return configuration with plugins', async () => {
     getConfig.mockResolvedValue(configuration);
-    getPlugin.mockResolvedValue(plugin);
-    getVersion.mockResolvedValue(version);
     listInstalledPlugins.mockResolvedValue({ plugins: [installedPlugin], meta });
 
     const result = await script(option);
 
-    expectEndpointsCalled(true);
+    expectEndpointsCalled();
     expectResult(result, false, true);
   });
 
   it('should return active configuration with plugins', async () => {
     getActiveRelease.mockResolvedValue(release);
     getConfig.mockResolvedValue(configuration);
-    getPlugin.mockResolvedValue(plugin);
-    getVersion.mockResolvedValue(version);
     listInstalledPlugins.mockResolvedValue({ plugins: [installedPlugin], meta });
 
     const result = await script(option);
 
-    expectEndpointsCalled(true);
+    expectEndpointsCalled();
     expectResult(result, true, true);
   });
 });

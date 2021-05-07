@@ -39,7 +39,7 @@ const getPluginVersion = async (name: string, version: string): Promise<PluginVe
 
 const getLatestPluginVersion = async (name: string): Promise<PluginVersionResource | null> => {
   try {
-    return versionsClient.latest(name);
+    return await versionsClient.latest(name);
   } catch (e) {
     return null;
   }
