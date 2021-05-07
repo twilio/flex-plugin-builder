@@ -174,7 +174,7 @@ jobs:
             - cmd_codecov
 
 workflows:
-  test:
+  workflow_e2e-tester:
     when: << pipeline.parameters.run_e2e_test >>
     jobs:
       - job_e2e-test:
@@ -182,7 +182,7 @@ workflows:
             parameters:
               package_version: [ << pipeline.parameters.package_version >> ]
 
-  publish:
+  workflow_publisher:
     when: << pipeline.parameters.run_npm_publish >>
     jobs:
       - job_npm-publish:
@@ -191,7 +191,7 @@ workflows:
               dist_tag: [ << pipeline.parameters.dist_tag >> ]
               version_bump: [ << pipeline.parameters.version_bump >> ]
 
-  validate:
+  workflow_pr-validator:
     when: << pipeline.parameters.run_pr_validator >>
     jobs:
       - job_pr-validator-win32:
