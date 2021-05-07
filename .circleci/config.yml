@@ -55,11 +55,16 @@ commands:
       - run:
           name: "Run linter"
           command: npm run lint
+  cmd_run-build:
+    steps:
+      - run:
+          name: "Build packages"
+          command: npm run build
   cmd_run-e2e-tests:
     steps:
       - run:
           name: "Run e2e tests"
-          command: cd packages/flex-plugin-e2e-tests && npm run build && npm start
+          command: cd packages/flex-plugin-e2e-tests && npm start
   cmd_codecov:
     steps:
       - run:
@@ -101,6 +106,7 @@ jobs:
       - checkout
       - cmd_install-prerequisites
       - cmd_install-dependencies
+      - cmd_run-build
       - cmd_run-e2e-tests
 
   job_npm-publish:
@@ -120,6 +126,7 @@ jobs:
       - checkout
       - cmd_install-prerequisites
       - cmd_install-dependencies
+      - cmd_run-build
       - cmd_setup_npm
       - cmd_run-publish:
           dist_tag: << parameters.dist_tag >>
@@ -139,6 +146,7 @@ jobs:
     steps:
       - checkout
       - cmd_install-dependencies
+      - cmd_run-build
       - cmd_run-unit-tests
 
   job_pr-validator-node:
@@ -158,6 +166,7 @@ jobs:
       - cmd_install-dependencies
       - cmd_run-linter
       - cmd_run-unit-tests
+      - cmd_run-build
       - when:
           condition:
             equal: [<< parameters.node-version >>, lts]

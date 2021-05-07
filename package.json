@@ -20,6 +20,7 @@
   "scripts": {
     "audit": "lerna-audit",
     "bootstrap": "lerna bootstrap --no-ci",
+    "postbootstrap": "npm run build",
     "build": "lerna run build",
     "coverage": "codecov",
     "docs": "./bin/docs-generator.js",
