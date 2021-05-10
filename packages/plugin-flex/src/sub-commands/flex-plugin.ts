@@ -11,13 +11,21 @@ import {
   ConfigurationsClient,
   ReleasesClient,
 } from 'flex-plugins-api-client';
-import { TwilioError, spawn, Logger, SpawnPromise, NotImplementedError, TwilioCliError, env } from 'flex-dev-utils';
+import {
+  TwilioError,
+  spawn,
+  Logger,
+  SpawnPromise,
+  NotImplementedError,
+  TwilioCliError,
+  env,
+  semver,
+} from 'flex-dev-utils';
 import dayjs from 'dayjs';
 import * as Errors from '@oclif/errors';
 import mkdirp from 'mkdirp';
 import { PluginServiceHttpOption } from 'flex-plugins-api-client/dist/clients/client';
 import * as Parser from '@oclif/parser';
-import semver from 'semver/preload';
 
 import parser from '../utils/parser';
 import * as flags from '../utils/flags';

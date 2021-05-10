@@ -67,6 +67,6 @@
     "@types/update-notifier": "^5.0.0"
   },
   "optionalDependencies": {
-    "keytar": "^7.4.0"
+    "keytar": "^7.7.0"
   }
 }
