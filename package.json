@@ -32,7 +32,6 @@
     "publish:alpha": "./bin/publish alpha $1",
     "publish:beta": "./bin/publish beta $1",
     "publish:dev": "./bin/publish dev patch",
-    "publish:nightly": "./bin/publish nightly patch",
     "publish:public": "./bin/publish public $1",
     "test": "node bin/test.js",
     "test:ci": "jest --clearCache && npm run test -- --no-cache --coverage",
