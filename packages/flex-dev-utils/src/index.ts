@@ -32,7 +32,7 @@ export { default as runner } from './runner';
 export { default as urls } from './urls';
 export { default as env } from './env';
 export { getPaths as paths } from './fs';
-export { default as semver } from './semver';
+export { default as semver, ReleaseType } from './semver';
 export { default as exit } from './exit';
 
 export type FunctionalCallback<D, R> = (data: D) => R;
