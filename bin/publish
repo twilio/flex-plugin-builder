@@ -71,7 +71,7 @@ if [ "${tag}" == "public" ] ; then
     --exact \
     --yes \
     "${bump}"
-else
+elif [ "${tag}" == "beta" ] || [ "${tag}" == "alpha" ] ; then
   ./node_modules/.bin/lerna publish \
     --force-publish="*" \
     --pre-dist-tag "${tag}" \
@@ -79,5 +79,15 @@ else
     --exact \
     --yes \
     "${bump}"
+else
+  ./node_modules/.bin/lerna publish \
+    --force-publish="*" \
+    --pre-dist-tag "${tag}" \
+    --dist-tag "${tag}" \
+    --exact \
+    --yes \
+    --skip-git \
+    --no-git-tag-version \
+    --no-push \
+    "${bump}"
 fi
-
