@@ -32,22 +32,36 @@ export const getAccountSid = (): string | undefined => process.env.TWILIO_ACCOUN
 export const getAuthToken = (): string | undefined => process.env.TWILIO_AUTH_TOKEN;
 export const hasHost = (): boolean => isDefined(process.env.HOST);
 export const getHost = (): string | undefined => process.env.HOST;
-export const setHost = (host: string): string => (process.env.HOST = host);
+export const setHost = (host: string): void => {
+  process.env.HOST = host;
+};
 export const hasPort = (): boolean => isDefined(process.env.PORT);
 export const getPort = (): number => Number(process.env.PORT);
-export const setPort = (port: number): string => (process.env.PORT = String(port));
+export const setPort = (port: number): void => {
+  process.env.PORT = String(port);
+};
 export const getNodeEnv = (): string => process.env.NODE_ENV as string;
-export const setNodeEnv = (_env: Environment): string => (process.env.NODE_ENV = _env);
+export const setNodeEnv = (_env: Environment): void => {
+  process.env.NODE_ENV = _env;
+};
 export const getBabelEnv = (): string => process.env.BABEL_ENV as string;
-export const setBabelEnv = (_env: Environment): string => (process.env.BABEL_ENV = _env);
+export const setBabelEnv = (_env: Environment): void => {
+  process.env.BABEL_ENV = _env;
+};
 export const getLifecycle = (): string => process.env.npm_lifecycle_event as string;
 export const isLifecycle = (cycle: Lifecycle): boolean => process.env.npm_lifecycle_event === cycle;
 export const isHTTPS = (): boolean => process.env.HTTPS === 'true';
-export const setWDSSocketHost = (host: string): string => (process.env.WDS_SOCKET_HOST = host);
+export const setWDSSocketHost = (host: string): void => {
+  process.env.WDS_SOCKET_HOST = host;
+};
 export const getWDSSocketHost = (): string | undefined => process.env.WDS_SOCKET_HOST;
-export const setWDSSocketPath = (path: string): string => (process.env.WDS_SOCKET_PATH = path);
+export const setWDSSocketPath = (path: string): void => {
+  process.env.WDS_SOCKET_PATH = path;
+};
 export const getWDSSocketPath = (): string | undefined => process.env.WDS_SOCKET_PATH;
-export const setWDSSocketPort = (port: number): string => (process.env.WDS_SOCKET_PORT = port.toString());
+export const setWDSSocketPort = (port: number): void => {
+  process.env.WDS_SOCKET_PORT = port.toString();
+};
 export const getWDSSocketPort = (): number => Number(process.env.WDS_SOCKET_PORT);
 export const getWSSocket = (): Record<string, string | undefined> => ({
   host: process.env.WDS_SOCKET_HOST,
