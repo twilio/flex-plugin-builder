@@ -65,7 +65,7 @@ export function internalDescribeConfiguration(
         description: p.description,
         changelog: p.changelog,
         isPrivate: p.private,
-        isArchived: p.plugin_archived,
+        isArchived: p.plugin_archived || p.plugin_version_archived,
         phase: p.phase,
       };
     });
