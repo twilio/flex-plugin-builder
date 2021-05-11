@@ -9,6 +9,7 @@ import { Script } from '.';
 import { DescribeConfiguration, internalDescribeConfiguration } from './describeConfiguration';
 
 interface OptionalResources {
+  release?: ReleaseResource;
   activeRelease?: ReleaseResource;
 }
 
@@ -44,7 +45,7 @@ export default function describeRelease(
   return async (option: DescribeReleaseOption) => {
     const resources = option.resources ? option.resources : ({} as OptionalResources);
 
-    const release = await releasesClient.get(option.sid);
+    const release = await (resources.release ? Promise.resolve(resources.release) : releasesClient.get(option.sid));
     const active = await (resources.activeRelease ? Promise.resolve(resources.activeRelease) : releasesClient.active());
 
     const configuration = await internalDescribeConfiguration(configurationClient, configuredPluginClient)(
