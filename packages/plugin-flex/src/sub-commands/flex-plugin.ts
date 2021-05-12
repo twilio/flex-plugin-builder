@@ -20,6 +20,8 @@ import {
   TwilioCliError,
   env,
   semver,
+  updateNotifier,
+  chalk,
 } from 'flex-dev-utils';
 import dayjs from 'dayjs';
 import * as Errors from '@oclif/errors';
@@ -82,6 +84,8 @@ const packageJsonStr = 'package.json';
  * This will ensure the script is running on a Flex-plugin project, otherwise will throw an error
  */
 export default class FlexPlugin extends baseCommands.TwilioClientCommand {
+  static checkForUpdateFrequency = 1000 * 60 * 60 * 24; // daily
+
   static topicName = 'flex:plugins';
 
   /**
@@ -123,6 +127,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
   protected readonly pluginRootDir: string;
 
+  protected readonly cliPkg: Pkg;
+
   protected readonly cliRootDir: string;
 
   protected readonly skipEnvironmentalSetup: boolean;
@@ -159,7 +165,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     this.skipEnvironmentalSetup = false;
     this._logger = new Logger({ isQuiet: false, markdown: true });
     // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
-    this.version = require(join(this.pluginRootDir, packageJsonStr)).version;
+    this.cliPkg = require(join(this.pluginRootDir, packageJsonStr));
+    this.version = this.cliPkg.version;
 
     if (!this.opts.strict) {
       // @ts-ignore
@@ -356,6 +363,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    */
   async run(): Promise<void> {
     await super.run();
+    this.checkForUpdate();
+
     this.logger.debug(`Using Flex Plugins Config File: ${this.pluginsConfigPath}`);
 
     if (this._flags['clear-terminal']) {
@@ -543,6 +552,20 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     } else {
       this._logger.info(`**@@${key}@@**`);
     }
+  }
+
+  /**
+   * Checks for CLI update
+   */
+  /* istanbul ignore next */
+  checkForUpdate(): void {
+    const notifier = updateNotifier({ pkg: this.cliPkg, updateCheckInterval: FlexPlugin.checkForUpdateFrequency });
+    // template taken from the update-checker
+    const message = `Update available ${chalk.dim(notifier.update?.current)}${chalk.reset(' → ')}${chalk.green(
+      notifier.update?.latest,
+    )} \nRun ${chalk.cyan('twilio plugins:install @twilio-labs/plugin-flex')} to update`;
+
+    notifier.notify({ message });
   }
 
   /**
