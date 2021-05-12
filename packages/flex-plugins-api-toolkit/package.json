@@ -1,6 +1,6 @@
 {
   "name": "flex-plugins-api-toolkit",
-  "version": "4.9.0-beta.0",
+  "version": "4.9.1-beta.0",
   "description": "Flex Plugins API Toolkit",
   "keywords": [
     "flex",
@@ -39,11 +39,11 @@
     "test:watch": "cd ../.. && jest packages/flex-plugins-api-toolkit --watch --color"
   },
   "dependencies": {
-    "flex-plugin-utils-http": "4.9.0-beta.0",
-    "flex-plugins-api-client": "4.9.0-beta.0",
-    "flex-plugins-utils-env": "4.9.0-beta.0",
-    "flex-plugins-utils-exception": "4.9.0-beta.0",
-    "flex-plugins-utils-logger": "4.9.0-beta.0",
+    "flex-plugin-utils-http": "4.9.1-beta.0",
+    "flex-plugins-api-client": "4.9.1-beta.0",
+    "flex-plugins-utils-env": "4.9.1-beta.0",
+    "flex-plugins-utils-exception": "4.9.1-beta.0",
+    "flex-plugins-utils-logger": "4.9.1-beta.0",
     "lodash.clonedeep": "^4.5.0"
   },
   "devDependencies": {
