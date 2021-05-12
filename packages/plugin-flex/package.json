@@ -32,7 +32,7 @@
   "scripts": {
     "prebuild": "npm run clean",
     "build": "cd ../.. && tsc -p \"packages/plugin-flex/tsconfig.json\"",
-    "clean": "rm -rf dist",
+    "clean": "rimraf -rf dist",
     "lint": "eslint --ext ts src/",
     "lint:fix": "npm run lint -- --fix",
     "prepack": "./bin/prepack",

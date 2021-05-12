@@ -27,7 +27,7 @@
   "scripts": {
     "prebuild": "npm run clean",
     "build": "cd ../.. && tsc -p \"packages/flex-plugin-webpack/tsconfig.json\"",
-    "clean": "rm -rf dist",
+    "clean": "rimraf -rf dist",
     "lint": "eslint --ext ts src/",
     "lint:fix": "npm run lint -- --fix",
     "test": "cd ../.. && jest packages/flex-plugin-webpack --color",

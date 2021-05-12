@@ -22,6 +22,7 @@
     "bootstrap": "lerna bootstrap --no-ci",
     "postbootstrap": "npm run build",
     "build": "lerna run build",
+    "clean": "lerna run clean",
     "coverage": "codecov",
     "docs": "./bin/docs-generator.js",
     "postinstall": "npm run bootstrap",
