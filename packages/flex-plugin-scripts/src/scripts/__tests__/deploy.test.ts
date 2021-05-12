@@ -31,7 +31,6 @@ const AssetClient = require('../../clients/assets').default;
 const BuildClient = require('../../clients/builds').default;
 const DeploymentClient = require('../../clients/deployments').default;
 const ConfigurationClient = require('../../clients/configurations').default;
-const PluginsApiClient = require('../../clients/pluginsApi').default;
 /* eslint-enable */
 /* eslint-disable camelcase */
 
