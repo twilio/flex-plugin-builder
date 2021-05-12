@@ -7,8 +7,8 @@ import {
   Credential,
   getCredential,
   env,
+  ReleaseType,
 } from 'flex-dev-utils';
-import { ReleaseType } from 'flex-dev-utils/dist/semver';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { checkFilesExist, updateAppVersion, getPackageVersion, getPaths } from 'flex-dev-utils/dist/fs';
 import { singleLineString } from 'flex-dev-utils/dist/strings';

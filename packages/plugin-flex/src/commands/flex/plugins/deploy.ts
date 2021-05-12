@@ -1,9 +1,8 @@
 import { PluginVersionResource } from 'flex-plugins-api-client/dist/clients/pluginVersions';
-import semver, { ReleaseType } from 'semver';
 import { DeployResult, _verifyPath } from 'flex-plugin-scripts/dist/scripts/deploy';
 import getRuntime from 'flex-plugin-scripts/dist/utils/runtime';
 import { CLIParseError } from '@oclif/parser/lib/errors';
-import { FlexPluginError, TwilioCliError, progress, getCredential, env } from 'flex-dev-utils';
+import { FlexPluginError, TwilioCliError, progress, getCredential, env, semver, ReleaseType } from 'flex-dev-utils';
 import { getPaths } from 'flex-dev-utils/dist/fs';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { PluginResource } from 'flex-plugins-api-client';

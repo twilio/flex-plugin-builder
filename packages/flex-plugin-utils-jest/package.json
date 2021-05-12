@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-utils-jest",
-  "version": "4.7.7-beta.0",
+  "version": "4.9.1-beta.0",
   "description": "Flex Plugin E2E Tests framework",
   "keywords": [
     "flex",
@@ -30,7 +30,6 @@
     "clean": "rm -rf dist",
     "lint": "eslint --ext ts src/",
     "lint:fix": "npm run lint -- --fix",
-    "prepublish": "npm run build",
     "test": "exit 0"
   },
   "devDependencies": {

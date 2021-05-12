@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-    <a href="https://travis-ci.com/twilio/flex-plugin-builder">
-        <img src="https://travis-ci.com/twilio/flex-plugin-builder.svg?branch=master" title="Build Status" />
+    <a href="https://app.circleci.com/pipelines/github/twilio/flex-plugin-builder?branch=v4-beta" >
+        <img src="https://circleci.com/gh/twilio/flex-plugin-builder/tree/v4-beta.svg?style=shield" />
     </a>
     <a href="https://codecov.io/gh/twilio/flex-plugin-builder">
         <img src="https://codecov.io/gh/twilio/flex-plugin-builder/branch/master/graph/badge.svg" title="Code Coverage" />
