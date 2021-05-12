@@ -12,7 +12,6 @@ jest.mock('../../clients/configurations');
 jest.mock('../../clients/environments');
 jest.mock('../../clients/builds');
 jest.mock('../../clients/deployments');
-jest.mock('../../clients/pluginsApi');
 jest.mock('../../prints/deploySuccessful');
 jest.mock('flex-dev-utils/dist/inquirer');
 jest.mock('flex-dev-utils/dist/fs');
