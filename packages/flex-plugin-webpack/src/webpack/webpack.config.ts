@@ -47,16 +47,23 @@ const EXTERNALS = {
  * @param reactDOMVersion the react-dom version
  */
 export const _getJSScripts = (flexUIVersion: string, reactVersion: string, reactDOMVersion: string): string[] => {
-  if (!semver.satisfies(flexUIVersion, '>=1.19.0')) {
+  const envSrc = env.getFlexUISrc();
+
+  if (!semver.satisfies(flexUIVersion, '>=1.19.0') && envSrc === undefined) {
     return [
       `<script src="https://assets.flex.twilio.com/releases/flex-ui/${flexUIVersion}/twilio-flex.min.js"></script>`,
     ];
   }
 
+  const flexUISrc =
+    envSrc === undefined
+      ? `https://assets.flex.twilio.com/releases/flex-ui/${flexUIVersion}/twilio-flex.unbundled-react.min.js`
+      : envSrc;
+
   return [
     `<script crossorigin src="https://unpkg.com/react@${reactVersion}/umd/react.development.js"></script>`,
     `<script crossorigin src="https://unpkg.com/react-dom@${reactDOMVersion}/umd/react-dom.development.js"></script>`,
-    `<script src="https://assets.flex.twilio.com/releases/flex-ui/${flexUIVersion}/twilio-flex.unbundled-react.min.js"></script>`,
+    `<script src=${flexUISrc}></script>`,
   ];
 };
 

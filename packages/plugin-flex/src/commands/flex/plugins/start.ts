@@ -2,7 +2,7 @@ import { flags } from '@oclif/command';
 import { findPortAvailablePort, StartScript } from 'flex-plugin-scripts/dist/scripts/start';
 import { FLAG_MULTI_PLUGINS } from 'flex-plugin-scripts/dist/scripts/pre-script-check';
 import semver from 'semver';
-import { TwilioCliError } from 'flex-dev-utils';
+import { TwilioCliError, env } from 'flex-dev-utils';
 import { readJsonFile } from 'flex-dev-utils/dist/fs';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
@@ -32,6 +32,9 @@ export default class FlexPluginsStart extends FlexPlugin {
     'include-remote': flags.boolean({
       description: FlexPluginsStart.topic.flags.includeRemote,
     }),
+    'flex-ui-source': flags.string({
+      hidden: true,
+    }),
   };
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
@@ -60,6 +63,10 @@ export default class FlexPluginsStart extends FlexPlugin {
 
     if (this._flags['include-remote']) {
       flexArgs.push('--include-remote');
+    }
+
+    if (this._flags['flex-ui-source']) {
+      env.setFlexUISrc(this._flags['flex-ui-source']);
     }
 
     // If running in a plugin directory, append it to the names

@@ -35,6 +35,8 @@ export const setHost = (host: string): string => (process.env.HOST = host);
 export const hasPort = (): boolean => isDefined(process.env.PORT);
 export const getPort = (): number => Number(process.env.PORT);
 export const setPort = (port: number): string => (process.env.PORT = String(port));
+export const getFlexUISrc = (): string | undefined => process.env.FLEX_UI_SRC;
+export const setFlexUISrc = (source: string): string => (process.env.FLEX_UI_SRC = source.toString());
 export const getNodeEnv = (): string => process.env.NODE_ENV as string;
 export const setNodeEnv = (_env: Environment): string => (process.env.NODE_ENV = _env);
 export const getBabelEnv = (): string => process.env.BABEL_ENV as string;
@@ -224,6 +226,8 @@ export default {
   hasPort,
   getPort,
   setPort,
+  getFlexUISrc,
+  setFlexUISrc,
   getNodeEnv,
   setNodeEnv,
   getBabelEnv,
