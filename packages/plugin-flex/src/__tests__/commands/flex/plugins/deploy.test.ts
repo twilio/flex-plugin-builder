@@ -77,6 +77,7 @@ describe('Commands/FlexPluginsDeploy', () => {
 
     const cmd = await createTest(FlexPluginsDeploy)('--changelog', defaultChangelog, ...args);
 
+    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'doRun').mockReturnThis();
@@ -232,7 +233,6 @@ describe('Commands/FlexPluginsDeploy', () => {
     const args = cmd.scriptArgs;
     expect(args[0]).toEqual('version');
     expect(args[1]).toEqual('0.0.1');
-    expect(args[2]).toEqual('--pilot-plugins-api');
   });
 
   it('should validate plugin as a minor bump', async () => {
@@ -251,7 +251,6 @@ describe('Commands/FlexPluginsDeploy', () => {
     const args = cmd.scriptArgs;
     expect(args[0]).toEqual('version');
     expect(args[1]).toEqual('2.1.0');
-    expect(args[2]).toEqual('--pilot-plugins-api');
   });
 
   it('should invalidate plugin because next version is smaller', async (done) => {

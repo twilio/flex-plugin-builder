@@ -147,6 +147,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "NReilingh",
+      "name": "Nick Reilingh",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2458645?v=4",
+      "profile": "http://nickreilingh.com/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "skipCi": true

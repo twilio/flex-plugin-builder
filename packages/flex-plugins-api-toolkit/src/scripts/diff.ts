@@ -1,10 +1,4 @@
-import {
-  ConfigurationsClient,
-  ConfiguredPluginsClient,
-  PluginsClient,
-  PluginVersionsClient,
-  ReleasesClient,
-} from 'flex-plugins-api-client';
+import { ConfigurationsClient, ConfiguredPluginsClient, ReleasesClient } from 'flex-plugins-api-client';
 import { TwilioError, TwilioApiError } from 'flex-plugins-utils-exception';
 
 import { Script } from '.';
@@ -27,25 +21,16 @@ export type DiffScript = Script<DiffOption, Diff>;
 
 /**
  * The .diff script. This script finds the diff between two resources
- * @param pluginClient        the Public API {@link PluginsClient}
- * @param pluginVersionClient the Public API {@link PluginVersionsClient}
  * @param configurationClient the Public API  {@link ConfigurationsClient}
  * @param configuredPluginClient the Public API {@link ConfiguredPluginsClient}
  * @param releasesClient the Public API {@link ReleasesClient}
  */
 export default function diff(
-  pluginClient: PluginsClient,
-  pluginVersionClient: PluginVersionsClient,
   configurationClient: ConfigurationsClient,
   configuredPluginClient: ConfiguredPluginsClient,
   releasesClient: ReleasesClient,
 ): DiffScript {
-  const describeConfiguration = internalDescribeConfiguration(
-    pluginClient,
-    pluginVersionClient,
-    configurationClient,
-    configuredPluginClient,
-  );
+  const describeConfiguration = internalDescribeConfiguration(configurationClient, configuredPluginClient);
 
   /**
    * Finds the diff of two configurations

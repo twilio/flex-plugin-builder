@@ -1,6 +1,6 @@
 {
   "name": "flex-plugins-api-client",
-  "version": "4.7.5-beta.0",
+  "version": "4.9.1-beta.0",
   "description": "Flex Plugins API Client",
   "keywords": [
     "flex",
@@ -35,15 +35,14 @@
     "clean": "rm -rf dist",
     "lint": "eslint --ext ts src/",
     "lint:fix": "npm run lint -- --fix",
-    "prepublish": "npm run build",
     "test": "cd ../.. && jest packages/flex-plugin-scripts --color",
     "test:watch": "cd ../.. && jest packages/flex-plugins-api-client --watch --color"
   },
   "dependencies": {
-    "flex-plugin-utils-http": "4.7.5-beta.0",
-    "flex-plugins-utils-env": "4.7.5-beta.0",
-    "flex-plugins-utils-exception": "4.7.5-beta.0",
-    "flex-plugins-utils-logger": "4.7.5-beta.0",
+    "flex-plugin-utils-http": "4.9.1-beta.0",
+    "flex-plugins-utils-env": "4.9.1-beta.0",
+    "flex-plugins-utils-exception": "4.9.1-beta.0",
+    "flex-plugins-utils-logger": "4.9.1-beta.0",
     "lodash.upperfirst": "^4.3.1",
     "url-join": "^4.0.1"
   },

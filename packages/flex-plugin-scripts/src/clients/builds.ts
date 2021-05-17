@@ -10,6 +10,7 @@ export interface BuildData {
   AssetVersions: string[];
   // eslint-disable-next-line @typescript-eslint/ban-types
   Dependencies: object;
+  Runtime?: string;
 }
 
 export default class BuildClient extends BaseClient {
@@ -35,6 +36,7 @@ export default class BuildClient extends BaseClient {
    */
   public create = async (data: BuildData): Promise<Build> => {
     return new Promise(async (resolve, reject) => {
+      data.Runtime = 'node12';
       const newBuild = await this._create(data);
       const { sid } = newBuild;
 

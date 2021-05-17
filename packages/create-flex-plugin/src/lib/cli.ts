@@ -39,7 +39,7 @@ export default class CLI {
     template: {
       alias: 't',
       type: 'string',
-      describe: 'A URL to a template directory',
+      describe: 'A GitHub URL that contains your template',
       default: '',
     },
     accountSid: {
@@ -52,7 +52,7 @@ export default class CLI {
       alias: 'r',
       type: 'boolean',
       default: false,
-      describe: 'Auto-install dependencies',
+      describe: 'The URL to your Twilio Flex Runtime',
     },
     install: {
       alias: 'i',

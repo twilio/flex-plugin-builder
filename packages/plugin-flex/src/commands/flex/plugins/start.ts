@@ -1,8 +1,7 @@
 import { flags } from '@oclif/command';
 import { findPortAvailablePort, StartScript } from 'flex-plugin-scripts/dist/scripts/start';
 import { FLAG_MULTI_PLUGINS } from 'flex-plugin-scripts/dist/scripts/pre-script-check';
-import semver from 'semver';
-import { TwilioCliError, env } from 'flex-dev-utils';
+import { TwilioCliError, semver, env } from 'flex-dev-utils';
 import { readJsonFile } from 'flex-dev-utils/dist/fs';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 

@@ -26,6 +26,7 @@ module.exports = (pkg, options) => {
       '!<rootDir>/src/**/prints/**/*.ts',
     ],
     setupFiles: ['<rootDir>/../../jest.setup.js'],
+    setupFilesAfterEnv: ['<rootDir>/../flex-plugin-utils-jest'],
     preset: 'ts-jest',
     testEnvironment: 'jsdom',
     testMatch: ['<rootDir>/src/**/*.test.ts'],
@@ -34,6 +35,11 @@ module.exports = (pkg, options) => {
     },
     testPathIgnorePatterns: ['/node_modules/', '<rootDir>/packages/flex-plugin-e2e-tests'],
     coveragePathIgnorePatterns: ['/node_modules/'],
+    globals: {
+      'ts-jest': {
+        tsconfig: 'tsconfig.test.json',
+      },
+    },
     ...defaultOptions,
     ...options,
   };

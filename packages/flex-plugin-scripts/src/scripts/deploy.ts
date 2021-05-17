@@ -7,19 +7,19 @@ import {
   Credential,
   getCredential,
   env,
+  ReleaseType,
 } from 'flex-dev-utils';
-import { ReleaseType } from 'flex-dev-utils/dist/semver';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { checkFilesExist, updateAppVersion, getPackageVersion, getPaths } from 'flex-dev-utils/dist/fs';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
 
 import AccountsClient from '../clients/accounts';
 import { setEnvironment } from '..';
-import { deploySuccessful, pluginsApiWarning } from '../prints';
+import { deploySuccessful } from '../prints';
 import { UIDependencies } from '../clients/configuration-types';
 import run from '../utils/run';
 import { Build, Runtime, Version } from '../clients/serverless-types';
-import { AssetClient, BuildClient, DeploymentClient, ConfigurationClient, PluginsApiClient } from '../clients';
+import { AssetClient, BuildClient, DeploymentClient, ConfigurationClient } from '../clients';
 import getRuntime from '../utils/runtime';
 
 const allowedBumps = ['major', 'minor', 'patch', 'version'];
@@ -28,7 +28,6 @@ export interface Options {
   isPublic: boolean;
   overwrite: boolean;
   disallowVersioning: boolean;
-  isPluginsPilot: boolean;
 }
 
 export interface DeployResult {
@@ -155,18 +154,6 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
   const sourceMapUri = `${pluginBaseUrl}/bundle.js.map`;
 
   const credentials = await getCredential();
-  if (options.isPluginsPilot) {
-    const pluginsApiClient = new PluginsApiClient(credentials);
-    const hasFlag = await pluginsApiClient.hasFlag();
-    if (!hasFlag) {
-      throw new FlexPluginError(
-        'This command is currently in Preview and is restricted to users while we work on improving it. If you would like to participate, please contact flex@twilio.com to learn more.',
-      );
-    }
-
-    pluginsApiWarning();
-  }
-
   logger.info('Uploading your Flex plugin to Twilio Assets\n');
 
   const runtime = await getRuntime(credentials);
@@ -285,7 +272,6 @@ const deploy = async (...argv: string[]): Promise<DeployResult> => {
   const opts: Options = {
     isPublic: argv.includes('--public'),
     overwrite: argv.includes('--overwrite') || disallowVersioning,
-    isPluginsPilot: argv.includes('--pilot-plugins-api'),
     disallowVersioning,
   };
 

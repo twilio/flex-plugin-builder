@@ -2,7 +2,6 @@
 import { join } from 'path';
 
 import rimraf from 'rimraf';
-import semver from 'semver';
 import {
   checkAFileExists,
   readFileSync,
@@ -14,7 +13,7 @@ import {
 } from 'flex-dev-utils/dist/fs';
 import packageJson from 'package-json';
 import { flags } from '@oclif/parser';
-import { TwilioApiError, TwilioCliError, spawn, progress } from 'flex-dev-utils';
+import { TwilioApiError, TwilioCliError, spawn, progress, semver } from 'flex-dev-utils';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import FlexPlugin, { ConfigData, PkgCallback, SecureStorage } from '../../../sub-commands/flex-plugin';
@@ -120,7 +119,8 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
 
     await this.prints.upgradeNotification(this._flags.yes);
 
-    switch (this.pkgVersion) {
+    const currentPkgVersion = this.pkgVersion;
+    switch (currentPkgVersion) {
       case 1:
         await this.upgradeFromV1();
         break;
@@ -135,7 +135,12 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         break;
     }
 
-    await this.cleanupNodeModules();
+    const pkgJson = await this.getLatestVersionOfDep('flex-plugin-scripts', this._flags.beta);
+    const latestVersion = pkgJson ? semver.coerce(pkgJson.version as string)?.major : 0;
+    if (currentPkgVersion !== latestVersion) {
+      await this.cleanupNodeModules();
+    }
+
     await this.npmInstall();
 
     this.prints.scriptSucceeded(!this._flags.install);
@@ -321,9 +326,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
             }
 
             // Now find the latest
-            const option =
-              FlexPluginsUpgradePlugin.pluginBuilderScripts.includes(dep) && beta ? { version: 'beta' } : {};
-            const scriptPkg = await packageJson(dep, option);
+            const scriptPkg = await this.getLatestVersionOfDep(dep, beta);
             if (!scriptPkg) {
               this.prints.packageNotFound(dep);
               this.exit(1);
@@ -457,6 +460,16 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         'react-test-renderer': 'react || 16.5.2',
       },
     };
+  }
+
+  /**
+   * Returns the latest version of a package
+   * @param dep the package to check
+   * @param isBeta  whether to check beta tag
+   */
+  async getLatestVersionOfDep(dep: string, isBeta: boolean): Promise<packageJson.AbbreviatedMetadata> {
+    const option = FlexPluginsUpgradePlugin.pluginBuilderScripts.includes(dep) && isBeta ? { version: 'beta' } : {};
+    return packageJson(dep, option);
   }
 
   /**
