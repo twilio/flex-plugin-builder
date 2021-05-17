@@ -1,5 +1,4 @@
-import { progress } from 'flex-dev-utils';
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { progress, Credential } from 'flex-dev-utils';
 
 import { BuildClient, ConfigurationClient, EnvironmentClient, ServiceClient } from '../clients';
 import { Runtime } from '../clients/serverless-types';
@@ -9,16 +8,14 @@ import { Runtime } from '../clients/serverless-types';
  *
  * @return a Promise of {@link Runtime}
  */
-const getRuntime = async (credentials: AuthConfig, serviceOnly = false): Promise<Runtime> => {
+const getRuntime = async (credentials: Credential, serviceOnly = false): Promise<Runtime> => {
   // Fetch the runtime service instance
-  return await progress<Runtime>('Fetching Twilio Runtime service', async () => {
+  return progress('Fetching Twilio Runtime service', async () => {
     const serverlessClient = new ServiceClient(credentials);
     const configurationClient = new ConfigurationClient(credentials);
 
     const serviceSid = (await configurationClient.getServiceSids())[0];
-    const service = serviceSid
-      ? await serverlessClient.get(serviceSid)
-      : await serverlessClient.getDefault();
+    const service = serviceSid ? await serverlessClient.get(serviceSid) : await serverlessClient.getDefault();
 
     if (serviceOnly) {
       return { service };

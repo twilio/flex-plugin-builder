@@ -9,9 +9,7 @@ describe('flex', () => {
   const Twilio = {
     Flex: {
       runDefault: jest.fn().mockImplementation(() => {
-        return runDefaultMockedFailResponse
-          ? Promise.reject()
-          : Promise.resolve();
+        return runDefaultMockedFailResponse ? Promise.reject() : Promise.resolve();
       }),
     },
   };
@@ -41,12 +39,9 @@ describe('flex', () => {
 
     loadFlex();
 
-    // tslint:disable-next-line
+    // eslint-disable-next-line no-console
     expect(console.error).not.toHaveBeenCalled();
-    expect(Twilio.Flex.runDefault).toHaveBeenCalledWith(
-      mockAppConfig,
-      undefined,
-    );
+    expect(Twilio.Flex.runDefault).toHaveBeenCalledWith(mockAppConfig, undefined);
   });
 
   it('should render Twilio Flex inside a custom DOM element', () => {
@@ -61,9 +56,6 @@ describe('flex', () => {
 
     loadFlex(targetEl);
 
-    expect(Twilio.Flex.runDefault).toHaveBeenCalledWith(
-      mockAppConfig,
-      targetEl,
-    );
+    expect(Twilio.Flex.runDefault).toHaveBeenCalledWith(mockAppConfig, targetEl);
   });
 });

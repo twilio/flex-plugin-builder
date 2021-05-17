@@ -17,7 +17,6 @@ A clear and concise description of what the bug is.
 | ----------------------------| ------- |
 | `create-flex-plugin`        | `X.Y.Z` |
 | `flex-plugin`               | `X.Y.Z` |
-| `craco-config-flex-plugin`  | `X.Y.Z` |
 | `node`                      | `X.Y.Z` |
 | `npm`                       | `X.Y.Z` |
 

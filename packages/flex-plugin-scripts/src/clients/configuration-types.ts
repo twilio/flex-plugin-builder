@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 export interface UIDependencies {
   react?: string;
   'react-dom'?: string;

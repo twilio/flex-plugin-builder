@@ -1,0 +1,53 @@
+{
+  "name": "flex-plugins-api-client",
+  "version": "4.9.1-beta.0",
+  "description": "Flex Plugins API Client",
+  "keywords": [
+    "flex",
+    "flex plugins",
+    "flex plugins api",
+    "flex plugins api client",
+    "flex plugins client",
+    "plugins"
+  ],
+  "homepage": "https://github.com/twilio/flex-plugin-builder",
+  "bugs": {
+    "url": "https://github.com/twilio/flex-plugin-builder/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio/flex-plugin-builder.git"
+  },
+  "license": "MIT",
+  "author": "Flex Runtime <flex-runtime@twilio.com>",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "directories": {
+    "lib": "src",
+    "test": "__tests__"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "cd ../.. && tsc -p \"packages/flex-plugins-api-client/tsconfig.json\"",
+    "clean": "rm -rf dist",
+    "lint": "eslint --ext ts src/",
+    "lint:fix": "npm run lint -- --fix",
+    "test": "cd ../.. && jest packages/flex-plugin-scripts --color",
+    "test:watch": "cd ../.. && jest packages/flex-plugins-api-client --watch --color"
+  },
+  "dependencies": {
+    "flex-plugin-utils-http": "4.9.1-beta.0",
+    "flex-plugins-utils-env": "4.9.1-beta.0",
+    "flex-plugins-utils-exception": "4.9.1-beta.0",
+    "flex-plugins-utils-logger": "4.9.1-beta.0",
+    "lodash.upperfirst": "^4.3.1",
+    "url-join": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/lodash.upperfirst": "^4.3.6",
+    "@types/url-join": "^4.0.0"
+  }
+}

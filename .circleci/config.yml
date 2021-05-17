@@ -1,0 +1,210 @@
+version: 2.1
+
+parameters:
+  run_e2e_test:
+    default: false
+    type: boolean
+  run_pr_validator:
+    default: true
+    type: boolean
+  run_npm_publish:
+    default: false
+    type: boolean
+  dist_tag:
+    default: 'alpha'
+    type: string
+  version_bump:
+    default: 'patch'
+    type: string
+  package_version:
+    default: ''
+    type: string
+
+executors:
+  node:
+    parameters:
+      tag:
+        type: string
+    docker:
+      - image: cimg/node:<< parameters.tag >>
+
+orbs:
+  win: circleci/windows@2.2.0
+
+commands:
+  cmd_install-dependencies:
+    steps:
+      - run:
+          name: "Install project dependencies"
+          command: npm i
+  cmd_install-prerequisites:
+    steps:
+      - run:
+          name: "Apt-get update"
+          command: sudo apt-get update
+      - run:
+          name: "Install libraries"
+          command: sudo apt-get install -y libsecret-1-dev
+  cmd_run-unit-tests:
+    steps:
+      - run:
+          name: "Run unit tests"
+          command: npm run test:ci
+  cmd_run-linter:
+    steps:
+      - run:
+          name: "Run linter"
+          command: npm run lint
+  cmd_run-build:
+    steps:
+      - run:
+          name: "Build packages"
+          command: npm run build
+  cmd_run-e2e-tests:
+    steps:
+      - run:
+          name: "Run e2e tests"
+          command: cd packages/flex-plugin-e2e-tests && npm start
+  cmd_codecov:
+    steps:
+      - run:
+          name: "Codecov report"
+          command: npm run coverage -- --token=$CODECOV_TOKEN
+  cmd_setup_npm:
+    steps:
+      - run:
+          name: "Setting up npm"
+          command: |
+            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+            git config --global user.email $GITHUB_EMAIL
+            git config --global user.name $GITHUB_USER
+  cmd_run-publish:
+    parameters:
+      dist_tag:
+        type: string
+      version_bump:
+        type: string
+    steps:
+      - run:
+          name: "Publishing package"
+          command: |
+            npm run publish:<< parameters.dist_tag >> << parameters.version_bump >>
+
+jobs:
+  job_e2e-test:
+    resource_class: xlarge
+    parameters:
+      package_version:
+        type: string
+    environment:
+      PACKAGE_VERSION: << parameters.package_version >>
+      NODE_VERSION: "lts"
+    executor:
+      name: node
+      tag: "lts"
+    steps:
+      - checkout
+      - cmd_install-prerequisites
+      - cmd_install-dependencies
+      - cmd_run-build
+      - cmd_run-e2e-tests
+
+  job_npm-publish:
+    resource_class: xlarge
+    parameters:
+      dist_tag:
+        type: string
+      version_bump:
+        type: string
+    environment:
+      NODE_OPTIONS: --max-old-space-size=14336
+      CI: ""
+    executor:
+      name: node
+      tag: "lts"
+    steps:
+      - checkout
+      - cmd_install-prerequisites
+      - cmd_install-dependencies
+      - cmd_run-build
+      - cmd_setup_npm
+      - cmd_run-publish:
+          dist_tag: << parameters.dist_tag >>
+          version_bump: << parameters.version_bump >>
+
+  job_pr-validator-win32:
+    environment:
+      NODE_OPTIONS: --max-old-space-size=14336
+      CI: ""
+    parameters:
+      shell:
+        type: string
+    executor:
+      name: win/default
+      shell: << parameters.shell >>
+      size: xlarge
+    steps:
+      - checkout
+      - cmd_install-dependencies
+      - cmd_run-build
+      - cmd_run-unit-tests
+
+  job_pr-validator-node:
+    resource_class: xlarge
+    environment:
+      NODE_OPTIONS: --max-old-space-size=14336
+      CI: ""
+    parameters:
+      node-version:
+        type: string
+    executor:
+      name: node
+      tag: << parameters.node-version >>
+    steps:
+      - checkout
+      - cmd_install-prerequisites
+      - cmd_install-dependencies
+      - cmd_run-linter
+      - cmd_run-unit-tests
+      - cmd_run-build
+      - when:
+          condition:
+            equal: [<< parameters.node-version >>, lts]
+          steps:
+            - cmd_codecov
+
+workflows:
+  workflow_e2e-tester:
+    when: << pipeline.parameters.run_e2e_test >>
+    jobs:
+      - job_e2e-test:
+          matrix:
+            parameters:
+              package_version: [ << pipeline.parameters.package_version >> ]
+
+  workflow_publisher:
+    when: << pipeline.parameters.run_npm_publish >>
+    jobs:
+      - job_npm-publish:
+          matrix:
+            parameters:
+              dist_tag: [ << pipeline.parameters.dist_tag >> ]
+              version_bump: [ << pipeline.parameters.version_bump >> ]
+
+  workflow_pr-validator:
+    when: << pipeline.parameters.run_pr_validator >>
+    jobs:
+      - job_pr-validator-win32:
+          matrix:
+            parameters:
+                shell: [ "bash.exe" ]
+      - job_pr-validator-node:
+          matrix:
+            parameters:
+              node-version: ["10.24", "12.21", "14.16", lts]
+          post-steps:
+            - run:
+                name: Send Slack notification
+                command: |
+                         curl -X POST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - $CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}*. View <$CIRCLE_BUILD_URL|build>. cc: <@$CIRCLE_USERNAME>', 'mrkdwn':true}" $SLACK_WEBHOOK
+                when: on_fail

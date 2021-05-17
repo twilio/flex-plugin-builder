@@ -7,15 +7,15 @@ import shortid from './shortid';
  * @return {void}
  */
 export const loadCSS = (...hrefArray: string[]): void => {
-    hrefArray.forEach((href: string) => {
-        const link  = document.createElement('link');
+  hrefArray.forEach((href: string) => {
+    const link = document.createElement('link');
 
-        link.id   = `external-css-${shortid()}`;
-        link.rel  = 'stylesheet';
-        link.type = 'text/css';
-        link.media = 'all';
-        link.href = href;
+    link.id = `external-css-${shortid()}`;
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.media = 'all';
+    link.href = href;
 
-        document.head.appendChild(link);
-    });
+    document.head.appendChild(link);
+  });
 };

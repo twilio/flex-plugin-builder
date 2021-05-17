@@ -1,3 +1,20 @@
+/* eslint-disable camelcase, import/no-unused-modules */
+export enum FileVisibility {
+  Public = 'Public',
+  Protected = 'Protected',
+}
+
+export enum Visibility {
+  Public = 'public',
+  Protected = 'protected',
+}
+
+export enum BuildStatus {
+  Building = 'building',
+  Completed = 'completed',
+  Failed = 'failed',
+}
+
 export interface Meta<Key> {
   page: number;
   page_size: number;
@@ -77,6 +94,7 @@ export interface Build extends ServerlessEntity {
   status: BuildStatus;
   asset_versions: AssetVersion[];
   function_versions: FunctionVersion[];
+  // eslint-disable-next-line @typescript-eslint/ban-types
   dependencies: object;
   service_sid: string;
 }
@@ -91,20 +109,4 @@ export interface Runtime {
   service: Service;
   environment?: Environment;
   build?: Build;
-}
-
-export enum FileVisibility {
-  Public = 'Public',
-  Protected = 'Protected',
-}
-
-export enum Visibility {
-  Public = 'public',
-  Protected = 'protected',
-}
-
-export enum BuildStatus {
-  Building = 'building',
-  Completed = 'completed',
-  Failed = 'failed',
 }

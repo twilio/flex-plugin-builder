@@ -1,65 +1,93 @@
 #!/bin/bash
 
-## Publish Script
-## Cleans up the node_modules, re-installs everything, runs test before publishing
-## By default, it will attempt to publish as next-gen, unless 'public' is provided
-## i.e.
-##    ./bin/publish public      publishes as a bump
-##    ./bin/publish             publishes as next-gen
+set -e
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-LERNA="$DIR/../node_modules/.bin/lerna"
-
-# Runs script but quits if script exists with non-zero exit code
-function run_script() {
-  eval "$@"
-  if [ $? -eq 1 ] ; then
-    echo "Script '$@' failed - exiting"
-    exit $?
-  fi
+function getJsonValue() {
+  KEY=$1
+  num=$2
+  awk -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/'"${KEY}"'\042/){print $(i+1)}}}' | tr -d '"' | sed -n "${num}"p
 }
 
-# Show notification and a countdown before publihsing 
-secs=5
-while [ $secs -gt 0 ]; do
-  tag="beta (next)"
-  if [ "$1" == "public" ] ; then 
-    tag="public" 
-  fi
-  echo -ne "Publishing as a \033[1m${tag}\033[0m release in ${secs}sec\033[0K\r"
-  sleep 1
-  : $((secs--))
-done
-echo -ne "Publishing as a \033[1m${tag}\033[0m release\033[0K\r"
-echo -ne "\r\n"
+tag="${1}"
+bump="${2}"
+branch="${CIRCLE_BRANCH}"
+currentVersion=$(cat ./lerna.json | getJsonValue 'version' |  cut -f1 -d"-")
+semver=( ${currentVersion//./ } )
+major="${semver[0]}"
+minor="${semver[1]}"
+patch=$((semver[2] + 1))
+id=$(date '+%Y%m%d')
 
-# Cleanup
-run_script $LERNA clean -y
-run_script $LERNA run clean
-run_script rm -rf node_modules
+# Verify arguments
+if [ -z "${tag}" ] ; then
+  echo "tag cannot be empty"
+  exit 1
+fi
+if [ "${tag}" != "beta" ] && [ "${tag}" != "alpha" ] && [ "${tag}" != "public" ] && [ "${tag}" != "dev" ] && [ "${tag}" != "nightly" ] ; then
+  echo "tag must be one of beta, alpha, public, dev, nightly"
+  exit 1
+fi
+if [ -z "${bump}" ] ; then
+  bump="patch";
+fi
+if [ "${bump}" != "patch" ] && [ "${bump}" != "minor" ] && [ "${bump}" != "major" ] ; then
+  echo "bump must be one of patch, minor, major"
+  exit 1
+fi
 
-# Install
-run_script npm install --no-package-lock
+# Verify tag and branch
+if [ "${tag}" == "public" ] && [ "${branch}" != "main" ] ; then
+  echo "Public release must be done on the main branch"
+  exit 1
+fi
+if [ "${tag}" == "beta" ] && [[ ! "${branch}" =~ ^v.-beta$ ]] ; then
+  echo "Beta release must be done on the v*-beta branch"
+  exit 1
+fi
 
-# Lint and test
-run_script npm run lint
-run_script npm run test
+# Update bump level
+if [ "${tag}" != "public" ] ; then
+  bump="pre${bump}"
+fi
 
-# Build
-run_script npm run build
+# Nightly/dev get a timestamp in their version
+if [ "${tag}" == "nightly" ] || [ "${tag}" == "dev" ] ; then
+  bump="${major}.${minor}.${patch}-${tag}.${id}"
+fi
 
-# Remove package-lock file
-find . -type f -regex "\.\/packages\/[a-zA-z-]*\/package-lock\.json" -delete -o -regex "\.\/package-lock.json" -delete
+# Run unit-tests one more time
+npm run test
+npm run build
 
-# Publish
-if [ "$1" == "public" ] ; then
-  echo -e "\n------------------------------------"
-  echo "-- Publishing as a public release --"
-  echo -e "------------------------------------\n"
-  run_script $LERNA publish
+# Publishing
+echo -e "\n------------------------------------"
+echo -e "-- Publishing as \033[1m${tag}\033[0m :: \033[1m${bump}\033[0m release --"
+echo -e "-- Publishing as \033[1m${tag}\033[0m :: \033[1m${bump}\033[0m release --"
+echo -e "------------------------------------\n"
+
+if [ "${tag}" == "public" ] ; then
+  ./node_modules/.bin/lerna publish \
+    --force-publish="*" \
+    --exact \
+    --yes \
+    "${bump}"
+elif [ "${tag}" == "beta" ] || [ "${tag}" == "alpha" ] ; then
+  ./node_modules/.bin/lerna publish \
+    --force-publish="*" \
+    --pre-dist-tag "${tag}" \
+    --dist-tag "${tag}" \
+    --exact \
+    --yes \
+    "${bump}"
 else
-  echo -e "\n-----------------------------------------"
-  echo "-- Publishing as a beta (next) release --"
-  echo -e "-----------------------------------------\n"
-  run_script $LERNA publish --dist-tag next
+  ./node_modules/.bin/lerna publish \
+    --force-publish="*" \
+    --pre-dist-tag "${tag}" \
+    --dist-tag "${tag}" \
+    --exact \
+    --yes \
+    --skip-git \
+    --no-git-tag-version \
+    --no-push \
+    "${bump}"
 fi

@@ -1,25 +1,34 @@
-import index from '../index';
 import { logger } from 'flex-dev-utils';
-import * as run from '../utils/run';
+import * as fsScripts from 'flex-dev-utils/dist/fs';
 import { render as markedRender } from 'flex-dev-utils/dist/marked';
+import * as exit from 'flex-dev-utils/dist/exit';
+
+import index from '..';
 
 jest.mock('flex-dev-utils/dist/spawn');
 jest.mock('flex-dev-utils/dist/logger');
 jest.mock('flex-dev-utils/dist/marked');
 
-// tslint:disable
-const spawn = require('flex-dev-utils').spawn;
-// tslint:enable
+/* eslint-disable */
+const { spawn } = require('flex-dev-utils');
+/* eslint-enable */
 
 describe('index', () => {
-  // @ts-ignore
-  const exit = jest.spyOn(process, 'exit').mockImplementation(() => { /* no-op */ });
+  const disallowVersioningFlag = '--disallow-versioning';
+  const runFlag = '--run-script';
+  const runExit = jest.spyOn(exit, 'default').mockReturnValue();
+
   // @ts-ignore
   logger.colors.blue = jest.fn();
+  const pluginName = 'plugin-test';
 
   beforeEach(() => {
     jest.resetAllMocks();
     jest.resetModules();
+
+    // @ts-ignore
+    jest.spyOn(fsScripts, 'getPaths').mockReturnValue({ app: { name: pluginName } });
+    jest.spyOn(fsScripts, 'getCwd').mockReturnValue(`/home/user/plugins/${pluginName}`);
 
     delete require.cache[require.resolve('../index')];
   });
@@ -32,8 +41,8 @@ describe('index', () => {
     await index();
 
     expect(spawn).not.toHaveBeenCalled();
-    expect(exit).toHaveBeenCalledTimes(1);
-    expect(exit).toHaveBeenCalledWith(1);
+    expect(runExit).toHaveBeenCalledTimes(1);
+    expect(runExit).toHaveBeenCalledWith(1);
     expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Unknown script'));
   });
 
@@ -42,13 +51,10 @@ describe('index', () => {
 
     await index('build');
 
-    expect(exit).toHaveBeenCalledTimes(1);
-    expect(exit).toHaveBeenCalledWith(0);
+    expect(runExit).toHaveBeenCalledTimes(1);
+    expect(runExit).toHaveBeenCalledWith(0, ['build']);
     expect(spawn).toHaveBeenCalledTimes(1);
-    assertSpawn([
-      expect.stringContaining('build'),
-      expect.anything(),
-    ]);
+    assertSpawn([expect.stringContaining('build'), disallowVersioningFlag, '--name', pluginName, runFlag]);
   });
 
   it('should run main script and pass other args', async () => {
@@ -56,28 +62,10 @@ describe('index', () => {
 
     await index('build', 'foo');
 
-    expect(exit).toHaveBeenCalledTimes(1);
-    expect(exit).toHaveBeenCalledWith(0);
+    expect(runExit).toHaveBeenCalledTimes(1);
+    expect(runExit).toHaveBeenCalledWith(0, ['build', 'foo']);
     expect(spawn).toHaveBeenCalledTimes(1);
-    assertSpawn([
-      expect.stringContaining('build'),
-      'foo',
-      expect.anything(),
-    ]);
-  });
-
-  it('should set no-versioning', async () => {
-    spawn.mockResolvedValue({ exitCode: 0 });
-
-    await index('build');
-
-    expect(exit).toHaveBeenCalledTimes(1);
-    expect(exit).toHaveBeenCalledWith(0);
-    expect(spawn).toHaveBeenCalledTimes(1);
-    assertSpawn([
-      expect.anything(),
-      '--disallow-versioning',
-    ]);
+    assertSpawn([expect.stringContaining('build'), 'foo', disallowVersioningFlag, '--name', pluginName, runFlag]);
   });
 
   it('should render doc', async () => {
@@ -85,15 +73,14 @@ describe('index', () => {
 
     await index('build', '--help');
 
-    expect(exit).toHaveBeenCalledTimes(1);
-    expect(exit).toHaveBeenCalledWith(0);
+    expect(runExit).toHaveBeenCalledTimes(1);
+    expect(runExit).toHaveBeenCalledWith(0);
     expect(spawn).not.toHaveBeenCalled();
     expect(markedRender).toHaveBeenCalledTimes(1);
   });
 
   it('should call exit', async () => {
     spawn.mockResolvedValue({ exitCode: 0 });
-    const runExit = jest.spyOn(run, 'exit').mockReturnValue();
 
     await index('build');
     expect(runExit).toHaveBeenCalledTimes(1);

@@ -1,13 +1,13 @@
-import { logger, FlexPluginError } from 'flex-dev-utils';
+import { logger, FlexPluginError, exit } from 'flex-dev-utils';
 import { getCredential } from 'flex-dev-utils/dist/credentials';
+import { getPaths } from 'flex-dev-utils/dist/fs';
 
 import run from '../utils/run';
 import { Visibility } from '../clients/serverless-types';
 import pluginVersions from '../prints/pluginVersions';
-import paths from '../utils/paths';
 import getRuntime from '../utils/runtime';
 
-const PLUGIN_REGEX_STR = '^\/plugins\/%PLUGIN_NAME%\/.*\/bundle\.js$';
+const PLUGIN_REGEX_STR = '^/plugins/%PLUGIN_NAME%/.*/bundle.js$';
 
 export type Order = 'desc' | 'asc';
 
@@ -18,24 +18,23 @@ export type Order = 'desc' | 'asc';
  * @param order         the order of versions. This can be desc or asc
  * @private
  */
-export const _doList = async (visibilities: Visibility[], order: Order = 'asc') => {
-  logger.info('Fetching all available versions of plugin %s', paths.packageName);
+export const _doList = async (visibilities: Visibility[], order: Order = 'asc'): Promise<void> => {
+  logger.info('Fetching all available versions of plugin %s', getPaths().app.name);
 
   const credentials = await getCredential();
   const runtime = await getRuntime(credentials);
-  const regex = new RegExp(PLUGIN_REGEX_STR.replace('%PLUGIN_NAME%', paths.packageName));
+  const regex = new RegExp(PLUGIN_REGEX_STR.replace('%PLUGIN_NAME%', getPaths().app.name));
 
-  const assets = runtime.build && runtime.build.asset_versions || [];
-  const versions = assets
-    .filter((a) => regex.test(a.path))
-    .filter((a) => visibilities.includes(a.visibility));
+  const assets = (runtime.build && runtime.build.asset_versions) || [];
+  const versions = assets.filter((a) => regex.test(a.path)).filter((a) => visibilities.includes(a.visibility));
 
   if (versions.length === 0) {
     logger.newline();
-    logger.info('No versions of plugin %s have been deployed', paths.packageName);
+    logger.info('No versions of plugin %s have been deployed', getPaths().app.name);
     logger.newline();
 
-    return process.exit(0);
+    exit(0);
+    return;
   }
   if (!runtime.environment) {
     throw new FlexPluginError('No Runtime environment was found');
@@ -49,7 +48,9 @@ export const _doList = async (visibilities: Visibility[], order: Order = 'asc') 
  *
  * @param argv
  */
-const list = async (...argv: string[]) => {
+const list = async (...argv: string[]): Promise<void> => {
+  logger.debug('Listing plugin versions');
+
   const publicOnly = argv.includes('--public-only');
   const privateOnly = argv.includes('--private-only');
   const order = argv.includes('--desc') ? 'desc' : 'asc';
@@ -71,6 +72,8 @@ const list = async (...argv: string[]) => {
   await _doList(visibilities, order);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(list);
 
+// eslint-disable-next-line import/no-unused-modules
 export default list;

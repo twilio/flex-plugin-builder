@@ -66,11 +66,6 @@ lerna-debug.log
 dist/
 plugin-test/
 **/node_modules
-.ultra.cache.json
-
-# Package Locks
-package-lock.json
-
 .idea
-
 .lerna_backup
+.ultra.cache.json

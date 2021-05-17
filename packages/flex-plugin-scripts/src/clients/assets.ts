@@ -1,8 +1,9 @@
-import { AuthConfig } from 'flex-dev-utils/dist/credentials';
+import { Credential } from 'flex-dev-utils';
+
 import FileClient from './files';
 
 export default class AssetClient extends FileClient {
-  constructor(auth: AuthConfig, serviceSid: string) {
+  constructor(auth: Credential, serviceSid: string) {
     super(auth, 'Assets', serviceSid);
   }
 }

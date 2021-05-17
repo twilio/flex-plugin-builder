@@ -35,8 +35,7 @@ describe('sids', () => {
         ['ZX00000000000000000000000000abcdef', 'ZX'],
       ];
 
-      sids.map((data) => isSidOfType(data[0], data[1]))
-        .forEach((resp) => expect(resp).toBeTruthy());
+      sids.map((data) => isSidOfType(data[0], data[1])).forEach((resp) => expect(resp).toBeTruthy());
     });
 
     it('should test false', () => {
@@ -46,8 +45,7 @@ describe('sids', () => {
         [null, 'AB'],
       ];
 
-      sids.map((data) => isSidOfType(data[0], data[1]))
-        .forEach((resp) => expect(resp).toBeFalsy());
+      sids.map((data) => isSidOfType(data[0], data[1])).forEach((resp) => expect(resp).toBeFalsy());
     });
   });
 });

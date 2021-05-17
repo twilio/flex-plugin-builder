@@ -2,6 +2,8 @@ import FlexPluginError from '../../errors/FlexPluginError';
 import UserActionError from '../../errors/UserActionError';
 
 describe('UserActionError', () => {
+  const errMsg = 'the-reason';
+
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -11,16 +13,16 @@ describe('UserActionError', () => {
   });
 
   it('should pass reason to message', () => {
-    const err = new UserActionError('the-reason');
+    const err = new UserActionError(errMsg);
 
-    expect(err.reason).toEqual('the-reason');
-    expect(err.message).toEqual('the-reason');
+    expect(err.reason).toEqual(errMsg);
+    expect(err.message).toEqual(errMsg);
   });
 
   it('should set reason and message', () => {
-    const err = new UserActionError('the-reason', 'the-message');
+    const err = new UserActionError(errMsg, 'the-message');
 
-    expect(err.reason).toEqual('the-reason');
+    expect(err.reason).toEqual(errMsg);
     expect(err.message).toEqual('the-message');
   });
 });

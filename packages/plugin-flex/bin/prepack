@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -e
+
+node_modules/.bin/oclif-dev manifest
+npm run replace-doc

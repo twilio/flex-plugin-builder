@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-    <a href="https://travis-ci.com/twilio/flex-plugin-builder">
-        <img src="https://travis-ci.com/twilio/flex-plugin-builder.svg?branch=master" title="Build Status" />
+    <a href="https://app.circleci.com/pipelines/github/twilio/flex-plugin-builder?branch=v4-beta" >
+        <img src="https://circleci.com/gh/twilio/flex-plugin-builder/tree/v4-beta.svg?style=shield" />
     </a>
     <a href="https://codecov.io/gh/twilio/flex-plugin-builder">
         <img src="https://codecov.io/gh/twilio/flex-plugin-builder/branch/master/graph/badge.svg" title="Code Coverage" />
@@ -25,18 +25,17 @@
 
 ## Getting Started
 
-This is a monorepo project managed by [lerna](https://github.com/lerna/lerna) for creating Twilio Flex plugins.
+Flex Plugin Builder requires [Node.js](https://nodejs.org/). We support Node >= 10.12 (and recommend the _even_ versions of Node). This is a monorepo project managed by [lerna](https://github.com/lerna/lerna) for creating Twilio Flex plugins.
 
 - [create-flex-plugin](packages/create-flex-plugin): The CLI tool to start a new Flex plugin project
 - [flex-plugin](packages/flex-plugin): Runtime dependency for Flex plugins
 - [flex-plugin-scripts](packages/flex-plugin-scripts): The scripts used for building, testing, and deploying your plugin
-- [craco-config-flex-plugin](packages/craco-config-flex-plugin): Config override for [Create React App](https://github.com/facebook/create-react-app) using [craco](https://github.com/sharegate/craco)
 
 ## User Guide
 
 * [Creating a new plugin](packages/create-flex-plugin/README.md)
-* [Overriding configuration](packages/craco-config-flex-plugin/README.md)
 * [Available Scripts](packages/flex-plugin-scripts/README.md)
+* [Troubleshooting and FAQ](faq.md)
 
 ## Changelog
 

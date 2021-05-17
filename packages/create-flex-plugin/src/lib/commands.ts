@@ -1,12 +1,11 @@
-import { findUp } from 'flex-dev-utils/dist/fs';
+import { findUp, resolveCwd } from 'flex-dev-utils/dist/fs';
 import { spawn } from 'flex-dev-utils';
 import { camelCase, upperFirst } from 'flex-dev-utils/dist/lodash';
-import { join } from 'path';
 
 import * as github from '../utils/github';
 import { FlexPluginArguments } from './create-flex-plugin';
 
-// tslint:disable-next-line
+// eslint-disable-next-line @typescript-eslint/no-var-requires, global-require, @typescript-eslint/no-require-imports
 const pkg = require(findUp(__filename, 'package.json'));
 
 /**
@@ -41,15 +40,12 @@ export const installDependencies = async (config: FlexPluginArguments): Promise<
 export const setupConfiguration = (config: FlexPluginArguments): FlexPluginArguments => {
   const name = config.name || '';
 
-  config.pluginClassName = upperFirst(camelCase(name)).replace('Plugin', '') + 'Plugin';
+  config.pluginClassName = `${upperFirst(camelCase(name)).replace('Plugin', '')}Plugin`;
   config.pluginNamespace = name.toLowerCase().replace('plugin-', '');
-  config.runtimeUrl = config.runtimeUrl || 'http://localhost:8080';
-  config.targetDirectory = join(process.cwd(), name);
+  config.runtimeUrl = config.runtimeUrl || 'http://localhost:3000';
+  config.targetDirectory = resolveCwd(name);
   config.flexSdkVersion = pkg.devDependencies['@twilio/flex-ui'];
-  config.flexPluginVersion = pkg.devDependencies['flex-plugin'];
-  config.cracoConfigVersion = pkg.devDependencies['craco-config-flex-plugin'];
   config.pluginScriptsVersion = pkg.devDependencies['flex-plugin-scripts'];
-  config.pluginJsonContent = JSON.stringify(_getPluginJsonContent(config), null, 2);
 
   return config;
 };
@@ -60,22 +56,8 @@ export const setupConfiguration = (config: FlexPluginArguments): FlexPluginArgum
  * @param url {string}                  the GitHub url
  * @param dir {string}                  the temp directory to save the downloaded file to
  */
-export const downloadFromGitHub = async (url: string, dir: string) => {
+export const downloadFromGitHub = async (url: string, dir: string): Promise<void> => {
   const info = await github.parseGitHubUrl(url);
 
-  return await github.downloadRepo(info, dir);
+  return github.downloadRepo(info, dir);
 };
-
-// tslint:disable
-export const _getPluginJsonContent = (config: FlexPluginArguments) => {
-  return [{
-    'name': config.name,
-    'version': '0.0.0',
-    'class': config.pluginClassName,
-    'requires': [{
-      '@twilio/flex-ui': config.flexSdkVersion,
-    }],
-    'src': `http://localhost:3000/${config.name}.js`,
-  }];
-};
-// tslint:enable

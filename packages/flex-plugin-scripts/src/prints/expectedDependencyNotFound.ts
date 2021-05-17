@@ -1,4 +1,4 @@
-import { logger } from 'flex-dev-utils';
+import { logger, env } from 'flex-dev-utils';
 
 import instructionToReinstall from './instructionToReinstall';
 
@@ -7,10 +7,11 @@ import instructionToReinstall from './instructionToReinstall';
  *
  * @param packageName the package name
  */
-export default (packageName: string) => {
+export default (packageName: string): void => {
   const nameColor = logger.coloredStrings.name;
   const flexUIName = nameColor('@twilio/flex-ui');
 
+  env.setQuiet(false);
   logger.newline();
   logger.error('An expected package was not found.');
   logger.newline();
@@ -19,4 +20,5 @@ export default (packageName: string) => {
   logger.newline();
 
   instructionToReinstall();
+  env.setQuiet(true);
 };

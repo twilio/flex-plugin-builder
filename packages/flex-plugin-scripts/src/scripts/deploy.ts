@@ -1,33 +1,43 @@
-import { logger, semver, progress, FlexPluginError, UserActionError } from 'flex-dev-utils';
-import { ReleaseType } from 'flex-dev-utils/dist/semver';
+import {
+  logger,
+  semver,
+  progress,
+  FlexPluginError,
+  UserActionError,
+  Credential,
+  getCredential,
+  env,
+  ReleaseType,
+} from 'flex-dev-utils';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
-import { checkFilesExist, updatePackageVersion, readPackageJson } from 'flex-dev-utils/dist/fs';
-import { AuthConfig, getCredential } from 'flex-dev-utils/dist/credentials';
+import { checkFilesExist, updateAppVersion, getPackageVersion, getPaths } from 'flex-dev-utils/dist/fs';
 import { singleLineString } from 'flex-dev-utils/dist/strings';
-import AccountsClient from '../clients/accounts';
-import { UIDependencies } from '../clients/configuration-types';
-import { deploySuccessful } from '../prints';
-import { getPackageVersion } from '../utils/require';
 
+import AccountsClient from '../clients/accounts';
+import { setEnvironment } from '..';
+import { deploySuccessful } from '../prints';
+import { UIDependencies } from '../clients/configuration-types';
 import run from '../utils/run';
-import { BuildData } from '../clients/builds';
 import { Build, Runtime, Version } from '../clients/serverless-types';
-import paths from '../utils/paths';
 import { AssetClient, BuildClient, DeploymentClient, ConfigurationClient } from '../clients';
 import getRuntime from '../utils/runtime';
 
-const allowedBumps = [
-  'major',
-  'minor',
-  'patch',
-  'custom',
-  'overwrite',
-];
+const allowedBumps = ['major', 'minor', 'patch', 'version'];
 
-interface Options {
+export interface Options {
   isPublic: boolean;
   overwrite: boolean;
   disallowVersioning: boolean;
+}
+
+export interface DeployResult {
+  serviceSid: string;
+  accountSid: string;
+  environmentSid: string;
+  domainName: string;
+  isPublic: boolean;
+  nextVersion: string;
+  pluginUrl: string;
 }
 
 /**
@@ -36,7 +46,7 @@ interface Options {
  * @param baseUrl   the baseURL of the file
  * @param build     the existing build
  */
-export const _verifyPath = (baseUrl: string, build: Build) => {
+export const _verifyPath = (baseUrl: string, build: Build): boolean => {
   const bundlePath = `${baseUrl}/bundle.js`;
   const sourceMapPath = `${baseUrl}/bundle.js.map`;
 
@@ -50,22 +60,29 @@ export const _verifyPath = (baseUrl: string, build: Build) => {
 
 /**
  * Validates Flex UI version requirement
- * @param flexUI      the flex ui version
- * @param allowReact  whether this deploy supports unbundled React
+ * @param flexUI        the flex ui version
+ * @param dependencies  the package.json dependencie
+ * @param allowReact    whether this deploy supports unbundled React
  * @private
  */
-export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: UIDependencies, allowReact: boolean) => {
+export const _verifyFlexUIConfiguration = async (
+  flexUI: string,
+  dependencies: UIDependencies,
+  allowReact: boolean,
+): Promise<void> => {
   const coerced = semver.coerce(flexUI);
   if (!allowReact) {
     return;
   }
   const UISupports = semver.satisfies('1.19.0', flexUI) || (coerced && semver.satisfies(coerced, '>=1.19.0'));
   if (!UISupports) {
-    throw new FlexPluginError(singleLineString(
-      `We detected that your account is using Flex UI version ${flexUI} which is incompatible`,
-      `with unbundled React. Please visit https://flex.twilio.com/admin/versioning and update to`,
-      `version 1.19 or above.`,
-    ));
+    throw new FlexPluginError(
+      singleLineString(
+        `We detected that your account is using Flex UI version ${flexUI} which is incompatible`,
+        `with unbundled React. Please visit https://flex.twilio.com/admin/versioning and update to`,
+        `version 1.19 or above.`,
+      ),
+    );
   }
 
   if (!dependencies.react || !dependencies['react-dom']) {
@@ -76,14 +93,18 @@ export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: U
   const reactDOMSupported = semver.satisfies(getPackageVersion('react-dom'), `${dependencies['react-dom']}`);
   if (!reactSupported || !reactDOMSupported) {
     logger.newline();
-    logger.warning(singleLineString(
-      `The React version ${getPackageVersion('react')} installed locally`,
-      `is incompatible with the React version ${dependencies.react} installed on your Flex project.`,
-    ));
-    logger.info(singleLineString(
-      'Change your local React version or visit https://flex.twilio.com/admin/developers to',
-      `change the React version installed on your Flex project.`,
-    ));
+    logger.warning(
+      singleLineString(
+        `The React version ${getPackageVersion('react')} installed locally`,
+        `is incompatible with the React version ${dependencies.react} installed on your Flex project.`,
+      ),
+    );
+    logger.info(
+      singleLineString(
+        'Change your local React version or visit https://flex.twilio.com/admin/developers to',
+        `change the React version installed on your Flex project.`,
+      ),
+    );
     const answer = await confirm('Do you still want to continue deploying?', 'N');
     if (!answer) {
       logger.newline();
@@ -95,20 +116,20 @@ export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: U
 /**
  * Returns the Account object only if credentials provided is AccountSid/AuthToken, otherwise returns a dummy data
  * @param runtime     the {@link Runtime}
- * @param credentials the {@link AuthConfig}
+ * @param credentials the {@link Credential}
  * @private
  */
-export const _getAccount = async (runtime: Runtime, credentials: AuthConfig) => {
+export const _getAccount = async (runtime: Runtime, credentials: Credential): Promise<{ sid: string }> => {
   const accountClient = new AccountsClient(credentials);
 
   if (credentials.username.startsWith('AC')) {
-    return accountClient.get(runtime.service.account_sid)
+    return accountClient.get(runtime.service.account_sid);
   }
 
   return {
     sid: runtime.service.account_sid,
-  }
-}
+  };
+};
 
 /**
  * The main deploy script. This script performs the following in order:
@@ -123,18 +144,17 @@ export const _getAccount = async (runtime: Runtime, credentials: AuthConfig) => 
  * @param nextVersion   the next version of the bundle
  * @param options       options for this deploy
  */
-export const _doDeploy = async (nextVersion: string, options: Options) => {
-  if (!checkFilesExist(paths.localBundlePath)) {
-    throw new FlexPluginError('Could not find build file. Did you run `npm run build` first?');
+export const _doDeploy = async (nextVersion: string, options: Options): Promise<DeployResult> => {
+  if (!checkFilesExist(getPaths().app.bundlePath)) {
+    throw new FlexPluginError('Could not find build file. Did you run `twilio flex:plugins:build` first?');
   }
 
-  logger.info('Uploading your Flex plugin to Twilio Assets\n');
-
-  const pluginBaseUrl = paths.assetBaseUrlTemplate.replace('%PLUGIN_VERSION%', nextVersion);
+  const pluginBaseUrl = getPaths().assetBaseUrlTemplate.replace('%PLUGIN_VERSION%', nextVersion);
   const bundleUri = `${pluginBaseUrl}/bundle.js`;
   const sourceMapUri = `${pluginBaseUrl}/bundle.js.map`;
 
   const credentials = await getCredential();
+  logger.info('Uploading your Flex plugin to Twilio Assets\n');
 
   const runtime = await getRuntime(credentials);
   if (!runtime.environment) {
@@ -163,7 +183,7 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
           logger.newline();
           logger.warning('Plugin already exists and the flag --overwrite is going to overwrite this plugin.');
         }
-      } else {
+      } else if (env.isCI() || !env.isCLI()) {
         throw new FlexPluginError(`You already have a plugin with the same version: ${pluginUrl}`);
       }
     }
@@ -176,16 +196,25 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
   const buildDependencies = runtime.build ? runtime.build.dependencies : [];
 
   // Upload plugin bundle and source map to S3
-  const buildData = await progress<BuildData>('Uploading your plugin bundle', async () => {
+  const buildData = await progress('Uploading your plugin bundle', async () => {
     // Upload bundle and sourcemap
-    const bundleVersion = await assetClient
-      .upload(paths.packageName, bundleUri, paths.localBundlePath, !options.isPublic);
-    const sourceMapVersion = await assetClient
-      .upload(paths.packageName, sourceMapUri, paths.localSourceMapPath, !options.isPublic);
+    const bundleVersion = await assetClient.upload(
+      getPaths().app.name,
+      bundleUri,
+      getPaths().app.bundlePath,
+      !options.isPublic,
+    );
+    const sourceMapVersion = await assetClient.upload(
+      getPaths().app.name,
+      sourceMapUri,
+      getPaths().app.sourceMapPath,
+      !options.isPublic,
+    );
 
-    const existingAssets = routeCollision && options.overwrite
-      ?  buildAssets.filter((v) => v.path !== bundleUri && v.path !== sourceMapUri)
-      :  buildAssets;
+    const existingAssets =
+      routeCollision && options.overwrite
+        ? buildAssets.filter((v) => v.path !== bundleUri && v.path !== sourceMapUri)
+        : buildAssets;
 
     // Create build
     const data = {
@@ -204,53 +233,72 @@ export const _doDeploy = async (nextVersion: string, options: Options) => {
     await configurationClient.registerSid(runtime.service.sid);
   });
 
+  const deployResult = {
+    serviceSid: runtime.service.sid,
+    accountSid: runtime.service.account_sid,
+    environmentSid: runtime.environment.sid,
+    domainName: runtime.environment.domain_name,
+    isPublic: options.isPublic,
+    nextVersion,
+    pluginUrl,
+  };
+
+  if (routeCollision && !options.overwrite) {
+    return deployResult;
+  }
+
   // Create a build, and poll regularly until build is complete
   await progress('Deploying a new build of your Twilio Runtime', async () => {
     const newBuild = await buildClient.create(buildData);
     const deployment = await deploymentClient.create(newBuild.sid);
 
-    updatePackageVersion(nextVersion);
+    updateAppVersion(nextVersion);
 
     return deployment;
   });
 
   deploySuccessful(pluginUrl, options.isPublic, await _getAccount(runtime, credentials));
+
+  return deployResult;
 };
 
-const deploy = async (...argv: string[]) => {
+const deploy = async (...argv: string[]): Promise<DeployResult> => {
+  setEnvironment(...argv);
   logger.debug('Deploying Flex plugin');
 
   const disallowVersioning = argv.includes('--disallow-versioning');
   let nextVersion = argv[1] as string;
   const bump = argv[0];
-  const opts = {
+  const opts: Options = {
     isPublic: argv.includes('--public'),
     overwrite: argv.includes('--overwrite') || disallowVersioning,
     disallowVersioning,
   };
 
-  if (!disallowVersioning) {
+  if (disallowVersioning) {
+    nextVersion = '0.0.0';
+  } else {
     if (!allowedBumps.includes(bump)) {
       throw new FlexPluginError(`Version bump can only be one of ${allowedBumps.join(', ')}`);
     }
 
-    if (bump === 'custom' && !argv[1]) {
+    if (bump === 'version' && !argv[1]) {
       throw new FlexPluginError('Custom version bump requires the version value.');
     }
 
     if (bump === 'overwrite') {
       opts.overwrite = true;
-      nextVersion = readPackageJson().version;
-    } else if (bump !== 'custom') {
-      nextVersion = semver.inc(paths.version, bump as ReleaseType) as any;
+      nextVersion = getPaths().app.version;
+    } else if (bump !== 'version') {
+      nextVersion = semver.inc(getPaths().app.version, bump as ReleaseType) as string;
     }
-  } else {
-    nextVersion = '0.0.0';
   }
 
-  await _doDeploy(nextVersion, opts);
+  return _doDeploy(nextVersion, opts);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 run(deploy);
 
+// eslint-disable-next-line import/no-unused-modules
 export default deploy;

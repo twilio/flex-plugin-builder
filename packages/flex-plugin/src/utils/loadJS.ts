@@ -7,13 +7,13 @@ import shortid from './shortid';
  * @return {void}
  */
 export const loadJS = (...srcArray: string[]): void => {
-    srcArray.forEach((src: string) => {
-        const script  = document.createElement('script');
+  srcArray.forEach((src: string) => {
+    const script = document.createElement('script');
 
-        script.id = `external-js-${shortid()}`;
-        script.type = 'text/javascript';
-        script.src = src;
+    script.id = `external-js-${shortid()}`;
+    script.type = 'text/javascript';
+    script.src = src;
 
-        document.body.appendChild(script);
-    });
+    document.body.appendChild(script);
+  });
 };
