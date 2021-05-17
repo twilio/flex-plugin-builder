@@ -5,7 +5,6 @@ export { default as versionMismatch } from './versionMismatch';
 export { default as expectedDependencyNotFound } from './expectedDependencyNotFound';
 export { default as deploySuccessful } from './deploySuccessful';
 export { default as packagesVersions } from './packagesVersions';
-export { default as pluginsApiWarning } from './pluginsApiWarning';
 export { default as buildSuccessful } from './buildSuccessful';
 export { default as buildFailure } from './buildFailure';
 export { default as typescriptNotInstalled } from './typescriptNotInstalled';

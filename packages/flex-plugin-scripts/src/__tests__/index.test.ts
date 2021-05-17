@@ -15,7 +15,6 @@ const { spawn } = require('flex-dev-utils');
 
 describe('index', () => {
   const disallowVersioningFlag = '--disallow-versioning';
-  const pilotPluginsFlag = '--pilot-plugins-api';
   const runFlag = '--run-script';
   const runExit = jest.spyOn(exit, 'default').mockReturnValue();
 
@@ -56,17 +55,6 @@ describe('index', () => {
     expect(runExit).toHaveBeenCalledWith(0, ['build']);
     expect(spawn).toHaveBeenCalledTimes(1);
     assertSpawn([expect.stringContaining('build'), disallowVersioningFlag, '--name', pluginName, runFlag]);
-  });
-
-  it('should run main script as pilot program', async () => {
-    spawn.mockResolvedValue({ exitCode: 0 });
-
-    await index('build', pilotPluginsFlag);
-
-    expect(runExit).toHaveBeenCalledTimes(1);
-    expect(runExit).toHaveBeenCalledWith(0, ['build', pilotPluginsFlag]);
-    expect(spawn).toHaveBeenCalledTimes(1);
-    assertSpawn([expect.stringContaining('build'), pilotPluginsFlag, '--name', pluginName, runFlag]);
   });
 
   it('should run main script and pass other args', async () => {
