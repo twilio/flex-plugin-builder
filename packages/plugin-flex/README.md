@@ -80,7 +80,7 @@ OPTIONS
   --sid=sid                        (required) The Flex Plugin Configuration SID to archive.
 ```
 
-_See code: [dist/commands/flex/plugins/archive/configuration.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/archive/configuration.js)_
+_See code: [dist/commands/flex/plugins/archive/configuration.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/archive/configuration.js)_
 
 ## `twilio flex:plugins:archive:plugin`
 
@@ -97,7 +97,7 @@ OPTIONS
   --name=name                      (required) The name of the Flex Plugin to archive.
 ```
 
-_See code: [dist/commands/flex/plugins/archive/plugin.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/archive/plugin.js)_
+_See code: [dist/commands/flex/plugins/archive/plugin.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/archive/plugin.js)_
 
 ## `twilio flex:plugins:archive:plugin-version`
 
@@ -115,7 +115,7 @@ OPTIONS
   --version=version                (required) The Flex Plugin Version to archive.
 ```
 
-_See code: [dist/commands/flex/plugins/archive/plugin-version.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/archive/plugin-version.js)_
+_See code: [dist/commands/flex/plugins/archive/plugin-version.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/archive/plugin-version.js)_
 
 ## `twilio flex:plugins:build`
 
@@ -131,7 +131,7 @@ OPTIONS
   --clear-terminal                 Clears the terminal before running the command.
 ```
 
-_See code: [dist/commands/flex/plugins/build.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/build.js)_
+_See code: [dist/commands/flex/plugins/build.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/build.js)_
 
 ## `twilio flex:plugins:create NAME`
 
@@ -162,7 +162,7 @@ DESCRIPTION
   name	Name of your plugin. This command needs to be invoked inside a plugin directory.
 ```
 
-_See code: [dist/commands/flex/plugins/create.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/create.js)_
+_See code: [dist/commands/flex/plugins/create.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/create.js)_
 
 ## `twilio flex:plugins:create-configuration`
 
@@ -196,7 +196,7 @@ OPTIONS
   --plugin=plugin                  Alias for --enable-plugin.
 ```
 
-_See code: [dist/commands/flex/plugins/create-configuration.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/create-configuration.js)_
+_See code: [dist/commands/flex/plugins/create-configuration.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/create-configuration.js)_
 
 ## `twilio flex:plugins:deploy`
 
@@ -219,7 +219,7 @@ OPTIONS
   --version=version                Publishes the version (SemVer).
 ```
 
-_See code: [dist/commands/flex/plugins/deploy.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/deploy.js)_
+_See code: [dist/commands/flex/plugins/deploy.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/deploy.js)_
 
 ## `twilio flex:plugins:describe:configuration`
 
@@ -237,7 +237,7 @@ OPTIONS
   --sid=sid                        (required) The Flex Plugin Configuration SID.
 ```
 
-_See code: [dist/commands/flex/plugins/describe/configuration.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/describe/configuration.js)_
+_See code: [dist/commands/flex/plugins/describe/configuration.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/describe/configuration.js)_
 
 ## `twilio flex:plugins:describe:plugin`
 
@@ -255,7 +255,7 @@ OPTIONS
   --name=name                      (required) The name of the Flex Plugin to describe.
 ```
 
-_See code: [dist/commands/flex/plugins/describe/plugin.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/describe/plugin.js)_
+_See code: [dist/commands/flex/plugins/describe/plugin.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/describe/plugin.js)_
 
 ## `twilio flex:plugins:describe:plugin-version`
 
@@ -274,7 +274,7 @@ OPTIONS
   --version=version                (required) The Flex Plugin Version to describe.
 ```
 
-_See code: [dist/commands/flex/plugins/describe/plugin-version.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/describe/plugin-version.js)_
+_See code: [dist/commands/flex/plugins/describe/plugin-version.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/describe/plugin-version.js)_
 
 ## `twilio flex:plugins:describe:release`
 
@@ -293,7 +293,7 @@ OPTIONS
   --sid=sid                        The Flex Plugin Release SID to describe.
 ```
 
-_See code: [dist/commands/flex/plugins/describe/release.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/describe/release.js)_
+_See code: [dist/commands/flex/plugins/describe/release.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/describe/release.js)_
 
 ## `twilio flex:plugins:diff ID1 [ID2]`
 
@@ -313,7 +313,7 @@ OPTIONS
   --clear-terminal                 Clears the terminal before running the command.
 ```
 
-_See code: [dist/commands/flex/plugins/diff.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/diff.js)_
+_See code: [dist/commands/flex/plugins/diff.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/diff.js)_
 
 ## `twilio flex:plugins:list:configurations`
 
@@ -330,7 +330,7 @@ OPTIONS
   --json                           Outputs the result of the command as json string.
 ```
 
-_See code: [dist/commands/flex/plugins/list/configurations.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/list/configurations.js)_
+_See code: [dist/commands/flex/plugins/list/configurations.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/list/configurations.js)_
 
 ## `twilio flex:plugins:list:plugin-versions`
 
@@ -348,7 +348,7 @@ OPTIONS
   --name=name                      (required) The plugin name to list its versions.
 ```
 
-_See code: [dist/commands/flex/plugins/list/plugin-versions.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/list/plugin-versions.js)_
+_See code: [dist/commands/flex/plugins/list/plugin-versions.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/list/plugin-versions.js)_
 
 ## `twilio flex:plugins:list:plugins`
 
@@ -365,7 +365,7 @@ OPTIONS
   --json                           Outputs the result of the command as json string.
 ```
 
-_See code: [dist/commands/flex/plugins/list/plugins.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/list/plugins.js)_
+_See code: [dist/commands/flex/plugins/list/plugins.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/list/plugins.js)_
 
 ## `twilio flex:plugins:list:releases`
 
@@ -382,7 +382,7 @@ OPTIONS
   --json                           Outputs the result of the command as json string.
 ```
 
-_See code: [dist/commands/flex/plugins/list/releases.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/list/releases.js)_
+_See code: [dist/commands/flex/plugins/list/releases.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/list/releases.js)_
 
 ## `twilio flex:plugins:release`
 
@@ -419,7 +419,7 @@ OPTIONS
   --plugin=plugin                        Alias for --enable-plugin.
 ```
 
-_See code: [dist/commands/flex/plugins/release.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/release.js)_
+_See code: [dist/commands/flex/plugins/release.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/release.js)_
 
 ## `twilio flex:plugins:start`
 
@@ -440,7 +440,7 @@ OPTIONS
                                    remote plugins using "--name 'plugin-name@remote'".
 ```
 
-_See code: [dist/commands/flex/plugins/start.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/start.js)_
+_See code: [dist/commands/flex/plugins/start.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/start.js)_
 
 ## `twilio flex:plugins:test`
 
@@ -456,7 +456,7 @@ OPTIONS
   --clear-terminal                 Clears the terminal before running the command.
 ```
 
-_See code: [dist/commands/flex/plugins/test.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/test.js)_
+_See code: [dist/commands/flex/plugins/test.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/test.js)_
 
 ## `twilio flex:plugins:upgrade-plugin`
 
@@ -483,5 +483,5 @@ OPTIONS
   --yes                            If set, will answer yes to all prompts.
 ```
 
-_See code: [dist/commands/flex/plugins/upgrade-plugin.js](https://github.com/twilio/flex-plugin-builder/blob/v4.10.0-alpha.0/dist/commands/flex/plugins/upgrade-plugin.js)_
+_See code: [dist/commands/flex/plugins/upgrade-plugin.js](https://github.com/twilio/flex-plugin-builder/blob/v4.0.0/dist/commands/flex/plugins/upgrade-plugin.js)_
 <!-- commandsstop -->
