@@ -38,6 +38,7 @@ describe('WebpackConfiguration', () => {
   };
 
   beforeEach(() => {
+    delete process.env.FLEX_UI_SRC;
     jest.restoreAllMocks();
     jest.resetModules();
 
@@ -168,6 +169,14 @@ describe('WebpackConfiguration', () => {
       expect(scripts[1]).toContain('umd/react-dom.development');
       expect(scripts[1]).toContain('16.12.1');
       expect(scripts[2]).toContain('localhost:8080');
+    });
+
+    it('should overwrite flex-ui even if flex-ui is < 1.19.0', () => {
+      process.env.FLEX_UI_SRC = 'http://localhost:8080/twilio-flex-ui.dev.browser.js';
+      const scripts = webpackConfig._getJSScripts('1.18.0', '', '');
+
+      expect(scripts).toHaveLength(1);
+      expect(scripts[0]).toContain('localhost:8080');
     });
   });
 

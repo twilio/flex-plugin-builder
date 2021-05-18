@@ -323,6 +323,20 @@ describe('env', () => {
     });
   });
 
+  describe('flexUISrc', () => {
+    const localFlexUISrc = 'http://localhost:8080/twilio-flex-ui.dev.browser.js';
+
+    it('should return local flexUISrc', () => {
+      process.env.FLEX_UI_SRC = localFlexUISrc;
+      expect(env.getFlexUISrc()).toEqual(localFlexUISrc);
+    });
+
+    it('should set local flexUISrc', () => {
+      env.setFlexUISrc(localFlexUISrc);
+      expect(env.getFlexUISrc()).toEqual(localFlexUISrc);
+    });
+  });
+
   describe('nodeEnv', () => {
     it('should return node env', () => {
       process.env.NODE_ENV = 'test';
