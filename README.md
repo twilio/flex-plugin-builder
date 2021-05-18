@@ -3,14 +3,14 @@
 </p>
 
 <p align="center">
-    <a href="https://app.circleci.com/pipelines/github/twilio/flex-plugin-builder?branch=v4-beta" >
-        <img src="https://circleci.com/gh/twilio/flex-plugin-builder/tree/v4-beta.svg?style=shield" />
+    <a href="https://app.circleci.com/pipelines/github/twilio/flex-plugin-builder?branch=main" >
+        <img src="https://circleci.com/gh/twilio/flex-plugin-builder/tree/main.svg?style=shield" />
     </a>
     <a href="https://codecov.io/gh/twilio/flex-plugin-builder">
         <img src="https://codecov.io/gh/twilio/flex-plugin-builder/branch/master/graph/badge.svg" title="Code Coverage" />
     </a>
     <a href="#contributors">
-        <img src="https://img.shields.io/badge/all_contributors-11-orange.svg?style=square" title="All Contributors" />
+        <img src="https://img.shields.io/badge/all_contributors-14-orange.svg?style=square" title="All Contributors" />
     </a>
     <a href="./CODE_OF_CONDUCT.md">
         <img src="https://img.shields.io/badge/%F0%9F%92%96-code%20of%20conduct-ff69b4.svg?style=square" title="Code of Conducts" />
