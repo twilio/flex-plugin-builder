@@ -1,7 +1,6 @@
 import * as pluginBuilderStartScript from 'flex-plugin-scripts/dist/scripts/start';
-import { TwilioCliError } from 'flex-dev-utils';
+import { TwilioCliError, env } from 'flex-dev-utils';
 import * as fs from 'flex-dev-utils/dist/fs';
-import * as env from 'flex-plugins-utils-env/dist/lib/env';
 
 import createTest, { mockGetPkg } from '../../../framework';
 import FlexPluginsStart from '../../../../commands/flex/plugins/start';

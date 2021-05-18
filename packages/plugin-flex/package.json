@@ -58,8 +58,7 @@
     "package-json": "^6.5.0",
     "phin": "^3.5.1",
     "rimraf": "^3.0.2",
-    "yargs": "^16.2.0",
-    "flex-plugins-utils-env": "file:packages/flex-plugins-utils-env"
+    "yargs": "^16.2.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.0",

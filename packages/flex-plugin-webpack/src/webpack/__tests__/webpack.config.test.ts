@@ -36,11 +36,12 @@ describe('WebpackConfiguration', () => {
       nodeModulesDir: 'cli/node_modules',
     },
   };
+  const OLD_ENV = { ...process.env };
 
   beforeEach(() => {
-    delete process.env.FLEX_UI_SRC;
     jest.restoreAllMocks();
     jest.resetModules();
+    process.env = { ...OLD_ENV };
 
     // @ts-ignore
     jest.spyOn(fs, 'getPaths').mockReturnValue(paths);

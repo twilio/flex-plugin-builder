@@ -58,14 +58,13 @@ export const _getJSScripts = (flexUIVersion: string, reactVersion: string, react
     ];
   }
 
-  const flexUISrc = envSrc
-    ? envSrc
-    : `https://assets.flex.twilio.com/releases/flex-ui/${flexUIVersion}/twilio-flex.unbundled-react.min.js`;
+  const flexUISrc =
+    envSrc || `https://assets.flex.twilio.com/releases/flex-ui/${flexUIVersion}/twilio-flex.unbundled-react.min.js`;
 
   return [
     `<script crossorigin src="https://unpkg.com/react@${reactVersion}/umd/react.development.js"></script>`,
     `<script crossorigin src="https://unpkg.com/react-dom@${reactDOMVersion}/umd/react-dom.development.js"></script>`,
-    `<script src=${flexUISrc}></script>`,
+    `<script src="${flexUISrc}"></script>`,
   ];
 };
 
