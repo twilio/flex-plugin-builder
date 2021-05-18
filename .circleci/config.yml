@@ -142,7 +142,7 @@ jobs:
     executor:
       name: win/default
       shell: << parameters.shell >>
-      size: xlarge
+      size: 2xlarge
     steps:
       - checkout
       - cmd_install-dependencies
