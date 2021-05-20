@@ -342,7 +342,7 @@ describe('env', () => {
         env.setFlexUISrc('invalid-flex-ui-source');
       } catch (e) {
         expect(e).toBeInstanceOf(TwilioCliError);
-        expect(e.message).toContain('You must pass in a valid JS file');
+        expect(e.message).toContain('is not a valid JS file');
         expect(env.getFlexUISrc()).toBeUndefined();
       }
     });

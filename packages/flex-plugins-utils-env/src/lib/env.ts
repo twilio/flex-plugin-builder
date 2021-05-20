@@ -28,10 +28,8 @@ export enum Lifecycle {
 const isDefined = (key: string | undefined) => typeof key === 'string' && key !== '';
 
 const setValidJSFile = (source: string) => {
-  const isFlexUISrcValid = source.endsWith('.js');
-
-  if (!isFlexUISrcValid) {
-    throw new TwilioCliError('You must pass in a valid JS file to --flex-ui-source.');
+  if (!source.endsWith('.js')) {
+    throw new TwilioCliError(`${source} is not a valid JS file.`);
   }
   process.env.FLEX_UI_SRC = source;
 };
