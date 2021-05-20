@@ -50,7 +50,7 @@ export const _getJSScripts = (flexUIVersion: string, reactVersion: string, react
   const envSrc = env.getFlexUISrc();
   if (!semver.satisfies(flexUIVersion, '>=1.19.0')) {
     if (envSrc) {
-      return [`<script src=${envSrc}></script>`];
+      return [`<script src="${envSrc}"></script>`];
     }
 
     return [

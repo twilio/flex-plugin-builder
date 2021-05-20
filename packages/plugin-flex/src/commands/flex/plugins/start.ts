@@ -65,6 +65,11 @@ export default class FlexPluginsStart extends FlexPlugin {
     }
 
     if (this._flags['flex-ui-source']) {
+      const isFlexUISrcValid = this._flags['flex-ui-source'].endsWith('.js');
+
+      if (!isFlexUISrcValid) {
+        throw new TwilioCliError('You must pass in a valid JS file to --flex-ui-source.');
+      }
       env.setFlexUISrc(this._flags['flex-ui-source']);
     }
 

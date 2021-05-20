@@ -171,7 +171,7 @@ describe('Commands/FlexPluginsStart', () => {
     jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
     findPortAvailablePort.mockResolvedValue(100);
 
-    await cmd.doRun();
+    await cmd.run();
 
     expect(cmd.pluginsConfig).toEqual(config);
     expect(cmd.runScript).toHaveBeenCalledTimes(3);
@@ -181,6 +181,31 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd.spawnScript).toHaveBeenCalledWith('start', ['plugin', '--name', pkg.name, '--port', '100']);
     expect(cmd._flags['flex-ui-source']).toEqual(flexUISrc);
     expect(env.getFlexUISrc()).toEqual(flexUISrc);
+  });
+
+  it('should error due to invalid flex-ui-source', async () => {
+    const flexUISrc = 'invalid-flex-ui-source';
+    const cmd = await createTest(FlexPluginsStart)('--flex-ui-source', flexUISrc);
+
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
+    mockGetPkg(cmd, pkg);
+    jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
+    jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
+    findPortAvailablePort.mockResolvedValue(100);
+
+    try {
+      await cmd.run();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TwilioCliError);
+      expect(e.message).toContain('You must pass in a valid JS file');
+      expect(env.getFlexUISrc()).toBeUndefined();
+      expect(cmd._flags['flex-ui-source']).toEqual(flexUISrc);
+      expect(cmd.runScript).not.toHaveBeenCalled();
+      expect(cmd.spawnScript).not.toHaveBeenCalled();
+    }
   });
 
   it('should process the one plugin', async () => {
