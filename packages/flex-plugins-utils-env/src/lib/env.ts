@@ -1,6 +1,8 @@
 /// <reference path="../module.d.ts" />
 import get from 'lodash.get';
 
+import { TwilioCliError } from '../../../flex-plugins-utils-exception';
+
 export type Realm = 'dev' | 'stage';
 
 /* eslint-disable import/no-unused-modules */
@@ -25,6 +27,15 @@ export enum Lifecycle {
  */
 const isDefined = (key: string | undefined) => typeof key === 'string' && key !== '';
 
+const setValidJSFile = (source: string) => {
+  const isFlexUISrcValid = source.endsWith('.js');
+
+  if (!isFlexUISrcValid) {
+    throw new TwilioCliError('You must pass in a valid JS file to --flex-ui-source.');
+  }
+  process.env.FLEX_UI_SRC = source;
+};
+
 /* istanbul ignore next */
 export const skipPreflightCheck = (): boolean => process.env.SKIP_PREFLIGHT_CHECK === 'true';
 export const allowUnbundledReact = (): boolean => process.env.UNBUNDLED_REACT === 'true';
@@ -37,7 +48,7 @@ export const hasPort = (): boolean => isDefined(process.env.PORT);
 export const getPort = (): number => Number(process.env.PORT);
 export const setPort = (port: number): string => (process.env.PORT = String(port));
 export const getFlexUISrc = (): string | undefined => process.env.FLEX_UI_SRC;
-export const setFlexUISrc = (source: string): string => (process.env.FLEX_UI_SRC = source.toString());
+export const setFlexUISrc = (source: string): void => setValidJSFile(source.toString());
 export const getNodeEnv = (): string => process.env.NODE_ENV as string;
 export const setNodeEnv = (_env: Environment): string => (process.env.NODE_ENV = _env);
 export const getBabelEnv = (): string => process.env.BABEL_ENV as string;

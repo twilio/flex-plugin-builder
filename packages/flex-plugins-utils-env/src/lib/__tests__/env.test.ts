@@ -1,4 +1,5 @@
 import * as env from '../env';
+import { TwilioCliError } from '../../../../flex-plugins-utils-exception';
 
 describe('env', () => {
   const OLD_ENV = process.env;
@@ -334,6 +335,16 @@ describe('env', () => {
     it('should set local flexUISrc', () => {
       env.setFlexUISrc(localFlexUISrc);
       expect(env.getFlexUISrc()).toEqual(localFlexUISrc);
+    });
+
+    it('should error if invalid flexUISrc', () => {
+      try {
+        env.setFlexUISrc('invalid-flex-ui-source');
+      } catch (e) {
+        expect(e).toBeInstanceOf(TwilioCliError);
+        expect(e.message).toContain('You must pass in a valid JS file');
+        expect(env.getFlexUISrc()).toBeUndefined();
+      }
     });
   });
 
