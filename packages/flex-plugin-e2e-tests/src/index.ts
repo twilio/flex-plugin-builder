@@ -9,9 +9,12 @@ export interface TestParams {
   packageVersion: string;
   nodeVersion: string;
   homeDir: string;
+  consoleBaseUrl: string;
   plugin: {
     name: string;
     dir: string;
+    componentText: string;
+    baseUrl: string;
   } & Partial<TestParamsBuilder>;
 }
 interface TestParamsBuilder {
@@ -41,10 +44,13 @@ const pluginName = 'flex-e2e-tester-plugin';
 const testParams: TestParams = {
   packageVersion: process.env.PACKAGE_VERSION as string,
   nodeVersion: process.env.NODE_VERSION as string,
+  consoleBaseUrl: process.env.CONSOLE_BASE_URL || 'https://www.twilio.com',
   homeDir,
   plugin: {
     name: pluginName,
     dir: `${homeDir}/${pluginName}`,
+    componentText: `This is a dismissible demo component ${Date.now()}`,
+    baseUrl: 'http://localhost:3000' || (process.env.PLUGIN_BASE_URL as string),
   },
 };
 

@@ -2,7 +2,7 @@
 import { TestSuite, TestParams } from '..';
 import { spawn, logResult, assertion } from '../utils';
 
-// Install Twilio CLI and Plugins CLI
+// Create a plugin
 const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
   const twilioCliResult = await spawn('twilio', ['flex:plugins:create', params.plugin.name]);
   logResult(twilioCliResult);
