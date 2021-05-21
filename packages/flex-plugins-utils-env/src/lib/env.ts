@@ -1,7 +1,7 @@
 /// <reference path="../module.d.ts" />
 import get from 'lodash.get';
 
-import { TwilioCliError } from '../../../flex-plugins-utils-exception';
+import { TwilioCliError } from '../../../flex-dev-utils';
 
 export type Realm = 'dev' | 'stage';
 

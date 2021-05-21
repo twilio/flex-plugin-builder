@@ -1,5 +1,5 @@
 import * as env from '../env';
-import { TwilioCliError } from '../../../../flex-plugins-utils-exception';
+import { TwilioCliError } from '../../../../flex-dev-utils';
 
 describe('env', () => {
   const OLD_ENV = process.env;
