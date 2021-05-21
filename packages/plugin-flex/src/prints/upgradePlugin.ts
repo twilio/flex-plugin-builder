@@ -159,7 +159,7 @@ const warningPluginNotInAPI = (logger: Logger) => (pluginName: string) => {
 
   logger.info(`Plugin ${name} has not been migrated to Plugins API.`);
   logger.newline();
-  logger.info(`Run {{$ twilio flex:plugins:upgrade-plugin \\-\\-beta \\-\\-install}} to upgrade your plugin code.`);
+  logger.info(`Run {{$ twilio flex:plugins:upgrade-plugin \\-\\-install}} to upgrade your plugin code.`);
   logger.info(
     `Run {{$ twilio flex:plugins:deploy \\-\\-changelog "migrating to Flex Plugins API" \\-\\-major}} to register with Plugins API.`,
   );

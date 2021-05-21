@@ -164,22 +164,19 @@ export default function createConfiguration(
     // Fetch installed plugins
     const configuredPluginsPage = await configuredPluginClient.list(configuration.sid);
     const installedPlugins: InstalledPlugin[] = await Promise.all(
-      configuredPluginsPage.plugins.map(async (installedPlugin) => {
-        const plugin = await pluginClient.get(installedPlugin.plugin_sid);
-        const version = await pluginVersionClient.get(installedPlugin.plugin_sid, installedPlugin.plugin_version_sid);
-
+      configuredPluginsPage.plugins.map(async (p) => {
         return {
-          pluginSid: installedPlugin.plugin_sid,
-          pluginVersionSid: installedPlugin.plugin_version_sid,
-          name: installedPlugin.unique_name,
-          version: installedPlugin.version,
-          url: installedPlugin.plugin_url,
-          phase: installedPlugin.phase,
-          friendlyName: plugin.friendly_name,
-          description: plugin.description,
-          changelog: version.changelog,
-          isPrivate: installedPlugin.private,
-          isArchived: plugin.archived || version.archived,
+          pluginSid: p.plugin_sid,
+          pluginVersionSid: p.plugin_version_sid,
+          name: p.unique_name,
+          version: p.version,
+          url: p.plugin_url,
+          phase: p.phase,
+          friendlyName: p.friendly_name,
+          description: p.description,
+          changelog: p.changelog,
+          isPrivate: p.private,
+          isArchived: p.plugin_archived || p.plugin_version_archived,
         };
       }),
     );

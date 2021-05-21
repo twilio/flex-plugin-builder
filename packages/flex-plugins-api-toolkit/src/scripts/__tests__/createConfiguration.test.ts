@@ -282,9 +282,9 @@ describe('CreateConfigurationScript', () => {
 
     const result = await script(option);
     expect(activeRelease).not.toHaveBeenCalled();
-    expect(getPlugin).toHaveBeenCalledTimes(3);
+    expect(getPlugin).toHaveBeenCalledTimes(2);
     expect(getPlugin).toHaveBeenCalledWith(plugin1.sid);
-    expect(getVersion).toHaveBeenCalledTimes(3);
+    expect(getVersion).toHaveBeenCalledTimes(2);
     expect(getVersion).toHaveBeenCalledWith(plugin1.unique_name, 'version1');
     expect(getVersion).toHaveBeenCalledWith(plugin1.sid, pluginVersion1.sid);
     expect(getLatestVersion).not.toHaveBeenCalled();
@@ -333,12 +333,12 @@ describe('CreateConfigurationScript', () => {
 
     const result = await script(option);
     expect(activeRelease).toHaveBeenCalledTimes(1);
-    expect(getPlugin).toHaveBeenCalledTimes(5);
+    expect(getPlugin).toHaveBeenCalledTimes(3);
     expect(getPlugin).toHaveBeenCalledWith(configuredPlugin1.unique_name);
     expect(getPlugin).not.toHaveBeenCalledWith(configuredPlugin2.unique_name);
     expect(getPlugin).toHaveBeenCalledWith(configuredPlugin1.plugin_sid);
     expect(getPlugin).toHaveBeenCalledWith(configuredPlugin2.plugin_sid);
-    expect(getVersion).toHaveBeenCalledTimes(5);
+    expect(getVersion).toHaveBeenCalledTimes(3);
     expect(getVersion).toHaveBeenCalledWith(plugin1.unique_name, 'version1');
     expect(getVersion).toHaveBeenCalledWith(plugin1.sid, pluginVersion1.sid);
     expect(getVersion).not.toHaveBeenCalledWith(plugin2.unique_name, pluginVersion2.version);
@@ -504,12 +504,12 @@ describe('CreateConfigurationScript', () => {
 
     const result = await script(option);
     expect(activeRelease).not.toHaveBeenCalled();
-    expect(getPlugin).toHaveBeenCalledTimes(5);
+    expect(getPlugin).toHaveBeenCalledTimes(3);
     expect(getPlugin).toHaveBeenCalledWith(configuredPlugin1.unique_name);
     expect(getPlugin).not.toHaveBeenCalledWith(configuredPlugin2.unique_name);
     expect(getPlugin).toHaveBeenCalledWith(configuredPlugin1.plugin_sid);
     expect(getPlugin).toHaveBeenCalledWith(configuredPlugin2.plugin_sid);
-    expect(getVersion).toHaveBeenCalledTimes(5);
+    expect(getVersion).toHaveBeenCalledTimes(3);
     expect(getVersion).toHaveBeenCalledWith(plugin1.unique_name, 'version1');
     expect(getVersion).toHaveBeenCalledWith(plugin1.sid, pluginVersion1.sid);
     expect(getVersion).not.toHaveBeenCalledWith(plugin2.unique_name, pluginVersion2.version);
@@ -585,10 +585,10 @@ describe('CreateConfigurationScript', () => {
 
     const result = await script(option);
     expect(activeRelease).toHaveBeenCalledTimes(1);
-    expect(getPlugin).toHaveBeenCalledTimes(3);
+    expect(getPlugin).toHaveBeenCalledTimes(2);
     expect(getPlugin).toHaveBeenCalledWith(configuredPlugin1.unique_name);
     expect(getPlugin).toHaveBeenCalledWith(configuredPlugin1.plugin_sid);
-    expect(getVersion).toHaveBeenCalledTimes(3);
+    expect(getVersion).toHaveBeenCalledTimes(2);
     expect(getVersion).toHaveBeenCalledWith(plugin1.unique_name, 'version1');
     expect(getVersion).toHaveBeenCalledWith(plugin1.sid, pluginVersion1.sid);
     expect(getLatestVersion).not.toHaveBeenCalled();

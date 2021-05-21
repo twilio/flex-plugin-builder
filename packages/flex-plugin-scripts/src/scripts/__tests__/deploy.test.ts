@@ -12,9 +12,7 @@ jest.mock('../../clients/configurations');
 jest.mock('../../clients/environments');
 jest.mock('../../clients/builds');
 jest.mock('../../clients/deployments');
-jest.mock('../../clients/pluginsApi');
 jest.mock('../../prints/deploySuccessful');
-jest.mock('../../prints/pluginsApiWarning');
 jest.mock('flex-dev-utils/dist/inquirer');
 jest.mock('flex-dev-utils/dist/fs');
 jest.mock('flex-dev-utils/dist/logger');
@@ -32,7 +30,6 @@ const AssetClient = require('../../clients/assets').default;
 const BuildClient = require('../../clients/builds').default;
 const DeploymentClient = require('../../clients/deployments').default;
 const ConfigurationClient = require('../../clients/configurations').default;
-const PluginsApiClient = require('../../clients/pluginsApi').default;
 /* eslint-enable */
 /* eslint-disable camelcase */
 
@@ -164,7 +161,6 @@ describe('DeployScript', () => {
       expectDoDeployCalled('2.0.0', {
         isPublic: false,
         overwrite: false,
-        isPluginsPilot: false,
         disallowVersioning: false,
       });
     });
@@ -175,7 +171,6 @@ describe('DeployScript', () => {
       expectDoDeployCalled('1.1.0', {
         isPublic: false,
         overwrite: false,
-        isPluginsPilot: false,
         disallowVersioning: false,
       });
     });
@@ -186,7 +181,6 @@ describe('DeployScript', () => {
       expectDoDeployCalled('1.0.1', {
         isPublic: false,
         overwrite: false,
-        isPluginsPilot: false,
         disallowVersioning: false,
       });
     });
@@ -197,7 +191,6 @@ describe('DeployScript', () => {
       expectDoDeployCalled('custom-version', {
         isPublic: false,
         overwrite: false,
-        isPluginsPilot: false,
         disallowVersioning: false,
       });
     });
@@ -208,7 +201,6 @@ describe('DeployScript', () => {
       expectDoDeployCalled('2.0.0', {
         isPublic: true,
         overwrite: false,
-        isPluginsPilot: false,
         disallowVersioning: false,
       });
     });
@@ -219,66 +211,13 @@ describe('DeployScript', () => {
       expect(doDeploy).toHaveBeenCalledTimes(1);
       expect(doDeploy).toHaveBeenCalledWith('0.0.0', expect.any(Object));
     });
-
-    it('should call run pilot program', async () => {
-      await deployScript.default('major', '--pilot-plugins-api');
-
-      expectDoDeployCalled('2.0.0', {
-        isPublic: false,
-        overwrite: false,
-        isPluginsPilot: true,
-        disallowVersioning: false,
-      });
-    });
   });
 
   describe('_doDeploy', () => {
-    it('should quit if running the pilot program but not have the flag set', async (done) => {
-      const options = {
-        isPublic: true,
-        overwrite: false,
-        isPluginsPilot: true,
-        disallowVersioning: false,
-      };
-
-      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
-      const hasFlag = jest.fn().mockResolvedValue(false);
-      PluginsApiClient.mockImplementation(() => ({ hasFlag }));
-
-      try {
-        await deployScript._doDeploy('1.0.0', options);
-      } catch (e) {
-        expect(e).toBeInstanceOf(FlexPluginError);
-        expect(e.message).toContain('is currently in Preview');
-        done();
-      }
-
-      checkFilesExist.mockRestore();
-    });
-
-    it('should run if pilot feature enabled', async () => {
-      const options = {
-        isPublic: true,
-        overwrite: false,
-        isPluginsPilot: true,
-        disallowVersioning: false,
-      };
-
-      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
-      const _getAccount = jest.spyOn(deployScript, '_getAccount').mockReturnThis();
-      const hasFlag = jest.fn().mockResolvedValue(true);
-      PluginsApiClient.mockImplementation(() => ({ hasFlag }));
-
-      await deployScript._doDeploy('1.0.0', options);
-      checkFilesExist.mockRestore();
-      _getAccount.mockRestore();
-    });
-
     it('should quit if build does not exist', async (done) => {
       const options = {
         isPublic: true,
         overwrite: false,
-        isPluginsPilot: false,
         disallowVersioning: false,
       };
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(false);
@@ -299,7 +238,6 @@ describe('DeployScript', () => {
       const options = {
         isPublic: true,
         overwrite: false,
-        isPluginsPilot: false,
         disallowVersioning: false,
       };
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
@@ -322,7 +260,6 @@ describe('DeployScript', () => {
       const options = {
         isPublic: true,
         overwrite: false,
-        isPluginsPilot: false,
         disallowVersioning: false,
       };
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
@@ -346,7 +283,6 @@ describe('DeployScript', () => {
       const options = {
         isPublic: true,
         overwrite: false,
-        isPluginsPilot: false,
         disallowVersioning: false,
       };
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
@@ -370,7 +306,6 @@ describe('DeployScript', () => {
       const options = {
         isPublic: true,
         overwrite: true,
-        isPluginsPilot: false,
         disallowVersioning: false,
       };
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
@@ -392,7 +327,6 @@ describe('DeployScript', () => {
       const options = {
         isPublic: true,
         overwrite: true,
-        isPluginsPilot: false,
         disallowVersioning: false,
       };
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
