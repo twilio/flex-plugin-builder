@@ -3,6 +3,11 @@ import { stringify } from 'querystring';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { logger } from 'flex-plugins-utils-logger';
 
+const csrfTokenRegex = new RegExp(/name="CSRF"\svalue="(.*?)"/m);
+const twVisitorCookieRegex = new RegExp(/tw-visitor=(.*?);/m);
+const identityCookieRegex = new RegExp(/identity=(.*?);/m);
+const serverIdentityCookieRegex = new RegExp(/server-identity=(.*?);/m);
+
 interface ConsoleAuthOptions {
   email: string | undefined;
   password: string | undefined;
@@ -30,6 +35,10 @@ export class ConsoleAPI {
 
   private consoleAuthOptions: ConsoleAuthOptions;
 
+  /**
+   * Initialises console base url and verifies console credentials
+   * @param consoleBaseUrl base url of Twilio console
+   */
   constructor(consoleBaseUrl: string) {
     this.baseUrl = consoleBaseUrl;
 
@@ -44,19 +53,15 @@ export class ConsoleAPI {
   }
 
   /**
-   * Get cookies to authenticate
+   * Get required cookies (tw-visitor, identity, server-identity) to authenticate
    */
   async getCookies(): Promise<Cookies> {
     const loginResponse = await this.getResponse({ method: 'GET', url: `${this.baseUrl}/login` });
 
-    const csrfToken = this.getValueFromResponse(
-      new RegExp(/name="CSRF"\svalue="(.*?)"/m),
-      loginResponse.data,
-      'CSRF Token',
-    );
+    const csrfToken = this.getValueFromResponse(new RegExp(csrfTokenRegex), loginResponse.data, 'CSRF Token');
 
     const twVisitorCookie = this.getValueFromResponse(
-      new RegExp(/tw-visitor=(.*?);/m),
+      new RegExp(twVisitorCookieRegex),
       loginResponse.headers[SET_COOKIE].join(),
       `${Cookie.visitor} cookie`,
     );
@@ -80,7 +85,7 @@ export class ConsoleAPI {
     const loginPasswordCookies = loginPasswordResponse.headers[SET_COOKIE].join();
 
     const serverIdentityCookie = this.getValueFromResponse(
-      new RegExp(/server-identity=(.*?);/m),
+      new RegExp(serverIdentityCookieRegex),
       loginPasswordCookies,
       `${Cookie.sIdentity} cookie`,
     );
@@ -89,7 +94,7 @@ export class ConsoleAPI {
 
     try {
       identityCookie = this.getValueFromResponse(
-        new RegExp(/identity=(.*?);/m),
+        new RegExp(identityCookieRegex),
         loginPasswordCookies,
         `${Cookie.identity} cookie`,
       );
@@ -104,6 +109,12 @@ export class ConsoleAPI {
     };
   }
 
+  /**
+   * Extracts value from response header using regex
+   * @param regex regex to apply
+   * @param response response to be searched
+   * @param matchName name of the entity being looked for
+   */
   private getValueFromResponse(regex: RegExp, response: string, matchName: string): string {
     const match = response.match(regex);
 
@@ -115,6 +126,10 @@ export class ConsoleAPI {
     return match[1];
   }
 
+  /**
+   * Fetch response from the Twilio console endpoint
+   * @param config request config to send
+   */
   private async getResponse(config: AxiosRequestConfig): Promise<AxiosResponse> {
     let response: AxiosResponse;
     try {

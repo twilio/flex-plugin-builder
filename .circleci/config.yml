@@ -186,6 +186,7 @@ jobs:
 
 workflows:
   workflow_e2e-tester:
+    when: << pipeline.parameters.run_e2e_test >>
     jobs:
       - job_e2e-test:
           matrix:

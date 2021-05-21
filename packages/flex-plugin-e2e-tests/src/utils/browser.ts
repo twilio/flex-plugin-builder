@@ -4,6 +4,12 @@ import chrome from 'selenium-webdriver/chrome';
 
 import { Cookies, Cookie } from './console-api';
 
+const DEFAULT_LOCATE_TIMEOUT = 15000;
+const DEFAULT_PAGE_LOAD_TIMEOUT = 60000;
+
+/**
+ * Manages instantiation and interactions with browser
+ */
 export class Browser {
   static browser: WebDriver;
 
@@ -36,7 +42,7 @@ export class Browser {
       'use-fake-ui-for-media-stream',
       '--disable-web-security',
       '--allow-file-access',
-      // '--headless',
+      '--headless',
       'no-sandbox',
     );
 
@@ -54,13 +60,12 @@ export class Browser {
 
   /**
    * Checks that plugin exists in DOM and is visible in UI
+   * @param pluginComponentText text to identify plugin by
    */
   static async pluginIsVisible(pluginComponentText: string): Promise<void> {
     await this.elementExistsAndIsVisible(
       this.pageObjects.flex.agentDesktop.plugin(pluginComponentText),
       'Plugin element',
-      15000,
-      15000,
     );
   }
 
@@ -77,11 +82,19 @@ export class Browser {
 
   /**
    * Sets console cookies and logs into Flex via service login
+   * @param cookies cookies to set
+   * @param consoleBaseUrl Twilio console base url
+   * @param flexBaseUrl base url of the flex
    */
   static async loginViaConsole(cookies: Cookies, consoleBaseUrl: string, flexBaseUrl: string): Promise<void> {
     // Set console cookies
     await this.browser.get(`${consoleBaseUrl}/login`);
-    await this.elementExistsAndIsVisible(this.pageObjects.console.loginPage.form, 'Login Form', 60000, 60000);
+    await this.elementExistsAndIsVisible(
+      this.pageObjects.console.loginPage.form,
+      'Login Form',
+      DEFAULT_PAGE_LOAD_TIMEOUT,
+      DEFAULT_PAGE_LOAD_TIMEOUT,
+    );
 
     await this.browser.manage().addCookie({ name: Cookie.visitor, value: cookies[Cookie.visitor] });
     await this.browser.manage().addCookie({ name: Cookie.sIdentity, value: cookies[Cookie.sIdentity] });
@@ -99,19 +112,23 @@ export class Browser {
     await this.elementExistsAndIsVisible(
       this.pageObjects.flex.agentDesktop.noTaskCanvas,
       'No Task Canvas',
-      60000,
-      60000,
+      DEFAULT_PAGE_LOAD_TIMEOUT,
+      DEFAULT_PAGE_LOAD_TIMEOUT,
     );
   }
 
   /**
    * Checks that element exists in DOM and is visible in UI
+   * @param locator selector wrapped in By
+   * @param elementName name of the searchable element
+   * @param existTimeout time to wait for until element is located in DOM
+   * @param visibleTimeout time to wait for until element is visible in the UI
    */
   private static async elementExistsAndIsVisible(
     locator: By,
     elementName: string,
-    existTimeout = 10000,
-    visibleTimeout = 10000,
+    existTimeout = DEFAULT_LOCATE_TIMEOUT,
+    visibleTimeout = DEFAULT_LOCATE_TIMEOUT,
   ): Promise<void> {
     const element = await this.elementExists(locator, elementName, existTimeout);
     await this.elementIsVisible(element, elementName, visibleTimeout);
@@ -119,8 +136,15 @@ export class Browser {
 
   /**
    * Check that element exists in the DOM
+   * @param locator selector wrapped in By
+   * @param elementName name of the searchable element
+   * @param timeout time to wait for until element is located in DOM
    */
-  private static async elementExists(locator: By, elementName: string, timeout = 10000): Promise<WebElement> {
+  private static async elementExists(
+    locator: By,
+    elementName: string,
+    timeout = DEFAULT_LOCATE_TIMEOUT,
+  ): Promise<WebElement> {
     let element: WebElement;
     try {
       element = await this.browser.wait(until.elementLocated(locator), timeout, `Could not find ${elementName} in DOM`);
@@ -133,8 +157,15 @@ export class Browser {
 
   /**
    * Check that element is visible
+   * @param element element which should be visible
+   * @param elementName name of the searchable element
+   * @param timeout time to wait for until element is visible in the UI
    */
-  private static async elementIsVisible(element: WebElement, elementName: string, timeout = 10000): Promise<void> {
+  private static async elementIsVisible(
+    element: WebElement,
+    elementName: string,
+    timeout = DEFAULT_LOCATE_TIMEOUT,
+  ): Promise<void> {
     try {
       await this.browser.wait(until.elementIsVisible(element), timeout, `Could not find ${elementName} in DOM`);
     } catch (e) {
