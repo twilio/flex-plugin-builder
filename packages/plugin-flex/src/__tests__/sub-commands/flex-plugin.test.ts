@@ -3,6 +3,7 @@ import * as fs from 'flex-dev-utils/dist/fs';
 
 import createTest, { mockGetPkg } from '../framework';
 import FlexPlugin from '../../sub-commands/flex-plugin';
+import DoneCallback = jest.DoneCallback;
 
 describe('SubCommands/FlexPlugin', () => {
   const { env } = process;
@@ -340,6 +341,83 @@ describe('SubCommands/FlexPlugin', () => {
 
       expect(cmd.pkg.dependencies).toEqual(dep);
       expect(cmd.pkg.devDependencies).toEqual(devDep);
+    });
+  });
+
+  describe('client initialization', () => {
+    const callAndVerifyNotInitialized = async (method: string, done: DoneCallback) => {
+      const cmd = await createTest(FlexPlugin)();
+
+      try {
+        const client = cmd[method];
+      } catch (e) {
+        expect(e.message).toContain('is not initialized');
+        done();
+      }
+    };
+
+    const callAndVerifyInitialized = async (method: string) => {
+      const cmd = await createTest(FlexPlugin)();
+      const client = `the-${method}-client`;
+      cmd[`_${method}`] = client;
+
+      expect(cmd[method]).toEqual(client);
+    };
+
+    it('should throw error if _pluginsApiToolkit is undefined', async (done) => {
+      await callAndVerifyNotInitialized('pluginsApiToolkit', done);
+    });
+
+    it('should get _pluginsApiToolkit', async () => {
+      await callAndVerifyInitialized('pluginsApiToolkit');
+    });
+
+    it('should throw error if _pluginsClient is undefined', async (done) => {
+      await callAndVerifyNotInitialized('pluginsClient', done);
+    });
+
+    it('should throw error if _pluginsClient is undefined', async () => {
+      await callAndVerifyInitialized('pluginsClient');
+    });
+
+    it('should throw error if _pluginVersionsClient is undefined', async (done) => {
+      await callAndVerifyNotInitialized('pluginVersionsClient', done);
+    });
+
+    it('should get _pluginVersionsClient', async () => {
+      await callAndVerifyInitialized('pluginVersionsClient');
+    });
+
+    it('should throw error if _configurationsClient is undefined', async (done) => {
+      await callAndVerifyNotInitialized('configurationsClient', done);
+    });
+
+    it('should get _configurationsClient', async () => {
+      await callAndVerifyInitialized('configurationsClient');
+    });
+
+    it('should throw error if _releasesClient is undefined', async (done) => {
+      await callAndVerifyNotInitialized('releasesClient', done);
+    });
+
+    it('should get _releasesClient', async () => {
+      await callAndVerifyInitialized('releasesClient');
+    });
+
+    it('should throw error if _flexConfigurationClient is undefined', async (done) => {
+      await callAndVerifyNotInitialized('flexConfigurationClient', done);
+    });
+
+    it('should get _flexConfigurationClient', async () => {
+      await callAndVerifyInitialized('flexConfigurationClient');
+    });
+
+    it('should throw error if _serverlessClient is undefined', async (done) => {
+      await callAndVerifyNotInitialized('serverlessClient', done);
+    });
+
+    it('should get _serverlessClient', async () => {
+      await callAndVerifyInitialized('serverlessClient');
     });
   });
 });
