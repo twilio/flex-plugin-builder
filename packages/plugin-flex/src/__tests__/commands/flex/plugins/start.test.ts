@@ -1,5 +1,5 @@
 import * as pluginBuilderStartScript from 'flex-plugin-scripts/dist/scripts/start';
-import { TwilioCliError, env } from 'flex-dev-utils';
+import { TwilioCliError, env, TwilioError } from 'flex-dev-utils';
 import * as fs from 'flex-dev-utils/dist/fs';
 
 import createTest, { mockGetPkg } from '../../../framework';
@@ -199,7 +199,7 @@ describe('Commands/FlexPluginsStart', () => {
     try {
       await cmd.run();
     } catch (e) {
-      expect(e).toBeInstanceOf(TwilioCliError);
+      expect(e).toBeInstanceOf(TwilioError);
       expect(e.message).toContain('is not a valid JS file');
       expect(env.getFlexUISrc()).toBeUndefined();
       expect(cmd._flags['flex-ui-source']).toEqual(flexUISrc);
