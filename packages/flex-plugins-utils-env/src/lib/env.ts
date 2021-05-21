@@ -1,7 +1,6 @@
 /// <reference path="../module.d.ts" />
 import get from 'lodash.get';
-
-import { TwilioCliError } from '../../../flex-plugins-utils-exception';
+import { TwilioError } from 'flex-plugins-utils-exception';
 
 export type Realm = 'dev' | 'stage';
 
@@ -29,7 +28,7 @@ const isDefined = (key: string | undefined) => typeof key === 'string' && key !=
 
 const setValidJSFile = (source: string) => {
   if (!source.endsWith('.js')) {
-    throw new TwilioCliError(`${source} is not a valid JS file.`);
+    throw new TwilioError(`${source} is not a valid JS file.`);
   }
   process.env.FLEX_UI_SRC = source;
 };

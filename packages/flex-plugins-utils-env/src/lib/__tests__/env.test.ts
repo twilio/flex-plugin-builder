@@ -1,5 +1,6 @@
+import { TwilioError } from 'flex-plugins-utils-exception';
+
 import * as env from '../env';
-import { TwilioCliError } from '../../../../flex-plugins-utils-exception';
 
 describe('env', () => {
   const OLD_ENV = process.env;
@@ -341,7 +342,7 @@ describe('env', () => {
       try {
         env.setFlexUISrc('invalid-flex-ui-source');
       } catch (e) {
-        expect(e).toBeInstanceOf(TwilioCliError);
+        expect(e).toBeInstanceOf(TwilioError);
         expect(e.message).toContain('is not a valid JS file');
         expect(env.getFlexUISrc()).toBeUndefined();
       }
