@@ -7,14 +7,15 @@ import { logger } from 'flex-plugins-utils-logger';
  */
 const waitForPluginToStart = async (url: string): Promise<void> => {
   let counter = 0;
-  setInterval(async () => {
+  const interval = setInterval(async () => {
     if (counter >= 3) {
+      clearInterval(interval);
       throw new Error('Plugin did not start');
     }
 
     try {
       await axios.get(url);
-      clearInterval(counter);
+      clearInterval(interval);
     } catch (e) {
       logger.warning(e);
     }
