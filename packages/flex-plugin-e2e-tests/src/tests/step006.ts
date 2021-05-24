@@ -3,12 +3,15 @@ import { replaceInFile } from 'replace-in-file';
 import { TestSuite, TestParams } from '..';
 import { spawn, Browser, pluginHelper, ConsoleAPI, joinPath } from '../utils';
 
+const PLUGIN_START_TIMEOUT = 30000;
+const PLUGIN_START_POLL_INTERVAL = 1000;
+
 // Plugin start
 const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
   const tmpComponentText = 'hot reload works';
 
   const twilioCliResult = await spawn(`cd ${params.plugin.dir} && twilio`, ['flex:plugins:start'], { detached: true, shell: true });
-  await pluginHelper.waitForPluginToStart(params.plugin.baseUrl);
+  await pluginHelper.waitForPluginToStart(params.plugin.baseUrl, PLUGIN_START_TIMEOUT, PLUGIN_START_POLL_INTERVAL);
   
   const consoleApi = new ConsoleAPI(params.consoleBaseUrl);
   const cookies = await consoleApi.getCookies();
