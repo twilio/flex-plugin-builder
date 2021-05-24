@@ -2,25 +2,29 @@ import axios from 'axios';
 import { logger } from 'flex-plugins-utils-logger';
 
 /**
- * Waits for plugin to start at the given url
+ *  * Waits for plugin to start at the given url
  * @param url plugin url to poll for a successful response
+ * @param timeout maximum amount of time to wait until failing
+ * @param pollInterval time to wait between each polling attempt
  */
-const waitForPluginToStart = async (url: string): Promise<void> => {
+const waitForPluginToStart = async (url: string, timeout: number, pollInterval: number): Promise<void> => {
   let counter = 0;
-  const interval = setInterval(async () => {
-    if (counter >= 3) {
-      clearInterval(interval);
-      throw new Error('Plugin did not start');
-    }
 
+  while (true) {
     try {
       await axios.get(url);
-      clearInterval(interval);
+      break;
     } catch (e) {
-      logger.warning(e);
+      if (counter === timeout) {
+        logger.error(e);
+        throw new Error('Plugin did not start');
+      }
     }
-    counter += 1;
-  }, 1000);
+
+    // eslint-disable-next-line no-loop-func
+    await new Promise((r) => setTimeout(r, pollInterval));
+    counter += pollInterval;
+  }
 };
 
 export default {
