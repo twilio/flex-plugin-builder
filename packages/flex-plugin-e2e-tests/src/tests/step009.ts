@@ -38,12 +38,9 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
 
     await Browser.pluginIsVisible(params.plugin.newlineValue);
 
-  } catch(e) {
+  } finally {
     await Browser.kill();
-    throw e;
   }
-
-  await Browser.kill();
 };
 testSuite.description = 'Released Plugin visible on the Hosted Flex';
 

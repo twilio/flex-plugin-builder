@@ -32,14 +32,10 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
     }); 
 
     await Browser.pluginIsVisible(tmpComponentText);
-  } catch(e) {
+  } finally {
     await Browser.kill();
     twilioCliResult.child?.kill();
-    throw e;
   }
-
-  await Browser.kill();
-  twilioCliResult.child?.kill();
 
   await replaceInFile({
     files: joinPath(params.plugin.dir, 'src', 'components', 'CustomTaskList', 'CustomTaskList.jsx'),
