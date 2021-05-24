@@ -2,7 +2,7 @@ import axios from 'axios';
 import { logger } from 'flex-plugins-utils-logger';
 
 /**
- *  * Waits for plugin to start at the given url
+ * Waits for plugin to start at the given url
  * @param url plugin url to poll for a successful response
  * @param timeout maximum amount of time to wait until failing
  * @param pollInterval time to wait between each polling attempt
