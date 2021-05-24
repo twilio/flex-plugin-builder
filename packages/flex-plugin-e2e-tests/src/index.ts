@@ -10,6 +10,7 @@ export interface TestParams {
   nodeVersion: string;
   homeDir: string;
   consoleBaseUrl: string;
+  hostedFlexBaseUrl: string;
   plugin: {
     name: string;
     dir: string;
@@ -45,6 +46,7 @@ const testParams: TestParams = {
   packageVersion: process.env.PACKAGE_VERSION as string,
   nodeVersion: process.env.NODE_VERSION as string,
   consoleBaseUrl: process.env.CONSOLE_BASE_URL || 'https://www.twilio.com',
+  hostedFlexBaseUrl: process.env.HOSTED_FLEX_BASE_URL || 'https://flex.twilio.com',
   homeDir,
   plugin: {
     name: pluginName,

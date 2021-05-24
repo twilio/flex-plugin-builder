@@ -7,6 +7,15 @@ import { Cookies, Cookie } from './console-api';
 const DEFAULT_LOCATE_TIMEOUT = 15000;
 const DEFAULT_PAGE_LOAD_TIMEOUT = 60000;
 
+interface PluginResponse {
+  name: string;
+  version: string;
+  phase: number;
+  src: string;
+}
+
+type FlexPath = 'agent-desktop' | 'admin';
+
 /**
  * Manages instantiation and interactions with browser
  */
@@ -26,6 +35,12 @@ export class Browser {
       agentDesktop: {
         plugin: (pluginText: string): By => By.xpath(`//div[contains(text(), '${pluginText}')]`),
         noTaskCanvas: By.css('.Twilio-NoTasksCanvas'),
+      },
+      adminDashboard: {
+        welcomeBanner: By.css('.welcome-banner'),
+      },
+      plugins: {
+        list: By.css('pre'),
       },
     },
   };
@@ -107,14 +122,53 @@ export class Browser {
     await this.browser.get(flexBaseUrl);
     const link = await this.elementExists(this.pageObjects.flex.loginPage.serviceLoginLink, 'Service Login link');
     await link.click();
+  }
 
-    // Making sure that agent desktop loads
-    await this.elementExistsAndIsVisible(
-      this.pageObjects.flex.agentDesktop.noTaskCanvas,
-      'No Task Canvas',
-      DEFAULT_PAGE_LOAD_TIMEOUT,
-      DEFAULT_PAGE_LOAD_TIMEOUT,
-    );
+  /**
+   * Ensures that user is on the correct view
+   * @param view name of view on which user should be
+   */
+  static async userIsOnView(view: 'Agent Desktop' | 'Admin Dashboard'): Promise<void> {
+    let locator: By;
+
+    if (view === 'Admin Dashboard') {
+      locator = this.pageObjects.flex.adminDashboard.welcomeBanner;
+    } else if (view === 'Agent Desktop') {
+      locator = this.pageObjects.flex.agentDesktop.noTaskCanvas;
+    } else {
+      throw new Error(`${view} is not a valid view`);
+    }
+
+    await this.elementExistsAndIsVisible(locator, view, DEFAULT_PAGE_LOAD_TIMEOUT, DEFAULT_PAGE_LOAD_TIMEOUT);
+  }
+
+  /**
+   * Open the given path in browser
+   * @param flexBaseUrl base url of the Flex
+   * @param path path to navigate to
+   */
+  static async navigate(flexBaseUrl: string, path: FlexPath): Promise<void> {
+    await this.browser.get(`${flexBaseUrl}/${path}`);
+  }
+
+  /**
+   * Returns all plugins from the /plugins endpoint
+   * @param flexBaseUrl base url of the Flex
+   */
+  static async getPluginResponse(flexBaseUrl: string): Promise<PluginResponse[]> {
+    await this.browser.get(`${flexBaseUrl}/plugins`);
+
+    const pluginListEle = await this.elementExists(this.pageObjects.flex.plugins.list, 'Plugin List PRE block');
+    const pluginListString = await pluginListEle.getText();
+
+    let pluginList;
+    try {
+      pluginList = JSON.parse(pluginListString);
+    } catch (e) {
+      logger.error('Plugin list retrieved from the /plugins is not a valid JSON');
+      throw e;
+    }
+    return pluginList;
   }
 
   /**
