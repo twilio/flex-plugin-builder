@@ -102,7 +102,6 @@ commands:
 
 jobs:
   job_e2e-test-win32:
-    resource_class: xlarge
     parameters:
       shell:
         type: string
