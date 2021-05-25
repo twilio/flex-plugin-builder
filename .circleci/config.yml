@@ -116,7 +116,7 @@ jobs:
       size: xlarge
     steps:
       - checkout
-      - cmd_install-prerequisites
+      # - cmd_install-prerequisites
       - cmd_install-dependencies
       - cmd_install-chrome-utils
       - cmd_run-build
@@ -213,11 +213,11 @@ workflows:
           matrix:
             parameters:
               package_version: [ << pipeline.parameters.package_version >> ]
-              shell: [ "bash.exe", "powershell.exe" ]
-      - job_e2e-test:
-          matrix:
-            parameters:
-              package_version: [ << pipeline.parameters.package_version >> ]
+              shell: [ "bash.exe" ]
+      # - job_e2e-test:
+      #     matrix:
+      #       parameters:
+      #         package_version: [ << pipeline.parameters.package_version >> ]
 
   workflow_publisher:
     when: << pipeline.parameters.run_npm_publish >>
