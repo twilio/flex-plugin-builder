@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@types/lodash.get": "^4.4.6",
+    "flex-plugins-utils-exception": "4.0.0",
     "lodash.get": "^4.4.2"
   }
 }
