@@ -208,7 +208,7 @@ workflows:
       - job_pr-validator-win32:
           matrix:
             parameters:
-                shell: [ "bash.exe" ]
+                shell: [ "bash.exe", "powershell.exe" ]
       - job_pr-validator-node:
           matrix:
             parameters:
