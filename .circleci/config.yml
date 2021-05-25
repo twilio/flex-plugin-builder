@@ -211,9 +211,10 @@ workflows:
     when: << pipeline.parameters.run_e2e_test >>
     jobs:
       - job_e2e-test-win32:
-          parameters:
-            package_version: [ << pipeline.parameters.package_version >> ]
-            shell: [ "bash.exe", "powershell.exe" ]
+          matrix:
+            parameters:
+              package_version: [ << pipeline.parameters.package_version >> ]
+              shell: [ "bash.exe", "powershell.exe" ]
       - job_e2e-test:
           matrix:
             parameters:
