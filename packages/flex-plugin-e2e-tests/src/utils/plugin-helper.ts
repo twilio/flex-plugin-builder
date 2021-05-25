@@ -3,6 +3,7 @@ import { ConfiguredPluginResource } from 'flex-plugins-api-client';
 import { logger } from 'flex-plugins-utils-logger';
 
 import { Browser } from './browser';
+import { sleep } from './timers';
 
 /**
  * Waits for plugin to start at the given url
@@ -24,8 +25,7 @@ const waitForPluginToStart = async (url: string, timeout: number, pollInterval: 
       }
     }
 
-    // eslint-disable-next-line no-loop-func
-    await new Promise((r) => setTimeout(r, pollInterval));
+    await sleep(pollInterval);
     counter += pollInterval;
   }
 };
@@ -48,7 +48,6 @@ const waitForPluginToRelease = async (
   while (true) {
     try {
       const plugins = await Browser.getPluginResponse(flexBaseUrl);
-
       const plugin = plugins.find((plugin) => plugin.name === releasedPlugin.unique_name);
 
       if (!plugin) {
@@ -62,8 +61,7 @@ const waitForPluginToRelease = async (
       }
     }
 
-    // eslint-disable-next-line no-loop-func
-    await new Promise((r) => setTimeout(r, pollInterval));
+    await sleep(pollInterval);
     counter += pollInterval;
   }
 };

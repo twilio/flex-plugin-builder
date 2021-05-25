@@ -3,7 +3,7 @@ import { readdirSync, existsSync, mkdirSync } from 'fs';
 
 import { logger } from 'flex-plugins-utils-logger';
 
-import { api } from './utils';
+import { api, ConsoleAuthOptions } from './utils';
 
 export interface TestParams {
   packageVersion: string;
@@ -11,6 +11,9 @@ export interface TestParams {
   homeDir: string;
   consoleBaseUrl: string;
   hostedFlexBaseUrl: string;
+  secrets: {
+    console: ConsoleAuthOptions;
+  };
   plugin: {
     name: string;
     dir: string;
@@ -48,6 +51,12 @@ const testParams: TestParams = {
   consoleBaseUrl: process.env.CONSOLE_BASE_URL || 'https://www.twilio.com',
   hostedFlexBaseUrl: process.env.HOSTED_FLEX_BASE_URL || 'https://flex.twilio.com',
   homeDir,
+  secrets: {
+    console: {
+      email: process.env.CONSOLE_EMAIL,
+      password: process.env.CONSOLE_PASSWORD,
+    },
+  },
   plugin: {
     name: pluginName,
     dir: `${homeDir}/${pluginName}`,
@@ -86,7 +95,9 @@ const runTest = async (step: number): Promise<void> => {
   }
 
   logger.info(`Running Plugins E2E Test with parameters:`);
-  Object.keys(testParams).forEach((key) => logger.info(`- ${key}: ${JSON.stringify(testParams[key])}`));
+  Object.keys(testParams).forEach(
+    (key) => key !== 'secrets' && logger.info(`- ${key}: ${JSON.stringify(testParams[key])}`),
+  );
   await api.cleanup();
 
   /*

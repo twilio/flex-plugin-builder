@@ -4,6 +4,8 @@ import * as fs from 'fs';
 
 import { get } from 'lodash';
 
+import { Browser } from './browser';
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const _strictEqual = (doesEqual: boolean, actual: any, expected: any, msg?: string): void => {
   if (doesEqual) {
@@ -69,4 +71,5 @@ export default {
     stringContains: stringContains(false),
     equal: equal(false),
   },
+  browser: Browser.assert,
 };

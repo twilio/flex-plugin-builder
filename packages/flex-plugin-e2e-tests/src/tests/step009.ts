@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { TestSuite, TestParams } from '..';
-import { api, Browser, ConsoleAPI, pluginHelper } from '../utils';
+import { api, assertion, Browser, ConsoleAPI, pluginHelper } from '../utils';
 
 const PLUGIN_RELEASED_TIMEOUT = 30000;
 const PLUGIN_RELEASED_POLL_INTERVAL = 5000;
@@ -17,7 +17,7 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
     throw new Error(`Did not find plugin with name: ${params.plugin.name} in released plugins`);
   }   
 
-  const consoleApi = new ConsoleAPI(params.consoleBaseUrl);
+  const consoleApi = new ConsoleAPI(params.consoleBaseUrl, params.secrets.console);
   const cookies = await consoleApi.getCookies();
   
   await Browser.create();
@@ -25,7 +25,7 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
   try {
     // Log into Flex
     await Browser.loginViaConsole(cookies, params.consoleBaseUrl, params.hostedFlexBaseUrl);
-    await Browser.userIsOnView('Admin Dashboard');
+    await assertion.browser.userIsOnView('Admin Dashboard');
 
     // Make sure that /plugins contain the plugin
     await pluginHelper.waitForPluginToRelease(params.hostedFlexBaseUrl, releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
@@ -36,7 +36,7 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
         throw new Error(`params.plugin.newlineValue does not have a valid value`);
     }
 
-    await Browser.pluginIsVisible(params.plugin.newlineValue);
+    await assertion.browser.pluginIsVisible(params.plugin.newlineValue);
 
   } finally {
     await Browser.kill();

@@ -8,7 +8,7 @@ const twVisitorCookieRegex = new RegExp(/tw-visitor=(.*?);/m);
 const identityCookieRegex = new RegExp(/identity=(.*?);/m);
 const serverIdentityCookieRegex = new RegExp(/server-identity=(.*?);/m);
 
-interface ConsoleAuthOptions {
+export interface ConsoleAuthOptions {
   email: string | undefined;
   password: string | undefined;
 }
@@ -38,17 +38,19 @@ export class ConsoleAPI {
   /**
    * Initialises console base url and verifies console credentials
    * @param consoleBaseUrl base url of Twilio console
+   * @param email email of the console user
+   * @param password password of the console user
    */
-  constructor(consoleBaseUrl: string) {
+  constructor(consoleBaseUrl: string, { email, password }: ConsoleAuthOptions) {
     this.baseUrl = consoleBaseUrl;
 
-    if (!process.env.CONSOLE_EMAIL || !process.env.CONSOLE_PASSWORD) {
+    if (!email || !password) {
       throw new Error('Please export CONSOLE_EMAIL; CONSOLE_PASSWORD');
     }
 
     this.consoleAuthOptions = {
-      email: process.env.CONSOLE_EMAIL,
-      password: process.env.CONSOLE_PASSWORD,
+      email,
+      password,
     };
   }
 
@@ -131,14 +133,11 @@ export class ConsoleAPI {
    * @param config request config to send
    */
   private async getResponse(config: AxiosRequestConfig): Promise<AxiosResponse> {
-    let response: AxiosResponse;
     try {
-      response = await axios(config);
+      return axios(config);
     } catch (e) {
       logger.error(`${config.method}: ${config.url} returned code ${e.status}.`);
       throw new Error(e);
     }
-
-    return response;
   }
 }

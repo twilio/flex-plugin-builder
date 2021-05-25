@@ -15,6 +15,7 @@ interface PluginResponse {
 }
 
 type FlexPath = 'agent-desktop' | 'admin';
+type FlexView = 'Agent Desktop' | 'Admin Dashboard';
 
 /**
  * Manages instantiation and interactions with browser
@@ -45,6 +46,11 @@ export class Browser {
     },
   };
 
+  static assert = {
+    pluginIsVisible: async (pluginComponentText: string): Promise<void> => Browser.pluginIsVisible(pluginComponentText),
+    userIsOnView: async (view: FlexView): Promise<void> => Browser.userIsOnView(view),
+  };
+
   /**
    * Initializes browser object
    */
@@ -71,17 +77,6 @@ export class Browser {
       .catch((e) => {
         throw e;
       });
-  }
-
-  /**
-   * Checks that plugin exists in DOM and is visible in UI
-   * @param pluginComponentText text to identify plugin by
-   */
-  static async pluginIsVisible(pluginComponentText: string): Promise<void> {
-    await this.elementExistsAndIsVisible(
-      this.pageObjects.flex.agentDesktop.plugin(pluginComponentText),
-      'Plugin element',
-    );
   }
 
   /**
@@ -125,24 +120,6 @@ export class Browser {
   }
 
   /**
-   * Ensures that user is on the correct view
-   * @param view name of view on which user should be
-   */
-  static async userIsOnView(view: 'Agent Desktop' | 'Admin Dashboard'): Promise<void> {
-    let locator: By;
-
-    if (view === 'Admin Dashboard') {
-      locator = this.pageObjects.flex.adminDashboard.welcomeBanner;
-    } else if (view === 'Agent Desktop') {
-      locator = this.pageObjects.flex.agentDesktop.noTaskCanvas;
-    } else {
-      throw new Error(`${view} is not a valid view`);
-    }
-
-    await this.elementExistsAndIsVisible(locator, view, DEFAULT_PAGE_LOAD_TIMEOUT, DEFAULT_PAGE_LOAD_TIMEOUT);
-  }
-
-  /**
    * Open the given path in browser
    * @param flexBaseUrl base url of the Flex
    * @param path path to navigate to
@@ -169,6 +146,35 @@ export class Browser {
       throw e;
     }
     return pluginList;
+  }
+
+  /**
+   * Checks that plugin exists in DOM and is visible in UI
+   * @param pluginComponentText text to identify plugin by
+   */
+  private static async pluginIsVisible(pluginComponentText: string): Promise<void> {
+    await this.elementExistsAndIsVisible(
+      this.pageObjects.flex.agentDesktop.plugin(pluginComponentText),
+      'Plugin element',
+    );
+  }
+
+  /**
+   * Ensures that user is on the correct view
+   * @param view name of view on which user should be
+   */
+  private static async userIsOnView(view: FlexView): Promise<void> {
+    let locator: By;
+
+    if (view === 'Admin Dashboard') {
+      locator = this.pageObjects.flex.adminDashboard.welcomeBanner;
+    } else if (view === 'Agent Desktop') {
+      locator = this.pageObjects.flex.agentDesktop.noTaskCanvas;
+    } else {
+      throw new Error(`${view} is not a valid view`);
+    }
+
+    await this.elementExistsAndIsVisible(locator, view, DEFAULT_PAGE_LOAD_TIMEOUT, DEFAULT_PAGE_LOAD_TIMEOUT);
   }
 
   /**
