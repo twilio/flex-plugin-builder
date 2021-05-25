@@ -54,7 +54,7 @@ commands:
           name: Check install
           command: |
             google-chrome --version
-            chromedriver --version    
+            chromedriver --version
   cmd_run-unit-tests:
     steps:
       - run:
@@ -101,6 +101,28 @@ commands:
             npm run publish:<< parameters.dist_tag >> << parameters.version_bump >>
 
 jobs:
+  job_e2e-test-win32:
+    resource_class: xlarge
+    parameters:
+      shell:
+        type: string
+      package_version:
+        type: string
+    environment:
+      PACKAGE_VERSION: << parameters.package_version >>
+      NODE_VERSION: "lts"
+    executor:
+      name: win/default
+      shell: << parameters.shell >>
+      size: xlarge
+    steps:
+      - checkout
+      - cmd_install-prerequisites
+      - cmd_install-dependencies
+      - cmd_install-chrome-utils
+      - cmd_run-build
+      - cmd_run-e2e-tests
+
   job_e2e-test:
     resource_class: xlarge
     parameters:
@@ -188,6 +210,10 @@ workflows:
   workflow_e2e-tester:
     when: << pipeline.parameters.run_e2e_test >>
     jobs:
+      - job_e2e-test-win32:
+          parameters:
+            package_version: [ << pipeline.parameters.package_version >> ]
+            shell: [ "bash.exe", "powershell.exe" ]
       - job_e2e-test:
           matrix:
             parameters:
@@ -212,7 +238,7 @@ workflows:
       - job_pr-validator-node:
           matrix:
             parameters:
-              node-version: ["10.24", "12.21", "14.16", lts]
+              node-version: ["10.24", "12.21", "14.16"]
           post-steps:
             - run:
                 name: Send Slack notification
