@@ -2,7 +2,7 @@
 import { TestSuite, TestParams } from '..';
 import { spawn, logResult, assertion } from '../utils';
 
-// Install Twilio CLI and Plugins CLI
+// Install dependencies
 const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
   const result = await spawn('npm', ['i'], { cwd: params.plugin.dir });
   logResult(result);

@@ -5,7 +5,7 @@ import semver from 'semver';
 import { assertion, joinPath, logResult, spawn, api } from '../utils';
 import { TestSuite, TestParams } from '..';
 
-// Install Twilio CLI and Plugins CLI
+// Deploy plugin
 const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
   params.plugin.newlineValue = `This is a dismissible demo component ${Date.now()}`;
   params.plugin.changelog = `e2e test ${Date.now()}`;
