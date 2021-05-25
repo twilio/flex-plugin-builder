@@ -3,15 +3,22 @@ import { readdirSync, existsSync, mkdirSync } from 'fs';
 
 import { logger } from 'flex-plugins-utils-logger';
 
-import { api } from './utils';
+import { api, ConsoleAuthOptions } from './utils';
 
 export interface TestParams {
   packageVersion: string;
   nodeVersion: string;
   homeDir: string;
+  consoleBaseUrl: string;
+  hostedFlexBaseUrl: string;
+  secrets: {
+    console: ConsoleAuthOptions;
+  };
   plugin: {
     name: string;
     dir: string;
+    componentText: string;
+    baseUrl: string;
   } & Partial<TestParamsBuilder>;
 }
 interface TestParamsBuilder {
@@ -41,10 +48,20 @@ const pluginName = 'flex-e2e-tester-plugin';
 const testParams: TestParams = {
   packageVersion: process.env.PACKAGE_VERSION as string,
   nodeVersion: process.env.NODE_VERSION as string,
+  consoleBaseUrl: process.env.CONSOLE_BASE_URL || 'https://www.twilio.com',
+  hostedFlexBaseUrl: process.env.HOSTED_FLEX_BASE_URL || 'https://flex.twilio.com',
   homeDir,
+  secrets: {
+    console: {
+      email: process.env.CONSOLE_EMAIL,
+      password: process.env.CONSOLE_PASSWORD,
+    },
+  },
   plugin: {
     name: pluginName,
     dir: `${homeDir}/${pluginName}`,
+    componentText: `This is a dismissible demo component ${Date.now()}`,
+    baseUrl: 'http://localhost:3000' || (process.env.PLUGIN_BASE_URL as string),
   },
 };
 
@@ -78,7 +95,9 @@ const runTest = async (step: number): Promise<void> => {
   }
 
   logger.info(`Running Plugins E2E Test with parameters:`);
-  Object.keys(testParams).forEach((key) => logger.info(`- ${key}: ${JSON.stringify(testParams[key])}`));
+  Object.keys(testParams).forEach(
+    (key) => key !== 'secrets' && logger.info(`- ${key}: ${JSON.stringify(testParams[key])}`),
+  );
   await api.cleanup();
 
   /*
