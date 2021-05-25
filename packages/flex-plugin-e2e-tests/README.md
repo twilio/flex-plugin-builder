@@ -6,6 +6,10 @@
 
 To be filled
 
+### Prerequisites
+
+Make sure that chromedriver is on your path and matches your chrome version
+
 ## Running Locally
 
 To run locally:

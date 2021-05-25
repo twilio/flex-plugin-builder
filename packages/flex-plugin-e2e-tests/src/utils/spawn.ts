@@ -1,4 +1,4 @@
-import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
+import { ChildProcessWithoutNullStreams, spawn, SpawnOptionsWithoutStdio } from 'child_process';
 
 import { logger } from 'flex-plugins-utils-logger';
 
@@ -7,6 +7,7 @@ import { homeDir } from '..';
 interface SpawnResult {
   stdout: string;
   stderr: string;
+  child?: ChildProcessWithoutNullStreams;
 }
 
 /**
@@ -16,6 +17,7 @@ interface SpawnResult {
  * @param options spawn options to run
  */
 export default async (cmd: string, args: string[], options?: SpawnOptionsWithoutStdio): Promise<SpawnResult> => {
+  // eslint-disable-next-line consistent-return
   return new Promise((resolve, reject) => {
     const defaultOptions = {
       cwd: homeDir,
@@ -67,6 +69,14 @@ export default async (cmd: string, args: string[], options?: SpawnOptionsWithout
 
       return reject(new Error(`Command exited with code ${code} and message ${stdout}: ${stderr}`));
     });
+
+    if (options?.detached) {
+      return resolve({
+        stdout: Buffer.concat(stdoutArr).toString(),
+        stderr: Buffer.concat(stderrArr).toString(),
+        child,
+      });
+    }
   });
 };
 
