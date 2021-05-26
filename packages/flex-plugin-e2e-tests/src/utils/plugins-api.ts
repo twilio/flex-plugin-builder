@@ -23,6 +23,10 @@ const configuredPluginsClient = new ConfiguredPluginsClient(client);
 const releasesClient = new ReleasesClient(client);
 
 const cleanup = async (): Promise<void> => {
+  // Fetch active plugin - later we will clean archive every entry
+  const activeRelease = await releasesClient.active();
+
+  // Create empty release
   const resource = await configurationsClient.create({
     Name: 'E2E Test Cleanup',
     Description: 'Empty Configuration',
@@ -31,6 +35,14 @@ const cleanup = async (): Promise<void> => {
   await releasesClient.create({
     ConfigurationId: resource.sid,
   });
+
+  // Now archive plugin versions
+  if (activeRelease) {
+    const list = await configuredPluginsClient.list(activeRelease.configuration_sid);
+    for (const plugin of list.plugins) {
+      await versionsClient.archive(plugin.plugin_sid, plugin.plugin_version_sid);
+    }
+  }
 };
 
 const getPluginVersion = async (name: string, version: string): Promise<PluginVersionResource> => {
