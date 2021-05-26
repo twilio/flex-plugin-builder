@@ -4,7 +4,9 @@ import { spawn, logResult, assertion } from '../utils';
 
 // Create a plugin
 const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
-  const twilioCliResult = await spawn('twilio', ['flex:plugins:create', params.plugin.name]);
+  const twilioCliResult = await spawn('twilio', ['flex:plugins:create', params.plugin.name], {
+    shell: true,
+  });
   logResult(twilioCliResult);
 
   // Assert files/directories exist

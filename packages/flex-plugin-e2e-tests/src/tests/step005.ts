@@ -11,7 +11,7 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
     from: /This is a dismissible demo component.*/,
     to: params.plugin.componentText,
   });
-  const result = await spawn('twilio', ['flex:plugins:build'], { cwd: params.plugin.dir });
+  const result = await spawn('twilio', ['flex:plugins:build'], { cwd: params.plugin.dir, shell: true });
   logResult(result);
 
   assertion.not.dirIsEmpty([params.plugin.dir, 'build']);

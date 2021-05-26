@@ -4,7 +4,7 @@ import { spawn, logResult, assertion } from '../utils';
 
 // Install dependencies
 const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
-  const result = await spawn('npm', ['i'], { cwd: params.plugin.dir });
+  const result = await spawn('npm', ['i'], { cwd: params.plugin.dir, shell: true });
   logResult(result);
 
   assertion.fileExists([params.plugin.dir, 'node_modules']);

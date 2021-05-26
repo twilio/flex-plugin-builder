@@ -137,15 +137,6 @@ jobs:
       - checkout
       - cmd_install-prerequisites
       - cmd_install-dependencies
-      - run:
-          name: "Install chromedriver"
-          command: choco install chromedriver
-      - run:
-          name: "Install chrome"
-          command: choco install googlechrome
-      - run:
-          name: "Verify chromedriver"
-          command: chromedriver --version
       # - cmd_install-chrome-utils
       - cmd_run-build
       - cmd_run-e2e-tests
@@ -228,14 +219,14 @@ workflows:
       #       parameters:
       #         package_version: [ << pipeline.parameters.package_version >> ]
 
-  workflow_publisher:
-    when: << pipeline.parameters.run_npm_publish >>
-    jobs:
-      - job_npm-publish:
-          matrix:
-            parameters:
-              dist_tag: [ << pipeline.parameters.dist_tag >> ]
-              version_bump: [ << pipeline.parameters.version_bump >> ]
+  # workflow_publisher:
+  #   when: << pipeline.parameters.run_npm_publish >>
+  #   jobs:
+  #     - job_npm-publish:
+  #         matrix:
+  #           parameters:
+  #             dist_tag: [ << pipeline.parameters.dist_tag >> ]
+  #             version_bump: [ << pipeline.parameters.version_bump >> ]
 
   # workflow_pr-validator:
   #   when: << pipeline.parameters.run_pr_validator >>

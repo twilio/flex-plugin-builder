@@ -9,7 +9,7 @@ const PLUGIN_START_POLL_INTERVAL = 1000;
 // Plugin start
 const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
   const tmpComponentText = 'hot reload works';
-  const twilioCliResult = await spawn('twilio', ['flex:plugins:start'], { detached: true, cwd: params.plugin.dir });
+  const twilioCliResult = await spawn('twilio', ['flex:plugins:start'], { detached: true, cwd: params.plugin.dir, shell: true });
   await pluginHelper.waitForPluginToStart(params.plugin.baseUrl, PLUGIN_START_TIMEOUT, PLUGIN_START_POLL_INTERVAL);
   const consoleApi = new ConsoleAPI(params.consoleBaseUrl, params.secrets.console);
   const cookies = await consoleApi.getCookies();

@@ -4,11 +4,13 @@ import { TestSuite, TestParams } from '..';
 
 // Release plugin
 const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
-  const result = await spawn('twilio', [
-    'flex:plugins:release',
-    '--plugin',
-    `${params.plugin.name}@${params.plugin.version}`,
-  ]);
+  const result = await spawn(
+    'twilio',
+    ['flex:plugins:release', '--plugin', `${params.plugin.name}@${params.plugin.version}`],
+    {
+      shell: true,
+    },
+  );
   logResult(result);
 
   const release = await api.getActiveRelease();
