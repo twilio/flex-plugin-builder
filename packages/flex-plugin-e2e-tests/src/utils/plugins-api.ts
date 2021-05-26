@@ -14,9 +14,9 @@ import {
 import { PluginServiceHttpOption } from 'flex-plugins-api-client/dist/clients/client';
 
 const options: PluginServiceHttpOption = {};
-if (process.env.REALM) {
+if (process.env.TWILIO_REGION) {
   // @ts-ignore
-  options.realm = process.env.REALM;
+  options.realm = process.env.TWILIO_REGION;
 }
 
 const client = new PluginServiceHTTPClient(

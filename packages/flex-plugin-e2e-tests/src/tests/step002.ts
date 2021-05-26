@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unused-modules, sonarjs/no-duplicate-string */
 import { TestSuite, TestParams } from '..';
-import { spawn, logResult, assertion } from '../utils';
+import { spawn, logResult, assertion, joinPath, writeFileSync } from '../utils';
 
 // Create a plugin
 const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
@@ -30,7 +30,41 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
   assertion.jsonFileContains([params.plugin.dir, 'package.json'], "dependencies['react']", `16.5.2`);
   assertion.jsonFileContains([params.plugin.dir, 'package.json'], "dependencies['react-dom']", `16.5.2`);
   assertion.jsonFileContains([params.plugin.dir, 'package.json'], "devDependencies['react-test-renderer']", `16.5.2`);
+
+  if (params.region) {
+    const appConfig = {
+      pluginService: {
+        enabled: true,
+        url: '/plugins',
+      },
+      logLevel: 'info',
+      flexConfigServiceUrl: `https://flex-api.${params.region}.twilio.com/v1/Configuration`,
+      sdkOptions: {
+        chat: {
+          region: 'stage-us1',
+        },
+        worker: {
+          ebServer: `https://event-bridge.${params.region}-us1.twilio.com/v1/wschannels`,
+          wsServer: `wss://event-bridge.${params.region}-us1.twilio.com/v1/wschannels`,
+        },
+        insights: {
+          productId: 'flex_insights',
+          region: `${params.region}-us1`,
+        },
+        voice: {
+          chunderw: `chunderw-vpc-gll.${params.region}.twilio.com`,
+          eventgw: `eventgw.${params.region}.twilio.com`,
+        },
+      },
+    };
+
+    writeFileSync(
+      joinPath(params.plugin.dir, 'public', 'appConfig.js'),
+      `var appConfig = ${JSON.stringify(appConfig)}`,
+    );
+  }
 };
+
 testSuite.description = 'Creating a Plugin';
 
 export default testSuite;

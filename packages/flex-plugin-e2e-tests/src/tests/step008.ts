@@ -8,7 +8,7 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
     'flex:plugins:release',
     '--plugin',
     `${params.plugin.name}@${params.plugin.version}`,
-    ...params.realmFlag,
+    ...params.regionFlag,
   ]);
   logResult(result);
 
