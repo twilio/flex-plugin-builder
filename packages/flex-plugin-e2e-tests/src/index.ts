@@ -49,7 +49,7 @@ export const homeDir = `${process.env.HOME as string}/.local`;
 const { REALM } = process.env;
 const pluginName = 'flex-e2e-tester-plugin';
 const consoleBaseUrl = REALM ? `https://www.${REALM}.twilio.com` : 'https://www.twilio.com';
-const hostedFlexBaseUrl = REALM ? `https://www.flex.${REALM}.twilio.com` : 'https://www.flex.twilio.com';
+const hostedFlexBaseUrl = REALM ? `https://flex.${REALM}.twilio.com` : 'https://flex.twilio.com';
 const testParams: TestParams = {
   packageVersion: process.env.PACKAGE_VERSION as string,
   nodeVersion: process.env.NODE_VERSION as string,
