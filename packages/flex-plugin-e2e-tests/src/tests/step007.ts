@@ -17,7 +17,7 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
 
   const resource = await api.getLatestPluginVersion(params.plugin.name);
   params.plugin.version = semver.inc(resource?.version || '0.0.0', 'patch') as string;
-  const result = await spawn('twilio', ['flex:plugins:deploy', '--changelog', params.plugin.changelog, '--patch'], {
+  const result = await spawn('../twilio', ['flex:plugins:deploy', '--changelog', params.plugin.changelog, '--patch'], {
     cwd: params.plugin.dir,
     shell: true,
   });
