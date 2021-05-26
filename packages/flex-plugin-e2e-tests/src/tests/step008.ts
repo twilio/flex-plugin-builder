@@ -1,11 +1,11 @@
 /* eslint-disable import/no-unused-modules, @typescript-eslint/no-non-null-assertion */
-import { assertion, logResult, spawn, api } from '../utils';
+import { assertion, logResult, spawn, api, joinPath } from '../utils';
 import { TestSuite, TestParams } from '..';
 
 // Release plugin
 const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
   const result = await spawn(
-    '../twilio',
+    `${joinPath(params.homeDir, 'twilio')}`,
     ['flex:plugins:release', '--plugin', `${params.plugin.name}@${params.plugin.version}`],
     {
       shell: true,
