@@ -119,6 +119,12 @@ jobs:
       # - cmd_install-prerequisites
       - cmd_install-dependencies
       # - cmd_install-chrome-utils
+      - run:
+          name: 'install chromedriver win'
+          command: choco install chromedriver --version 90.0.4430.240
+      - run:
+          name: 'install google chrome'
+          command: choco install googlechrome --version 90.0.4430.212 --ignore-checksums
       - cmd_run-build
       - cmd_run-e2e-tests
 
