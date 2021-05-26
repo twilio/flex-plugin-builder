@@ -11,8 +11,8 @@ export interface TestParams {
   homeDir: string;
   consoleBaseUrl: string;
   hostedFlexBaseUrl: string;
-  realm?: string;
-  realmFlag: string[];
+  region?: string;
+  regionFlag: string[];
   secrets: {
     console: ConsoleAuthOptions;
   };
@@ -46,17 +46,17 @@ const testSuites = readdirSync(`${__dirname}/tests`)
   });
 
 export const homeDir = `${process.env.HOME as string}/.local`;
-const { REALM } = process.env;
+const { TWILIO_REGION } = process.env;
 const pluginName = 'flex-e2e-tester-plugin';
-const consoleBaseUrl = REALM ? `https://www.${REALM}.twilio.com` : 'https://www.twilio.com';
-const hostedFlexBaseUrl = REALM ? `https://www.flex.${REALM}.twilio.com` : 'https://www.flex.twilio.com';
+const consoleBaseUrl = TWILIO_REGION ? `https://www.${TWILIO_REGION}.twilio.com` : 'https://www.twilio.com';
+const hostedFlexBaseUrl = TWILIO_REGION ? `https://flex.${TWILIO_REGION}.twilio.com` : 'https://flex.twilio.com';
 const testParams: TestParams = {
   packageVersion: process.env.PACKAGE_VERSION as string,
   nodeVersion: process.env.NODE_VERSION as string,
   consoleBaseUrl: process.env.CONSOLE_BASE_URL || consoleBaseUrl,
   hostedFlexBaseUrl: process.env.HOSTED_FLEX_BASE_URL || hostedFlexBaseUrl,
-  realm: REALM,
-  realmFlag: [],
+  region: TWILIO_REGION,
+  regionFlag: [],
   homeDir,
   secrets: {
     console: {
@@ -71,8 +71,8 @@ const testParams: TestParams = {
     baseUrl: 'http://localhost:3000' || (process.env.PLUGIN_BASE_URL as string),
   },
 };
-if (testParams.realm) {
-  testParams.realmFlag.push('--realm', testParams.realm);
+if (testParams.region) {
+  testParams.regionFlag.push('--region', testParams.region);
 }
 
 /**

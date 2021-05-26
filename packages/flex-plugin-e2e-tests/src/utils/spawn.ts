@@ -25,6 +25,8 @@ export default async (cmd: string, args: string[], options?: SpawnOptionsWithout
         PATH: `${process.env.PATH}:/${homeDir}/bin`,
         TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
         TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
+        TWILIO_REGION: process.env.TWILIO_REGION,
+        REALM: process.env.TWILIO_REGION,
       },
     };
     const spawnOptions = { ...defaultOptions, ...options };

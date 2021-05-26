@@ -24,7 +24,7 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
 
   try {
     // Log into Flex
-    await Browser.loginViaConsole(cookies, params.consoleBaseUrl, params.hostedFlexBaseUrl);
+    await Browser.loginViaConsole(cookies, params.consoleBaseUrl, params.hostedFlexBaseUrl, 'admin');
     await assertion.browser.userIsOnView('Admin Dashboard');
 
     // Make sure that /plugins contain the plugin
