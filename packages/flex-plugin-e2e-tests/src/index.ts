@@ -98,6 +98,7 @@ const runTest = async (step: number): Promise<void> => {
   Object.keys(testParams).forEach(
     (key) => key !== 'secrets' && logger.info(`- ${key}: ${JSON.stringify(testParams[key])}`),
   );
+  logger.info('Cleaning up');
   await api.cleanup();
 
   /*
