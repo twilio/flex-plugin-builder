@@ -2,7 +2,7 @@ import { ChildProcessWithoutNullStreams, spawn, SpawnOptionsWithoutStdio } from 
 
 import { logger } from 'flex-plugins-utils-logger';
 
-import { homeDir } from '..';
+import { homeDir } from '../core';
 
 interface SpawnResult {
   stdout: string;

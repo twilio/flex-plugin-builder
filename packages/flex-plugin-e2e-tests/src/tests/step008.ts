@@ -1,14 +1,14 @@
 /* eslint-disable import/no-unused-modules, @typescript-eslint/no-non-null-assertion */
 import { assertion, logResult, spawn, api } from '../utils';
-import { TestSuite, TestParams } from '..';
+import { TestSuite, TestParams } from '../core';
 
 // Release plugin
-const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
+const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<void> => {
   const result = await spawn('twilio', [
     'flex:plugins:release',
     '--plugin',
-    `${params.plugin.name}@${params.plugin.version}`,
-    ...params.regionFlag,
+    `${scenario.plugin.name}@${scenario.plugin.version}`,
+    ...config.regionFlag,
   ]);
   logResult(result);
 
@@ -19,8 +19,8 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
   assertion.stringContains(result.stdout, 'Configuration FJ');
   assertion.stringContains(result.stdout, 'enabled');
   assertion.equal(1, plugins.plugins.length);
-  assertion.equal(plugins.plugins[0].unique_name, params.plugin.name);
-  assertion.equal(plugins.plugins[0].version, params.plugin.version);
+  assertion.equal(plugins.plugins[0].unique_name, scenario.plugin.name);
+  assertion.equal(plugins.plugins[0].version, scenario.plugin.version);
 };
 testSuite.description = 'Running {{twilio flex:plugins:release}}';
 
