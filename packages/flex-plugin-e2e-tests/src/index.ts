@@ -11,6 +11,8 @@ export interface TestParams {
   homeDir: string;
   consoleBaseUrl: string;
   hostedFlexBaseUrl: string;
+  region?: string;
+  regionFlag: string[];
   secrets: {
     console: ConsoleAuthOptions;
   };
@@ -44,12 +46,17 @@ const testSuites = readdirSync(`${__dirname}/tests`)
   });
 
 export const homeDir = `${process.env.HOME as string}/.local`;
+const { TWILIO_REGION } = process.env;
 const pluginName = 'flex-e2e-tester-plugin';
+const consoleBaseUrl = TWILIO_REGION ? `https://www.${TWILIO_REGION}.twilio.com` : 'https://www.twilio.com';
+const hostedFlexBaseUrl = TWILIO_REGION ? `https://flex.${TWILIO_REGION}.twilio.com` : 'https://flex.twilio.com';
 const testParams: TestParams = {
   packageVersion: process.env.PACKAGE_VERSION as string,
   nodeVersion: process.env.NODE_VERSION as string,
-  consoleBaseUrl: process.env.CONSOLE_BASE_URL || 'https://www.twilio.com',
-  hostedFlexBaseUrl: process.env.HOSTED_FLEX_BASE_URL || 'https://flex.twilio.com',
+  consoleBaseUrl: process.env.CONSOLE_BASE_URL || consoleBaseUrl,
+  hostedFlexBaseUrl: process.env.HOSTED_FLEX_BASE_URL || hostedFlexBaseUrl,
+  region: TWILIO_REGION,
+  regionFlag: [],
   homeDir,
   secrets: {
     console: {
@@ -64,7 +71,13 @@ const testParams: TestParams = {
     baseUrl: 'http://localhost:3000' || (process.env.PLUGIN_BASE_URL as string),
   },
 };
+if (testParams.region) {
+  testParams.regionFlag.push('--region', testParams.region);
+}
 
+/**
+ * Converts the --step arg to steps
+ */
 const getArgs = (flag: string): string[] => {
   const _get = (...argv: string[]): string[] => {
     const index = argv.indexOf(flag);
@@ -79,6 +92,10 @@ const getArgs = (flag: string): string[] => {
   return _get(...process.argv);
 };
 
+/**
+ * Main method for running a test
+ * @param step the step to run
+ */
 const runTest = async (step: number): Promise<void> => {
   // Makes the step have leading 0s
   const stepStr = '0'.repeat(Math.max(0, 3 - String(step).length)) + String(step);
@@ -98,7 +115,6 @@ const runTest = async (step: number): Promise<void> => {
   Object.keys(testParams).forEach(
     (key) => key !== 'secrets' && logger.info(`- ${key}: ${JSON.stringify(testParams[key])}`),
   );
-  logger.info('Cleaning up');
   await api.cleanup();
 
   /*

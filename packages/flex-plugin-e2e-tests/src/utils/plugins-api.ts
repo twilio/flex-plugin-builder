@@ -11,10 +11,18 @@ import {
   ConfigurationResource,
   ConfiguredPluginResourcePage,
 } from 'flex-plugins-api-client';
+import { PluginServiceHttpOption } from 'flex-plugins-api-client/dist/clients/client';
+
+const options: PluginServiceHttpOption = {};
+if (process.env.TWILIO_REGION) {
+  // @ts-ignore
+  options.realm = process.env.TWILIO_REGION;
+}
 
 const client = new PluginServiceHTTPClient(
   process.env.TWILIO_ACCOUNT_SID as string,
   process.env.TWILIO_AUTH_TOKEN as string,
+  options,
 );
 const pluginsClient = new PluginsClient(client);
 const versionsClient = new PluginVersionsClient(client);

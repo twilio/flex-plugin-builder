@@ -17,7 +17,7 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
 
   try {
     // Plugin loads
-    await Browser.loginViaConsole(cookies, params.consoleBaseUrl, params.plugin.baseUrl);
+    await Browser.loginViaConsole(cookies, params.consoleBaseUrl, params.plugin.baseUrl, 'agent-desktop');
     await assertion.browser.userIsOnView('Agent Desktop');
     await assertion.browser.pluginIsVisible(params.plugin.componentText);
 
