@@ -32,7 +32,7 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
   } finally {
     await Browser.kill();
     if(twilioCliResult.child) {
-      process.kill(-twilioCliResult.child.pid)
+      await spawn('taskkill', ['/pid', `${twilioCliResult.child.pid}`, '/f', '/t'], { shell: true });
     }
   }
 
