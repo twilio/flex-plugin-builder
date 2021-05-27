@@ -120,6 +120,12 @@ jobs:
       - cmd_install-dependencies
       # - cmd_install-chrome-utils
       - run:
+          name: 'install node'
+          command: nvm install 12.13.0
+      - run:
+          name: 'use node'
+          command: nvm use 12.13.0
+      - run:
           name: 'install chromedriver win'
           command: choco install chromedriver --version 90.0.4430.240
       - run:
