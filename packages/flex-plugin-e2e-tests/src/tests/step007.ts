@@ -19,7 +19,7 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
   params.plugin.version = semver.inc(resource?.version || '0.0.0', 'patch') as string;
   const result = await spawn(
     `${joinPath(params.homeDir, 'twilio')}`,
-    ['flex:plugins:deploy', '--changelog', params.plugin.changelog, '--patch'],
+    ['flex:plugins:deploy', '--changelog', `"${params.plugin.changelog}"`, '--patch'],
     {
       cwd: params.plugin.dir,
       shell: true,
