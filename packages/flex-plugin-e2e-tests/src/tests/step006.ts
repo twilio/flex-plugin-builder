@@ -31,7 +31,9 @@ const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
     await assertion.browser.pluginIsVisible(tmpComponentText);
   } finally {
     await Browser.kill();
-    twilioCliResult.child?.kill();
+    if(twilioCliResult.child) {
+      process.kill(-twilioCliResult.child.pid)
+    }
   }
 
   await replaceInFile({
