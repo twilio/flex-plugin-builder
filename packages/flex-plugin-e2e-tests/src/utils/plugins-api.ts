@@ -13,15 +13,17 @@ import {
 } from 'flex-plugins-api-client';
 import { PluginServiceHttpOption } from 'flex-plugins-api-client/dist/clients/client';
 
+import { testParams } from '../core';
+
 const options: PluginServiceHttpOption = {};
-if (process.env.TWILIO_REGION) {
+if (testParams.config.region) {
   // @ts-ignore
-  options.realm = process.env.TWILIO_REGION;
+  options.realm = testParams.config.region;
 }
 
 const client = new PluginServiceHTTPClient(
-  process.env.TWILIO_ACCOUNT_SID as string,
-  process.env.TWILIO_AUTH_TOKEN as string,
+  testParams.secrets.api.accountSid,
+  testParams.secrets.api.authToken,
   options,
 );
 const pluginsClient = new PluginsClient(client);

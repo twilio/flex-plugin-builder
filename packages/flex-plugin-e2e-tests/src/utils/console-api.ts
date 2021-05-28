@@ -9,8 +9,8 @@ const identityCookieRegex = new RegExp(/identity=(.*?);/m);
 const serverIdentityCookieRegex = new RegExp(/server-identity=(.*?);/m);
 
 export interface ConsoleAuthOptions {
-  email: string | undefined;
-  password: string | undefined;
+  email: string;
+  password: string;
 }
 
 const SET_COOKIE = 'set-cookie';
@@ -31,44 +31,65 @@ export interface Cookies {
  * Defines interactions with Console API
  */
 export class ConsoleAPI {
-  private baseUrl: string;
+  private readonly baseUrl: string;
 
-  private consoleAuthOptions: ConsoleAuthOptions;
+  private readonly consoleAuthOptions: ConsoleAuthOptions;
 
   /**
    * Initialises console base url and verifies console credentials
    * @param consoleBaseUrl base url of Twilio console
-   * @param email email of the console user
-   * @param password password of the console user
+   * @param auth the {@link ConsoleAuthOptions}
    */
-  constructor(consoleBaseUrl: string, { email, password }: ConsoleAuthOptions) {
+  constructor(consoleBaseUrl: string, auth: ConsoleAuthOptions) {
     this.baseUrl = consoleBaseUrl;
+    this.consoleAuthOptions = auth;
+  }
 
-    if (!email || !password) {
-      throw new Error('Please export CONSOLE_EMAIL; CONSOLE_PASSWORD');
+  /**
+   * Extracts value from response header using regex
+   * @param regex regex to apply
+   * @param response response to be searched
+   * @param matchName name of the entity being looked for
+   */
+  private static getValueFromResponse(regex: RegExp, response: string, matchName: string): string {
+    const match = response.match(regex);
+
+    if (!match || !match[1]) {
+      logger.error(response);
+      throw new Error(`Response does not contain ${matchName}`);
     }
 
-    this.consoleAuthOptions = {
-      email,
-      password,
-    };
+    return match[1];
+  }
+
+  /**
+   * Fetch response from the Twilio console endpoint
+   * @param config request config to send
+   */
+  private static async getResponse(config: AxiosRequestConfig): Promise<AxiosResponse> {
+    try {
+      return axios(config);
+    } catch (e) {
+      logger.error(`${config.method}: ${config.url} returned code ${e.status}.`);
+      throw new Error(e);
+    }
   }
 
   /**
    * Get required cookies (tw-visitor, identity, server-identity) to authenticate
    */
   async getCookies(): Promise<Cookies> {
-    const loginResponse = await this.getResponse({ method: 'GET', url: `${this.baseUrl}/login` });
+    const loginResponse = await ConsoleAPI.getResponse({ method: 'GET', url: `${this.baseUrl}/login` });
 
-    const csrfToken = this.getValueFromResponse(new RegExp(csrfTokenRegex), loginResponse.data, 'CSRF Token');
+    const csrfToken = ConsoleAPI.getValueFromResponse(new RegExp(csrfTokenRegex), loginResponse.data, 'CSRF Token');
 
-    const twVisitorCookie = this.getValueFromResponse(
+    const twVisitorCookie = ConsoleAPI.getValueFromResponse(
       new RegExp(twVisitorCookieRegex),
       loginResponse.headers[SET_COOKIE].join(),
       `${Cookie.visitor} cookie`,
     );
 
-    const loginPasswordResponse = await this.getResponse({
+    const loginPasswordResponse = await ConsoleAPI.getResponse({
       method: 'POST',
       url: `${this.baseUrl}/login/password`,
       withCredentials: true,
@@ -86,7 +107,7 @@ export class ConsoleAPI {
 
     const loginPasswordCookies = loginPasswordResponse.headers[SET_COOKIE].join();
 
-    const serverIdentityCookie = this.getValueFromResponse(
+    const serverIdentityCookie = ConsoleAPI.getValueFromResponse(
       new RegExp(serverIdentityCookieRegex),
       loginPasswordCookies,
       `${Cookie.sIdentity} cookie`,
@@ -95,7 +116,7 @@ export class ConsoleAPI {
     let identityCookie: string | undefined;
 
     try {
-      identityCookie = this.getValueFromResponse(
+      identityCookie = ConsoleAPI.getValueFromResponse(
         new RegExp(identityCookieRegex),
         loginPasswordCookies,
         `${Cookie.identity} cookie`,
@@ -109,35 +130,5 @@ export class ConsoleAPI {
       [Cookie.sIdentity]: serverIdentityCookie,
       [Cookie.visitor]: twVisitorCookie,
     };
-  }
-
-  /**
-   * Extracts value from response header using regex
-   * @param regex regex to apply
-   * @param response response to be searched
-   * @param matchName name of the entity being looked for
-   */
-  private getValueFromResponse(regex: RegExp, response: string, matchName: string): string {
-    const match = response.match(regex);
-
-    if (!match || !match[1]) {
-      logger.error(response);
-      throw new Error(`Response does not contain ${matchName}`);
-    }
-
-    return match[1];
-  }
-
-  /**
-   * Fetch response from the Twilio console endpoint
-   * @param config request config to send
-   */
-  private async getResponse(config: AxiosRequestConfig): Promise<AxiosResponse> {
-    try {
-      return axios(config);
-    } catch (e) {
-      logger.error(`${config.method}: ${config.url} returned code ${e.status}.`);
-      throw new Error(e);
-    }
   }
 }

@@ -3,6 +3,7 @@ import { Builder, WebDriver, WebElement, until, By } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 
 import { Cookies, Cookie } from './console-api';
+import { testParams } from '../core';
 
 const DEFAULT_LOCATE_TIMEOUT = 15000;
 const DEFAULT_PAGE_LOAD_TIMEOUT = 60000;
@@ -101,7 +102,7 @@ export class Browser {
     flexPath: FlexPath,
   ): Promise<void> {
     const serviceLoginUrl = `${consoleBaseUrl}/console/flex/service-login/${
-      process.env.TWILIO_ACCOUNT_SID
+      testParams.secrets.api.accountSid
     }/?path=/${flexPath}&referer=${
       flexBaseUrl.includes('localhost') ? 'http://localhost:3000&localPort=3000' : flexBaseUrl
     }`;
