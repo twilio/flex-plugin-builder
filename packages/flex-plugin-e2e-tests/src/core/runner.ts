@@ -72,7 +72,7 @@ const beforeAll = async () => {
 /**
  * Starts the runner
  */
-const runner = async () => {
+const runner = async (): Promise<void> => {
   printParameters();
   await beforeAll();
 
