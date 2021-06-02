@@ -4,6 +4,23 @@ interface Hidden {
   __hidden: boolean;
 }
 
+interface Scenario {
+  packageVersion: string;
+  plugin: {
+    name: string;
+    dir: string;
+    componentText: string;
+    localhostUrl: string;
+  } & Partial<{
+    newlineValue: string;
+    changelog: string;
+    version: string;
+  }>;
+  flexUIVersion?: string;
+  reactVersion?: string;
+  isTS?: boolean;
+}
+
 export interface TestParams {
   environment: {
     nodeVersion: string;
@@ -23,22 +40,7 @@ export interface TestParams {
     region?: string;
     regionFlag: string[];
   } & Hidden;
-  scenario: {
-    packageVersion: string;
-    plugin: {
-      name: string;
-      dir: string;
-      componentText: string;
-      localhostUrl: string;
-    } & Partial<{
-      newlineValue: string;
-      changelog: string;
-      version: string;
-    }>;
-    flexUIVersion?: string;
-    reactVersion?: string;
-    isTS?: boolean;
-  } & Hidden;
+  scenario: Scenario & Hidden;
 }
 
 const { TWILIO_REGION } = process.env;
@@ -95,3 +97,13 @@ export const testParams: TestParams = {
 if (testParams.config.region) {
   testParams.config.regionFlag.push('--region', testParams.config.region);
 }
+
+// All test scenarios to run
+export const testScenarios: Partial<Scenario>[] = [
+  {
+    isTS: false,
+  },
+  {
+    isTS: true,
+  },
+];
