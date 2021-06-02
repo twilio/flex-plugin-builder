@@ -148,7 +148,6 @@ jobs:
       - checkout
       - cmd_install-prerequisites
       - cmd_install-dependencies
-      - cmd_run-build
       - cmd_setup_npm
       - cmd_run-publish:
           dist_tag: << parameters.dist_tag >>
@@ -234,4 +233,24 @@ workflows:
                 name: Send Slack notification
                 command: |
                          curl -X POST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - $CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}*. View <$CIRCLE_BUILD_URL|build>. cc: <@$CIRCLE_USERNAME>', 'mrkdwn':true}" $SLACK_WEBHOOK
+                when: on_fail
+
+  workflow_nightly-e2e:
+    triggers:
+      - schedule:
+          cron: "0 16 * * *"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - job_e2e-test:
+          matrix:
+            parameters:
+              package_version: [ "latest" ]
+          post-steps:
+            - run:
+                name: Send Slack notification
+                command: |
+                         curl -X POST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - nightly E2E tests failed. View <$CIRCLE_BUILD_URL|build>.', 'mrkdwn':true}" $SLACK_WEBHOOK
                 when: on_fail
