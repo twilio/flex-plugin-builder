@@ -148,7 +148,6 @@ jobs:
       - checkout
       - cmd_install-prerequisites
       - cmd_install-dependencies
-      - cmd_run-build
       - cmd_setup_npm
       - cmd_run-publish:
           dist_tag: << parameters.dist_tag >>
