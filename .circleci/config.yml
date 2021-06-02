@@ -232,7 +232,7 @@ workflows:
       - job_e2e-test:
           matrix:
             parameters:
-              package_version: [ << pipeline.parameters.package_version >> ]
+              package_version: [ "latest" ]
           post-steps:
             - run:
                 name: Send Slack notification
