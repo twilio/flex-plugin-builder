@@ -3,6 +3,7 @@ import { Builder, WebDriver, WebElement, until, By } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 
 import { Cookies, Cookie } from './console-api';
+import { testParams } from '../core';
 
 const DEFAULT_LOCATE_TIMEOUT = 15000;
 const DEFAULT_PAGE_LOAD_TIMEOUT = 60000;
@@ -30,9 +31,6 @@ export class Browser {
       },
     },
     flex: {
-      loginPage: {
-        serviceLoginLink: By.css('a > span'),
-      },
       agentDesktop: {
         plugin: (pluginText: string): By => By.xpath(`//div[contains(text(), '${pluginText}')]`),
         noTaskCanvas: By.css('.Twilio-NoTasksCanvas'),
@@ -95,10 +93,22 @@ export class Browser {
    * @param cookies cookies to set
    * @param consoleBaseUrl Twilio console base url
    * @param flexBaseUrl base url of the flex
+   * @param flexPath flex path to navigate to after logging in
    */
-  static async loginViaConsole(cookies: Cookies, consoleBaseUrl: string, flexBaseUrl: string): Promise<void> {
-    // Set console cookies
-    await this.browser.get(`${consoleBaseUrl}/login`);
+  static async loginViaConsole(
+    cookies: Cookies,
+    consoleBaseUrl: string,
+    flexBaseUrl: string,
+    flexPath: FlexPath,
+  ): Promise<void> {
+    const serviceLoginUrl = `${consoleBaseUrl}/console/flex/service-login/${
+      testParams.secrets.api.accountSid
+    }/?path=/${flexPath}&referer=${
+      flexBaseUrl.includes('localhost') ? 'http://localhost:3000&localPort=3000' : flexBaseUrl
+    }`;
+
+    // Open Twilio console to set cookies
+    await this.browser.get(serviceLoginUrl);
     await this.elementExistsAndIsVisible(
       this.pageObjects.console.loginPage.form,
       'Login Form',
@@ -106,6 +116,7 @@ export class Browser {
       DEFAULT_PAGE_LOAD_TIMEOUT,
     );
 
+    // Set console cookies
     await this.browser.manage().addCookie({ name: Cookie.visitor, value: cookies[Cookie.visitor] });
     await this.browser.manage().addCookie({ name: Cookie.sIdentity, value: cookies[Cookie.sIdentity] });
 
@@ -114,9 +125,7 @@ export class Browser {
     }
 
     // Log in Flex via service login
-    await this.browser.get(flexBaseUrl);
-    const link = await this.elementExists(this.pageObjects.flex.loginPage.serviceLoginLink, 'Service Login link');
-    await link.click();
+    await this.browser.get(serviceLoginUrl);
   }
 
   /**

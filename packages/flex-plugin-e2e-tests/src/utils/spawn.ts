@@ -2,7 +2,7 @@ import { ChildProcessWithoutNullStreams, spawn, SpawnOptionsWithoutStdio } from 
 
 import { logger } from 'flex-plugins-utils-logger';
 
-import { homeDir } from '..';
+import { homeDir, testParams } from '../core';
 
 interface SpawnResult {
   stdout: string;
@@ -22,9 +22,11 @@ export default async (cmd: string, args: string[], options?: SpawnOptionsWithout
     const defaultOptions = {
       cwd: homeDir,
       env: {
-        PATH: `${process.env.PATH}:/${homeDir}/bin`,
-        TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
-        TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
+        PATH: `${testParams.environment.path}:/${homeDir}/bin`,
+        TWILIO_ACCOUNT_SID: testParams.secrets.api.accountSid,
+        TWILIO_AUTH_TOKEN: testParams.secrets.api.authToken,
+        TWILIO_REGION: testParams.config.region,
+        REALM: testParams.config.region,
       },
     };
     const spawnOptions = { ...defaultOptions, ...options };
