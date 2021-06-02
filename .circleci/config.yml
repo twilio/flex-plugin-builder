@@ -195,7 +195,7 @@ jobs:
       - cmd_run-build
       - when:
           condition:
-            equal: [<< parameters.node-version >>, lts]
+            equal: [<< parameters.node-version >>, "14.16"]
           steps:
             - cmd_codecov
 
