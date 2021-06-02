@@ -66,7 +66,6 @@ echo -e "-- Publishing as \033[1m${tag}\033[0m :: \033[1m${bump}\033[0m release 
 echo -e "-- Publishing as \033[1m${tag}\033[0m :: \033[1m${bump}\033[0m release --"
 echo -e "------------------------------------\n"
 
-exit 1
 
 if [ "${tag}" == "public" ] ; then
   ./node_modules/.bin/lerna publish \
