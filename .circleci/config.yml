@@ -222,7 +222,7 @@ workflows:
   workflow_nightly-e2e:
     triggers:
       - schedule:
-          cron: "0 0 * * *"
+          cron: "0 16 * * *"
           filters:
             branches:
               only:
