@@ -7,10 +7,11 @@ import { TestSuite, TestParams } from '../core';
 
 // Deploy plugin
 const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<void> => {
+  const ext = scenario.isTS ? 'tsx' : 'jsx';
   scenario.plugin.newlineValue = `This is a dismissible demo component ${Date.now()}`;
   scenario.plugin.changelog = `e2e test ${Date.now()}`;
   await replaceInFile({
-    files: joinPath(scenario.plugin.dir, 'src', 'components', 'CustomTaskList', 'CustomTaskList.jsx'),
+    files: joinPath(scenario.plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
     from: /This is a dismissible demo component.*/,
     to: scenario.plugin.newlineValue,
   });

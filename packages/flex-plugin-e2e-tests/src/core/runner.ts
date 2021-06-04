@@ -3,8 +3,7 @@ import { existsSync, mkdirSync, rmdirSync } from 'fs';
 
 import { logger } from 'flex-plugins-utils-logger';
 
-import { TestSuite, testSuites } from './suites';
-import { homeDir, TestParams, testParams, testScenarios } from './parameters';
+import { homeDir, TestParams, TestScenario, TestSuite, testSuites } from '.';
 import { api } from '../utils';
 
 /**
@@ -73,33 +72,54 @@ const beforeEach = async () => {
 };
 
 /**
- * Starts the runner
+ * Runs all steps
+ * @param testParams    the {@link TestParams}
+ * @param testScenarios the {@link TestScenario}
  */
-const runner = async (): Promise<void> => {
-  /*
-   * We can run a particular step by provide --step 002
-   * Otherwise we run all
-   */
-  if (!process.argv.includes('--step')) {
-    for (const testScenario of testScenarios) {
-      const params = { ...testParams };
-      params.scenario = { ...params.scenario, ...testScenario };
+const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenario>[]): Promise<void> => {
+  for (const testScenario of testScenarios) {
+    const params = { ...testParams };
+    params.scenario = { ...params.scenario, ...testScenario };
 
-      printParameters(params);
-      await beforeEach();
+    printParameters(params);
+    await beforeEach();
 
-      for (let i = 0; i < testSuites.length; i++) {
-        await runTest(i + 1, params);
-      }
+    for (let i = 0; i < testSuites.length; i++) {
+      await runTest(i + 1, params);
     }
+  }
+};
 
+/**
+ * Runs selected steps
+ * @param testParams    the {@link TestParams}
+ */
+const runSelected = async (testParams: TestParams): Promise<void> => {
+  const steps = getArgs('--step');
+  const scenarios = getArgs('--scenario');
+  const params = { ...testParams };
+  for (const testScenario of scenarios) {
+    params.scenario = { ...params.scenario, ...JSON.parse(testScenario) };
+  }
+  printParameters(params);
+
+  for (let i = 0; i < steps.length; i++) {
+    await runTest(parseInt(steps[i], 10), { ...params });
+  }
+};
+
+/**
+ * Starts the runner
+ * @param testParams    the {@link TestParams} to use
+ * @param testScenarios the {@link TestScenario} to test against
+ */
+const runner = async (testParams: TestParams, testScenarios: Partial<TestScenario>[]): Promise<void> => {
+  if (!process.argv.includes('--step')) {
+    await runAll({ ...testParams }, [...testScenarios]);
     return;
   }
 
-  const steps = getArgs('--step');
-  for (let i = 0; i < steps.length; i++) {
-    await runTest(parseInt(steps[i], 10), { ...testParams });
-  }
+  await runSelected({ ...testParams });
 };
 
 export default runner;
