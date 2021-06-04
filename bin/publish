@@ -55,17 +55,16 @@ if [ "${tag}" == "dev" ] || [ "${tag}" == "alpha" ] ; then
   bump="${major}.${minor}.${patch}-${tag}.${id}"
 fi
 
-# Run unit-tests one more time
-npm run lint
-npm run test
-npm run build
-
 # Publishing
 echo -e "\n------------------------------------"
 echo -e "-- Publishing as \033[1m${tag}\033[0m :: \033[1m${bump}\033[0m release --"
 echo -e "-- Publishing as \033[1m${tag}\033[0m :: \033[1m${bump}\033[0m release --"
 echo -e "------------------------------------\n"
 
+# Run unit-tests one more time
+npm run lint
+npm run test
+npm run build
 
 if [ "${tag}" == "public" ] ; then
   ./node_modules/.bin/lerna publish \
@@ -76,6 +75,7 @@ if [ "${tag}" == "public" ] ; then
 elif [ "${tag}" == "beta" ] ; then
   ./node_modules/.bin/lerna publish \
     --force-publish="*" \
+    --preid "${tag}" \
     --pre-dist-tag "${tag}" \
     --dist-tag "${tag}" \
     --exact \
@@ -84,12 +84,13 @@ elif [ "${tag}" == "beta" ] ; then
 else
   ./node_modules/.bin/lerna publish \
     --force-publish="*" \
+    --preid "${tag}" \
     --pre-dist-tag "${tag}" \
     --dist-tag "${tag}" \
-    --exact \
-    --yes \
     --skip-git \
     --no-git-tag-version \
     --no-push \
+    --exact \
+    --yes \
     "${bump}"
 fi

@@ -8,6 +8,7 @@ const PLUGIN_START_POLL_INTERVAL = 1000;
 
 // Plugin start
 const testSuite: TestSuite = async ({ scenario, config, secrets }: TestParams): Promise<void> => {
+  const ext = scenario.isTS ? 'tsx' : 'jsx';
   const tmpComponentText = 'hot reload works';
   const twilioCliResult = await spawn('twilio', ['flex:plugins:start'], { detached: true, cwd: scenario.plugin.dir });
   await pluginHelper.waitForPluginToStart(scenario.plugin.localhostUrl, PLUGIN_START_TIMEOUT, PLUGIN_START_POLL_INTERVAL);
@@ -23,7 +24,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets }: TestParams): 
 
     // Verify hot reload
     await replaceInFile({
-      files: joinPath(scenario.plugin.dir, 'src', 'components', 'CustomTaskList', 'CustomTaskList.jsx'),
+      files: joinPath(scenario.plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
       from: scenario.plugin.componentText,
       to: tmpComponentText,
     });
@@ -35,7 +36,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets }: TestParams): 
   }
 
   await replaceInFile({
-    files: joinPath(scenario.plugin.dir, 'src', 'components', 'CustomTaskList', 'CustomTaskList.jsx'),
+    files: joinPath(scenario.plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
     from: tmpComponentText,
     to: scenario.plugin.componentText,
   });

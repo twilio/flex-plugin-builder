@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, @typescript-eslint/prefer-for-of, global-require */
 import { logger } from 'flex-plugins-utils-logger';
 
-import { runner } from './core';
+import { runner, testParams, testScenarios } from './core';
 
-runner()
+runner(testParams, testScenarios)
   .then(() => {
     logger.success('All E2E tests passed successfully');
   })

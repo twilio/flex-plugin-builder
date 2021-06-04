@@ -365,6 +365,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     await super.run();
     this.checkForUpdate();
 
+    this.logger.debug(`Using Plugins CLI version ${this.cliPkg.version}`);
     this.logger.debug(`Using Flex Plugins Config File: ${this.pluginsConfigPath}`);
 
     if (this._flags['clear-terminal']) {
@@ -372,6 +373,9 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     }
 
     if (this.opts.runInDirectory) {
+      const pluginScriptVersion = FlexPlugin.getPackageVersion(join(this.cwd, 'node_modules', 'flex-plugin-scripts'));
+      this.logger.debug(`Using flex-plugin-scripts version ${pluginScriptVersion}`);
+
       if (!this.isPluginFolder()) {
         throw new TwilioCliError(
           `${this.cwd} directory is not a flex plugin directory. You must either run a plugin inside a directory or use the --name flag`,

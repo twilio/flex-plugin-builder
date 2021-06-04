@@ -6,8 +6,9 @@ import { spawn, logResult, assertion, joinPath } from '../utils';
 
 // Build plugin
 const testSuite: TestSuite = async ({ scenario }: TestParams): Promise<void> => {
+  const ext = scenario.isTS ? 'tsx' : 'jsx';
   await replaceInFile({
-    files: joinPath(scenario.plugin.dir, 'src', 'components', 'CustomTaskList', 'CustomTaskList.jsx'),
+    files: joinPath(scenario.plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
     from: /This is a dismissible demo component.*/,
     to: scenario.plugin.componentText,
   });
