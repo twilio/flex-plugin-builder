@@ -235,6 +235,17 @@ workflows:
                          curl -X POST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - $CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}*. View <$CIRCLE_BUILD_URL|build>. cc: <@$CIRCLE_USERNAME>', 'mrkdwn':true}" $SLACK_WEBHOOK
                 when: on_fail
 
+  workflow_publish-dev-on-merge:
+    jobs:
+      - job_npm-publish:
+          matrix:
+            parameters:
+              dist_tag: [ "dev" ]
+              version_bump: [ "patch" ]
+          filters:
+            branches:
+              only: "dev" 
+
   workflow_nightly-e2e:
     triggers:
       - schedule:
