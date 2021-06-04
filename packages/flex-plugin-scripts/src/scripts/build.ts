@@ -86,9 +86,17 @@ const build = async (...argv: string[]): Promise<void> => {
 
   try {
     const { warnings, bundles } = await _runWebpack();
-    const fileSize = getFileSizeInMB(getPaths().app.bundlePath);
-    if (fileSize >= MAX_BUILD_SIZE_MB) {
-      fileTooLarge(fileSize, MAX_BUILD_SIZE_MB);
+    const bundleSize = getFileSizeInMB(getPaths().app.bundlePath);
+    const sourceMapSize = getFileSizeInMB(getPaths().app.sourceMapPath);
+
+    if (bundleSize >= MAX_BUILD_SIZE_MB) {
+      fileTooLarge('bundle', bundleSize, MAX_BUILD_SIZE_MB);
+      exit(1, argv);
+      return;
+    }
+
+    if (sourceMapSize >= MAX_BUILD_SIZE_MB) {
+      fileTooLarge('sourcemap', bundleSize, MAX_BUILD_SIZE_MB);
       exit(1, argv);
       return;
     }
