@@ -4,7 +4,7 @@ interface Hidden {
   __hidden: boolean;
 }
 
-interface Scenario {
+export interface TestScenario {
   packageVersion: string;
   plugin: {
     name: string;
@@ -40,7 +40,7 @@ export interface TestParams {
     region?: string;
     regionFlag: string[];
   } & Hidden;
-  scenario: Scenario & Hidden;
+  scenario: TestScenario & Hidden;
 }
 
 const { TWILIO_REGION } = process.env;
@@ -99,7 +99,7 @@ if (testParams.config.region) {
 }
 
 // All test scenarios to run
-export const testScenarios: Partial<Scenario>[] = [
+export const testScenarios: Partial<TestScenario>[] = [
   {
     isTS: false,
   },
