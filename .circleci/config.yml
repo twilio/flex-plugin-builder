@@ -240,6 +240,23 @@ workflows:
                 command: |
                          curl -X POST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - $CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}*. View <$CIRCLE_BUILD_URL|build>. cc: <@$CIRCLE_USERNAME>', 'mrkdwn':true}" $SLACK_WEBHOOK
                 when: on_fail
+      - job_npm-publish:
+          matrix:
+            parameters:
+              dist_tag: ["dev"]
+              version_bump: ["patch"]
+          requires:
+            - job_pr-validator-win32
+            - job_pr-validator-node
+          pre-steps:
+            - when:
+                condition:
+                  not:
+                    - equal: [ "dev", $CIRCLE_BRANCH ]
+                steps:
+                  - run:
+                      name: "Branch is not dev, skipping npm publish"
+                      command: circleci-agent step halt    
 
   workflow_nightly-e2e:
     triggers:
