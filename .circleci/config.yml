@@ -150,14 +150,15 @@ jobs:
       name: node
       tag: "lts"
     steps:
-      - checkout
-      - cmd_install-prerequisites
-      - cmd_install-dependencies
-      - cmd_setup-npm
-      - cmd_setup-github
-      - cmd_run-publish:
-          dist_tag: << parameters.dist_tag >>
-          version_bump: << parameters.version_bump >>
+      - run: echo "Running"
+      # - checkout
+      # - cmd_install-prerequisites
+      # - cmd_install-dependencies
+      # - cmd_setup-npm
+      # - cmd_setup-github
+      # - cmd_run-publish:
+      #     dist_tag: << parameters.dist_tag >>
+      #     version_bump: << parameters.version_bump >>
 
   job_pr-validator-win32:
     environment:
@@ -248,15 +249,9 @@ workflows:
           requires:
             - job_pr-validator-win32
             - job_pr-validator-node
-          pre-steps:
-            - when:
-                condition:
-                  not:
-                    - equal: [ "dev", $CIRCLE_BRANCH ]
-                steps:
-                  - run:
-                      name: "Branch is not dev, skipping npm publish"
-                      command: circleci-agent step halt    
+          filters:
+            branches:
+              only: "dev"
 
   workflow_nightly-e2e:
     triggers:
