@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, @typescript-eslint/prefer-for-of, global-require */
 import { existsSync, mkdirSync, rmdirSync } from 'fs';
 
+import packageJson from 'package-json';
 import { logger } from 'flex-plugins-utils-logger';
 
 import { homeDir, TestParams, TestScenario, TestSuite, testSuites } from '.';
@@ -60,6 +61,17 @@ const getArgs = (flag: string): string[] => {
 };
 
 /**
+ * Runs once before all tests
+ * @param testParams the {@link TestParams} to use
+ */
+const beforeAll = async (testParams: TestParams) => {
+  if (testParams.scenario.packageVersion === 'latest') {
+    const pkg = await packageJson('flex-plugin-scripts', { version: 'latest' });
+    testParams.scenario.packageVersion = pkg.version as string;
+  }
+};
+
+/**
  * Runs before the test
  */
 const beforeEach = async () => {
@@ -114,12 +126,16 @@ const runSelected = async (testParams: TestParams): Promise<void> => {
  * @param testScenarios the {@link TestScenario} to test against
  */
 const runner = async (testParams: TestParams, testScenarios: Partial<TestScenario>[]): Promise<void> => {
+  const _testParams = { ...testParams };
+  const _testScenario = [...testScenarios];
+  await beforeAll(_testParams);
+
   if (!process.argv.includes('--step')) {
-    await runAll({ ...testParams }, [...testScenarios]);
+    await runAll(_testParams, _testScenario);
     return;
   }
 
-  await runSelected({ ...testParams });
+  await runSelected(_testParams);
 };
 
 export default runner;
