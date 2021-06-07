@@ -1,17 +1,18 @@
 /* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, @typescript-eslint/prefer-for-of, global-require */
-import { existsSync, mkdirSync } from 'fs';
+import { existsSync, mkdirSync, rmdirSync } from 'fs';
 
+import packageJson from 'package-json';
 import { logger } from 'flex-plugins-utils-logger';
 
-import { TestSuite, testSuites } from './suites';
-import { homeDir, testParams } from './parameters';
+import { homeDir, TestParams, TestScenario, TestSuite, testSuites } from '.';
 import { api } from '../utils';
 
 /**
  * Main method for running a test
  * @param step the step to run
+ * @param params the test params
  */
-const runTest = async (step: number): Promise<void> => {
+const runTest = async (step: number, params: TestParams): Promise<void> => {
   // Makes the step have leading 0s
   const stepStr = '0'.repeat(Math.max(0, 3 - String(step).length)) + String(step);
   const testFile = `step${stepStr}`;
@@ -19,25 +20,26 @@ const runTest = async (step: number): Promise<void> => {
 
   logger.info(`Step ${stepStr} - ${testSuite.description}`);
   if (testSuite.before) {
-    await testSuite.before(testParams);
+    await testSuite.before(params);
   }
-  await testSuite(testParams);
+  await testSuite(params);
   if (testSuite.after) {
-    await testSuite.after(testParams);
+    await testSuite.after(params);
   }
 };
 
 /**
  * Prints contextual information
+ * @param params the test params
  */
-const printParameters = () => {
+const printParameters = (params: TestParams) => {
   logger.info(`Running Plugins E2E Test with parameters:`);
-  Object.keys(testParams)
-    .filter((k) => !testParams[k].__hidden)
+  Object.keys(params)
+    .filter((k) => !params[k].__hidden)
     .forEach((k) => {
-      const params = { ...testParams[k] };
-      delete params.__hidden;
-      logger.info(`- ${k}: ${JSON.stringify(params, null, 2)}`);
+      const p = { ...params[k] };
+      delete p.__hidden;
+      logger.info(`- ${k}: ${JSON.stringify(p, null, 2)}`);
     });
 };
 
@@ -59,38 +61,81 @@ const getArgs = (flag: string): string[] => {
 };
 
 /**
+ * Runs once before all tests
+ * @param testParams the {@link TestParams} to use
+ */
+const beforeAll = async (testParams: TestParams) => {
+  if (testParams.scenario.packageVersion === 'latest') {
+    const pkg = await packageJson('flex-plugin-scripts', { version: 'latest' });
+    testParams.scenario.packageVersion = pkg.version as string;
+  }
+};
+
+/**
  * Runs before the test
  */
-const beforeAll = async () => {
-  if (!existsSync(homeDir)) {
-    mkdirSync(homeDir);
+const beforeEach = async () => {
+  if (existsSync(homeDir)) {
+    rmdirSync(homeDir, { recursive: true });
   }
+  mkdirSync(homeDir);
 
   await api.cleanup();
 };
 
 /**
- * Starts the runner
+ * Runs all steps
+ * @param testParams    the {@link TestParams}
+ * @param testScenarios the {@link TestScenario}
  */
-const runner = async (): Promise<void> => {
-  printParameters();
-  await beforeAll();
+const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenario>[]): Promise<void> => {
+  for (const testScenario of testScenarios) {
+    const params = { ...testParams };
+    params.scenario = { ...params.scenario, ...testScenario };
 
-  /*
-   * We can run a particular step by provide --step 002
-   * Otherwise we run all
-   */
-  if (!process.argv.includes('--step')) {
+    printParameters(params);
+    await beforeEach();
+
     for (let i = 0; i < testSuites.length; i++) {
-      await runTest(i + 1);
+      await runTest(i + 1, params);
     }
+  }
+};
+
+/**
+ * Runs selected steps
+ * @param testParams    the {@link TestParams}
+ */
+const runSelected = async (testParams: TestParams): Promise<void> => {
+  const steps = getArgs('--step');
+  const scenarios = getArgs('--scenario');
+  const params = { ...testParams };
+  for (const testScenario of scenarios) {
+    params.scenario = { ...params.scenario, ...JSON.parse(testScenario) };
+  }
+  printParameters(params);
+
+  for (let i = 0; i < steps.length; i++) {
+    await runTest(parseInt(steps[i], 10), { ...params });
+  }
+};
+
+/**
+ * Starts the runner
+ * @param testParams    the {@link TestParams} to use
+ * @param testScenarios the {@link TestScenario} to test against
+ */
+const runner = async (testParams: TestParams, testScenarios: Partial<TestScenario>[]): Promise<void> => {
+  const _testParams = { ...testParams };
+  const _testScenario = [...testScenarios];
+  await beforeAll(_testParams);
+
+  if (!process.argv.includes('--step')) {
+    await runAll(_testParams, _testScenario);
     return;
   }
 
-  const steps = getArgs('--step');
-  for (let i = 0; i < steps.length; i++) {
-    await runTest(parseInt(steps[i], 10));
-  }
+  await runSelected(_testParams);
 };
 
 export default runner;

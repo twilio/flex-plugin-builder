@@ -36,10 +36,12 @@ describe('WebpackConfiguration', () => {
       nodeModulesDir: 'cli/node_modules',
     },
   };
+  const OLD_ENV = { ...process.env };
 
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.resetModules();
+    process.env = { ...OLD_ENV };
 
     // @ts-ignore
     jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
@@ -156,6 +158,26 @@ describe('WebpackConfiguration', () => {
       expect(scripts[2]).toContain('flex-ui');
       expect(scripts[2]).toContain('1.19.0');
       expect(scripts[2]).toContain('twilio-flex.unbundled-react.min.js');
+    });
+
+    it('should overwrite flex-ui if --flex-ui-source is provided', () => {
+      process.env.FLEX_UI_SRC = 'http://localhost:8080/twilio-flex-ui.dev.browser.js';
+      const scripts = webpackConfig._getJSScripts('1.19.0', '16.13.1', '16.12.1');
+
+      expect(scripts).toHaveLength(3);
+      expect(scripts[0]).toContain('umd/react.development');
+      expect(scripts[0]).toContain('16.13.1');
+      expect(scripts[1]).toContain('umd/react-dom.development');
+      expect(scripts[1]).toContain('16.12.1');
+      expect(scripts[2]).toContain('localhost:8080');
+    });
+
+    it('should overwrite flex-ui even if flex-ui is < 1.19.0', () => {
+      process.env.FLEX_UI_SRC = 'http://localhost:8080/twilio-flex-ui.dev.browser.js';
+      const scripts = webpackConfig._getJSScripts('1.18.0', '', '');
+
+      expect(scripts).toHaveLength(1);
+      expect(scripts[0]).toContain('localhost:8080');
     });
   });
 

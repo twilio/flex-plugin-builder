@@ -4,7 +4,11 @@ import { spawn, logResult, assertion, joinPath, writeFileSync } from '../utils';
 
 // Create a plugin
 const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<void> => {
-  const twilioCliResult = await spawn('twilio', ['flex:plugins:create', scenario.plugin.name]);
+  const flags: string[] = [];
+  if (scenario.isTS) {
+    flags.push('--typescript');
+  }
+  const twilioCliResult = await spawn('twilio', ['flex:plugins:create', scenario.plugin.name, ...flags]);
   logResult(twilioCliResult);
 
   // Assert files/directories exist
