@@ -13,7 +13,9 @@ job:
 
     steps:
       - name: Trigger NPM Publish job via CURL
-      - run: |
-          curl -u "${token}:" -X POST -H "Content-Type: application/json" \
+        env:
+          CIRCLECI_TOKEN: ${{ secrets.CIRCLECI_TOKEN }}
+        run: |
+          curl -u "${CIRCLECI_TOKEN}:" -X POST -H "Content-Type: application/json" \
           -d "{\"parameters\":{\"run_e2e_test\":false, \"run_pr_validator\":false, \"dist_tag\":\"dev\"}, \"version_bump\":\"patch\"}, \"branch\":\"dev\"}" \
           https://circleci.com/api/v2/project/github/twilio/flex-plugin-builder/pipeline
