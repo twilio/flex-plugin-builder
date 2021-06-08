@@ -174,14 +174,6 @@ jobs:
       tag: "lts"
     steps:
       - run: echo "Running"
-      # - checkout
-      # - cmd_install-prerequisites
-      # - cmd_install-dependencies
-      # - cmd_setup-npm
-      # - cmd_setup-github
-      # - cmd_run-publish:
-      #     dist_tag: << parameters.dist_tag >>
-      #     version_bump: << parameters.version_bump >>
 
   job_pr-validator-win32:
     environment:
@@ -270,7 +262,6 @@ workflows:
               dist_tag: ["dev"]
               version_bump: ["patch"]
           requires:
-            - job_pr-validator-win32
             - job_pr-validator-node
           filters:
             branches:
