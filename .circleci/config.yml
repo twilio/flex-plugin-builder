@@ -235,6 +235,16 @@ workflows:
             parameters:
               node-version: ["10.24", "12.21", "14.16"]
           post-steps:
+            - when:
+                and:
+                  - equal: [ dev, << pipeline.git.branch >> ]
+                  - equal: [ "14.16", << matrix.node-version >> ]
+                  - on_success
+              steps:
+                - run:
+                    name: Publish dev Build
+                    command: |
+                      echo "npm dev build placeholder"
             - run:
                 name: Send Slack notification
                 command: |
