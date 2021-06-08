@@ -246,6 +246,11 @@ workflows:
                     command: |
                       echo "npm dev build placeholder"
             - run:
+                name: Another example
+                command: |
+                  echo "is this running?"
+                when: on_success
+            - run:
                 name: Send Slack notification
                 command: |
                          curl -X POST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - $CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}*. View <$CIRCLE_BUILD_URL|build>. cc: <@$CIRCLE_USERNAME>', 'mrkdwn':true}" $SLACK_WEBHOOK
