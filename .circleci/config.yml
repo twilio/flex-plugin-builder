@@ -241,11 +241,10 @@ workflows:
                   - cmd_codecov
             - when:
                 equal: [ "14.16", << matrix.node-version >> ]
-                steps:
-                  - run:
-                      name: Publish dev Build
-                      command: |
-                        echo "npm dev build placeholder"
+                run:
+                    name: Publish dev Build
+                    command: |
+                      echo "npm dev build placeholder"
             - run:
                 name: Send Slack notification
                 command: |
