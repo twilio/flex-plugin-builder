@@ -195,9 +195,9 @@ jobs:
       - checkout
       - cmd_install-prerequisites
       - cmd_install-dependencies
-      - cmd_run-linter
+      #- cmd_run-linter
       - cmd_run-unit-tests
-      - cmd_run-build
+      #- cmd_run-build
 #      - when:
 #          condition:
 #            equal: [<< parameters.node-version >>, "14.16"]
@@ -236,8 +236,8 @@ workflows:
               node-version: ["10.24", "12.21", "14.16"]
           post-steps:
             - when:
-                - equal: [ << matrix.node-version >>, "14.16" ]
-                - steps:
+                equal: [ << matrix.node-version >>, "14.16" ]
+                steps:
                   - cmd_codecov
             - when:
                 and:
@@ -245,7 +245,6 @@ workflows:
                   - equal: [ "14.16", << matrix.node-version >> ]
               steps:
                 - run:
-                    when: on_success
                     name: Publish dev Build
                     command: |
                       echo "npm dev build placeholder"
