@@ -240,14 +240,12 @@ workflows:
                 steps:
                   - cmd_codecov
             - when:
-                and:
-                  - equal: [ dev, << pipeline.git.branch >> ]
-                  - equal: [ "14.16", << matrix.node-version >> ]
-              steps:
-                - run:
-                    name: Publish dev Build
-                    command: |
-                      echo "npm dev build placeholder"
+                equal: [ "14.16", << matrix.node-version >> ]
+                steps:
+                  - run:
+                      name: Publish dev Build
+                      command: |
+                        echo "npm dev build placeholder"
             - run:
                 name: Send Slack notification
                 command: |
