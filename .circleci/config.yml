@@ -198,11 +198,11 @@ jobs:
       - cmd_run-linter
       - cmd_run-unit-tests
       - cmd_run-build
-      - when:
-          condition:
-            equal: [<< parameters.node-version >>, "14.16"]
-          steps:
-            - cmd_codecov
+#      - when:
+#          condition:
+#            equal: [<< parameters.node-version >>, "14.16"]
+#          steps:
+#            - cmd_codecov
 
 workflows:
   workflow_e2e-tester:
@@ -235,6 +235,11 @@ workflows:
             parameters:
               node-version: ["10.24", "12.21", "14.16"]
           post-steps:
+            - when:
+                condition:
+                  equal: [ << matrix.node-version >>, "14.16" ]
+                steps:
+                  - cmd_codecov
             - when:
                 and:
                   - equal: [ dev, << pipeline.git.branch >> ]
