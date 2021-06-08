@@ -159,6 +159,22 @@ jobs:
           dist_tag: << parameters.dist_tag >>
           version_bump: << parameters.version_bump >>
 
+  job_dummy-publish:
+    resource_class: xlarge
+    parameters:
+      dist_tag:
+        type: string
+      version_bump:
+        type: string
+    environment:
+      NODE_OPTIONS: --max-old-space-size=14336
+      CI: ""
+    executor:
+      name: node
+      tag: "lts"
+    steps:
+      - run: echo "Running"
+
   job_pr-validator-win32:
     environment:
       NODE_OPTIONS: --max-old-space-size=14336
@@ -235,21 +251,21 @@ workflows:
             parameters:
               node-version: ["10.24", "12.21", "14.16"]
           post-steps:
-            - when:
-                and:
-                  - equal: [ dev, << pipeline.git.branch >> ]
-                  - equal: [ "14.16", << matrix.node-version >> ]
-              steps:
-                - run:
-                    when: on_success
-                    name: Publish dev Build
-                    command: |
-                      echo "npm dev build placeholder"
             - run:
                 name: Send Slack notification
                 command: |
                          curl -X POST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - $CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}*. View <$CIRCLE_BUILD_URL|build>. cc: <@$CIRCLE_USERNAME>', 'mrkdwn':true}" $SLACK_WEBHOOK
                 when: on_fail
+      - job_dummy-publish:
+          matrix:
+            parameters:
+              dist_tag: ["dev"]
+              version_bump: ["patch"]
+          requires:
+            - job_pr-validator-node
+          filters:
+            branches:
+              only: "dev"
 
   workflow_nightly-e2e:
     triggers:
