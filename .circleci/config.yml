@@ -242,6 +242,7 @@ workflows:
                   - on_success
               steps:
                 - run:
+                    when: on_success
                     name: Publish dev Build
                     command: |
                       echo "npm dev build placeholder"
