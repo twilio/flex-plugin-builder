@@ -54,7 +54,7 @@ commands:
           name: Check install
           command: |
             google-chrome --version
-            chromedriver --version    
+            chromedriver --version
   cmd_run-unit-tests:
     steps:
       - run:
@@ -80,7 +80,7 @@ commands:
       - run:
           name: "Codecov report"
           command: npm run coverage -- --token=$CODECOV_TOKEN
-  cmd_setup_npm:
+  cmd_setup-npm:
     steps:
       - run:
           name: "Setting up npm"
@@ -88,6 +88,11 @@ commands:
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
             git config --global user.email $GITHUB_EMAIL
             git config --global user.name $GITHUB_USER
+  cmd_setup-github:
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "f3:09:6f:86:86:0a:6e:98:9b:fa:cb:49:2e:90:bc:75"
   cmd_run-publish:
     parameters:
       dist_tag:
@@ -148,7 +153,8 @@ jobs:
       - checkout
       - cmd_install-prerequisites
       - cmd_install-dependencies
-      - cmd_setup_npm
+      - cmd_setup-npm
+      - cmd_setup-github
       - cmd_run-publish:
           dist_tag: << parameters.dist_tag >>
           version_bump: << parameters.version_bump >>
@@ -229,6 +235,16 @@ workflows:
             parameters:
               node-version: ["10.24", "12.21", "14.16"]
           post-steps:
+            - when:
+                and:
+                  - equal: [ dev, << pipeline.git.branch >> ]
+                  - equal: [ "14.16", << matrix.node-version >> ]
+              steps:
+                - run:
+                    when: on_success
+                    name: Publish dev Build
+                    command: |
+                      echo "npm dev build placeholder"
             - run:
                 name: Send Slack notification
                 command: |
