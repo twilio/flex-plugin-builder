@@ -236,9 +236,8 @@ workflows:
               node-version: ["10.24", "12.21", "14.16"]
           post-steps:
             - when:
-                condition:
-                  equal: [ << matrix.node-version >>, "14.16" ]
-                steps:
+                - equal: [ << matrix.node-version >>, "14.16" ]
+                - steps:
                   - cmd_codecov
             - when:
                 and:
