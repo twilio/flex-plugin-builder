@@ -196,7 +196,7 @@ jobs:
       - cmd_install-prerequisites
       - cmd_install-dependencies
       #- cmd_run-linter
-      - cmd_run-unit-tests
+      #- cmd_run-unit-tests
       #- cmd_run-build
 #      - when:
 #          condition:
