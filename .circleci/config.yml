@@ -239,7 +239,6 @@ workflows:
                 and:
                   - equal: [ dev, << pipeline.git.branch >> ]
                   - equal: [ "14.16", << matrix.node-version >> ]
-                  - on_success
               steps:
                 - run:
                     when: on_success
