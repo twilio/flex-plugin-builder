@@ -23,7 +23,7 @@ export default class {{pluginClassName}} extends FlexPlugin {
     this.registerReducers(manager);
 
     const options = { sortOrder: -1 };
-    flex.W
+    flex.AgentDesktopView
       .Panel1
       .Content
       .add(<CustomTaskListContainer key="{{pluginClassName}}-component" />, options);
