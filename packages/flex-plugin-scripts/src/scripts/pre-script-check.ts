@@ -1,5 +1,5 @@
 import { copyFileSync, readFileSync } from 'fs';
-import { join, basename } from 'path';
+import { join } from 'path';
 
 import { env, logger, semver, FlexPluginError, exit } from 'flex-dev-utils';
 import {
@@ -14,6 +14,7 @@ import {
   _require,
   setCwd,
   getCliPaths,
+  readPackageJson,
 } from 'flex-dev-utils/dist/fs';
 
 import {
@@ -195,8 +196,16 @@ const preScriptCheck = async (...args: string[]): Promise<void> => {
   addCWDNodeModule(...args);
 
   _setPluginDir(...args);
+
+  let pkgName = '';
+  try {
+    const packageJson = readPackageJson(join(process.cwd(), 'package.json'));
+    pkgName = packageJson.name;
+  } catch (e) {
+    // no-op
+  }
   const resetPluginDirectory = await checkPluginConfigurationExists(
-    basename(process.cwd()),
+    pkgName,
     process.cwd(),
     args.includes(FLAG_MULTI_PLUGINS),
   );
