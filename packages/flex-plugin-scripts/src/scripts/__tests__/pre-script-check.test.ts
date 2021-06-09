@@ -92,18 +92,30 @@ describe('PreScriptCheck', () => {
     };
 
     it('should call all methods', async () => {
+      jest.spyOn(fsScripts, 'readPackageJson').mockReturnValue({
+        version: '1.0.0',
+        name: 'plugin-test',
+        dependencies: {},
+      });
+
       await preScriptCheck.default();
 
       expectCalled(false, false);
-      expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-dir', pluginDir, false);
+      expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-test', pluginDir, false);
       expect(_setPluginDir).toHaveBeenCalledTimes(2);
     });
 
     it('should call with multi-plugin flag', async () => {
+      jest.spyOn(fsScripts, 'readPackageJson').mockReturnValue({
+        version: '1.0.0',
+        name: 'plugin-test',
+        dependencies: {},
+      });
+
       await preScriptCheck.default(preScriptCheck.FLAG_MULTI_PLUGINS);
 
       expectCalled(false, false);
-      expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-dir', pluginDir, true);
+      expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-test', pluginDir, true);
       expect(_setPluginDir).toHaveBeenCalledTimes(2);
     });
 
