@@ -1,3 +1,5 @@
+import { TwilioError } from 'flex-plugins-utils-exception';
+
 import * as env from '../env';
 
 describe('env', () => {
@@ -320,6 +322,30 @@ describe('env', () => {
     it('should set port', () => {
       env.setPort(123);
       expect(env.getPort()).toEqual(123);
+    });
+  });
+
+  describe('flexUISrc', () => {
+    const localFlexUISrc = 'http://localhost:8080/twilio-flex-ui.dev.browser.js';
+
+    it('should return local flexUISrc', () => {
+      process.env.FLEX_UI_SRC = localFlexUISrc;
+      expect(env.getFlexUISrc()).toEqual(localFlexUISrc);
+    });
+
+    it('should set local flexUISrc', () => {
+      env.setFlexUISrc(localFlexUISrc);
+      expect(env.getFlexUISrc()).toEqual(localFlexUISrc);
+    });
+
+    it('should error if invalid flexUISrc', () => {
+      try {
+        env.setFlexUISrc('invalid-flex-ui-source');
+      } catch (e) {
+        expect(e).toBeInstanceOf(TwilioError);
+        expect(e.message).toContain('is not a valid JS file');
+        expect(env.getFlexUISrc()).toBeUndefined();
+      }
     });
   });
 

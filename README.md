@@ -1,16 +1,16 @@
 <h1 align="center">Twilio Flex Plugin Builder</h1>
-<p align="center">Monorepo for all the tooling needed to create a custom <a href="https://www.twilio.com/flex" target="_blank">Twilio Flex</a> plugins
+<p align="center">Monorepo for all the tooling needed to create a custom <a href="https://www.twilio.com/docs/flex/developer/plugins" target="_blank">Twilio Flex Plugins</a>
 </p>
 
 <p align="center">
-    <a href="https://app.circleci.com/pipelines/github/twilio/flex-plugin-builder?branch=v4-beta" >
-        <img src="https://circleci.com/gh/twilio/flex-plugin-builder/tree/v4-beta.svg?style=shield" />
+    <a href="https://app.circleci.com/pipelines/github/twilio/flex-plugin-builder?branch=main" >
+        <img src="https://circleci.com/gh/twilio/flex-plugin-builder/tree/main.svg?style=shield" />
     </a>
     <a href="https://codecov.io/gh/twilio/flex-plugin-builder">
         <img src="https://codecov.io/gh/twilio/flex-plugin-builder/branch/master/graph/badge.svg" title="Code Coverage" />
     </a>
     <a href="#contributors">
-        <img src="https://img.shields.io/badge/all_contributors-11-orange.svg?style=square" title="All Contributors" />
+        <img src="https://img.shields.io/badge/all_contributors-14-orange.svg?style=square" title="All Contributors" />
     </a>
     <a href="./CODE_OF_CONDUCT.md">
         <img src="https://img.shields.io/badge/%F0%9F%92%96-code%20of%20conduct-ff69b4.svg?style=square" title="Code of Conducts" />
@@ -27,14 +27,14 @@
 
 Flex Plugin Builder requires [Node.js](https://nodejs.org/). We support Node >= 10.12 (and recommend the _even_ versions of Node). This is a monorepo project managed by [lerna](https://github.com/lerna/lerna) for creating Twilio Flex plugins.
 
-- [create-flex-plugin](packages/create-flex-plugin): The CLI tool to start a new Flex plugin project
-- [flex-plugin](packages/flex-plugin): Runtime dependency for Flex plugins
-- [flex-plugin-scripts](packages/flex-plugin-scripts): The scripts used for building, testing, and deploying your plugin
+- [@twilio-labs/plugin-flex](packages/plugin-flex): The CLI tool for creating, building, testing, deploying, and managing your plugins
 
 ## User Guide
 
-* [Creating a new plugin](packages/create-flex-plugin/README.md)
-* [Available Scripts](packages/flex-plugin-scripts/README.md)
+Please visit [Twilio Docs](https://www.twilio.com/docs/flex/developer/plugins) for the latest docs on Plugins CLI and API.
+
+* [Plugins CLI](https://www.twilio.com/docs/flex/developer/plugins/cli)
+* [Plugins API](https://www.twilio.com/docs/flex/developer/plugins/api)
 * [Troubleshooting and FAQ](faq.md)
 
 ## Changelog

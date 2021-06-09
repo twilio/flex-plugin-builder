@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-e2e-tests",
-  "version": "4.9.1-beta.0",
+  "version": "4.0.1",
   "description": "Flex Plugin E2E Tests framework",
   "keywords": [
     "flex",
@@ -33,14 +33,18 @@
     "test": "exit 0"
   },
   "dependencies": {
-    "flex-plugins-api-client": "4.9.1-beta.0",
-    "flex-plugins-utils-logger": "4.9.1-beta.0",
+    "axios": "^0.21.1",
+    "flex-plugins-api-client": "4.0.1",
+    "flex-plugins-utils-logger": "4.0.1",
     "lodash": "4.17.21",
+    "package-json": "^6.5.0",
     "replace-in-file": "^6.2.0",
+    "selenium-webdriver": "^4.0.0-beta.3",
     "semver": "^7.3.5"
   },
   "devDependencies": {
     "@types/lodash": "4.14.168",
+    "@types/selenium-webdriver": "^4.0.12",
     "@types/semver": "^7.3.5"
   },
   "engines": {

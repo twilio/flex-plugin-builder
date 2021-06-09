@@ -1,18 +1,18 @@
 /* eslint-disable import/no-unused-modules */
-import { TestSuite, TestParams } from '..';
+import { TestSuite, TestParams } from '../core';
 import { spawn, logResult, assertion } from '../utils';
 
-// Install Twilio CLI and Plugins CLI
-const testSuite: TestSuite = async (params: TestParams): Promise<void> => {
-  const result = await spawn('npm', ['i'], { cwd: params.plugin.dir });
+// Install dependencies
+const testSuite: TestSuite = async ({ scenario }: TestParams): Promise<void> => {
+  const result = await spawn('npm', ['i'], { cwd: scenario.plugin.dir });
   logResult(result);
 
-  assertion.fileExists([params.plugin.dir, 'node_modules']);
-  assertion.fileExists([params.plugin.dir, 'node_modules', 'flex-plugin-scripts']);
+  assertion.fileExists([scenario.plugin.dir, 'node_modules']);
+  assertion.fileExists([scenario.plugin.dir, 'node_modules', 'flex-plugin-scripts']);
   assertion.jsonFileContains(
-    [params.plugin.dir, 'node_modules', 'flex-plugin-scripts', 'package.json'],
+    [scenario.plugin.dir, 'node_modules', 'flex-plugin-scripts', 'package.json'],
     'version',
-    params.packageVersion,
+    scenario.packageVersion,
   );
 };
 testSuite.description = 'Running {{npm i}}';
