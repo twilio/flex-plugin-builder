@@ -46,6 +46,7 @@
     "util": "^0.12.3"
   },
   "devDependencies": {
-    "@types/qs": "^6.9.5"
+    "@types/qs": "^6.9.5",
+    "axios-mock-adapter": "^1.19.0"
   }
 }
