@@ -75,22 +75,22 @@ describe('BaseClient', () => {
 
   describe('getBaseUrl', () => {
     it('should get prod baseUrl', () => {
-      process.env.REALM = '';
+      process.env.REGION = '';
       const baseUrl = BaseClient.getBaseUrl('foo', 'v1');
 
       expect(baseUrl).toEqual('https://foo.twilio.com/v1');
     });
 
     it('should get dev baseUrl', () => {
-      process.env.REALM = 'dev';
+      process.env.REGION = 'dev';
       const baseUrl = BaseClient.getBaseUrl('bar', 'v2');
 
       expect(baseUrl).toEqual('https://bar.dev.twilio.com/v2');
     });
 
-    it('should throw error if invalid realm is provided', (done) => {
+    it('should throw error if invalid region is provided', (done) => {
       try {
-        process.env.REALM = 'invalid';
+        process.env.REGION = 'invalid';
         BaseClient.getBaseUrl('foo', 'v1');
       } catch (e) {
         done();

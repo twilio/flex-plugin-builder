@@ -1,7 +1,7 @@
 /// <reference path="../module.d.ts" />
 import get from 'lodash.get';
 
-export type Realm = 'dev' | 'stage';
+export type Region = 'dev' | 'stage';
 
 /* eslint-disable import/no-unused-modules */
 export enum Environment {
@@ -160,19 +160,19 @@ export const isDebug = (): boolean => {
 };
 
 /**
- * Sets the realm
+ * Sets the region
  */
-export const setRealm = (realm: Realm): void => {
-  process.env.REALM = realm;
+export const setRegion = (region: Region): void => {
+  process.env.REGION = region;
 };
 
 /**
- * Returns the realm
+ * Returns the region
  */
 /* istanbul ignore next */
-export const getRealm = (): Realm | string => {
+export const getRegion = (): Region | string => {
   if (isNode()) {
-    return process.env.REALM as Realm;
+    return process.env.REGION as Region;
   }
 
   if (window.Twilio) {
@@ -217,8 +217,8 @@ export default {
   isTrace,
   getAccountSid,
   getAuthToken,
-  getRealm,
-  setRealm,
+  getRegion,
+  setRegion,
   hasHost,
   getHost,
   setHost,
