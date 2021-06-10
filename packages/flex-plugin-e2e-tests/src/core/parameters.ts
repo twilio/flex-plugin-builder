@@ -15,7 +15,6 @@ export interface TestScenario {
     newlineValue: string;
     changelog: string;
     version: string;
-    envVarText: string;
   }>;
   flexUIVersion?: string;
   reactVersion?: string;
