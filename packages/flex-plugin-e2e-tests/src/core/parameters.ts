@@ -15,6 +15,7 @@ export interface TestScenario {
     newlineValue: string;
     changelog: string;
     version: string;
+    envVarText: string;
   }>;
   flexUIVersion?: string;
   reactVersion?: string;
@@ -80,7 +81,7 @@ export const testParams: TestParams = {
     __hidden: false,
     consoleBaseUrl: process.env.CONSOLE_BASE_URL || consoleBaseUrl,
     hostedFlexBaseUrl: process.env.HOSTED_FLEX_BASE_URL || hostedFlexBaseUrl,
-    region: TWILIO_REGION,
+    region: TWILIO_REGION || '',
     regionFlag: [],
   },
   scenario: {
