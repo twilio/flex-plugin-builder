@@ -15,6 +15,7 @@ import {
   setCwd,
   getCliPaths,
   readPackageJson,
+  checkAFileExists,
 } from 'flex-dev-utils/dist/fs';
 
 import {
@@ -197,21 +198,28 @@ const preScriptCheck = async (...args: string[]): Promise<void> => {
 
   _setPluginDir(...args);
 
-  let pkgName = '';
-  try {
+  const hasPackageJson = checkAFileExists(process.cwd(), 'package.json');
+  if (hasPackageJson) {
     const packageJson = readPackageJson(join(process.cwd(), 'package.json'));
-    pkgName = packageJson.name;
-  } catch (e) {
-    // no-op
+    const isPluginDir = packageJson.dependencies['@twilio/flex-ui'] || packageJson.devDependencies['@twilio/flex-ui'];
+
+    if (isPluginDir) {
+      const pkgName = packageJson.name;
+      if (!pkgName) {
+        throw new FlexPluginError('No package name was found');
+      }
+
+      const resetPluginDirectory = await checkPluginConfigurationExists(
+        pkgName,
+        process.cwd(),
+        args.includes(FLAG_MULTI_PLUGINS),
+      );
+      if (resetPluginDirectory) {
+        _setPluginDir(...args);
+      }
+    }
   }
-  const resetPluginDirectory = await checkPluginConfigurationExists(
-    pkgName,
-    process.cwd(),
-    args.includes(FLAG_MULTI_PLUGINS),
-  );
-  if (resetPluginDirectory) {
-    _setPluginDir(...args);
-  }
+
   _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
   _checkPluginCount();
   _validateTypescriptProject();

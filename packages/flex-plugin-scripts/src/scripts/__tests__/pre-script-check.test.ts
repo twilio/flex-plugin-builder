@@ -59,6 +59,16 @@ describe('PreScriptCheck', () => {
     const cwd = jest.spyOn(process, 'cwd');
 
     beforeEach(() => {
+      jest.spyOn(fsScripts, 'checkAFileExists').mockReturnValue(true);
+      jest.spyOn(fsScripts, 'readPackageJson').mockReturnValue({
+        version: '1.0.0',
+        name: 'plugin-test',
+        dependencies: {},
+        devDependencies: {
+          '@twilio/flex-ui': '^1',
+        },
+      });
+
       _checkExternalDepsVersions.mockReset();
       _validateTypescriptProject.mockReset();
       _checkPluginCount.mockReset();
@@ -92,12 +102,6 @@ describe('PreScriptCheck', () => {
     };
 
     it('should call all methods', async () => {
-      jest.spyOn(fsScripts, 'readPackageJson').mockReturnValue({
-        version: '1.0.0',
-        name: 'plugin-test',
-        dependencies: {},
-      });
-
       await preScriptCheck.default();
 
       expectCalled(false, false);
@@ -106,17 +110,32 @@ describe('PreScriptCheck', () => {
     });
 
     it('should call with multi-plugin flag', async () => {
-      jest.spyOn(fsScripts, 'readPackageJson').mockReturnValue({
-        version: '1.0.0',
-        name: 'plugin-test',
-        dependencies: {},
-      });
-
       await preScriptCheck.default(preScriptCheck.FLAG_MULTI_PLUGINS);
 
       expectCalled(false, false);
       expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-test', pluginDir, true);
       expect(_setPluginDir).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not call checkPluginConfigurationExists if package json does not exist', async () => {
+      jest.spyOn(fsScripts, 'checkAFileExists').mockReturnValue(false);
+
+      await preScriptCheck.default();
+
+      expect(checkPluginConfigurationExists).toHaveBeenCalledTimes(0);
+    });
+
+    it('should not call checkPluginConfigurationExists if not in a plugin dir', async () => {
+      jest.spyOn(fsScripts, 'readPackageJson').mockReturnValue({
+        version: '1.0.0',
+        name: 'plugin-test',
+        dependencies: {},
+        devDependencies: {},
+      });
+
+      await preScriptCheck.default();
+
+      expect(checkPluginConfigurationExists).toHaveBeenCalledTimes(0);
     });
 
     it('should call all methods and allow skip', async () => {
