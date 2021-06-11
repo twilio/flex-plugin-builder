@@ -25,6 +25,7 @@ describe('fs', () => {
       [flexPluginScripts]: '1',
       'flex-plugin': '2',
     },
+    devDependencies: {},
   };
 
   beforeEach(() => {
@@ -506,6 +507,7 @@ describe('fs', () => {
         [flexPluginScripts]: '1',
         'flex-plugin': '2',
       },
+      devDependencies: {},
     };
 
     it('should give cli paths', () => {
