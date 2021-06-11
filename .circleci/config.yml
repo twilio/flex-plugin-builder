@@ -30,6 +30,7 @@ executors:
 
 orbs:
   win: circleci/windows@2.2.0
+  browser-tools: circleci/browser-tools@1.1.3
 
 commands:
   cmd_install-dependencies:
@@ -45,6 +46,15 @@ commands:
       - run:
           name: "Install libraries"
           command: sudo apt-get install -y libsecret-1-dev
+  cmd_install-chrome-utils:
+    steps:
+      - browser-tools/install-chrome
+      - browser-tools/install-chromedriver
+      - run:
+          name: Check install
+          command: |
+            google-chrome --version
+            chromedriver --version
   cmd_run-unit-tests:
     steps:
       - run:
@@ -70,7 +80,7 @@ commands:
       - run:
           name: "Codecov report"
           command: npm run coverage -- --token=$CODECOV_TOKEN
-  cmd_setup_npm:
+  cmd_setup-npm:
     steps:
       - run:
           name: "Setting up npm"
@@ -78,6 +88,11 @@ commands:
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
             git config --global user.email $GITHUB_EMAIL
             git config --global user.name $GITHUB_USER
+  cmd_setup-github:
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "f3:09:6f:86:86:0a:6e:98:9b:fa:cb:49:2e:90:bc:75"
   cmd_run-publish:
     parameters:
       dist_tag:
@@ -89,6 +104,17 @@ commands:
           name: "Publishing package"
           command: |
             npm run publish:<< parameters.dist_tag >> << parameters.version_bump >>
+  cmd_windows-nvm-install-node:
+    parameters:
+      node-version:
+        type: string
+    steps:
+      - run:
+          name: "Install node"
+          command: nvm install << parameters.node-version >>
+      - run:
+          name: "NVM use"
+          command: nvm use << parameters.node-version >>
 
 jobs:
   job_e2e-test:
@@ -106,6 +132,7 @@ jobs:
       - checkout
       - cmd_install-prerequisites
       - cmd_install-dependencies
+      - cmd_install-chrome-utils
       - cmd_run-build
       - cmd_run-e2e-tests
 
@@ -126,8 +153,8 @@ jobs:
       - checkout
       - cmd_install-prerequisites
       - cmd_install-dependencies
-      - cmd_run-build
-      - cmd_setup_npm
+      - cmd_setup-npm
+      - cmd_setup-github
       - cmd_run-publish:
           dist_tag: << parameters.dist_tag >>
           version_bump: << parameters.version_bump >>
@@ -139,12 +166,16 @@ jobs:
     parameters:
       shell:
         type: string
+      node-version:
+        type: string
     executor:
       name: win/default
       shell: << parameters.shell >>
       size: xlarge
     steps:
       - checkout
+      - cmd_windows-nvm-install-node:
+          node-version: << parameters.node-version >>
       - cmd_install-dependencies
       - cmd_run-build
       - cmd_run-unit-tests
@@ -169,7 +200,7 @@ jobs:
       - cmd_run-build
       - when:
           condition:
-            equal: [<< parameters.node-version >>, lts]
+            equal: [<< parameters.node-version >>, "14.16"]
           steps:
             - cmd_codecov
 
@@ -197,14 +228,45 @@ workflows:
       - job_pr-validator-win32:
           matrix:
             parameters:
-                shell: [ "bash.exe" ]
+                shell: [ "bash.exe", "powershell.exe" ]
+                node-version: ["10.24", "12.21", "14.16"]
       - job_pr-validator-node:
           matrix:
             parameters:
-              node-version: ["10.24", "12.21", "14.16", lts]
+              node-version: ["10.24", "12.21", "14.16"]
           post-steps:
             - run:
                 name: Send Slack notification
                 command: |
                          curl -X POST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - $CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}*. View <$CIRCLE_BUILD_URL|build>. cc: <@$CIRCLE_USERNAME>', 'mrkdwn':true}" $SLACK_WEBHOOK
+                when: on_fail
+      - job_npm-publish:
+          matrix:
+            parameters:
+              dist_tag: ["dev"]
+              version_bump: ["patch"]
+          requires:
+            - job_pr-validator-node
+          filters:
+            branches:
+              only: "dev"
+
+  workflow_nightly-e2e:
+    triggers:
+      - schedule:
+          cron: "0 16 * * *"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - job_e2e-test:
+          matrix:
+            parameters:
+              package_version: [ "latest" ]
+          post-steps:
+            - run:
+                name: Send Slack notification
+                command: |
+                         curl -X POST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - nightly E2E tests failed. View <$CIRCLE_BUILD_URL|build>.', 'mrkdwn':true}" $SLACK_WEBHOOK
                 when: on_fail
