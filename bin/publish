@@ -16,15 +16,15 @@ semver=( ${currentVersion//./ } )
 major="${semver[0]}"
 minor="${semver[1]}"
 patch=$((semver[2] + 1))
-id=$(date '+%Y%m%d')
+id=$(date '+%Y%m%d%H%M')
 
 # Verify arguments
 if [ -z "${tag}" ] ; then
   echo "tag cannot be empty"
   exit 1
 fi
-if [ "${tag}" != "beta" ] && [ "${tag}" != "alpha" ] && [ "${tag}" != "public" ] && [ "${tag}" != "dev" ] && [ "${tag}" != "nightly" ] ; then
-  echo "tag must be one of beta, alpha, public, dev, nightly"
+if [ "${tag}" != "rc" ] && [ "${tag}" != "beta" ] && [ "${tag}" != "alpha" ] && [ "${tag}" != "public" ] && [ "${tag}" != "dev" ] ; then
+  echo "tag must be one of rc, beta, alpha, public, dev"
   exit 1
 fi
 if [ -z "${bump}" ] ; then
@@ -50,14 +50,10 @@ if [ "${tag}" != "public" ] ; then
   bump="pre${bump}"
 fi
 
-# Nightly/dev get a timestamp in their version
-if [ "${tag}" == "nightly" ] || [ "${tag}" == "dev" ] ; then
+# alpha/dev get a timestamp in their version
+if [ "${tag}" == "dev" ] || [ "${tag}" == "alpha" ] ; then
   bump="${major}.${minor}.${patch}-${tag}.${id}"
 fi
-
-# Run unit-tests one more time
-npm run test
-npm run build
 
 # Publishing
 echo -e "\n------------------------------------"
@@ -65,15 +61,21 @@ echo -e "-- Publishing as \033[1m${tag}\033[0m :: \033[1m${bump}\033[0m release 
 echo -e "-- Publishing as \033[1m${tag}\033[0m :: \033[1m${bump}\033[0m release --"
 echo -e "------------------------------------\n"
 
+# Run unit-tests one more time
+npm run lint
+npm run test
+npm run build
+
 if [ "${tag}" == "public" ] ; then
   ./node_modules/.bin/lerna publish \
     --force-publish="*" \
     --exact \
     --yes \
     "${bump}"
-elif [ "${tag}" == "beta" ] || [ "${tag}" == "alpha" ] ; then
+elif [ "${tag}" == "beta" ] ; then
   ./node_modules/.bin/lerna publish \
     --force-publish="*" \
+    --preid "${tag}" \
     --pre-dist-tag "${tag}" \
     --dist-tag "${tag}" \
     --exact \
@@ -82,12 +84,13 @@ elif [ "${tag}" == "beta" ] || [ "${tag}" == "alpha" ] ; then
 else
   ./node_modules/.bin/lerna publish \
     --force-publish="*" \
+    --preid "${tag}" \
     --pre-dist-tag "${tag}" \
     --dist-tag "${tag}" \
-    --exact \
-    --yes \
     --skip-git \
     --no-git-tag-version \
     --no-push \
+    --exact \
+    --yes \
     "${bump}"
 fi

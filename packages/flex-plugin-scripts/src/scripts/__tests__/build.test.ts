@@ -14,6 +14,7 @@ describe('BuildScript', () => {
   const paths = {
     app: {
       bundlePath: '/bundle/path/file.js',
+      sourceMapPath: '/source/map/path/file.js',
     },
   };
 
@@ -48,8 +49,9 @@ describe('BuildScript', () => {
       expect(env.setNodeEnv).toHaveBeenCalledTimes(1);
       expect(env.setNodeEnv).toHaveBeenCalledWith(Environment.Production);
 
-      expect(getFileSizeInMB).toHaveBeenCalledTimes(1);
+      expect(getFileSizeInMB).toHaveBeenCalledTimes(2);
       expect(getFileSizeInMB).toHaveBeenCalledWith(paths.app.bundlePath);
+      expect(getFileSizeInMB).toHaveBeenCalledWith(paths.app.sourceMapPath);
       expect(updateAppVersion).not.toHaveBeenCalled();
       expect(_getBundle).toHaveBeenCalledTimes(1);
       expect(prints.buildSuccessful).toHaveBeenCalledTimes(1);
@@ -61,13 +63,31 @@ describe('BuildScript', () => {
     });
 
     it('should exit if bundle size is too large', async () => {
-      const getFileSizeInMB = jest.spyOn(fs, 'getFileSizeInMB').mockReturnValue(100);
+      const getFileSizeInMB = jest.spyOn(fs, 'getFileSizeInMB').mockReturnValueOnce(100).mockReturnValue(5);
       const _getBundle = jest.spyOn(buildScript, '_runWebpack').mockResolvedValue({ warnings: [], bundles: [bundle] });
 
       await buildScript.default();
 
-      expect(getFileSizeInMB).toHaveBeenCalledTimes(1);
+      expect(getFileSizeInMB).toHaveBeenCalledTimes(2);
       expect(getFileSizeInMB).toHaveBeenCalledWith(paths.app.bundlePath);
+      expect(getFileSizeInMB).toHaveBeenCalledWith(paths.app.sourceMapPath);
+      expect(prints.buildSuccessful).not.toHaveBeenCalledTimes(1);
+      expect(prints.buildFailure).not.toHaveBeenCalled();
+      expect(prints.fileTooLarge).toHaveBeenCalledTimes(1);
+      expect(exit).toHaveBeenCalled();
+
+      _getBundle.mockRestore();
+    });
+
+    it('should exit if source map size is too large', async () => {
+      const getFileSizeInMB = jest.spyOn(fs, 'getFileSizeInMB').mockReturnValueOnce(5).mockReturnValue(100);
+      const _getBundle = jest.spyOn(buildScript, '_runWebpack').mockResolvedValue({ warnings: [], bundles: [bundle] });
+
+      await buildScript.default();
+
+      expect(getFileSizeInMB).toHaveBeenCalledTimes(2);
+      expect(getFileSizeInMB).toHaveBeenCalledWith(paths.app.bundlePath);
+      expect(getFileSizeInMB).toHaveBeenCalledWith(paths.app.sourceMapPath);
       expect(prints.buildSuccessful).not.toHaveBeenCalledTimes(1);
       expect(prints.buildFailure).not.toHaveBeenCalled();
       expect(prints.fileTooLarge).toHaveBeenCalledTimes(1);
