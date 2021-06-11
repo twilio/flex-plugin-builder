@@ -1,12 +1,13 @@
-import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
+import { ChildProcessWithoutNullStreams, spawn, SpawnOptionsWithoutStdio } from 'child_process';
 
 import { logger } from 'flex-plugins-utils-logger';
 
-import { homeDir } from '..';
+import { homeDir, testParams } from '../core';
 
 interface SpawnResult {
   stdout: string;
   stderr: string;
+  child?: ChildProcessWithoutNullStreams;
 }
 
 /**
@@ -16,13 +17,16 @@ interface SpawnResult {
  * @param options spawn options to run
  */
 export default async (cmd: string, args: string[], options?: SpawnOptionsWithoutStdio): Promise<SpawnResult> => {
+  // eslint-disable-next-line consistent-return
   return new Promise((resolve, reject) => {
     const defaultOptions = {
       cwd: homeDir,
       env: {
-        PATH: `${process.env.PATH}:/${homeDir}/bin`,
-        TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
-        TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
+        PATH: `${testParams.environment.path}:/${homeDir}/bin`,
+        TWILIO_ACCOUNT_SID: testParams.secrets.api.accountSid,
+        TWILIO_AUTH_TOKEN: testParams.secrets.api.authToken,
+        TWILIO_REGION: testParams.config.region,
+        REALM: testParams.config.region,
       },
     };
     const spawnOptions = { ...defaultOptions, ...options };
@@ -67,6 +71,14 @@ export default async (cmd: string, args: string[], options?: SpawnOptionsWithout
 
       return reject(new Error(`Command exited with code ${code} and message ${stdout}: ${stderr}`));
     });
+
+    if (options?.detached) {
+      return resolve({
+        stdout: Buffer.concat(stdoutArr).toString(),
+        stderr: Buffer.concat(stderrArr).toString(),
+        child,
+      });
+    }
   });
 };
 
