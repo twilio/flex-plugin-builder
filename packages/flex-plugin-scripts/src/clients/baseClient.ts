@@ -1,4 +1,4 @@
-import { Credential } from 'flex-dev-utils';
+import { Credential, env } from 'flex-dev-utils';
 
 import Http, { ContentType, HttpConfig } from './http';
 import { getPackageDetails, FLEX_PACKAGES } from '../utils/package';
@@ -37,7 +37,7 @@ export default abstract class BaseClient {
    */
   public static getBaseUrl = (subDomain: string, version: string): string => {
     const { regions } = BaseClient;
-    const region = process.env.REGION;
+    const region = env.getRegion();
     if (region && !regions.includes(region)) {
       throw new Error(`Invalid region ${region} was provided. Region must be one of ${regions.join(',')}`);
     }
