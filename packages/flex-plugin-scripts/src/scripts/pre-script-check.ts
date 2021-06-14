@@ -1,5 +1,5 @@
 import { copyFileSync, readFileSync } from 'fs';
-import { join, basename } from 'path';
+import { join } from 'path';
 
 import { env, logger, semver, FlexPluginError, exit } from 'flex-dev-utils';
 import {
@@ -14,6 +14,9 @@ import {
   _require,
   setCwd,
   getCliPaths,
+  readPackageJson,
+  checkAFileExists,
+  isPluginDir,
 } from 'flex-dev-utils/dist/fs';
 
 import {
@@ -195,14 +198,28 @@ const preScriptCheck = async (...args: string[]): Promise<void> => {
   addCWDNodeModule(...args);
 
   _setPluginDir(...args);
-  const resetPluginDirectory = await checkPluginConfigurationExists(
-    basename(process.cwd()),
-    process.cwd(),
-    args.includes(FLAG_MULTI_PLUGINS),
-  );
-  if (resetPluginDirectory) {
-    _setPluginDir(...args);
+
+  const hasPackageJson = checkAFileExists(process.cwd(), 'package.json');
+  if (hasPackageJson) {
+    const packageJson = readPackageJson(join(process.cwd(), 'package.json'));
+
+    if (isPluginDir(packageJson)) {
+      const pkgName = packageJson.name;
+      if (!pkgName) {
+        throw new FlexPluginError('No package name was found');
+      }
+
+      const resetPluginDirectory = await checkPluginConfigurationExists(
+        pkgName,
+        process.cwd(),
+        args.includes(FLAG_MULTI_PLUGINS),
+      );
+      if (resetPluginDirectory) {
+        _setPluginDir(...args);
+      }
+    }
   }
+
   _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
   _checkPluginCount();
   _validateTypescriptProject();

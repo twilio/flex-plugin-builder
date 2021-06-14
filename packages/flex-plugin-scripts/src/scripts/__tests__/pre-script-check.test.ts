@@ -59,6 +59,16 @@ describe('PreScriptCheck', () => {
     const cwd = jest.spyOn(process, 'cwd');
 
     beforeEach(() => {
+      jest.spyOn(fsScripts, 'checkAFileExists').mockReturnValue(true);
+      jest.spyOn(fsScripts, 'readPackageJson').mockReturnValue({
+        version: '1.0.0',
+        name: 'plugin-test',
+        dependencies: {},
+        devDependencies: {
+          '@twilio/flex-ui': '^1',
+        },
+      });
+
       _checkExternalDepsVersions.mockReset();
       _validateTypescriptProject.mockReset();
       _checkPluginCount.mockReset();
@@ -95,7 +105,7 @@ describe('PreScriptCheck', () => {
       await preScriptCheck.default();
 
       expectCalled(false, false);
-      expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-dir', pluginDir, false);
+      expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-test', pluginDir, false);
       expect(_setPluginDir).toHaveBeenCalledTimes(2);
     });
 
@@ -103,8 +113,46 @@ describe('PreScriptCheck', () => {
       await preScriptCheck.default(preScriptCheck.FLAG_MULTI_PLUGINS);
 
       expectCalled(false, false);
-      expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-dir', pluginDir, true);
+      expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-test', pluginDir, true);
       expect(_setPluginDir).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not call checkPluginConfigurationExists if package json does not exist', async () => {
+      jest.spyOn(fsScripts, 'checkAFileExists').mockReturnValue(false);
+
+      await preScriptCheck.default();
+
+      expect(checkPluginConfigurationExists).toHaveBeenCalledTimes(0);
+    });
+
+    it('should not call checkPluginConfigurationExists if not in a plugin dir', async () => {
+      jest.spyOn(fsScripts, 'readPackageJson').mockReturnValue({
+        version: '1.0.0',
+        name: 'plugin-test',
+        dependencies: {},
+        devDependencies: {},
+      });
+
+      await preScriptCheck.default();
+
+      expect(checkPluginConfigurationExists).toHaveBeenCalledTimes(0);
+    });
+
+    it('should throw an error if a package.json exists but name does not', async () => {
+      jest.spyOn(fsScripts, 'readPackageJson').mockReturnValue({
+        version: '1.0.0',
+        name: '',
+        dependencies: {},
+        devDependencies: {
+          '@twilio/flex-ui': '^1',
+        },
+      });
+
+      try {
+        await preScriptCheck.default();
+      } catch (e) {
+        expect(e.message).toBe('No package name was found');
+      }
     });
 
     it('should call all methods and allow skip', async () => {

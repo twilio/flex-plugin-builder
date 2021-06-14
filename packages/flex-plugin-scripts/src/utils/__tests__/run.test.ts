@@ -20,6 +20,7 @@ describe('run', () => {
       'flex-plugin': '1.2.3',
       'flex-plugin-scripts': '4.5.6',
     },
+    devDependencies: {},
   });
 
   beforeEach(() => {
