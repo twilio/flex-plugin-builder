@@ -138,6 +138,23 @@ describe('PreScriptCheck', () => {
       expect(checkPluginConfigurationExists).toHaveBeenCalledTimes(0);
     });
 
+    it('should throw an error if a package.json exists but name does not', async () => {
+      jest.spyOn(fsScripts, 'readPackageJson').mockReturnValue({
+        version: '1.0.0',
+        name: '',
+        dependencies: {},
+        devDependencies: {
+          '@twilio/flex-ui': '^1',
+        },
+      });
+
+      try {
+        await preScriptCheck.default();
+      } catch (e) {
+        expect(e.message).toBe('No package name was found');
+      }
+    });
+
     it('should call all methods and allow skip', async () => {
       process.env.SKIP_PREFLIGHT_CHECK = 'true';
       await preScriptCheck.default();
