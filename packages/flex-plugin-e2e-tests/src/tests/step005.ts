@@ -15,13 +15,13 @@ const testSuite: TestSuite = async ({ scenario }: TestParams): Promise<void> => 
     to: scenario.plugin.componentText,
   });
 
-  const envVariableValue = `close-${Date.now()}`;
+  const envVariableValue = `${Date.now()}`;
 
   writeFileSync(`${scenario.plugin.dir}/.env`, `FLEX_APP_ENVIRONMENT_TEST=${envVariableValue}`);
 
   await replaceInFile({
     files: joinPath(scenario.plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
-    from: /(close(?!-))|(close-{process.env.FLEX_APP_ENVIRONMENT_TEST})/,
+    from: /close.*/,
     to: `close-{process.env.FLEX_APP_ENVIRONMENT_TEST}`,
     countMatches: true,
   });
