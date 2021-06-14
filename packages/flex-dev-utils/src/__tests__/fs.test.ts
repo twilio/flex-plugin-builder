@@ -730,4 +730,43 @@ describe('fs', () => {
       expect(findGlobsIn).toHaveBeenCalledWith(expect.toMatchPathContaining('the/cwd/src'), 'pattern1', 'pattern2');
     });
   });
+
+  describe('isPluginDir', () => {
+    it('should return true if @twilio/flex-ui is in the dependencies', () => {
+      expect(
+        fs.isPluginDir({
+          version: '1.0.0',
+          name: '',
+          dependencies: {
+            '@twilio/flex-ui': '^1',
+          },
+          devDependencies: {},
+        }),
+      ).toBe(true);
+    });
+
+    it('should return true if @twilio/flex-ui is in the devDependencies', () => {
+      expect(
+        fs.isPluginDir({
+          version: '1.0.0',
+          name: '',
+          dependencies: {},
+          devDependencies: {
+            '@twilio/flex-ui': '^1',
+          },
+        }),
+      ).toBe(true);
+    });
+
+    it('should return true if @twilio/flex-ui is not in dependencies or devDependencies', () => {
+      expect(
+        fs.isPluginDir({
+          version: '1.0.0',
+          name: '',
+          dependencies: {},
+          devDependencies: {},
+        }),
+      ).toBe(false);
+    });
+  });
 });

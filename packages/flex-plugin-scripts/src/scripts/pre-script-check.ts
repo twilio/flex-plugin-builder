@@ -16,6 +16,7 @@ import {
   getCliPaths,
   readPackageJson,
   checkAFileExists,
+  isPluginDir,
 } from 'flex-dev-utils/dist/fs';
 
 import {
@@ -201,9 +202,8 @@ const preScriptCheck = async (...args: string[]): Promise<void> => {
   const hasPackageJson = checkAFileExists(process.cwd(), 'package.json');
   if (hasPackageJson) {
     const packageJson = readPackageJson(join(process.cwd(), 'package.json'));
-    const isPluginDir = packageJson.dependencies['@twilio/flex-ui'] || packageJson.devDependencies['@twilio/flex-ui'];
 
-    if (isPluginDir) {
+    if (isPluginDir(packageJson)) {
       const pkgName = packageJson.name;
       if (!pkgName) {
         throw new FlexPluginError('No package name was found');
