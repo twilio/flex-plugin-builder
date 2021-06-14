@@ -13,12 +13,19 @@ A clear and concise description of what the bug is.
 
 ### Versions
 
+You can find the version of your `@twilio/plugin-flex` by typing `twilio plugins`.
+
 | package                     | version |
 | ----------------------------| ------- |
-| `create-flex-plugin`        | `X.Y.Z` |
-| `flex-plugin`               | `X.Y.Z` |
+| `@twilio/plugin-flex`       | `X.Y.Z` |
+| `flex-plugin-scripts`       | `X.Y.Z` |
 | `node`                      | `X.Y.Z` |
 | `npm`                       | `X.Y.Z` |
+
+### Package.json
+
+Please include the entire content of your `package.json`.
+
 
 ### Steps to Reproduce
 
