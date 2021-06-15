@@ -237,7 +237,7 @@ describe('env', () => {
 
   describe('getRegion', () => {
     it('should return region', () => {
-      process.env.REGION = 'stage';
+      process.env.TWILIO_REGION = 'stage';
 
       expect(env.getRegion()).toEqual('stage');
     });
