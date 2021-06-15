@@ -1,5 +1,5 @@
 import { PluginServiceHTTPClient } from 'flex-plugins-api-client';
-import { Realm } from 'flex-plugins-utils-env';
+import { Region } from 'flex-plugins-utils-env';
 import { OptionalHttpConfig } from 'flex-plugin-utils-http';
 
 import FlexPluginsAPIToolkitBase from './flexPluginsAPIToolkitBase';
@@ -39,7 +39,7 @@ export {
 } from './scripts';
 
 interface FlexPluginsAPIToolkitOptions extends OptionalHttpConfig {
-  realm?: Realm;
+  region?: Region;
 }
 
 export { default as FlexPluginsAPIToolkitBase } from './flexPluginsAPIToolkitBase';

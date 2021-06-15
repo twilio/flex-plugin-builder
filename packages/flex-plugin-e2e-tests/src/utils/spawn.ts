@@ -26,7 +26,7 @@ export default async (cmd: string, args: string[], options?: SpawnOptionsWithout
         TWILIO_ACCOUNT_SID: testParams.secrets.api.accountSid,
         TWILIO_AUTH_TOKEN: testParams.secrets.api.authToken,
         TWILIO_REGION: testParams.config.region,
-        REALM: testParams.config.region,
+        REGION: testParams.config.region,
       },
     };
     const spawnOptions = { ...defaultOptions, ...options };

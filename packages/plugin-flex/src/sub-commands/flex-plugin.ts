@@ -407,9 +407,9 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
     if (this._flags.region) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      pluginServiceOptions.realm = this._flags.region as any;
+      pluginServiceOptions.region = this._flags.region as any;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      flexConfigOptions.realm = this._flags.region as any;
+      flexConfigOptions.region = this._flags.region as any;
     }
 
     const httpClient = new PluginServiceHTTPClient(

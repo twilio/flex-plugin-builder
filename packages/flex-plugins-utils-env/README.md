@@ -32,9 +32,9 @@ Returns true if the log level is debug. Works on both the browser and the server
 
 Returns true if the log level is trace. Works on both the browser and the server.
 
-### getRealm
+### getRegion
 
-Returns the realm. Will use the process env if running on the server, otherwise uses the windows.location. 
+Returns the region. Will use the process env if running on the server, otherwise uses the windows.location. 
 
 ### isCI
 

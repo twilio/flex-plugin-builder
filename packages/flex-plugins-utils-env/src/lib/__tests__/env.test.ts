@@ -235,19 +235,19 @@ describe('env', () => {
     });
   });
 
-  describe('getRealm', () => {
-    it('should return realm', () => {
-      process.env.REALM = 'stage';
+  describe('getRegion', () => {
+    it('should return region', () => {
+      process.env.REGION = 'stage';
 
-      expect(env.getRealm()).toEqual('stage');
+      expect(env.getRegion()).toEqual('stage');
     });
   });
 
-  describe('setRealm', () => {
-    it('should set realm', () => {
-      expect(env.getRealm()).toBeUndefined();
-      env.setRealm('stage');
-      expect(env.getRealm()).toEqual('stage');
+  describe('setRegion', () => {
+    it('should set region', () => {
+      expect(env.getRegion()).toBeUndefined();
+      env.setRegion('stage');
+      expect(env.getRegion()).toEqual('stage');
     });
   });
 
