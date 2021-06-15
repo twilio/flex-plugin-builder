@@ -272,6 +272,28 @@ describe('SubCommands/FlexPlugin', () => {
     expect(cmd.checkCompatibility).toEqual(false);
   });
 
+  it('should set region in config client if flag is passed in', async () => {
+    const cmd = await createTest(FlexPlugin)('--region', 'stage');
+
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'doRun').mockReturnThis();
+
+    await cmd.run();
+    expect(cmd.flexConfigurationClient).toHaveProperty('options.region', 'stage');
+  });
+
+  it('should not set a region in config client if flag is not passed in', async () => {
+    const cmd = await createTest(FlexPlugin)();
+
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'doRun').mockReturnThis();
+
+    await cmd.run();
+    expect(cmd.flexConfigurationClient).not.toHaveProperty('options.region');
+  });
+
   describe('setupEnvironment', () => {
     const username = 'test-username';
     const password = 'test-password';
