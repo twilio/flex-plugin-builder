@@ -21,6 +21,7 @@ describe('pluginServer', () => {
     name: defaultPluginName,
     version: '1.2.3',
     dependencies: {},
+    devDependencies: {},
   };
 
   beforeEach(() => {

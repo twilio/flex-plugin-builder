@@ -15,6 +15,7 @@ export interface PackageJson {
   name: string;
   version: string;
   dependencies: Record<string, string>;
+  devDependencies: Record<string, string>;
 }
 
 export interface AppPackageJson extends PackageJson {
@@ -592,4 +593,14 @@ export const getPackageVersion = (name: string): string => {
   const installedPath = resolveRelative(getPaths().app.nodeModulesDir, name, packageJsonStr);
 
   return readPackageJson(installedPath).version;
+};
+
+/**
+ * Determines whether the directory is plugin based on the package.json
+ * @param packageJson  the package json
+ */
+export const isPluginDir = (packageJson: PackageJson): boolean => {
+  const flexUI = '@twilio/flex-ui';
+
+  return Boolean(packageJson.dependencies[flexUI] || packageJson.devDependencies[flexUI]);
 };
