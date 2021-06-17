@@ -17,7 +17,7 @@ export interface Question {
  *
  * @param defaultAnswer
  */
-export const _validateConfirmation = (defaultAnswer?: YNAnswer) => (input: string) => {
+export const _validateConfirmation = (defaultAnswer?: YNAnswer) => (input: string): string | boolean => {
   if (!input && defaultAnswer) {
     input = defaultAnswer;
   }

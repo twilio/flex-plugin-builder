@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import axios, { AxiosRequestConfig } from 'axios';
+import { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { env } from 'flex-plugins-utils-env';
 import { TwilioApiError } from 'flex-plugins-utils-exception';

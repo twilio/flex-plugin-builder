@@ -38,6 +38,8 @@ const extensions = ['js', 'jsx', 'ts', 'tsx'];
 
 const PackagesToVerify = ['react', 'react-dom'];
 
+const packageJsonName = 'package.json';
+
 export const FLAG_MULTI_PLUGINS = '--multi-plugins-pilot';
 
 export const flags = [FLAG_MULTI_PLUGINS];
@@ -101,7 +103,7 @@ export const _verifyPackageVersion = (
 
   // @ts-ignore
   const requiredVersion = semver.coerce(expectedDependency).version;
-  const installedPath = resolveRelative(getPaths().app.nodeModulesDir, name, 'package.json');
+  const installedPath = resolveRelative(getPaths().app.nodeModulesDir, name, packageJsonName);
   const installedVersion = _require(installedPath).version;
 
   if (requiredVersion !== installedVersion) {
@@ -199,9 +201,9 @@ const preScriptCheck = async (...args: string[]): Promise<void> => {
 
   _setPluginDir(...args);
 
-  const hasPackageJson = checkAFileExists(process.cwd(), 'package.json');
+  const hasPackageJson = checkAFileExists(process.cwd(), packageJsonName);
   if (hasPackageJson) {
-    const packageJson = readPackageJson(join(process.cwd(), 'package.json'));
+    const packageJson = readPackageJson(join(process.cwd(), packageJsonName));
 
     if (isPluginDir(packageJson)) {
       const pkgName = packageJson.name;

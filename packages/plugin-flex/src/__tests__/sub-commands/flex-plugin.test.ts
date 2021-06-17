@@ -371,6 +371,7 @@ describe('SubCommands/FlexPlugin', () => {
       const cmd = await createTest(FlexPlugin)();
 
       try {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const client = cmd[method];
       } catch (e) {
         expect(e.message).toContain('is not initialized');
