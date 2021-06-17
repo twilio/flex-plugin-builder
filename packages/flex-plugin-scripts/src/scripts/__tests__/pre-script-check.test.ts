@@ -93,10 +93,10 @@ describe('PreScriptCheck', () => {
       cwd.mockRestore();
     });
 
-    const expectCalled = (allowSkip: boolean, allowReact: boolean) => {
+    const expectCalled = (allowSkip: boolean) => {
       expect(_checkExternalDepsVersions).toHaveBeenCalledTimes(1);
       expect(_validateTypescriptProject).toHaveBeenCalledTimes(1);
-      expect(_checkExternalDepsVersions).toHaveBeenCalledWith(allowSkip, allowReact);
+      expect(_checkExternalDepsVersions).toHaveBeenCalledWith(allowSkip);
       expect(_checkPluginCount).toHaveBeenCalledTimes(1);
       expect(checkPluginConfigurationExists).toHaveBeenCalledTimes(1);
     };
@@ -104,7 +104,7 @@ describe('PreScriptCheck', () => {
     it('should call all methods', async () => {
       await preScriptCheck.default();
 
-      expectCalled(false, false);
+      expectCalled(false);
       expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-test', pluginDir, false);
       expect(_setPluginDir).toHaveBeenCalledTimes(2);
     });
@@ -112,7 +112,7 @@ describe('PreScriptCheck', () => {
     it('should call with multi-plugin flag', async () => {
       await preScriptCheck.default(preScriptCheck.FLAG_MULTI_PLUGINS);
 
-      expectCalled(false, false);
+      expectCalled(false);
       expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-test', pluginDir, true);
       expect(_setPluginDir).toHaveBeenCalledTimes(2);
     });
@@ -159,14 +159,14 @@ describe('PreScriptCheck', () => {
       process.env.SKIP_PREFLIGHT_CHECK = 'true';
       await preScriptCheck.default();
 
-      expectCalled(true, false);
+      expectCalled(true);
     });
 
     it('should call all methods and allow react', async () => {
       process.env.UNBUNDLED_REACT = 'true';
       await preScriptCheck.default();
 
-      expectCalled(false, true);
+      expectCalled(false);
     });
 
     it('should call methods in a specific order', async () => {
@@ -186,7 +186,7 @@ describe('PreScriptCheck', () => {
         version: '1.18.0',
         dependencies: {},
       };
-      preScriptCheck._verifyPackageVersion(pkg, false, false, 'foo');
+      preScriptCheck._verifyPackageVersion(pkg, false, 'foo');
 
       expect(prints.expectedDependencyNotFound).toHaveBeenCalledTimes(1);
       expect(prints.expectedDependencyNotFound).toHaveBeenCalledWith('foo');
@@ -202,10 +202,10 @@ describe('PreScriptCheck', () => {
       };
       _require.mockReturnValue({ version: '1.0.0' });
 
-      preScriptCheck._verifyPackageVersion(pkg, false, false, 'somePackage');
+      preScriptCheck._verifyPackageVersion(pkg, false, 'somePackage');
 
-      expect(prints.versionMismatch).toHaveBeenCalledTimes(1);
-      expect(prints.versionMismatch).toHaveBeenCalledWith('somePackage', '1.0.0', '2.0.0', false);
+      expect(prints.unbundledReactMismatch).toHaveBeenCalledTimes(1);
+      expect(prints.unbundledReactMismatch).toHaveBeenCalledWith('1.18.0', 'somePackage', '1.0.0', false);
       expect(exit).toHaveBeenCalledTimes(1);
       expect(exit).toHaveBeenCalledWith(1);
       expect(_require).toHaveBeenCalledTimes(1);
@@ -219,10 +219,10 @@ describe('PreScriptCheck', () => {
       };
       _require.mockReturnValue({ version: '1.0.0' });
 
-      preScriptCheck._verifyPackageVersion(pkg, true, false, 'somePackage');
+      preScriptCheck._verifyPackageVersion(pkg, true, 'somePackage');
 
-      expect(prints.versionMismatch).toHaveBeenCalledTimes(1);
-      expect(prints.versionMismatch).toHaveBeenCalledWith('somePackage', '1.0.0', '2.0.0', true);
+      expect(prints.unbundledReactMismatch).toHaveBeenCalledTimes(1);
+      expect(prints.unbundledReactMismatch).toHaveBeenCalledWith('1.18.0', 'somePackage', '1.0.0', true);
       expect(exit).not.toHaveBeenCalled();
       expect(_require).toHaveBeenCalledTimes(1);
       expect(_require).toHaveBeenCalledWith(expect.stringContaining('somePackage'));
@@ -234,7 +234,7 @@ describe('PreScriptCheck', () => {
         dependencies: { somePackage: '1.0.0' },
       };
       _require.mockReturnValue({ version: '1.0.0' });
-      preScriptCheck._verifyPackageVersion(pkg, false, false, 'somePackage');
+      preScriptCheck._verifyPackageVersion(pkg, false, 'somePackage');
 
       expect(exit).not.toHaveBeenCalled();
       expect(_require).toHaveBeenCalledTimes(1);
@@ -247,7 +247,7 @@ describe('PreScriptCheck', () => {
         dependencies: { somePackage: `^1.0.0` },
       };
       _require.mockReturnValue({ version: '1.0.0' });
-      preScriptCheck._verifyPackageVersion(pkg, false, false, 'somePackage');
+      preScriptCheck._verifyPackageVersion(pkg, false, 'somePackage');
 
       expect(exit).not.toHaveBeenCalled();
       expect(_require).toHaveBeenCalledTimes(1);
@@ -260,11 +260,10 @@ describe('PreScriptCheck', () => {
         dependencies: { somePackage: `1.0.0` },
       };
       _require.mockReturnValue({ version: '2.0.0' });
-      preScriptCheck._verifyPackageVersion(pkg, false, true, 'somePackage');
+      preScriptCheck._verifyPackageVersion(pkg, false, 'somePackage');
 
       expect(prints.unbundledReactMismatch).toHaveBeenCalledTimes(1);
       expect(prints.unbundledReactMismatch).toHaveBeenCalledWith('1.18.0', 'somePackage', '2.0.0', false);
-      expect(prints.versionMismatch).not.toHaveBeenCalled();
       expect(exit).toHaveBeenCalled();
       expect(_require).toHaveBeenCalledTimes(1);
       expect(_require).toHaveBeenCalledWith(expect.stringContaining('somePackage'));
@@ -276,10 +275,9 @@ describe('PreScriptCheck', () => {
         dependencies: { somePackage: `1.0.0` },
       };
       _require.mockReturnValue({ version: '2.0.0' });
-      preScriptCheck._verifyPackageVersion(pkg, false, true, 'somePackage');
+      preScriptCheck._verifyPackageVersion(pkg, false, 'somePackage');
 
       expect(prints.unbundledReactMismatch).not.toHaveBeenCalled();
-      expect(prints.versionMismatch).not.toHaveBeenCalled();
       expect(exit).not.toHaveBeenCalled();
       expect(_require).toHaveBeenCalledTimes(1);
       expect(_require).toHaveBeenCalledWith(expect.stringContaining('somePackage'));

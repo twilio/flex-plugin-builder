@@ -21,7 +21,6 @@ import {
 
 import {
   unbundledReactMismatch,
-  versionMismatch,
   expectedDependencyNotFound,
   loadPluginCountError,
   typescriptNotInstalled,
@@ -80,16 +79,10 @@ export const _validateTypescriptProject = (): void => {
  *
  * @param flexUIPkg   the flex-ui package.json
  * @param allowSkip   whether to allow skip
- * @param allowReact  whether to allow unbundled react
  * @param name        the package to check
  * @private
  */
-export const _verifyPackageVersion = (
-  flexUIPkg: Package,
-  allowSkip: boolean,
-  allowReact: boolean,
-  name: string,
-): void => {
+export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, name: string): void => {
   const expectedDependency = flexUIPkg.dependencies[name];
   const supportsUnbundled = semver.satisfies(flexUIPkg.version, '>=1.19.0');
   if (!expectedDependency) {
@@ -105,15 +98,10 @@ export const _verifyPackageVersion = (
   const installedVersion = _require(installedPath).version;
 
   if (requiredVersion !== installedVersion) {
-    if (allowReact) {
-      if (supportsUnbundled) {
-        return;
-      }
-
-      unbundledReactMismatch(flexUIPkg.version, name, installedVersion, allowSkip);
-    } else {
-      versionMismatch(name, installedVersion, requiredVersion, allowSkip);
+    if (supportsUnbundled) {
+      return;
     }
+    unbundledReactMismatch(flexUIPkg.version, name, installedVersion, allowSkip);
 
     if (!allowSkip) {
       exit(1);
@@ -125,14 +113,13 @@ export const _verifyPackageVersion = (
  * Checks the version of external libraries and exists if customer is using another version
  *
  * allowSkip  whether to allow skip
- * allowReact whether to allow reacts
  * @private
  */
 /* istanbul ignore next */
-export const _checkExternalDepsVersions = (allowSkip: boolean, allowReact: boolean): void => {
+export const _checkExternalDepsVersions = (allowSkip: boolean): void => {
   const flexUIPkg = _require(getPaths().app.flexUIPkgPath);
 
-  PackagesToVerify.forEach((name) => _verifyPackageVersion(flexUIPkg, allowSkip, allowReact, name));
+  PackagesToVerify.forEach((name) => _verifyPackageVersion(flexUIPkg, allowSkip, name));
 };
 
 /**
@@ -220,7 +207,7 @@ const preScriptCheck = async (...args: string[]): Promise<void> => {
     }
   }
 
-  _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
+  _checkExternalDepsVersions(env.skipPreflightCheck());
   _checkPluginCount();
   _validateTypescriptProject();
 };

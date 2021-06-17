@@ -61,20 +61,13 @@ export const _verifyPath = (baseUrl: string, build: Build): boolean => {
 /**
  * Validates Flex UI version requirement
  * @param flexUI        the flex ui version
- * @param dependencies  the package.json dependencie
- * @param allowReact    whether this deploy supports unbundled React
+ * @param dependencies  the package.json dependencies
  * @private
  */
-export const _verifyFlexUIConfiguration = async (
-  flexUI: string,
-  dependencies: UIDependencies,
-  allowReact: boolean,
-): Promise<void> => {
+export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: UIDependencies): Promise<void> => {
   const coerced = semver.coerce(flexUI);
-  if (!allowReact) {
-    return;
-  }
   const UISupports = semver.satisfies('1.19.0', flexUI) || (coerced && semver.satisfies(coerced, '>=1.19.0'));
+
   if (!UISupports) {
     throw new FlexPluginError(
       singleLineString(
@@ -168,10 +161,10 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
   const deploymentClient = new DeploymentClient(credentials, runtime.service.sid, runtime.environment.sid);
 
   // Validate Flex UI version
-  const allowReact = process.env.UNBUNDLED_REACT === 'true';
   const uiVersion = await configurationClient.getFlexUIVersion();
   const uiDependencies = await configurationClient.getUIDependencies();
-  await _verifyFlexUIConfiguration(uiVersion, uiDependencies, allowReact);
+
+  await _verifyFlexUIConfiguration(uiVersion, uiDependencies);
 
   // Check duplicate routes
   const routeCollision = await progress('Validating the new plugin bundle', async () => {
