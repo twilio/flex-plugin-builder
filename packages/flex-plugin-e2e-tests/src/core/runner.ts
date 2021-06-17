@@ -18,7 +18,7 @@ const runTest = async (step: number, params: TestParams): Promise<void> => {
   const testFile = `step${stepStr}`;
   const testSuite = require(`${__dirname}/../tests/${testFile}`).default as TestSuite;
 
-  logger.info(`Step ${stepStr} - ${testSuite.description}`);
+  logger.info(`Step ${stepStr} - ${testSuite.description} ..[${new Date().toISOString()}]..`);
   if (testSuite.before) {
     await testSuite.before(params);
   }

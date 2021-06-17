@@ -33,7 +33,6 @@ const testSuite: TestSuite = async ({ scenario, config, secrets }: TestParams): 
     await Browser.navigate(config.hostedFlexBaseUrl, 'agent-desktop');
 
     await assertion.browser.pluginIsVisible(scenario.plugin.newlineValue);
-
   } finally {
     await Browser.kill();
   }

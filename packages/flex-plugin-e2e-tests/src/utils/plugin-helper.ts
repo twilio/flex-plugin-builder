@@ -53,6 +53,7 @@ const waitForPluginToRelease = async (
       if (!plugin) {
         throw new Error(`/plugins did not contain ${releasedPlugin.unique_name}`);
       }
+      logger.info('/plugins endpoint returned', JSON.stringify(plugins));
 
       break;
     } catch (e) {
