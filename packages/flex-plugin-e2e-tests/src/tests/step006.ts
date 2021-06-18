@@ -20,6 +20,11 @@ const testSuite: TestSuite = async ({ scenario, config, secrets }: TestParams): 
     // Plugin loads
     await Browser.loginViaConsole(cookies, config.consoleBaseUrl, scenario.plugin.localhostUrl, 'agent-desktop');
     await assertion.browser.userIsOnView('Agent Desktop');
+
+    // Verify that user is on the right account
+    const accountSid = await Browser.getFlexAccountSid();
+    assertion.equal(accountSid, secrets.api.accountSid);
+
     await assertion.browser.pluginIsVisible(scenario.plugin.componentText);
 
     // Verify hot reload
