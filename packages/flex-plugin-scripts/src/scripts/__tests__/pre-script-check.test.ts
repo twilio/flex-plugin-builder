@@ -246,7 +246,7 @@ describe('PreScriptCheck', () => {
       expect(_require).toHaveBeenCalledWith(expect.stringContaining('somePackage'));
     });
 
-    it('should warn if allowReact but unsupported flex-ui', () => {
+    it('should warn if unsupported flex-ui', () => {
       const pkg = {
         version: '1.18.0',
         dependencies: { somePackage: `1.0.0` },
@@ -261,7 +261,7 @@ describe('PreScriptCheck', () => {
       expect(_require).toHaveBeenCalledWith(expect.stringContaining('somePackage'));
     });
 
-    it('should warn if allowReact', () => {
+    it('should succeed if flex-ui version supports unbundled react', () => {
       const pkg = {
         version: '1.19.0',
         dependencies: { somePackage: `1.0.0` },

@@ -402,9 +402,19 @@ describe('DeployScript', () => {
 
     it('should throw exception if unsupported flex-ui version is provided', async (done) => {
       try {
-        await deployScript._verifyFlexUIConfiguration('1.18.0', {});
+        await deployScript._verifyFlexUIConfiguration('1.18.0', dependencies);
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
+        done();
+      }
+    });
+
+    it('should throw exception if a React version has not been set', async (done) => {
+      try {
+        await deployScript._verifyFlexUIConfiguration('^1', {});
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+        expect(e.message).toContain('need to set the React version');
         done();
       }
     });
