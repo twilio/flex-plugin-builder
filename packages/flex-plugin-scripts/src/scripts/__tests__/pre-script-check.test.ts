@@ -7,7 +7,6 @@ import * as preScriptCheck from '../pre-script-check';
 import * as parser from '../../utils/parser';
 
 jest.mock('flex-dev-utils/dist/logger');
-jest.mock('../../prints/versionMismatch');
 jest.mock('../../prints/unbundledReactMismatch');
 jest.mock('../../prints/expectedDependencyNotFound');
 jest.mock('../../prints/typescriptNotInstalled');
@@ -160,13 +159,6 @@ describe('PreScriptCheck', () => {
       await preScriptCheck.default();
 
       expectCalled(true);
-    });
-
-    it('should call all methods and allow react', async () => {
-      process.env.UNBUNDLED_REACT = 'true';
-      await preScriptCheck.default();
-
-      expectCalled(false);
     });
 
     it('should call methods in a specific order', async () => {

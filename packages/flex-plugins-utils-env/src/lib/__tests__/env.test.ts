@@ -203,17 +203,6 @@ describe('env', () => {
     });
   });
 
-  describe('allowUnbundledReact', () => {
-    it('allowUnbundledReact should return true', () => {
-      process.env.UNBUNDLED_REACT = 'true';
-      expect(env.allowUnbundledReact()).toEqual(true);
-    });
-
-    it('allowUnbundledReact should return false', () => {
-      expect(env.allowUnbundledReact()).toEqual(false);
-    });
-  });
-
   describe('quiet', () => {
     it('should return true', () => {
       process.env.QUIET = 'true';
