@@ -53,7 +53,6 @@ export class Browser {
    * Gets account sid from browser's console
    */
   static async getFlexAccountSid(): Promise<string> {
-    await this.browser.sleep(10000);
     return this.browser.executeScript<string>(
       'return Twilio.Flex.Manager.getInstance().serviceConfiguration.account_sid',
     );
