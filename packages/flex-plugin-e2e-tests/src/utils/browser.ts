@@ -50,6 +50,15 @@ export class Browser {
   };
 
   /**
+   * Gets account sid from browser's console
+   */
+  static async getFlexAccountSid(): Promise<string> {
+    return this.browser.executeScript<string>(
+      'return Twilio.Flex.Manager.getInstance().serviceConfiguration.account_sid',
+    );
+  }
+
+  /**
    * Initializes browser object
    */
   static async create(): Promise<void> {
@@ -214,14 +223,12 @@ export class Browser {
     elementName: string,
     timeout = DEFAULT_LOCATE_TIMEOUT,
   ): Promise<WebElement> {
-    let element: WebElement;
     try {
-      element = await this.browser.wait(until.elementLocated(locator), timeout, `Could not find ${elementName} in DOM`);
+      return await this.browser.wait(until.elementLocated(locator), timeout, `Could not find ${elementName} in DOM`);
     } catch (e) {
       logger.error(`Did not find locator [${locator}] for element: ${elementName} in DOM`);
       throw new Error(e);
     }
-    return element;
   }
 
   /**
