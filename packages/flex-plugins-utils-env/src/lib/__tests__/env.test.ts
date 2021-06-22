@@ -215,12 +215,12 @@ describe('env', () => {
   });
 
   describe('quiet', () => {
-    it('should return true', () => {
+    it('isQuiet should return true', () => {
       process.env.QUIET = 'true';
       expect(env.isQuiet()).toEqual(true);
     });
 
-    it('should return false', () => {
+    it('isQuiet should return false', () => {
       expect(env.isQuiet()).toEqual(false);
     });
 

@@ -15,6 +15,7 @@ jest.mock('../../prints/loadPluginCountError');
 
 describe('PreScriptCheck', () => {
   const pluginDir = '/path/to/plugin-dir';
+  const plugiName = 'plugin-test';
   const paths = {
     scripts: {
       tsConfigPath: 'test-ts-config-path',
@@ -27,7 +28,7 @@ describe('PreScriptCheck', () => {
     },
     app: {
       version: '1.0.0',
-      name: 'plugin-test',
+      name: plugiName,
       dir: 'test-dir',
       nodeModulesDir: 'test-node-modules',
       appConfig: 'appConfig.js',
@@ -62,7 +63,7 @@ describe('PreScriptCheck', () => {
       jest.spyOn(fsScripts, 'checkAFileExists').mockReturnValue(true);
       jest.spyOn(fsScripts, 'readPackageJson').mockReturnValue({
         version: '1.0.0',
-        name: 'plugin-test',
+        name: plugiName,
         dependencies: {},
         devDependencies: {
           '@twilio/flex-ui': '^1',
@@ -105,7 +106,7 @@ describe('PreScriptCheck', () => {
       await preScriptCheck.default();
 
       expectCalled(false, false);
-      expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-test', pluginDir, false);
+      expect(checkPluginConfigurationExists).toHaveBeenCalledWith(plugiName, pluginDir, false);
       expect(_setPluginDir).toHaveBeenCalledTimes(2);
     });
 
@@ -113,7 +114,7 @@ describe('PreScriptCheck', () => {
       await preScriptCheck.default(preScriptCheck.FLAG_MULTI_PLUGINS);
 
       expectCalled(false, false);
-      expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-test', pluginDir, true);
+      expect(checkPluginConfigurationExists).toHaveBeenCalledWith(plugiName, pluginDir, true);
       expect(_setPluginDir).toHaveBeenCalledTimes(2);
     });
 
@@ -128,7 +129,7 @@ describe('PreScriptCheck', () => {
     it('should not call checkPluginConfigurationExists if not in a plugin dir', async () => {
       jest.spyOn(fsScripts, 'readPackageJson').mockReturnValue({
         version: '1.0.0',
-        name: 'plugin-test',
+        name: plugiName,
         dependencies: {},
         devDependencies: {},
       });

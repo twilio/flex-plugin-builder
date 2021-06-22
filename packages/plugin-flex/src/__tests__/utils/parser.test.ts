@@ -2,11 +2,13 @@ import { CLIParseError } from '@oclif/parser/lib/errors';
 
 import * as parser from '../../utils/parser';
 
+const stringToBeTrimmed = 'needs trimming';
+
 describe('Utils/Parser', () => {
   it('should trim only strings', () => {
     const obj = {
-      str1: 'needs trimming ',
-      str2: '  needs trimming  ',
+      str1: `${stringToBeTrimmed} `,
+      str2: `  ${stringToBeTrimmed}  `,
       str3: 'is good',
       num: 123,
       bool: true,
@@ -14,8 +16,8 @@ describe('Utils/Parser', () => {
     };
     const trimmed = parser._trim(obj);
 
-    expect(trimmed.str1).toEqual('needs trimming');
-    expect(trimmed.str2).toEqual('needs trimming');
+    expect(trimmed.str1).toEqual(stringToBeTrimmed);
+    expect(trimmed.str2).toEqual(stringToBeTrimmed);
     expect(trimmed.str3).toEqual('is good');
     expect(trimmed.num).toEqual(123);
     expect(trimmed.bool).toEqual(true);

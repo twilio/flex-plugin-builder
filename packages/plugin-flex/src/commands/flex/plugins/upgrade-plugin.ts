@@ -19,6 +19,12 @@ import { OutputFlags } from '@oclif/parser/lib/parse';
 import FlexPlugin, { ConfigData, PkgCallback, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { createDescription, instanceOf } from '../../../utils/general';
 
+const appConfig = 'appConfig.js';
+const crackoConfig = 'craco.config.js';
+
+const flexPluginScript = 'flex-plugin-scripts';
+const flexPlugin = 'flex-plugin';
+
 interface ScriptsToRemove {
   name: string;
   it: string;
@@ -71,10 +77,10 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
 
   private static cracoConfigSha = '4a8ecfec7b70da88a0849b7b0163808b2cc46eee08c9ab599c8aa3525ff01546';
 
-  private static pluginBuilderScripts = ['flex-plugin-scripts', 'flex-plugin'];
+  private static pluginBuilderScripts = [flexPluginScript, flexPlugin];
 
   private static packagesToRemove = [
-    'flex-plugin-scripts', // remove and then re-add
+    flexPluginScript, // remove and then re-add
     'react-app-rewire-flex-plugin',
     'react-app-rewired',
     'react-scripts',
@@ -94,7 +100,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     '@types/react',
     '@types/react-dom',
     '@types/react-redux',
-    'flex-plugin',
+    flexPlugin,
   ];
 
   // @ts-ignore
@@ -135,7 +141,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         break;
     }
 
-    const pkgJson = await this.getLatestVersionOfDep('flex-plugin-scripts', this._flags.beta);
+    const pkgJson = await this.getLatestVersionOfDep(flexPluginScript, this._flags.beta);
     const latestVersion = pkgJson ? semver.coerce(pkgJson.version as string)?.major : 0;
     if (currentPkgVersion !== latestVersion) {
       await this.cleanupNodeModules();
@@ -225,10 +231,10 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     await progress('Cleaning up the scaffold', async () => {
       let warningLogged = false;
 
-      if (checkAFileExists(this.cwd, 'craco.config.js')) {
-        const sha = await calculateSha256(this.cwd, 'craco.config.js');
+      if (checkAFileExists(this.cwd, crackoConfig)) {
+        const sha = await calculateSha256(this.cwd, crackoConfig);
         if (sha === FlexPluginsUpgradePlugin.cracoConfigSha) {
-          removeFile(this.cwd, 'craco.config.js');
+          removeFile(this.cwd, crackoConfig);
         } else {
           this.prints.cannotRemoveCraco(!warningLogged);
           warningLogged = true;
@@ -250,14 +256,14 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         copyFile([require.resolve('create-flex-plugin'), '..', '..', 'templates', 'core', file], [this.cwd, file]);
       });
 
-      if (checkAFileExists(this.cwd, 'public', 'appConfig.js')) {
+      if (checkAFileExists(this.cwd, 'public', appConfig)) {
         const newLines: string[] = [];
         const ignoreLines = [
           '// set to /plugins.json for local dev',
           '// set to /plugins.local.build.json for testing your build',
           '// set to "" for the default live plugin loader',
         ];
-        readFileSync(this.cwd, 'public', 'appConfig.js')
+        readFileSync(this.cwd, 'public', appConfig)
           .split('\n')
           .forEach((line: string) => {
             if (ignoreLines.includes(line) || line.startsWith('var pluginServiceUrl')) {
@@ -273,7 +279,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
           newLines[index] = newLines[index].replace('url: pluginServiceUrl', "url: '/plugins'");
         }
 
-        writeFile(newLines.join('\n'), this.cwd, 'public', 'appConfig.js');
+        writeFile(newLines.join('\n'), this.cwd, 'public', appConfig);
       }
     });
   }
@@ -448,16 +454,17 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   }
 
   getDependencyUpdates(): DependencyUpdates {
+    const react = 'react || 16.5.2';
     return {
       remove: FlexPluginsUpgradePlugin.packagesToRemove,
       deps: {
-        'flex-plugin-scripts': '*',
-        react: 'react || 16.5.2',
-        'react-dom': 'react || 16.5.2',
+        flexPluginScript: '*',
+        react,
+        'react-dom': react,
       },
       devDeps: {
         '@twilio/flex-ui': '^1',
-        'react-test-renderer': 'react || 16.5.2',
+        'react-test-renderer': react,
       },
     };
   }
@@ -477,12 +484,12 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
    */
   get pkgVersion(): number | undefined {
     const pkg =
-      this.pkg.dependencies['flex-plugin-scripts'] ||
-      this.pkg.devDependencies['flex-plugin-scripts'] ||
-      this.pkg.dependencies['flex-plugin'] ||
-      this.pkg.devDependencies['flex-plugin'];
+      this.pkg.dependencies[flexPluginScript] ||
+      this.pkg.devDependencies[flexPluginScript] ||
+      this.pkg.dependencies[flexPlugin] ||
+      this.pkg.devDependencies[flexPlugin];
     if (!pkg) {
-      throw new TwilioCliError("Package 'flex-plugin-scripts' was not found");
+      throw new TwilioCliError(`Package '${flexPluginScript}' was not found`);
     }
 
     return semver.coerce(pkg)?.major;
