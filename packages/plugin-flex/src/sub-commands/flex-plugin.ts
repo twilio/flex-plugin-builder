@@ -43,6 +43,12 @@ interface FlexPluginOption {
   runInDirectory: boolean;
 }
 
+const flexPluginScripts = 'flex-plugin-scripts';
+const flexPluginsApiUtils = 'flex-plugins-api-utils';
+const flexPluginsApiClient = 'flex-plugins-api-client';
+const twilioCLI = '@twilio/cli-core';
+const twilioCliFlexPlugin = 'twilio-cli-flex-plugin';
+
 export type ConfigData = typeof services.config.ConfigData;
 export type SecureStorage = typeof services.secureStorage.SecureStorage;
 
@@ -260,7 +266,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    */
   get builderVersion(): number | null {
     const { pkg } = this;
-    const script = pkg.dependencies['flex-plugin-scripts'] || pkg.devDependencies['flex-plugin-scripts'];
+    const script = pkg.dependencies[flexPluginScripts] || pkg.devDependencies[flexPluginScripts];
     if (!script) {
       return null;
     }
@@ -373,8 +379,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     }
 
     if (this.opts.runInDirectory) {
-      const pluginScriptVersion = FlexPlugin.getPackageVersion(join(this.cwd, 'node_modules', 'flex-plugin-scripts'));
-      this.logger.debug(`Using flex-plugin-scripts version ${pluginScriptVersion}`);
+      const pluginScriptVersion = FlexPlugin.getPackageVersion(join(this.cwd, 'node_modules', flexPluginScripts));
+      this.logger.debug(`Using ${flexPluginScripts} version ${pluginScriptVersion}`);
 
       if (!this.isPluginFolder()) {
         throw new TwilioCliError(
@@ -392,11 +398,11 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       setUserAgent: true,
       caller: 'twilio-cli',
       packages: {
-        'flex-plugin-scripts': FlexPlugin.getPackageVersion('flex-plugin-scripts'),
-        'flex-plugins-api-utils': FlexPlugin.getPackageVersion('flex-plugins-api-utils'),
-        'flex-plugins-api-client': FlexPlugin.getPackageVersion('flex-plugins-api-client'),
-        'twilio-cli': FlexPlugin.getPackageVersion('@twilio/cli-core'),
-        'twilio-cli-flex-plugin': FlexPlugin.getPackageVersion(this.pluginRootDir),
+        [flexPluginScripts]: FlexPlugin.getPackageVersion(flexPluginScripts),
+        [flexPluginsApiUtils]: FlexPlugin.getPackageVersion(flexPluginsApiUtils),
+        [flexPluginsApiClient]: FlexPlugin.getPackageVersion(flexPluginsApiClient),
+        [twilioCLI]: FlexPlugin.getPackageVersion(twilioCLI),
+        [twilioCliFlexPlugin]: FlexPlugin.getPackageVersion(this.pluginRootDir),
       },
     };
     const flexConfigOptions: FlexConfigurationClientOptions = {
@@ -484,7 +490,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     }
 
     // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
-    return require(`flex-plugin-scripts/dist/scripts/${scriptName}`).default(...argv, ...extra);
+    return require(`${flexPluginScripts}/dist/scripts/${scriptName}`).default(...argv, ...extra);
   }
 
   /**
@@ -495,7 +501,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   /* istanbul ignore next */
   // @ts-ignore
   async spawnScript(scriptName: string, argv = this.scriptArgs): SpawnPromise {
-    const scriptPath = require.resolve(`flex-plugin-scripts/dist/scripts/${scriptName}`);
+    const scriptPath = require.resolve(`${flexPluginScripts}/dist/scripts/${scriptName}`);
     env.setCLI();
     return spawn('node', [scriptPath, ...argv, '--run-script', '--core-cwd', this.pluginRootDir]);
   }
@@ -627,6 +633,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   /**
    * Configures the success/error print messages
    */
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   get _prints() {
     return prints(this._logger);
   }

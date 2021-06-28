@@ -14,6 +14,7 @@ jest.mock('../../prints/loadPluginCountError');
 
 describe('PreScriptCheck', () => {
   const pluginDir = '/path/to/plugin-dir';
+  const pluginName = 'plugin-test';
   const paths = {
     scripts: {
       tsConfigPath: 'test-ts-config-path',
@@ -26,7 +27,7 @@ describe('PreScriptCheck', () => {
     },
     app: {
       version: '1.0.0',
-      name: 'plugin-test',
+      name: pluginName,
       dir: 'test-dir',
       nodeModulesDir: 'test-node-modules',
       appConfig: 'appConfig.js',
@@ -61,7 +62,7 @@ describe('PreScriptCheck', () => {
       jest.spyOn(fsScripts, 'checkAFileExists').mockReturnValue(true);
       jest.spyOn(fsScripts, 'readPackageJson').mockReturnValue({
         version: '1.0.0',
-        name: 'plugin-test',
+        name: pluginName,
         dependencies: {},
         devDependencies: {
           '@twilio/flex-ui': '^1',
@@ -104,7 +105,7 @@ describe('PreScriptCheck', () => {
       await preScriptCheck.default();
 
       expectCalled(false);
-      expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-test', pluginDir, false);
+      expect(checkPluginConfigurationExists).toHaveBeenCalledWith(pluginName, pluginDir, false);
       expect(_setPluginDir).toHaveBeenCalledTimes(2);
     });
 
@@ -112,7 +113,7 @@ describe('PreScriptCheck', () => {
       await preScriptCheck.default(preScriptCheck.FLAG_MULTI_PLUGINS);
 
       expectCalled(false);
-      expect(checkPluginConfigurationExists).toHaveBeenCalledWith('plugin-test', pluginDir, true);
+      expect(checkPluginConfigurationExists).toHaveBeenCalledWith(pluginName, pluginDir, true);
       expect(_setPluginDir).toHaveBeenCalledTimes(2);
     });
 
@@ -127,7 +128,7 @@ describe('PreScriptCheck', () => {
     it('should not call checkPluginConfigurationExists if not in a plugin dir', async () => {
       jest.spyOn(fsScripts, 'readPackageJson').mockReturnValue({
         version: '1.0.0',
-        name: 'plugin-test',
+        name: pluginName,
         dependencies: {},
         devDependencies: {},
       });

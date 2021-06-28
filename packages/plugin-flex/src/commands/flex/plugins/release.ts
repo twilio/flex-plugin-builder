@@ -8,6 +8,13 @@ import { createDescription } from '../../../utils/general';
 import { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import CreateConfiguration from '../../../sub-commands/create-configuration';
 
+const descriptionFlex = 'description';
+const nameFlex = 'name';
+const enablePluginFlex = 'enable-plugin';
+const disablePluginFlex = 'disable-plugin';
+const newFlex = 'new';
+const configurationSidFlex = 'configuration-sid';
+
 /**
  * Creates a Flex Plugin Configuration and releases and sets it to active
  */
@@ -18,34 +25,34 @@ export default class FlexPluginsRelease extends CreateConfiguration {
 
   public static flags = {
     ...CreateConfiguration.flags,
-    'configuration-sid': flags.string({
+    [configurationSidFlex]: flags.string({
       description: FlexPluginsRelease.topic.flags.configurationSid,
-      exclusive: ['description', 'name', 'new'],
+      exclusive: [descriptionFlex, nameFlex, newFlex],
     }),
     name: flags.string({
       ...CreateConfiguration.nameFlag,
       required: false,
-      exclusive: ['configuration-sid'],
+      exclusive: [configurationSidFlex],
     }),
     plugin: flags.string({
       ...CreateConfiguration.aliasEnablePluginFlag,
       required: false,
-      exclusive: ['configuration-sid'],
+      exclusive: [configurationSidFlex],
     }),
-    'enable-plugin': flags.string({
+    [enablePluginFlex]: flags.string({
       ...CreateConfiguration.enablePluginFlag,
       required: false,
-      exclusive: ['configuration-sid'],
+      exclusive: [configurationSidFlex],
     }),
-    'disable-plugin': flags.string({
+    [disablePluginFlex]: flags.string({
       ...CreateConfiguration.disablePluginFlag,
       required: false,
-      exclusive: ['configuration-sid'],
+      exclusive: [configurationSidFlex],
     }),
     description: flags.string({
       ...CreateConfiguration.descriptionFlag,
       required: false,
-      exclusive: ['configuration-sid'],
+      exclusive: [configurationSidFlex],
     }),
   };
 
@@ -63,8 +70,8 @@ export default class FlexPluginsRelease extends CreateConfiguration {
    * @override
    */
   async doRun(): Promise<void> {
-    if (this._flags['configuration-sid']) {
-      await this.doCreateRelease(this._flags['configuration-sid']);
+    if (this._flags[configurationSidFlex]) {
+      await this.doCreateRelease(this._flags[configurationSidFlex]);
     } else {
       const config = await super.doCreateConfiguration();
       await this.doCreateRelease(config.sid);
@@ -94,11 +101,11 @@ export default class FlexPluginsRelease extends CreateConfiguration {
    */
   get _flags(): OutputFlags<typeof FlexPluginsRelease.flags> {
     const parse = this.parse(FlexPluginsRelease);
-    if (parse.flags['configuration-sid']) {
+    if (parse.flags[configurationSidFlex]) {
       return parse.flags;
     }
 
-    ['description', 'name'].forEach((key) => {
+    [descriptionFlex, nameFlex].forEach((key) => {
       if (!parse.flags[key]) {
         throw new RequiredFlagError({
           flag: FlexPluginsRelease.flags[key],
@@ -111,10 +118,10 @@ export default class FlexPluginsRelease extends CreateConfiguration {
       }
     });
 
-    const hasChange = ['enable-plugin', 'disable-plugin'].some((x) => parse.flags[x]);
+    const hasChange = [enablePluginFlex, disablePluginFlex].some((x) => parse.flags[x]);
     if (!hasChange) {
       throw new RequiredFlagError({
-        flag: FlexPluginsRelease.flags['enable-plugin'],
+        flag: FlexPluginsRelease.flags[enablePluginFlex],
         parse: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           input: {} as any,

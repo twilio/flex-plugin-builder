@@ -123,6 +123,7 @@ afterEach(() => {
  * @param cmd the command
  * @param obj the package response
  */
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const mockGetPkg = (cmd: FlexPlugin, obj: Record<string, unknown>) => {
   // @ts-ignore;
   return jest.spyOn(cmd, 'pkg', 'get').mockReturnValue(obj);
@@ -143,6 +144,7 @@ export const mockPrintMethod = <C extends FlexPlugin>(cmd: C, method: string): v
  * @param cmd the command
  * @param method the print method to return
  */
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const getPrintMethod = <C extends FlexPlugin>(cmd: C, method: string) => {
   // @ts-ignore
   return cmd.prints[method];

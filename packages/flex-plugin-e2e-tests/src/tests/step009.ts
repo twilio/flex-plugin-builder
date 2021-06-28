@@ -28,12 +28,15 @@ const testSuite: TestSuite = async ({ scenario, config, secrets }: TestParams): 
     await Browser.loginViaConsole(cookies, config.consoleBaseUrl, config.hostedFlexBaseUrl, 'admin');
     await assertion.browser.userIsOnView('Admin Dashboard');
 
+    // Verify that user is on the right account
+    const accountSid = await Browser.getFlexAccountSid();
+    assertion.equal(accountSid, secrets.api.accountSid);
+
     // Make sure that /plugins contain the plugin
     await pluginHelper.waitForPluginToRelease(config.hostedFlexBaseUrl, releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
     await Browser.navigate(config.hostedFlexBaseUrl, 'agent-desktop');
 
     await assertion.browser.pluginIsVisible(scenario.plugin.newlineValue);
-
   } finally {
     await Browser.kill();
   }

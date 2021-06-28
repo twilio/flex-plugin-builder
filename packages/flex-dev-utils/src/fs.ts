@@ -11,6 +11,10 @@ import appModule from 'app-module-path';
 
 import { confirm } from './inquirer';
 
+const flexUI = '@twilio/flex-ui';
+const react = 'react';
+const reactDOM = 'react-dom';
+
 export interface PackageJson {
   name: string;
   version: string;
@@ -468,7 +472,7 @@ export const getPaths = () => {
   const publicDir = resolveCwd('public');
   const buildDir = resolveCwd('build');
   const srcDir = resolveCwd('src');
-  const flexUIDir = resolveRelative(nodeModulesDir, '@twilio/flex-ui');
+  const flexUIDir = resolveRelative(nodeModulesDir, flexUI);
   const tsConfigPath = resolveCwd('tsconfig.json');
   const webpackDir = _getFlexPluginWebpackPath(scriptsNodeModulesDir);
 
@@ -548,13 +552,13 @@ export const getPaths = () => {
       // dependencies
       dependencies: {
         react: {
-          version: readPackageJson(resolveRelative(nodeModulesDir, 'react', packageJsonStr)).version,
+          version: readPackageJson(resolveRelative(nodeModulesDir, react, packageJsonStr)).version,
         },
         reactDom: {
-          version: readPackageJson(resolveRelative(nodeModulesDir, 'react-dom', packageJsonStr)).version,
+          version: readPackageJson(resolveRelative(nodeModulesDir, reactDOM, packageJsonStr)).version,
         },
         flexUI: {
-          version: readPackageJson(resolveRelative(nodeModulesDir, '@twilio/flex-ui', packageJsonStr)).version,
+          version: readPackageJson(resolveRelative(nodeModulesDir, flexUI, packageJsonStr)).version,
         },
       },
     },
@@ -600,7 +604,5 @@ export const getPackageVersion = (name: string): string => {
  * @param packageJson  the package json
  */
 export const isPluginDir = (packageJson: PackageJson): boolean => {
-  const flexUI = '@twilio/flex-ui';
-
   return Boolean(packageJson.dependencies[flexUI] || packageJson.devDependencies[flexUI]);
 };

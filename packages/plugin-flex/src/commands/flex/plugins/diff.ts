@@ -139,6 +139,7 @@ export default class FlexPluginsDiff extends FlexPlugin {
   }
 
   /* istanbul ignore next */
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   get _args() {
     return this.parse(FlexPluginsDiff).args;
   }

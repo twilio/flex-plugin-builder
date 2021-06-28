@@ -70,34 +70,30 @@ describe('credentials', () => {
   });
 
   describe('getCredential', () => {
-    it('should quit if CI=true and accountSid and authToken or api key and secret are not provided', async () => {
-      process.env.CI = 'true';
-
+    const validateCredentialsInvalid = async () => {
       try {
         await credentials.getCredential();
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
       }
+    };
+
+    it('should quit if CI=true and accountSid and authToken or api key and secret are not provided', async () => {
+      process.env.CI = 'true';
+
+      await validateCredentialsInvalid();
     });
 
     it('should quit if CI=true and accountSid without authToken and the reverse', async () => {
       process.env.CI = 'true';
       process.env.TWILIO_ACCOUNT_SID = accountSid;
 
-      try {
-        await credentials.getCredential();
-      } catch (e) {
-        expect(e).toBeInstanceOf(FlexPluginError);
-      }
+      await validateCredentialsInvalid();
 
       process.env.TWILIO_ACCOUNT_SID = undefined;
       process.env.TWILIO_AUTH_TOKEN = authToken;
 
-      try {
-        await credentials.getCredential();
-      } catch (e) {
-        expect(e).toBeInstanceOf(FlexPluginError);
-      }
+      await validateCredentialsInvalid();
     });
 
     it('should quit if CI=true and api key without secret and the reverse', async () => {
