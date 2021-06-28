@@ -66,7 +66,13 @@ export const _verifyPath = (baseUrl: string, build: Build): boolean => {
  */
 export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: UIDependencies): Promise<void> => {
   const coerced = semver.coerce(flexUI);
-  const UISupports = semver.satisfies('1.19.0', flexUI) || (coerced && semver.satisfies(coerced, '>=1.19.0'));
+  const reactPackageVersion = getPackageVersion('react');
+  const reactDomPackageVersion = getPackageVersion('react-dom');
+
+  const UISupports =
+    semver.satisfies('1.19.0', flexUI) ||
+    (coerced && semver.satisfies(coerced, '>=1.19.0')) ||
+    (semver.satisfies('16.5.2', reactPackageVersion) && semver.satisfies('16.5.2', reactDomPackageVersion));
 
   if (!UISupports) {
     throw new FlexPluginError(
@@ -82,13 +88,13 @@ export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: U
     throw new FlexPluginError('To use unbundled React, you need to set the React version from the Developer page');
   }
 
-  const reactSupported = semver.satisfies(getPackageVersion('react'), `${dependencies.react}`);
-  const reactDOMSupported = semver.satisfies(getPackageVersion('react-dom'), `${dependencies['react-dom']}`);
+  const reactSupported = semver.satisfies(reactPackageVersion, `${dependencies.react}`);
+  const reactDOMSupported = semver.satisfies(reactDomPackageVersion, `${dependencies['react-dom']}`);
   if (!reactSupported || !reactDOMSupported) {
     logger.newline();
     logger.warning(
       singleLineString(
-        `The React version ${getPackageVersion('react')} installed locally`,
+        `The React version ${reactPackageVersion} installed locally`,
         `is incompatible with the React version ${dependencies.react} installed on your Flex project.`,
       ),
     );

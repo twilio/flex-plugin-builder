@@ -400,13 +400,24 @@ describe('DeployScript', () => {
   describe('_verifyFlexUIConfiguration', () => {
     const dependencies = { react: '16.13.1', 'react-dom': '16.13.1' };
 
-    it('should throw exception if unsupported flex-ui version is provided', async (done) => {
+    it('should throw exception if flex-ui < 1.19.0 and react versions are not 16.5.2', async (done) => {
       try {
         await deployScript._verifyFlexUIConfiguration('1.18.0', dependencies);
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         done();
       }
+    });
+
+    it('should not throw exception if flex-ui is < 1.19.0 and react versions are 16.5.2', async () => {
+      const flexUIDependencies = { react: '16.5.2', 'react-dom': '16.5.2' };
+      const confirm = jest.spyOn(inquirer, 'confirm');
+      const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.5.2');
+
+      await deployScript._verifyFlexUIConfiguration('1.18.0', flexUIDependencies);
+
+      expect(confirm).not.toHaveBeenCalled();
+      expect(getPackageVersion).toHaveBeenCalledTimes(2);
     });
 
     it('should throw exception if a React version has not been set', async (done) => {
@@ -419,7 +430,7 @@ describe('DeployScript', () => {
       }
     });
 
-    it('should ask for no confirmation if react version is correct', async () => {
+    it('should ask for no confirmation if react versions match', async () => {
       const confirm = jest.spyOn(inquirer, 'confirm');
       const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.13.1');
 
@@ -436,7 +447,7 @@ describe('DeployScript', () => {
       await deployScript._verifyFlexUIConfiguration('^1', dependencies);
 
       expect(confirm).toHaveBeenCalledTimes(1);
-      expect(getPackageVersion).toHaveBeenCalledTimes(3);
+      expect(getPackageVersion).toHaveBeenCalledTimes(2);
     });
 
     it('should reject confirm to allow deployment if react version is mismatched', async (done) => {
@@ -447,7 +458,7 @@ describe('DeployScript', () => {
         await deployScript._verifyFlexUIConfiguration('^1', dependencies);
       } catch (e) {
         expect(confirm).toHaveBeenCalledTimes(1);
-        expect(getPackageVersion).toHaveBeenCalledTimes(3);
+        expect(getPackageVersion).toHaveBeenCalledTimes(2);
         expect(e).toBeInstanceOf(UserActionError);
 
         done();
