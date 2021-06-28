@@ -1,6 +1,5 @@
 <h1 align="center">Twilio Flex Plugin Builder</h1>
-<p align="center">Monorepo for all the tooling needed to create a custom <a href="https://www.twilio.com/docs/flex/developer/plugins" target="_blank">Twilio Flex Plugins</a>
-</p>
+<p align="center">Monorepo for all the tooling needed to create a custom <a href="https://www.twilio.com/docs/flex/developer/plugins" target="_blank">Twilio Flex Plugins</a></p>
 
 <p align="center">
     <a href="https://app.circleci.com/pipelines/github/twilio/flex-plugin-builder?branch=main" >
