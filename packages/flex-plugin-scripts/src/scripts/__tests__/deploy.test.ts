@@ -72,8 +72,8 @@ describe('DeployScript', () => {
   const createBuild = jest.fn().mockResolvedValue({ sid: buildSid });
   const createDeployment = jest.fn().mockResolvedValue({ sid: deploymentSid });
   const registerSid = jest.fn().mockResolvedValue(config);
-  const getFlexUIVersion = jest.fn().mockResolvedValue(config);
-  const getUIDependencies = jest.fn().mockResolvedValue(config);
+  const getFlexUIVersion = jest.fn().mockResolvedValue(config.ui_version);
+  const getUIDependencies = jest.fn().mockResolvedValue(config.ui_dependencies);
 
   const runtime = {
     service: {
@@ -242,6 +242,7 @@ describe('DeployScript', () => {
       };
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
       const verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(false);
+      const verifyFlexUIConfiguration = jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
 
       try {
         await deployScript._doDeploy('1.0.0', options);
@@ -253,6 +254,7 @@ describe('DeployScript', () => {
 
       checkFilesExist.mockRestore();
       verifyPath.mockRestore();
+      verifyFlexUIConfiguration.mockRestore();
     });
 
     it('should quit if duplicate route is found and caller is not the CLI', async (done) => {
@@ -264,6 +266,7 @@ describe('DeployScript', () => {
       };
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
       const verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(false);
+      const verifyFlexUIConfiguration = jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
 
       try {
         await deployScript._doDeploy('1.0.0', options);
@@ -275,6 +278,7 @@ describe('DeployScript', () => {
 
       checkFilesExist.mockRestore();
       verifyPath.mockRestore();
+      verifyFlexUIConfiguration.mockRestore();
     });
 
     it('should return the existing asset if the caller is the CLI, duplicate route is found, user does not want to overwite, and not in CI', async () => {
@@ -288,6 +292,7 @@ describe('DeployScript', () => {
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
       const _getAccount = jest.spyOn(deployScript, '_getAccount').mockReturnThis();
       const _verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(false);
+      const verifyFlexUIConfiguration = jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
       const deploySuccessful = jest.spyOn(prints, 'deploySuccessful');
 
       await deployScript._doDeploy('1.0.0', options);
@@ -298,6 +303,7 @@ describe('DeployScript', () => {
       checkFilesExist.mockRestore();
       _verifyPath.mockRestore();
       _getAccount.mockRestore();
+      verifyFlexUIConfiguration.mockRestore();
     });
 
     it('should overwrite the existing asset if the caller is the CLI, duplicate route is found, user does want to overwite, and not in CI', async () => {
@@ -311,6 +317,7 @@ describe('DeployScript', () => {
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
       const _getAccount = jest.spyOn(deployScript, '_getAccount').mockReturnThis();
       const _verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(false);
+      const verifyFlexUIConfiguration = jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
       const deploySuccessful = jest.spyOn(prints, 'deploySuccessful');
 
       await deployScript._doDeploy('1.0.0', options);
@@ -321,6 +328,7 @@ describe('DeployScript', () => {
       checkFilesExist.mockRestore();
       _verifyPath.mockRestore();
       _getAccount.mockRestore();
+      verifyFlexUIConfiguration.mockRestore();
     });
 
     it('should deploy and write a success message', async () => {
@@ -332,6 +340,7 @@ describe('DeployScript', () => {
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
       const _getAccount = jest.spyOn(deployScript, '_getAccount').mockReturnThis();
       const _verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(true);
+      const verifyFlexUIConfiguration = jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
       const deploySuccessful = jest.spyOn(prints, 'deploySuccessful');
 
       await deployScript._doDeploy('1.0.0', options);
@@ -342,6 +351,7 @@ describe('DeployScript', () => {
       checkFilesExist.mockRestore();
       _verifyPath.mockRestore();
       _getAccount.mockRestore();
+      verifyFlexUIConfiguration.mockRestore();
     });
   });
 
@@ -390,20 +400,41 @@ describe('DeployScript', () => {
   describe('_verifyFlexUIConfiguration', () => {
     const dependencies = { react: '16.13.1', 'react-dom': '16.13.1' };
 
-    it('should throw exception if unsupported flex-ui version is provided', async (done) => {
+    it('should throw exception if flex-ui < 1.19.0 and react versions are not 16.5.2', async (done) => {
       try {
-        await deployScript._verifyFlexUIConfiguration('1.18.0', {}, true);
+        await deployScript._verifyFlexUIConfiguration('1.18.0', dependencies);
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         done();
       }
     });
 
-    it('should ask for no confirmation if react version is correct', async () => {
+    it('should not throw exception if flex-ui is < 1.19.0 and react versions are 16.5.2', async () => {
+      const flexUIDependencies = { react: '16.5.2', 'react-dom': '16.5.2' };
+      const confirm = jest.spyOn(inquirer, 'confirm');
+      const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.5.2');
+
+      await deployScript._verifyFlexUIConfiguration('1.18.0', flexUIDependencies);
+
+      expect(confirm).not.toHaveBeenCalled();
+      expect(getPackageVersion).toHaveBeenCalledTimes(2);
+    });
+
+    it('should throw exception if a React version has not been set', async (done) => {
+      try {
+        await deployScript._verifyFlexUIConfiguration('^1', {});
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+        expect(e.message).toContain('need to set the React version');
+        done();
+      }
+    });
+
+    it('should ask for no confirmation if react versions match', async () => {
       const confirm = jest.spyOn(inquirer, 'confirm');
       const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.13.1');
 
-      await deployScript._verifyFlexUIConfiguration('^1', dependencies, true);
+      await deployScript._verifyFlexUIConfiguration('^1', dependencies);
 
       expect(confirm).not.toHaveBeenCalled();
       expect(getPackageVersion).toHaveBeenCalledTimes(2);
@@ -413,10 +444,10 @@ describe('DeployScript', () => {
       const confirm = jest.spyOn(inquirer, 'confirm').mockResolvedValue(true);
       const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.12.1');
 
-      await deployScript._verifyFlexUIConfiguration('^1', dependencies, true);
+      await deployScript._verifyFlexUIConfiguration('^1', dependencies);
 
       expect(confirm).toHaveBeenCalledTimes(1);
-      expect(getPackageVersion).toHaveBeenCalledTimes(3);
+      expect(getPackageVersion).toHaveBeenCalledTimes(2);
     });
 
     it('should reject confirm to allow deployment if react version is mismatched', async (done) => {
@@ -424,10 +455,10 @@ describe('DeployScript', () => {
       const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.12.1');
 
       try {
-        await deployScript._verifyFlexUIConfiguration('^1', dependencies, true);
+        await deployScript._verifyFlexUIConfiguration('^1', dependencies);
       } catch (e) {
         expect(confirm).toHaveBeenCalledTimes(1);
-        expect(getPackageVersion).toHaveBeenCalledTimes(3);
+        expect(getPackageVersion).toHaveBeenCalledTimes(2);
         expect(e).toBeInstanceOf(UserActionError);
 
         done();
@@ -437,14 +468,14 @@ describe('DeployScript', () => {
     it('should not throw any exceptions', async () => {
       jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.13.1');
 
-      await deployScript._verifyFlexUIConfiguration('^1', dependencies, true);
-      await deployScript._verifyFlexUIConfiguration('^1.1', dependencies, true);
-      await deployScript._verifyFlexUIConfiguration('^1.19.0', dependencies, true);
-      await deployScript._verifyFlexUIConfiguration('~1.19.0', dependencies, true);
-      await deployScript._verifyFlexUIConfiguration('~1.19.1', dependencies, true);
-      await deployScript._verifyFlexUIConfiguration('1.19.0', dependencies, true);
-      await deployScript._verifyFlexUIConfiguration('1.19.1', dependencies, true);
-      await deployScript._verifyFlexUIConfiguration('1.20.0', dependencies, true);
+      await deployScript._verifyFlexUIConfiguration('^1', dependencies);
+      await deployScript._verifyFlexUIConfiguration('^1.1', dependencies);
+      await deployScript._verifyFlexUIConfiguration('^1.19.0', dependencies);
+      await deployScript._verifyFlexUIConfiguration('~1.19.0', dependencies);
+      await deployScript._verifyFlexUIConfiguration('~1.19.1', dependencies);
+      await deployScript._verifyFlexUIConfiguration('1.19.0', dependencies);
+      await deployScript._verifyFlexUIConfiguration('1.19.1', dependencies);
+      await deployScript._verifyFlexUIConfiguration('1.20.0', dependencies);
     });
   });
 

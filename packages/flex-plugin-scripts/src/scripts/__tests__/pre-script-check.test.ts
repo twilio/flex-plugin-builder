@@ -7,7 +7,6 @@ import * as preScriptCheck from '../pre-script-check';
 import * as parser from '../../utils/parser';
 
 jest.mock('flex-dev-utils/dist/logger');
-jest.mock('../../prints/versionMismatch');
 jest.mock('../../prints/unbundledReactMismatch');
 jest.mock('../../prints/expectedDependencyNotFound');
 jest.mock('../../prints/typescriptNotInstalled');
@@ -15,7 +14,7 @@ jest.mock('../../prints/loadPluginCountError');
 
 describe('PreScriptCheck', () => {
   const pluginDir = '/path/to/plugin-dir';
-  const plugiName = 'plugin-test';
+  const pluginName = 'plugin-test';
   const paths = {
     scripts: {
       tsConfigPath: 'test-ts-config-path',
@@ -28,7 +27,7 @@ describe('PreScriptCheck', () => {
     },
     app: {
       version: '1.0.0',
-      name: plugiName,
+      name: pluginName,
       dir: 'test-dir',
       nodeModulesDir: 'test-node-modules',
       appConfig: 'appConfig.js',
@@ -63,7 +62,7 @@ describe('PreScriptCheck', () => {
       jest.spyOn(fsScripts, 'checkAFileExists').mockReturnValue(true);
       jest.spyOn(fsScripts, 'readPackageJson').mockReturnValue({
         version: '1.0.0',
-        name: plugiName,
+        name: pluginName,
         dependencies: {},
         devDependencies: {
           '@twilio/flex-ui': '^1',
@@ -94,10 +93,10 @@ describe('PreScriptCheck', () => {
       cwd.mockRestore();
     });
 
-    const expectCalled = (allowSkip: boolean, allowReact: boolean) => {
+    const expectCalled = (allowSkip: boolean) => {
       expect(_checkExternalDepsVersions).toHaveBeenCalledTimes(1);
       expect(_validateTypescriptProject).toHaveBeenCalledTimes(1);
-      expect(_checkExternalDepsVersions).toHaveBeenCalledWith(allowSkip, allowReact);
+      expect(_checkExternalDepsVersions).toHaveBeenCalledWith(allowSkip);
       expect(_checkPluginCount).toHaveBeenCalledTimes(1);
       expect(checkPluginConfigurationExists).toHaveBeenCalledTimes(1);
     };
@@ -105,16 +104,16 @@ describe('PreScriptCheck', () => {
     it('should call all methods', async () => {
       await preScriptCheck.default();
 
-      expectCalled(false, false);
-      expect(checkPluginConfigurationExists).toHaveBeenCalledWith(plugiName, pluginDir, false);
+      expectCalled(false);
+      expect(checkPluginConfigurationExists).toHaveBeenCalledWith(pluginName, pluginDir, false);
       expect(_setPluginDir).toHaveBeenCalledTimes(2);
     });
 
     it('should call with multi-plugin flag', async () => {
       await preScriptCheck.default(preScriptCheck.FLAG_MULTI_PLUGINS);
 
-      expectCalled(false, false);
-      expect(checkPluginConfigurationExists).toHaveBeenCalledWith(plugiName, pluginDir, true);
+      expectCalled(false);
+      expect(checkPluginConfigurationExists).toHaveBeenCalledWith(pluginName, pluginDir, true);
       expect(_setPluginDir).toHaveBeenCalledTimes(2);
     });
 
@@ -129,7 +128,7 @@ describe('PreScriptCheck', () => {
     it('should not call checkPluginConfigurationExists if not in a plugin dir', async () => {
       jest.spyOn(fsScripts, 'readPackageJson').mockReturnValue({
         version: '1.0.0',
-        name: plugiName,
+        name: pluginName,
         dependencies: {},
         devDependencies: {},
       });
@@ -160,14 +159,7 @@ describe('PreScriptCheck', () => {
       process.env.SKIP_PREFLIGHT_CHECK = 'true';
       await preScriptCheck.default();
 
-      expectCalled(true, false);
-    });
-
-    it('should call all methods and allow react', async () => {
-      process.env.UNBUNDLED_REACT = 'true';
-      await preScriptCheck.default();
-
-      expectCalled(false, true);
+      expectCalled(true);
     });
 
     it('should call methods in a specific order', async () => {
@@ -187,7 +179,7 @@ describe('PreScriptCheck', () => {
         version: '1.18.0',
         dependencies: {},
       };
-      preScriptCheck._verifyPackageVersion(pkg, false, false, 'foo');
+      preScriptCheck._verifyPackageVersion(pkg, false, 'foo');
 
       expect(prints.expectedDependencyNotFound).toHaveBeenCalledTimes(1);
       expect(prints.expectedDependencyNotFound).toHaveBeenCalledWith('foo');
@@ -203,10 +195,10 @@ describe('PreScriptCheck', () => {
       };
       _require.mockReturnValue({ version: '1.0.0' });
 
-      preScriptCheck._verifyPackageVersion(pkg, false, false, 'somePackage');
+      preScriptCheck._verifyPackageVersion(pkg, false, 'somePackage');
 
-      expect(prints.versionMismatch).toHaveBeenCalledTimes(1);
-      expect(prints.versionMismatch).toHaveBeenCalledWith('somePackage', '1.0.0', '2.0.0', false);
+      expect(prints.unbundledReactMismatch).toHaveBeenCalledTimes(1);
+      expect(prints.unbundledReactMismatch).toHaveBeenCalledWith('1.18.0', 'somePackage', '1.0.0', false);
       expect(exit).toHaveBeenCalledTimes(1);
       expect(exit).toHaveBeenCalledWith(1);
       expect(_require).toHaveBeenCalledTimes(1);
@@ -220,10 +212,10 @@ describe('PreScriptCheck', () => {
       };
       _require.mockReturnValue({ version: '1.0.0' });
 
-      preScriptCheck._verifyPackageVersion(pkg, true, false, 'somePackage');
+      preScriptCheck._verifyPackageVersion(pkg, true, 'somePackage');
 
-      expect(prints.versionMismatch).toHaveBeenCalledTimes(1);
-      expect(prints.versionMismatch).toHaveBeenCalledWith('somePackage', '1.0.0', '2.0.0', true);
+      expect(prints.unbundledReactMismatch).toHaveBeenCalledTimes(1);
+      expect(prints.unbundledReactMismatch).toHaveBeenCalledWith('1.18.0', 'somePackage', '1.0.0', true);
       expect(exit).not.toHaveBeenCalled();
       expect(_require).toHaveBeenCalledTimes(1);
       expect(_require).toHaveBeenCalledWith(expect.stringContaining('somePackage'));
@@ -235,7 +227,7 @@ describe('PreScriptCheck', () => {
         dependencies: { somePackage: '1.0.0' },
       };
       _require.mockReturnValue({ version: '1.0.0' });
-      preScriptCheck._verifyPackageVersion(pkg, false, false, 'somePackage');
+      preScriptCheck._verifyPackageVersion(pkg, false, 'somePackage');
 
       expect(exit).not.toHaveBeenCalled();
       expect(_require).toHaveBeenCalledTimes(1);
@@ -248,39 +240,37 @@ describe('PreScriptCheck', () => {
         dependencies: { somePackage: `^1.0.0` },
       };
       _require.mockReturnValue({ version: '1.0.0' });
-      preScriptCheck._verifyPackageVersion(pkg, false, false, 'somePackage');
+      preScriptCheck._verifyPackageVersion(pkg, false, 'somePackage');
 
       expect(exit).not.toHaveBeenCalled();
       expect(_require).toHaveBeenCalledTimes(1);
       expect(_require).toHaveBeenCalledWith(expect.stringContaining('somePackage'));
     });
 
-    it('should warn if allowReact but unsupported flex-ui', () => {
+    it('should warn if unsupported flex-ui', () => {
       const pkg = {
         version: '1.18.0',
         dependencies: { somePackage: `1.0.0` },
       };
       _require.mockReturnValue({ version: '2.0.0' });
-      preScriptCheck._verifyPackageVersion(pkg, false, true, 'somePackage');
+      preScriptCheck._verifyPackageVersion(pkg, false, 'somePackage');
 
       expect(prints.unbundledReactMismatch).toHaveBeenCalledTimes(1);
       expect(prints.unbundledReactMismatch).toHaveBeenCalledWith('1.18.0', 'somePackage', '2.0.0', false);
-      expect(prints.versionMismatch).not.toHaveBeenCalled();
       expect(exit).toHaveBeenCalled();
       expect(_require).toHaveBeenCalledTimes(1);
       expect(_require).toHaveBeenCalledWith(expect.stringContaining('somePackage'));
     });
 
-    it('should warn if allowReact', () => {
+    it('should succeed if flex-ui version supports unbundled react', () => {
       const pkg = {
         version: '1.19.0',
         dependencies: { somePackage: `1.0.0` },
       };
       _require.mockReturnValue({ version: '2.0.0' });
-      preScriptCheck._verifyPackageVersion(pkg, false, true, 'somePackage');
+      preScriptCheck._verifyPackageVersion(pkg, false, 'somePackage');
 
       expect(prints.unbundledReactMismatch).not.toHaveBeenCalled();
-      expect(prints.versionMismatch).not.toHaveBeenCalled();
       expect(exit).not.toHaveBeenCalled();
       expect(_require).toHaveBeenCalledTimes(1);
       expect(_require).toHaveBeenCalledWith(expect.stringContaining('somePackage'));

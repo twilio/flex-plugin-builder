@@ -35,7 +35,6 @@ const setValidJSFile = (source: string) => {
 
 /* istanbul ignore next */
 export const skipPreflightCheck = (): boolean => process.env.SKIP_PREFLIGHT_CHECK === 'true';
-export const allowUnbundledReact = (): boolean => process.env.UNBUNDLED_REACT === 'true';
 export const getAccountSid = (): string | undefined => process.env.TWILIO_ACCOUNT_SID;
 export const getAuthToken = (): string | undefined => process.env.TWILIO_AUTH_TOKEN;
 export const hasHost = (): boolean => isDefined(process.env.HOST);
@@ -213,7 +212,6 @@ export default {
   isWin32,
   persistTerminal,
   skipPreflightCheck,
-  allowUnbundledReact,
   isTerminalPersisted,
   setTwilioProfile,
   getTwilioProfile,
