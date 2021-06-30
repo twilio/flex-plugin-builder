@@ -4,7 +4,13 @@ import { spawn, logResult } from '../utils';
 
 // Install Twilio CLI and Plugins CLI
 const testSuite: TestSuite = async ({ environment, scenario }: TestParams): Promise<void> => {
-  const twilioCliResult = await spawn('npm', ['install', `--prefix=${environment.homeDir}`, '-g', 'twilio-cli']);
+  const cliInstallArgs = ['install', '-g', 'twilio-cli'];
+
+  if (!environment.ignorePrefix) {
+    cliInstallArgs.push(`--prefix=${environment.homeDir}`);
+  }
+
+  const twilioCliResult = await spawn('npm', cliInstallArgs);
   logResult(twilioCliResult);
 
   const pluginsCliResult = await spawn('twilio', [

@@ -9,6 +9,7 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
     flags.push('--typescript');
   }
   const twilioCliResult = await spawn('twilio', ['flex:plugins:create', scenario.plugin.name, ...flags]);
+
   logResult(twilioCliResult);
 
   // Assert files/directories exist

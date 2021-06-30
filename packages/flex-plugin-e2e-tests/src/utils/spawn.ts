@@ -16,7 +16,11 @@ interface SpawnResult {
  * @param args the args to that command
  * @param options spawn options to run
  */
-export default async (cmd: string, args: string[], options?: SpawnOptionsWithoutStdio): Promise<SpawnResult> => {
+export const promisifiedSpawn = async (
+  cmd: string,
+  args: string[],
+  options?: SpawnOptionsWithoutStdio,
+): Promise<SpawnResult> => {
   // eslint-disable-next-line consistent-return
   return new Promise((resolve, reject) => {
     const defaultOptions = {
@@ -28,6 +32,7 @@ export default async (cmd: string, args: string[], options?: SpawnOptionsWithout
         TWILIO_REGION: testParams.config.region,
         REALM: testParams.config.region,
       },
+      shell: true,
     };
     const spawnOptions = { ...defaultOptions, ...options };
     logger.info(`Running spawn command: **${cmd} ${args.join(' ').replace(/-/g, '\\-')}**`);
@@ -90,5 +95,26 @@ export const logResult = (result: SpawnResult): void => {
   logger.info(result.stdout.replace(/-/g, '\\-'));
   if (result.stderr) {
     logger.warning(result.stderr.replace(/-/g, '\\-'));
+  }
+};
+
+/**
+ * Kills child process
+ * @param child child process to kill
+ * @param os operating system
+ */
+export const killChildProcess = async (
+  child: ChildProcessWithoutNullStreams | undefined,
+  os: string,
+): Promise<void> => {
+  if (!child) {
+    throw new Error('Could not kill child process, process does not exist');
+  }
+
+  if (os === 'win32') {
+    await promisifiedSpawn('taskkill', ['/pid', `${child.pid}`, '/f', '/t']);
+    await promisifiedSpawn('taskkill', ['/im', 'chromedriver.exe', '/f']);
+  } else {
+    child.kill();
   }
 };
