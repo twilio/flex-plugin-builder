@@ -1,12 +1,16 @@
+import { mkdirSync, writeFileSync, existsSync } from 'fs';
+
 import { logger } from 'flex-plugins-utils-logger';
-import { Builder, WebDriver, WebElement, until, By } from 'selenium-webdriver';
+import { Builder, WebDriver, WebElement, until, By, logging } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 
 import { Cookies, Cookie } from './console-api';
 import { testParams } from '../core';
+import { joinPath } from '.';
 
-const DEFAULT_LOCATE_TIMEOUT = 15000;
+const DEFAULT_LOCATE_TIMEOUT = 20000;
 const DEFAULT_PAGE_LOAD_TIMEOUT = 60000;
+const SCREENSHOT_DIR = 'screenshots';
 
 interface PluginResponse {
   name: string;
@@ -37,6 +41,7 @@ export class Browser {
       },
       adminDashboard: {
         welcomeBanner: By.css('.welcome-banner'),
+        projectName: By.css('#project-switcher-btn > span'),
       },
       plugins: {
         list: By.css('pre'),
@@ -84,6 +89,51 @@ export class Browser {
       .catch((e) => {
         throw e;
       });
+  }
+
+  /**
+   * Prints all logs with level SEVERE
+   */
+  static async printLogs(): Promise<void> {
+    const logTypes = await this.getAvailableLogTypes();
+    const browserLogType = logging.Type.BROWSER;
+
+    if (logTypes.includes(browserLogType)) {
+      const allLogs = await this.browser.manage().logs().get(browserLogType);
+      const severeLogs = allLogs.filter((e) => e.level === logging.Level.SEVERE);
+
+      if (severeLogs.length) {
+        logger.info('Browser logs');
+        severeLogs.forEach((entry) => {
+          const { message, timestamp } = entry;
+          logger.error({
+            message,
+            timestamp,
+          });
+        });
+      }
+    } else {
+      logger.warning(`${browserLogType} logs are not available`);
+    }
+  }
+
+  /**
+   * Takes screenshot of the browser
+   * @param rootDir directory under which to store screenshots
+   * @param screenshotName name by which to save the screenshot
+   */
+  static async takeScreenshot(rootDir: string, screenshotName = 'on_failure.png'): Promise<void> {
+    const screenshotDir = joinPath(rootDir, SCREENSHOT_DIR);
+
+    if (!screenshotName.endsWith('.png')) {
+      screenshotName += '.png';
+    }
+
+    if (!existsSync(screenshotDir)) {
+      mkdirSync(screenshotDir);
+    }
+
+    writeFileSync(joinPath(screenshotDir, screenshotName), await this.browser.takeScreenshot(), 'base64');
   }
 
   /**
@@ -167,6 +217,18 @@ export class Browser {
   }
 
   /**
+   * Gets all available log types from the browser
+   */
+  private static async getAvailableLogTypes(): Promise<string[]> {
+    try {
+      return await this.browser.manage().logs().getAvailableLogTypes();
+    } catch (e) {
+      logger.warning('Failed to retrieve log types');
+      return [];
+    }
+  }
+
+  /**
    * Checks that plugin exists in DOM and is visible in UI
    * @param pluginComponentText text to identify plugin by
    */
@@ -227,7 +289,7 @@ export class Browser {
       return await this.browser.wait(until.elementLocated(locator), timeout, `Could not find ${elementName} in DOM`);
     } catch (e) {
       logger.error(`Did not find locator [${locator}] for element: ${elementName} in DOM`);
-      throw new Error(e);
+      throw new Error(JSON.stringify(e));
     }
   }
 
@@ -246,7 +308,7 @@ export class Browser {
       await this.browser.wait(until.elementIsVisible(element), timeout, `Could not find ${elementName} in DOM`);
     } catch (e) {
       logger.error(`Element: ${elementName} is not visible in the UI`);
-      throw new Error(e);
+      throw new Error(JSON.stringify(e));
     }
   }
 }

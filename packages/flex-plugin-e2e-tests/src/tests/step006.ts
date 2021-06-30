@@ -1,13 +1,13 @@
 /* eslint-disable */
 import { replaceInFile } from 'replace-in-file';
 import { TestSuite, TestParams } from '../core';
-import { spawn, Browser, pluginHelper, ConsoleAPI, joinPath, assertion } from '../utils';
+import { spawn, Browser, pluginHelper, ConsoleAPI, joinPath, assertion, killChildProcess } from '../utils';
 
 const PLUGIN_START_TIMEOUT = 30000;
 const PLUGIN_START_POLL_INTERVAL = 1000;
 
 // Plugin start
-const testSuite: TestSuite = async ({ scenario, config, secrets }: TestParams): Promise<void> => {
+const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
   const ext = scenario.isTS ? 'tsx' : 'jsx';
   const tmpComponentText = 'hot reload works';
   const twilioCliResult = await spawn('twilio', ['flex:plugins:start'], { detached: true, cwd: scenario.plugin.dir });
@@ -30,9 +30,13 @@ const testSuite: TestSuite = async ({ scenario, config, secrets }: TestParams): 
     });
 
     await assertion.browser.pluginIsVisible(tmpComponentText);
+  } catch (e) {
+    await Browser.takeScreenshot(environment.cwd);
+    await Browser.printLogs();
+    throw e;
   } finally {
     await Browser.kill();
-    twilioCliResult.child?.kill();
+    await killChildProcess(twilioCliResult.child, environment.operatingSystem)
   }
 
   await replaceInFile({
