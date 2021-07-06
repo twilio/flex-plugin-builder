@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { logger } from 'flex-plugins-utils-logger';
 import { TestSuite, TestParams } from '../core';
 import { api, assertion, Browser, ConsoleAPI, pluginHelper } from '../utils';
 
@@ -6,7 +7,7 @@ const PLUGIN_RELEASED_TIMEOUT = 30000;
 const PLUGIN_RELEASED_POLL_INTERVAL = 5000;
 
 // Plugin visible on the Hosted Flex
-const testSuite: TestSuite = async ({ scenario, config, secrets }: TestParams): Promise<void> => {
+const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
   if(!scenario.plugin.newlineValue) {
     throw new Error(`scenario.plugin.newlineValue does not have a valid value`);
   }
@@ -37,6 +38,10 @@ const testSuite: TestSuite = async ({ scenario, config, secrets }: TestParams): 
     await Browser.navigate(config.hostedFlexBaseUrl, 'agent-desktop');
 
     await assertion.browser.pluginIsVisible(scenario.plugin.newlineValue);
+  } catch (e) {
+    await Browser.takeScreenshot(environment.cwd);
+    await Browser.printLogs();
+    throw e;
   } finally {
     await Browser.kill();
   }
