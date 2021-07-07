@@ -152,10 +152,7 @@ commands:
       - run:
           name: Send Slack notification
           command: |
-            curl -X POST 
-            -H "Content-type:application/json" 
-            --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - nightly E2E tests failed on << parameters.platform >> . View <$CIRCLE_BUILD_URL|build>.', 'mrkdwn':true}" 
-            $SLACK_WEBHOOK
+            curl -X POST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - nightly E2E tests failed on << parameters.platform >> . View <$CIRCLE_BUILD_URL|build>.', 'mrkdwn':true}" $SLACK_WEBHOOK
           when: on_fail
 
 jobs:
