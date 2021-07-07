@@ -152,7 +152,7 @@ commands:
       - run:
           name: Send Slack notification
           command: |
-            curl -X POST -H "Content-type:application/json" --data "{'text':':error: << parameters.text >> . View <$CIRCLE_BUILD_URL|build>.', 'mrkdwn':true}" $SLACK_WEBHOOK
+            curl -XPOST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - << parameters.text >>. View <$CIRCLE_BUILD_URL|build>.', 'mrkdwn':true}" $SLACK_WEBHOOK
           when: on_fail
 
 jobs:
@@ -344,7 +344,7 @@ workflows:
               node-version: ["10.24", "12.21", "14.16"]
           post-steps:
             - cmd_slack-notification-error:
-                text: "$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - $CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}*."
+                text: "$CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}*."
       - job_npm-publish:
           matrix:
             parameters:
@@ -372,7 +372,7 @@ workflows:
               node-version: ["14.17.1"]
           post-steps:
             - cmd_slack-notification-error:
-                text: "$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - nightly E2E tests failed on Linux."
+                text: "nightly E2E tests failed on Linux."
       - job_e2e-test-macos:
           matrix:
             parameters:
@@ -380,7 +380,7 @@ workflows:
               node-version: ["14.17.1"]
           post-steps:
             - cmd_slack-notification-error:
-                text: "$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - nightly E2E tests failed on MacOS."
+                text: "nightly E2E tests failed on MacOS."
       - job_e2e-test-win:
           matrix:
             parameters:
@@ -389,4 +389,4 @@ workflows:
               node-version: ["14.17.1"]
           post-steps:
             - cmd_slack-notification-error:
-                text: "$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - nightly E2E tests failed on Windows."
+                text: "nightly E2E tests failed on Windows."
