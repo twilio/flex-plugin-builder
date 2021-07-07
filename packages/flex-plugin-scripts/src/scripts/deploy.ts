@@ -61,10 +61,10 @@ export const _verifyPath = (baseUrl: string, build: Build): boolean => {
 /**
  * Validates Flex UI version requirement
  * @param flexUI        the flex ui version
- * @param dependencies  the package.json dependencies
+ * @param uiDependencies  the deps from Flex Configuration ui_dependencies
  * @private
  */
-export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: UIDependencies): Promise<void> => {
+export const _verifyFlexUIConfiguration = async (flexUI: string, uiDependencies: UIDependencies): Promise<void> => {
   const coerced = semver.coerce(flexUI);
   const reactPackageVersion = getPackageVersion('react');
   const reactDomPackageVersion = getPackageVersion('react-dom');
@@ -84,18 +84,22 @@ export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: U
     );
   }
 
-  if (!dependencies.react || !dependencies['react-dom']) {
-    throw new FlexPluginError('To use unbundled React, you need to set the React version from the Developer page');
+  // If no uiDependencies set, then use 16.5.2 to verify against what is installed locally
+  if (!uiDependencies.react || !uiDependencies['react-dom']) {
+    uiDependencies = {
+      react: '16.5.2',
+      'react-dom': '16.5.2',
+    };
   }
 
-  const reactSupported = semver.satisfies(reactPackageVersion, `${dependencies.react}`);
-  const reactDOMSupported = semver.satisfies(reactDomPackageVersion, `${dependencies['react-dom']}`);
+  const reactSupported = semver.satisfies(reactPackageVersion, `${uiDependencies.react}`);
+  const reactDOMSupported = semver.satisfies(reactDomPackageVersion, `${uiDependencies['react-dom']}`);
   if (!reactSupported || !reactDOMSupported) {
     logger.newline();
     logger.warning(
       singleLineString(
         `The React version ${reactPackageVersion} installed locally`,
-        `is incompatible with the React version ${dependencies.react} installed on your Flex project.`,
+        `is incompatible with the React version ${uiDependencies.react} installed on your Flex project.`,
       ),
     );
     logger.info(
@@ -169,7 +173,6 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
   // Validate Flex UI version
   const uiVersion = await configurationClient.getFlexUIVersion();
   const uiDependencies = await configurationClient.getUIDependencies();
-
   await _verifyFlexUIConfiguration(uiVersion, uiDependencies);
 
   // Check duplicate routes
