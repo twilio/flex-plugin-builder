@@ -18,7 +18,7 @@ import { testParams } from '../core';
 const options: PluginServiceHttpOption = {};
 if (testParams.config.region) {
   // @ts-ignore
-  options.realm = testParams.config.region;
+  options.region = testParams.config.region;
 }
 
 const client = new PluginServiceHTTPClient(

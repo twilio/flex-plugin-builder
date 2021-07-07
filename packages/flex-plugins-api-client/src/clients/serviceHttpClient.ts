@@ -1,5 +1,5 @@
 import upperFirst from 'lodash.upperfirst';
-import { Realm, env } from 'flex-plugins-utils-env';
+import { Region, env } from 'flex-plugins-utils-env';
 import { logger } from 'flex-plugins-utils-logger';
 import { HttpClient } from 'flex-plugin-utils-http';
 
@@ -26,27 +26,27 @@ export interface PaginationMeta {
 }
 
 export default abstract class ServiceHttpClient extends HttpClient {
-  protected static realms: Realm[] = ['dev', 'stage'];
+  protected static regions: Region[] = ['dev', 'stage'];
 
   /**
-   * Returns the realm if provided
+   * Returns the region if provided
    */
-  protected static getRealm = (realm?: Realm): string => {
-    if (realm && ServiceHttpClient.realms.includes(realm)) {
-      return `.${realm}`;
+  protected static getRegion = (region?: Region): string => {
+    if (region && ServiceHttpClient.regions.includes(region)) {
+      return `.${region}`;
     }
 
-    realm = env.getRealm() as Realm;
-    if (!realm) {
+    region = env.getRegion() as Region;
+    if (!region) {
       return '';
     }
 
-    if (!ServiceHttpClient.realms.includes(realm)) {
-      logger.warning('Invalid realm %s was provided, returning production realm', realm);
+    if (!ServiceHttpClient.regions.includes(region)) {
+      logger.warning('Invalid region %s was provided, returning production region', region);
       return '';
     }
 
-    return `.${realm}`;
+    return `.${region}`;
   };
 
   /**

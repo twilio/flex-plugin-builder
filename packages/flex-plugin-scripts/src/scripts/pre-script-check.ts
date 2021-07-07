@@ -1,5 +1,5 @@
 import { copyFileSync, readFileSync } from 'fs';
-import { join, basename } from 'path';
+import { join } from 'path';
 
 import { env, logger, semver, FlexPluginError, exit } from 'flex-dev-utils';
 import {
@@ -14,11 +14,13 @@ import {
   _require,
   setCwd,
   getCliPaths,
+  readPackageJson,
+  checkAFileExists,
+  isPluginDir,
 } from 'flex-dev-utils/dist/fs';
 
 import {
   unbundledReactMismatch,
-  versionMismatch,
   expectedDependencyNotFound,
   loadPluginCountError,
   typescriptNotInstalled,
@@ -34,6 +36,8 @@ interface Package {
 const extensions = ['js', 'jsx', 'ts', 'tsx'];
 
 const PackagesToVerify = ['react', 'react-dom'];
+
+const packageJsonName = 'package.json';
 
 export const FLAG_MULTI_PLUGINS = '--multi-plugins-pilot';
 
@@ -77,16 +81,10 @@ export const _validateTypescriptProject = (): void => {
  *
  * @param flexUIPkg   the flex-ui package.json
  * @param allowSkip   whether to allow skip
- * @param allowReact  whether to allow unbundled react
  * @param name        the package to check
  * @private
  */
-export const _verifyPackageVersion = (
-  flexUIPkg: Package,
-  allowSkip: boolean,
-  allowReact: boolean,
-  name: string,
-): void => {
+export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, name: string): void => {
   const expectedDependency = flexUIPkg.dependencies[name];
   const supportsUnbundled = semver.satisfies(flexUIPkg.version, '>=1.19.0');
   if (!expectedDependency) {
@@ -98,19 +96,14 @@ export const _verifyPackageVersion = (
 
   // @ts-ignore
   const requiredVersion = semver.coerce(expectedDependency).version;
-  const installedPath = resolveRelative(getPaths().app.nodeModulesDir, name, 'package.json');
+  const installedPath = resolveRelative(getPaths().app.nodeModulesDir, name, packageJsonName);
   const installedVersion = _require(installedPath).version;
 
   if (requiredVersion !== installedVersion) {
-    if (allowReact) {
-      if (supportsUnbundled) {
-        return;
-      }
-
-      unbundledReactMismatch(flexUIPkg.version, name, installedVersion, allowSkip);
-    } else {
-      versionMismatch(name, installedVersion, requiredVersion, allowSkip);
+    if (supportsUnbundled) {
+      return;
     }
+    unbundledReactMismatch(flexUIPkg.version, name, installedVersion, allowSkip);
 
     if (!allowSkip) {
       exit(1);
@@ -122,14 +115,13 @@ export const _verifyPackageVersion = (
  * Checks the version of external libraries and exists if customer is using another version
  *
  * allowSkip  whether to allow skip
- * allowReact whether to allow reacts
  * @private
  */
 /* istanbul ignore next */
-export const _checkExternalDepsVersions = (allowSkip: boolean, allowReact: boolean): void => {
+export const _checkExternalDepsVersions = (allowSkip: boolean): void => {
   const flexUIPkg = _require(getPaths().app.flexUIPkgPath);
 
-  PackagesToVerify.forEach((name) => _verifyPackageVersion(flexUIPkg, allowSkip, allowReact, name));
+  PackagesToVerify.forEach((name) => _verifyPackageVersion(flexUIPkg, allowSkip, name));
 };
 
 /**
@@ -195,15 +187,29 @@ const preScriptCheck = async (...args: string[]): Promise<void> => {
   addCWDNodeModule(...args);
 
   _setPluginDir(...args);
-  const resetPluginDirectory = await checkPluginConfigurationExists(
-    basename(process.cwd()),
-    process.cwd(),
-    args.includes(FLAG_MULTI_PLUGINS),
-  );
-  if (resetPluginDirectory) {
-    _setPluginDir(...args);
+
+  const hasPackageJson = checkAFileExists(process.cwd(), packageJsonName);
+  if (hasPackageJson) {
+    const packageJson = readPackageJson(join(process.cwd(), packageJsonName));
+
+    if (isPluginDir(packageJson)) {
+      const pkgName = packageJson.name;
+      if (!pkgName) {
+        throw new FlexPluginError('No package name was found');
+      }
+
+      const resetPluginDirectory = await checkPluginConfigurationExists(
+        pkgName,
+        process.cwd(),
+        args.includes(FLAG_MULTI_PLUGINS),
+      );
+      if (resetPluginDirectory) {
+        _setPluginDir(...args);
+      }
+    }
   }
-  _checkExternalDepsVersions(env.skipPreflightCheck(), env.allowUnbundledReact());
+
+  _checkExternalDepsVersions(env.skipPreflightCheck());
   _checkPluginCount();
   _validateTypescriptProject();
 };

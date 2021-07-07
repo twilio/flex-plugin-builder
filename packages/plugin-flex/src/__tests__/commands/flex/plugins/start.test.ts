@@ -5,6 +5,9 @@ import * as fs from 'flex-dev-utils/dist/fs';
 import createTest, { mockGetPkg } from '../../../framework';
 import FlexPluginsStart from '../../../../commands/flex/plugins/start';
 
+const includeRemote = 'include-remote';
+const flexUiSource = 'flex-ui-source';
+
 describe('Commands/FlexPluginsStart', () => {
   const preStartCheck = 'pre-start-check';
   const preScriptCheck = 'pre-script-check';
@@ -97,8 +100,8 @@ describe('Commands/FlexPluginsStart', () => {
       expect(e).toBeInstanceOf(TwilioCliError);
       expect(e.message).toContain('is not compatible');
       expect(cmd._flags.name).toBeUndefined();
-      expect(cmd._flags['include-remote']).toBeUndefined();
-      expect(cmd._flags['flex-ui-source']).toBeUndefined();
+      expect(cmd._flags[includeRemote]).toBeUndefined();
+      expect(cmd._flags[flexUiSource]).toBeUndefined();
       expect(cmd.runScript).toHaveBeenCalledTimes(2);
       expect(cmd.runScript).toHaveBeenCalledWith(preStartCheck, ['--name', badVersionPkg.name]);
       expect(cmd.runScript).toHaveBeenCalledWith(preScriptCheck, ['--name', badVersionPkg.name]);
@@ -123,8 +126,8 @@ describe('Commands/FlexPluginsStart', () => {
       expect(e).toBeInstanceOf(TwilioCliError);
       expect(e.message).toContain('was not found');
       expect(cmd._flags.name).toBeUndefined();
-      expect(cmd._flags['include-remote']).toBeUndefined();
-      expect(cmd._flags['flex-ui-source']).toBeUndefined();
+      expect(cmd._flags[includeRemote]).toBeUndefined();
+      expect(cmd._flags[flexUiSource]).toBeUndefined();
       expect(cmd.runScript).toHaveBeenCalledTimes(2);
       expect(cmd.runScript).toHaveBeenCalledWith(preStartCheck, ['--name', badPluginsPkg.name]);
       expect(cmd.runScript).toHaveBeenCalledWith(preScriptCheck, ['--name', badPluginsPkg.name]);
@@ -154,8 +157,8 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd._flags.name.includes(pluginNameOne));
     expect(cmd._flags.name.includes(pluginNameTwo));
     expect(cmd._flags.name.length).toEqual(2);
-    expect(cmd._flags['include-remote']).toEqual(true);
-    expect(cmd._flags['flex-ui-source']).toBeUndefined();
+    expect(cmd._flags[includeRemote]).toEqual(true);
+    expect(cmd._flags[flexUiSource]).toBeUndefined();
   });
 
   it('should read and set flex-ui-source', async () => {
@@ -179,7 +182,7 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd.runScript).toHaveBeenCalledWith(preStartCheck, ['--name', pkg.name]);
     expect(cmd.runScript).toHaveBeenCalledWith(preScriptCheck, ['--name', pkg.name]);
     expect(cmd.spawnScript).toHaveBeenCalledWith('start', ['plugin', '--name', pkg.name, '--port', '100']);
-    expect(cmd._flags['flex-ui-source']).toEqual(flexUISrc);
+    expect(cmd._flags[flexUiSource]).toEqual(flexUISrc);
     expect(env.getFlexUISrc()).toEqual(flexUISrc);
   });
 
@@ -202,7 +205,7 @@ describe('Commands/FlexPluginsStart', () => {
       expect(e).toBeInstanceOf(TwilioError);
       expect(e.message).toContain('is not a valid JS file');
       expect(env.getFlexUISrc()).toBeUndefined();
-      expect(cmd._flags['flex-ui-source']).toEqual(flexUISrc);
+      expect(cmd._flags[flexUiSource]).toEqual(flexUISrc);
       expect(cmd.runScript).not.toHaveBeenCalled();
       expect(cmd.spawnScript).not.toHaveBeenCalled();
     }
@@ -223,8 +226,8 @@ describe('Commands/FlexPluginsStart', () => {
 
     expect(cmd._flags.name.includes(pluginNameOne));
     expect(cmd._flags.name.length).toEqual(1);
-    expect(cmd._flags['include-remote']).toBeUndefined();
-    expect(cmd._flags['flex-ui-source']).toBeUndefined();
+    expect(cmd._flags[includeRemote]).toBeUndefined();
+    expect(cmd._flags[flexUiSource]).toBeUndefined();
   });
 
   it('should throw an error for no local plugins', async () => {
@@ -258,8 +261,8 @@ describe('Commands/FlexPluginsStart', () => {
       expect(e).toBeInstanceOf(TwilioCliError);
       expect(e.message).toContain('not a flex plugin');
       expect(cmd._flags.name).toBeUndefined();
-      expect(cmd._flags['include-remote']).toBeUndefined();
-      expect(cmd._flags['flex-ui-source']).toBeUndefined();
+      expect(cmd._flags[includeRemote]).toBeUndefined();
+      expect(cmd._flags[flexUiSource]).toBeUndefined();
     }
   });
 
