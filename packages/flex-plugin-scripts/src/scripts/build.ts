@@ -29,26 +29,25 @@ const MAX_BUILD_SIZE_MB = 10;
  * @private
  */
 // eslint-disable-next-line import/no-unused-modules
-export const _handler = (
-  resolve: Callback<BuildBundle>,
-  reject: Callback<Error | string | string[]>,
-): WebpackCompiler.Handler => (err: Error, stats) => {
-  if (err) {
-    reject(err);
-    return;
-  }
+export const _handler =
+  (resolve: Callback<BuildBundle>, reject: Callback<Error | string | string[]>): WebpackCompiler.Handler =>
+  (err: Error, stats) => {
+    if (err) {
+      reject(err);
+      return;
+    }
 
-  const result = stats.toJson({ all: false, warnings: true, errors: true });
-  if (stats.hasErrors()) {
-    reject(result.errors);
-    return;
-  }
+    const result = stats.toJson({ all: false, warnings: true, errors: true });
+    if (stats.hasErrors()) {
+      reject(result.errors);
+      return;
+    }
 
-  resolve({
-    bundles: stats.toJson({ assets: true }).assets as Bundle[],
-    warnings: result.warnings,
-  });
-};
+    resolve({
+      bundles: stats.toJson({ assets: true }).assets as Bundle[],
+      warnings: result.warnings,
+    });
+  };
 
 /**
  * Promisify the webpack runner

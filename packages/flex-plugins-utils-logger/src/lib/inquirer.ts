@@ -17,17 +17,19 @@ export interface Question {
  *
  * @param defaultAnswer
  */
-export const _validateConfirmation = (defaultAnswer?: YNAnswer) => (input: string): string | boolean => {
-  if (!input && defaultAnswer) {
-    input = defaultAnswer;
-  }
+export const _validateConfirmation =
+  (defaultAnswer?: YNAnswer) =>
+  (input: string): string | boolean => {
+    if (!input && defaultAnswer) {
+      input = defaultAnswer;
+    }
 
-  if (acceptableAnswers.includes(input.toLowerCase())) {
-    return true;
-  }
+    if (acceptableAnswers.includes(input.toLowerCase())) {
+      return true;
+    }
 
-  return 'Please answer with either "y" or "n"';
-};
+    return 'Please answer with either "y" or "n"';
+  };
 
 /**
  * Prompts the user to answer the question. Upon validation, returns the answer.
