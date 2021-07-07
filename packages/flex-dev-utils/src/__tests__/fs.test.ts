@@ -1,5 +1,3 @@
-import path from 'path';
-
 import appModule from 'app-module-path';
 import * as globby from 'globby';
 
@@ -17,6 +15,7 @@ describe('fs', () => {
   const flexPluginWebpackPath = `/path/to/${flexPluginWebpack}`;
   const pluginName = 'plugin-test';
   const fileContent = '{"version":1}';
+  const filePath = 'path1/path2';
 
   const appPackage: fs.AppPackageJson = {
     version: '1',
@@ -25,6 +24,7 @@ describe('fs', () => {
       [flexPluginScripts]: '1',
       'flex-plugin': '2',
     },
+    devDependencies: {},
   };
 
   beforeEach(() => {
@@ -151,7 +151,7 @@ describe('fs', () => {
 
       fs.writeFile('the-str', 'path1', 'path2');
       expect(writeFileSync).toHaveBeenCalledTimes(1);
-      expect(writeFileSync).toHaveBeenCalledWith(expect.toMatchPath('path1/path2'), 'the-str');
+      expect(writeFileSync).toHaveBeenCalledWith(expect.toMatchPath(filePath), 'the-str');
     });
   });
 
@@ -179,7 +179,7 @@ describe('fs', () => {
 
       fs.removeFile('path1', 'path2');
       expect(unlinkSync).toHaveBeenCalledTimes(1);
-      expect(unlinkSync).toHaveBeenCalledWith(expect.toMatchPath('path1/path2'));
+      expect(unlinkSync).toHaveBeenCalledWith(expect.toMatchPath(filePath));
     });
   });
 
@@ -191,7 +191,7 @@ describe('fs', () => {
 
       fs.copyFile(['path1', 'path2'], ['path3', 'path4']);
       expect(copyFileSync).toHaveBeenCalledTimes(1);
-      expect(copyFileSync).toHaveBeenCalledWith(expect.toMatchPath('path1/path2'), expect.toMatchPath('path3/path4'));
+      expect(copyFileSync).toHaveBeenCalledWith(expect.toMatchPath(filePath), expect.toMatchPath('path3/path4'));
     });
   });
 
@@ -201,7 +201,7 @@ describe('fs', () => {
 
       expect(fs.checkAFileExists('path1', 'path2')).toEqual(true);
       expect(existsSync).toHaveBeenCalledTimes(1);
-      expect(existsSync).toHaveBeenCalledWith(expect.toMatchPath('path1/path2'));
+      expect(existsSync).toHaveBeenCalledWith(expect.toMatchPath(filePath));
     });
   });
 
@@ -506,6 +506,7 @@ describe('fs', () => {
         [flexPluginScripts]: '1',
         'flex-plugin': '2',
       },
+      devDependencies: {},
     };
 
     it('should give cli paths', () => {
@@ -726,6 +727,45 @@ describe('fs', () => {
       expect(getCwd).toHaveBeenCalledTimes(1);
       expect(findGlobsIn).toHaveBeenCalledTimes(1);
       expect(findGlobsIn).toHaveBeenCalledWith(expect.toMatchPathContaining('the/cwd/src'), 'pattern1', 'pattern2');
+    });
+  });
+
+  describe('isPluginDir', () => {
+    it('should return true if @twilio/flex-ui is in the dependencies', () => {
+      expect(
+        fs.isPluginDir({
+          version: '1.0.0',
+          name: '',
+          dependencies: {
+            '@twilio/flex-ui': '^1',
+          },
+          devDependencies: {},
+        }),
+      ).toBe(true);
+    });
+
+    it('should return true if @twilio/flex-ui is in the devDependencies', () => {
+      expect(
+        fs.isPluginDir({
+          version: '1.0.0',
+          name: '',
+          dependencies: {},
+          devDependencies: {
+            '@twilio/flex-ui': '^1',
+          },
+        }),
+      ).toBe(true);
+    });
+
+    it('should return true if @twilio/flex-ui is not in dependencies or devDependencies', () => {
+      expect(
+        fs.isPluginDir({
+          version: '1.0.0',
+          name: '',
+          dependencies: {},
+          devDependencies: {},
+        }),
+      ).toBe(false);
     });
   });
 });

@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import { AxiosRequestConfig } from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import { env } from 'flex-plugins-utils-env';
 import { TwilioApiError } from 'flex-plugins-utils-exception';
 
@@ -184,22 +185,23 @@ describe('HttpClient', () => {
     });
   });
 
-  describe('transformRequest', () => {
-    it('should all the callback with unmodified data', () => {
+  describe('useRequestInterceptors', () => {
+    it('should all the callback with unmodified data', async () => {
       const req: AxiosRequestConfig = {
         method: 'post',
         data: { payload: 'value' },
       };
       const mockTransformer = jest.fn();
+      const httpClient = new HttpClient(config);
 
       // @ts-ignore
-      HttpClient.transformRequest([HttpClient.transformRequestFormData, mockTransformer])(req);
+      await httpClient.useRequestInterceptors([HttpClient.transformRequestFormData, mockTransformer])(req);
 
       expect(mockTransformer).toBeCalledTimes(1);
       expect(mockTransformer).toBeCalledWith(req);
     });
 
-    it('should all the callback with modified data', () => {
+    it('should all the callback with modified data', async () => {
       const req: AxiosRequestConfig = {
         method: 'post',
         data: { payload: 'value' },
@@ -208,9 +210,10 @@ describe('HttpClient', () => {
         },
       };
       const mockTransformer = jest.fn();
+      const httpClient = new HttpClient(config);
 
       // @ts-ignore
-      HttpClient.transformRequest([HttpClient.transformRequestFormData, mockTransformer])(req);
+      await httpClient.useRequestInterceptors([HttpClient.transformRequestFormData, mockTransformer])(req);
 
       expect(mockTransformer).toBeCalledTimes(1);
       expect(mockTransformer).toBeCalledWith({ ...req, data: payloadStr });
@@ -218,7 +221,7 @@ describe('HttpClient', () => {
   });
 
   describe('transformRequestFormData', () => {
-    it('should not transform application/json', () => {
+    it('should not transform application/json', async () => {
       const req: AxiosRequestConfig = {
         method: 'post',
         data: { payload: 'value' },
@@ -227,12 +230,12 @@ describe('HttpClient', () => {
         },
       };
       // @ts-ignore
-      const transformed = HttpClient.transformRequestFormData(req);
+      const transformed = await HttpClient.transformRequestFormData(req);
 
       expect(transformed.data).toEqual(req.data);
     });
 
-    it('should transform post parameter if json blob', () => {
+    it('should transform post parameter if json blob', async () => {
       const req: AxiosRequestConfig = {
         method: 'post',
         data: { payload: 'value' },
@@ -241,12 +244,12 @@ describe('HttpClient', () => {
         },
       };
       // @ts-ignore
-      const transformed = HttpClient.transformRequestFormData(req);
+      const transformed = await HttpClient.transformRequestFormData(req);
 
       expect(transformed.data).toEqual(payloadStr);
     });
 
-    it('should transform not transform data-blob', () => {
+    it('should transform not transform data-blob', async () => {
       const req: AxiosRequestConfig = {
         method: 'post',
         data: payloadStr,
@@ -255,12 +258,12 @@ describe('HttpClient', () => {
         },
       };
       // @ts-ignore
-      const transformed = HttpClient.transformRequestFormData(req);
+      const transformed = await HttpClient.transformRequestFormData(req);
 
       expect(transformed.data).toEqual(payloadStr);
     });
 
-    it('should transform nested array of object', () => {
+    it('should transform nested array of object', async () => {
       const req: AxiosRequestConfig = {
         method: 'post',
         headers: {
@@ -277,7 +280,7 @@ describe('HttpClient', () => {
       };
 
       // @ts-ignore
-      const transformed = HttpClient.transformRequestFormData(req);
+      const transformed = await HttpClient.transformRequestFormData(req);
 
       expect(transformed.data).toEqual(
         'payload=value&arr=item1&arr=item2&objArr={"name":"item1","phase":0}&objArr={"name":"item2","phase":1}',
@@ -292,17 +295,21 @@ describe('HttpClient', () => {
         config: {},
         request: {},
       };
+      const httpClient = new HttpClient(config);
+
       // @ts-ignore
-      expect(HttpClient.transformResponse(response)).toEqual('123');
+      expect(httpClient.transformResponse(response)).toEqual('123');
     });
   });
 
   describe('transformResponseError', () => {
     it('should not transform any rejection if not a twilio error', async (done) => {
       const err = new Error('the-error');
+      const httpClient = new HttpClient(config);
+
       try {
         // @ts-ignore
-        await HttpClient.transformResponseError(err);
+        await httpClient.transformResponseError(err);
       } catch (e) {
         expect(e).toEqual(err);
         done();
@@ -321,10 +328,11 @@ describe('HttpClient', () => {
           },
         },
       };
+      const httpClient = new HttpClient(config);
 
       try {
         // @ts-ignore
-        await HttpClient.transformResponseError(err);
+        await httpClient.transformResponseError(err);
       } catch (e) {
         expect(e).toBeInstanceOf(TwilioApiError);
         expect((e as TwilioApiError).code).toEqual(err.response.data.code);
@@ -358,6 +366,137 @@ describe('HttpClient', () => {
 
       // @ts-ignore
       expect(httpClient.getRequestOption({ cacheable: true, cacheAge: 123 })).toEqual({ cache: { maxAge: 123 } });
+    });
+  });
+
+  describe('concurrency', () => {
+    const makeRequest = (httpClient: HttpClient, count: number): Promise<string>[] => {
+      const promises: Promise<string>[] = [];
+      for (let i = 0; i < count; i++) {
+        promises.push(httpClient.get(`url-${i}`));
+      }
+
+      return promises;
+    };
+    const sleep = async () => new Promise((r) => setTimeout(r, 250));
+
+    it('should handle default concurrency', async () => {
+      const httpClient = new HttpClient(config);
+
+      // @ts-ignore
+      const mockAxios = new MockAdapter(httpClient.client);
+      mockAxios.onGet().reply(async (config) => Promise.resolve([200, config.url]));
+      // @ts-ignore
+      const incrementConcurrentRequests = jest.spyOn(httpClient, 'incrementConcurrentRequests');
+      // @ts-ignore
+      const decrementConcurrentRequests = jest.spyOn(httpClient, 'decrementConcurrentRequests');
+
+      const result = await Promise.all(makeRequest(httpClient, 5));
+
+      expect(result).toEqual(['url-0', 'url-1', 'url-2', 'url-3', 'url-4']);
+      expect(incrementConcurrentRequests).toHaveBeenCalledTimes(5);
+      expect(decrementConcurrentRequests).toHaveBeenCalledTimes(5);
+    });
+
+    it('should queue calls', async () => {
+      const httpClient = new HttpClient(config);
+      const callbacks = {
+        'url-0': jest.fn(),
+        'url-1': jest.fn(),
+        'url-2': jest.fn(),
+        'url-3': jest.fn(),
+        'url-4': jest.fn(),
+        'url-5': jest.fn(),
+        'url-6': jest.fn(),
+      };
+      const doResolve = {
+        'url-0': false,
+        'url-1': false,
+        'url-2': false,
+        'url-3': false,
+        'url-4': false,
+        'url-5': false,
+        'url-6': false,
+      };
+
+      // @ts-ignore
+      const mockAxios = new MockAdapter(httpClient.client);
+      mockAxios.onGet().reply(async (config) => {
+        callbacks[config.url as string]();
+        return new Promise((resolve) => {
+          const id = setInterval(() => {
+            if (doResolve[config.url as string]) {
+              clearInterval(id);
+              resolve([200, config.url]);
+            }
+          }, 10);
+        });
+      });
+
+      const promises = makeRequest(httpClient, 7);
+      await sleep();
+
+      // First, the first 5 should be called, but the other two should not
+      expect(callbacks['url-0']).toHaveBeenCalledTimes(1);
+      expect(callbacks['url-1']).toHaveBeenCalledTimes(1);
+      expect(callbacks['url-2']).toHaveBeenCalledTimes(1);
+      expect(callbacks['url-3']).toHaveBeenCalledTimes(1);
+      expect(callbacks['url-4']).toHaveBeenCalledTimes(1);
+      expect(callbacks['url-5']).not.toHaveBeenCalled();
+      expect(callbacks['url-6']).not.toHaveBeenCalled();
+
+      // Now resolve the first promise
+      doResolve['url-0'] = true;
+      await sleep();
+
+      // Now, the next one should be called
+      expect(callbacks['url-0']).toHaveBeenCalledTimes(1);
+      expect(callbacks['url-1']).toHaveBeenCalledTimes(1);
+      expect(callbacks['url-2']).toHaveBeenCalledTimes(1);
+      expect(callbacks['url-3']).toHaveBeenCalledTimes(1);
+      expect(callbacks['url-4']).toHaveBeenCalledTimes(1);
+      expect(callbacks['url-5']).toHaveBeenCalledTimes(1);
+      expect(callbacks['url-6']).not.toHaveBeenCalled();
+
+      // Now resolve the second promise
+      doResolve['url-1'] = true;
+      await sleep();
+
+      // Now, the next one should be called
+      expect(callbacks['url-0']).toHaveBeenCalledTimes(1);
+      expect(callbacks['url-1']).toHaveBeenCalledTimes(1);
+      expect(callbacks['url-2']).toHaveBeenCalledTimes(1);
+      expect(callbacks['url-3']).toHaveBeenCalledTimes(1);
+      expect(callbacks['url-4']).toHaveBeenCalledTimes(1);
+      expect(callbacks['url-5']).toHaveBeenCalledTimes(1);
+      expect(callbacks['url-6']).toHaveBeenCalledTimes(1);
+
+      doResolve['url-2'] = true;
+      doResolve['url-3'] = true;
+      doResolve['url-4'] = true;
+      doResolve['url-5'] = true;
+      doResolve['url-6'] = true;
+      const result = await Promise.all(promises);
+
+      expect(result).toEqual(['url-0', 'url-1', 'url-2', 'url-3', 'url-4', 'url-5', 'url-6']);
+    });
+
+    it('should allow overwrite of default concurrency', async () => {
+      const httpClient = new HttpClient({ ...config, maxConcurrentRequests: 7 });
+
+      // @ts-ignore
+      const mockAxios = new MockAdapter(httpClient.client);
+      mockAxios.onGet().reply(async (config) => Promise.resolve([200, config.url]));
+      // @ts-ignore
+      const incrementConcurrentRequests = jest.spyOn(httpClient, 'incrementConcurrentRequests');
+      // @ts-ignore
+      const decrementConcurrentRequests = jest.spyOn(httpClient, 'decrementConcurrentRequests');
+
+      const result = await Promise.all(makeRequest(httpClient, 7));
+
+      expect(result).toEqual(['url-0', 'url-1', 'url-2', 'url-3', 'url-4', 'url-5', 'url-6']);
+      expect(incrementConcurrentRequests).toHaveBeenCalledTimes(7);
+      expect(decrementConcurrentRequests).toHaveBeenCalledTimes(7);
     });
   });
 });

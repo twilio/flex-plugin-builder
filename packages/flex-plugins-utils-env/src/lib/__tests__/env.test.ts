@@ -203,24 +203,13 @@ describe('env', () => {
     });
   });
 
-  describe('allowUnbundledReact', () => {
-    it('allowUnbundledReact should return true', () => {
-      process.env.UNBUNDLED_REACT = 'true';
-      expect(env.allowUnbundledReact()).toEqual(true);
-    });
-
-    it('allowUnbundledReact should return false', () => {
-      expect(env.allowUnbundledReact()).toEqual(false);
-    });
-  });
-
   describe('quiet', () => {
-    it('should return true', () => {
+    it('isQuiet should return true', () => {
       process.env.QUIET = 'true';
       expect(env.isQuiet()).toEqual(true);
     });
 
-    it('should return false', () => {
+    it('isQuiet should return false', () => {
       expect(env.isQuiet()).toEqual(false);
     });
 
@@ -235,19 +224,19 @@ describe('env', () => {
     });
   });
 
-  describe('getRealm', () => {
-    it('should return realm', () => {
-      process.env.REALM = 'stage';
+  describe('getRegion', () => {
+    it('should return region', () => {
+      process.env.REGION = 'stage';
 
-      expect(env.getRealm()).toEqual('stage');
+      expect(env.getRegion()).toEqual('stage');
     });
   });
 
-  describe('setRealm', () => {
-    it('should set realm', () => {
-      expect(env.getRealm()).toBeUndefined();
-      env.setRealm('stage');
-      expect(env.getRealm()).toEqual('stage');
+  describe('setRegion', () => {
+    it('should set region', () => {
+      expect(env.getRegion()).toBeUndefined();
+      env.setRegion('stage');
+      expect(env.getRegion()).toEqual('stage');
     });
   });
 

@@ -17,6 +17,7 @@ jest.mock('flex-dev-utils/dist/fs');
 jest.mock('flex-dev-utils/dist/updateNotifier');
 
 describe('Commands/FlexPluginsDeploy', () => {
+  const pluginName = 'plugin-test';
   const serviceSid = 'ZS00000000000000000000000000000';
   const serviceSid2 = 'ZS00000000000000000000000000001';
   const defaultChangelog = 'sample changlog';
@@ -434,7 +435,7 @@ describe('Commands/FlexPluginsDeploy', () => {
     // @ts-ignore
     jest.spyOn(fs, 'readPackageJson').mockReturnValue({
       version: '1.0.0',
-      name: 'plugin-test',
+      name: pluginName,
     });
     // @ts-ignore
     jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
@@ -456,7 +457,7 @@ describe('Commands/FlexPluginsDeploy', () => {
     // @ts-ignore
     jest.spyOn(fs, 'readPackageJson').mockReturnValue({
       version: '1.0.0',
-      name: 'plugin-test',
+      name: pluginName,
     });
     // @ts-ignore
     jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
@@ -480,7 +481,7 @@ describe('Commands/FlexPluginsDeploy', () => {
     // @ts-ignore
     jest.spyOn(fs, 'readPackageJson').mockReturnValue({
       version: '1.0.0',
-      name: 'plugin-test',
+      name: pluginName,
     });
     // @ts-ignore
     jest.spyOn(fs, 'getPaths').mockReturnValue(paths);

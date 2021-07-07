@@ -1,10 +1,10 @@
-import { Realm } from 'flex-plugins-utils-env';
+import { Region } from 'flex-plugins-utils-env';
 import { OptionalHttpConfig } from 'flex-plugin-utils-http';
 
 import ServiceHttpClient from './serviceHttpClient';
 
 export interface PluginServiceHttpOption extends OptionalHttpConfig {
-  realm?: Realm;
+  region?: Region;
 }
 
 /**
@@ -22,7 +22,7 @@ export default class PluginServiceHttp extends ServiceHttpClient {
 
     super({
       ...options,
-      baseURL: `https://flex-api${PluginServiceHttp.getRealm(options && options.realm)}.twilio.com/${
+      baseURL: `https://flex-api${PluginServiceHttp.getRegion(options && options.region)}.twilio.com/${
         PluginServiceHttp.version
       }/PluginService`,
       auth: { username, password },
