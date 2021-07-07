@@ -144,15 +144,15 @@ commands:
       - run:
           name: "NVM use"
           command: nvm use << parameters.node-version >>
-  cmd_slack-notification-e2e-nightly:
+  cmd_slack-notification-error:
     parameters:
-      platform:
+      text:
         type: string
     steps:
       - run:
           name: Send Slack notification
           command: |
-            curl -X POST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - nightly E2E tests failed on << parameters.platform >> . View <$CIRCLE_BUILD_URL|build>.', 'mrkdwn':true}" $SLACK_WEBHOOK
+            curl -X POST -H "Content-type:application/json" --data "{'text':':error: << parameters.text >> . View <$CIRCLE_BUILD_URL|build>.', 'mrkdwn':true}" $SLACK_WEBHOOK
           when: on_fail
 
 jobs:
@@ -343,11 +343,8 @@ workflows:
             parameters:
               node-version: ["10.24", "12.21", "14.16"]
           post-steps:
-            - run:
-                name: Send Slack notification
-                command: |
-                  curl -X POST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - $CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}*. View <$CIRCLE_BUILD_URL|build>. cc: <@$CIRCLE_USERNAME>', 'mrkdwn':true}" $SLACK_WEBHOOK
-                when: on_fail
+            - cmd_slack-notification-error:
+                text: "$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - $CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}*."
       - job_npm-publish:
           matrix:
             parameters:
@@ -374,16 +371,16 @@ workflows:
               package_version: ["latest"]
               node-version: ["14.17.1"]
           post-steps:
-            - cmd_slack-notification-e2e-nightly:
-                platform: "Linux"
+            - cmd_slack-notification-error:
+                text: "$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - nightly E2E tests failed on Linux."
       - job_e2e-test-macos:
           matrix:
             parameters:
               package_version: ["latest"]
               node-version: ["14.17.1"]
           post-steps:
-            - cmd_slack-notification-e2e-nightly:
-                platform: "MacOS"
+            - cmd_slack-notification-error:
+                text: "$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - nightly E2E tests failed on MacOS."
       - job_e2e-test-win:
           matrix:
             parameters:
@@ -391,5 +388,5 @@ workflows:
               shell: ["bash.exe"]
               node-version: ["14.17.1"]
           post-steps:
-            - cmd_slack-notification-e2e-nightly:
-                platform: "Windows"
+            - cmd_slack-notification-error:
+                text: "$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - nightly E2E tests failed on Windows."
