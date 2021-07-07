@@ -420,17 +420,22 @@ describe('DeployScript', () => {
       expect(getPackageVersion).toHaveBeenCalledTimes(2);
     });
 
-    it('should throw exception if a React version has not been set', async (done) => {
-      try {
-        await deployScript._verifyFlexUIConfiguration('^1', {});
-      } catch (e) {
-        expect(e).toBeInstanceOf(FlexPluginError);
-        expect(e.message).toContain('need to set the React version');
-        done();
-      }
+    it('should use default react', async () => {
+      const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.5.2');
+      await deployScript._verifyFlexUIConfiguration('^1', {});
+      expect(getPackageVersion).toHaveBeenCalledTimes(2);
     });
 
-    it('should ask for no confirmation if react versions match', async () => {
+    it('should ask for confirmation if no react is set', async () => {
+      const confirm = jest.spyOn(inquirer, 'confirm').mockResolvedValue(true);
+      const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.13.1');
+      await deployScript._verifyFlexUIConfiguration('^1', {});
+
+      expect(confirm).toHaveBeenCalled();
+      expect(getPackageVersion).toHaveBeenCalledTimes(2);
+    });
+
+    it('should ask for confirmation if react versions match', async () => {
       const confirm = jest.spyOn(inquirer, 'confirm');
       const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.13.1');
 
