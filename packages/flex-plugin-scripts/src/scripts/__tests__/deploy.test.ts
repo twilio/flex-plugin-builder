@@ -435,7 +435,7 @@ describe('DeployScript', () => {
       expect(getPackageVersion).toHaveBeenCalledTimes(2);
     });
 
-    it('should ask for confirmation if react versions match', async () => {
+    it('should not ask for confirmation if react versions match', async () => {
       const confirm = jest.spyOn(inquirer, 'confirm');
       const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.13.1');
 
