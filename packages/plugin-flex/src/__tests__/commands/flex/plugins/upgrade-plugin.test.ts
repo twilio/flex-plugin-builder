@@ -81,13 +81,17 @@ describe('Commands/FlexPluginsStart', () => {
       // modified
       commandModified: 'some random command2',
       // command with pre, where pre is modified by main is not; it should not be removed
+      // eslint-disable-next-line sonarjs/no-duplicate-string
       preCommandWithPreModified: 'pre some command with pre',
+      // eslint-disable-next-line sonarjs/no-duplicate-string
       commandWithPreModified: 'some command with pre',
       // command with pre, where main is modified, so it should not be removed
       preCommandModifiedWithPreModified: 'pre command',
       commandModifiedWithPreModified: 'command modified',
       // command with post, where post is modified by main is not; it should not be removed
+      // eslint-disable-next-line sonarjs/no-duplicate-string
       commandWithPostModified: 'some command with post',
+      // eslint-disable-next-line sonarjs/no-duplicate-string
       postCommandWithPostModified: 'post some command with post',
       // command with post, where main is modified, so it should not be removed
       commandModifiedWithPostModified: 'command modified',

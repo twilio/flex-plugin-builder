@@ -35,6 +35,7 @@ describe('FlexPluginError', () => {
         'flex-plugin': '2.0.0',
         'flex-plugin-scripts': '3.0.0',
       },
+      devDependencies: {},
     });
 
     const err = new FlexPluginError();

@@ -55,43 +55,43 @@ describe('PluginServiceHttp', () => {
     });
   });
 
-  describe('getRealm', () => {
-    it('should return the realm passed to it', () => {
-      jest.spyOn(env, 'getRealm');
+  describe('getRegion', () => {
+    it('should return the region passed to it', () => {
+      jest.spyOn(env, 'getRegion');
 
       // @ts-ignore
-      expect(PluginServiceHttp.getRealm('stage')).toEqual('.stage');
-      expect(env.getRealm).not.toHaveBeenCalled();
+      expect(PluginServiceHttp.getRegion('stage')).toEqual('.stage');
+      expect(env.getRegion).not.toHaveBeenCalled();
     });
 
-    it('should return prod realm if no realm provided', () => {
+    it('should return prod region if no region provided', () => {
       // @ts-ignore
-      jest.spyOn(env, 'getRealm').mockReturnValue('');
+      jest.spyOn(env, 'getRegion').mockReturnValue('');
 
       // @ts-ignore
-      expect(PluginServiceHttp.getRealm()).toEqual('');
+      expect(PluginServiceHttp.getRegion()).toEqual('');
     });
 
-    it('should return prod realm if invalid realm provided', () => {
+    it('should return prod region if invalid region provided', () => {
       // @ts-ignore
-      jest.spyOn(env, 'getRealm').mockReturnValue('foo');
+      jest.spyOn(env, 'getRegion').mockReturnValue('foo');
 
       // @ts-ignore
-      expect(PluginServiceHttp.getRealm()).toEqual('');
+      expect(PluginServiceHttp.getRegion()).toEqual('');
     });
 
-    it('should return dev realm', () => {
-      jest.spyOn(env, 'getRealm').mockReturnValue('dev');
+    it('should return dev region', () => {
+      jest.spyOn(env, 'getRegion').mockReturnValue('dev');
 
       // @ts-ignore
-      expect(PluginServiceHttp.getRealm()).toEqual('.dev');
+      expect(PluginServiceHttp.getRegion()).toEqual('.dev');
     });
 
-    it('should return stage realm', () => {
-      jest.spyOn(env, 'getRealm').mockReturnValue('stage');
+    it('should return stage region', () => {
+      jest.spyOn(env, 'getRegion').mockReturnValue('stage');
 
       // @ts-ignore
-      expect(PluginServiceHttp.getRealm()).toEqual('.stage');
+      expect(PluginServiceHttp.getRegion()).toEqual('.stage');
     });
   });
 

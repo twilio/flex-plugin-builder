@@ -1,6 +1,13 @@
 import CreateConfiguration from '../../sub-commands/create-configuration';
 import createTest from '../framework';
 
+const descriptionFlex = '--description';
+const nameFlex = '--name';
+const enablePluginFlex = '--enable-plugin';
+const disablePluginFlex = '--disable-plugin';
+const newFlex = '--new';
+const pluginFlex = '--plugin';
+
 describe('SubCommands/CreateConfiguration', () => {
   class Plugin extends CreateConfiguration {}
 
@@ -27,7 +34,7 @@ describe('SubCommands/CreateConfiguration', () => {
   });
 
   it('should call createConfiguration from the toolkit with enablePlugins', async () => {
-    const cmd = await createTest(Plugin)('--name', name, '--description', description, '--enable-plugin', enablePlugin);
+    const cmd = await createTest(Plugin)(nameFlex, name, descriptionFlex, description, enablePluginFlex, enablePlugin);
     mockPluginsApiToolkit(cmd);
 
     // @ts-ignore
@@ -44,7 +51,7 @@ describe('SubCommands/CreateConfiguration', () => {
   });
 
   it('should support using --plugin', async () => {
-    const cmd = await createTest(Plugin)('--name', name, '--description', description, '--plugin', aliasPlugin);
+    const cmd = await createTest(Plugin)(nameFlex, name, descriptionFlex, description, pluginFlex, aliasPlugin);
     mockPluginsApiToolkit(cmd);
 
     // @ts-ignore
@@ -61,13 +68,13 @@ describe('SubCommands/CreateConfiguration', () => {
 
   it('should support enable and disable', async () => {
     const cmd = await createTest(Plugin)(
-      '--name',
+      nameFlex,
       name,
-      '--description',
+      descriptionFlex,
       description,
-      '--enable-plugin',
+      enablePluginFlex,
       enablePlugin,
-      '--disable-plugin',
+      disablePluginFlex,
       disablePlugin,
     );
     mockPluginsApiToolkit(cmd);
@@ -86,15 +93,15 @@ describe('SubCommands/CreateConfiguration', () => {
 
   it('should support enable and disable and alias', async () => {
     const cmd = await createTest(Plugin)(
-      '--name',
+      nameFlex,
       name,
-      '--description',
+      descriptionFlex,
       description,
-      '--enable-plugin',
+      enablePluginFlex,
       enablePlugin,
-      '--disable-plugin',
+      disablePluginFlex,
       disablePlugin,
-      '--plugin',
+      pluginFlex,
       aliasPlugin,
     );
     mockPluginsApiToolkit(cmd);
@@ -112,7 +119,7 @@ describe('SubCommands/CreateConfiguration', () => {
   });
 
   it('should support --new', async () => {
-    const cmd = await createTest(Plugin)('--name', name, '--description', description, '--new');
+    const cmd = await createTest(Plugin)(nameFlex, name, descriptionFlex, description, newFlex);
     mockPluginsApiToolkit(cmd);
 
     // @ts-ignore

@@ -1,4 +1,4 @@
-import { Credential } from 'flex-dev-utils';
+import { Credential, env } from 'flex-dev-utils';
 
 import Http, { ContentType, HttpConfig } from './http';
 import { getPackageDetails, FLEX_PACKAGES } from '../utils/package';
@@ -10,7 +10,7 @@ export interface BaseClientOptions {
 export default abstract class BaseClient {
   public static userAgent = BaseClient.getUserAgent();
 
-  private static realms = ['dev', 'stage'];
+  private static regions = ['dev', 'stage'];
 
   protected readonly config: HttpConfig;
 
@@ -36,15 +36,15 @@ export default abstract class BaseClient {
    * Returns the base URL
    */
   public static getBaseUrl = (subDomain: string, version: string): string => {
-    const { realms } = BaseClient;
-    const realm = process.env.REALM;
-    if (realm && !realms.includes(realm)) {
-      throw new Error(`Invalid realm ${realm} was provided. Realm must be one of ${realms.join(',')}`);
+    const { regions } = BaseClient;
+    const region = env.getRegion();
+    if (region && !regions.includes(region)) {
+      throw new Error(`Invalid region ${region} was provided. Region must be one of ${regions.join(',')}`);
     }
 
-    const realmDomain = realm && realms.includes(realm) ? `.${realm.toLowerCase()}` : '';
+    const regionDomain = region && regions.includes(region) ? `.${region.toLowerCase()}` : '';
 
-    return `https://${subDomain}${realmDomain}.twilio.com/${version}`;
+    return `https://${subDomain}${regionDomain}.twilio.com/${version}`;
   };
 
   /**

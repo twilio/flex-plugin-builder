@@ -1,6 +1,5 @@
 <h1 align="center">Twilio Flex Plugin Builder</h1>
-<p align="center">Monorepo for all the tooling needed to create a custom <a href="https://www.twilio.com/docs/flex/developer/plugins" target="_blank">Twilio Flex Plugins</a>
-</p>
+<p align="center">Monorepo for all the tooling needed to create a custom <a href="https://www.twilio.com/docs/flex/developer/plugins" target="_blank">Twilio Flex Plugins</a></p>
 
 <p align="center">
     <a href="https://app.circleci.com/pipelines/github/twilio/flex-plugin-builder?branch=main" >
@@ -51,6 +50,6 @@ Flex Plugin Builder is licensed under [MIT](LICENSE).
 
 ## Contributors
 
-Thanks goes to the wonderful people listed in [CONTRIBUTORS.md](CONTRIBUTORS.md).
+Thanks to the wonderful people listed in [CONTRIBUTORS.md](CONTRIBUTORS.md).
 
 This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification. Contributions of any kind welcome!

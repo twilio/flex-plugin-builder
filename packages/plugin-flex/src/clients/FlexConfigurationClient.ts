@@ -6,7 +6,7 @@ export interface FlexConfigurationClientOptions {
   accountSid: string;
   username: string;
   password: string;
-  realm?: 'dev' | 'stage';
+  region?: 'dev' | 'stage';
 }
 
 /**
@@ -85,8 +85,8 @@ export default class FlexConfigurationClient {
     const auth = Buffer.from(`${this.options.username}:${this.options.password}`, 'utf8').toString('base64');
     // eslint-disable-next-line camelcase
     const data = { account_sid: this.options.accountSid, serverless_service_sids: sids };
-    const url = this.options.realm
-      ? `https://flex-api.${this.options.realm}.twilio.com/v1/Configuration`
+    const url = this.options.region
+      ? `https://flex-api.${this.options.region}.twilio.com/v1/Configuration`
       : 'https://flex-api.twilio.com/v1/Configuration';
 
     const response = await phin({
