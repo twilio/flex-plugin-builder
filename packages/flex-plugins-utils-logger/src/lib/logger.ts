@@ -338,20 +338,8 @@ const wrap = (input: string, columns: number, options = DefaultWrapOptions): str
  * You can create an instance to overwrite default behavior.
  */
 export const _logger = new Logger();
-const {
-  debug,
-  info,
-  warning,
-  error,
-  trace,
-  success,
-  newline,
-  notice,
-  installInfo,
-  clearTerminal,
-  markdown,
-  columns,
-} = _logger;
+const { debug, info, warning, error, trace, success, newline, notice, installInfo, clearTerminal, markdown, columns } =
+  _logger;
 
 export default {
   debug,

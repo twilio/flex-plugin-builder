@@ -3,10 +3,10 @@ import { readdirSync } from 'fs';
 import { TestParams } from './parameters';
 
 export interface TestSuite {
+  (params: TestParams): Promise<void>;
+  description: string;
   before?: (params: TestParams) => Promise<void>;
   after?: (params: TestParams) => Promise<void>;
-  description: string;
-  (params: TestParams): Promise<void>;
 }
 
 /**

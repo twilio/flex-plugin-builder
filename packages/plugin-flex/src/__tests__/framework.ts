@@ -103,16 +103,16 @@ const mockConfig = async <C extends FlexPlugin>(command: C): Promise<C> => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const createTest = <C extends FlexPlugin>(Command: new (...argv: any[]) => C) => async (
-  ...args: string[]
-): Promise<C> => {
-  return Promise.resolve(new Command(args, ConfigData))
-    .then(async (c) => mockSecureStorage(c))
-    .then(async (c) => mockUserConfig(c))
-    .then(async (c) => mockEnv(c))
-    .then(async (c) => mockLogger(c))
-    .then(async (c) => mockConfig(c));
-};
+const createTest =
+  <C extends FlexPlugin>(Command: new (...argv: any[]) => C) =>
+  async (...args: string[]): Promise<C> => {
+    return Promise.resolve(new Command(args, ConfigData))
+      .then(async (c) => mockSecureStorage(c))
+      .then(async (c) => mockUserConfig(c))
+      .then(async (c) => mockEnv(c))
+      .then(async (c) => mockLogger(c))
+      .then(async (c) => mockConfig(c));
+  };
 
 afterEach(() => {
   removeTmpDirectory();
