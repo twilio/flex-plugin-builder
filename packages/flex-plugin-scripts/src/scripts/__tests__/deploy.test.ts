@@ -501,4 +501,24 @@ describe('DeployScript', () => {
       expect(getAccount).not.toHaveBeenCalled();
     });
   });
+
+  describe('_getDefaultUIDependencies', () => {
+    it('should return react 16.5.2', () => {
+      const result = deployScript._getDefaultUIDependencies('1.27.0', {});
+      expect(result.react).toEqual('16.5.2');
+      expect(result['react-dom']).toEqual('16.5.2');
+    });
+
+    it('should return react 17.0.2', () => {
+      const result = deployScript._getDefaultUIDependencies('2.0.0', {});
+      expect(result.react).toEqual('17.0.2');
+      expect(result['react-dom']).toEqual('17.0.2');
+    });
+
+    it('should return whatever passed', () => {
+      const uiDeps = { react: '18.0.0', 'react-dom': '18.0.0' };
+      const result = deployScript._getDefaultUIDependencies('1.27.0', uiDeps);
+      expect(result).toEqual(uiDeps);
+    });
+  });
 });

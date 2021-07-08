@@ -17,6 +17,8 @@ import {
   readPackageJson,
   checkAFileExists,
   isPluginDir,
+  packageDependencyVersion,
+  PackageJson,
 } from 'flex-dev-utils/dist/fs';
 
 import {
@@ -27,11 +29,6 @@ import {
 } from '../prints';
 import run from '../utils/run';
 import { findFirstLocalPlugin, parseUserInputPlugins } from '../utils/parser';
-
-interface Package {
-  version: string;
-  dependencies: Record<string, string>;
-}
 
 const extensions = ['js', 'jsx', 'ts', 'tsx'];
 
@@ -84,9 +81,9 @@ export const _validateTypescriptProject = (): void => {
  * @param name        the package to check
  * @private
  */
-export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, name: string): void => {
-  const expectedDependency = flexUIPkg.dependencies[name];
-  const supportsUnbundled = semver.satisfies(flexUIPkg.version, '>=1.19.0');
+export const _verifyPackageVersion = (flexUIPkg: PackageJson, allowSkip: boolean, name: string): void => {
+  const expectedDependency = packageDependencyVersion(flexUIPkg, name);
+  const supportsUnbundled = semver.satisfies(semver.coerce(flexUIPkg.version)?.version as string, '>=1.19.0');
   if (!expectedDependency) {
     expectedDependencyNotFound(name);
 
