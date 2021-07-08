@@ -458,7 +458,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     return {
       remove: FlexPluginsUpgradePlugin.packagesToRemove,
       deps: {
-        flexPluginScript: '*',
+        [flexPluginScript]: '*',
         react,
         'react-dom': react,
       },
