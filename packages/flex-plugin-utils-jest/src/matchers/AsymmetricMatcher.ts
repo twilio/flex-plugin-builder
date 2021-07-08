@@ -20,14 +20,16 @@ export abstract class AsymmetricMatcher<T> implements jest.AsymmetricMatcher {
     return `${this.toString()}<${this.actual}>`;
   }
 
-  protected passMessage = (actual: string, expected: string) => (): string => `${matcherHint(`.not.${this.method()}`)}
+  protected passMessage = (actual: string, expected: string) => (): string =>
+    `${matcherHint(`.not.${this.method()}`)}
 
 Expected value not to match:
   ${printExpected(expected)}
 Received:
   ${printReceived(actual)}`;
 
-  protected failMessage = (actual: string, expected: string) => (): string => `${matcherHint(`.${this.method()}`)}
+  protected failMessage = (actual: string, expected: string) => (): string =>
+    `${matcherHint(`.${this.method()}`)}
 
 Expected value to match:
   ${printExpected(expected)}

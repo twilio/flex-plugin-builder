@@ -121,5 +121,8 @@ export default class FlexPluginsAPIToolkitBase {
   }
 
   // Clones the arguments before passing them to the script
-  private cloneArgs = <O, R>(script: Script<O, R>) => async (option: O) => script(cloneDeep(option));
+  private cloneArgs =
+    <O, R>(script: Script<O, R>) =>
+    async (option: O) =>
+      script(cloneDeep(option));
 }
