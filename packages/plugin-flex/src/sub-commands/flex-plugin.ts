@@ -185,9 +185,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     this.exit = exit;
 
     const doubleDashIndex = argv.indexOf('--');
-    const hasInternalArgs = doubleDashIndex === -1;
-    this.internalScriptArgs = hasInternalArgs ? [] : argv.slice(doubleDashIndex + 1);
-    if (hasInternalArgs) {
+    this.internalScriptArgs = doubleDashIndex === -1 ? [] : argv.slice(doubleDashIndex + 1);
+    if (doubleDashIndex !== -1) {
       process.argv = process.argv.slice(0, doubleDashIndex);
       this.argv = argv.slice(0, doubleDashIndex);
     }
