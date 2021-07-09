@@ -19,6 +19,22 @@ describe('SubCommands/FlexPlugin', () => {
     expect(FlexPlugin.hasOwnProperty('flags')).toEqual(true);
   });
 
+  it('should set internal args', async () => {
+    const cmd1 = await createTest(FlexPlugin)('--arg1', '--', '--internal1');
+    const cmd2 = await createTest(FlexPlugin)('--', '--internal2');
+    const cmd3 = await createTest(FlexPlugin)('--');
+    const cmd4 = await createTest(FlexPlugin)('--', '--internal4a', '--internal4b');
+
+    // @ts-ignore
+    expect(cmd1.internalScriptArgs).toEqual(['--internal1']);
+    // @ts-ignore
+    expect(cmd2.internalScriptArgs).toEqual(['--internal2']);
+    // @ts-ignore
+    expect(cmd3.internalScriptArgs).toEqual([]);
+    // @ts-ignore
+    expect(cmd4.internalScriptArgs).toEqual(['--internal4a', '--internal4b']);
+  });
+
   it('should test isPluginFolder to be false if no package.json is found', async () => {
     const cmd = await createTest(FlexPlugin)();
 

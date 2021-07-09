@@ -143,7 +143,11 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
   protected readonly _logger: Logger;
 
+  // Contains all the raw flags
   protected scriptArgs: string[];
+
+  // Contains all the flags that are passed after --, i.e. `twilio flex:plugins:foo -- --arg1 --arg2
+  protected internalScriptArgs: string[];
 
   private _pluginsApiToolkit?: PluginsApiToolkit;
 
@@ -167,7 +171,6 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     this.cwd = process.cwd();
     this.pluginRootDir = join(__dirname, '../../');
     this.cliRootDir = join(homedir(), '.twilio-cli');
-    this.scriptArgs = process.argv.slice(3);
     this.skipEnvironmentalSetup = false;
     this._logger = new Logger({ isQuiet: false, markdown: true });
     // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
@@ -180,6 +183,15 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     }
 
     this.exit = exit;
+
+    const doubleDashIndex = argv.indexOf('--');
+    this.internalScriptArgs = doubleDashIndex === -1 ? [] : argv.slice(doubleDashIndex + 1);
+    if (doubleDashIndex !== -1) {
+      process.argv = process.argv.slice(0, doubleDashIndex);
+      this.argv = argv.slice(0, doubleDashIndex);
+    }
+    // TODO: get rid of scriptArgs and use argv instead
+    this.scriptArgs = process.argv.slice(3);
   }
 
   /**
