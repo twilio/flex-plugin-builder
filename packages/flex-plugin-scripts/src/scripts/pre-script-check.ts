@@ -1,7 +1,7 @@
 import { copyFileSync, readFileSync } from 'fs';
 import { join } from 'path';
 
-import { env, logger, semver, FlexPluginError, exit } from 'flex-dev-utils';
+import { env, logger, semver, FlexPluginError, exit, versionSatisfiesRange } from 'flex-dev-utils';
 import {
   checkFilesExist,
   findGlobs,
@@ -83,7 +83,6 @@ export const _validateTypescriptProject = (): void => {
  */
 export const _verifyPackageVersion = (flexUIPkg: PackageJson, allowSkip: boolean, name: string): void => {
   const expectedDependency = packageDependencyVersion(flexUIPkg, name);
-  const supportsUnbundled = semver.satisfies(semver.coerce(flexUIPkg.version)?.version as string, '>=1.19.0');
   if (!expectedDependency) {
     expectedDependencyNotFound(name);
 
@@ -95,6 +94,7 @@ export const _verifyPackageVersion = (flexUIPkg: PackageJson, allowSkip: boolean
   const requiredVersion = semver.coerce(expectedDependency).version;
   const installedPath = resolveRelative(getPaths().app.nodeModulesDir, name, packageJsonName);
   const installedVersion = _require(installedPath).version;
+  const supportsUnbundled = versionSatisfiesRange(flexUIPkg.version, '>=1.19.0');
 
   if (requiredVersion !== installedVersion) {
     if (supportsUnbundled) {
