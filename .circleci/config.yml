@@ -157,7 +157,7 @@ commands:
 
 jobs:
   job_e2e-test-linux:
-    resource_class: xlarge
+    resource_class: large
     parameters:
       package_version:
         type: string
@@ -277,7 +277,7 @@ jobs:
       - cmd_run-unit-tests
 
   job_pr-validator-node:
-    resource_class: xlarge
+    resource_class: large
     environment:
       NODE_OPTIONS: --max-old-space-size=14336
       CI: ""
