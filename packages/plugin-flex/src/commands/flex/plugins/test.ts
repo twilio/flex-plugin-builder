@@ -27,7 +27,7 @@ export default class FlexPluginsTest extends FlexPlugin {
   async doRun(): Promise<void> {
     process.env.PERSIST_TERMINAL = 'true';
     await this.runScript('pre-script-check');
-    await this.runScript('test', ['--env=jsdom']);
+    await this.runScript('test', ['--env=jsdom', ...this.internalScriptArgs]);
   }
 
   /**

@@ -1,7 +1,7 @@
 import { copyFileSync, readFileSync } from 'fs';
 import { join } from 'path';
 
-import { env, logger, semver, FlexPluginError, exit } from 'flex-dev-utils';
+import { env, logger, semver, FlexPluginError, exit, versionSatisfiesRange } from 'flex-dev-utils';
 import {
   checkFilesExist,
   findGlobs,
@@ -17,6 +17,8 @@ import {
   readPackageJson,
   checkAFileExists,
   isPluginDir,
+  packageDependencyVersion,
+  PackageJson,
 } from 'flex-dev-utils/dist/fs';
 
 import {
@@ -27,11 +29,6 @@ import {
 } from '../prints';
 import run from '../utils/run';
 import { findFirstLocalPlugin, parseUserInputPlugins } from '../utils/parser';
-
-interface Package {
-  version: string;
-  dependencies: Record<string, string>;
-}
 
 const extensions = ['js', 'jsx', 'ts', 'tsx'];
 
@@ -84,9 +81,8 @@ export const _validateTypescriptProject = (): void => {
  * @param name        the package to check
  * @private
  */
-export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, name: string): void => {
-  const expectedDependency = flexUIPkg.dependencies[name];
-  const supportsUnbundled = semver.satisfies(flexUIPkg.version, '>=1.19.0');
+export const _verifyPackageVersion = (flexUIPkg: PackageJson, allowSkip: boolean, name: string): void => {
+  const expectedDependency = packageDependencyVersion(flexUIPkg, name);
   if (!expectedDependency) {
     expectedDependencyNotFound(name);
 
@@ -98,6 +94,7 @@ export const _verifyPackageVersion = (flexUIPkg: Package, allowSkip: boolean, na
   const requiredVersion = semver.coerce(expectedDependency).version;
   const installedPath = resolveRelative(getPaths().app.nodeModulesDir, name, packageJsonName);
   const installedVersion = _require(installedPath).version;
+  const supportsUnbundled = versionSatisfiesRange(flexUIPkg.version, '>=1.19.0');
 
   if (requiredVersion !== installedVersion) {
     if (supportsUnbundled) {
