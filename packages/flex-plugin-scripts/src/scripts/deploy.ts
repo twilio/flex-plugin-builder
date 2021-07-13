@@ -16,7 +16,6 @@ import { singleLineString } from 'flex-dev-utils/dist/strings';
 import AccountsClient from '../clients/accounts';
 import { setEnvironment } from '..';
 import { deploySuccessful } from '../prints';
-import { UIDependencies } from '../clients/configuration-types';
 import run from '../utils/run';
 import { Build, Runtime, Version } from '../clients/serverless-types';
 import { AssetClient, BuildClient, DeploymentClient, ConfigurationClient } from '../clients';
@@ -60,11 +59,15 @@ export const _verifyPath = (baseUrl: string, build: Build): boolean => {
 
 /**
  * Validates Flex UI version requirement
- * @param flexUI        the flex ui version
- * @param dependencies  the package.json dependencies
- * @private
  */
-export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: UIDependencies): Promise<void> => {
+export const _verifyFlexUIConfiguration = async (): Promise<void> => {
+  const credentials = await getCredential();
+  const configurationClient = new ConfigurationClient(credentials);
+
+  // Validate Flex UI version
+  const flexUI = await configurationClient.getFlexUIVersion();
+  const dependencies = await configurationClient.getUIDependencies();
+
   const coerced = semver.coerce(flexUI);
   const reactPackageVersion = getPackageVersion('react');
   const reactDomPackageVersion = getPackageVersion('react-dom');
@@ -91,6 +94,8 @@ export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: U
   const reactSupported = semver.satisfies(reactPackageVersion, `${dependencies.react}`);
   const reactDOMSupported = semver.satisfies(reactDomPackageVersion, `${dependencies['react-dom']}`);
   if (!reactSupported || !reactDOMSupported) {
+    const isQuiet = env.isQuiet();
+    env.setQuiet(false);
     logger.newline();
     logger.warning(
       singleLineString(
@@ -109,6 +114,8 @@ export const _verifyFlexUIConfiguration = async (flexUI: string, dependencies: U
       logger.newline();
       throw new UserActionError('User rejected confirmation to deploy with mismatched React version.');
     }
+    logger.newline();
+    env.setQuiet(isQuiet);
   }
 };
 
@@ -161,16 +168,13 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
   }
   const pluginUrl = `https://${runtime.environment.domain_name}${bundleUri}`;
 
-  const configurationClient = new ConfigurationClient(credentials);
   const buildClient = new BuildClient(credentials, runtime.service.sid);
   const assetClient = new AssetClient(credentials, runtime.service.sid);
   const deploymentClient = new DeploymentClient(credentials, runtime.service.sid, runtime.environment.sid);
 
-  // Validate Flex UI version
-  const uiVersion = await configurationClient.getFlexUIVersion();
-  const uiDependencies = await configurationClient.getUIDependencies();
-
-  await _verifyFlexUIConfiguration(uiVersion, uiDependencies);
+  if (!env.isCLI) {
+    await _verifyFlexUIConfiguration();
+  }
 
   // Check duplicate routes
   const routeCollision = await progress('Validating the new plugin bundle', async () => {
@@ -229,6 +233,7 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
 
   // Register service sid with Config service
   await progress('Registering plugin with Flex', async () => {
+    const configurationClient = new ConfigurationClient(credentials);
     await configurationClient.registerSid(runtime.service.sid);
   });
 
