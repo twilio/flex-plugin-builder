@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { deepStrictEqual, notDeepStrictEqual } from 'assert';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -6,7 +7,6 @@ import { get } from 'lodash';
 
 import { Browser } from './browser';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const _strictEqual = (doesEqual: boolean, actual: any, expected: any, msg?: string): void => {
   if (doesEqual) {
     deepStrictEqual(actual, expected, msg);
@@ -15,24 +15,29 @@ const _strictEqual = (doesEqual: boolean, actual: any, expected: any, msg?: stri
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const equal = (doesEqual: boolean) => (actual: any, expected: any, msg?: string): void => {
-  _strictEqual(doesEqual, actual, expected, msg);
-};
+const equal =
+  (doesEqual: boolean) =>
+  (actual: any, expected: any, msg?: string): void => {
+    _strictEqual(doesEqual, actual, expected, msg);
+  };
 
 /**
  * Checks whether a file/directory exists
  */
-const fileExists = (doesEqual: boolean) => (paths: string[], msg?: string): void => {
-  _strictEqual(doesEqual, true, fs.existsSync(path.join(...paths)), msg);
-};
+const fileExists =
+  (doesEqual: boolean) =>
+  (paths: string[], msg?: string): void => {
+    _strictEqual(doesEqual, true, fs.existsSync(path.join(...paths)), msg);
+  };
 
 /**
  * Checks whether the JSON file contains the given key:value pair
  */
-const jsonFileContains = (doesEqual: boolean) => <T>(paths: string[], key: string, value: T, msg?: string) => {
-  _strictEqual(doesEqual, value, get(JSON.parse(fs.readFileSync(path.join(...paths), 'utf-8')), key), msg);
-};
+const jsonFileContains =
+  (doesEqual: boolean) =>
+  <T>(paths: string[], key: string, value: T, msg?: string) => {
+    _strictEqual(doesEqual, value, get(JSON.parse(fs.readFileSync(path.join(...paths), 'utf-8')), key), msg);
+  };
 
 const stringContains = (doesEqual: boolean) => (line: string, str: string, msg?: string) => {
   _strictEqual(doesEqual, true, line.includes(str), msg);

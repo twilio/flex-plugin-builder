@@ -121,19 +121,19 @@ export const _combineFlags = <F, A extends { [name: string]: any }>(
  */
 /* istanbul ignore next */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const parser = <F, A extends { [name: string]: any }>(
-  OclifParser: (options?: Input<F>, argv?: string[]) => Output<F, A>,
-) => (options?: Input<F>, argv: string[] = []): Output<F, A> => {
-  const parsed: Output<F, A> = _combineFlags(OclifParser(_prepareFlags(options), argv), options);
+const parser =
+  <F, A extends { [name: string]: any }>(OclifParser: (options?: Input<F>, argv?: string[]) => Output<F, A>) =>
+  (options?: Input<F>, argv: string[] = []): Output<F, A> => {
+    const parsed: Output<F, A> = _combineFlags(OclifParser(_prepareFlags(options), argv), options);
 
-  parsed.flags = _trim(parsed.flags);
-  parsed.args = _trim(parsed.args);
+    parsed.flags = _trim(parsed.flags);
+    parsed.args = _trim(parsed.args);
 
-  if (options && options.flags && parsed.flags) {
-    _validate(parsed.flags, options.flags, parsed);
-  }
+    if (options && options.flags && parsed.flags) {
+      _validate(parsed.flags, options.flags, parsed);
+    }
 
-  return parsed;
-};
+    return parsed;
+  };
 
 export default parser;

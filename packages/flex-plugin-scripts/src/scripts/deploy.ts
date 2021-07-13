@@ -66,7 +66,7 @@ export const _verifyFlexUIConfiguration = async (): Promise<void> => {
 
   // Validate Flex UI version
   const flexUI = await configurationClient.getFlexUIVersion();
-  const dependencies = await configurationClient.getUIDependencies();
+  const uiDependencies = await configurationClient.getUIDependencies();
 
   const coerced = semver.coerce(flexUI);
   const reactPackageVersion = getPackageVersion('react');
@@ -87,12 +87,16 @@ export const _verifyFlexUIConfiguration = async (): Promise<void> => {
     );
   }
 
-  if (!dependencies.react || !dependencies['react-dom']) {
-    throw new FlexPluginError('To use unbundled React, you need to set the React version from the Developer page');
+  // If no uiDependencies set, then use 16.5.2 to verify against what is installed locally
+  if (!uiDependencies.react || !uiDependencies['react-dom']) {
+    uiDependencies = {
+      react: '16.5.2',
+      'react-dom': '16.5.2',
+    };
   }
 
-  const reactSupported = semver.satisfies(reactPackageVersion, `${dependencies.react}`);
-  const reactDOMSupported = semver.satisfies(reactDomPackageVersion, `${dependencies['react-dom']}`);
+  const reactSupported = semver.satisfies(reactPackageVersion, `${uiDependencies.react}`);
+  const reactDOMSupported = semver.satisfies(reactDomPackageVersion, `${uiDependencies['react-dom']}`);
   if (!reactSupported || !reactDOMSupported) {
     const isQuiet = env.isQuiet();
     env.setQuiet(false);
@@ -100,7 +104,7 @@ export const _verifyFlexUIConfiguration = async (): Promise<void> => {
     logger.warning(
       singleLineString(
         `The React version ${reactPackageVersion} installed locally`,
-        `is incompatible with the React version ${dependencies.react} installed on your Flex project.`,
+        `is incompatible with the React version ${uiDependencies.react} installed on your Flex project.`,
       ),
     );
     logger.info(
