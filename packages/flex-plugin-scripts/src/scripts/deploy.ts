@@ -90,7 +90,8 @@ export const _verifyFlexUIConfiguration = async (): Promise<void> => {
 
   // Validate Flex UI version
   const uiVersion = await configurationClient.getFlexUIVersion();
-  const uiDependencies = await configurationClient.getUIDependencies();
+  const flexUIDependencies = await configurationClient.getUIDependencies();
+  const uiDependencies = _getDefaultUIDependencies(uiVersion, flexUIDependencies);
 
   const reactVersion = getPackageVersion('react');
   const reactDomVersion = getPackageVersion('react-dom');
