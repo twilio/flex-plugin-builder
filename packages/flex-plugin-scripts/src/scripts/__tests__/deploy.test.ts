@@ -401,8 +401,12 @@ describe('DeployScript', () => {
     const dependencies = { react: '16.13.1', 'react-dom': '16.13.1' };
 
     it('should throw exception if flex-ui < 1.19.0 and react versions are not 16.5.2', async (done) => {
+      const getFlexUIVersion = jest.fn().mockResolvedValue('1.18.0');
+      const getUIDependencies = jest.fn().mockResolvedValue(dependencies);
+      ConfigurationClient.mockImplementation(() => ({ getFlexUIVersion, getUIDependencies }));
+
       try {
-        await deployScript._verifyFlexUIConfiguration('1.18.0', dependencies);
+        await deployScript._verifyFlexUIConfiguration();
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         done();
@@ -411,56 +415,80 @@ describe('DeployScript', () => {
 
     it('should not throw exception if flex-ui is < 1.19.0 and react versions are 16.5.2', async () => {
       const flexUIDependencies = { react: '16.5.2', 'react-dom': '16.5.2' };
+      const getFlexUIVersion = jest.fn().mockResolvedValue('1.18.0');
+      const getUIDependencies = jest.fn().mockResolvedValue(flexUIDependencies);
+      ConfigurationClient.mockImplementation(() => ({ getFlexUIVersion, getUIDependencies }));
+
       const confirm = jest.spyOn(inquirer, 'confirm');
       const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.5.2');
 
-      await deployScript._verifyFlexUIConfiguration('1.18.0', flexUIDependencies);
+      await deployScript._verifyFlexUIConfiguration();
 
       expect(confirm).not.toHaveBeenCalled();
       expect(getPackageVersion).toHaveBeenCalledTimes(2);
     });
 
     it('should use default react', async () => {
+      const getFlexUIVersion = jest.fn().mockResolvedValue('^1');
+      const getUIDependencies = jest.fn().mockResolvedValue({});
+      ConfigurationClient.mockImplementation(() => ({ getFlexUIVersion, getUIDependencies }));
+
       const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.5.2');
-      await deployScript._verifyFlexUIConfiguration('^1', {});
+      await deployScript._verifyFlexUIConfiguration();
       expect(getPackageVersion).toHaveBeenCalledTimes(2);
     });
 
     it('should ask for confirmation if no react is set', async () => {
+      const getFlexUIVersion = jest.fn().mockResolvedValue('^1');
+      const getUIDependencies = jest.fn().mockResolvedValue({});
+      ConfigurationClient.mockImplementation(() => ({ getFlexUIVersion, getUIDependencies }));
+
       const confirm = jest.spyOn(inquirer, 'confirm').mockResolvedValue(true);
       const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.13.1');
-      await deployScript._verifyFlexUIConfiguration('^1', {});
+      await deployScript._verifyFlexUIConfiguration();
 
       expect(confirm).toHaveBeenCalled();
       expect(getPackageVersion).toHaveBeenCalledTimes(2);
     });
 
     it('should not ask for confirmation if react versions match', async () => {
+      const getFlexUIVersion = jest.fn().mockResolvedValue('^1');
+      const getUIDependencies = jest.fn().mockResolvedValue(dependencies);
+      ConfigurationClient.mockImplementation(() => ({ getFlexUIVersion, getUIDependencies }));
+
       const confirm = jest.spyOn(inquirer, 'confirm');
       const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.13.1');
 
-      await deployScript._verifyFlexUIConfiguration('^1', dependencies);
+      await deployScript._verifyFlexUIConfiguration();
 
       expect(confirm).not.toHaveBeenCalled();
       expect(getPackageVersion).toHaveBeenCalledTimes(2);
     });
 
     it('should confirm to allow deployment if react version is mismatched', async () => {
+      const getFlexUIVersion = jest.fn().mockResolvedValue('^1');
+      const getUIDependencies = jest.fn().mockResolvedValue(dependencies);
+      ConfigurationClient.mockImplementation(() => ({ getFlexUIVersion, getUIDependencies }));
+
       const confirm = jest.spyOn(inquirer, 'confirm').mockResolvedValue(true);
       const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.12.1');
 
-      await deployScript._verifyFlexUIConfiguration('^1', dependencies);
+      await deployScript._verifyFlexUIConfiguration();
 
       expect(confirm).toHaveBeenCalledTimes(1);
       expect(getPackageVersion).toHaveBeenCalledTimes(2);
     });
 
     it('should reject confirm to allow deployment if react version is mismatched', async (done) => {
+      const getFlexUIVersion = jest.fn().mockResolvedValue('^1');
+      const getUIDependencies = jest.fn().mockResolvedValue(dependencies);
+      ConfigurationClient.mockImplementation(() => ({ getFlexUIVersion, getUIDependencies }));
+
       const confirm = jest.spyOn(inquirer, 'confirm').mockResolvedValue(false);
       const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.12.1');
 
       try {
-        await deployScript._verifyFlexUIConfiguration('^1', dependencies);
+        await deployScript._verifyFlexUIConfiguration();
       } catch (e) {
         expect(confirm).toHaveBeenCalledTimes(1);
         expect(getPackageVersion).toHaveBeenCalledTimes(2);
@@ -468,19 +496,6 @@ describe('DeployScript', () => {
 
         done();
       }
-    });
-
-    it('should not throw any exceptions', async () => {
-      jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.13.1');
-
-      await deployScript._verifyFlexUIConfiguration('^1', dependencies);
-      await deployScript._verifyFlexUIConfiguration('^1.1', dependencies);
-      await deployScript._verifyFlexUIConfiguration('^1.19.0', dependencies);
-      await deployScript._verifyFlexUIConfiguration('~1.19.0', dependencies);
-      await deployScript._verifyFlexUIConfiguration('~1.19.1', dependencies);
-      await deployScript._verifyFlexUIConfiguration('1.19.0', dependencies);
-      await deployScript._verifyFlexUIConfiguration('1.19.1', dependencies);
-      await deployScript._verifyFlexUIConfiguration('1.20.0', dependencies);
     });
   });
 

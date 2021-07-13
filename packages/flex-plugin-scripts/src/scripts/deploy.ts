@@ -85,14 +85,14 @@ export const _getDefaultUIDependencies = (uiVersion: string, uiDependencies: UID
  * Validates Flex UI version requirement
  */
 export const _verifyFlexUIConfiguration = async (): Promise<void> => {
-    const credentials = await getCredential();
-    const configurationClient = new ConfigurationClient(credentials);
+  const credentials = await getCredential();
+  const configurationClient = new ConfigurationClient(credentials);
 
-    // Validate Flex UI version
-    const uiVersion = await configurationClient.getFlexUIVersion();
-    const uiDependencies = await configurationClient.getUIDependencies();
+  // Validate Flex UI version
+  const uiVersion = await configurationClient.getFlexUIVersion();
+  const uiDependencies = await configurationClient.getUIDependencies();
 
-    const reactVersion = getPackageVersion('react');
+  const reactVersion = getPackageVersion('react');
   const reactDomVersion = getPackageVersion('react-dom');
   const reactSupported = semver.satisfies(reactVersion, `${uiDependencies.react}`);
   const reactDOMSupported = semver.satisfies(reactDomVersion, `${uiDependencies['react-dom']}`);
@@ -112,6 +112,7 @@ export const _verifyFlexUIConfiguration = async (): Promise<void> => {
 
   if (!reactSupported || !reactDOMSupported) {
     const isQuiet = env.isQuiet();
+    env.setQuiet(false);
     localReactIncompatibleWithRemote(reactVersion, uiDependencies.react || '');
     const answer = await confirm('Do you still want to continue deploying?', 'N');
     if (!answer) {
