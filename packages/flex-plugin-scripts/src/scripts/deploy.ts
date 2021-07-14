@@ -174,6 +174,7 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
   }
   const pluginUrl = `https://${runtime.environment.domain_name}${bundleUri}`;
 
+  const configurationClient = new ConfigurationClient(credentials);
   const buildClient = new BuildClient(credentials, runtime.service.sid);
   const assetClient = new AssetClient(credentials, runtime.service.sid);
   const deploymentClient = new DeploymentClient(credentials, runtime.service.sid, runtime.environment.sid);
@@ -239,7 +240,6 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
 
   // Register service sid with Config service
   await progress('Registering plugin with Flex', async () => {
-    const configurationClient = new ConfigurationClient(credentials);
     await configurationClient.registerSid(runtime.service.sid);
   });
 
