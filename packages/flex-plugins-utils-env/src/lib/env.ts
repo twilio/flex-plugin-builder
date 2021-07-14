@@ -172,7 +172,7 @@ export const isDebug = (): boolean => {
  * Sets the region
  */
 export const setRegion = (region: Region): void => {
-  process.env.REGION = region;
+  process.env.TWILIO_REGION = region;
 };
 
 /**
@@ -181,7 +181,7 @@ export const setRegion = (region: Region): void => {
 /* istanbul ignore next */
 export const getRegion = (): Region | string => {
   if (isNode()) {
-    return process.env.REGION as Region;
+    return process.env.TWILIO_REGION as Region;
   }
 
   if (window.Twilio) {
