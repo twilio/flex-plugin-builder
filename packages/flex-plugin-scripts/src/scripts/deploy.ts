@@ -1,7 +1,6 @@
 import {
   logger,
   semver,
-  SemVer,
   progress,
   FlexPluginError,
   UserActionError,
@@ -84,12 +83,16 @@ export const _getDefaultUIDependencies = (uiVersion: string, uiDependencies: UID
 };
 /**
  * Validates Flex UI version requirement
- * @param uiVersion       the flex ui version
- * @param uiDependencies  the deps from Flex Configuration ui_dependencies
- * @private
  */
-export const _verifyFlexUIConfiguration = async (uiVersion: string, uiDependencies: UIDependencies): Promise<void> => {
-  uiDependencies = _getDefaultUIDependencies(uiVersion, uiDependencies);
+export const _verifyFlexUIConfiguration = async (): Promise<void> => {
+  const credentials = await getCredential();
+  const configurationClient = new ConfigurationClient(credentials);
+
+  // Validate Flex UI version
+  const uiVersion = await configurationClient.getFlexUIVersion();
+  const flexUIDependencies = await configurationClient.getUIDependencies();
+  const uiDependencies = _getDefaultUIDependencies(uiVersion, flexUIDependencies);
+
   const reactVersion = getPackageVersion('react');
   const reactDomVersion = getPackageVersion('react-dom');
   const reactSupported = semver.satisfies(reactVersion, `${uiDependencies.react}`);
@@ -109,12 +112,16 @@ export const _verifyFlexUIConfiguration = async (uiVersion: string, uiDependenci
   }
 
   if (!reactSupported || !reactDOMSupported) {
+    const isQuiet = env.isQuiet();
+    env.setQuiet(false);
     localReactIncompatibleWithRemote(reactVersion, uiDependencies.react || '');
     const answer = await confirm('Do you still want to continue deploying?', 'N');
     if (!answer) {
       logger.newline();
       throw new UserActionError('User rejected confirmation to deploy with mismatched React version.');
     }
+    logger.newline();
+    env.setQuiet(isQuiet);
   }
 };
 
@@ -172,10 +179,9 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
   const assetClient = new AssetClient(credentials, runtime.service.sid);
   const deploymentClient = new DeploymentClient(credentials, runtime.service.sid, runtime.environment.sid);
 
-  // Validate Flex UI version
-  const uiVersion = await configurationClient.getFlexUIVersion();
-  const uiDependencies = await configurationClient.getUIDependencies();
-  await _verifyFlexUIConfiguration(uiVersion, uiDependencies);
+  if (!env.isCLI()) {
+    await _verifyFlexUIConfiguration();
+  }
 
   // Check duplicate routes
   const routeCollision = await progress('Validating the new plugin bundle', async () => {
