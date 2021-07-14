@@ -178,7 +178,7 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
   const assetClient = new AssetClient(credentials, runtime.service.sid);
   const deploymentClient = new DeploymentClient(credentials, runtime.service.sid, runtime.environment.sid);
 
-  if (!env.isCLI) {
+  if (!env.isCLI()) {
     await _verifyFlexUIConfiguration();
   }
 

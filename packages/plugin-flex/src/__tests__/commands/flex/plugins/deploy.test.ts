@@ -6,6 +6,7 @@ import * as runtime from 'flex-plugin-scripts/dist/utils/runtime';
 import * as fs from 'flex-dev-utils/dist/fs';
 import { PluginVersionResource } from 'flex-plugins-api-client/dist/clients/pluginVersions';
 import { PluginResource } from 'flex-plugins-api-client';
+import * as deployScript from 'flex-plugin-scripts/dist/scripts/deploy';
 
 import createTest, { getPrintMethod, mockGetPkg, mockGetter, mockPrintMethod } from '../../../framework';
 import FlexPluginsDeploy, { parseVersionInput } from '../../../../commands/flex/plugins/deploy';
@@ -128,6 +129,31 @@ describe('Commands/FlexPluginsDeploy', () => {
         done();
       }
     });
+  });
+
+  it('should run deploy and verify flex ui configuration', async () => {
+    const cmd = await createTest(FlexPluginsDeploy)('--changelog', defaultChangelog);
+
+    jest.spyOn(cmd, 'checkServerlessInstance').mockReturnThis();
+    jest.spyOn(cmd, 'checkForLegacy').mockReturnThis();
+    jest.spyOn(cmd, 'validatePlugin').mockReturnThis();
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'hasCollisionAndOverwrite').mockReturnThis();
+    jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
+    jest.spyOn(cmd, 'registerPlugin').mockReturnThis();
+    jest.spyOn(cmd, 'registerPluginVersion').mockReturnThis();
+    mockGetPkg(cmd, pkg);
+
+    await cmd.doRun();
+
+    expect(cmd.checkServerlessInstance).toHaveBeenCalledTimes(1);
+    expect(cmd.checkForLegacy).toHaveBeenCalledTimes(1);
+    expect(cmd.validatePlugin).toHaveBeenCalledTimes(1);
+    expect(cmd.runScript).toHaveBeenCalledTimes(3);
+    expect(cmd.hasCollisionAndOverwrite).toHaveBeenCalledTimes(1);
+    expect(deployScript._verifyFlexUIConfiguration).toHaveBeenCalledTimes(1);
+    expect(cmd.registerPlugin).toHaveBeenCalledTimes(1);
+    expect(cmd.registerPluginVersion).toHaveBeenCalledTimes(1);
   });
 
   it('should have flag as own property', () => {

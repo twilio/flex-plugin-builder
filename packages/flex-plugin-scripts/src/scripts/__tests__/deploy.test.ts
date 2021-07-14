@@ -241,8 +241,8 @@ describe('DeployScript', () => {
         disallowVersioning: false,
       };
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
-      const verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(false);
-      const verifyFlexUIConfiguration = jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
+      const _verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(false);
+      const _verifyFlexUIConfiguration = jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
 
       try {
         await deployScript._doDeploy('1.0.0', options);
@@ -253,8 +253,8 @@ describe('DeployScript', () => {
       }
 
       checkFilesExist.mockRestore();
-      verifyPath.mockRestore();
-      verifyFlexUIConfiguration.mockRestore();
+      _verifyPath.mockRestore();
+      _verifyFlexUIConfiguration.mockRestore();
     });
 
     it('should quit if duplicate route is found and caller is not the CLI', async (done) => {
@@ -265,8 +265,8 @@ describe('DeployScript', () => {
         disallowVersioning: false,
       };
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
-      const verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(false);
-      const verifyFlexUIConfiguration = jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
+      const _verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(false);
+      const _verifyFlexUIConfiguration = jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
 
       try {
         await deployScript._doDeploy('1.0.0', options);
@@ -277,11 +277,11 @@ describe('DeployScript', () => {
       }
 
       checkFilesExist.mockRestore();
-      verifyPath.mockRestore();
-      verifyFlexUIConfiguration.mockRestore();
+      _verifyPath.mockRestore();
+      _verifyFlexUIConfiguration.mockRestore();
     });
 
-    it('should return the existing asset if the caller is the CLI, duplicate route is found, user does not want to overwite, and not in CI', async () => {
+    it('should return the existing asset if the caller is the CLI, duplicate route is found, user does not want to overwrite, and not in CI', async () => {
       process.env.CI = 'false';
       process.env.FLEX_PLUGINS_CLI = 'true';
       const options = {
@@ -292,21 +292,22 @@ describe('DeployScript', () => {
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
       const _getAccount = jest.spyOn(deployScript, '_getAccount').mockReturnThis();
       const _verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(false);
-      const verifyFlexUIConfiguration = jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
+      const _verifyFlexUIConfiguration = jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
       const deploySuccessful = jest.spyOn(prints, 'deploySuccessful');
 
       await deployScript._doDeploy('1.0.0', options);
 
       expect(_getAccount).toHaveBeenCalledTimes(0);
+      expect(_verifyFlexUIConfiguration).not.toHaveBeenCalled();
       expect(deploySuccessful).toHaveBeenCalledTimes(0);
 
       checkFilesExist.mockRestore();
       _verifyPath.mockRestore();
       _getAccount.mockRestore();
-      verifyFlexUIConfiguration.mockRestore();
+      _verifyFlexUIConfiguration.mockRestore();
     });
 
-    it('should overwrite the existing asset if the caller is the CLI, duplicate route is found, user does want to overwite, and not in CI', async () => {
+    it('should overwrite the existing asset if the caller is the CLI, duplicate route is found, user does want to overwrite, and not in CI', async () => {
       process.env.CI = 'false';
       process.env.FLEX_PLUGINS_CLI = 'true';
       const options = {
@@ -317,18 +318,19 @@ describe('DeployScript', () => {
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
       const _getAccount = jest.spyOn(deployScript, '_getAccount').mockReturnThis();
       const _verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(false);
-      const verifyFlexUIConfiguration = jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
+      const _verifyFlexUIConfiguration = jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
       const deploySuccessful = jest.spyOn(prints, 'deploySuccessful');
 
       await deployScript._doDeploy('1.0.0', options);
 
       expect(_getAccount).toHaveBeenCalledTimes(1);
+      expect(_verifyFlexUIConfiguration).not.toHaveBeenCalled();
       expect(deploySuccessful).toHaveBeenCalledTimes(1);
 
       checkFilesExist.mockRestore();
       _verifyPath.mockRestore();
       _getAccount.mockRestore();
-      verifyFlexUIConfiguration.mockRestore();
+      _verifyFlexUIConfiguration.mockRestore();
     });
 
     it('should deploy and write a success message', async () => {
@@ -340,18 +342,44 @@ describe('DeployScript', () => {
       const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
       const _getAccount = jest.spyOn(deployScript, '_getAccount').mockReturnThis();
       const _verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(true);
-      const verifyFlexUIConfiguration = jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
+      const _verifyFlexUIConfiguration = jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
       const deploySuccessful = jest.spyOn(prints, 'deploySuccessful');
 
       await deployScript._doDeploy('1.0.0', options);
 
       expect(_getAccount).toHaveBeenCalledTimes(1);
+      expect(_verifyFlexUIConfiguration).toHaveBeenCalledTimes(1);
       expect(deploySuccessful).toHaveBeenCalledTimes(1);
 
       checkFilesExist.mockRestore();
       _verifyPath.mockRestore();
       _getAccount.mockRestore();
-      verifyFlexUIConfiguration.mockRestore();
+      _verifyFlexUIConfiguration.mockRestore();
+    });
+
+    it('should not verify ui configuration if the caller is the CLI', async () => {
+      process.env.FLEX_PLUGINS_CLI = 'true';
+      const options = {
+        isPublic: true,
+        overwrite: true,
+        disallowVersioning: false,
+      };
+      const checkFilesExist = jest.spyOn(fs, 'checkFilesExist').mockReturnValue(true);
+      const _getAccount = jest.spyOn(deployScript, '_getAccount').mockReturnThis();
+      const _verifyPath = jest.spyOn(deployScript, '_verifyPath').mockReturnValue(true);
+      const _verifyFlexUIConfiguration = jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
+      const deploySuccessful = jest.spyOn(prints, 'deploySuccessful');
+
+      await deployScript._doDeploy('1.0.0', options);
+
+      expect(_getAccount).toHaveBeenCalledTimes(1);
+      expect(_verifyFlexUIConfiguration).not.toHaveBeenCalled();
+      expect(deploySuccessful).toHaveBeenCalledTimes(1);
+
+      checkFilesExist.mockRestore();
+      _verifyPath.mockRestore();
+      _getAccount.mockRestore();
+      _verifyFlexUIConfiguration.mockRestore();
     });
   });
 
