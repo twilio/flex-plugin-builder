@@ -531,6 +531,10 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       env.setDebug();
       env.persistTerminal();
     }
+
+    if (this._flags.region) {
+      env.setRegion(this._flags.region as any);
+    }
   }
 
   /**
