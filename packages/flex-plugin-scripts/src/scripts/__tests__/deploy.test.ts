@@ -428,6 +428,11 @@ describe('DeployScript', () => {
   describe('_verifyFlexUIConfiguration', () => {
     const dependencies = { react: '16.13.1', 'react-dom': '16.13.1' };
 
+    afterEach(() => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+    });
+
     it('should throw exception if flex-ui < 1.19.0 and react versions are not 16.5.2', async (done) => {
       const getFlexUIVersion = jest.fn().mockResolvedValue('1.18.0');
       const getUIDependencies = jest.fn().mockResolvedValue(dependencies);
