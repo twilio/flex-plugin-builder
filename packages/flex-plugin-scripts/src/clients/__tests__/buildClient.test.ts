@@ -75,14 +75,14 @@ describe('BaseClient', () => {
 
   describe('getBaseUrl', () => {
     it('should get prod baseUrl', () => {
-      process.env.REGION = '';
+      process.env.TWILIO_REGION = '';
       const baseUrl = BaseClient.getBaseUrl('foo', 'v1');
 
       expect(baseUrl).toEqual('https://foo.twilio.com/v1');
     });
 
     it('should get dev baseUrl', () => {
-      process.env.REGION = 'dev';
+      process.env.TWILIO_REGION = 'dev';
       const baseUrl = BaseClient.getBaseUrl('bar', 'v2');
 
       expect(baseUrl).toEqual('https://bar.dev.twilio.com/v2');
@@ -90,7 +90,7 @@ describe('BaseClient', () => {
 
     it('should throw error if invalid region is provided', (done) => {
       try {
-        process.env.REGION = 'invalid';
+        process.env.TWILIO_REGION = 'invalid';
         BaseClient.getBaseUrl('foo', 'v1');
       } catch (e) {
         done();
