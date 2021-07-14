@@ -72,6 +72,11 @@ const getConfiguration = async <T extends ConfigurationType>(
 
     if (checkFilesExist(getPaths().app.devServerConfigPath)) {
       try {
+        // Because I don't know how to pass webpack options to twilio-cli webpack dev server
+        // when running flex:plugins:start
+        // looks like webpack.dev.js & webpack.config.js are not took into account
+        // or not well merged...
+        config.disableHostCheck = true;
         return require(getPaths().app.devServerConfigPath)(config, args);
       } catch (exception) {
         await emitDevServerCrashed(exception);
