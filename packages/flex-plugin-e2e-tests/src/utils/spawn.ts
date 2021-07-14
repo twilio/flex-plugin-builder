@@ -30,7 +30,6 @@ export const promisifiedSpawn = async (
         TWILIO_ACCOUNT_SID: testParams.secrets.api.accountSid,
         TWILIO_AUTH_TOKEN: testParams.secrets.api.authToken,
         TWILIO_REGION: testParams.config.region,
-        REGION: testParams.config.region,
       },
       shell: true,
     };

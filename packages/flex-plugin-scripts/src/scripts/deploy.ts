@@ -8,6 +8,7 @@ import {
   getCredential,
   env,
   ReleaseType,
+  versionSatisfiesRange,
 } from 'flex-dev-utils';
 import { confirm } from 'flex-dev-utils/dist/inquirer';
 import { checkFilesExist, updateAppVersion, getPackageVersion, getPaths } from 'flex-dev-utils/dist/fs';
@@ -15,7 +16,7 @@ import { singleLineString } from 'flex-dev-utils/dist/strings';
 
 import AccountsClient from '../clients/accounts';
 import { setEnvironment } from '..';
-import { deploySuccessful } from '../prints';
+import { deploySuccessful, localReactIncompatibleWithRemote } from '../prints';
 import { UIDependencies } from '../clients/configuration-types';
 import run from '../utils/run';
 import { Build, Runtime, Version } from '../clients/serverless-types';
@@ -59,60 +60,68 @@ export const _verifyPath = (baseUrl: string, build: Build): boolean => {
 };
 
 /**
- * Validates Flex UI version requirement
- * @param flexUI        the flex ui version
- * @param uiDependencies  the deps from Flex Configuration ui_dependencies
- * @private
+ * Returns the default version of flex-ui dependency if uiDependency is empty
+ * @param uiVersion the Flex UI version
+ * @param uiDependencies   the provided ui dependency
  */
-export const _verifyFlexUIConfiguration = async (flexUI: string, uiDependencies: UIDependencies): Promise<void> => {
-  const coerced = semver.coerce(flexUI);
-  const reactPackageVersion = getPackageVersion('react');
-  const reactDomPackageVersion = getPackageVersion('react-dom');
+export const _getDefaultUIDependencies = (uiVersion: string, uiDependencies: UIDependencies): UIDependencies => {
+  if (!uiDependencies.react || !uiDependencies['react-dom']) {
+    if (versionSatisfiesRange(uiVersion, '>=2.0.0')) {
+      return {
+        react: '17.0.2',
+        'react-dom': '17.0.2',
+      };
+    }
 
+    return {
+      react: '16.5.2',
+      'react-dom': '16.5.2',
+    };
+  }
+
+  return uiDependencies;
+};
+/**
+ * Validates Flex UI version requirement
+ */
+export const _verifyFlexUIConfiguration = async (): Promise<void> => {
+  const credentials = await getCredential();
+  const configurationClient = new ConfigurationClient(credentials);
+
+  // Validate Flex UI version
+  const uiVersion = await configurationClient.getFlexUIVersion();
+  const flexUIDependencies = await configurationClient.getUIDependencies();
+  const uiDependencies = _getDefaultUIDependencies(uiVersion, flexUIDependencies);
+
+  const reactVersion = getPackageVersion('react');
+  const reactDomVersion = getPackageVersion('react-dom');
+  const reactSupported = semver.satisfies(reactVersion, `${uiDependencies.react}`);
+  const reactDOMSupported = semver.satisfies(reactDomVersion, `${uiDependencies['react-dom']}`);
+  const defaultReactSupported = semver.satisfies('16.5.2', reactVersion) && semver.satisfies('16.5.2', reactDomVersion);
   const UISupports =
-    semver.satisfies('1.19.0', flexUI) ||
-    (coerced && semver.satisfies(coerced, '>=1.19.0')) ||
-    (semver.satisfies('16.5.2', reactPackageVersion) && semver.satisfies('16.5.2', reactDomPackageVersion));
+    semver.satisfies('1.19.0', uiVersion) || versionSatisfiesRange(uiVersion, '>=1.19.0') || defaultReactSupported;
 
   if (!UISupports) {
     throw new FlexPluginError(
       singleLineString(
-        `We detected that your account is using Flex UI version ${flexUI} which is incompatible`,
+        `We detected that your account is using Flex UI version ${uiVersion} which is incompatible`,
         `with unbundled React. Please visit https://flex.twilio.com/admin/versioning and update to`,
         `version 1.19 or above.`,
       ),
     );
   }
 
-  // If no uiDependencies set, then use 16.5.2 to verify against what is installed locally
-  if (!uiDependencies.react || !uiDependencies['react-dom']) {
-    uiDependencies = {
-      react: '16.5.2',
-      'react-dom': '16.5.2',
-    };
-  }
-
-  const reactSupported = semver.satisfies(reactPackageVersion, `${uiDependencies.react}`);
-  const reactDOMSupported = semver.satisfies(reactDomPackageVersion, `${uiDependencies['react-dom']}`);
   if (!reactSupported || !reactDOMSupported) {
-    logger.newline();
-    logger.warning(
-      singleLineString(
-        `The React version ${reactPackageVersion} installed locally`,
-        `is incompatible with the React version ${uiDependencies.react} installed on your Flex project.`,
-      ),
-    );
-    logger.info(
-      singleLineString(
-        'Change your local React version or visit https://flex.twilio.com/admin/developers to',
-        `change the React version installed on your Flex project.`,
-      ),
-    );
+    const isQuiet = env.isQuiet();
+    env.setQuiet(false);
+    localReactIncompatibleWithRemote(reactVersion, uiDependencies.react || '');
     const answer = await confirm('Do you still want to continue deploying?', 'N');
     if (!answer) {
       logger.newline();
       throw new UserActionError('User rejected confirmation to deploy with mismatched React version.');
     }
+    logger.newline();
+    env.setQuiet(isQuiet);
   }
 };
 
@@ -170,10 +179,9 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
   const assetClient = new AssetClient(credentials, runtime.service.sid);
   const deploymentClient = new DeploymentClient(credentials, runtime.service.sid, runtime.environment.sid);
 
-  // Validate Flex UI version
-  const uiVersion = await configurationClient.getFlexUIVersion();
-  const uiDependencies = await configurationClient.getUIDependencies();
-  await _verifyFlexUIConfiguration(uiVersion, uiDependencies);
+  if (!env.isCLI()) {
+    await _verifyFlexUIConfiguration();
+  }
 
   // Check duplicate routes
   const routeCollision = await progress('Validating the new plugin bundle', async () => {

@@ -173,12 +173,15 @@ describe('PreScriptCheck', () => {
 
   describe('_verifyPackageVersion', () => {
     const _require = jest.spyOn(fsScripts, '_require');
+    const _pkg = {
+      name: 'test-package',
+      version: '1.18.0',
+      dependencies: {},
+      devDependencies: {},
+    };
 
     it('should quit if expected dependency is not found', () => {
-      const pkg = {
-        version: '1.18.0',
-        dependencies: {},
-      };
+      const pkg = { ..._pkg };
       preScriptCheck._verifyPackageVersion(pkg, false, 'foo');
 
       expect(prints.expectedDependencyNotFound).toHaveBeenCalledTimes(1);
@@ -189,10 +192,7 @@ describe('PreScriptCheck', () => {
     });
 
     it('should warn about version mismatch and quit', () => {
-      const pkg = {
-        version: '1.18.0',
-        dependencies: { somePackage: '2.0.0' },
-      };
+      const pkg = { ..._pkg, ...{ dependencies: { somePackage: '2.0.0' } } };
       _require.mockReturnValue({ version: '1.0.0' });
 
       preScriptCheck._verifyPackageVersion(pkg, false, 'somePackage');
@@ -206,10 +206,7 @@ describe('PreScriptCheck', () => {
     });
 
     it('should warn about version mismatch but not quit', () => {
-      const pkg = {
-        version: '1.18.0',
-        dependencies: { somePackage: '2.0.0' },
-      };
+      const pkg = { ..._pkg, ...{ dependencies: { somePackage: '2.0.0' } } };
       _require.mockReturnValue({ version: '1.0.0' });
 
       preScriptCheck._verifyPackageVersion(pkg, true, 'somePackage');
@@ -222,10 +219,7 @@ describe('PreScriptCheck', () => {
     });
 
     it('should find no conflict with pinned dependency', () => {
-      const pkg = {
-        version: '1.18.0',
-        dependencies: { somePackage: '1.0.0' },
-      };
+      const pkg = { ..._pkg, ...{ dependencies: { somePackage: '1.0.0' } } };
       _require.mockReturnValue({ version: '1.0.0' });
       preScriptCheck._verifyPackageVersion(pkg, false, 'somePackage');
 
@@ -235,10 +229,7 @@ describe('PreScriptCheck', () => {
     });
 
     it('should find no conflict with unpinned dependency', () => {
-      const pkg = {
-        version: '1.18.0',
-        dependencies: { somePackage: `^1.0.0` },
-      };
+      const pkg = { ..._pkg, ...{ dependencies: { somePackage: '^1.0.0' } } };
       _require.mockReturnValue({ version: '1.0.0' });
       preScriptCheck._verifyPackageVersion(pkg, false, 'somePackage');
 
@@ -248,10 +239,7 @@ describe('PreScriptCheck', () => {
     });
 
     it('should warn if unsupported flex-ui', () => {
-      const pkg = {
-        version: '1.18.0',
-        dependencies: { somePackage: `1.0.0` },
-      };
+      const pkg = { ..._pkg, ...{ dependencies: { somePackage: '1.0.0' } } };
       _require.mockReturnValue({ version: '2.0.0' });
       preScriptCheck._verifyPackageVersion(pkg, false, 'somePackage');
 
@@ -263,10 +251,7 @@ describe('PreScriptCheck', () => {
     });
 
     it('should succeed if flex-ui version supports unbundled react', () => {
-      const pkg = {
-        version: '1.19.0',
-        dependencies: { somePackage: `1.0.0` },
-      };
+      const pkg = { ..._pkg, ...{ version: '1.19.0', dependencies: { somePackage: '1.0.0' } } };
       _require.mockReturnValue({ version: '2.0.0' });
       preScriptCheck._verifyPackageVersion(pkg, false, 'somePackage');
 

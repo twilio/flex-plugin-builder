@@ -20,6 +20,7 @@ export interface PackageJson {
   version: string;
   dependencies: Record<string, string>;
   devDependencies: Record<string, string>;
+  peerDependencies?: Record<string, string>;
 }
 
 export interface AppPackageJson extends PackageJson {
@@ -605,4 +606,31 @@ export const getPackageVersion = (name: string): string => {
  */
 export const isPluginDir = (packageJson: PackageJson): boolean => {
   return Boolean(packageJson.dependencies[flexUI] || packageJson.devDependencies[flexUI]);
+};
+
+/**
+ * Fetches the version corresponding to the dependency inside the given package
+ * @param pkg the package.json to check
+ * @param name the package to look for
+ */
+export const packageDependencyVersion = (pkg: PackageJson, name: string): string | null => {
+  if (pkg.dependencies && name in pkg.dependencies) {
+    return pkg.dependencies[name];
+  }
+  if (pkg.devDependencies && name in pkg.devDependencies) {
+    return pkg.devDependencies[name];
+  }
+  if (pkg.peerDependencies && name in pkg.peerDependencies) {
+    return pkg.peerDependencies[name];
+  }
+
+  return null;
+};
+
+/**
+ * Fetches the version corresponding to the dependency inside the flex-ui package.json
+ * @param name the package to check
+ */
+export const flexUIPackageDependencyVersion = (name: string): string | null => {
+  return packageDependencyVersion(_require(getPaths().app.flexUIPkgPath) as PackageJson, name);
 };

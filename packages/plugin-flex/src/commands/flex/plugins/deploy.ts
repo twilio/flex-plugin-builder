@@ -1,5 +1,5 @@
 import { PluginVersionResource } from 'flex-plugins-api-client/dist/clients/pluginVersions';
-import { DeployResult, _verifyPath } from 'flex-plugin-scripts/dist/scripts/deploy';
+import { DeployResult, _verifyPath, _verifyFlexUIConfiguration } from 'flex-plugin-scripts/dist/scripts/deploy';
 import getRuntime from 'flex-plugin-scripts/dist/utils/runtime';
 import { CLIParseError } from '@oclif/parser/lib/errors';
 import { FlexPluginError, TwilioCliError, progress, getCredential, env, semver, ReleaseType } from 'flex-dev-utils';
@@ -123,6 +123,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       args.push('--overwrite');
     }
 
+    await _verifyFlexUIConfiguration();
     const deployedData: DeployResult = await progress(
       `Uploading ${name}`,
       async () => this.runScript('deploy', [...this.scriptArgs, ...args]),

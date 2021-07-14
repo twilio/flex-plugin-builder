@@ -3,6 +3,7 @@ import * as globby from 'globby';
 
 import * as fs from '../fs';
 import * as inquirer from '../inquirer';
+import { PackageJson } from '../fs';
 
 jest.mock('flex-plugins-utils-logger/dist/lib/inquirer');
 jest.mock('globby');
@@ -766,6 +767,51 @@ describe('fs', () => {
           devDependencies: {},
         }),
       ).toBe(false);
+    });
+  });
+
+  describe('packageDependencyVersion', () => {
+    const pkg: PackageJson = {
+      name: 'test',
+      version: '1.2.3',
+      dependencies: {},
+      devDependencies: {},
+    };
+
+    it('should return version from dependency', () => {
+      const testPkg = { ...pkg, ...{ dependencies: { test: '2.3.4' } } };
+      expect(fs.packageDependencyVersion(testPkg, 'test')).toEqual('2.3.4');
+    });
+
+    it('should return version from devDeps', () => {
+      const testPkg = { ...pkg, ...{ devDependencies: { test: '3.4.5' } } };
+      expect(fs.packageDependencyVersion(testPkg, 'test')).toEqual('3.4.5');
+    });
+
+    it('should return version from peerDeps', () => {
+      const testPkg = { ...pkg, ...{ peerDependencies: { test: '4.5.6' } } };
+      expect(fs.packageDependencyVersion(testPkg, 'test')).toEqual('4.5.6');
+    });
+
+    it('should return null if no package is found', () => {
+      expect(fs.packageDependencyVersion(pkg, 'test')).toBeNull();
+    });
+  });
+
+  describe('flexUIPackageDependencyVersion', () => {
+    it('should call packageDependencyVersion', () => {
+      const packageDependencyVersion = jest.spyOn(fs, 'packageDependencyVersion');
+      const flexUIPkgPath = 'path/to/flex-ui';
+      const pkg = { name: 'test' };
+      // @ts-ignore
+      jest.spyOn(fs, 'getPaths').mockReturnValue({ app: { flexUIPkgPath } });
+      const _require = jest.spyOn(fs, '_require').mockReturnValue(pkg);
+
+      fs.flexUIPackageDependencyVersion('test');
+
+      expect(packageDependencyVersion).toHaveBeenCalledTimes(1);
+      expect(packageDependencyVersion).toHaveBeenCalledWith(pkg, 'test');
+      expect(_require).toHaveBeenCalledWith(flexUIPkgPath);
     });
   });
 });
