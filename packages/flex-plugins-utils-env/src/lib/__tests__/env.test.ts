@@ -29,6 +29,34 @@ describe('env', () => {
     jest.restoreAllMocks();
   });
 
+  describe('setProcessEnv', () => {
+    it('should set the env', () => {
+      expect(process.env.foo).toBeUndefined();
+      env.setProcessEnv('foo', 'value');
+      expect(process.env.foo).toEqual('value');
+      env.setProcessEnv('foo', 'new-value');
+      expect(process.env.foo).toEqual('new-value');
+    });
+
+    it('should not set the env if not node', () => {
+      expect(process.env.foo).toBeUndefined();
+      jest.spyOn(env, 'isNode').mockReturnValue(false);
+      env.setProcessEnv('foo', 'value');
+      expect(process.env.foo).toBeUndefined();
+    });
+  });
+
+  describe('getProcessEnv', () => {
+    it('should get the value if set', () => {
+      process.env.foo = 'the-value';
+      expect(env.getProcessEnv('foo')).toEqual('the-value');
+    });
+
+    it('should return undefined if value not set', () => {
+      expect(env.getProcessEnv('foo')).toBeUndefined();
+    });
+  });
+
   describe('setTwilioProfile', () => {
     const profile = 'the-profile';
 
