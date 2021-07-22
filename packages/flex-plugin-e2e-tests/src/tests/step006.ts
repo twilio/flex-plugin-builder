@@ -29,14 +29,14 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
       to: tmpComponentText,
     });
 
-    await assertion.browser.pluginIsVisible(tmpComponentText);
+    await assertion.browser.pluginIsVisible(tmpComponentText+"2");
   } catch (e) {
     await Browser.takeScreenshot(environment.cwd);
     // await Browser.printLogs();
     throw e;
   } finally {
     await Browser.kill();
-    await killChildProcess(twilioCliResult.child, environment.operatingSystem)
+    // await killChildProcess(twilioCliResult.child, environment.operatingSystem)
   }
 
   await replaceInFile({

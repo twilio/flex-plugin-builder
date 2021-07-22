@@ -66,7 +66,7 @@ export class Browser {
    * Initializes browser object
    */
   static async create(): Promise<void> {
-    this.browser = await launch({ headless: false, args: ['--use-fake-ui-for-media-stream'] });
+    this.browser = await launch({ headless: true, args: ['--use-fake-ui-for-media-stream'] });
     this.page = await this.browser.newPage();
     // await this.page.setViewport({ width: 1920, height: 1080 });
     await this.page.setRequestInterception(true);

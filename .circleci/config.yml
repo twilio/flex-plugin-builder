@@ -49,7 +49,7 @@ commands:
           command: sudo apt-get update
       - run:
           name: "Install libraries"
-          command: sudo apt-get install -y libsecret-1-dev
+          command: sudo apt-get install -y libsecret-1-dev libnss
   cmd_install-chrome-utils-linux:
     steps:
       - browser-tools/install-chrome
