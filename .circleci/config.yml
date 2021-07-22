@@ -174,7 +174,7 @@ jobs:
       - checkout
       - cmd_install-prerequisites
       - cmd_install-dependencies
-      - cmd_install-chrome-utils-linux
+      # - cmd_install-chrome-utils-linux
       - cmd_run-build
       - cmd_set-linux-permissions
       - cmd_run-e2e-tests
@@ -201,7 +201,7 @@ jobs:
       - cmd_windows-nvm-install-node:
           node-version: << parameters.node-version >>
       - cmd_install-dependencies
-      - cmd_install-chrome-utils-win
+      # - cmd_install-chrome-utils-win
       - cmd_run-build
       - cmd_run-e2e-tests
       - store_artifacts:
@@ -224,8 +224,8 @@ jobs:
       - node/install:
           node-version: << parameters.node-version >>
       - cmd_install-dependencies
-      - cmd_install-chrome-utils-macos
-      - browser-tools/install-chromedriver
+      # - cmd_install-chrome-utils-macos
+      # - browser-tools/install-chromedriver
       - cmd_run-build
       - cmd_set-mac-permissions
       - cmd_run-e2e-tests

@@ -35,12 +35,11 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
 
     // Make sure that /plugins contain the plugin
     await pluginHelper.waitForPluginToRelease(config.hostedFlexBaseUrl, releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
-    await Browser.navigate(config.hostedFlexBaseUrl, 'agent-desktop');
+    await Browser.open(config.hostedFlexBaseUrl, 'agent-desktop');
 
     await assertion.browser.pluginIsVisible(scenario.plugin.newlineValue);
   } catch (e) {
     await Browser.takeScreenshot(environment.cwd);
-    await Browser.printLogs();
     throw e;
   } finally {
     await Browser.kill();
