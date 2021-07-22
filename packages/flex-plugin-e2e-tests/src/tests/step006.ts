@@ -29,7 +29,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
       to: tmpComponentText,
     });
 
-    await assertion.browser.pluginIsVisible(tmpComponentText+"2");
+    await assertion.browser.pluginIsVisible(tmpComponentText);
   } catch (e) {
     await Browser.takeScreenshot(environment.cwd);
     // await Browser.printLogs();

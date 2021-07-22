@@ -49,29 +49,7 @@ commands:
           command: sudo apt-get update
       - run:
           name: "Install libraries"
-          command: sudo apt-get install -y libsecret-1-dev libnss
-  cmd_install-chrome-utils-linux:
-    steps:
-      - browser-tools/install-chrome
-      - browser-tools/install-chromedriver
-  cmd_install-chrome-utils-win:
-    steps:
-      - run:
-          name: "Install chromedriver"
-          command: choco install chromedriver --version 90.0.4430.240
-      - run:
-          name: "Install Google Chrome"
-          command: choco install googlechrome --version 90.0.4430.212 --ignore-checksums
-  cmd_install-chrome-utils-macos:
-    steps:
-      - run:
-          name: "Install chrome"
-          command: |
-            curl "https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg" -o googlechrome.dmg
-            hdiutil attach googlechrome.dmg
-            cp -R /Volumes/Google\ Chrome/Google\ Chrome.app /Applications/Google\ Chrome.app
-            hdiutil detach /Volumes/Google\ Chrome
-      - browser-tools/install-chromedriver
+          command: sudo apt-get install -y libsecret-1-dev gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
   cmd_run-unit-tests:
     steps:
       - run:
@@ -174,7 +152,6 @@ jobs:
       - checkout
       - cmd_install-prerequisites
       - cmd_install-dependencies
-      # - cmd_install-chrome-utils-linux
       - cmd_run-build
       - cmd_set-linux-permissions
       - cmd_run-e2e-tests
@@ -201,7 +178,6 @@ jobs:
       - cmd_windows-nvm-install-node:
           node-version: << parameters.node-version >>
       - cmd_install-dependencies
-      # - cmd_install-chrome-utils-win
       - cmd_run-build
       - cmd_run-e2e-tests
       - store_artifacts:
@@ -224,8 +200,6 @@ jobs:
       - node/install:
           node-version: << parameters.node-version >>
       - cmd_install-dependencies
-      # - cmd_install-chrome-utils-macos
-      # - browser-tools/install-chromedriver
       - cmd_run-build
       - cmd_set-mac-permissions
       - cmd_run-e2e-tests
