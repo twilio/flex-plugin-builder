@@ -56,12 +56,16 @@ commands:
       - browser-tools/install-chromedriver
   cmd_install-chrome-utils-win:
     steps:
+      - browser-tools/install-browser-tools:
+          chrome-version: 90.0.4430.212
       - run:
           name: "Install chromedriver"
           command: choco install chromedriver --version 90.0.4430.240
       - run:
-          name: "Install Google Chrome"
-          command: choco install googlechrome --version 90.0.4430.212 --ignore-checksums
+          name: "Check Chrome versions"
+          command: |
+            google-chrome --version
+            chromedriver --version
   cmd_install-chrome-utils-macos:
     steps:
       - run:
