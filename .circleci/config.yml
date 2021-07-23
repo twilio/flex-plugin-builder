@@ -58,10 +58,10 @@ commands:
     steps:
       - run:
           name: "Install Google Chrome"
-          command: choco install google-chrome --version 90.0.4430.212 --ignore-checksums && choco list --localonly
+          command: choco install googlechrome --ignore-checksums && choco list --localonly
       - run:
           name: "Install chromedriver"
-          command: choco install chromedriver --version 90.0.4430.240 && choco list --localonly
+          command: choco install chromedriver && choco list --localonly
   cmd_install-chrome-utils-macos:
     steps:
       - run:
