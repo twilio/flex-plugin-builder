@@ -19,6 +19,30 @@ export enum Lifecycle {
   Predeploy = 'predeploy',
 }
 
+/* istanbul ignore next */
+export const isNode = (): boolean => typeof process === 'object' && `${process}` === '[object process]';
+
+/* istanbul ignore next */
+export const isWin32 = (): boolean => isNode() && process.platform === 'win32';
+
+/**
+ * Internal method for setting process.env
+ * This is used to bypass terser library that does `process.env.FOO` string replacement
+ * @param key the key to set
+ * @param value the value set it to
+ */
+export const setProcessEnv = <T>(key: string, value: T): void => {
+  if (isNode()) {
+    process.env[key] = value as unknown as string;
+  }
+};
+
+/**
+ * Internal method for getting the process.env
+ * @param key the key to get
+ */
+export const getProcessEnv = <T>(key: string): T => process.env[key] as unknown as T;
+
 /**
  * Helper method to test whether env variable is defined
  * @param key the env to lookup
@@ -30,108 +54,90 @@ const setValidJSFile = (source: string) => {
   if (!source.endsWith('.js')) {
     throw new TwilioError(`${source} is not a valid JS file.`);
   }
-  process.env.FLEX_UI_SRC = source;
+  setProcessEnv('FLEX_UI_SRC', source);
 };
 
 /* istanbul ignore next */
-export const skipPreflightCheck = (): boolean => process.env.SKIP_PREFLIGHT_CHECK === 'true';
-export const getAccountSid = (): string | undefined => process.env.TWILIO_ACCOUNT_SID;
-export const getAuthToken = (): string | undefined => process.env.TWILIO_AUTH_TOKEN;
-export const hasHost = (): boolean => isDefined(process.env.HOST);
-export const getHost = (): string | undefined => process.env.HOST;
-export const setHost = (host: string): string => (process.env.HOST = host);
-export const hasPort = (): boolean => isDefined(process.env.PORT);
-export const getPort = (): number => Number(process.env.PORT);
-export const setPort = (port: number): string => (process.env.PORT = String(port));
-export const getFlexUISrc = (): string | undefined => process.env.FLEX_UI_SRC;
+export const skipPreflightCheck = (): boolean => getProcessEnv('SKIP_PREFLIGHT_CHECK') === 'true';
+export const getAccountSid = (): string | undefined => getProcessEnv('TWILIO_ACCOUNT_SID');
+export const getAuthToken = (): string | undefined => getProcessEnv('TWILIO_AUTH_TOKEN');
+export const hasHost = (): boolean => isDefined(getProcessEnv('HOST'));
+export const getHost = (): string | undefined => getProcessEnv('HOST');
+export const setHost = (host: string): void => setProcessEnv('HOST', host);
+export const hasPort = (): boolean => isDefined(getProcessEnv('PORT'));
+export const getPort = (): number => Number(getProcessEnv('PORT'));
+export const setPort = (port: number): void => setProcessEnv('PORT', String(port));
+export const getFlexUISrc = (): string | undefined => getProcessEnv('FLEX_UI_SRC');
 export const setFlexUISrc = (source: string): void => setValidJSFile(source.toString());
-export const getNodeEnv = (): string => process.env.NODE_ENV as string;
-export const setNodeEnv = (_env: Environment): string => (process.env.NODE_ENV = _env);
-export const getBabelEnv = (): string => process.env.BABEL_ENV as string;
-export const setBabelEnv = (_env: Environment): string => (process.env.BABEL_ENV = _env);
-export const getLifecycle = (): string => process.env.npm_lifecycle_event as string;
-export const isLifecycle = (cycle: Lifecycle): boolean => process.env.npm_lifecycle_event === cycle;
-export const isHTTPS = (): boolean => process.env.HTTPS === 'true';
-export const setWDSSocketHost = (host: string): string => (process.env.WDS_SOCKET_HOST = host);
-export const getWDSSocketHost = (): string | undefined => process.env.WDS_SOCKET_HOST;
-export const setWDSSocketPath = (path: string): string => (process.env.WDS_SOCKET_PATH = path);
-export const getWDSSocketPath = (): string | undefined => process.env.WDS_SOCKET_PATH;
-export const setWDSSocketPort = (port: number): string => (process.env.WDS_SOCKET_PORT = port.toString());
-export const getWDSSocketPort = (): number => Number(process.env.WDS_SOCKET_PORT);
+export const getNodeEnv = (): string => getProcessEnv('NODE_ENV');
+export const setNodeEnv = (_env: Environment): void => setProcessEnv('NODE_ENV', _env);
+export const getBabelEnv = (): string => getProcessEnv('BABEL_ENV');
+export const setBabelEnv = (_env: Environment): void => setProcessEnv('BABEL_ENV', _env);
+export const getLifecycle = (): string => getProcessEnv('npm_lifecycle_event');
+export const isLifecycle = (cycle: Lifecycle): boolean => getProcessEnv('npm_lifecycle_event') === cycle;
+export const isHTTPS = (): boolean => getProcessEnv('HTTPS') === 'true';
+export const setWDSSocketHost = (host: string): void => setProcessEnv('WDS_SOCKET_HOST', host);
+export const getWDSSocketHost = (): string | undefined => getProcessEnv('WDS_SOCKET_HOST');
+export const setWDSSocketPath = (path: string): void => setProcessEnv('WDS_SOCKET_PATH', path);
+export const getWDSSocketPath = (): string | undefined => getProcessEnv('WDS_SOCKET_PATH');
+export const setWDSSocketPort = (port: number): void => setProcessEnv('WDS_SOCKET_PORT', port.toString());
+export const getWDSSocketPort = (): number => Number(getProcessEnv('WDS_SOCKET_PORT'));
 export const getWSSocket = (): Record<string, string | undefined> => ({
-  host: process.env.WDS_SOCKET_HOST,
-  path: process.env.WDS_SOCKET_PATH,
-  port: process.env.WDS_SOCKET_PORT,
+  host: getProcessEnv('WDS_SOCKET_HOST'),
+  path: getProcessEnv('WDS_SOCKET_PATH'),
+  port: getProcessEnv('WDS_SOCKET_PORT'),
 });
 
 /* istanbul ignore next */
-export const isNode = (): boolean => typeof process === 'object' && `${process}` === '[object process]';
-
-/* istanbul ignore next */
-export const isWin32 = (): boolean => isNode() && process.platform === 'win32';
-
-/* istanbul ignore next */
-export const isCI = (): boolean => isNode() && process.env.CI === 'true';
+export const isCI = (): boolean => isNode() && getProcessEnv('CI') === 'true';
 
 /**
  * Sets the Twilio Profile
  * @param profile the profile to set
  */
-export const setTwilioProfile = (profile: string): void => {
-  if (isNode()) {
-    process.env.TWILIO_PROFILE = profile;
-  }
-};
+export const setTwilioProfile = (profile: string): void => setProcessEnv('TWILIO_PROFILE', profile);
 
 /**
  * Returns the Twilio Profile
  */
-export const getTwilioProfile = (): string | undefined => process.env.TWILIO_PROFILE;
+export const getTwilioProfile = (): string | undefined => getProcessEnv('TWILIO_PROFILE');
 
 /**
  * Sets the environment to persist the terminal
  */
-export const persistTerminal = (): void => {
-  if (isNode()) {
-    process.env.PERSIST_TERMINAL = 'true';
-  }
-};
+export const persistTerminal = (): void => setProcessEnv('PERSIST_TERMINAL', 'true');
 
 /**
  * Determines if the terminal should be persisted or not
  */
-export const isTerminalPersisted = (): boolean => isNode() && process.env.PERSIST_TERMINAL === 'true';
+export const isTerminalPersisted = (): boolean => isNode() && getProcessEnv('PERSIST_TERMINAL') === 'true';
 
 /**
  * Determines whether script should run in quiet mode
  */
-export const isQuiet = (): boolean => isNode() && process.env.QUIET === 'true';
+export const isQuiet = (): boolean => isNode() && getProcessEnv('QUIET') === 'true';
 
 /**
  * Sets the quiet mode
  */
-export const setQuiet = (isQuiet: boolean = true): void => {
-  process.env.QUIET = String(isQuiet);
-};
+export const setQuiet = (isQuiet: boolean = true): void => setProcessEnv('QUIET', String(isQuiet));
 
 /**
  * Returns true if the caller is the CLI
  */
-export const isCLI = (): boolean => process.env.FLEX_PLUGINS_CLI === 'true';
+export const isCLI = (): boolean => getProcessEnv('FLEX_PLUGINS_CLI') === 'true';
 
 /**
  * Sets the caller to be the CLI
  */
-export const setCLI = (): void => {
-  process.env.FLEX_PLUGINS_CLI = 'true';
-};
+export const setCLI = (): void => setProcessEnv('FLEX_PLUGINS_CLI', 'true');
 
 /**
  * Determines if log level should be trace level
  */
 export const isTrace = (): boolean => {
   if (isNode()) {
-    return process.env.TRACE === 'true';
+    return getProcessEnv('TRACE') === 'true';
   }
 
   if (window.Twilio) {
@@ -144,11 +150,7 @@ export const isTrace = (): boolean => {
 /**
  * Sets the debug mode
  */
-export const setDebug = (isDebug: boolean = true): void => {
-  if (isNode()) {
-    process.env.DEBUG = String(isDebug);
-  }
-};
+export const setDebug = (isDebug: boolean = true): void => setProcessEnv('DEBUG', String(isDebug));
 
 /**
  * Returns true if running in debug verbose mode
@@ -158,7 +160,7 @@ export const isDebug = (): boolean => {
     return true;
   }
   if (isNode()) {
-    return process.env.DEBUG === 'true';
+    return getProcessEnv('DEBUG') === 'true';
   }
 
   if (window.Twilio) {
@@ -171,9 +173,7 @@ export const isDebug = (): boolean => {
 /**
  * Sets the region
  */
-export const setRegion = (region: Region): void => {
-  process.env.REGION = region;
-};
+export const setRegion = (region: Region): void => setProcessEnv('REGION', region);
 
 /**
  * Returns the region
@@ -181,7 +181,7 @@ export const setRegion = (region: Region): void => {
 /* istanbul ignore next */
 export const getRegion = (): Region | string => {
   if (isNode()) {
-    return process.env.REGION as Region;
+    return getProcessEnv('REGION') as Region;
   }
 
   if (window.Twilio) {
@@ -208,6 +208,8 @@ export const getRegion = (): Region | string => {
 };
 
 export default {
+  setProcessEnv,
+  getProcessEnv,
   isNode,
   isWin32,
   persistTerminal,
