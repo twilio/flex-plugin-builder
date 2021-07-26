@@ -1,5 +1,4 @@
-/* eslint-disable */
-import { logger } from 'flex-plugins-utils-logger';
+/* eslint-disable import/no-unused-modules */
 import { TestSuite, TestParams } from '../core';
 import { api, assertion, Browser, ConsoleAPI, pluginHelper } from '../utils';
 
@@ -8,38 +7,44 @@ const PLUGIN_RELEASED_POLL_INTERVAL = 5000;
 
 // Plugin visible on the Hosted Flex
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
-  if(!scenario.plugin.newlineValue) {
+  if (!scenario.plugin.newlineValue) {
     throw new Error(`scenario.plugin.newlineValue does not have a valid value`);
   }
 
   // Fetch and find latest released plugin
   const release = await api.getActiveRelease();
-  const plugins = await api.getActivePlugins(release!.configuration_sid);
-  const releasedPlugin = plugins.plugins.find(plugin => plugin.unique_name == scenario.plugin.name);
-  if(!releasedPlugin) {
+
+  if (!release) {
+    throw new Error('Account does not have an active release');
+  }
+
+  const plugins = await api.getActivePlugins(release.configuration_sid);
+  const releasedPlugin = plugins.plugins.find((plugin) => plugin.unique_name === scenario.plugin.name);
+  if (!releasedPlugin) {
     throw new Error(`Did not find plugin with name: ${scenario.plugin.name} in released plugins`);
   }
 
   const consoleApi = new ConsoleAPI(config.consoleBaseUrl, secrets.console);
   const cookies = await consoleApi.getCookies();
 
-  await Browser.create();
+  await Browser.create({ flex: config.hostedFlexBaseUrl, twilioConsole: config.consoleBaseUrl });
   try {
     // Log into Flex
-    await Browser.loginViaConsole(cookies, config.consoleBaseUrl, config.hostedFlexBaseUrl, 'admin');
-    await assertion.browser.userIsOnView('Admin Dashboard');
+    await Browser.app.twilioConsole.login(cookies, 'admin', secrets.api.accountSid);
+
+    await assertion.app.view.adminDashboard.isVisible();
 
     // Verify that user is on the right account
-    const accountSid = await Browser.getFlexAccountSid();
+    const accountSid = await Browser.app.getFlexAccountSid();
     assertion.equal(accountSid, secrets.api.accountSid);
 
     // Make sure that /plugins contain the plugin
-    await pluginHelper.waitForPluginToRelease(config.hostedFlexBaseUrl, releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
-    await Browser.open(config.hostedFlexBaseUrl, 'agent-desktop');
+    await pluginHelper.waitForPluginToRelease(releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
+    await Browser.app.agentDesktop.open();
 
-    await assertion.browser.pluginIsVisible(scenario.plugin.newlineValue);
+    await assertion.app.view.plugins.plugin.isVisible(scenario.plugin.newlineValue);
   } catch (e) {
-    await Browser.takeScreenshot(environment.cwd);
+    await Browser.app.takeScreenshot(environment.cwd);
     throw e;
   } finally {
     await Browser.kill();

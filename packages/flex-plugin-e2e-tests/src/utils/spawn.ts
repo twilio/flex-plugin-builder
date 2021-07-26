@@ -113,7 +113,6 @@ export const killChildProcess = async (
 
   if (os === 'win32') {
     await promisifiedSpawn('taskkill', ['/pid', `${child.pid}`, '/f', '/t']);
-    await promisifiedSpawn('taskkill', ['/im', 'chromedriver.exe', '/f']);
   } else {
     child.kill();
   }

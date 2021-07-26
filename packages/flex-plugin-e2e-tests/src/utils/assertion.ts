@@ -5,7 +5,7 @@ import * as fs from 'fs';
 
 import { get } from 'lodash';
 
-import { Browser } from './browser';
+import { App } from './pages';
 
 const _strictEqual = (doesEqual: boolean, actual: any, expected: any, msg?: string): void => {
   if (doesEqual) {
@@ -76,5 +76,18 @@ export default {
     stringContains: stringContains(false),
     equal: equal(false),
   },
-  browser: Browser.assert,
+  app: (() => {
+    let view: InstanceType<typeof App>['assert'];
+    return {
+      get view(): InstanceType<typeof App>['assert'] {
+        if (view) {
+          return view;
+        }
+        throw new Error('You must call init before accessing app assert');
+      },
+      init: (value: App) => {
+        view = value.assert;
+      },
+    };
+  })(),
 };
