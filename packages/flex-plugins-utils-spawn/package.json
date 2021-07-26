@@ -1,6 +1,6 @@
 {
   "name": "flex-plugins-utils-spawn",
-  "version": "4.1.0",
+  "version": "4.1.2",
   "description": "Flex Plugins Spawns",
   "keywords": [
     "flex",
@@ -37,6 +37,6 @@
   },
   "dependencies": {
     "execa": "^4.0.3",
-    "flex-plugins-utils-logger": "4.1.0"
+    "flex-plugins-utils-logger": "4.1.2"
   }
 }

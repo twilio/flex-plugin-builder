@@ -9,7 +9,7 @@ import {
 } from 'flex-plugins-api-client';
 import { looksLikeSid } from 'flex-plugin-utils-http';
 import { TwilioError } from 'flex-plugins-utils-exception';
-import { logger } from 'flex-plugins-utils-logger';
+import logger from 'flex-plugins-utils-logger/dist/lib/logger';
 
 import { DeployPlugin } from './deploy';
 import { Script } from '.';
