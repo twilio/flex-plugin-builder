@@ -19,7 +19,6 @@ export class Browser {
   static async create(baseUrls: BaseUrl): Promise<void> {
     this._browser = await launch({ headless: true, args: ['--use-fake-ui-for-media-stream'] });
     this._page = await this._browser.newPage();
-    // await this.page.setViewport({ width: 1920, height: 1080 });
     await this._page.setRequestInterception(true);
     this._attachLogListener();
     this._attachNetworkInterceptor();
@@ -56,26 +55,20 @@ export class Browser {
    */
   private static _attachLogListener(): void {
     this._page.on('console', (msg: ConsoleMessage) => {
-      const logTypes: ConsoleMessageType[] = ['error', 'warning'];
+      const logTypes: ConsoleMessageType[] = ['error'];
 
       const url = msg.location().url || '';
       const re = new RegExp(this._domainsToInclude.join('|'));
 
       if (logTypes.includes(msg.type()) && re.test(url)) {
-        const message = {
+        logger.error({
           msg: msg.text(),
           url,
           args: msg.args() || '',
           lineNumber: msg.location().lineNumber,
           colNumber: msg.location().columnNumber,
           stackTrace: msg.stackTrace() || '',
-        };
-
-        if (msg.type.toString() === 'warning') {
-          logger.warning(message);
-        } else {
-          logger.error(message);
-        }
+        });
       }
     });
   }
