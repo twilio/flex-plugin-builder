@@ -201,7 +201,7 @@ export const setRegion = (region: Region): void => setProcessEnv('TWILIO_REGION'
 /* istanbul ignore next */
 export const getRegion = (): Region | string => {
   if (isNode()) {
-    return getProcessEnv('REGION') as Region;
+    return getProcessEnv('TWILIO_REGION') as Region;
   }
 
   if (window.Twilio) {
