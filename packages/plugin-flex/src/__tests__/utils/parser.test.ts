@@ -32,6 +32,8 @@ describe('Utils/Parser', () => {
 
     it('should pass validation for no flags', () => {
       parser._validate({}, {});
+      // @ts-ignore
+      parser._validate({}, null);
     });
 
     it('should pass validation for flags', () => {
@@ -130,6 +132,10 @@ describe('Utils/Parser', () => {
   });
 
   describe('_prepareFlags', () => {
+    it('should return undefined if nothing is sent', () => {
+      expect(parser._prepareFlags()).toBeUndefined();
+    });
+
     it('should duplicate alias', () => {
       const options = {
         flags: {
@@ -173,6 +179,16 @@ describe('Utils/Parser', () => {
   describe('_combineFlags', () => {
     const alias = 'alias-key';
     const original = 'original-key';
+
+    it('should return passed arg untouched if no options is passed', () => {
+      const parsed = {
+        flags: {
+          str: [original],
+        },
+      };
+      // @ts-ignore
+      expect(parser._combineFlags(parsed)).toEqual(parsed);
+    });
 
     it('should do nothing if no duplicate exists', () => {
       const parsed = {
