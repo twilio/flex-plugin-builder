@@ -1,6 +1,26 @@
-/// <reference path="../module.d.ts" />
 import get from 'lodash.get';
 import { TwilioError } from 'flex-plugins-utils-exception';
+
+declare global {
+  interface Window {
+    Twilio?: {
+      Flex: {
+        Manager: {
+          getInstance(): {
+            configuration: {
+              logLevel: string;
+              sdkOptions?: {
+                chat?: {
+                  region?: string;
+                };
+              };
+            };
+          };
+        };
+      };
+    };
+  }
+}
 
 export type Region = 'dev' | 'stage';
 
