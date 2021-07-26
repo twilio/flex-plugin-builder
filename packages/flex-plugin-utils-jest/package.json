@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-utils-jest",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "description": "Flex Plugin E2E Tests framework",
   "keywords": [
     "flex",

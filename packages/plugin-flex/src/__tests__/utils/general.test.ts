@@ -38,4 +38,14 @@ describe('Utils/General', () => {
       expect(generalUtils.instanceOf(error, Foo)).toEqual(false);
     });
   });
+
+  describe('exit', () => {
+    it('should call exit', () => {
+      const exit = jest.spyOn(process, 'exit').mockReturnThis();
+
+      generalUtils.exit(10);
+      expect(exit).toHaveBeenCalledTimes(1);
+      expect(exit).toHaveBeenCalledWith(10);
+    });
+  });
 });
