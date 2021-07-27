@@ -1,6 +1,26 @@
-/// <reference path="../module.d.ts" />
 import get from 'lodash.get';
 import { TwilioError } from 'flex-plugins-utils-exception';
+
+declare global {
+  interface Window {
+    Twilio?: {
+      Flex: {
+        Manager: {
+          getInstance(): {
+            configuration: {
+              logLevel: string;
+              sdkOptions?: {
+                chat?: {
+                  region?: string;
+                };
+              };
+            };
+          };
+        };
+      };
+    };
+  }
+}
 
 export type Region = 'dev' | 'stage';
 
@@ -173,7 +193,7 @@ export const isDebug = (): boolean => {
 /**
  * Sets the region
  */
-export const setRegion = (region: Region): void => setProcessEnv('REGION', region);
+export const setRegion = (region: Region): void => setProcessEnv('TWILIO_REGION', region);
 
 /**
  * Returns the region
@@ -181,7 +201,7 @@ export const setRegion = (region: Region): void => setProcessEnv('REGION', regio
 /* istanbul ignore next */
 export const getRegion = (): Region | string => {
   if (isNode()) {
-    return getProcessEnv('REGION') as Region;
+    return getProcessEnv('TWILIO_REGION') as Region;
   }
 
   if (window.Twilio) {
