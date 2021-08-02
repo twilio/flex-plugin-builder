@@ -8,6 +8,8 @@ import { AgentDesktop } from './view/agent-desktop';
 import { Plugins } from './view/plugins';
 import { TwilioConsole } from './view/twilio-console';
 
+const screenshotExtension = '.png';
+
 export interface BaseUrl {
   flex: string;
   twilioConsole: string;
@@ -80,10 +82,9 @@ export class App {
    */
   async takeScreenshot(rootDir: string, screenshotName = 'on_failure.png'): Promise<void> {
     const screenshotDir = joinPath(rootDir, 'screenshots');
-    const extension = '.png';
 
-    if (!screenshotName.endsWith(extension)) {
-      screenshotName += extension;
+    if (!screenshotName.endsWith(screenshotExtension)) {
+      screenshotName += screenshotExtension;
     }
 
     if (!existsSync(screenshotDir)) {

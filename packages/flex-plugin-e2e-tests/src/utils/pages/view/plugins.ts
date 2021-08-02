@@ -36,15 +36,12 @@ export class Plugins extends Base {
     const pluginListElementHandle = await this.elementVisible(this._pluginList, 'Plugins in PRE tag');
     const pluginListAsString = await this.getText(pluginListElementHandle, 'Plugins in PRE tag');
 
-    let plugins: PluginResponse[];
-
     try {
-      plugins = JSON.parse(pluginListAsString);
+      return JSON.parse(pluginListAsString);
     } catch (e) {
       logger.error('Plugin list retrieved from the /plugins is not a valid JSON');
       throw e;
     }
-    return plugins;
   }
 
   /**
