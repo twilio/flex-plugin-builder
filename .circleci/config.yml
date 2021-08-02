@@ -214,6 +214,8 @@ jobs:
         type: string
       node-version:
         type: string
+      npm-version:
+        type: string
     environment:
       NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
@@ -223,6 +225,7 @@ jobs:
       - checkout
       - node/install:
           node-version: << parameters.node-version >>
+          npm-version: << parameters.npm-version >>
       - cmd_install-dependencies
       - cmd_install-chrome-utils-macos
       - browser-tools/install-chromedriver
@@ -320,6 +323,7 @@ workflows:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
               node-version: ["14.17.1"]
+              npm-version: ["6.14.14"]
 
   workflow_publisher:
     when: << pipeline.parameters.run_npm_publish >>
@@ -378,6 +382,7 @@ workflows:
             parameters:
               package_version: ["latest"]
               node-version: ["14.17.1"]
+              npm-version: ["6.14.14"]
           post-steps:
             - cmd_slack-notification-error:
                 text: "nightly E2E tests failed on MacOS."
