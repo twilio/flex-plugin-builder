@@ -13,6 +13,10 @@ interface PluginResponse {
 export class Plugins extends Base {
   assert = {
     plugin: {
+      /**
+       * Checks whether plugin with the given text is visible in the UI
+       * @param pluginText
+       */
       isVisible: async (pluginText: string): Promise<ElementHandle<Element>> =>
         this.elementVisible(this._plugin(pluginText), `Plugin with text: ${pluginText}`),
     },

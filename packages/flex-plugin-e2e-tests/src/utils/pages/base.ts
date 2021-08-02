@@ -1,6 +1,6 @@
 import { ElementHandle, Page } from 'puppeteer';
 
-export class Base {
+export abstract class Base {
   protected readonly page: Page;
 
   protected readonly DEFAULT_LOCATE_TIMEOUT = 20000;

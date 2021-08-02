@@ -5,6 +5,9 @@ import { Base } from '../base';
 export class AdminDashboard extends Base {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   assert = {
+    /**
+     * Checks whether Welcome Banner is visible on Admin Dashboard
+     */
     isVisible: async (): Promise<ElementHandle<Element>> => this.elementVisible(this._welcomeBanner, 'Welcome banner'),
   };
 
