@@ -1,11 +1,11 @@
 import { ElementHandle, Page } from 'puppeteer';
 
 export abstract class Base {
+  protected static readonly DEFAULT_LOCATE_TIMEOUT = 20000;
+
+  protected static readonly DEFAULT_PAGE_LOAD_TIMEOUT = 60000;
+
   protected readonly page: Page;
-
-  protected readonly DEFAULT_LOCATE_TIMEOUT = 20000;
-
-  protected readonly DEFAULT_PAGE_LOAD_TIMEOUT = 60000;
 
   constructor(page: Page) {
     this.page = page;
@@ -45,7 +45,7 @@ export abstract class Base {
   protected async elementVisible(
     seletor: string,
     elementName: string,
-    timeout = this.DEFAULT_LOCATE_TIMEOUT,
+    timeout = Base.DEFAULT_LOCATE_TIMEOUT,
   ): Promise<ElementHandle<Element>> {
     const waitOptions = { timeout };
 

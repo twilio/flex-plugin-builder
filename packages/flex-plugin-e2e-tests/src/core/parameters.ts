@@ -43,13 +43,14 @@ export interface TestParams {
   config: {
     consoleBaseUrl: string;
     hostedFlexBaseUrl: string;
+    localhostPort: number;
     region?: string;
     regionFlag: string[];
   } & Hidden;
   scenario: TestScenario & Hidden;
 }
 
-const { TWILIO_REGION } = process.env;
+const { TWILIO_REGION, LOCALHOST_PORT } = process.env;
 const pluginName = 'flex-e2e-tester-plugin';
 const consoleBaseUrl = TWILIO_REGION ? `https://www.${TWILIO_REGION}.twilio.com` : 'https://www.twilio.com';
 const hostedFlexBaseUrl = TWILIO_REGION ? `https://flex.${TWILIO_REGION}.twilio.com` : 'https://flex.twilio.com';
@@ -97,6 +98,7 @@ export const testParams: TestParams = {
     hostedFlexBaseUrl: process.env.HOSTED_FLEX_BASE_URL || hostedFlexBaseUrl,
     region: TWILIO_REGION || '',
     regionFlag: [],
+    localhostPort: Number(LOCALHOST_PORT) || 3000,
   },
   scenario: {
     __hidden: false,

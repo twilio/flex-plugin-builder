@@ -28,6 +28,7 @@ export class Browser {
 
   static async kill(): Promise<void> {
     try {
+      this._page.removeAllListeners();
       await this._browser.close();
     } catch (e) {
       logger.error('Failed to quit browser');

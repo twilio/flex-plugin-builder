@@ -18,7 +18,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
 
   try {
     // Plugin loads
-    await Browser.app.twilioConsole.login(cookies, 'agent-desktop', secrets.api.accountSid);
+    await Browser.app.twilioConsole.login(cookies, 'agent-desktop', secrets.api.accountSid, config.localhostPort);
     await assertion.app.view.agentDesktop.isVisible();
     await assertion.app.view.plugins.plugin.isVisible(scenario.plugin.componentText);
 

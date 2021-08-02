@@ -4,9 +4,9 @@ import { Base } from '../base';
 import { Cookie, Cookies } from '../../console-api';
 
 export class TwilioConsole extends Base {
-  assert = {};
+  private static _loginForm = 'form[method="post"';
 
-  private _loginForm = 'form[method="post"';
+  assert = {};
 
   private readonly _baseUrl: string;
 
@@ -19,20 +19,26 @@ export class TwilioConsole extends Base {
   }
 
   /**
+   * Creates a localhost url
+   * @param port
+   */
+  private static _createLocalhostUrl = (port: number) => `http://localhost:${port}&localPort=${port}`;
+
+  /**
    * Logs user in through service-login
    * @param cookies
    * @param flexBaseUrl
    * @param flexPath
    * @param accountSid
    */
-  async login(cookies: Cookies, flexPath: string, accountSid: string): Promise<void> {
+  async login(cookies: Cookies, flexPath: string, accountSid: string, localhostPort: number): Promise<void> {
     const redirectUrl = this._flexBaseUrl.includes('localhost')
-      ? 'http://localhost:3000&localPort=3000'
+      ? TwilioConsole._createLocalhostUrl(localhostPort)
       : this._flexBaseUrl;
     const path = `console/flex/service-login/${accountSid}/?path=/${flexPath}&referer=${redirectUrl}`;
 
     await this.goto({ baseUrl: this._baseUrl, path });
-    await this.elementVisible(this._loginForm, `Twilio Console's Login form`);
+    await this.elementVisible(TwilioConsole._loginForm, `Twilio Console's Login form`);
 
     const requiredCookies = [
       { name: Cookie.visitor, value: cookies[Cookie.visitor] },

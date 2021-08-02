@@ -11,6 +11,8 @@ interface PluginResponse {
 }
 
 export class Plugins extends Base {
+  private static readonly _pluginList = 'pre';
+
   assert = {
     plugin: {
       /**
@@ -24,8 +26,6 @@ export class Plugins extends Base {
 
   private readonly _baseUrl: string;
 
-  private readonly _pluginList = 'pre';
-
   constructor(page: Page, baseUrl: string) {
     super(page);
     this._baseUrl = baseUrl.includes('localhost') ? 'https://flex.twilio.com' : baseUrl;
@@ -37,7 +37,7 @@ export class Plugins extends Base {
   async list(): Promise<PluginResponse[]> {
     await this.goto({ baseUrl: this._baseUrl, path: '/plugins' });
 
-    const pluginListElementHandle = await this.elementVisible(this._pluginList, 'Plugins in PRE tag');
+    const pluginListElementHandle = await this.elementVisible(Plugins._pluginList, 'Plugins in PRE tag');
     const pluginListAsString = await this.getText(pluginListElementHandle, 'Plugins in PRE tag');
 
     try {
