@@ -19,6 +19,22 @@ describe('SubCommands/FlexPlugin', () => {
     expect(FlexPlugin.hasOwnProperty('flags')).toEqual(true);
   });
 
+  it('should set internal args', async () => {
+    const cmd1 = await createTest(FlexPlugin)('--arg1', '--', '--internal1');
+    const cmd2 = await createTest(FlexPlugin)('--', '--internal2');
+    const cmd3 = await createTest(FlexPlugin)('--');
+    const cmd4 = await createTest(FlexPlugin)('--', '--internal4a', '--internal4b');
+
+    // @ts-ignore
+    expect(cmd1.internalScriptArgs).toEqual(['--internal1']);
+    // @ts-ignore
+    expect(cmd2.internalScriptArgs).toEqual(['--internal2']);
+    // @ts-ignore
+    expect(cmd3.internalScriptArgs).toEqual([]);
+    // @ts-ignore
+    expect(cmd4.internalScriptArgs).toEqual(['--internal4a', '--internal4b']);
+  });
+
   it('should test isPluginFolder to be false if no package.json is found', async () => {
     const cmd = await createTest(FlexPlugin)();
 
@@ -307,6 +323,7 @@ describe('SubCommands/FlexPlugin', () => {
       jest.spyOn(utilsEnv, 'setTwilioProfile');
       jest.spyOn(utilsEnv, 'setDebug');
       jest.spyOn(utilsEnv, 'persistTerminal');
+      jest.spyOn(utilsEnv, 'setRegion');
     };
 
     it('should setup environment', async () => {
@@ -321,6 +338,7 @@ describe('SubCommands/FlexPlugin', () => {
       expect(utilsEnv.setTwilioProfile).toHaveBeenCalledWith(id);
       expect(utilsEnv.setDebug).not.toHaveBeenCalled();
       expect(utilsEnv.persistTerminal).not.toHaveBeenCalled();
+      expect(utilsEnv.setRegion).not.toHaveBeenCalled();
     });
 
     it('should setup environment as debug level', async () => {
@@ -335,6 +353,22 @@ describe('SubCommands/FlexPlugin', () => {
       expect(utilsEnv.setTwilioProfile).toHaveBeenCalledWith(id);
       expect(utilsEnv.setDebug).toHaveBeenCalledTimes(1);
       expect(utilsEnv.persistTerminal).toHaveBeenCalledTimes(1);
+      expect(utilsEnv.setRegion).not.toHaveBeenCalled();
+    });
+
+    it('should setup environment and twilio region', async () => {
+      const cmd = await createTest(FlexPlugin)('--region', 'stage');
+      setupMocks(cmd);
+
+      cmd.setupEnvironment();
+      expect(process.env.SKIP_CREDENTIALS_SAVING).toEqual('true');
+      expect(process.env.TWILIO_ACCOUNT_SID).toEqual(username);
+      expect(process.env.TWILIO_AUTH_TOKEN).toEqual(password);
+      expect(utilsEnv.setTwilioProfile).toHaveBeenCalledTimes(1);
+      expect(utilsEnv.setTwilioProfile).toHaveBeenCalledWith(id);
+      expect(utilsEnv.setDebug).not.toHaveBeenCalled();
+      expect(utilsEnv.persistTerminal).not.toHaveBeenCalled();
+      expect(utilsEnv.setRegion).toHaveBeenCalledWith('stage');
     });
   });
 

@@ -297,7 +297,7 @@ describe('Commands/FlexPluginsStart', () => {
       expect(cmd.removeLegacyPlugin).toHaveBeenCalledTimes(1);
     });
 
-    it('should call not cleanupNodeModules if already latest version', async () => {
+    it('should not call cleanupNodeModules if already latest version', async () => {
       const cmd = await createTest(FlexPluginsUpgradePlugin)();
       mockForDoRun(cmd);
       jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
