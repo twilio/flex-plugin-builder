@@ -323,6 +323,7 @@ workflows:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
               node-version: ["14.17.1"]
+              npm-version: ["6.14.14"]
 
   workflow_publisher:
     when: << pipeline.parameters.run_npm_publish >>
