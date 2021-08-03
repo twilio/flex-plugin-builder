@@ -1,6 +1,6 @@
 import { Page } from 'puppeteer';
 
-import { Base } from '../base';
+import { Base } from './base';
 import { Cookie, Cookies } from '../../console-api';
 
 export class TwilioConsole extends Base {

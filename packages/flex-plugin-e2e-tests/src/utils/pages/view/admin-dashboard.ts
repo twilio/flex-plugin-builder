@@ -1,6 +1,6 @@
 import { ElementHandle, Page } from 'puppeteer';
 
-import { Base } from '../base';
+import { Base } from './base';
 
 export class AdminDashboard extends Base {
   private static readonly _welcomeBanner = '.welcome-banner';

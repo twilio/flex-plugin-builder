@@ -1,7 +1,7 @@
 import { logger } from 'flex-plugins-utils-logger';
 import { ElementHandle, Page } from 'puppeteer';
 
-import { Base } from '../base';
+import { Base } from './base';
 
 interface PluginResponse {
   name: string;
