@@ -14,13 +14,13 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   await pluginHelper.waitForPluginToStart(scenario.plugin.localhostUrl, PLUGIN_START_TIMEOUT, PLUGIN_START_POLL_INTERVAL);
   const consoleApi = new ConsoleAPI(config.consoleBaseUrl, secrets.console);
   const cookies = await consoleApi.getCookies();
-  await Browser.create();
+  await Browser.create({ flex: scenario.plugin.localhostUrl, twilioConsole: config.consoleBaseUrl });
 
   try {
     // Plugin loads
-    await Browser.loginViaConsole(cookies, config.consoleBaseUrl, scenario.plugin.localhostUrl, 'agent-desktop');
-    await assertion.browser.userIsOnView('Agent Desktop');
-    await assertion.browser.pluginIsVisible(scenario.plugin.componentText);
+    await Browser.app.twilioConsole.login(cookies, 'agent-desktop', secrets.api.accountSid, config.localhostPort);
+    await assertion.app.view.agentDesktop.isVisible();
+    await assertion.app.view.plugins.plugin.isVisible(scenario.plugin.componentText);
 
     // Verify hot reload
     await replaceInFile({
@@ -29,10 +29,9 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
       to: tmpComponentText,
     });
 
-    await assertion.browser.pluginIsVisible(tmpComponentText);
+    await assertion.app.view.plugins.plugin.isVisible(tmpComponentText);
   } catch (e) {
-    await Browser.takeScreenshot(environment.cwd);
-    await Browser.printLogs();
+    await Browser.app.takeScreenshot(environment.cwd);
     throw e;
   } finally {
     await Browser.kill();

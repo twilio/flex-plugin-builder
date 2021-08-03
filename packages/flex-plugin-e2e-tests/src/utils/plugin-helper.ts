@@ -38,7 +38,6 @@ const waitForPluginToStart = async (url: string, timeout: number, pollInterval: 
  * @param pollInterval time to wait between each polling attempt
  */
 const waitForPluginToRelease = async (
-  flexBaseUrl: string,
   releasedPlugin: ConfiguredPluginResource,
   timeout: number,
   pollInterval: number,
@@ -47,7 +46,7 @@ const waitForPluginToRelease = async (
 
   while (true) {
     try {
-      const plugins = await Browser.getPluginResponse(flexBaseUrl);
+      const plugins = await Browser.app.plugins.list();
       const plugin = plugins.find((plugin) => plugin.name === releasedPlugin.unique_name);
 
       if (!plugin) {
