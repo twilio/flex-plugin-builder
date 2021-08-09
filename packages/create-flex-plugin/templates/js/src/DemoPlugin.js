@@ -19,14 +19,11 @@ export default class {{pluginClassName}} extends FlexPlugin {
    * @param flex { typeof import('@twilio/flex-ui') }
    * @param manager { import('@twilio/flex-ui').Manager }
    */
-  init(flex, manager) {
+  async init(flex, manager) {
     this.registerReducers(manager);
 
     const options = { sortOrder: -1 };
-    flex.AgentDesktopView
-      .Panel1
-      .Content
-      .add(<CustomTaskListContainer key="{{pluginClassName}}-component" />, options);
+    flex.AgentDesktopView.Panel1.Content.add(<CustomTaskListContainer key="{{pluginClassName}}-component" />, options);
   }
 
   /**
@@ -36,7 +33,7 @@ export default class {{pluginClassName}} extends FlexPlugin {
    */
   registerReducers(manager) {
     if (!manager.store.addReducer) {
-      // eslint: disable-next-line
+      // eslint-disable-next-line
       console.error(`You need FlexUI > 1.9.0 to use built-in redux; you are currently on ${VERSION}`);
       return;
     }

@@ -22,5 +22,5 @@ export interface AppState {
 
 // Combine the reducers
 export default combineReducers({
-  customTaskList: CustomTaskListReducer
+  customTaskList: CustomTaskListReducer,
 });
