@@ -1,4 +1,4 @@
-import { Action } from './index';
+import { Action } from '.';
 
 const ACTION_DISMISS_BAR = 'DISMISS_BAR';
 
@@ -14,7 +14,8 @@ export class Actions {
   public static dismissBar = (): Action => ({ type: ACTION_DISMISS_BAR });
 }
 
-export function reduce(state: CustomTaskListState = initialState, action: Action) {
+export function reduce(state: CustomTaskListState = initialState, action: Action): CustomTaskListState {
+  // eslint-disable-next-line sonarjs/no-small-switch
   switch (action.type) {
     case ACTION_DISMISS_BAR: {
       return {

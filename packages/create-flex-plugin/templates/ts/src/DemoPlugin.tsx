@@ -19,14 +19,11 @@ export default class {{pluginClassName}} extends FlexPlugin {
    * @param flex { typeof Flex }
    * @param manager { Flex.Manager }
    */
-  init(flex: typeof Flex, manager: Flex.Manager) {
+  async init(flex: typeof Flex, manager: Flex.Manager): Promise<void> {
     this.registerReducers(manager);
 
     const options: Flex.ContentFragmentProps = { sortOrder: -1 };
-    flex.AgentDesktopView
-      .Panel1
-      .Content
-      .add(<CustomTaskListContainer key="{{pluginClassName}}-component" />, options);
+    flex.AgentDesktopView.Panel1.Content.add(<CustomTaskListContainer key="{{pluginClassName}}-component" />, options);
   }
 
   /**
@@ -36,7 +33,7 @@ export default class {{pluginClassName}} extends FlexPlugin {
    */
   private registerReducers(manager: Flex.Manager) {
     if (!manager.store.addReducer) {
-      // tslint: disable-next-line
+      // eslint-disable-next-line
       console.error(`You need FlexUI > 1.9.0 to use built-in redux; you are currently on ${Flex.VERSION}`);
       return;
     }

@@ -13,6 +13,6 @@
   "devDependencies": {
     "@twilio/flex-ui": "{{flexSdkVersion}}",
     "react-test-renderer": "16.5.2",
-    "typescript": "^3"
+    "typescript": "^4"
   }
 }
