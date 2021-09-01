@@ -31,6 +31,9 @@ export default class FlexPluginsStart extends FlexPlugin {
     'include-remote': flags.boolean({
       description: FlexPluginsStart.topic.flags.includeRemote,
     }),
+    'port': flags.string({
+      description: FlexPluginsStart.topic.flags.port,
+    }),
     'flex-ui-source': flags.string({
       hidden: true,
     }),
@@ -50,6 +53,7 @@ export default class FlexPluginsStart extends FlexPlugin {
   async doRun(): Promise<void> {
     const flexArgs: string[] = [];
     const pluginNames: string[] = [];
+    let finalPort = 3000;
 
     if (this._flags.name) {
       for (const name of this._flags.name) {
@@ -62,6 +66,17 @@ export default class FlexPluginsStart extends FlexPlugin {
 
     if (this._flags['include-remote']) {
       flexArgs.push('--include-remote');
+    }
+
+    if (this._flags['port']) {
+      const userPort = this._flags.port;
+      flexArgs.push('--port', userPort);
+
+      // Change the port number
+      let portNum = parseInt(userPort)
+      if (!isNaN(portNum)) {
+        finalPort = portNum;
+      }
     }
 
     if (this._flags['flex-ui-source']) {
@@ -80,7 +95,8 @@ export default class FlexPluginsStart extends FlexPlugin {
       );
     }
 
-    let flexStartScript: StartScript = { port: 3000 };
+    let flexStartScript: StartScript = { port: finalPort };
+
     if (flexArgs.length && pluginNames.length) {
       // Verify all plugins are correct
       for (let i = 0; pluginNames && i < pluginNames.length; i++) {
