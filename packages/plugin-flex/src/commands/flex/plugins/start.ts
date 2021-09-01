@@ -31,7 +31,7 @@ export default class FlexPluginsStart extends FlexPlugin {
     'include-remote': flags.boolean({
       description: FlexPluginsStart.topic.flags.includeRemote,
     }),
-    'port': flags.integer({
+    port: flags.integer({
       description: FlexPluginsStart.topic.flags.port,
       default: 3000,
     }),
