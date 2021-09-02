@@ -76,7 +76,7 @@ describe('Commands/FlexPluginsStart', () => {
 
     expect(cmd.pluginsConfig).toEqual(config);
     expect(cmd.runScript).toHaveBeenCalledTimes(3);
-    expect(cmd.runScript).toHaveBeenCalledWith('start', ['flex', '--name', pkg.name]);
+    expect(cmd.runScript).toHaveBeenCalledWith('start', ['flex', '--name', pkg.name, '--port', 3000]);
     expect(cmd.runScript).toHaveBeenCalledWith(preStartCheck, ['--name', pkg.name]);
     expect(cmd.runScript).toHaveBeenCalledWith(preScriptCheck, ['--name', pkg.name]);
     expect(cmd.spawnScript).toHaveBeenCalledWith('start', ['plugin', '--name', pkg.name, '--port', '100']);
@@ -178,7 +178,7 @@ describe('Commands/FlexPluginsStart', () => {
 
     expect(cmd.pluginsConfig).toEqual(config);
     expect(cmd.runScript).toHaveBeenCalledTimes(3);
-    expect(cmd.runScript).toHaveBeenCalledWith('start', ['flex', '--name', pkg.name]);
+    expect(cmd.runScript).toHaveBeenCalledWith('start', ['flex', '--name', pkg.name, '--port', 3000]);
     expect(cmd.runScript).toHaveBeenCalledWith(preStartCheck, ['--name', pkg.name]);
     expect(cmd.runScript).toHaveBeenCalledWith(preScriptCheck, ['--name', pkg.name]);
     expect(cmd.spawnScript).toHaveBeenCalledWith('start', ['plugin', '--name', pkg.name, '--port', '100']);

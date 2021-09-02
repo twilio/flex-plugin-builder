@@ -31,6 +31,10 @@ export default class FlexPluginsStart extends FlexPlugin {
     'include-remote': flags.boolean({
       description: FlexPluginsStart.topic.flags.includeRemote,
     }),
+    port: flags.integer({
+      description: FlexPluginsStart.topic.flags.port,
+      default: 3000,
+    }),
     'flex-ui-source': flags.string({
       hidden: true,
     }),
@@ -80,7 +84,8 @@ export default class FlexPluginsStart extends FlexPlugin {
       );
     }
 
-    let flexStartScript: StartScript = { port: 3000 };
+    flexArgs.push('--port', this._flags.port);
+
     if (flexArgs.length && pluginNames.length) {
       // Verify all plugins are correct
       for (let i = 0; pluginNames && i < pluginNames.length; i++) {
@@ -88,7 +93,7 @@ export default class FlexPluginsStart extends FlexPlugin {
       }
 
       // Start flex start once
-      flexStartScript = await this.runScript('start', ['flex', ...flexArgs]);
+      const flexStartScript: StartScript = await this.runScript('start', ['flex', ...flexArgs]);
 
       // Now spawn each plugin as a separate process
       for (let i = 0; pluginNames && i < pluginNames.length; i++) {
