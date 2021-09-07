@@ -12,7 +12,7 @@ describe('parser', () => {
   });
 
   describe('parseUserInputPlugins', () => {
-    const plugin = { name: pluginName, dir: 'test-dir', port: 0 };
+    const plugin = { name: pluginName, dir: 'test-dir' };
     const readPluginsJson = jest.spyOn(fs, 'readPluginsJson');
 
     beforeEach(() => {
@@ -53,6 +53,19 @@ describe('parser', () => {
         expect(e.message).toContain('Unexpected plugin name format');
         done();
       }
+    });
+  });
+
+  describe('parsePluginConfig', () => {
+    it('should return the correct plugin configuration', () => {
+      const result = parserScripts.parsePluginConfig(
+        ...['--name-port', 'pluginOne', '3100', '--name-port', 'pluginTwo', '3200'],
+      );
+
+      expect(result).toEqual({
+        pluginOne: { port: 3100 },
+        pluginTwo: { port: 3200 },
+      });
     });
   });
 

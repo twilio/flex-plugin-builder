@@ -444,7 +444,7 @@ describe('PreScriptCheck', () => {
     it('should do nothing if plugin is found but its directory is not', () => {
       checkFilesExist.mockImplementation((...p: string[]) => p.includes(cliJsonPath));
       parseUserInputPlugins.mockReturnValue([{ name: 'plugin', remote: false }]);
-      findFirstLocalPlugin.mockReturnValue({ name: 'plugin', dir: pluginPath, port: 0 });
+      findFirstLocalPlugin.mockReturnValue({ name: 'plugin', dir: pluginPath });
 
       preScriptCheck._setPluginDir();
 
@@ -459,7 +459,7 @@ describe('PreScriptCheck', () => {
     it('should set directory', () => {
       checkFilesExist.mockReturnValue(true);
       parseUserInputPlugins.mockReturnValue([{ name: 'plugin', remote: false }]);
-      findFirstLocalPlugin.mockReturnValue({ name: 'plugin', dir: pluginPath, port: 0 });
+      findFirstLocalPlugin.mockReturnValue({ name: 'plugin', dir: pluginPath });
 
       preScriptCheck._setPluginDir();
 

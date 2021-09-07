@@ -1,7 +1,7 @@
 import { env, exit, logger } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import { addCWDNodeModule, getPaths, readPluginsJson, setCwd, writeJSONFile } from 'flex-dev-utils/dist/fs';
+import { addCWDNodeModule, setCwd } from 'flex-dev-utils/dist/fs';
 import { findPort, getDefaultPort } from 'flex-dev-utils/dist/urls';
 import {
   compiler,
@@ -20,7 +20,13 @@ import {
 
 import getConfiguration, { ConfigurationType, WebpackType } from '../config';
 import run from '../utils/run';
-import { findFirstLocalPlugin, parseUserInputPlugins, UserInputPlugin } from '../utils/parser';
+import {
+  findFirstLocalPlugin,
+  parsePluginConfig,
+  parseUserInputPlugins,
+  PluginConfig,
+  UserInputPlugin,
+} from '../utils/parser';
 import { serverCrashed } from '../prints';
 
 interface StartServerOptions {
@@ -59,22 +65,6 @@ export const _requirePackages = (pluginsPath: string, pkgPath: string): Packages
 };
 
 /**
- * Update port of a plugin
- * @param port
- * @param name
- */
-export const _updatePluginPort = (port: number, name: string): void => {
-  const config = readPluginsJson();
-  config.plugins.forEach((plugin) => {
-    if (plugin.name === name) {
-      plugin.port = port;
-    }
-  });
-
-  writeJSONFile(config, getPaths().cli.pluginsJsonPath);
-};
-
-/**
  * Handles server crash
  * @param payload
  */
@@ -95,6 +85,7 @@ export const _onServerCrash = (payload: OnDevServerCrashedPayload): void => {
 export const _startDevServer = async (
   plugins: UserInputPlugin[],
   options: StartServerOptions,
+  pluginConfig: Record<string, PluginConfig>,
 ): Promise<StartScript> => {
   const { type, port, remoteAll } = options;
   const isJavaScriptServer = type === WebpackType.JavaScript;
@@ -113,7 +104,8 @@ export const _startDevServer = async (
   // Setup plugin's server
   if (!isJavaScriptServer) {
     const pluginServerConfig = { port, remoteAll };
-    pluginServer(pluginRequest, devConfig, pluginServerConfig, onRemotePlugins);
+    // JSON parse shit
+    pluginServer(pluginRequest, devConfig, pluginServerConfig, onRemotePlugins, pluginConfig);
   }
 
   // Start IPC Server
@@ -175,6 +167,7 @@ export const start = async (...args: string[]): Promise<StartScript> => {
   });
 
   const userInputPlugins = parseUserInputPlugins(true, ...args);
+  const pluginConfig = parsePluginConfig(...args);
   const plugin = findFirstLocalPlugin(userInputPlugins);
   if (!plugin) {
     throw new FlexPluginError('You must run at least one plugin locally.');
@@ -202,9 +195,6 @@ export const start = async (...args: string[]): Promise<StartScript> => {
   }
 
   setCwd(plugin.dir);
-  if (type === WebpackType.Complete || type === WebpackType.JavaScript) {
-    _updatePluginPort(port, plugin.name);
-  }
 
   const options = {
     port,
@@ -212,7 +202,7 @@ export const start = async (...args: string[]): Promise<StartScript> => {
     remoteAll: args.includes('--include-remote'),
   };
 
-  return _startDevServer(userInputPlugins, options);
+  return _startDevServer(userInputPlugins, options, pluginConfig);
 };
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises

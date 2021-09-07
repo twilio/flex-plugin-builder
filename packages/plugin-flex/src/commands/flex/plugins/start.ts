@@ -92,12 +92,17 @@ export default class FlexPluginsStart extends FlexPlugin {
         await this.checkPlugin(pluginNames[i]);
       }
 
-      // Start flex start once
-      const flexStartScript: StartScript = await this.runScript('start', ['flex', ...flexArgs]);
-
       // Now spawn each plugin as a separate process
+      const pluginConfig: string[] = [];
       for (let i = 0; pluginNames && i < pluginNames.length; i++) {
-        const port = await findPortAvailablePort('--port', (flexStartScript.port + (i + 1) * 100).toString());
+        const port = await findPortAvailablePort('--port', (parseInt(this._flags.port, 10) + (i + 1) * 100).toString());
+        pluginConfig.push('--name-port', pluginNames[i], port.toString());
+      }
+
+      const flexStartScript: StartScript = await this.runScript('start', ['flex', ...flexArgs, ...pluginConfig]);
+
+      for (let i = 0; pluginNames && i < pluginNames.length; i++) {
+        const port = pluginConfig[pluginConfig.indexOf(pluginNames[i]) + 1];
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.spawnScript('start', ['plugin', '--name', pluginNames[i], '--port', port.toString()]);
       }

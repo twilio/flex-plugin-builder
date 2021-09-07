@@ -8,6 +8,9 @@ export interface UserInputPlugin {
   remote: boolean;
   version?: string;
 }
+export interface PluginConfig {
+  port: number;
+}
 
 /**
  * Reads user input to returns the --name plugins
@@ -49,6 +52,29 @@ export const parseUserInputPlugins = (failIfNotFound: boolean, ...args: string[]
   }
 
   return userInputPlugins;
+};
+
+/**
+ * Reads the plugin config and returns a configuration with the ports for each plugin
+ * @param failIfNotFound
+ * @param args
+ * @returns
+ */
+export const parsePluginConfig = (...args: string[]): Record<string, PluginConfig> => {
+  const pluginConfig: Record<string, PluginConfig> = {};
+
+  for (let i = 0; i < args.length - 2; i++) {
+    if (args[i] !== '--name-port') {
+      continue;
+    }
+
+    const name = args[i + 1];
+    const port = args[i + 2];
+
+    pluginConfig[name] = { port: parseInt(port, 10) };
+  }
+
+  return pluginConfig;
 };
 
 /**

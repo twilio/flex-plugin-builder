@@ -1,7 +1,6 @@
 import { join } from 'path';
 
-import { _require, getPaths, PackageJson, resolveModulePath } from 'flex-dev-utils/dist/fs';
-import { semver } from 'flex-dev-utils';
+import { _require, resolveModulePath } from 'flex-dev-utils/dist/fs';
 
 export const FLEX_PACKAGES: string[] = ['@twilio/flex-ui', 'flex-plugin-scripts', 'flex-plugin', 'flex-dev-utils'];
 
