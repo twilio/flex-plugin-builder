@@ -1,6 +1,7 @@
 import * as pluginBuilderStartScript from 'flex-plugin-scripts/dist/scripts/start';
 import { TwilioCliError, env, TwilioError } from 'flex-dev-utils';
 import * as fs from 'flex-dev-utils/dist/fs';
+import { PluginConfig } from 'flex-plugin-scripts/src/scripts/start';
 
 import createTest, { mockGetPkg } from '../../../framework';
 import FlexPluginsStart from '../../../../commands/flex/plugins/start';
@@ -15,6 +16,8 @@ describe('Commands/FlexPluginsStart', () => {
   const pluginNameOne = 'plugin-testOne';
   const pluginNameTwo = 'plugin-testTwo';
   const pluginNameBad = 'pluginBad';
+  const pluginConfig: PluginConfig = {};
+  pluginConfig['plugin-testOne'] = { port: 100 };
   const pkg = {
     name: pluginNameOne,
     dependencies: {
@@ -39,9 +42,9 @@ describe('Commands/FlexPluginsStart', () => {
   };
   const config = {
     plugins: [
-      { name: pluginNameOne, dir: 'test-dir', port: 0 },
-      { name: pluginNameTwo, dir: 'test-dir', port: 0 },
-      { name: pluginNameBad, dir: 'test-dir', port: 0 },
+      { name: pluginNameOne, dir: 'test-dir' },
+      { name: pluginNameTwo, dir: 'test-dir' },
+      { name: pluginNameBad, dir: 'test-dir' },
     ],
   };
 
@@ -82,9 +85,8 @@ describe('Commands/FlexPluginsStart', () => {
       pkg.name,
       '--port',
       3000,
-      '--name-port',
-      pkg.name,
-      '100',
+      '--plugin-config',
+      JSON.stringify(pluginConfig),
     ]);
     expect(cmd.runScript).toHaveBeenCalledWith(preStartCheck, ['--name', pkg.name]);
     expect(cmd.runScript).toHaveBeenCalledWith(preScriptCheck, ['--name', pkg.name]);
@@ -193,9 +195,8 @@ describe('Commands/FlexPluginsStart', () => {
       pkg.name,
       '--port',
       3000,
-      '--name-port',
-      pkg.name,
-      '100',
+      '--plugin-config',
+      JSON.stringify(pluginConfig),
     ]);
     expect(cmd.runScript).toHaveBeenCalledWith(preStartCheck, ['--name', pkg.name]);
     expect(cmd.runScript).toHaveBeenCalledWith(preScriptCheck, ['--name', pkg.name]);

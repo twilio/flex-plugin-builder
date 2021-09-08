@@ -49,6 +49,7 @@ describe('StartScript', () => {
     const _startDevServer = jest.spyOn(startScripts, '_startDevServer');
     const readPluginsJson = jest.spyOn(fs, 'readPluginsJson');
     const parseUserInputPlugins = jest.spyOn(parserUtils, 'parseUserInputPlugins');
+    const _getPluginConfiguration = jest.spyOn(startScripts, '_getPluginConfiguration');
     const writeJSONFile = jest.spyOn(fs, 'writeJSONFile');
     const setCwd = jest.spyOn(fs, 'setCwd');
 
@@ -59,15 +60,28 @@ describe('StartScript', () => {
       expect(getDefaultPort).toHaveBeenCalledWith(port.toString());
       expect(_startDevServer).toHaveBeenCalledTimes(1);
       expect(parseUserInputPlugins).toHaveBeenCalledTimes(1);
-      expect(_startDevServer).toHaveBeenCalledWith(
-        [{ name: pluginName, remote: false }],
-        {
-          port,
-          type,
-          remoteAll: false,
-        },
-        {},
-      );
+
+      if (type === configScripts.WebpackType.JavaScript) {
+        expect(_startDevServer).toHaveBeenCalledWith(
+          [{ name: pluginName, remote: false }],
+          {
+            port,
+            type,
+            remoteAll: false,
+          },
+          {},
+        );
+      } else {
+        expect(_startDevServer).toHaveBeenCalledWith(
+          [{ name: pluginName, remote: false }],
+          {
+            port,
+            type,
+            remoteAll: false,
+          },
+          { 'plugin-test': { port } },
+        );
+      }
     };
 
     beforeEach(() => {
@@ -91,6 +105,7 @@ describe('StartScript', () => {
 
     it('should start dev-server', async () => {
       parseUserInputPlugins.mockReturnValue([{ name: pluginName, remote: false }]);
+      _getPluginConfiguration.mockReturnValue({ [pluginName]: { port } });
 
       await startScripts.default();
 
@@ -99,6 +114,7 @@ describe('StartScript', () => {
 
     it('should start static html page', async () => {
       parseUserInputPlugins.mockReturnValue([{ name: pluginName, remote: false }]);
+      _getPluginConfiguration.mockReturnValue({ [pluginName]: { port } });
 
       await startScripts.default(...['flex']);
 

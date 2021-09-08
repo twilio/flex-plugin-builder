@@ -25,7 +25,9 @@ interface StartServerConfig {
 }
 
 export interface PluginConfig {
-  port: number;
+  [pluginName: string]: {
+    port: number;
+  };
 }
 
 export type OnRemotePlugins = (remotePlugins: Plugin[]) => void;
@@ -212,7 +214,7 @@ export default (
   webpackConfig: Configuration,
   serverConfig: StartServerConfig,
   onRemotePlugin: OnRemotePlugins,
-  pluginConfig: Record<string, PluginConfig>,
+  pluginConfig: PluginConfig,
 ): void => {
   serverConfig.port = webpackConfig.port || 3000;
 

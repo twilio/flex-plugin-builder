@@ -4,6 +4,7 @@ import { FLAG_MULTI_PLUGINS } from 'flex-plugin-scripts/dist/scripts/pre-script-
 import { TwilioCliError, semver, env } from 'flex-dev-utils';
 import { readJsonFile } from 'flex-dev-utils/dist/fs';
 import { OutputFlags } from '@oclif/parser/lib/parse';
+import { PluginConfig } from 'flex-plugin-scripts/src/scripts/start';
 
 import { createDescription } from '../../../utils/general';
 import FlexPlugin, { ConfigData, Pkg, SecureStorage } from '../../../sub-commands/flex-plugin';
@@ -93,18 +94,21 @@ export default class FlexPluginsStart extends FlexPlugin {
       }
 
       // Now spawn each plugin as a separate process
-      const pluginConfig: string[] = [];
+      const pluginConfig: PluginConfig = {};
       for (let i = 0; pluginNames && i < pluginNames.length; i++) {
-        const port = await findPortAvailablePort('--port', (parseInt(this._flags.port, 10) + (i + 1) * 100).toString());
-        pluginConfig.push('--name-port', pluginNames[i], port.toString());
+        const pluginPort = await findPortAvailablePort(
+          '--port',
+          (parseInt(this._flags.port, 10) + (i + 1) * 100).toString(),
+        );
+        pluginConfig[pluginNames[i]] = { port: pluginPort };
       }
 
-      const flexStartScript: StartScript = await this.runScript('start', ['flex', ...flexArgs, ...pluginConfig]);
+      await this.runScript('start', ['flex', ...flexArgs, '--plugin-config', JSON.stringify(pluginConfig)]);
 
       for (let i = 0; pluginNames && i < pluginNames.length; i++) {
-        const port = pluginConfig[pluginConfig.indexOf(pluginNames[i]) + 1];
+        const pluginPort = pluginConfig[pluginNames[i]].port;
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.spawnScript('start', ['plugin', '--name', pluginNames[i], '--port', port.toString()]);
+        this.spawnScript('start', ['plugin', '--name', pluginNames[i], '--port', pluginPort.toString()]);
       }
     }
   }

@@ -56,19 +56,6 @@ describe('parser', () => {
     });
   });
 
-  describe('parsePluginConfig', () => {
-    it('should return the correct plugin configuration', () => {
-      const result = parserScripts.parsePluginConfig(
-        ...['--name-port', 'pluginOne', '3100', '--name-port', 'pluginTwo', '3200'],
-      );
-
-      expect(result).toEqual({
-        pluginOne: { port: 3100 },
-        pluginTwo: { port: 3200 },
-      });
-    });
-  });
-
   describe('findFirstLocalPlugin', () => {
     it('should find no plugin', () => {
       const plugin = {

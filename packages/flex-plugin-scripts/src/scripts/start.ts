@@ -20,13 +20,7 @@ import {
 
 import getConfiguration, { ConfigurationType, WebpackType } from '../config';
 import run from '../utils/run';
-import {
-  findFirstLocalPlugin,
-  parsePluginConfig,
-  parseUserInputPlugins,
-  PluginConfig,
-  UserInputPlugin,
-} from '../utils/parser';
+import { findFirstLocalPlugin, parseUserInputPlugins, UserInputPlugin } from '../utils/parser';
 import { serverCrashed } from '../prints';
 
 interface StartServerOptions {
@@ -42,6 +36,12 @@ export interface StartScript {
 interface Packages {
   plugins: Plugin[];
   pkg: Record<string, string>;
+}
+
+export interface PluginConfig {
+  [pluginName: string]: {
+    port: number;
+  };
 }
 
 /**
@@ -74,6 +74,15 @@ export const _onServerCrash = (payload: OnDevServerCrashedPayload): void => {
 };
 
 /**
+ * Parse the configuration
+ * @param args
+ * @returns
+ */
+export const _getPluginConfiguration = (...args: string[]): PluginConfig => {
+  return JSON.parse(args[args.indexOf('--plugin-config') + 1]) as PluginConfig;
+};
+
+/**
  * Starts the webpack dev-server
  * @param port      the port the server is running on
  * @param plugins   the list of plugins user has requested
@@ -85,7 +94,7 @@ export const _onServerCrash = (payload: OnDevServerCrashedPayload): void => {
 export const _startDevServer = async (
   plugins: UserInputPlugin[],
   options: StartServerOptions,
-  pluginConfig: Record<string, PluginConfig>,
+  pluginConfig: PluginConfig,
 ): Promise<StartScript> => {
   const { type, port, remoteAll } = options;
   const isJavaScriptServer = type === WebpackType.JavaScript;
@@ -167,7 +176,7 @@ export const start = async (...args: string[]): Promise<StartScript> => {
   });
 
   const userInputPlugins = parseUserInputPlugins(true, ...args);
-  const pluginConfig = parsePluginConfig(...args);
+  let pluginConfig: PluginConfig = {};
   const plugin = findFirstLocalPlugin(userInputPlugins);
   if (!plugin) {
     throw new FlexPluginError('You must run at least one plugin locally.');
@@ -201,6 +210,10 @@ export const start = async (...args: string[]): Promise<StartScript> => {
     type,
     remoteAll: args.includes('--include-remote'),
   };
+
+  if (type !== WebpackType.JavaScript) {
+    pluginConfig = _getPluginConfiguration(...args);
+  }
 
   return _startDevServer(userInputPlugins, options, pluginConfig);
 };
