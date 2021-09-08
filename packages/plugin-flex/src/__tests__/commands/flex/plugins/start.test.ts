@@ -169,6 +169,27 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd._flags.name.includes(pluginNameTwo));
     expect(cmd._flags.name.length).toEqual(2);
     expect(cmd._flags[includeRemote]).toEqual(true);
+    expect(cmd._flags.port).toEqual(3000);
+    expect(cmd._flags[flexUiSource]).toBeUndefined();
+  });
+
+  it('should read the port flag', async () => {
+    const cmd = await createTest(FlexPluginsStart)('--name', pluginNameOne, '--name', pluginNameTwo, '--port', '4000');
+
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
+    jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
+    jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
+    findPortAvailablePort.mockResolvedValue(4100);
+
+    await cmd.run();
+
+    expect(cmd._flags.name.includes(pluginNameOne));
+    expect(cmd._flags.name.includes(pluginNameTwo));
+    expect(cmd._flags.name.length).toEqual(2);
+    expect(cmd._flags.port).toEqual(4000);
     expect(cmd._flags[flexUiSource]).toBeUndefined();
   });
 

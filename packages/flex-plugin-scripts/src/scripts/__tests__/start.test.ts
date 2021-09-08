@@ -71,6 +71,7 @@ describe('StartScript', () => {
           },
           {},
         );
+        expect(_getPluginConfiguration).toHaveBeenCalledTimes(0);
       } else {
         expect(_startDevServer).toHaveBeenCalledWith(
           [{ name: pluginName, remote: false }],
@@ -81,6 +82,7 @@ describe('StartScript', () => {
           },
           { 'plugin-test': { port } },
         );
+        expect(_getPluginConfiguration).toHaveBeenCalledTimes(1);
       }
     };
 
@@ -101,6 +103,7 @@ describe('StartScript', () => {
       readPluginsJson.mockRestore();
       writeJSONFile.mockRestore();
       setCwd.mockRestore();
+      _getPluginConfiguration.mockRestore();
     });
 
     it('should start dev-server', async () => {
@@ -127,7 +130,6 @@ describe('StartScript', () => {
       await startScripts.default(...['plugin', '--name', pluginName]);
 
       assertTest(configScripts.WebpackType.JavaScript);
-      expect(readPluginsJson).toHaveBeenCalledTimes(1);
       expect(setCwd).toHaveBeenCalledTimes(1);
     });
 
@@ -203,11 +205,7 @@ describe('StartScript', () => {
     });
 
     it('should not start pluginServer', async () => {
-      await startScripts._startDevServer(
-        [plugin],
-        { ...opts, type: configScripts.WebpackType.JavaScript },
-        pluginConfig,
-      );
+      await startScripts._startDevServer([plugin], { ...opts, type: configScripts.WebpackType.JavaScript }, {});
       expect(pluginServer).not.toHaveBeenCalled();
     });
 
@@ -221,20 +219,12 @@ describe('StartScript', () => {
       expect(startIPCServer).not.toHaveBeenCalled();
 
       startIPCServer.mockReset();
-      await startScripts._startDevServer(
-        [plugin],
-        { ...opts, type: configScripts.WebpackType.JavaScript },
-        pluginConfig,
-      );
+      await startScripts._startDevServer([plugin], { ...opts, type: configScripts.WebpackType.JavaScript }, {});
       expect(startIPCServer).not.toHaveBeenCalled();
     });
 
     it('should start client server', async () => {
-      await startScripts._startDevServer(
-        [plugin],
-        { ...opts, type: configScripts.WebpackType.JavaScript },
-        pluginConfig,
-      );
+      await startScripts._startDevServer([plugin], { ...opts, type: configScripts.WebpackType.JavaScript }, {});
       expect(startIPCClient).toHaveBeenCalledTimes(1);
     });
 
@@ -248,11 +238,7 @@ describe('StartScript', () => {
     });
 
     it('should use emitter for javascript', async () => {
-      await startScripts._startDevServer(
-        [plugin],
-        { ...opts, type: configScripts.WebpackType.JavaScript },
-        pluginConfig,
-      );
+      await startScripts._startDevServer([plugin], { ...opts, type: configScripts.WebpackType.JavaScript }, {});
       expect(compiler).toHaveBeenCalledTimes(1);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(compiler).toHaveBeenCalledWith(expect.any(Object), true, emitCompileComplete as any);
@@ -286,6 +272,25 @@ describe('StartScript', () => {
       expect(prints.serverCrashed).toHaveBeenCalledWith(payload);
       expect(exit.default).toHaveBeenCalledTimes(1);
       expect(exit.default).toHaveBeenCalledWith(1);
+    });
+  });
+
+  describe('_getPluginConfiguration', () => {
+    it('should return plugin configuration', () => {
+      const obj: startScripts.PluginConfig = {
+        pluginOne: {
+          port: 100,
+        },
+        pluginTwo: {
+          port: 200,
+        },
+      };
+      const configStr = '{"pluginOne":{"port":100},"pluginTwo":{"port":200}}';
+      const args = ['stuff', '--plugin-config', configStr];
+
+      const config = startScripts._getPluginConfiguration(...args);
+
+      expect(config).toEqual(obj);
     });
   });
 });
