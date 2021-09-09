@@ -18,6 +18,7 @@ jest.mock('flex-dev-utils/dist/fs');
 jest.mock('flex-dev-utils/dist/updateNotifier');
 
 describe('Commands/FlexPluginsDeploy', () => {
+  jest.setTimeout(10000);
   const pluginName = 'plugin-test';
   const serviceSid = 'ZS00000000000000000000000000000';
   const serviceSid2 = 'ZS00000000000000000000000000001';
@@ -68,7 +69,6 @@ describe('Commands/FlexPluginsDeploy', () => {
   const OLD_ENV = process.env;
 
   beforeEach(() => {
-    jest.setTimeout(10000);
     jest.resetAllMocks();
     jest.restoreAllMocks();
     process.env = { ...OLD_ENV };
