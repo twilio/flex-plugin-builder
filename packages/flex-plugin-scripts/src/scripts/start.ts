@@ -16,6 +16,7 @@ import {
   startIPCServer,
   webpackDevServer,
   OnDevServerCrashedPayload,
+  PluginsConfig,
 } from 'flex-plugin-webpack';
 
 import getConfiguration, { ConfigurationType, WebpackType } from '../config';
@@ -36,12 +37,6 @@ export interface StartScript {
 interface Packages {
   plugins: Plugin[];
   pkg: Record<string, string>;
-}
-
-export interface PluginConfig {
-  [pluginName: string]: {
-    port: number;
-  };
 }
 
 /**
@@ -78,8 +73,8 @@ export const _onServerCrash = (payload: OnDevServerCrashedPayload): void => {
  * @param args
  * @returns
  */
-export const _getPluginConfiguration = (...args: string[]): PluginConfig => {
-  return JSON.parse(args[args.indexOf('--plugin-config') + 1]) as PluginConfig;
+export const _getPluginsConfiguration = (...args: string[]): PluginsConfig => {
+  return JSON.parse(args[args.indexOf('--plugin-config') + 1]) as PluginsConfig;
 };
 
 /**
@@ -94,7 +89,7 @@ export const _getPluginConfiguration = (...args: string[]): PluginConfig => {
 export const _startDevServer = async (
   plugins: UserInputPlugin[],
   options: StartServerOptions,
-  pluginConfig: PluginConfig,
+  pluginsConfig: PluginsConfig,
 ): Promise<StartScript> => {
   const { type, port, remoteAll } = options;
   const isJavaScriptServer = type === WebpackType.JavaScript;
@@ -114,7 +109,7 @@ export const _startDevServer = async (
   if (!isJavaScriptServer) {
     const pluginServerConfig = { port, remoteAll };
     // JSON parse shit
-    pluginServer(pluginRequest, devConfig, pluginServerConfig, onRemotePlugins, pluginConfig);
+    pluginServer(pluginRequest, devConfig, pluginServerConfig, onRemotePlugins, pluginsConfig);
   }
 
   // Start IPC Server
@@ -176,7 +171,6 @@ export const start = async (...args: string[]): Promise<StartScript> => {
   });
 
   const userInputPlugins = parseUserInputPlugins(true, ...args);
-  let pluginConfig: PluginConfig = {};
   const plugin = findFirstLocalPlugin(userInputPlugins);
   if (!plugin) {
     throw new FlexPluginError('You must run at least one plugin locally.');
@@ -211,11 +205,12 @@ export const start = async (...args: string[]): Promise<StartScript> => {
     remoteAll: args.includes('--include-remote'),
   };
 
+  let pluginsConfig: PluginsConfig = {};
   if (type !== WebpackType.JavaScript) {
-    pluginConfig = _getPluginConfiguration(...args);
+    pluginsConfig = _getPluginsConfiguration(...args);
   }
 
-  return _startDevServer(userInputPlugins, options, pluginConfig);
+  return _startDevServer(userInputPlugins, options, pluginsConfig);
 };
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises

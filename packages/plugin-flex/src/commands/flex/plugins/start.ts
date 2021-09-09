@@ -1,10 +1,10 @@
 import { flags } from '@oclif/command';
-import { findPortAvailablePort, StartScript } from 'flex-plugin-scripts/dist/scripts/start';
+import { PluginsConfig } from 'flex-plugin-scripts';
+import { findPortAvailablePort } from 'flex-plugin-scripts/dist/scripts/start';
 import { FLAG_MULTI_PLUGINS } from 'flex-plugin-scripts/dist/scripts/pre-script-check';
 import { TwilioCliError, semver, env } from 'flex-dev-utils';
 import { readJsonFile } from 'flex-dev-utils/dist/fs';
 import { OutputFlags } from '@oclif/parser/lib/parse';
-import { PluginConfig } from 'flex-plugin-scripts/src/scripts/start';
 
 import { createDescription } from '../../../utils/general';
 import FlexPlugin, { ConfigData, Pkg, SecureStorage } from '../../../sub-commands/flex-plugin';
@@ -94,21 +94,23 @@ export default class FlexPluginsStart extends FlexPlugin {
       }
 
       // Now spawn each plugin as a separate process
-      const pluginConfig: PluginConfig = {};
+      const pluginsConfig: PluginsConfig = {};
       for (let i = 0; pluginNames && i < pluginNames.length; i++) {
-        const pluginPort = await findPortAvailablePort(
-          '--port',
-          (parseInt(this._flags.port, 10) + (i + 1) * 100).toString(),
-        );
-        pluginConfig[pluginNames[i]] = { port: pluginPort };
+        const port = await findPortAvailablePort('--port', (parseInt(this._flags.port, 10) + (i + 1) * 100).toString());
+        pluginsConfig[pluginNames[i]] = { port };
       }
 
-      await this.runScript('start', ['flex', ...flexArgs, '--plugin-config', JSON.stringify(pluginConfig)]);
+      await this.runScript('start', ['flex', ...flexArgs, '--plugin-config', JSON.stringify(pluginsConfig)]);
 
       for (let i = 0; pluginNames && i < pluginNames.length; i++) {
-        const pluginPort = pluginConfig[pluginNames[i]].port;
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.spawnScript('start', ['plugin', '--name', pluginNames[i], '--port', pluginPort.toString()]);
+        this.spawnScript('start', [
+          'plugin',
+          '--name',
+          pluginNames[i],
+          '--port',
+          pluginsConfig[pluginNames[i]].port.toString(),
+        ]);
       }
     }
   }
