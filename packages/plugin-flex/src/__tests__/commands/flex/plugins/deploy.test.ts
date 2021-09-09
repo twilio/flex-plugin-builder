@@ -68,6 +68,7 @@ describe('Commands/FlexPluginsDeploy', () => {
   const OLD_ENV = process.env;
 
   beforeEach(() => {
+    jest.setTimeout(10000);
     jest.resetAllMocks();
     jest.restoreAllMocks();
     process.env = { ...OLD_ENV };
