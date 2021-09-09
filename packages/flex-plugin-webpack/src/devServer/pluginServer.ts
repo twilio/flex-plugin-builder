@@ -24,6 +24,12 @@ interface StartServerConfig {
   remoteAll: boolean;
 }
 
+export interface PluginsConfig {
+  [pluginName: string]: {
+    port: number;
+  };
+}
+
 export type OnRemotePlugins = (remotePlugins: Plugin[]) => void;
 
 /**
@@ -208,6 +214,7 @@ export default (
   webpackConfig: Configuration,
   serverConfig: StartServerConfig,
   onRemotePlugin: OnRemotePlugins,
+  pluginsConfig: PluginsConfig,
 ): void => {
   serverConfig.port = webpackConfig.port || 3000;
 
@@ -215,7 +222,7 @@ export default (
     proxy[`/plugins/${name}.js`] = {
       target: `http://localhost:${serverConfig.port}`, // placeholder
       router: () => {
-        const match = _getLocalPlugin(name);
+        const match = pluginsConfig[name];
         if (!match) {
           throw new Error();
         }

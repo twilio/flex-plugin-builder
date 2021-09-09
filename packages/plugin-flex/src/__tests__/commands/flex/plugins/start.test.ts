@@ -1,6 +1,7 @@
 import * as pluginBuilderStartScript from 'flex-plugin-scripts/dist/scripts/start';
 import { TwilioCliError, env, TwilioError } from 'flex-dev-utils';
 import * as fs from 'flex-dev-utils/dist/fs';
+import { PluginsConfig } from 'flex-plugin-scripts';
 
 import createTest, { mockGetPkg } from '../../../framework';
 import FlexPluginsStart from '../../../../commands/flex/plugins/start';
@@ -15,6 +16,8 @@ describe('Commands/FlexPluginsStart', () => {
   const pluginNameOne = 'plugin-testOne';
   const pluginNameTwo = 'plugin-testTwo';
   const pluginNameBad = 'pluginBad';
+  const pluginsConfig: PluginsConfig = {};
+  pluginsConfig['plugin-testOne'] = { port: 100 };
   const pkg = {
     name: pluginNameOne,
     dependencies: {
@@ -39,9 +42,9 @@ describe('Commands/FlexPluginsStart', () => {
   };
   const config = {
     plugins: [
-      { name: pluginNameOne, dir: 'test-dir', port: 0 },
-      { name: pluginNameTwo, dir: 'test-dir', port: 0 },
-      { name: pluginNameBad, dir: 'test-dir', port: 0 },
+      { name: pluginNameOne, dir: 'test-dir' },
+      { name: pluginNameTwo, dir: 'test-dir' },
+      { name: pluginNameBad, dir: 'test-dir' },
     ],
   };
 
@@ -76,7 +79,15 @@ describe('Commands/FlexPluginsStart', () => {
 
     expect(cmd.pluginsConfig).toEqual(config);
     expect(cmd.runScript).toHaveBeenCalledTimes(3);
-    expect(cmd.runScript).toHaveBeenCalledWith('start', ['flex', '--name', pkg.name, '--port', 3000]);
+    expect(cmd.runScript).toHaveBeenCalledWith('start', [
+      'flex',
+      '--name',
+      pkg.name,
+      '--port',
+      3000,
+      '--plugin-config',
+      JSON.stringify(pluginsConfig),
+    ]);
     expect(cmd.runScript).toHaveBeenCalledWith(preStartCheck, ['--name', pkg.name]);
     expect(cmd.runScript).toHaveBeenCalledWith(preScriptCheck, ['--name', pkg.name]);
     expect(cmd.spawnScript).toHaveBeenCalledWith('start', ['plugin', '--name', pkg.name, '--port', '100']);
@@ -158,6 +169,27 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd._flags.name.includes(pluginNameTwo));
     expect(cmd._flags.name.length).toEqual(2);
     expect(cmd._flags[includeRemote]).toEqual(true);
+    expect(cmd._flags.port).toEqual(3000);
+    expect(cmd._flags[flexUiSource]).toBeUndefined();
+  });
+
+  it('should read the port flag', async () => {
+    const cmd = await createTest(FlexPluginsStart)('--name', pluginNameOne, '--name', pluginNameTwo, '--port', '4000');
+
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
+    jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
+    jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
+    findPortAvailablePort.mockResolvedValue(4100);
+
+    await cmd.run();
+
+    expect(cmd._flags.name.includes(pluginNameOne));
+    expect(cmd._flags.name.includes(pluginNameTwo));
+    expect(cmd._flags.name.length).toEqual(2);
+    expect(cmd._flags.port).toEqual(4000);
     expect(cmd._flags[flexUiSource]).toBeUndefined();
   });
 
@@ -178,7 +210,15 @@ describe('Commands/FlexPluginsStart', () => {
 
     expect(cmd.pluginsConfig).toEqual(config);
     expect(cmd.runScript).toHaveBeenCalledTimes(3);
-    expect(cmd.runScript).toHaveBeenCalledWith('start', ['flex', '--name', pkg.name, '--port', 3000]);
+    expect(cmd.runScript).toHaveBeenCalledWith('start', [
+      'flex',
+      '--name',
+      pkg.name,
+      '--port',
+      3000,
+      '--plugin-config',
+      JSON.stringify(pluginsConfig),
+    ]);
     expect(cmd.runScript).toHaveBeenCalledWith(preStartCheck, ['--name', pkg.name]);
     expect(cmd.runScript).toHaveBeenCalledWith(preScriptCheck, ['--name', pkg.name]);
     expect(cmd.spawnScript).toHaveBeenCalledWith('start', ['plugin', '--name', pkg.name, '--port', '100']);

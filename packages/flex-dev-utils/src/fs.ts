@@ -33,7 +33,6 @@ export interface AppPackageJson extends PackageJson {
 export interface FlexConfigurationPlugin {
   name: string;
   dir: string;
-  port: number;
 }
 
 export interface CLIFlexConfiguration {
@@ -365,7 +364,7 @@ export const checkPluginConfigurationExists = async (
   const plugin = config.plugins.find((p) => p.name === name);
 
   if (!plugin) {
-    config.plugins.push({ name, dir, port: 0 });
+    config.plugins.push({ name, dir });
     writeJSONFile(config, cliPaths.pluginsJsonPath);
     return true;
   }

@@ -12,7 +12,7 @@ describe('parser', () => {
   });
 
   describe('parseUserInputPlugins', () => {
-    const plugin = { name: pluginName, dir: 'test-dir', port: 0 };
+    const plugin = { name: pluginName, dir: 'test-dir' };
     const readPluginsJson = jest.spyOn(fs, 'readPluginsJson');
 
     beforeEach(() => {

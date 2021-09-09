@@ -1,5 +1,6 @@
 import { flags } from '@oclif/command';
-import { findPortAvailablePort, StartScript } from 'flex-plugin-scripts/dist/scripts/start';
+import { PluginsConfig } from 'flex-plugin-scripts';
+import { findPortAvailablePort } from 'flex-plugin-scripts/dist/scripts/start';
 import { FLAG_MULTI_PLUGINS } from 'flex-plugin-scripts/dist/scripts/pre-script-check';
 import { TwilioCliError, semver, env } from 'flex-dev-utils';
 import { readJsonFile } from 'flex-dev-utils/dist/fs';
@@ -92,14 +93,24 @@ export default class FlexPluginsStart extends FlexPlugin {
         await this.checkPlugin(pluginNames[i]);
       }
 
-      // Start flex start once
-      const flexStartScript: StartScript = await this.runScript('start', ['flex', ...flexArgs]);
-
       // Now spawn each plugin as a separate process
+      const pluginsConfig: PluginsConfig = {};
       for (let i = 0; pluginNames && i < pluginNames.length; i++) {
-        const port = await findPortAvailablePort('--port', (flexStartScript.port + (i + 1) * 100).toString());
+        const port = await findPortAvailablePort('--port', (parseInt(this._flags.port, 10) + (i + 1) * 100).toString());
+        pluginsConfig[pluginNames[i]] = { port };
+      }
+
+      await this.runScript('start', ['flex', ...flexArgs, '--plugin-config', JSON.stringify(pluginsConfig)]);
+
+      for (let i = 0; pluginNames && i < pluginNames.length; i++) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.spawnScript('start', ['plugin', '--name', pluginNames[i], '--port', port.toString()]);
+        this.spawnScript('start', [
+          'plugin',
+          '--name',
+          pluginNames[i],
+          '--port',
+          pluginsConfig[pluginNames[i]].port.toString(),
+        ]);
       }
     }
   }
