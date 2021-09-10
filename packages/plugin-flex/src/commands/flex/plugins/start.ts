@@ -2,7 +2,7 @@ import { flags } from '@oclif/command';
 import { PluginsConfig } from 'flex-plugin-scripts';
 import { findPortAvailablePort } from 'flex-plugin-scripts/dist/scripts/start';
 import { FLAG_MULTI_PLUGINS } from 'flex-plugin-scripts/dist/scripts/pre-script-check';
-import { TwilioCliError, semver, env } from 'flex-dev-utils';
+import { TwilioCliError, semver, env, TwilioApiError } from 'flex-dev-utils';
 import { readJsonFile } from 'flex-dev-utils/dist/fs';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
@@ -14,6 +14,7 @@ const baseFlags = { ...FlexPlugin.flags };
 delete baseFlags.json;
 
 const MULTI_PLUGINS_PILOT = FLAG_MULTI_PLUGINS.substring(2);
+const PLUGIN_INPUT_PARSER_REGEX = /([\w-]+)(?:@(\S+))?/;
 
 /**
  * Starts the dev-server for building and iterating on a plugin bundle
@@ -58,10 +59,12 @@ export default class FlexPluginsStart extends FlexPlugin {
 
     if (this._flags.name) {
       for (const name of this._flags.name) {
-        flexArgs.push('--name', name);
-        if (!name.includes('@remote')) {
+        if (!name.includes('@')) {
           pluginNames.push(name);
+        } else if (!name.includes('@remote')) {
+          await this.checkVersion(name);
         }
+        flexArgs.push('--name', name);
       }
     }
 
@@ -139,6 +142,35 @@ export default class FlexPluginsStart extends FlexPlugin {
     let scriptVersion = semver.coerce(pkg.dependencies['flex-plugin-scripts']);
     if (!scriptVersion) {
       scriptVersion = semver.coerce(pkg.devDependencies['flex-plugin-scripts']);
+    }
+  }
+
+  /**
+   * Checks the plugin version exists
+   * @param name the inputted plugin name w/ @ version
+   */
+  async checkVersion(name: string): Promise<void> {
+    const groups = name.match(PLUGIN_INPUT_PARSER_REGEX);
+
+    if (!groups) {
+      throw new TwilioCliError('Unexpected plugin format was provided.');
+    }
+
+    const pluginName = groups[1];
+    const version = groups[2];
+
+    // Check if version is in correct format
+    if (!semver.valid(version)) {
+      throw new TwilioCliError(`Version format ${version} is not valid (${pluginName}).`);
+    }
+
+    // Check if given version exists for the plugin
+    try {
+      await this.pluginVersionsClient.get(pluginName, version);
+
+      return;
+    } catch (e) {
+      throw new TwilioApiError(20404, `Error finding plugin ${pluginName} at version ${version}`, 404);
     }
   }
 

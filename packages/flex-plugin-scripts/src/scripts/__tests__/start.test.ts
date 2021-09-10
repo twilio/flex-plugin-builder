@@ -151,6 +151,11 @@ describe('StartScript', () => {
       name: 'plugin-name',
       remote: true,
     };
+    const pluginVersion = {
+      name: 'plugin-name',
+      remote: true,
+      version: '1.0.0',
+    };
     const opts = {
       port: 1234,
       remoteAll: true,
@@ -201,7 +206,31 @@ describe('StartScript', () => {
       );
       expect(pluginServer).toHaveBeenCalledTimes(1);
       expect(pluginServer).toHaveBeenCalledWith(
-        { local: [], remote: [plugin.name] },
+        { local: [], remote: [plugin.name], version: [] },
+        expect.anything(),
+        expect.anything(),
+        onRemotePlugins,
+        pluginsConfig,
+      );
+    });
+
+    it('should start pluginServer with versions', async () => {
+      await startScripts._startDevServer(
+        [pluginVersion],
+        { ...opts, type: configScripts.WebpackType.Static },
+        pluginsConfig,
+      );
+      expect(pluginServer).toHaveBeenCalledTimes(1);
+
+      pluginServer.mockReset();
+      await startScripts._startDevServer(
+        [pluginVersion],
+        { ...opts, type: configScripts.WebpackType.Complete },
+        pluginsConfig,
+      );
+      expect(pluginServer).toHaveBeenCalledTimes(1);
+      expect(pluginServer).toHaveBeenCalledWith(
+        { local: [], remote: [], version: [`${pluginVersion.name}@${pluginVersion.version}`] },
         expect.anything(),
         expect.anything(),
         onRemotePlugins,

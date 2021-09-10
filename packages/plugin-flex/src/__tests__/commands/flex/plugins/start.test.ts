@@ -1,5 +1,5 @@
 import * as pluginBuilderStartScript from 'flex-plugin-scripts/dist/scripts/start';
-import { TwilioCliError, env, TwilioError } from 'flex-dev-utils';
+import { TwilioCliError, env, TwilioError, TwilioApiError } from 'flex-dev-utils';
 import * as fs from 'flex-dev-utils/dist/fs';
 import { PluginsConfig } from 'flex-plugin-scripts';
 
@@ -361,5 +361,37 @@ describe('Commands/FlexPluginsStart', () => {
     // @ts-ignore
     expect(cmd.isMultiPlugin()).toEqual(true);
     expect(cmd.isPluginFolder).toHaveBeenCalledTimes(1);
+  });
+
+  it('should error due to incorrectly formatted version input (semver)', async () => {
+    const cmd = await createTest(FlexPluginsStart)('--name', 'plugin-testOne', '--name', 'plugin-testTwo@a.b.c');
+
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+
+    try {
+      await cmd.run();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TwilioCliError);
+      expect(e.message).toContain('Version format a.b.c is not valid (plugin-testTwo).');
+      expect(cmd.runScript).not.toHaveBeenCalled();
+      expect(cmd.spawnScript).not.toHaveBeenCalled();
+    }
+  });
+
+  it('should error due to incorrectly formatted version input (regex)', async () => {
+    const cmd = await createTest(FlexPluginsStart)('--name', '!@!');
+
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+
+    try {
+      await cmd.run();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TwilioCliError);
+      expect(e.message).toContain('Unexpected plugin format was provided.');
+      expect(cmd.runScript).not.toHaveBeenCalled();
+      expect(cmd.spawnScript).not.toHaveBeenCalled();
+    }
   });
 });
