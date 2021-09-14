@@ -59,11 +59,30 @@ export default class FlexPluginsStart extends FlexPlugin {
 
     if (this._flags.name) {
       for (const name of this._flags.name) {
-        if (!name.includes('@')) {
-          pluginNames.push(name);
-        } else if (!name.includes('@remote')) {
-          await this.checkVersion(name);
+        const groups = name.match(PLUGIN_INPUT_PARSER_REGEX);
+
+        if (!groups) {
+          throw new TwilioCliError('Unexpected plugin format was provided.');
         }
+
+        const pluginName = groups[1];
+        const version = groups[2];
+
+        if (version) {
+          // Check that versioning input is in valid format
+          if (!semver.valid(version) && version !== 'remote') {
+            throw new TwilioCliError(`Plugin format provided for '${name}' is not valid.`);
+          }
+
+          // Check that given plugin version exists on users Flex instance
+          if (semver.valid(version)) {
+            await this.checkPluginVersionExists(pluginName, version);
+          }
+        } else {
+          pluginNames.push(name);
+        }
+
+        // Push all plugins to flex arguments
         flexArgs.push('--name', name);
       }
     }
@@ -149,28 +168,11 @@ export default class FlexPluginsStart extends FlexPlugin {
    * Checks the plugin version exists
    * @param name the inputted plugin name w/ @ version
    */
-  async checkVersion(name: string): Promise<void> {
-    const groups = name.match(PLUGIN_INPUT_PARSER_REGEX);
-
-    if (!groups) {
-      throw new TwilioCliError('Unexpected plugin format was provided.');
-    }
-
-    const pluginName = groups[1];
-    const version = groups[2];
-
-    // Check if version is in correct format
-    if (!semver.valid(version)) {
-      throw new TwilioCliError(`Version format ${version} is not valid (${pluginName}).`);
-    }
-
-    // Check if given version exists for the plugin
+  async checkPluginVersionExists(name: string, version: string): Promise<void> {
     try {
-      await this.pluginVersionsClient.get(pluginName, version);
-
-      return;
+      await this.pluginVersionsClient.get(name, version);
     } catch (e) {
-      throw new TwilioApiError(20404, `Error finding plugin ${pluginName} at version ${version}`, 404);
+      throw new TwilioApiError(20404, `Error finding plugin ${name} at version ${version}`, 404);
     }
   }
 
