@@ -103,7 +103,7 @@
         "description": "Starts a dev-server to build the Flex plugin locally.",
         "flags": {
           "name": "The name of the plugin you would like to run. You can provide multiple to run them all concurrently in the dev-environment (in Pilot). You can include specific active remote plugins using \"--name 'plugin-name@remote'\".",
-          "includeRemote": "Use this flag to include all remote plugins in your build (in Pilot)."
+          "includeRemote": "Use this flag to include all remote plugins in your build."
         }
       },
       "flex:plugins:deploy": {
