@@ -72,12 +72,12 @@ describe('pluginServer', () => {
     });
   });
 
-  describe('_getRemoteVersionPlugins', () => {
+  describe('_getRemoteVersionedPlugins', () => {
     const plugin = 'plugin-version@1.0.0';
     const badPlugin = '!';
 
     it('should return the versioned plugin', () => {
-      const result = pluginServerScript._getRemoteVersionPlugins([plugin]);
+      const result = pluginServerScript._getRemoteVersionedPlugins([plugin]);
       expect(result).toEqual([
         {
           phase: 3,
@@ -90,7 +90,7 @@ describe('pluginServer', () => {
 
     it('should throw error', (done) => {
       try {
-        pluginServerScript._getRemoteVersionPlugins([badPlugin]);
+        pluginServerScript._getRemoteVersionedPlugins([badPlugin]);
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(e.message).toContain('Unexpected plugin name format was provided');
@@ -148,7 +148,7 @@ describe('pluginServer', () => {
     const plugins = {
       local: ['plugin-local1', 'plugin-local2'],
       remote: ['plugin-remote1', 'plugin-remote2'],
-      version: ['plugin-remote2'],
+      versioned: ['plugin-remote2'],
     };
     const config = { port, remoteAll: true };
     const jweHeaders = { 'x-flex-jwe': 'jweToken' };

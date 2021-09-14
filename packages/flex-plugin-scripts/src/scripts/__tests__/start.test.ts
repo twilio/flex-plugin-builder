@@ -206,7 +206,7 @@ describe('StartScript', () => {
       );
       expect(pluginServer).toHaveBeenCalledTimes(1);
       expect(pluginServer).toHaveBeenCalledWith(
-        { local: [], remote: [plugin.name], version: [] },
+        { local: [], remote: [plugin.name], versioned: [] },
         expect.anything(),
         expect.anything(),
         onRemotePlugins,
@@ -230,7 +230,7 @@ describe('StartScript', () => {
       );
       expect(pluginServer).toHaveBeenCalledTimes(1);
       expect(pluginServer).toHaveBeenCalledWith(
-        { local: [], remote: [], version: [`${pluginVersion.name}@${pluginVersion.version}`] },
+        { local: [], remote: [], versioned: [`${pluginVersion.name}@${pluginVersion.version}`] },
         expect.anything(),
         expect.anything(),
         onRemotePlugins,

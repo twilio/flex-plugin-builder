@@ -379,7 +379,7 @@ describe('Commands/FlexPluginsStart', () => {
       await cmd.run();
     } catch (e) {
       expect(e).toBeInstanceOf(TwilioCliError);
-      expect(e.message).toContain(`Plugin format provided for '${name}@${badVersion}' is not valid.`);
+      expect(e.message).toContain('Version a.b.c is not a valid semver string.');
       expect(cmd.runScript).not.toHaveBeenCalled();
       expect(cmd.spawnScript).not.toHaveBeenCalled();
     }

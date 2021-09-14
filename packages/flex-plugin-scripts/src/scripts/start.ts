@@ -100,9 +100,9 @@ export const _startDevServer = async (
   const pluginRequest = {
     local: localPlugins.map((p) => p.name),
     remote: plugins.filter((p) => p.remote && !p.version).map((p) => p.name),
-    version: plugins.filter((p) => p.version).map((p) => `${p.name}@${p.version}`),
+    versioned: plugins.filter((p) => p.version).map((p) => `${p.name}@${p.version}`),
   };
-  const hasRemote = pluginRequest.remote.length > 0 || options.remoteAll;
+  const hasRemote = pluginRequest.remote.length > 0 || pluginRequest.versioned.length > 0 || options.remoteAll;
 
   // compiler render callbacks
   const { onCompile, onRemotePlugins } = compilerRenderer(port, pluginRequest.local, !isJavaScriptServer, hasRemote);

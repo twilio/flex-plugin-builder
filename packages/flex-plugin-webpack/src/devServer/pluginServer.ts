@@ -7,7 +7,7 @@ import { Configuration } from 'webpack-dev-server';
 
 import { remotePluginNotFound } from '../prints';
 
-const PLUGIN_INPUT_PARSER_REGEX = /([\w-]+)(?:@(\S+))?/;
+export const PLUGIN_INPUT_PARSER_REGEX = /([\w-]+)(?:@(\S+))?/;
 
 export interface Plugin {
   phase: number;
@@ -19,7 +19,7 @@ export interface Plugin {
 interface StartServerPlugins {
   local: string[];
   remote: string[];
-  version?: string[];
+  versioned: string[];
 }
 
 interface StartServerConfig {
@@ -127,7 +127,7 @@ export const _getRemotePlugins = async (token: string, version: string | null | 
  * @param names
  * @returns
  */
-export const _getRemoteVersionPlugins = (names: string[]): Plugin[] => {
+export const _getRemoteVersionedPlugins = (names: string[]): Plugin[] => {
   const protocol = `http${env.isHTTPS() ? 's' : ''}://`;
 
   return names.map((plugin) => {
@@ -156,10 +156,16 @@ export const _getRemoteVersionPlugins = (names: string[]): Plugin[] => {
  * @private
  */
 // eslint-disable-next-line import/no-unused-modules
-export const _mergePlugins = (localPlugins: Plugin[], remotePlugins: Plugin[], versionPlugins: Plugin[]): Plugin[] => {
-  const deduped = remotePlugins.filter((r) => !localPlugins.some((l) => l.name === r.name));
+export const _mergePlugins = (
+  localPlugins: Plugin[],
+  remotePlugins: Plugin[],
+  versionedPlugins: Plugin[],
+): Plugin[] => {
+  const deduped = remotePlugins.filter(
+    (r) => !localPlugins.some((l) => l.name === r.name) && !versionedPlugins.some((l) => l.name === r.name),
+  );
 
-  return [...localPlugins, ...deduped, ...versionPlugins];
+  return [...localPlugins, ...deduped, ...versionedPlugins];
 };
 
 /**
@@ -198,9 +204,9 @@ export const _startServer = (
 
     const hasRemotePlugin = config.remoteAll || plugins.remote.length !== 0;
     const localPlugins = _getLocalPlugins(config.port, plugins.local);
-    let versionPlugins: Plugin[] = [];
-    if (plugins.version) {
-      versionPlugins = _getRemoteVersionPlugins(plugins.version);
+    let versionedPlugins: Plugin[] = [];
+    if (plugins.versioned) {
+      versionedPlugins = _getRemoteVersionedPlugins(plugins.versioned);
     }
     const promise: Promise<Plugin[]> = hasRemotePlugin ? _getRemotePlugins(jweToken, flexVersion) : Promise.resolve([]);
 
@@ -227,7 +233,7 @@ export const _startServer = (
 
           onRemotePlugin(remotePlugins);
           res.writeHead(200, responseHeaders);
-          res.end(JSON.stringify(_mergePlugins(localPlugins, remotePlugins, versionPlugins)));
+          res.end(JSON.stringify(_mergePlugins(localPlugins, remotePlugins, versionedPlugins)));
         })
         .catch((err) => {
           res.writeHead(500, responseHeaders);

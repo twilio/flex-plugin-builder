@@ -46,7 +46,7 @@ describe('parser', () => {
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(readPluginsJson).toHaveBeenCalledTimes(1);
-        expect(e.message).toContain(`The version 'a.b.c' is not a valid input.`);
+        expect(e.message).toContain(`The version 'a.b.c' is not a valid semver.`);
         done();
       }
     });

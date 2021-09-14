@@ -1,7 +1,6 @@
 import { FlexConfigurationPlugin, readPluginsJson } from 'flex-dev-utils/dist/fs';
 import { FlexPluginError, semver } from 'flex-dev-utils';
-
-const PLUGIN_INPUT_PARSER_REGEX = /([\w-]+)(?:@(\S+))?/;
+import { PLUGIN_INPUT_PARSER_REGEX } from 'flex-plugin-webpack';
 
 export interface UserInputPlugin {
   name: string;
@@ -41,7 +40,7 @@ export const parseUserInputPlugins = (failIfNotFound: boolean, ...args: string[]
       userInputPlugins.push({ name, remote: true, version });
       continue;
     } else if (version) {
-      throw new FlexPluginError(`The version \'${version}\' is not a valid input.`);
+      throw new FlexPluginError(`The version \'${version}\' is not a valid semver.`);
     }
 
     const plugin = config.plugins.find((p) => p.name === name);
