@@ -204,7 +204,7 @@ export const _startServer = (
 
     const hasRemotePlugin = config.remoteAll || plugins.remote.length !== 0;
     const localPlugins = _getLocalPlugins(config.port, plugins.local);
-    const versionedPlugins: Plugin[] = plugins.versioned ? _getRemoteVersionedPlugins(plugins.versioned) : [];
+    const versionedPlugins = _getRemoteVersionedPlugins(plugins.versioned);
     const promise: Promise<Plugin[]> = hasRemotePlugin ? _getRemotePlugins(jweToken, flexVersion) : Promise.resolve([]);
 
     return (

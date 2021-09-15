@@ -235,6 +235,7 @@ describe('pluginServer', () => {
       expect(_getRemotePlugins).toHaveBeenCalledTimes(1);
       expect(_getRemotePlugins).toHaveBeenCalledWith('jweToken', undefined);
       expect(_getRemoteVersionedPlugins).toHaveBeenCalledTimes(1);
+      expect(_getRemoteVersionedPlugins).toHaveBeenCalledWith(plugins.versioned);
       expect(_mergePlugins).toHaveBeenCalledTimes(1);
       expect(onRemotePlugins).toHaveBeenCalledTimes(1);
       expect(onRemotePlugins).toHaveBeenCalledWith(remotePlugin);

@@ -1,5 +1,3 @@
-/* eslint-disable complexity */
-
 import { flags } from '@oclif/command';
 import { PluginsConfig, PLUGIN_INPUT_PARSER_REGEX } from 'flex-plugin-scripts';
 import { findPortAvailablePort } from 'flex-plugin-scripts/dist/scripts/start';
