@@ -109,7 +109,6 @@ export const _startDevServer = async (
   // Setup plugin's server
   if (!isJavaScriptServer) {
     const pluginServerConfig = { port, remoteAll };
-    // JSON parse shit
     pluginServer(pluginRequest, devConfig, pluginServerConfig, onRemotePlugins, pluginsConfig);
   }
 

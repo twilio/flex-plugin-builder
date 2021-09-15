@@ -141,6 +141,22 @@ describe('pluginServer', () => {
 
       expect(plugins).toHaveLength(3);
     });
+
+    it('should return remote plugins that are not versioned', () => {
+      const localPlugin = { name: defaultPluginName, phase: 3 } as pluginServerScript.Plugin;
+      const remotePlugin = { name: 'plugin-remote', phase: 3 } as pluginServerScript.Plugin;
+      const remotePlugin2 = { name: 'plugin-version', phase: 3 } as pluginServerScript.Plugin;
+      const versionPlugin = { name: 'plugin-version', phase: 3, version: '1.0.0' } as pluginServerScript.Plugin;
+
+      jest.spyOn(pluginServerScript, '_getLocalPlugins').mockReturnValue([localPlugin]);
+      jest.spyOn(fsScript, 'readPackageJson').mockReturnValue(pkg);
+      jest.spyOn(fsScript, 'readPluginsJson').mockReturnValue({ plugins: [{ name: 'test-name', dir: pluginDir }] });
+
+      const plugins = pluginServerScript._mergePlugins([localPlugin], [remotePlugin, remotePlugin2], [versionPlugin]);
+
+      expect(plugins).toHaveLength(3);
+      expect(plugins).toEqual([localPlugin, remotePlugin, versionPlugin]);
+    });
   });
 
   describe('_startServer', () => {
@@ -204,6 +220,9 @@ describe('pluginServer', () => {
 
       jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' });
       const _getRemotePlugins = jest.spyOn(pluginServerScript, '_getRemotePlugins').mockResolvedValue(remotePlugin);
+      const _getRemoteVersionedPlugins = jest
+        .spyOn(pluginServerScript, '_getRemoteVersionedPlugins')
+        .mockReturnValue([]);
       const _mergePlugins = jest
         .spyOn(pluginServerScript, '_mergePlugins')
         .mockReturnValue([{ name: 'plugin-1' }, { name: 'plugin-2' }] as pluginServerScript.Plugin[]);
@@ -215,6 +234,7 @@ describe('pluginServer', () => {
       expect(resp.writeHead).toHaveBeenCalledWith(200, { header: 'true' });
       expect(_getRemotePlugins).toHaveBeenCalledTimes(1);
       expect(_getRemotePlugins).toHaveBeenCalledWith('jweToken', undefined);
+      expect(_getRemoteVersionedPlugins).toHaveBeenCalledTimes(1);
       expect(_mergePlugins).toHaveBeenCalledTimes(1);
       expect(onRemotePlugins).toHaveBeenCalledTimes(1);
       expect(onRemotePlugins).toHaveBeenCalledWith(remotePlugin);

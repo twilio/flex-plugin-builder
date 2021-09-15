@@ -369,7 +369,7 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd.isPluginFolder).toHaveBeenCalledTimes(1);
   });
 
-  it('should error due to incorrectly formatted version input (semver)', async () => {
+  it('should error due to incorrectly formatted version input (semver)', async (done) => {
     const cmd = await createTest(FlexPluginsStart)('--name', 'plugin-testOne', '--name', `${name}@${badVersion}`);
 
     jest.spyOn(cmd, 'runScript').mockReturnThis();
@@ -382,10 +382,12 @@ describe('Commands/FlexPluginsStart', () => {
       expect(e.message).toContain('Version a.b.c is not a valid semver string.');
       expect(cmd.runScript).not.toHaveBeenCalled();
       expect(cmd.spawnScript).not.toHaveBeenCalled();
+
+      done();
     }
   });
 
-  it('should error due to incorrectly formatted version input (regex)', async () => {
+  it('should error due to incorrectly formatted version input (regex)', async (done) => {
     const cmd = await createTest(FlexPluginsStart)('--name', '!@!');
 
     jest.spyOn(cmd, 'runScript').mockReturnThis();
@@ -398,6 +400,8 @@ describe('Commands/FlexPluginsStart', () => {
       expect(e.message).toContain('Unexpected plugin format was provided.');
       expect(cmd.runScript).not.toHaveBeenCalled();
       expect(cmd.spawnScript).not.toHaveBeenCalled();
+
+      done();
     }
   });
 

@@ -204,10 +204,7 @@ export const _startServer = (
 
     const hasRemotePlugin = config.remoteAll || plugins.remote.length !== 0;
     const localPlugins = _getLocalPlugins(config.port, plugins.local);
-    let versionedPlugins: Plugin[] = [];
-    if (plugins.versioned) {
-      versionedPlugins = _getRemoteVersionedPlugins(plugins.versioned);
-    }
+    const versionedPlugins: Plugin[] = plugins.versioned ? _getRemoteVersionedPlugins(plugins.versioned) : [];
     const promise: Promise<Plugin[]> = hasRemotePlugin ? _getRemotePlugins(jweToken, flexVersion) : Promise.resolve([]);
 
     return (
@@ -231,7 +228,7 @@ export const _startServer = (
         .then((remotePlugins) => {
           logger.trace('Got remote plugins', remotePlugins);
 
-          onRemotePlugin(remotePlugins);
+          onRemotePlugin([...versionedPlugins, ...remotePlugins]);
           res.writeHead(200, responseHeaders);
           res.end(JSON.stringify(_mergePlugins(localPlugins, remotePlugins, versionedPlugins)));
         })
