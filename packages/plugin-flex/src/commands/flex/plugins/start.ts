@@ -1,8 +1,8 @@
 import { flags } from '@oclif/command';
-import { PluginsConfig } from 'flex-plugin-scripts';
+import { PluginsConfig, PLUGIN_INPUT_PARSER_REGEX } from 'flex-plugin-scripts';
 import { findPortAvailablePort } from 'flex-plugin-scripts/dist/scripts/start';
 import { FLAG_MULTI_PLUGINS } from 'flex-plugin-scripts/dist/scripts/pre-script-check';
-import { TwilioCliError, semver, env } from 'flex-dev-utils';
+import { TwilioCliError, semver, env, TwilioApiError } from 'flex-dev-utils';
 import { readJsonFile } from 'flex-dev-utils/dist/fs';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
@@ -54,14 +54,35 @@ export default class FlexPluginsStart extends FlexPlugin {
    */
   async doRun(): Promise<void> {
     const flexArgs: string[] = [];
-    const pluginNames: string[] = [];
+    const localPluginNames: string[] = [];
 
     if (this._flags.name) {
       for (const name of this._flags.name) {
         flexArgs.push('--name', name);
-        if (!name.includes('@remote')) {
-          pluginNames.push(name);
+
+        const groups = name.match(PLUGIN_INPUT_PARSER_REGEX);
+        if (!groups) {
+          throw new TwilioCliError('Unexpected plugin format was provided.');
         }
+
+        const pluginName = groups[1];
+        const version = groups[2];
+
+        // local plugin
+        if (!version) {
+          localPluginNames.push(name);
+          continue;
+        }
+
+        // remote plugin
+        if (version === 'remote') {
+          continue;
+        }
+
+        if (!semver.valid(version)) {
+          throw new TwilioCliError(`Version ${version} is not a valid semver string.`);
+        }
+        await this.checkPluginVersionExists(pluginName, version);
       }
     }
 
@@ -76,10 +97,10 @@ export default class FlexPluginsStart extends FlexPlugin {
     // If running in a plugin directory, append it to the names
     if (this.isPluginFolder() && !flexArgs.includes(this.pkg.name)) {
       flexArgs.push('--name', this.pkg.name);
-      pluginNames.push(this.pkg.name);
+      localPluginNames.push(this.pkg.name);
     }
 
-    if (!pluginNames.length) {
+    if (!localPluginNames.length) {
       throw new TwilioCliError(
         'You must run at least one local plugin. To view all remote plugins, go to flex.twilio.com.',
       );
@@ -87,29 +108,29 @@ export default class FlexPluginsStart extends FlexPlugin {
 
     flexArgs.push('--port', this._flags.port);
 
-    if (flexArgs.length && pluginNames.length) {
+    if (flexArgs.length && localPluginNames.length) {
       // Verify all plugins are correct
-      for (let i = 0; pluginNames && i < pluginNames.length; i++) {
-        await this.checkPlugin(pluginNames[i]);
+      for (let i = 0; localPluginNames && i < localPluginNames.length; i++) {
+        await this.checkPlugin(localPluginNames[i]);
       }
 
       // Now spawn each plugin as a separate process
       const pluginsConfig: PluginsConfig = {};
-      for (let i = 0; pluginNames && i < pluginNames.length; i++) {
+      for (let i = 0; localPluginNames && i < localPluginNames.length; i++) {
         const port = await findPortAvailablePort('--port', (parseInt(this._flags.port, 10) + (i + 1) * 100).toString());
-        pluginsConfig[pluginNames[i]] = { port };
+        pluginsConfig[localPluginNames[i]] = { port };
       }
 
       await this.runScript('start', ['flex', ...flexArgs, '--plugin-config', JSON.stringify(pluginsConfig)]);
 
-      for (let i = 0; pluginNames && i < pluginNames.length; i++) {
+      for (let i = 0; localPluginNames && i < localPluginNames.length; i++) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.spawnScript('start', [
           'plugin',
           '--name',
-          pluginNames[i],
+          localPluginNames[i],
           '--port',
-          pluginsConfig[pluginNames[i]].port.toString(),
+          pluginsConfig[localPluginNames[i]].port.toString(),
         ]);
       }
     }
@@ -139,6 +160,18 @@ export default class FlexPluginsStart extends FlexPlugin {
     let scriptVersion = semver.coerce(pkg.dependencies['flex-plugin-scripts']);
     if (!scriptVersion) {
       scriptVersion = semver.coerce(pkg.devDependencies['flex-plugin-scripts']);
+    }
+  }
+
+  /**
+   * Checks the plugin version exists
+   * @param name the inputted plugin name w/ @ version
+   */
+  async checkPluginVersionExists(name: string, version: string): Promise<void> {
+    try {
+      await this.pluginVersionsClient.get(name, version);
+    } catch (e) {
+      throw new TwilioApiError(20404, `Error finding plugin ${name} at version ${version}`, 404);
     }
   }
 

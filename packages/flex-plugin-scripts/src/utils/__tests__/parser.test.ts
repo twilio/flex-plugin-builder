@@ -33,6 +33,24 @@ describe('parser', () => {
       expect(result).toEqual([{ name: pluginName, remote: true }]);
     });
 
+    it('should always return the versioned plugins', () => {
+      const result = parserScripts.parseUserInputPlugins(true, ...['--name', 'plugin-test@1.0.0']);
+
+      expect(readPluginsJson).toHaveBeenCalledTimes(1);
+      expect(result).toEqual([{ name: pluginName, remote: true, version: '1.0.0' }]);
+    });
+
+    it('should throw an error if the version is not in correct format', (done) => {
+      try {
+        parserScripts.parseUserInputPlugins(true, ...['--name', 'plugin-test@a.b.c']);
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+        expect(readPluginsJson).toHaveBeenCalledTimes(1);
+        expect(e.message).toContain(`The version 'a.b.c' is not a valid semver.`);
+        done();
+      }
+    });
+
     it('should throw an error if local plugin is not found', (done) => {
       try {
         parserScripts.parseUserInputPlugins(true, ...['--name', 'plugin-unknown']);
