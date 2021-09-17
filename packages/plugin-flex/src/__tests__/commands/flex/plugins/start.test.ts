@@ -279,6 +279,30 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd._flags[flexUiSource]).toBeUndefined();
   });
 
+  it('should throw an error due to a user inputted port being unavailable', async (done) => {
+    const cmd = await createTest(FlexPluginsStart)('--name', pluginNameOne, '--port', '3000');
+
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
+    jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
+    jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
+    findPortAvailablePort.mockResolvedValueOnce(3100);
+    findPortAvailablePort.mockResolvedValueOnce(3200);
+
+    try {
+      await cmd.run();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TwilioCliError);
+      expect(e.message).toContain('already in use. Use --port to choose another port');
+      expect(cmd.runScript).not.toHaveBeenCalled();
+      expect(cmd.spawnScript).not.toHaveBeenCalled();
+
+      done();
+    }
+  });
+
   it('should throw an error for no local plugins', async () => {
     const cmd = await createTest(FlexPluginsStart)('--name', 'plugin-testOne@remote');
 
