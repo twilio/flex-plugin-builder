@@ -146,7 +146,7 @@ export const findPortAvailablePort = async (...args: string[]): Promise<number> 
   const portIndex = args.indexOf('--port');
   return portIndex === -1
     ? findPort(getDefaultPort(process.env.PORT))
-    : Promise.resolve(parseInt(args[portIndex + 1], 10));
+    : Promise.resolve(findPort(parseInt(args[portIndex + 1], 10)));
 };
 
 /**

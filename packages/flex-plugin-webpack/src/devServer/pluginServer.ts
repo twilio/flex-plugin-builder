@@ -161,11 +161,12 @@ export const _mergePlugins = (
   remotePlugins: Plugin[],
   versionedPlugins: Plugin[],
 ): Plugin[] => {
-  const deduped = remotePlugins.filter(
+  const dedupedRemote = remotePlugins.filter(
     (r) => !localPlugins.some((l) => l.name === r.name) && !versionedPlugins.some((l) => l.name === r.name),
   );
+  const dedupedVersioned = versionedPlugins.filter((r) => !localPlugins.some((l) => l.name === r.name));
 
-  return [...localPlugins, ...deduped, ...versionedPlugins];
+  return [...localPlugins, ...dedupedRemote, ...dedupedVersioned];
 };
 
 /**

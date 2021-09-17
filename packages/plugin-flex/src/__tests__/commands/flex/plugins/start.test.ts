@@ -79,7 +79,8 @@ describe('Commands/FlexPluginsStart', () => {
     mockGetPkg(cmd, pkg);
     jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
     jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
-    findPortAvailablePort.mockResolvedValue(100);
+    findPortAvailablePort.mockResolvedValueOnce(3000);
+    findPortAvailablePort.mockResolvedValueOnce(100);
 
     await cmd.doRun();
 
@@ -90,7 +91,7 @@ describe('Commands/FlexPluginsStart', () => {
       '--name',
       pkg.name,
       '--port',
-      3000,
+      '3000',
       '--plugin-config',
       JSON.stringify(pluginsConfig),
     ]);
@@ -175,7 +176,7 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd._flags.name.includes(pluginNameTwo));
     expect(cmd._flags.name.length).toEqual(2);
     expect(cmd._flags[includeRemote]).toEqual(true);
-    expect(cmd._flags.port).toEqual(3000);
+    expect(cmd._flags.port).toBeUndefined();
     expect(cmd._flags[flexUiSource]).toBeUndefined();
   });
 
@@ -188,7 +189,8 @@ describe('Commands/FlexPluginsStart', () => {
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
     jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
     jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
-    findPortAvailablePort.mockResolvedValue(4100);
+    findPortAvailablePort.mockResolvedValueOnce(4000);
+    findPortAvailablePort.mockResolvedValueOnce(4100);
 
     await cmd.run();
 
@@ -210,7 +212,8 @@ describe('Commands/FlexPluginsStart', () => {
     mockGetPkg(cmd, pkg);
     jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
     jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
-    findPortAvailablePort.mockResolvedValue(100);
+    findPortAvailablePort.mockResolvedValueOnce(3000);
+    findPortAvailablePort.mockResolvedValueOnce(100);
 
     await cmd.run();
 
@@ -221,7 +224,7 @@ describe('Commands/FlexPluginsStart', () => {
       '--name',
       pkg.name,
       '--port',
-      3000,
+      '3000',
       '--plugin-config',
       JSON.stringify(pluginsConfig),
     ]);

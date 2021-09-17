@@ -34,7 +34,6 @@ export default class FlexPluginsStart extends FlexPlugin {
     }),
     port: flags.integer({
       description: FlexPluginsStart.topic.flags.port,
-      default: 3000,
     }),
     'flex-ui-source': flags.string({
       hidden: true,
@@ -106,7 +105,8 @@ export default class FlexPluginsStart extends FlexPlugin {
       );
     }
 
-    flexArgs.push('--port', this._flags.port);
+    const flexPort = await this.checkUserPortIsAvailable();
+    flexArgs.push('--port', flexPort.toString());
 
     if (flexArgs.length && localPluginNames.length) {
       // Verify all plugins are correct
@@ -117,7 +117,7 @@ export default class FlexPluginsStart extends FlexPlugin {
       // Now spawn each plugin as a separate process
       const pluginsConfig: PluginsConfig = {};
       for (let i = 0; localPluginNames && i < localPluginNames.length; i++) {
-        const port = await findPortAvailablePort('--port', (parseInt(this._flags.port, 10) + (i + 1) * 100).toString());
+        const port = await findPortAvailablePort('--port', (flexPort + (i + 1) * 100).toString());
         pluginsConfig[localPluginNames[i]] = { port };
       }
 
@@ -173,6 +173,26 @@ export default class FlexPluginsStart extends FlexPlugin {
     } catch (e) {
       throw new TwilioApiError(20404, `Error finding plugin ${name} at version ${version}`, 404);
     }
+  }
+
+  /**
+   * Throws an error if user inputted a taken port
+   * Returns the port if available
+   *
+   * @param port
+   * @returns
+   */
+  async checkUserPortIsAvailable(): Promise<number> {
+    const flexPort = this._flags.port
+      ? await findPortAvailablePort('--port', this._flags.port)
+      : await findPortAvailablePort('--port', '3000');
+
+    // If port provided, check it is available
+    if (this._flags.port && this._flags.port !== flexPort) {
+      throw new TwilioCliError(`Port ${this._flags.port} already in use. Use --port to choose another port.`);
+    }
+
+    return flexPort;
   }
 
   /**
