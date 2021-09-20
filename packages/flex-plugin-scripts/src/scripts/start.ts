@@ -99,8 +99,12 @@ export const _startDevServer = async (
   const localPlugins = plugins.filter((p) => !p.remote);
   const pluginRequest = {
     local: localPlugins.map((p) => p.name),
-    remote: plugins.filter((p) => p.remote && !p.version).map((p) => p.name),
-    versioned: plugins.filter((p) => p.version).map((p) => `${p.name}@${p.version}`),
+    remote: plugins
+      .filter((p) => p.remote && !p.version && !localPlugins.some((l) => l.name === p.name))
+      .map((p) => p.name),
+    versioned: plugins
+      .filter((p) => p.remote && p.version && !localPlugins.some((l) => l.name === p.name))
+      .map((p) => `${p.name}@${p.version}`),
   };
   const hasRemote = pluginRequest.remote.length > 0 || pluginRequest.versioned.length > 0 || options.remoteAll;
 

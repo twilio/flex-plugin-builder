@@ -147,19 +147,14 @@ describe('pluginServer', () => {
       const remotePlugin = { name: 'plugin-remote', phase: 3 } as pluginServerScript.Plugin;
       const remotePlugin2 = { name: defaultPluginName, phase: 3 } as pluginServerScript.Plugin;
       const versionPlugin = { name: 'plugin-version', phase: 3, version: '1.0.0' } as pluginServerScript.Plugin;
-      const versionPlugin2 = { name: defaultPluginName, phase: 3, version: '1.0.0' } as pluginServerScript.Plugin;
 
       jest.spyOn(pluginServerScript, '_getLocalPlugins').mockReturnValue([localPlugin]);
       jest.spyOn(pluginServerScript, '_getRemotePlugins').mockResolvedValue([remotePlugin, remotePlugin2]);
-      jest.spyOn(pluginServerScript, '_getRemoteVersionedPlugins').mockReturnValue([versionPlugin, versionPlugin2]);
+      jest.spyOn(pluginServerScript, '_getRemoteVersionedPlugins').mockReturnValue([versionPlugin]);
       jest.spyOn(fsScript, 'readPackageJson').mockReturnValue(pkg);
       jest.spyOn(fsScript, 'readPluginsJson').mockReturnValue({ plugins: [{ name: 'test-name', dir: pluginDir }] });
 
-      const plugins = pluginServerScript._mergePlugins(
-        [localPlugin],
-        [remotePlugin, remotePlugin2],
-        [versionPlugin, versionPlugin2],
-      );
+      const plugins = pluginServerScript._mergePlugins([localPlugin], [remotePlugin, remotePlugin2], [versionPlugin]);
 
       expect(plugins).toHaveLength(3);
       expect(plugins).toEqual([localPlugin, remotePlugin, versionPlugin]);

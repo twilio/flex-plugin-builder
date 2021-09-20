@@ -105,7 +105,7 @@ export default class FlexPluginsStart extends FlexPlugin {
       );
     }
 
-    const flexPort = await this.checkUserPortIsAvailable();
+    const flexPort = await this.getPort();
     flexArgs.push('--port', flexPort.toString());
 
     if (flexArgs.length && localPluginNames.length) {
@@ -182,17 +182,15 @@ export default class FlexPluginsStart extends FlexPlugin {
    * @param port
    * @returns
    */
-  async checkUserPortIsAvailable(): Promise<number> {
-    const flexPort = this._flags.port
-      ? await findPortAvailablePort('--port', this._flags.port)
-      : await findPortAvailablePort('--port', '3000');
+  async getPort(): Promise<number> {
+    const port = await findPortAvailablePort('--port', this._flags.port || '3000');
 
     // If port provided, check it is available
-    if (this._flags.port && this._flags.port !== flexPort) {
+    if (this._flags.port && this._flags.port !== port) {
       throw new TwilioCliError(`Port ${this._flags.port} already in use. Use --port to choose another port.`);
     }
 
-    return flexPort;
+    return port;
   }
 
   /**
