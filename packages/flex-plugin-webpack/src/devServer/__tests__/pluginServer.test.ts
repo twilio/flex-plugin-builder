@@ -142,13 +142,15 @@ describe('pluginServer', () => {
       expect(plugins).toHaveLength(3);
     });
 
-    it('should return remote plugins that are not versioned', () => {
+    it('should return remote plugins that are not local', () => {
       const localPlugin = { name: defaultPluginName, phase: 3 } as pluginServerScript.Plugin;
       const remotePlugin = { name: 'plugin-remote', phase: 3 } as pluginServerScript.Plugin;
-      const remotePlugin2 = { name: 'plugin-version', phase: 3 } as pluginServerScript.Plugin;
+      const remotePlugin2 = { name: defaultPluginName, phase: 3 } as pluginServerScript.Plugin;
       const versionPlugin = { name: 'plugin-version', phase: 3, version: '1.0.0' } as pluginServerScript.Plugin;
 
       jest.spyOn(pluginServerScript, '_getLocalPlugins').mockReturnValue([localPlugin]);
+      jest.spyOn(pluginServerScript, '_getRemotePlugins').mockResolvedValue([remotePlugin, remotePlugin2]);
+      jest.spyOn(pluginServerScript, '_getRemoteVersionedPlugins').mockReturnValue([versionPlugin]);
       jest.spyOn(fsScript, 'readPackageJson').mockReturnValue(pkg);
       jest.spyOn(fsScript, 'readPluginsJson').mockReturnValue({ plugins: [{ name: 'test-name', dir: pluginDir }] });
 

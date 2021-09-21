@@ -238,6 +238,39 @@ describe('StartScript', () => {
       );
     });
 
+    it('should start pluginServer with versioned and remote plugins that are not local', async () => {
+      const pluginRemote = {
+        name: 'plugin-name',
+        remote: true,
+      };
+      const pluginLocal = {
+        name: 'plugin-name',
+        remote: false,
+      };
+
+      await startScripts._startDevServer(
+        [pluginLocal, pluginRemote, pluginVersion],
+        { ...opts, type: configScripts.WebpackType.Static },
+        pluginsConfig,
+      );
+      expect(pluginServer).toHaveBeenCalledTimes(1);
+
+      pluginServer.mockReset();
+      await startScripts._startDevServer(
+        [pluginLocal, pluginRemote, pluginVersion],
+        { ...opts, type: configScripts.WebpackType.Complete },
+        pluginsConfig,
+      );
+      expect(pluginServer).toHaveBeenCalledTimes(1);
+      expect(pluginServer).toHaveBeenCalledWith(
+        { local: [pluginLocal.name], remote: [], versioned: [] },
+        expect.anything(),
+        expect.anything(),
+        onRemotePlugins,
+        pluginsConfig,
+      );
+    });
+
     it('should not start pluginServer', async () => {
       await startScripts._startDevServer([plugin], { ...opts, type: configScripts.WebpackType.JavaScript }, {});
       expect(pluginServer).not.toHaveBeenCalled();

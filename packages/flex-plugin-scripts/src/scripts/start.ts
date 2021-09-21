@@ -99,8 +99,12 @@ export const _startDevServer = async (
   const localPlugins = plugins.filter((p) => !p.remote);
   const pluginRequest = {
     local: localPlugins.map((p) => p.name),
-    remote: plugins.filter((p) => p.remote && !p.version).map((p) => p.name),
-    versioned: plugins.filter((p) => p.version).map((p) => `${p.name}@${p.version}`),
+    remote: plugins
+      .filter((p) => p.remote && !p.version && !localPlugins.some((l) => l.name === p.name))
+      .map((p) => p.name),
+    versioned: plugins
+      .filter((p) => p.remote && p.version && !localPlugins.some((l) => l.name === p.name))
+      .map((p) => `${p.name}@${p.version}`),
   };
   const hasRemote = pluginRequest.remote.length > 0 || pluginRequest.versioned.length > 0 || options.remoteAll;
 
@@ -146,7 +150,7 @@ export const findPortAvailablePort = async (...args: string[]): Promise<number> 
   const portIndex = args.indexOf('--port');
   return portIndex === -1
     ? findPort(getDefaultPort(process.env.PORT))
-    : Promise.resolve(parseInt(args[portIndex + 1], 10));
+    : Promise.resolve(findPort(parseInt(args[portIndex + 1], 10)));
 };
 
 /**
