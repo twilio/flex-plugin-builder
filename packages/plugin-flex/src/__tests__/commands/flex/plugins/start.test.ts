@@ -176,7 +176,7 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd._flags.name.includes(pluginNameTwo));
     expect(cmd._flags.name.length).toEqual(2);
     expect(cmd._flags[includeRemote]).toEqual(true);
-    expect(cmd._flags.port).toBeUndefined();
+    expect(cmd._flags.port).toEqual(3000);
     expect(cmd._flags[flexUiSource]).toBeUndefined();
   });
 
