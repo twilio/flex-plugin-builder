@@ -34,6 +34,7 @@ export default class FlexPluginsStart extends FlexPlugin {
     }),
     port: flags.integer({
       description: FlexPluginsStart.topic.flags.port,
+      default: 3000,
     }),
     'flex-ui-source': flags.string({
       hidden: true,
@@ -183,10 +184,10 @@ export default class FlexPluginsStart extends FlexPlugin {
    * @returns
    */
   async getPort(): Promise<number> {
-    const port = await findPortAvailablePort('--port', this._flags.port || '3000');
+    const port = await findPortAvailablePort('--port', this._flags.port);
 
     // If port provided, check it is available
-    if (this._flags.port && this._flags.port !== port) {
+    if (this._flags.port !== port && this.argv.includes('--port')) {
       throw new TwilioCliError(`Port ${this._flags.port} already in use. Use --port to choose another port.`);
     }
 
