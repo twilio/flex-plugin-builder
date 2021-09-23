@@ -7,6 +7,8 @@ import { Configuration } from 'webpack-dev-server';
 
 import { remotePluginNotFound } from '../prints';
 
+export const PLUGIN_INPUT_PARSER_REGEX = /([\w-]+)(?:@(\S+))?/;
+
 export interface Plugin {
   phase: number;
   name: string;
@@ -17,11 +19,18 @@ export interface Plugin {
 interface StartServerPlugins {
   local: string[];
   remote: string[];
+  versioned: string[];
 }
 
 interface StartServerConfig {
   port: number;
   remoteAll: boolean;
+}
+
+export interface PluginsConfig {
+  [pluginName: string]: {
+    port: number;
+  };
 }
 
 export type OnRemotePlugins = (remotePlugins: Plugin[]) => void;
@@ -113,16 +122,50 @@ export const _getRemotePlugins = async (token: string, version: string | null | 
 };
 
 /**
+ * Returns versioned plugins from the CLI
+ *
+ * @param names
+ * @returns
+ */
+export const _getRemoteVersionedPlugins = (names: string[]): Plugin[] => {
+  const protocol = `http${env.isHTTPS() ? 's' : ''}://`;
+
+  return names.map((plugin) => {
+    const groups = plugin.match(PLUGIN_INPUT_PARSER_REGEX);
+
+    if (!groups) {
+      throw new FlexPluginError('Unexpected plugin name format was provided');
+    }
+
+    const name = groups[1];
+    const version = groups[2];
+
+    return {
+      phase: 3,
+      name,
+      src: `${protocol}flex.twilio.com/plugins/v1/${name}/${version}/bundle.js`,
+      version,
+    };
+  });
+};
+
+/**
  * Merge local and remote plugins
  * @param localPlugins   the list of local plugins
  * @param remotePlugins  the lost of remote plugins
  * @private
  */
 // eslint-disable-next-line import/no-unused-modules
-export const _mergePlugins = (localPlugins: Plugin[], remotePlugins: Plugin[]): Plugin[] => {
-  const deduped = remotePlugins.filter((r) => !localPlugins.some((l) => l.name === r.name));
+export const _mergePlugins = (
+  localPlugins: Plugin[],
+  remotePlugins: Plugin[],
+  versionedPlugins: Plugin[],
+): Plugin[] => {
+  const deduped = remotePlugins.filter(
+    (r) => !localPlugins.some((l) => l.name === r.name) && !versionedPlugins.some((l) => l.name === r.name),
+  );
 
-  return [...localPlugins, ...deduped];
+  return [...localPlugins, ...deduped, ...versionedPlugins];
 };
 
 /**
@@ -161,6 +204,7 @@ export const _startServer = (
 
     const hasRemotePlugin = config.remoteAll || plugins.remote.length !== 0;
     const localPlugins = _getLocalPlugins(config.port, plugins.local);
+    const versionedPlugins = _getRemoteVersionedPlugins(plugins.versioned);
     const promise: Promise<Plugin[]> = hasRemotePlugin ? _getRemotePlugins(jweToken, flexVersion) : Promise.resolve([]);
 
     return (
@@ -184,9 +228,9 @@ export const _startServer = (
         .then((remotePlugins) => {
           logger.trace('Got remote plugins', remotePlugins);
 
-          onRemotePlugin(remotePlugins);
+          onRemotePlugin([...versionedPlugins, ...remotePlugins]);
           res.writeHead(200, responseHeaders);
-          res.end(JSON.stringify(_mergePlugins(localPlugins, remotePlugins)));
+          res.end(JSON.stringify(_mergePlugins(localPlugins, remotePlugins, versionedPlugins)));
         })
         .catch((err) => {
           res.writeHead(500, responseHeaders);
@@ -208,6 +252,7 @@ export default (
   webpackConfig: Configuration,
   serverConfig: StartServerConfig,
   onRemotePlugin: OnRemotePlugins,
+  pluginsConfig: PluginsConfig,
 ): void => {
   serverConfig.port = webpackConfig.port || 3000;
 
@@ -215,7 +260,7 @@ export default (
     proxy[`/plugins/${name}.js`] = {
       target: `http://localhost:${serverConfig.port}`, // placeholder
       router: () => {
-        const match = _getLocalPlugin(name);
+        const match = pluginsConfig[name];
         if (!match) {
           throw new Error();
         }

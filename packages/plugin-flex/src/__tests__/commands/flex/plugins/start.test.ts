@@ -1,6 +1,10 @@
+/* eslint-disable camelcase */
+
 import * as pluginBuilderStartScript from 'flex-plugin-scripts/dist/scripts/start';
-import { TwilioCliError, env, TwilioError } from 'flex-dev-utils';
+import { TwilioCliError, env, TwilioError, TwilioApiError } from 'flex-dev-utils';
 import * as fs from 'flex-dev-utils/dist/fs';
+import { PluginsConfig } from 'flex-plugin-scripts';
+import { PluginVersionResource } from 'flex-plugins-api-client';
 
 import createTest, { mockGetPkg } from '../../../framework';
 import FlexPluginsStart from '../../../../commands/flex/plugins/start';
@@ -9,12 +13,17 @@ const includeRemote = 'include-remote';
 const flexUiSource = 'flex-ui-source';
 
 describe('Commands/FlexPluginsStart', () => {
+  const name = 'plugin-test';
+  const goodVersion = '2.0.0';
+  const badVersion = 'a.b.c';
   const preStartCheck = 'pre-start-check';
   const preScriptCheck = 'pre-script-check';
   const pluginNameSample = 'plugin-sample';
   const pluginNameOne = 'plugin-testOne';
   const pluginNameTwo = 'plugin-testTwo';
   const pluginNameBad = 'pluginBad';
+  const pluginsConfig: PluginsConfig = {};
+  pluginsConfig['plugin-testOne'] = { port: 100 };
   const pkg = {
     name: pluginNameOne,
     dependencies: {
@@ -39,9 +48,9 @@ describe('Commands/FlexPluginsStart', () => {
   };
   const config = {
     plugins: [
-      { name: pluginNameOne, dir: 'test-dir', port: 0 },
-      { name: pluginNameTwo, dir: 'test-dir', port: 0 },
-      { name: pluginNameBad, dir: 'test-dir', port: 0 },
+      { name: pluginNameOne, dir: 'test-dir' },
+      { name: pluginNameTwo, dir: 'test-dir' },
+      { name: pluginNameBad, dir: 'test-dir' },
     ],
   };
 
@@ -70,13 +79,22 @@ describe('Commands/FlexPluginsStart', () => {
     mockGetPkg(cmd, pkg);
     jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
     jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
-    findPortAvailablePort.mockResolvedValue(100);
+    findPortAvailablePort.mockResolvedValueOnce(3000);
+    findPortAvailablePort.mockResolvedValueOnce(100);
 
     await cmd.doRun();
 
     expect(cmd.pluginsConfig).toEqual(config);
     expect(cmd.runScript).toHaveBeenCalledTimes(3);
-    expect(cmd.runScript).toHaveBeenCalledWith('start', ['flex', '--name', pkg.name]);
+    expect(cmd.runScript).toHaveBeenCalledWith('start', [
+      'flex',
+      '--name',
+      pkg.name,
+      '--port',
+      '3000',
+      '--plugin-config',
+      JSON.stringify(pluginsConfig),
+    ]);
     expect(cmd.runScript).toHaveBeenCalledWith(preStartCheck, ['--name', pkg.name]);
     expect(cmd.runScript).toHaveBeenCalledWith(preScriptCheck, ['--name', pkg.name]);
     expect(cmd.spawnScript).toHaveBeenCalledWith('start', ['plugin', '--name', pkg.name, '--port', '100']);
@@ -158,6 +176,28 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd._flags.name.includes(pluginNameTwo));
     expect(cmd._flags.name.length).toEqual(2);
     expect(cmd._flags[includeRemote]).toEqual(true);
+    expect(cmd._flags.port).toEqual(3000);
+    expect(cmd._flags[flexUiSource]).toBeUndefined();
+  });
+
+  it('should read the port flag', async () => {
+    const cmd = await createTest(FlexPluginsStart)('--name', pluginNameOne, '--name', pluginNameTwo, '--port', '4000');
+
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
+    jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
+    jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
+    findPortAvailablePort.mockResolvedValueOnce(4000);
+    findPortAvailablePort.mockResolvedValueOnce(4100);
+
+    await cmd.run();
+
+    expect(cmd._flags.name.includes(pluginNameOne));
+    expect(cmd._flags.name.includes(pluginNameTwo));
+    expect(cmd._flags.name.length).toEqual(2);
+    expect(cmd._flags.port).toEqual(4000);
     expect(cmd._flags[flexUiSource]).toBeUndefined();
   });
 
@@ -172,13 +212,22 @@ describe('Commands/FlexPluginsStart', () => {
     mockGetPkg(cmd, pkg);
     jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
     jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
-    findPortAvailablePort.mockResolvedValue(100);
+    findPortAvailablePort.mockResolvedValueOnce(3000);
+    findPortAvailablePort.mockResolvedValueOnce(100);
 
     await cmd.run();
 
     expect(cmd.pluginsConfig).toEqual(config);
     expect(cmd.runScript).toHaveBeenCalledTimes(3);
-    expect(cmd.runScript).toHaveBeenCalledWith('start', ['flex', '--name', pkg.name]);
+    expect(cmd.runScript).toHaveBeenCalledWith('start', [
+      'flex',
+      '--name',
+      pkg.name,
+      '--port',
+      '3000',
+      '--plugin-config',
+      JSON.stringify(pluginsConfig),
+    ]);
     expect(cmd.runScript).toHaveBeenCalledWith(preStartCheck, ['--name', pkg.name]);
     expect(cmd.runScript).toHaveBeenCalledWith(preScriptCheck, ['--name', pkg.name]);
     expect(cmd.spawnScript).toHaveBeenCalledWith('start', ['plugin', '--name', pkg.name, '--port', '100']);
@@ -228,6 +277,30 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd._flags.name.length).toEqual(1);
     expect(cmd._flags[includeRemote]).toBeUndefined();
     expect(cmd._flags[flexUiSource]).toBeUndefined();
+  });
+
+  it('should throw an error due to a user inputted port being unavailable', async (done) => {
+    const cmd = await createTest(FlexPluginsStart)('--name', pluginNameOne, '--port', '3000');
+
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
+    jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
+    jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
+    findPortAvailablePort.mockResolvedValueOnce(3100);
+    findPortAvailablePort.mockResolvedValueOnce(3200);
+
+    try {
+      await cmd.run();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TwilioCliError);
+      expect(e.message).toContain('already in use. Use --port to choose another port');
+      expect(cmd.runScript).not.toHaveBeenCalled();
+      expect(cmd.spawnScript).not.toHaveBeenCalled();
+
+      done();
+    }
   });
 
   it('should throw an error for no local plugins', async () => {
@@ -321,5 +394,103 @@ describe('Commands/FlexPluginsStart', () => {
     // @ts-ignore
     expect(cmd.isMultiPlugin()).toEqual(true);
     expect(cmd.isPluginFolder).toHaveBeenCalledTimes(1);
+  });
+
+  it('should error due to incorrectly formatted version input (semver)', async (done) => {
+    const cmd = await createTest(FlexPluginsStart)('--name', 'plugin-testOne', '--name', `${name}@${badVersion}`);
+
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+
+    try {
+      await cmd.run();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TwilioCliError);
+      expect(e.message).toContain('Version a.b.c is not a valid semver string.');
+      expect(cmd.runScript).not.toHaveBeenCalled();
+      expect(cmd.spawnScript).not.toHaveBeenCalled();
+
+      done();
+    }
+  });
+
+  it('should error due to incorrectly formatted version input (regex)', async (done) => {
+    const cmd = await createTest(FlexPluginsStart)('--name', '!@!');
+
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+
+    try {
+      await cmd.run();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TwilioCliError);
+      expect(e.message).toContain('Unexpected plugin format was provided.');
+      expect(cmd.runScript).not.toHaveBeenCalled();
+      expect(cmd.spawnScript).not.toHaveBeenCalled();
+
+      done();
+    }
+  });
+
+  it('should error due to version not found', async (done) => {
+    const cmd = await createTest(FlexPluginsStart)('--name', 'plugin-testOne', '--name', `${name}@${goodVersion}`);
+
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
+    mockGetPkg(cmd, pkg);
+    jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
+    jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
+    findPortAvailablePort.mockResolvedValue(100);
+    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+
+    const get = jest.fn().mockRejectedValue(new Error());
+
+    try {
+      // @ts-ignore
+      jest.spyOn(cmd, 'pluginVersionsClient', 'get').mockReturnValue({ get });
+      await cmd.run();
+    } catch (e) {
+      expect(e instanceof TwilioApiError).toEqual(true);
+      expect(e.message).toContain(`Error finding plugin ${name} at version ${goodVersion}`);
+
+      expect(get).toHaveBeenCalledTimes(1);
+      done();
+    }
+  });
+
+  it('should find the version of the plugin if available', async () => {
+    const pluginVersionResource: PluginVersionResource = {
+      archived: false,
+      changelog: 'test',
+      private: true,
+      account_sid: 'AC00000000000000000000000000000',
+      version: goodVersion,
+      plugin_url: 'https://flex.twilio.com/plugins/plugin-test/2.0.0/bundle.js',
+      sid: 'FV00000000000000000000000000000',
+      date_created: '2021',
+      plugin_sid: 'FP00000000000000000000000000000',
+    };
+    const cmd = await createTest(FlexPluginsStart)('--name', 'plugin-testOne', '--name', `${name}@${goodVersion}`);
+
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
+    mockGetPkg(cmd, pkg);
+    jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
+    jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
+    findPortAvailablePort.mockResolvedValue(100);
+    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    const get = jest.fn().mockResolvedValue(pluginVersionResource);
+
+    // @ts-ignore
+    jest.spyOn(cmd, 'pluginVersionsClient', 'get').mockReturnValue({ get });
+
+    await cmd.run();
+
+    expect(get).toHaveBeenCalledTimes(1);
+    expect(get).toHaveBeenCalledWith(name, goodVersion);
   });
 });

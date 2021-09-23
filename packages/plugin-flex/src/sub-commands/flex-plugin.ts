@@ -61,7 +61,6 @@ export interface FlexPluginFlags {
 interface FlexConfigurationPlugin {
   name: string;
   dir: string;
-  port: number;
 }
 
 interface CLIFlexConfiguration {

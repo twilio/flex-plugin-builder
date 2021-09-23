@@ -1,7 +1,8 @@
 import { flags } from '@oclif/command';
-import { findPortAvailablePort, StartScript } from 'flex-plugin-scripts/dist/scripts/start';
+import { PluginsConfig, PLUGIN_INPUT_PARSER_REGEX } from 'flex-plugin-scripts';
+import { findPortAvailablePort } from 'flex-plugin-scripts/dist/scripts/start';
 import { FLAG_MULTI_PLUGINS } from 'flex-plugin-scripts/dist/scripts/pre-script-check';
-import { TwilioCliError, semver, env } from 'flex-dev-utils';
+import { TwilioCliError, semver, env, TwilioApiError } from 'flex-dev-utils';
 import { readJsonFile } from 'flex-dev-utils/dist/fs';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
@@ -31,6 +32,10 @@ export default class FlexPluginsStart extends FlexPlugin {
     'include-remote': flags.boolean({
       description: FlexPluginsStart.topic.flags.includeRemote,
     }),
+    port: flags.integer({
+      description: FlexPluginsStart.topic.flags.port,
+      default: 3000,
+    }),
     'flex-ui-source': flags.string({
       hidden: true,
     }),
@@ -49,14 +54,35 @@ export default class FlexPluginsStart extends FlexPlugin {
    */
   async doRun(): Promise<void> {
     const flexArgs: string[] = [];
-    const pluginNames: string[] = [];
+    const localPluginNames: string[] = [];
 
     if (this._flags.name) {
       for (const name of this._flags.name) {
         flexArgs.push('--name', name);
-        if (!name.includes('@remote')) {
-          pluginNames.push(name);
+
+        const groups = name.match(PLUGIN_INPUT_PARSER_REGEX);
+        if (!groups) {
+          throw new TwilioCliError('Unexpected plugin format was provided.');
         }
+
+        const pluginName = groups[1];
+        const version = groups[2];
+
+        // local plugin
+        if (!version) {
+          localPluginNames.push(name);
+          continue;
+        }
+
+        // remote plugin
+        if (version === 'remote') {
+          continue;
+        }
+
+        if (!semver.valid(version)) {
+          throw new TwilioCliError(`Version ${version} is not a valid semver string.`);
+        }
+        await this.checkPluginVersionExists(pluginName, version);
       }
     }
 
@@ -71,30 +97,42 @@ export default class FlexPluginsStart extends FlexPlugin {
     // If running in a plugin directory, append it to the names
     if (this.isPluginFolder() && !flexArgs.includes(this.pkg.name)) {
       flexArgs.push('--name', this.pkg.name);
-      pluginNames.push(this.pkg.name);
+      localPluginNames.push(this.pkg.name);
     }
 
-    if (!pluginNames.length) {
+    if (!localPluginNames.length) {
       throw new TwilioCliError(
         'You must run at least one local plugin. To view all remote plugins, go to flex.twilio.com.',
       );
     }
 
-    let flexStartScript: StartScript = { port: 3000 };
-    if (flexArgs.length && pluginNames.length) {
+    const flexPort = await this.getPort();
+    flexArgs.push('--port', flexPort.toString());
+
+    if (flexArgs.length && localPluginNames.length) {
       // Verify all plugins are correct
-      for (let i = 0; pluginNames && i < pluginNames.length; i++) {
-        await this.checkPlugin(pluginNames[i]);
+      for (let i = 0; localPluginNames && i < localPluginNames.length; i++) {
+        await this.checkPlugin(localPluginNames[i]);
       }
 
-      // Start flex start once
-      flexStartScript = await this.runScript('start', ['flex', ...flexArgs]);
-
       // Now spawn each plugin as a separate process
-      for (let i = 0; pluginNames && i < pluginNames.length; i++) {
-        const port = await findPortAvailablePort('--port', (flexStartScript.port + (i + 1) * 100).toString());
+      const pluginsConfig: PluginsConfig = {};
+      for (let i = 0; localPluginNames && i < localPluginNames.length; i++) {
+        const port = await findPortAvailablePort('--port', (flexPort + (i + 1) * 100).toString());
+        pluginsConfig[localPluginNames[i]] = { port };
+      }
+
+      await this.runScript('start', ['flex', ...flexArgs, '--plugin-config', JSON.stringify(pluginsConfig)]);
+
+      for (let i = 0; localPluginNames && i < localPluginNames.length; i++) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.spawnScript('start', ['plugin', '--name', pluginNames[i], '--port', port.toString()]);
+        this.spawnScript('start', [
+          'plugin',
+          '--name',
+          localPluginNames[i],
+          '--port',
+          pluginsConfig[localPluginNames[i]].port.toString(),
+        ]);
       }
     }
   }
@@ -124,6 +162,36 @@ export default class FlexPluginsStart extends FlexPlugin {
     if (!scriptVersion) {
       scriptVersion = semver.coerce(pkg.devDependencies['flex-plugin-scripts']);
     }
+  }
+
+  /**
+   * Checks the plugin version exists
+   * @param name the inputted plugin name w/ @ version
+   */
+  async checkPluginVersionExists(name: string, version: string): Promise<void> {
+    try {
+      await this.pluginVersionsClient.get(name, version);
+    } catch (e) {
+      throw new TwilioApiError(20404, `Error finding plugin ${name} at version ${version}`, 404);
+    }
+  }
+
+  /**
+   * Throws an error if user inputted a taken port
+   * Returns the port if available
+   *
+   * @param port
+   * @returns
+   */
+  async getPort(): Promise<number> {
+    const port = await findPortAvailablePort('--port', this._flags.port);
+
+    // If port provided, check it is available
+    if (this._flags.port !== port && this.argv.includes('--port')) {
+      throw new TwilioCliError(`Port ${this._flags.port} already in use. Use --port to choose another port.`);
+    }
+
+    return port;
   }
 
   /**

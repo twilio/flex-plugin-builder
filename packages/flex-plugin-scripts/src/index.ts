@@ -7,6 +7,8 @@ import { env, spawn, exit, logger } from 'flex-dev-utils';
 import { checkForUpdate } from 'flex-dev-utils/dist/updateNotifier';
 import { render as markedRender } from 'flex-dev-utils/dist/marked';
 import { getPaths, getCwd, addCWDNodeModule } from 'flex-dev-utils/dist/fs';
+// eslint-disable-next-line import/no-unused-modules
+export { PluginsConfig, PLUGIN_INPUT_PARSER_REGEX } from 'flex-plugin-webpack';
 
 checkForUpdate();
 

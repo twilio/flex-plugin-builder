@@ -1,7 +1,7 @@
 import { env, exit, logger } from 'flex-dev-utils';
 import { Environment } from 'flex-dev-utils/dist/env';
 import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import { addCWDNodeModule, getPaths, readPluginsJson, setCwd, writeJSONFile } from 'flex-dev-utils/dist/fs';
+import { addCWDNodeModule, setCwd } from 'flex-dev-utils/dist/fs';
 import { findPort, getDefaultPort } from 'flex-dev-utils/dist/urls';
 import {
   compiler,
@@ -16,6 +16,7 @@ import {
   startIPCServer,
   webpackDevServer,
   OnDevServerCrashedPayload,
+  PluginsConfig,
 } from 'flex-plugin-webpack';
 
 import getConfiguration, { ConfigurationType, WebpackType } from '../config';
@@ -59,28 +60,21 @@ export const _requirePackages = (pluginsPath: string, pkgPath: string): Packages
 };
 
 /**
- * Update port of a plugin
- * @param port
- * @param name
- */
-export const _updatePluginPort = (port: number, name: string): void => {
-  const config = readPluginsJson();
-  config.plugins.forEach((plugin) => {
-    if (plugin.name === name) {
-      plugin.port = port;
-    }
-  });
-
-  writeJSONFile(config, getPaths().cli.pluginsJsonPath);
-};
-
-/**
  * Handles server crash
  * @param payload
  */
 export const _onServerCrash = (payload: OnDevServerCrashedPayload): void => {
   serverCrashed(payload);
   exit(1);
+};
+
+/**
+ * Parse the configuration
+ * @param args
+ * @returns
+ */
+export const _getPluginsConfiguration = (...args: string[]): PluginsConfig => {
+  return JSON.parse(args[args.indexOf('--plugin-config') + 1]) as PluginsConfig;
 };
 
 /**
@@ -95,6 +89,7 @@ export const _onServerCrash = (payload: OnDevServerCrashedPayload): void => {
 export const _startDevServer = async (
   plugins: UserInputPlugin[],
   options: StartServerOptions,
+  pluginsConfig: PluginsConfig,
 ): Promise<StartScript> => {
   const { type, port, remoteAll } = options;
   const isJavaScriptServer = type === WebpackType.JavaScript;
@@ -104,16 +99,21 @@ export const _startDevServer = async (
   const localPlugins = plugins.filter((p) => !p.remote);
   const pluginRequest = {
     local: localPlugins.map((p) => p.name),
-    remote: plugins.filter((p) => p.remote).map((p) => p.name),
+    remote: plugins
+      .filter((p) => p.remote && !p.version && !localPlugins.some((l) => l.name === p.name))
+      .map((p) => p.name),
+    versioned: plugins
+      .filter((p) => p.remote && p.version && !localPlugins.some((l) => l.name === p.name))
+      .map((p) => `${p.name}@${p.version}`),
   };
-  const hasRemote = pluginRequest.remote.length > 0 || options.remoteAll;
+  const hasRemote = pluginRequest.remote.length > 0 || pluginRequest.versioned.length > 0 || options.remoteAll;
 
   // compiler render callbacks
   const { onCompile, onRemotePlugins } = compilerRenderer(port, pluginRequest.local, !isJavaScriptServer, hasRemote);
   // Setup plugin's server
   if (!isJavaScriptServer) {
     const pluginServerConfig = { port, remoteAll };
-    pluginServer(pluginRequest, devConfig, pluginServerConfig, onRemotePlugins);
+    pluginServer(pluginRequest, devConfig, pluginServerConfig, onRemotePlugins, pluginsConfig);
   }
 
   // Start IPC Server
@@ -150,7 +150,7 @@ export const findPortAvailablePort = async (...args: string[]): Promise<number> 
   const portIndex = args.indexOf('--port');
   return portIndex === -1
     ? findPort(getDefaultPort(process.env.PORT))
-    : Promise.resolve(parseInt(args[portIndex + 1], 10));
+    : Promise.resolve(findPort(parseInt(args[portIndex + 1], 10)));
 };
 
 /**
@@ -202,9 +202,6 @@ export const start = async (...args: string[]): Promise<StartScript> => {
   }
 
   setCwd(plugin.dir);
-  if (type === WebpackType.Complete || type === WebpackType.JavaScript) {
-    _updatePluginPort(port, plugin.name);
-  }
 
   const options = {
     port,
@@ -212,7 +209,12 @@ export const start = async (...args: string[]): Promise<StartScript> => {
     remoteAll: args.includes('--include-remote'),
   };
 
-  return _startDevServer(userInputPlugins, options);
+  let pluginsConfig: PluginsConfig = {};
+  if (type !== WebpackType.JavaScript) {
+    pluginsConfig = _getPluginsConfiguration(...args);
+  }
+
+  return _startDevServer(userInputPlugins, options, pluginsConfig);
 };
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises

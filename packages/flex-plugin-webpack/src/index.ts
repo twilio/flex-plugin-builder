@@ -17,7 +17,7 @@ export { default as webpackFactory } from './webpack/webpack.config';
 export { default as webpackDevFactory } from './webpack/webpack.dev';
 export { default as compiler, compilerRenderer } from './compiler';
 export { default as webpackDevServer } from './devServer/webpackDevServer';
-export { default as pluginServer, Plugin } from './devServer/pluginServer';
+export { default as pluginServer, Plugin, PluginsConfig, PLUGIN_INPUT_PARSER_REGEX } from './devServer/pluginServer';
 export {
   emitCompileComplete,
   emitDevServerCrashed,
