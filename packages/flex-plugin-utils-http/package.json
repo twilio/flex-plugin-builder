@@ -37,16 +37,16 @@
     "test:watch": "cd ../.. && jest packages/flex-plugin-utils-http --watch --color"
   },
   "dependencies": {
-    "axios": "^0.21.1",
-    "axios-cache-adapter": "^2.5.0",
+    "axios": "^0.21.4",
+    "axios-cache-adapter": "^2.7.3",
     "flex-plugins-utils-env": "4.2.0",
     "flex-plugins-utils-exception": "4.2.0",
     "flex-plugins-utils-logger": "4.2.0",
-    "qs": "^6.9.4",
-    "util": "^0.12.3"
+    "qs": "^6.10.1",
+    "util": "^0.12.4"
   },
   "devDependencies": {
-    "@types/qs": "^6.9.5",
-    "axios-mock-adapter": "^1.19.0"
+    "@types/qs": "^6.9.7",
+    "axios-mock-adapter": "^1.20.0"
   }
 }

@@ -36,21 +36,21 @@
     "test:watch": "cd ../.. && jest packages/flex-plugins-utils-logger --watch --color"
   },
   "dependencies": {
-    "@k88/pipe-compose": "^2.2.0",
-    "boxen": "^4.1.0",
-    "chalk": "^4.1.0",
+    "@k88/pipe-compose": "^2.5.0",
+    "boxen": "^4.2.0",
+    "chalk": "^4.1.2",
     "columnify": "^1.5.4",
     "flex-plugins-utils-env": "4.2.0",
     "inquirer": "7.3.3",
     "log-symbols": "^3.0.0",
-    "ora": "^4.0.5",
-    "string-width": "^4.2.0",
+    "ora": "^4.1.1",
+    "string-width": "^4.2.3",
     "table": "^5.4.6",
     "wrap-ansi": "^4.0.0"
   },
   "devDependencies": {
-    "@types/columnify": "^1.5.0",
-    "@types/inquirer": "^7.3.1",
+    "@types/columnify": "^1.5.1",
+    "@types/inquirer": "^7.3.3",
     "@types/string-width": "^4.0.1",
     "@types/table": "^4.0.7",
     "@types/wrap-ansi": "^3.0.0"
