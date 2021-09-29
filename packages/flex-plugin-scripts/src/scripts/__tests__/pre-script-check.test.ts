@@ -501,9 +501,18 @@ describe('PreScriptCheck', () => {
       expect(logger.warning).not.toHaveBeenCalled();
     });
 
-    it('should log a warning if the plugin and cli versions are not the same', () => {
+    it('should log a warning if the flex-plugin-scripts version is less than CLI', () => {
       jest.spyOn(fsScripts, 'packageDependencyVersion').mockReturnValueOnce('1.2.4');
       jest.spyOn(fsScripts, 'packageDependencyVersion').mockReturnValueOnce('1.2.3');
+
+      preScriptCheck._comparePluginAndCLIVersions();
+
+      expect(logger.warning).toHaveBeenCalledTimes(1);
+    });
+
+    it('should log a warning if CLI version is less than flex-plugin-scripts', () => {
+      jest.spyOn(fsScripts, 'packageDependencyVersion').mockReturnValueOnce('1.2.3');
+      jest.spyOn(fsScripts, 'packageDependencyVersion').mockReturnValueOnce('1.2.4');
 
       preScriptCheck._comparePluginAndCLIVersions();
 

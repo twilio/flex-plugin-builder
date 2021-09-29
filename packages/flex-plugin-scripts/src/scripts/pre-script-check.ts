@@ -182,12 +182,13 @@ export const _setPluginDir = (...args: string[]): void => {
 export const _comparePluginAndCLIVersions = (): void => {
   const cliPackageJson = readPackageJson(join(getCliPaths().dir, packageJsonName));
   const pluginPackageJson = readPackageJson(join(getCwd(), packageJsonName));
-  const cliVersion = packageDependencyVersion(cliPackageJson, '@twilio-labs/plugin-flex');
-  const pluginVersion = packageDependencyVersion(pluginPackageJson, 'flex-plugin-scripts');
+  const cliVersion = semver.coerce(packageDependencyVersion(cliPackageJson, '@twilio-labs/plugin-flex'));
+  const pluginVersion = semver.coerce(packageDependencyVersion(pluginPackageJson, 'flex-plugin-scripts'));
 
-  if (cliVersion && pluginVersion && semver.clean(cliVersion) !== semver.clean(pluginVersion)) {
+  if (cliVersion && pluginVersion && cliVersion.version !== pluginVersion.version) {
+    const earlierVersion = cliVersion.version < pluginVersion.version ? 'CLI' : 'flex-plugin-scripts';
     logger.warning(
-      `You are using CLI Version \'${cliVersion}\' with flex-plugin-scripts version \'${pluginVersion}\' for plugin \'${pluginPackageJson.name}\'.`,
+      `You are using CLI Version \'${cliVersion.version}\' with flex-plugin-scripts version \'${pluginVersion.version}\' for plugin \'${pluginPackageJson.name}\'. Consider upgrading your ${earlierVersion}.`,
     );
   }
 };
