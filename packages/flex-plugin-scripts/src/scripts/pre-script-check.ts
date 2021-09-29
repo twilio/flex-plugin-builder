@@ -176,6 +176,24 @@ export const _setPluginDir = (...args: string[]): void => {
 };
 
 /**
+ * Compares the CLI and the plugin for flex-plugin-scripts
+ * @private
+ */
+export const _comparePluginAndCLIVersions = (): void => {
+  const cliPackageJson = readPackageJson(join(getCliPaths().dir, packageJsonName));
+  const pluginPackageJson = readPackageJson(join(getCwd(), packageJsonName));
+  const cliVersion = semver.coerce(packageDependencyVersion(cliPackageJson, '@twilio-labs/plugin-flex'));
+  const pluginVersion = semver.coerce(packageDependencyVersion(pluginPackageJson, 'flex-plugin-scripts'));
+
+  if (cliVersion && pluginVersion && cliVersion.version !== pluginVersion.version) {
+    const earlierVersion = cliVersion.version < pluginVersion.version ? 'CLI' : 'flex-plugin-scripts';
+    logger.warning(
+      `You are using CLI Version \'${cliVersion.version}\' with flex-plugin-scripts version \'${pluginVersion.version}\' for plugin \'${pluginPackageJson.name}\'. Consider upgrading your ${earlierVersion}.`,
+    );
+  }
+};
+
+/**
  * Runs pre-start/build checks
  */
 const preScriptCheck = async (...args: string[]): Promise<void> => {
@@ -209,6 +227,7 @@ const preScriptCheck = async (...args: string[]): Promise<void> => {
   _checkExternalDepsVersions(env.skipPreflightCheck());
   _checkPluginCount();
   _validateTypescriptProject();
+  _comparePluginAndCLIVersions();
 };
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
