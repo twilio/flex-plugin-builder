@@ -1,6 +1,7 @@
 import fs from 'fs';
 
 import * as fsScripts from 'flex-dev-utils/dist/fs';
+import { logger } from 'flex-dev-utils';
 
 import * as prints from '../../prints';
 import * as preScriptCheck from '../pre-script-check';
@@ -56,6 +57,7 @@ describe('PreScriptCheck', () => {
     const _checkPluginCount = jest.spyOn(preScriptCheck, '_checkPluginCount');
     const checkPluginConfigurationExists = jest.spyOn(fsScripts, 'checkPluginConfigurationExists');
     const _setPluginDir = jest.spyOn(preScriptCheck, '_setPluginDir');
+    const _comparePluginAndCLIVersions = jest.spyOn(preScriptCheck, '_comparePluginAndCLIVersions');
     const cwd = jest.spyOn(process, 'cwd');
 
     beforeEach(() => {
@@ -74,6 +76,7 @@ describe('PreScriptCheck', () => {
       _checkPluginCount.mockReset();
       checkPluginConfigurationExists.mockReset();
       _setPluginDir.mockReset();
+      _comparePluginAndCLIVersions.mockReset();
       cwd.mockReset();
 
       _checkExternalDepsVersions.mockReturnThis();
@@ -81,6 +84,7 @@ describe('PreScriptCheck', () => {
       _checkPluginCount.mockReturnValue(undefined);
       checkPluginConfigurationExists.mockReturnThis();
       _setPluginDir.mockReturnThis();
+      _comparePluginAndCLIVersions.mockReturnThis();
       cwd.mockReturnValue(pluginDir);
     });
 
@@ -90,6 +94,7 @@ describe('PreScriptCheck', () => {
       _checkPluginCount.mockRestore();
       checkPluginConfigurationExists.mockRestore();
       _setPluginDir.mockRestore();
+      _comparePluginAndCLIVersions.mockRestore();
       cwd.mockRestore();
     });
 
@@ -99,6 +104,7 @@ describe('PreScriptCheck', () => {
       expect(_checkExternalDepsVersions).toHaveBeenCalledWith(allowSkip);
       expect(_checkPluginCount).toHaveBeenCalledTimes(1);
       expect(checkPluginConfigurationExists).toHaveBeenCalledTimes(1);
+      expect(_comparePluginAndCLIVersions).toHaveBeenCalledTimes(1);
     };
 
     it('should call all methods', async () => {
@@ -469,6 +475,39 @@ describe('PreScriptCheck', () => {
       expect(parseUserInputPlugins).toHaveBeenCalledTimes(1);
       expect(findFirstLocalPlugin).toHaveBeenCalledTimes(1);
       expect(setCwd).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('_comparePluginAndCLIVersions', () => {
+    beforeEach(() => {
+      jest.spyOn(fsScripts, 'readPackageJson').mockReturnValue({
+        version: '1.0.0',
+        name: '',
+        dependencies: {
+          '@twilio-labs/plugin-flex': '1.2.3',
+        },
+        devDependencies: {
+          '@twilio/flex-ui': '^1',
+        },
+      });
+    });
+
+    it('should do nothing if the plugin and cli versions are the same', () => {
+      jest.spyOn(fsScripts, 'packageDependencyVersion').mockReturnValueOnce('1.2.3');
+      jest.spyOn(fsScripts, 'packageDependencyVersion').mockReturnValueOnce('1.2.3');
+
+      preScriptCheck._comparePluginAndCLIVersions();
+
+      expect(logger.warning).not.toHaveBeenCalled();
+    });
+
+    it('should log a warning if the plugin and cli versions are not the same', () => {
+      jest.spyOn(fsScripts, 'packageDependencyVersion').mockReturnValueOnce('1.2.4');
+      jest.spyOn(fsScripts, 'packageDependencyVersion').mockReturnValueOnce('1.2.3');
+
+      preScriptCheck._comparePluginAndCLIVersions();
+
+      expect(logger.warning).toHaveBeenCalledTimes(1);
     });
   });
 });
