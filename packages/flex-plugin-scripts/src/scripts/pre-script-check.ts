@@ -188,7 +188,7 @@ export const _comparePluginAndCLIVersions = (): void => {
   if (cliVersion && pluginVersion && cliVersion.version !== pluginVersion.version) {
     const earlierVersion = cliVersion.version < pluginVersion.version ? 'CLI' : 'flex-plugin-scripts';
     logger.warning(
-      `You are using CLI Version \'${cliVersion.version}\' with flex-plugin-scripts version \'${pluginVersion.version}\' for plugin \'${pluginPackageJson.name}\'. Consider upgrading your ${earlierVersion}.`,
+      `The Flex Plugins CLI version installed is different from the version used by your plugin. The Plugins CLI version installed is ${cliVersion.version} and the version used by your plugin is ${pluginVersion.version}. Run the upgrade plugin command to use the installed version.`,
     );
   }
 };
