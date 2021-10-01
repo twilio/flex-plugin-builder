@@ -1,6 +1,7 @@
-import phin from 'phin';
 import { ConfigurationContext, ConfigurationInstance } from 'twilio/lib/rest/flexApi/v1/configuration';
 import { TwilioCliError } from 'flex-dev-utils';
+import { HttpsProxyAgent } from 'https-proxy-agent';
+import phin from 'agent-phin';
 
 export interface FlexConfigurationClientOptions {
   accountSid: string;
@@ -89,6 +90,9 @@ export default class FlexConfigurationClient {
       ? `https://flex-api.${this.options.region}.twilio.com/v1/Configuration`
       : 'https://flex-api.twilio.com/v1/Configuration';
 
+    // use proxy
+    const agent = process.env.HTTP_PROXY ? new HttpsProxyAgent(process.env.HTTP_PROXY) : undefined;    
+
     const response = await phin({
       url,
       method: 'POST',
@@ -98,6 +102,7 @@ export default class FlexConfigurationClient {
       },
       parse: 'json',
       data,
+      agent,
     });
     if (response.statusCode !== 200) {
       throw new TwilioCliError(response.body as string);
