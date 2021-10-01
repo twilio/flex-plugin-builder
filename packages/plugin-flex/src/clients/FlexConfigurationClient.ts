@@ -91,7 +91,7 @@ export default class FlexConfigurationClient {
       : 'https://flex-api.twilio.com/v1/Configuration';
 
     // use proxy
-    const agent = process.env.HTTP_PROXY ? new HttpsProxyAgent(process.env.HTTP_PROXY) : undefined;    
+    const agent = process.env.HTTP_PROXY ? new HttpsProxyAgent(process.env.HTTP_PROXY) : undefined;
 
     const response = await phin({
       url,
