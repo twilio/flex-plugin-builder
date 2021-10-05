@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { Compiler } from '../compiler';
 import { onIPCServerMessage, IPCType } from '../devServer/ipcServer';
 
