@@ -39,6 +39,11 @@ export interface CLIFlexConfiguration {
   plugins: FlexConfigurationPlugin[];
 }
 
+export interface LocallyRunningPluginsConfiguration {
+  plugins: string[];
+  loadedPlugins: string[];
+}
+
 export type JsonObject<T> = { [K in keyof T]: T[K] };
 
 export default fs;
@@ -176,12 +181,17 @@ export const getCliPaths = () => {
     nodeModulesDir: coreNodeModulesDir,
     flexDir,
     pluginsJsonPath: resolveRelative(flexDir, 'plugins.json'),
+    localPluginsJsonPath: resolveRelative(flexDir, 'locallyRunningPlugins.json'),
   };
 };
 
 // Read plugins.json from Twilio CLI
 export const readPluginsJson = (): CLIFlexConfiguration =>
   readJsonFile<CLIFlexConfiguration>(getCliPaths().pluginsJsonPath);
+
+// Read plugins.json from Twilio CLI
+export const readRunPluginsJson = (): LocallyRunningPluginsConfiguration =>
+  readJsonFile<LocallyRunningPluginsConfiguration>(getCliPaths().localPluginsJsonPath);
 
 /**
  * Writes string to file
@@ -387,6 +397,27 @@ export const checkPluginConfigurationExists = async (
   }
 
   return false;
+};
+
+/**
+ * Touch ~/.twilio-cli/flex/locallyRunningPlugins.json if it does not exist,
+ * and if it does exist, clear the file so it is ready for a new run
+ */
+export const checkRunPluginConfigurationExists = async (localPlugins: string[]): Promise<void> => {
+  const cliPaths = getCliPaths();
+
+  if (!checkFilesExist(cliPaths.localPluginsJsonPath)) {
+    mkdirpSync(cliPaths.flexDir);
+  }
+
+  writeJSONFile({ plugins: [], loadedPlugins: [] }, cliPaths.localPluginsJsonPath);
+  const runConfig = readRunPluginsJson();
+
+  for (const plugin of localPlugins) {
+    runConfig.plugins.push(plugin);
+  }
+
+  writeJSONFile(runConfig, cliPaths.localPluginsJsonPath);
 };
 
 /**

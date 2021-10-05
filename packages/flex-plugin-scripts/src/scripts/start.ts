@@ -17,6 +17,7 @@ import {
   webpackDevServer,
   OnDevServerCrashedPayload,
   PluginsConfig,
+  DelayRenderStaticPlugin,
 } from 'flex-plugin-webpack';
 
 import getConfiguration, { ConfigurationType, WebpackType } from '../config';
@@ -118,6 +119,7 @@ export const _startDevServer = async (
 
   // Start IPC Server
   if (isStaticServer) {
+    config?.plugins?.push(new DelayRenderStaticPlugin());
     startIPCServer();
     // start-flex will be listening to compilation errors emitted by start-plugin
     onIPCServerMessage(IPCType.onCompileComplete, onCompile);
@@ -131,7 +133,12 @@ export const _startDevServer = async (
 
   try {
     // Pass either the default onCompile (for start-flex) or the event-emitter (for start-plugin)
-    const devCompiler = compiler(config, true, isJavaScriptServer ? emitCompileComplete : onCompile);
+    const devCompiler = compiler(
+      config,
+      true,
+      isJavaScriptServer,
+      isJavaScriptServer ? emitCompileComplete : onCompile,
+    );
     webpackDevServer(devCompiler, devConfig, type);
   } catch (err) {
     await emitDevServerCrashed(err);

@@ -4,6 +4,7 @@ import * as globby from 'globby';
 import * as fs from '../fs';
 import * as inquirer from '../inquirer';
 import { PackageJson } from '../fs';
+import { readJsonFile } from '../../dist/fs';
 
 jest.mock('flex-plugins-utils-logger/dist/lib/inquirer');
 jest.mock('globby');
@@ -339,6 +340,7 @@ describe('fs', () => {
       dir,
       flexDir: 'test-dir-flex',
       pluginsJsonPath,
+      localPluginsJsonPath: 'test-dir-local-run',
     };
 
     let checkFilesExist = jest.spyOn(fs, 'checkFilesExist');
@@ -452,6 +454,106 @@ describe('fs', () => {
     });
   });
 
+  describe('checkRunPluginConfigurationExists', () => {
+    const localPluginsJsonPath = 'test-local-plugins';
+    const localPlugins = ['plugin-one', 'plugin-two'];
+    const cliPath = {
+      dir: 'test-dir',
+      flexDir: 'test-dir-flex',
+      pluginsJsonPath: 'test-dir-plugins',
+      localPluginsJsonPath,
+    };
+
+    let checkFilesExist = jest.spyOn(fs, 'checkFilesExist');
+    let mkdirpSync = jest.spyOn(fs, 'mkdirpSync');
+    let writeFileSync = jest.spyOn(fs.default, 'writeFileSync');
+    let readRunPluginsJson = jest.spyOn(fs, 'readRunPluginsJson');
+    let getCliPaths = jest.spyOn(fs, 'getCliPaths');
+    const readJsonFile = jest.spyOn(fs, 'readJsonFile');
+
+    beforeEach(() => {
+      checkFilesExist = jest.spyOn(fs, 'checkFilesExist');
+      mkdirpSync = jest.spyOn(fs, 'mkdirpSync');
+      writeFileSync = jest.spyOn(fs.default, 'writeFileSync');
+      readRunPluginsJson = jest.spyOn(fs, 'readRunPluginsJson');
+      getCliPaths = jest.spyOn(fs, 'getCliPaths');
+
+      mkdirpSync.mockReturnThis();
+      writeFileSync.mockReturnThis();
+      readJsonFile.mockReturnThis();
+      readRunPluginsJson.mockReturnValue({ plugins: [], loadedPlugins: [] });
+
+      // @ts-ignore
+      getCliPaths.mockReturnValue(cliPath);
+    });
+
+    it('make directories if not found', async () => {
+      checkFilesExist.mockReturnValue(false);
+
+      await fs.checkRunPluginConfigurationExists(localPlugins);
+
+      expect(readRunPluginsJson).toHaveBeenCalledTimes(1);
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(checkFilesExist).toHaveBeenCalledWith(localPluginsJsonPath);
+      expect(mkdirpSync).toHaveBeenCalledTimes(1);
+      expect(mkdirpSync).toHaveBeenCalledWith('test-dir-flex');
+    });
+
+    it('do nothing if directories are found', async () => {
+      checkFilesExist.mockReturnValue(true);
+
+      await fs.checkRunPluginConfigurationExists(localPlugins);
+
+      expect(readRunPluginsJson).toHaveBeenCalledTimes(1);
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(checkFilesExist).toHaveBeenCalledWith(localPluginsJsonPath);
+      expect(mkdirpSync).not.toHaveBeenCalled();
+    });
+
+    it('should add the local plugins to the locallyRunningPlugins.json file', async () => {
+      checkFilesExist.mockReturnValue(true);
+      writeFileSync.mockReturnThis();
+
+      await fs.checkRunPluginConfigurationExists(localPlugins);
+
+      expect(checkFilesExist).toHaveBeenCalledTimes(1);
+      expect(readRunPluginsJson).toHaveBeenCalledTimes(1);
+      expect(writeFileSync).toHaveBeenCalledTimes(2);
+      expect(writeFileSync).toHaveBeenNthCalledWith(
+        1,
+        localPluginsJsonPath,
+        JSON.stringify({ plugins: [], loadedPlugins: [] }, null, 2),
+      );
+      expect(writeFileSync).toHaveBeenNthCalledWith(
+        2,
+        localPluginsJsonPath,
+        JSON.stringify({ plugins: localPlugins, loadedPlugins: [] }, null, 2),
+      );
+    });
+  });
+
+  describe('readRunPluginsJson', () => {
+    it('should run readJsonFile', () => {
+      const readJsonFile = jest.spyOn(fs, 'readJsonFile');
+      const getCliPaths = jest.spyOn(fs, 'getCliPaths');
+      const cliPath = {
+        dir: 'test-dir',
+        flexDir: 'test-dir-flex',
+        pluginsJsonPath: 'test-dir-plugins',
+        localPluginsJsonPath: 'test-local-plugins',
+      };
+
+      // @ts-ignore
+      getCliPaths.mockReturnValue(cliPath);
+      readJsonFile.mockReturnThis();
+
+      fs.readRunPluginsJson();
+
+      expect(readJsonFile).toHaveBeenCalledTimes(1);
+      expect(readJsonFile).toHaveBeenCalledWith('test-local-plugins');
+    });
+  });
+
   describe('_getFlexPluginScripts', () => {
     it('should resolve path', () => {
       const thePath = 'the/path';
@@ -517,6 +619,7 @@ describe('fs', () => {
       expect(fs.getCliPaths().dir).toMatchPathContaining('/.twilio-cli');
       expect(fs.getCliPaths().flexDir).toMatchPathContaining('/.twilio-cli/flex');
       expect(fs.getCliPaths().pluginsJsonPath).toEqual(expect.stringMatching('plugins.json'));
+      expect(fs.getCliPaths().localPluginsJsonPath).toEqual(expect.stringMatching('locallyRunningPlugins.json'));
 
       readPackageJson.mockRestore();
     });
