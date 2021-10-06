@@ -121,11 +121,11 @@ export default (
       }
 
       // Check to see if the plugin is the last bundle to be loaded
-      if (config.plugins.length === config.loadedPlugins.length) {
-        onCompile({ result, appName: getPaths().app.name, lastPluginBundle: true });
-      } else {
-        onCompile({ result, appName: getPaths().app.name, lastPluginBundle: false });
-      }
+      onCompile({
+        result,
+        appName: getPaths().app.name,
+        lastPluginBundle: config.plugins.length === config.loadedPlugins.length,
+      });
     });
 
     return compiler;

@@ -492,7 +492,6 @@ describe('fs', () => {
 
       await fs.checkRunPluginConfigurationExists(localPlugins);
 
-      expect(readRunPluginsJson).toHaveBeenCalledTimes(1);
       expect(checkFilesExist).toHaveBeenCalledTimes(1);
       expect(checkFilesExist).toHaveBeenCalledWith(localPluginsJsonPath);
       expect(mkdirpSync).toHaveBeenCalledTimes(1);
@@ -504,7 +503,6 @@ describe('fs', () => {
 
       await fs.checkRunPluginConfigurationExists(localPlugins);
 
-      expect(readRunPluginsJson).toHaveBeenCalledTimes(1);
       expect(checkFilesExist).toHaveBeenCalledTimes(1);
       expect(checkFilesExist).toHaveBeenCalledWith(localPluginsJsonPath);
       expect(mkdirpSync).not.toHaveBeenCalled();
@@ -517,15 +515,8 @@ describe('fs', () => {
       await fs.checkRunPluginConfigurationExists(localPlugins);
 
       expect(checkFilesExist).toHaveBeenCalledTimes(1);
-      expect(readRunPluginsJson).toHaveBeenCalledTimes(1);
-      expect(writeFileSync).toHaveBeenCalledTimes(2);
-      expect(writeFileSync).toHaveBeenNthCalledWith(
-        1,
-        localPluginsJsonPath,
-        JSON.stringify({ plugins: [], loadedPlugins: [] }, null, 2),
-      );
-      expect(writeFileSync).toHaveBeenNthCalledWith(
-        2,
+      expect(writeFileSync).toHaveBeenCalledTimes(1);
+      expect(writeFileSync).toHaveBeenCalledWith(
         localPluginsJsonPath,
         JSON.stringify({ plugins: localPlugins, loadedPlugins: [] }, null, 2),
       );

@@ -410,8 +410,7 @@ export const checkRunPluginConfigurationExists = async (localPlugins: string[]):
     mkdirpSync(cliPaths.flexDir);
   }
 
-  writeJSONFile({ plugins: [], loadedPlugins: [] }, cliPaths.localPluginsJsonPath);
-  const runConfig = readRunPluginsJson();
+  const runConfig: LocallyRunningPluginsConfiguration = { plugins: [], loadedPlugins: [] };
 
   for (const plugin of localPlugins) {
     runConfig.plugins.push(plugin);

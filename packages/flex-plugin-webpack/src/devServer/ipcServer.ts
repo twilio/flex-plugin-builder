@@ -28,13 +28,10 @@ export interface OnDevServerCrashedPayload {
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface OnEmitAllCompilesComplete {}
-
 export interface IPCPayload {
   onCompileComplete: OnCompileCompletePayload;
   onDevServerCrashed: OnDevServerCrashedPayload;
-  onEmitAllCompilesComplete: OnEmitAllCompilesComplete;
+  onEmitAllCompilesComplete: unknown;
 }
 
 type MessageCallback<T extends IPCType> = (payload: IPCPayload[T]) => void;
