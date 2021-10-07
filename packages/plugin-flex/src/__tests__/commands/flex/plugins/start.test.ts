@@ -16,6 +16,7 @@ describe('Commands/FlexPluginsStart', () => {
   const name = 'plugin-test';
   const goodVersion = '2.0.0';
   const badVersion = 'a.b.c';
+  const preLocalRunCheck = 'pre-localrun-check';
   const preStartCheck = 'pre-start-check';
   const preScriptCheck = 'pre-script-check';
   const pluginNameSample = 'plugin-sample';
@@ -85,7 +86,8 @@ describe('Commands/FlexPluginsStart', () => {
     await cmd.doRun();
 
     expect(cmd.pluginsConfig).toEqual(config);
-    expect(cmd.runScript).toHaveBeenCalledTimes(3);
+    expect(cmd.runScript).toHaveBeenCalledTimes(4);
+    expect(cmd.runScript).toHaveBeenCalledWith(preLocalRunCheck, [pkg.name]);
     expect(cmd.runScript).toHaveBeenCalledWith('start', [
       'flex',
       '--name',
@@ -120,7 +122,8 @@ describe('Commands/FlexPluginsStart', () => {
       expect(cmd._flags.name).toBeUndefined();
       expect(cmd._flags[includeRemote]).toBeUndefined();
       expect(cmd._flags[flexUiSource]).toBeUndefined();
-      expect(cmd.runScript).toHaveBeenCalledTimes(2);
+      expect(cmd.runScript).toHaveBeenCalledTimes(3);
+      expect(cmd.runScript).toHaveBeenCalledWith(preLocalRunCheck, [badVersionPkg.name]);
       expect(cmd.runScript).toHaveBeenCalledWith(preStartCheck, ['--name', badVersionPkg.name]);
       expect(cmd.runScript).toHaveBeenCalledWith(preScriptCheck, ['--name', badVersionPkg.name]);
       expect(cmd.spawnScript).not.toHaveBeenCalled();
@@ -146,7 +149,8 @@ describe('Commands/FlexPluginsStart', () => {
       expect(cmd._flags.name).toBeUndefined();
       expect(cmd._flags[includeRemote]).toBeUndefined();
       expect(cmd._flags[flexUiSource]).toBeUndefined();
-      expect(cmd.runScript).toHaveBeenCalledTimes(2);
+      expect(cmd.runScript).toHaveBeenCalledTimes(3);
+      expect(cmd.runScript).toHaveBeenCalledWith(preLocalRunCheck, [badPluginsPkg.name]);
       expect(cmd.runScript).toHaveBeenCalledWith(preStartCheck, ['--name', badPluginsPkg.name]);
       expect(cmd.runScript).toHaveBeenCalledWith(preScriptCheck, ['--name', badPluginsPkg.name]);
       expect(cmd.spawnScript).not.toHaveBeenCalled();
@@ -218,7 +222,8 @@ describe('Commands/FlexPluginsStart', () => {
     await cmd.run();
 
     expect(cmd.pluginsConfig).toEqual(config);
-    expect(cmd.runScript).toHaveBeenCalledTimes(3);
+    expect(cmd.runScript).toHaveBeenCalledTimes(4);
+    expect(cmd.runScript).toHaveBeenCalledWith(preLocalRunCheck, [pkg.name]);
     expect(cmd.runScript).toHaveBeenCalledWith('start', [
       'flex',
       '--name',

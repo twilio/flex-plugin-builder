@@ -17,14 +17,28 @@ describe('ipcServer', () => {
     expect(_processEmitQueue).toHaveBeenCalledTimes(1);
   });
 
-  it('should test emitCompileComplete', async () => {
+  it('should test emitCompileComplete for a plugin that is not the last to load', async () => {
+    const _emitAllCompilesComplete = jest.spyOn(ipcServerScripts, 'emitAllCompilesComplete').mockReturnThis();
     const _emitToServer = jest.spyOn(ipcServerScripts, '_emitToServer').mockReturnThis();
 
-    const payload = { result: {} as ToJsonOutput, appName: 'test' };
+    const payload = { result: {} as ToJsonOutput, appName: 'test', lastPluginBundle: false };
     await ipcServerScripts.emitCompileComplete(payload);
 
     expect(_emitToServer).toHaveBeenCalledTimes(1);
     expect(_emitToServer).toHaveBeenCalledWith(ipcServerScripts.IPCType.onCompileComplete, payload);
+    expect(_emitAllCompilesComplete).not.toHaveBeenCalled();
+  });
+
+  it('should test emitCompileComplete for a plugin that is the last to load', async () => {
+    const _emitAllCompilesComplete = jest.spyOn(ipcServerScripts, 'emitAllCompilesComplete').mockReturnThis();
+    const _emitToServer = jest.spyOn(ipcServerScripts, '_emitToServer').mockReturnThis();
+
+    const payload = { result: {} as ToJsonOutput, appName: 'test', lastPluginBundle: true };
+    await ipcServerScripts.emitCompileComplete(payload);
+
+    expect(_emitToServer).toHaveBeenCalledTimes(1);
+    expect(_emitToServer).toHaveBeenCalledWith(ipcServerScripts.IPCType.onCompileComplete, payload);
+    expect(_emitAllCompilesComplete).toHaveBeenCalledTimes(1);
   });
 
   it('should test emitDevServerCrashed', async () => {
