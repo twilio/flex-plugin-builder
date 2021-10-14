@@ -136,7 +136,6 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       false,
     );
 
-    /* istanbul ignore next */
     this.prints.deploySuccessful(
       this.pkg.name,
       pluginVersion.private ? 'private' : 'public',
