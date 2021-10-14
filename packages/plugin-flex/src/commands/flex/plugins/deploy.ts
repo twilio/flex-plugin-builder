@@ -136,7 +136,12 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       false,
     );
 
-    this.prints.deploySuccessful(this.pkg.name, pluginVersion.private ? 'private' : 'public', deployedData);
+    this.prints.deploySuccessful(
+      this.pkg.name,
+      pluginVersion.private ? 'private' : 'public',
+      deployedData,
+      this.argv.includes('--profile') ? this.userProfileId : null,
+    );
   }
 
   /**

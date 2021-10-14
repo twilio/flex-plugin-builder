@@ -324,6 +324,7 @@ describe('SubCommands/FlexPlugin', () => {
       jest.spyOn(utilsEnv, 'setDebug');
       jest.spyOn(utilsEnv, 'persistTerminal');
       jest.spyOn(utilsEnv, 'setRegion');
+      jest.spyOn(cmd, 'userProfileId', 'get').mockReturnValue(id);
     };
 
     it('should setup environment', async () => {
@@ -369,6 +370,14 @@ describe('SubCommands/FlexPlugin', () => {
       expect(utilsEnv.setDebug).not.toHaveBeenCalled();
       expect(utilsEnv.persistTerminal).not.toHaveBeenCalled();
       expect(utilsEnv.setRegion).toHaveBeenCalledWith('stage');
+    });
+
+    it('should return the users twilio id correctly', async () => {
+      const cmd = await createTest(FlexPlugin)();
+      setupMocks(cmd);
+
+      cmd.setupEnvironment();
+      expect(cmd.userProfileId).toEqual(id);
     });
   });
 

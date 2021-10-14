@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { CLIParseError } from '@oclif/parser/lib/errors';
-import { TwilioCliError, FlexPluginError } from 'flex-dev-utils';
+import { TwilioCliError, FlexPluginError, env } from 'flex-dev-utils';
 import * as credentials from 'flex-dev-utils/dist/credentials';
 import * as runtime from 'flex-plugin-scripts/dist/utils/runtime';
 import * as fs from 'flex-dev-utils/dist/fs';
@@ -22,6 +22,7 @@ describe('Commands/FlexPluginsDeploy', () => {
   const pluginName = 'plugin-test';
   const serviceSid = 'ZS00000000000000000000000000000';
   const serviceSid2 = 'ZS00000000000000000000000000001';
+  const userProfile = 'user-profile-test';
   const defaultChangelog = 'sample changlog';
   const pkg = {
     name: 'test-package',
@@ -88,16 +89,20 @@ describe('Commands/FlexPluginsDeploy', () => {
     mockGetPkg(cmd, pkg);
     mockGetter(cmd, 'flexConfigurationClient', { getServerlessSid });
     mockGetter(cmd, 'serverlessClient', { hasLegacy });
+    mockGetter(cmd, 'userProfileId', userProfile);
 
     await cmd.run();
 
     return cmd;
   };
 
-  const getPluginVersionsCommand = async (changelog?: string) => {
+  const getPluginVersionsCommand = async (changelog?: string, profile?: string) => {
     const args = [];
     if (changelog) {
       args.push('--changelog', changelog);
+    }
+    if (profile) {
+      args.push('--profile', profile);
     }
 
     const cmd = await getCommand(...args);
@@ -144,6 +149,7 @@ describe('Commands/FlexPluginsDeploy', () => {
     jest.spyOn(cmd, 'registerPlugin').mockReturnThis();
     jest.spyOn(cmd, 'registerPluginVersion').mockReturnThis();
     mockGetPkg(cmd, pkg);
+    mockGetter(cmd, 'userProfileId', userProfile);
 
     await cmd.doRun();
 
