@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { CLIParseError } from '@oclif/parser/lib/errors';
-import { TwilioCliError, FlexPluginError, env } from 'flex-dev-utils';
+import { TwilioCliError, FlexPluginError } from 'flex-dev-utils';
 import * as credentials from 'flex-dev-utils/dist/credentials';
 import * as runtime from 'flex-plugin-scripts/dist/utils/runtime';
 import * as fs from 'flex-dev-utils/dist/fs';
@@ -96,13 +96,10 @@ describe('Commands/FlexPluginsDeploy', () => {
     return cmd;
   };
 
-  const getPluginVersionsCommand = async (changelog?: string, profile?: string) => {
+  const getPluginVersionsCommand = async (changelog?: string) => {
     const args = [];
     if (changelog) {
       args.push('--changelog', changelog);
-    }
-    if (profile) {
-      args.push('--profile', profile);
     }
 
     const cmd = await getCommand(...args);
