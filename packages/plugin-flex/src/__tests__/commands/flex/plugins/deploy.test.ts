@@ -22,7 +22,6 @@ describe('Commands/FlexPluginsDeploy', () => {
   const pluginName = 'plugin-test';
   const serviceSid = 'ZS00000000000000000000000000000';
   const serviceSid2 = 'ZS00000000000000000000000000001';
-  const userProfile = 'user-profile-test';
   const defaultChangelog = 'sample changlog';
   const pkg = {
     name: 'test-package',
@@ -89,7 +88,6 @@ describe('Commands/FlexPluginsDeploy', () => {
     mockGetPkg(cmd, pkg);
     mockGetter(cmd, 'flexConfigurationClient', { getServerlessSid });
     mockGetter(cmd, 'serverlessClient', { hasLegacy });
-    mockGetter(cmd, 'userProfileId', userProfile);
 
     await cmd.run();
 
@@ -146,7 +144,6 @@ describe('Commands/FlexPluginsDeploy', () => {
     jest.spyOn(cmd, 'registerPlugin').mockReturnThis();
     jest.spyOn(cmd, 'registerPluginVersion').mockReturnThis();
     mockGetPkg(cmd, pkg);
-    mockGetter(cmd, 'userProfileId', userProfile);
 
     await cmd.doRun();
 

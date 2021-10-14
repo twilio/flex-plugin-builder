@@ -140,7 +140,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       this.pkg.name,
       pluginVersion.private ? 'private' : 'public',
       deployedData,
-      this.argv.includes('--profile') ? this.userProfileId : null,
+      this.argv.includes('--profile') ? this.currentProfile.id : null,
     );
   }
 

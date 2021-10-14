@@ -653,10 +653,6 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     return prints(this._logger);
   }
 
-  get userProfileId(): string {
-    return this.currentProfile.id;
-  }
-
   /**
    * The command parse override
    */
