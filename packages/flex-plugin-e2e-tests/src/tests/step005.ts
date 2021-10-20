@@ -15,6 +15,21 @@ const testSuite: TestSuite = async ({ scenario }: TestParams): Promise<void> => 
     to: scenario.plugin.componentText,
   });
 
+  // Replace the component text in the 2 other plugins as well if testing multi-plugin
+  if (scenario.isMultiPluginRemote || scenario.isMultiPluginVersioned) {
+    await replaceInFile({
+      files: joinPath(scenario.plugin2.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
+      from: /This is a dismissible demo component.*/,
+      to: scenario.plugin2.componentText,
+    });
+
+    await replaceInFile({
+      files: joinPath(scenario.plugin3.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
+      from: /This is a dismissible demo component.*/,
+      to: scenario.plugin3.componentText,
+    });
+  }
+
   const envVariableValue = `${Date.now()}`;
 
   writeFileSync(`${scenario.plugin.dir}/.env`, `FLEX_APP_ENVIRONMENT_TEST=${envVariableValue}`);

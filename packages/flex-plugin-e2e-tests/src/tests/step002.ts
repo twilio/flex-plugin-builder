@@ -9,8 +9,16 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
     flags.push('--typescript');
   }
   const twilioCliResult = await spawn('twilio', ['flex:plugins:create', scenario.plugin.name, ...flags]);
-
   logResult(twilioCliResult);
+
+  // Create 2 more plugins if we are testing multi-plugin scenario
+  if (scenario.isMultiPluginRemote || scenario.isMultiPluginVersioned) {
+    const twilioCliResult2 = await spawn('twilio', ['flex:plugins:create', scenario.plugin2.name, ...flags]);
+    logResult(twilioCliResult2);
+
+    const twilioCliResult3 = await spawn('twilio', ['flex:plugins:create', scenario.plugin3.name, ...flags]);
+    logResult(twilioCliResult3);
+  }
 
   // Assert files/directories exist
   assertion.fileExists([scenario.plugin.dir], 'Plugin directory does not exist');

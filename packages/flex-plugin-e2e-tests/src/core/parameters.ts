@@ -7,6 +7,16 @@ interface Hidden {
   __hidden: boolean;
 }
 
+interface TestPlugin {
+  name: string;
+  dir: string;
+  componentText: string;
+  localhostUrl: string;
+  newlineValue?: string;
+  changelog?: string;
+  version?: string;
+}
+
 export interface TestScenario {
   packageVersion: string;
   plugin: {
@@ -19,9 +29,13 @@ export interface TestScenario {
     changelog: string;
     version: string;
   }>;
+  plugin2: TestPlugin;
+  plugin3: TestPlugin;
   flexUIVersion?: string;
   reactVersion?: string;
   isTS?: boolean;
+  isMultiPluginRemote?: boolean;
+  isMultiPluginVersioned?: boolean;
 }
 
 export interface TestParams {
@@ -52,6 +66,8 @@ export interface TestParams {
 
 const { TWILIO_REGION, LOCALHOST_PORT } = process.env;
 const pluginName = 'flex-e2e-tester-plugin';
+const pluginName2 = 'flex-e2e-tester-plugin-2';
+const pluginName3 = 'flex-e2e-tester-plugin-3';
 const consoleBaseUrl = TWILIO_REGION ? `https://www.${TWILIO_REGION}.twilio.com` : 'https://www.twilio.com';
 const hostedFlexBaseUrl = TWILIO_REGION ? `https://flex.${TWILIO_REGION}.twilio.com` : 'https://flex.twilio.com';
 const operatingSystem = platform();
@@ -109,6 +125,18 @@ export const testParams: TestParams = {
       componentText: `This is a dismissible demo component ${Date.now()}`,
       localhostUrl: 'http://localhost:3000' || (process.env.PLUGIN_BASE_URL as string),
     },
+    plugin2: {
+      name: pluginName2,
+      dir: join(homeDir, pluginName2),
+      componentText: `This is a dismissible demo component for plugin2 ${Date.now()}`,
+      localhostUrl: 'http://localhost:3000' || (process.env.PLUGIN_BASE_URL as string),
+    },
+    plugin3: {
+      name: pluginName3,
+      dir: join(homeDir, pluginName3),
+      componentText: `This is a dismissible demo component for plugin3 ${Date.now()}`,
+      localhostUrl: 'http://localhost:3000' || (process.env.PLUGIN_BASE_URL as string),
+    },
   },
 };
 if (testParams.config.region) {
@@ -117,6 +145,9 @@ if (testParams.config.region) {
 
 // All test scenarios to run
 export const testScenarios: Partial<TestScenario>[] = [
+  {
+    isMultiPluginRemote: true,
+  },
   {
     isTS: false,
   },
