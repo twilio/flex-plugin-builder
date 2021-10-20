@@ -1,12 +1,12 @@
-import * as devUtils from 'flex-dev-utils';
+import * as spawnUtils from 'flex-dev-utils/dist/spawn';
 
 import buildToolkit from '../build';
 
-jest.mock('flex-dev-utils');
+jest.mock('flex-dev-utils/dist/spawn');
 
 describe('BuildToolkit', () => {
   it('should invoke the build script', async () => {
-    const spawn = jest.spyOn(devUtils, 'spawn').mockReturnThis();
+    const spawn = jest.spyOn(spawnUtils, 'spawn').mockReturnThis();
 
     await buildToolkit({ cwd: 'the-cwd', name: 'the-name' });
 

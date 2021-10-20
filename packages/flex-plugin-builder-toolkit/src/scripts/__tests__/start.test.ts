@@ -1,8 +1,8 @@
-import * as devUtils from 'flex-dev-utils';
+import * as spawnUtils from 'flex-dev-utils/dist/spawn';
 
 import startToolkit from '../start';
 
-jest.mock('flex-dev-utils');
+jest.mock('flex-dev-utils/dist/spawn');
 
 describe('StartToolkit', () => {
   const runFlag = '--run-script';
@@ -10,7 +10,7 @@ describe('StartToolkit', () => {
   const cwd = 'the-cwd';
 
   it('should invoke the start script', async () => {
-    const spawn = jest.spyOn(devUtils, 'spawn').mockReturnThis();
+    const spawn = jest.spyOn(spawnUtils, 'spawn').mockReturnThis();
 
     await startToolkit({ cwd: 'the-cwd', name: 'the-name' });
 
