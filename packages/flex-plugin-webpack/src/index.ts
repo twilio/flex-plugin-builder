@@ -21,9 +21,11 @@ export { default as pluginServer, Plugin, PluginsConfig, PLUGIN_INPUT_PARSER_REG
 export {
   emitCompileComplete,
   emitDevServerCrashed,
+  emitAllCompilesComplete,
   IPCType,
   onIPCServerMessage,
   OnDevServerCrashedPayload,
   startIPCClient,
   startIPCServer,
 } from './devServer/ipcServer';
+export { default as DelayRenderStaticPlugin } from './plugins/DelayRenderStaticPlugin';
