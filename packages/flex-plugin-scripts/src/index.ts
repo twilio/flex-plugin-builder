@@ -3,7 +3,8 @@
 import { readdirSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 
-import { env, spawn, exit, logger } from 'flex-dev-utils';
+import { env, exit, logger } from 'flex-dev-utils';
+import { spawn } from 'flex-dev-utils/dist/spawn';
 import { checkForUpdate } from 'flex-dev-utils/dist/updateNotifier';
 import { render as markedRender } from 'flex-dev-utils/dist/marked';
 import { getPaths, getCwd, addCWDNodeModule } from 'flex-dev-utils/dist/fs';

@@ -1,12 +1,12 @@
-import * as devUtils from 'flex-dev-utils';
+import * as spawnUtils from 'flex-dev-utils/dist/spawn';
 
 import deployToolkit from '../deploy';
 
-jest.mock('flex-dev-utils');
+jest.mock('flex-dev-utils/dist/spawn');
 
 describe('DeployToolkit', () => {
   it('should invoke the deploy script', async () => {
-    const spawn = jest.spyOn(devUtils, 'spawn').mockReturnThis();
+    const spawn = jest.spyOn(spawnUtils, 'spawn').mockReturnThis();
 
     await deployToolkit({ cwd: 'the-cwd', name: 'the-name' });
 

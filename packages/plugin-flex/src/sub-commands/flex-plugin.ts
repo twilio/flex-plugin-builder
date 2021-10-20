@@ -13,9 +13,7 @@ import {
 } from 'flex-plugins-api-client';
 import {
   TwilioError,
-  spawn,
   Logger,
-  SpawnPromise,
   NotImplementedError,
   TwilioCliError,
   env,
@@ -23,6 +21,7 @@ import {
   updateNotifier,
   chalk,
 } from 'flex-dev-utils';
+import { spawn, SpawnPromise } from 'flex-dev-utils/dist/spawn';
 import dayjs from 'dayjs';
 import * as Errors from '@oclif/errors';
 import mkdirp from 'mkdirp';

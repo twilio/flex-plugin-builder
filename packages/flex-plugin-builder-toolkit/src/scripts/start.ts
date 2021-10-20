@@ -1,4 +1,4 @@
-import { spawn, SpawnPromise } from 'flex-dev-utils';
+import { spawn, SpawnPromise } from 'flex-dev-utils/dist/spawn';
 
 const startScriptPath = require.resolve('flex-plugin-scripts/dist/scripts/start');
 const preStartCheck = require.resolve('flex-plugin-scripts/dist/scripts/pre-start-check');
