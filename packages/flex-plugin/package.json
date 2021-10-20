@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin",
-  "version": "4.1.3",
+  "version": "4.2.1",
   "description": "Runtime for Flex plugins",
   "keywords": [
     "builder",
