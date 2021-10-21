@@ -8,7 +8,14 @@ To be filled
 
 ### Prerequisites
 
-Make sure that chromedriver is on your path and matches your chrome version
+Make sure that chromedriver is on your path and matches your Chrome version
+
+## Create a new Test
+
+To create a new test, use:
+
+- `npm run create`: creates a new test
+- `npm run create 5`: creates a test at step5 and then auto-increments all existing steps (i.e. step 5 -> 6, step 6-> 7, etc)
 
 ## Running Locally
 

@@ -1,0 +1,64 @@
+#!/bin/bash
+
+# Utility for managing writing and running tests
+# Refer to the end of the file for list of commands
+
+action="$1"
+arg="$2"
+dir=$(realpath "$(dirname "$0")")
+testsDir="$dir/../src/tests"
+
+# Boilerplate code for a new test
+read -r -d '' newTestBoilerplate << EOM
+/* eslint-disable import/no-unused-modules */
+import { TestSuite, TestParams } from '../core';
+import { logResult } from '../utils';
+
+// Describe the test
+const testSuite: TestSuite = async ({ environment, scenario }: TestParams): Promise<void> => {
+  // Your test goes in here
+};
+testSuite.description = 'Add your Test Description Here';
+
+export default testSuite;
+EOM
+
+# Utility for creating a new test
+# Syntax is `e2e create 5`
+# It will automatically create a new test file and auto-increment all remaining tests after
+# i.e. `e2e create 5`  would move step05 to step06, step006 to step007 and so on and then create step005
+function create() {
+  # Adds leading zeros, then truncates to length 3
+  function addZeros() {
+    echo $(echo "00$1" | rev | cut -b-3 | rev)
+  }
+
+  # Recursively renames and increments file names
+  function renameFile() {
+    if [ -f "${testsDir}/step$(addZeros $1).ts" ] ; then
+      renameFile "$(($1 + 1))"
+      mv "${testsDir}/step$(addZeros $1).ts" "${testsDir}/step$(addZeros $(($1 + 1))).ts"
+    fi
+  }
+
+  if [ -z "${arg}" ] ; then
+    count=$(find "${testsDir}" -name "step*.ts" | wc -l)
+    arg=$((count + 1))
+  fi
+
+  if [ -z "${arg##*[!0-9]*}" ] ; then
+    echo "$arg is not a number - it must be a number for creating a new test"
+    exit 1
+  fi
+
+  renameFile "${arg}"
+  echo "${newTestBoilerplate}" > "${testsDir}/step$(addZeros $arg).ts"
+}
+
+case "$action" in
+  "create") create ;;
+  *)
+    echo "No command was found"
+    exit 1
+    ;;
+esac
