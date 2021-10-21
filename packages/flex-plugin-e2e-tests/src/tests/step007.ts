@@ -25,7 +25,7 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
       cwd: scenario.plugins[0].dir,
     },
   );
-  logResult(result);
+  logResult(result); 
 
   assertion.fileExists([scenario.plugins[0].dir, 'build', `${scenario.plugins[0].name}.js`]);
   assertion.fileContains(
