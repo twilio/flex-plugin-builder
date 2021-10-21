@@ -27,6 +27,7 @@
     "prebuild": "npm run clean",
     "build": "cd ../.. && tsc -p \"packages/flex-plugin-e2e-tests/tsconfig.json\"",
     "clean": "rm -rf dist",
+    "create": "bin/e2e create $1",
     "lint": "eslint --ext ts src/",
     "lint:fix": "npm run lint -- --fix",
     "start": "node dist",
