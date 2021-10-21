@@ -7,18 +7,21 @@ interface Hidden {
   __hidden: boolean;
 }
 
+export interface PluginType {
+  name: string;
+  dir: string;
+  componentText: string;
+  localhostUrl: string;
+}
+
 export interface TestScenario {
   packageVersion: string;
-  plugins: ({
-    name: string;
-    dir: string;
-    componentText: string;
-    localhostUrl: string;
-  } & Partial<{
-    newlineValue: string;
-    changelog: string;
-    version: string;
-  }>)[];
+  plugins: (PluginType &
+    Partial<{
+      newlineValue: string;
+      changelog: string;
+      version: string;
+    }>)[];
   flexUIVersion?: string;
   reactVersion?: string;
   isTS?: boolean;
@@ -41,6 +44,10 @@ export interface TestParams {
     };
   } & Hidden;
   config: {
+    start: {
+      timeout: number;
+      pollInterval: number;
+    };
     consoleBaseUrl: string;
     hostedFlexBaseUrl: string;
     localhostPort: number;
@@ -95,6 +102,10 @@ export const testParams: TestParams = {
     },
   },
   config: {
+    start: {
+      timeout: 30000,
+      pollInterval: 1000,
+    },
     __hidden: false,
     consoleBaseUrl: process.env.CONSOLE_BASE_URL || consoleBaseUrl,
     hostedFlexBaseUrl: process.env.HOSTED_FLEX_BASE_URL || hostedFlexBaseUrl,

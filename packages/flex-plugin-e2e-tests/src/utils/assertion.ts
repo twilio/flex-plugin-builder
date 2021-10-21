@@ -61,6 +61,13 @@ const dirIsEmpty = (doesEqual: boolean) => (paths: string[], msg?: string) => {
   _strictEqual(doesEqual, 0, fs.readdirSync(path.join(...paths)).length, msg);
 };
 
+/**
+ * Checks whether the object is null/undefined
+ */
+const objIsNull = (doesEqual: boolean) => (obj: any, msg?: string) => {
+  _strictEqual(doesEqual, undefined || null, obj, msg); // This is wrong and have not yet figured out why
+};
+
 export default {
   equal: equal(true),
   fileExists: fileExists(true),
@@ -68,6 +75,7 @@ export default {
   fileContains: fileContains(true),
   dirIsEmpty: dirIsEmpty(true),
   stringContains: stringContains(true),
+  objIsNull: objIsNull(true),
   not: {
     fileExists: fileExists(false),
     jsonFileContains: jsonFileContains(false),
@@ -75,6 +83,7 @@ export default {
     dirIsEmpty: dirIsEmpty(false),
     stringContains: stringContains(false),
     equal: equal(false),
+    objIsNull: objIsNull(false),
   },
   app: (() => {
     let view: InstanceType<typeof App>['assert'];

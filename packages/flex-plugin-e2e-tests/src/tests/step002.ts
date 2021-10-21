@@ -8,6 +8,11 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
   if (scenario.isTS) {
     flags.push('--typescript');
   }
+  /*
+   * const plugin = scenario.plugins[0];
+   * assertion.not.objIsNull(plugin); --> Still commenting this out because my assertion is wrong
+   */
+
   const twilioCliResult = await spawn('twilio', ['flex:plugins:create', scenario.plugins[0].name, ...flags]);
   logResult(twilioCliResult);
 

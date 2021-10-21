@@ -1,52 +1,38 @@
 /* eslint-disable import/no-unused-modules */
 import { replaceInFile } from 'replace-in-file';
 
-import { TestSuite, TestParams } from '../core';
+import { TestSuite, TestParams, testParams } from '../core';
 import { spawn, Browser, pluginHelper, ConsoleAPI, joinPath, assertion, killChildProcess, logResult } from '../utils';
-
-// should import these from other files
-const PLUGIN_START_TIMEOUT = 30000;
-const PLUGIN_START_POLL_INTERVAL = 1000;
+import { PluginType } from '../core/parameters';
 
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
+  if (!scenario.plugins[0].newlineValue) {
+    throw new Error('scenario.plugin.newlineValue does not have a valid value');
+  }
   const flags: string[] = [];
   const ext = scenario.isTS ? 'tsx' : 'jsx';
 
   if (scenario.isTS) {
     flags.push('--typescript');
   }
-  // Create 2 new plugins
-  const twilioCliResult2 = await spawn('twilio', ['flex:plugins:create', scenario.plugins[1].name, ...flags]);
-  logResult(twilioCliResult2);
 
-  const twilioCliResult3 = await spawn('twilio', ['flex:plugins:create', scenario.plugins[2].name, ...flags]);
-  logResult(twilioCliResult3);
+  const setup = async (plugin: PluginType) => {
+    const createResult = await spawn('twilio', ['flex:plugins:create', plugin.name, ...flags]);
+    logResult(createResult);
 
-  // Install dependencies in the 2 new plugins
-  const result2 = await spawn('npm', ['i'], { cwd: scenario.plugins[1].dir });
-  logResult(result2);
+    const installResult = await spawn('npm', ['i'], { cwd: plugin.dir });
+    logResult(installResult);
 
-  const result3 = await spawn('npm', ['i'], { cwd: scenario.plugins[2].dir });
-  logResult(result3);
+    await replaceInFile({
+      files: joinPath(plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
+      from: /This is a dismissible demo component.*/,
+      to: plugin.componentText,
+    });
+  };
 
-  // Replace component text in the 2 new plugins
-  await replaceInFile({
-    files: joinPath(scenario.plugins[1].dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
-    from: /This is a dismissible demo component.*/,
-    to: scenario.plugins[1].componentText,
-  });
-
-  await replaceInFile({
-    files: joinPath(scenario.plugins[2].dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
-    from: /This is a dismissible demo component.*/,
-    to: scenario.plugins[2].componentText,
-  });
+  await Promise.all([setup(scenario.plugins[1]), setup(scenario.plugins[2])]);
 
   const startFlags: string[] = [];
-
-  if (!scenario.plugins[0].newlineValue) {
-    throw new Error(`scenario.plugin.newlineValue does not have a valid value`);
-  }
 
   // Add the remote plugin & local plugin
   startFlags.push('--name', `${scenario.plugins[0].name}@remote`, '--name', scenario.plugins[1].name);
@@ -58,13 +44,13 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   });
   await pluginHelper.waitForPluginToStart(
     scenario.plugins[1].localhostUrl,
-    PLUGIN_START_TIMEOUT,
-    PLUGIN_START_POLL_INTERVAL,
+    testParams.config.start.timeout,
+    testParams.config.start.pollInterval,
   );
   await pluginHelper.waitForPluginToStart(
     scenario.plugins[2].localhostUrl,
-    PLUGIN_START_TIMEOUT,
-    PLUGIN_START_POLL_INTERVAL,
+    testParams.config.start.timeout,
+    testParams.config.start.pollInterval,
   );
   const consoleApi = new ConsoleAPI(config.consoleBaseUrl, secrets.console);
   const cookies = await consoleApi.getCookies();
