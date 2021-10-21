@@ -11,7 +11,7 @@ const testSuite: TestSuite = async ({ scenario, environment }: TestParams): Prom
     logger.warning('Skipping [flex:plugins:test] on Win32');
   } else {
     const result = await spawn('twilio', ['flex:plugins:test'], {
-      cwd: scenario.plugin.dir,
+      cwd: scenario.plugins[0].dir,
     });
     logResult(result);
   }

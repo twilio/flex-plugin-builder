@@ -43,6 +43,8 @@ To run multiple steps:
 ... npm start -- --step 2 --step 3 --step 10
 ```
 
+If you are running into an error where Flex won't load at all on localhost, ensure that the flex-e2e-tester-plugin is enabled on your flex account.
+
 ## Contributors
 
 Thank you to all the lovely contributors to this project. Please check the main repository to see [all contributors](https://github.com/twilio/flex-plugin-builder#contributors).

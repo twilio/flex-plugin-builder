@@ -4,13 +4,13 @@ import { spawn, logResult, assertion } from '../utils';
 
 // Install dependencies
 const testSuite: TestSuite = async ({ scenario }: TestParams): Promise<void> => {
-  const result = await spawn('npm', ['i'], { cwd: scenario.plugin.dir });
+  const result = await spawn('npm', ['i'], { cwd: scenario.plugins[0].dir });
   logResult(result);
 
-  assertion.fileExists([scenario.plugin.dir, 'node_modules']);
-  assertion.fileExists([scenario.plugin.dir, 'node_modules', 'flex-plugin-scripts']);
+  assertion.fileExists([scenario.plugins[0].dir, 'node_modules']);
+  assertion.fileExists([scenario.plugins[0].dir, 'node_modules', 'flex-plugin-scripts']);
   assertion.jsonFileContains(
-    [scenario.plugin.dir, 'node_modules', 'flex-plugin-scripts', 'package.json'],
+    [scenario.plugins[0].dir, 'node_modules', 'flex-plugin-scripts', 'package.json'],
     'version',
     scenario.packageVersion,
   );

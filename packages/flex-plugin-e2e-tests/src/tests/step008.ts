@@ -7,7 +7,7 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
   const result = await spawn('twilio', [
     'flex:plugins:release',
     '--plugin',
-    `${scenario.plugin.name}@${scenario.plugin.version}`,
+    `${scenario.plugins[0].name}@${scenario.plugins[0].version}`,
     ...config.regionFlag,
   ]);
   logResult(result);
@@ -20,8 +20,8 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
   assertion.stringContains(result.stdout, 'Configuration FJ');
   assertion.stringContains(result.stdout, 'enabled');
   assertion.equal(1, plugins.plugins.length);
-  assertion.equal(plugins.plugins[0].unique_name, scenario.plugin.name);
-  assertion.equal(plugins.plugins[0].version, scenario.plugin.version);
+  assertion.equal(plugins.plugins[0].unique_name, scenario.plugins[0].name);
+  assertion.equal(plugins.plugins[0].version, scenario.plugins[0].version);
 };
 testSuite.description = 'Running {{twilio flex:plugins:release}}';
 
