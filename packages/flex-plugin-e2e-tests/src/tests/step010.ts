@@ -18,6 +18,8 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   }
   const flags: string[] = [];
   const ext = scenario.isTS ? 'tsx' : 'jsx';
+  const startPlugin = async (url: string) =>
+    pluginHelper.waitForPluginToStart(url, testParams.config.start.timeout, testParams.config.start.pollInterval);
 
   if (scenario.isTS) {
     flags.push('--typescript');
@@ -39,26 +41,15 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
 
   await Promise.all([setup(plugin2), setup(plugin3)]);
 
-  const startFlags: string[] = [];
-
-  // Add the remote plugin & local plugin
-  startFlags.push('--name', `${plugin1.name}@remote`, '--name', plugin2.name);
+  const startFlags = ['--name', `${plugin1.name}@remote`, '--name', plugin2.name];
 
   // Start all 3 plugins (Note: cwd is plugin3 in this scenario since plugin is the remote one)
   const twilioCliResult = await spawn('twilio', ['flex:plugins:start', ...startFlags], {
     detached: true,
     cwd: plugin3.dir,
   });
-  await pluginHelper.waitForPluginToStart(
-    plugin2.localhostUrl,
-    testParams.config.start.timeout,
-    testParams.config.start.pollInterval,
-  );
-  await pluginHelper.waitForPluginToStart(
-    plugin3.localhostUrl,
-    testParams.config.start.timeout,
-    testParams.config.start.pollInterval,
-  );
+  await Promise.all([startPlugin(plugin2.localhostUrl), startPlugin(plugin3.localhostUrl)]);
+
   const consoleApi = new ConsoleAPI(config.consoleBaseUrl, secrets.console);
   const cookies = await consoleApi.getCookies();
   await Browser.create({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
