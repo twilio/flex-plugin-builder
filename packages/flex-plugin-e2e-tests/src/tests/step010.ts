@@ -45,11 +45,11 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   await Promise.all([setup(plugin2), setup(plugin3)]);
 
   // Start all 3 plugins (Note: cwd is plugin3 in this scenario since plugin is the remote one)
-  const startFlags = ['--name', `${plugin1.name}@remote`, '--name', plugin2.name];
-  const twilioCliResult = await spawn('twilio', ['flex:plugins:start', ...startFlags], {
-    detached: true,
-    cwd: plugin3.dir,
-  });
+  const twilioCliResult = await spawn(
+    'twilio',
+    ['flex:plugins:start', '--name', `${plugin1.name}@remote`, '--name', plugin2.name],
+    { detached: true, cwd: plugin3.dir },
+  );
   await Promise.all([startPlugin(plugin2.localhostUrl), startPlugin(plugin3.localhostUrl)]);
 
   const consoleApi = new ConsoleAPI(config.consoleBaseUrl, secrets.console);

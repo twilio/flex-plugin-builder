@@ -39,8 +39,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   ]);
 
   // Start 1 local plugin and all remote plugins (note: local is plugin3 by cwd)
-  const startFlags = ['--include-remote'];
-  const twilioCliResult = await spawn('twilio', ['flex:plugins:start', ...startFlags], {
+  const twilioCliResult = await spawn('twilio', ['flex:plugins:start --include-remote'], {
     detached: true,
     cwd: plugin3.dir,
   });
@@ -70,6 +69,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     await killChildProcess(twilioCliResult.child, environment.operatingSystem);
   }
 };
-testSuite.description = 'Running {{twilio flex:plugins:start}} with 1 local plugin and all remote plugins';
+testSuite.description =
+  'Running {{twilio flex:plugins:start --include-remote}} with 1 local plugin and all remote plugins';
 
 export default testSuite;
