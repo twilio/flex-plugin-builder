@@ -6,7 +6,14 @@ import { spawn, Browser, pluginHelper, ConsoleAPI, joinPath, assertion, killChil
 import { PluginType } from '../core/parameters';
 
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
-  if (!scenario.plugins[0].newlineValue) {
+  const plugin1 = scenario.plugins[0];
+  const plugin2 = scenario.plugins[1];
+  const plugin3 = scenario.plugins[2];
+  assertion.not.isNull(plugin1);
+  assertion.not.isNull(plugin2);
+  assertion.not.isNull(plugin3);
+
+  if (!plugin1.newlineValue) {
     throw new Error('scenario.plugin.newlineValue does not have a valid value');
   }
   const flags: string[] = [];
@@ -30,40 +37,40 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     });
   };
 
-  await Promise.all([setup(scenario.plugins[1]), setup(scenario.plugins[2])]);
+  await Promise.all([setup(plugin2), setup(plugin3)]);
 
   const startFlags: string[] = [];
 
   // Add the remote plugin & local plugin
-  startFlags.push('--name', `${scenario.plugins[0].name}@remote`, '--name', scenario.plugins[1].name);
+  startFlags.push('--name', `${plugin1.name}@remote`, '--name', plugin2.name);
 
   // Start all 3 plugins (Note: cwd is plugin3 in this scenario since plugin is the remote one)
   const twilioCliResult = await spawn('twilio', ['flex:plugins:start', ...startFlags], {
     detached: true,
-    cwd: scenario.plugins[2].dir,
+    cwd: plugin3.dir,
   });
   await pluginHelper.waitForPluginToStart(
-    scenario.plugins[1].localhostUrl,
+    plugin2.localhostUrl,
     testParams.config.start.timeout,
     testParams.config.start.pollInterval,
   );
   await pluginHelper.waitForPluginToStart(
-    scenario.plugins[2].localhostUrl,
+    plugin3.localhostUrl,
     testParams.config.start.timeout,
     testParams.config.start.pollInterval,
   );
   const consoleApi = new ConsoleAPI(config.consoleBaseUrl, secrets.console);
   const cookies = await consoleApi.getCookies();
-  await Browser.create({ flex: scenario.plugins[2].localhostUrl, twilioConsole: config.consoleBaseUrl });
+  await Browser.create({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
 
   try {
     // Plugin loads
     await Browser.app.twilioConsole.login(cookies, 'admin', secrets.api.accountSid, config.localhostPort);
     await assertion.app.view.agentDesktop.isVisible();
 
-    await assertion.app.view.plugins.plugin.isVisible(scenario.plugins[0].newlineValue);
-    await assertion.app.view.plugins.plugin.isVisible(scenario.plugins[1].componentText);
-    await assertion.app.view.plugins.plugin.isVisible(scenario.plugins[2].componentText);
+    await assertion.app.view.plugins.plugin.isVisible(plugin1.newlineValue);
+    await assertion.app.view.plugins.plugin.isVisible(plugin2.componentText);
+    await assertion.app.view.plugins.plugin.isVisible(plugin3.componentText);
   } catch (e) {
     await Browser.app.takeScreenshot(environment.cwd);
     throw e;

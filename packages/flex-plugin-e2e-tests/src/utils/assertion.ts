@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { deepStrictEqual, notDeepStrictEqual } from 'assert';
+import { deepStrictEqual, notDeepStrictEqual, deepEqual, notDeepEqual } from 'assert';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -62,10 +62,25 @@ const dirIsEmpty = (doesEqual: boolean) => (paths: string[], msg?: string) => {
 };
 
 /**
- * Checks whether the object is null/undefined
+ * Checks whether the object is null
  */
-const objIsNull = (doesEqual: boolean) => (obj: any, msg?: string) => {
-  _strictEqual(doesEqual, undefined || null, obj, msg); // This is wrong and have not yet figured out why
+const isNull = (doesEqual: boolean) => (obj: any, msg?: string) => {
+  if (doesEqual) {
+    deepEqual(obj, null, msg);
+  } else {
+    notDeepEqual(obj, null, msg);
+  }
+};
+
+/**
+ * Checks whether the object is underfined
+ */
+const isUndefined = (doesEqual: boolean) => (obj: any, msg?: string) => {
+  if (doesEqual) {
+    deepEqual(obj, undefined, msg);
+  } else {
+    notDeepEqual(obj, undefined, msg);
+  }
 };
 
 export default {
@@ -75,7 +90,8 @@ export default {
   fileContains: fileContains(true),
   dirIsEmpty: dirIsEmpty(true),
   stringContains: stringContains(true),
-  objIsNull: objIsNull(true),
+  isNull: isNull(true),
+  isUndefined: isUndefined(true),
   not: {
     fileExists: fileExists(false),
     jsonFileContains: jsonFileContains(false),
@@ -83,7 +99,8 @@ export default {
     dirIsEmpty: dirIsEmpty(false),
     stringContains: stringContains(false),
     equal: equal(false),
-    objIsNull: objIsNull(false),
+    isNull: isNull(false),
+    isUndefined: isUndefined(false),
   },
   app: (() => {
     let view: InstanceType<typeof App>['assert'];

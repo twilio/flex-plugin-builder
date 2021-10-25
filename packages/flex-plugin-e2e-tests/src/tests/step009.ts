@@ -7,7 +7,10 @@ const PLUGIN_RELEASED_POLL_INTERVAL = 5000;
 
 // Plugin visible on the Hosted Flex
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
-  if (!scenario.plugins[0].newlineValue) {
+  const plugin = scenario.plugins[0];
+  assertion.not.isNull(plugin);
+
+  if (!plugin.newlineValue) {
     throw new Error(`scenario.plugin.newlineValue does not have a valid value`);
   }
 
@@ -19,9 +22,9 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   }
 
   const plugins = await api.getActivePlugins(release.configuration_sid);
-  const releasedPlugin = plugins.plugins.find((plugin) => plugin.unique_name === scenario.plugins[0].name);
+  const releasedPlugin = plugins.plugins.find((plgin) => plgin.unique_name === plugin.name);
   if (!releasedPlugin) {
-    throw new Error(`Did not find plugin with name: ${scenario.plugins[0].name} in released plugins`);
+    throw new Error(`Did not find plugin with name: ${plugin.name} in released plugins`);
   }
 
   const consoleApi = new ConsoleAPI(config.consoleBaseUrl, secrets.console);
@@ -42,7 +45,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     await pluginHelper.waitForPluginToRelease(releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
     await Browser.app.agentDesktop.open();
 
-    await assertion.app.view.plugins.plugin.isVisible(scenario.plugins[0].newlineValue);
+    await assertion.app.view.plugins.plugin.isVisible(plugin.newlineValue);
   } catch (e) {
     await Browser.app.takeScreenshot(environment.cwd);
     throw e;

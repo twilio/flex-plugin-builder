@@ -5,28 +5,31 @@ import { spawn, Browser, pluginHelper, ConsoleAPI, joinPath, assertion, killChil
 
 // Plugin start
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
+  const plugin = scenario.plugins[0];
+  assertion.not.isNull(plugin);
+
   const ext = scenario.isTS ? 'tsx' : 'jsx';
   const tmpComponentText = 'hot reload works';
-  const twilioCliResult = await spawn('twilio', ['flex:plugins:start'], { detached: true, cwd: scenario.plugins[0].dir });
+  const twilioCliResult = await spawn('twilio', ['flex:plugins:start'], { detached: true, cwd: plugin.dir });
   await pluginHelper.waitForPluginToStart(
-    scenario.plugins[0].localhostUrl,
+    plugin.localhostUrl,
     testParams.config.start.timeout,
     testParams.config.start.pollInterval,
   );
   const consoleApi = new ConsoleAPI(config.consoleBaseUrl, secrets.console);
   const cookies = await consoleApi.getCookies();
-  await Browser.create({ flex: scenario.plugins[0].localhostUrl, twilioConsole: config.consoleBaseUrl });
+  await Browser.create({ flex: plugin.localhostUrl, twilioConsole: config.consoleBaseUrl });
 
   try {
     // Plugin loads
     await Browser.app.twilioConsole.login(cookies, 'agent-desktop', secrets.api.accountSid, config.localhostPort);
     await assertion.app.view.agentDesktop.isVisible();
-    await assertion.app.view.plugins.plugin.isVisible(scenario.plugins[0].componentText);
+    await assertion.app.view.plugins.plugin.isVisible(plugin.componentText);
 
     // Verify hot reload
     await replaceInFile({
-      files: joinPath(scenario.plugins[0].dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
-      from: scenario.plugins[0].componentText,
+      files: joinPath(plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
+      from: plugin.componentText,
       to: tmpComponentText,
     });
 
@@ -40,9 +43,9 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   }
 
   await replaceInFile({
-    files: joinPath(scenario.plugins[0].dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
+    files: joinPath(plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
     from: tmpComponentText,
-    to: scenario.plugins[0].componentText,
+    to: plugin.componentText,
   });
 };
 testSuite.description = 'Running {{twilio flex:plugins:start}}';

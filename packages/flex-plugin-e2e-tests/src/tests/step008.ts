@@ -4,10 +4,13 @@ import { TestSuite, TestParams } from '../core';
 
 // Release plugin
 const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<void> => {
+  const plugin = scenario.plugins[0];
+  assertion.not.isNull(plugin);
+
   const result = await spawn('twilio', [
     'flex:plugins:release',
     '--plugin',
-    `${scenario.plugins[0].name}@${scenario.plugins[0].version}`,
+    `${plugin.name}@${plugin.version}`,
     ...config.regionFlag,
   ]);
   logResult(result);
@@ -20,8 +23,8 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
   assertion.stringContains(result.stdout, 'Configuration FJ');
   assertion.stringContains(result.stdout, 'enabled');
   assertion.equal(1, plugins.plugins.length);
-  assertion.equal(plugins.plugins[0].unique_name, scenario.plugins[0].name);
-  assertion.equal(plugins.plugins[0].version, scenario.plugins[0].version);
+  assertion.equal(plugins.plugins[0].unique_name, plugin.name);
+  assertion.equal(plugins.plugins[0].version, plugin.version);
 };
 testSuite.description = 'Running {{twilio flex:plugins:release}}';
 
