@@ -82,7 +82,7 @@ describe('pluginServer', () => {
         {
           phase: 3,
           name: 'plugin-version',
-          src: 'http://flex.twilio.com/plugins/v1/plugin-version/1.0.0/bundle.js',
+          src: 'https://flex.twilio.com/plugins/v1/plugin-version/1.0.0/bundle.js',
           version: '1.0.0',
         },
       ]);
