@@ -7,18 +7,21 @@ interface Hidden {
   __hidden: boolean;
 }
 
+export interface PluginType {
+  name: string;
+  dir: string;
+  componentText: string;
+  localhostUrl: string;
+}
+
 export interface TestScenario {
   packageVersion: string;
-  plugin: {
-    name: string;
-    dir: string;
-    componentText: string;
-    localhostUrl: string;
-  } & Partial<{
-    newlineValue: string;
-    changelog: string;
-    version: string;
-  }>;
+  plugins: (PluginType &
+    Partial<{
+      newlineValue: string;
+      changelog: string;
+      version: string;
+    }>)[];
   flexUIVersion?: string;
   reactVersion?: string;
   isTS?: boolean;
@@ -41,6 +44,10 @@ export interface TestParams {
     };
   } & Hidden;
   config: {
+    start: {
+      timeout: number;
+      pollInterval: number;
+    };
     consoleBaseUrl: string;
     hostedFlexBaseUrl: string;
     localhostPort: number;
@@ -52,6 +59,8 @@ export interface TestParams {
 
 const { TWILIO_REGION, LOCALHOST_PORT } = process.env;
 const pluginName = 'flex-e2e-tester-plugin';
+const pluginName2 = 'flex-e2e-tester-plugin-2';
+const pluginName3 = 'flex-e2e-tester-plugin-3';
 const consoleBaseUrl = TWILIO_REGION ? `https://www.${TWILIO_REGION}.twilio.com` : 'https://www.twilio.com';
 const hostedFlexBaseUrl = TWILIO_REGION ? `https://flex.${TWILIO_REGION}.twilio.com` : 'https://flex.twilio.com';
 const operatingSystem = platform();
@@ -93,6 +102,10 @@ export const testParams: TestParams = {
     },
   },
   config: {
+    start: {
+      timeout: 30000,
+      pollInterval: 1000,
+    },
     __hidden: false,
     consoleBaseUrl: process.env.CONSOLE_BASE_URL || consoleBaseUrl,
     hostedFlexBaseUrl: process.env.HOSTED_FLEX_BASE_URL || hostedFlexBaseUrl,
@@ -103,12 +116,26 @@ export const testParams: TestParams = {
   scenario: {
     __hidden: false,
     packageVersion: process.env.PACKAGE_VERSION as string,
-    plugin: {
-      name: pluginName,
-      dir: join(homeDir, pluginName),
-      componentText: `This is a dismissible demo component ${Date.now()}`,
-      localhostUrl: 'http://localhost:3000' || (process.env.PLUGIN_BASE_URL as string),
-    },
+    plugins: [
+      {
+        name: pluginName,
+        dir: join(homeDir, pluginName),
+        componentText: `This is a dismissible demo component ${Date.now()}`,
+        localhostUrl: 'http://localhost:3000' || (process.env.PLUGIN_BASE_URL as string),
+      },
+      {
+        name: pluginName2,
+        dir: join(homeDir, pluginName2),
+        componentText: `This is a dismissible demo component for plugin2 ${Date.now()}`,
+        localhostUrl: 'http://localhost:3000' || (process.env.PLUGIN_BASE_URL as string),
+      },
+      {
+        name: pluginName3,
+        dir: join(homeDir, pluginName3),
+        componentText: `This is a dismissible demo component for plugin3 ${Date.now()}`,
+        localhostUrl: 'http://localhost:3000' || (process.env.PLUGIN_BASE_URL as string),
+      },
+    ],
   },
 };
 if (testParams.config.region) {

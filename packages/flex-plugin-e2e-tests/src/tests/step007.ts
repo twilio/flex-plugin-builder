@@ -7,40 +7,43 @@ import { TestSuite, TestParams } from '../core';
 
 // Deploy plugin
 const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<void> => {
+  const plugin = scenario.plugins[0];
+  assertion.not.isNull(plugin);
+
   const ext = scenario.isTS ? 'tsx' : 'jsx';
-  scenario.plugin.newlineValue = `This is a dismissible demo component ${Date.now()}`;
-  scenario.plugin.changelog = `e2e test ${Date.now()}`;
+  plugin.newlineValue = `This is a dismissible demo component ${Date.now()}`;
+  plugin.changelog = `e2e test ${Date.now()}`;
   await replaceInFile({
-    files: joinPath(scenario.plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
+    files: joinPath(plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
     from: /This is a dismissible demo component.*/,
-    to: scenario.plugin.newlineValue,
+    to: plugin.newlineValue,
   });
 
-  const resource = await api.getLatestPluginVersion(scenario.plugin.name);
-  scenario.plugin.version = semver.inc(resource?.version || '0.0.0', 'patch') as string;
+  const resource = await api.getLatestPluginVersion(plugin.name);
+  plugin.version = semver.inc(resource?.version || '0.0.0', 'patch') as string;
   const result = await spawn(
     'twilio',
-    ['flex:plugins:deploy', '--changelog', `"${scenario.plugin.changelog}"`, '--patch', ...config.regionFlag],
+    ['flex:plugins:deploy', '--changelog', `"${plugin.changelog}"`, '--patch', ...config.regionFlag],
     {
-      cwd: scenario.plugin.dir,
+      cwd: plugin.dir,
     },
   );
   logResult(result);
 
-  assertion.fileExists([scenario.plugin.dir, 'build', `${scenario.plugin.name}.js`]);
-  assertion.fileContains([scenario.plugin.dir, 'build', `${scenario.plugin.name}.js`], scenario.plugin.newlineValue);
-  assertion.jsonFileContains([scenario.plugin.dir, 'package.json'], 'version', scenario.plugin.version);
+  assertion.fileExists([plugin.dir, 'build', `${plugin.name}.js`]);
+  assertion.fileContains([plugin.dir, 'build', `${plugin.name}.js`], plugin.newlineValue);
+  assertion.jsonFileContains([plugin.dir, 'package.json'], 'version', plugin.version);
   assertion.stringContains(result.stdout, 'Next Steps');
   assertion.stringContains(result.stdout, 'twilio flex:plugins:release');
-  assertion.stringContains(result.stdout, scenario.plugin.name);
+  assertion.stringContains(result.stdout, plugin.name);
 
-  const plugin = await api.getPlugin(scenario.plugin.name);
-  const pluginVersion = await api.getPluginVersion(scenario.plugin.name, scenario.plugin.version);
-  const latest = await api.getLatestPluginVersion(scenario.plugin.name);
+  const apiPlugin = await api.getPlugin(plugin.name);
+  const pluginVersion = await api.getPluginVersion(plugin.name, plugin.version);
+  const latest = await api.getLatestPluginVersion(plugin.name);
 
-  assertion.equal(plugin.unique_name, scenario.plugin.name);
-  assertion.equal(pluginVersion.version, scenario.plugin.version);
-  assertion.equal(pluginVersion.changelog, scenario.plugin.changelog);
+  assertion.equal(apiPlugin.unique_name, plugin.name);
+  assertion.equal(pluginVersion.version, plugin.version);
+  assertion.equal(pluginVersion.changelog, plugin.changelog);
   assertion.equal(pluginVersion, latest);
 };
 testSuite.description = 'Running {{twilio flex:plugins:deploy}}';
