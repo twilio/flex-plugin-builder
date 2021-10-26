@@ -128,8 +128,6 @@ export const _getRemotePlugins = async (token: string, version: string | null | 
  * @returns
  */
 export const _getRemoteVersionedPlugins = (names: string[]): Plugin[] => {
-  const protocol = `http${env.isHTTPS() ? 's' : ''}://`;
-
   return names.map((plugin) => {
     const groups = plugin.match(PLUGIN_INPUT_PARSER_REGEX);
 
@@ -143,7 +141,7 @@ export const _getRemoteVersionedPlugins = (names: string[]): Plugin[] => {
     return {
       phase: 3,
       name,
-      src: `${protocol}flex.twilio.com/plugins/v1/${name}/${version}/bundle.js`,
+      src: `https://flex.twilio.com/plugins/v1/${name}/${version}/bundle.js`,
       version,
     };
   });
