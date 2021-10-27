@@ -16,10 +16,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   assertion.not.isNull(plugin1);
   assertion.not.isNull(plugin2);
   assertion.not.isNull(plugin3);
-
-  if (!plugin1.newlineValue) {
-    throw new Error('scenario.plugin.newlineValue does not have a valid value');
-  }
+  assertion.not.isNull(plugin1.newlineValue, 'scenario.plugins[0].newlineValue does not have a valid value');
 
   // Edit remote plugin to have different text
   await replaceInFile({
@@ -63,7 +60,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     // Plugin loads
     await Browser.app.twilioConsole.login(cookies, 'admin', secrets.api.accountSid, config.localhostPort);
     await assertion.app.view.agentDesktop.isVisible();
-
+    // @ts-ignore
     await assertion.app.view.plugins.plugin.isVisible(plugin1.newlineValue);
     await assertion.app.view.plugins.plugin.isVisible(plugin2.componentText);
     await assertion.app.view.plugins.plugin.isVisible(plugin3.componentText);
