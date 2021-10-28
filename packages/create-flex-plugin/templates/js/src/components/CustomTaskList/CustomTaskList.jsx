@@ -1,29 +1,24 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
+import { Alert } from '@twilio-paste/core/alert';
+import { Text } from '@twilio-paste/core/text';
 import { CustomTaskListComponentStyles } from './CustomTaskList.Styles';
 
-// It is recommended to keep components stateless and use redux for managing states
-const CustomTaskList = (props) => {
+export default function CustomTaskList(props) {
   if (!props.isOpen) {
     return null;
   }
 
   return (
     <CustomTaskListComponentStyles>
-      This is a dismissible demo component
-      <i className="accented" onClick={props.dismissBar} aria-hidden="true">
-        close
-      </i>
+        <AlertComponent/>
     </CustomTaskListComponentStyles>
   );
 };
 
-CustomTaskList.displayName = 'CustomTaskList';
-
-CustomTaskList.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  dismissBar: PropTypes.func.isRequired,
-};
-
-export default CustomTaskList;
+// bar doesn't close when X clicked; the component looks totally wrong
+const AlertComponent = () => (
+  <Alert onDismiss={() => props.dismissBar} variant="neutral">
+    <Text color="red">This is a dismissible demo component.</Text>
+  </Alert>
+);

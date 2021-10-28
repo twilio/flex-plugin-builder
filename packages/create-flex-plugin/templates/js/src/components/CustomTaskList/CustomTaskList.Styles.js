@@ -1,14 +1,8 @@
-import styled from 'react-emotion';
+import {styled, css} from '@twilio-paste/styling-library';
 
-export const CustomTaskListComponentStyles = styled('div')`
-  padding: 10px;
-  margin: 0px;
-  color: #fff;
-  background: #000;
-
-  .accented {
-    color: red;
-    cursor: pointer;
-    float: right;
-  }
-`;
+export const CustomTaskListComponentStyles = styled.div(
+  css({
+    backgroundColor: '#000',
+    padding: '10px',
+  })
+);
