@@ -5,6 +5,7 @@ export const CustomTaskListComponentStyles = styled('div')`
   margin: 0px;
   color: #fff;
   background: #000;
+  
   .accented {
     color: red;
     cursor: pointer;
