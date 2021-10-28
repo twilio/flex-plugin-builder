@@ -1,24 +1,29 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-import { Alert } from '@twilio-paste/core/alert';
-import { Theme } from '@twilio-paste/core/theme';
-import { Text } from '@twilio-paste/core/text';
+import { CustomTaskListComponentStyles } from './CustomTaskList.Styles';
 
+// It is recommended to keep components stateless and use redux for managing states
 const CustomTaskList = (props) => {
   if (!props.isOpen) {
     return null;
   }
 
-  const [isOpen, setIsOpen] = React.useState(false);
-  const handleClose = () => setIsOpen(false);
-
   return (
-    <Theme.Provider theme="default">
-      <Alert isOpen={isOpen} onDismiss={() => {handleClose}} variant="neutral">
-        <Text>This is a dismissible demo component.</Text>
-      </Alert>
-    </Theme.Provider>
+    <CustomTaskListComponentStyles>
+      This is a dismissible demo component
+      <i className="accented" onClick={props.dismissBar} aria-hidden="true">
+        close
+      </i>
+    </CustomTaskListComponentStyles>
   );
+};
+
+CustomTaskList.displayName = 'CustomTaskList';
+
+CustomTaskList.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  dismissBar: PropTypes.func.isRequired,
 };
 
 export default CustomTaskList;
