@@ -1,24 +1,24 @@
 import React from 'react';
 
 import { Alert } from '@twilio-paste/core/alert';
+import { Theme } from '@twilio-paste/core/theme';
 import { Text } from '@twilio-paste/core/text';
-import { CustomTaskListComponentStyles } from './CustomTaskList.Styles';
 
-export default function CustomTaskList(props) {
+const CustomTaskList = (props) => {
   if (!props.isOpen) {
     return null;
   }
 
+  const [isOpen, setIsOpen] = React.useState(false);
+  const handleClose = () => setIsOpen(false);
+
   return (
-    <CustomTaskListComponentStyles>
-        <AlertComponent/>
-    </CustomTaskListComponentStyles>
+    <Theme.Provider theme="default">
+      <Alert isOpen={isOpen} onDismiss={() => {handleClose}} variant="neutral">
+        <Text>This is a dismissible demo component.</Text>
+      </Alert>
+    </Theme.Provider>
   );
 };
 
-// bar doesn't close when X clicked; the component looks totally wrong
-const AlertComponent = () => (
-  <Alert onDismiss={() => props.dismissBar} variant="neutral">
-    <Text color="red">This is a dismissible demo component.</Text>
-  </Alert>
-);
+export default CustomTaskList;
