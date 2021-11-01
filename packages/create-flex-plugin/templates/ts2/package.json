@@ -15,7 +15,7 @@
     "@twilio-paste/icons": "^5.7.0"
   },
   "devDependencies": {
-    "@twilio/flex-ui": "alpha",
+    "@twilio/flex-ui": "{{flexSdkVersion}}",
     "react-test-renderer": "17.0.1",
     "typescript": "^4"
   }

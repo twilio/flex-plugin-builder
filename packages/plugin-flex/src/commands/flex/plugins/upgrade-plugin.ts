@@ -10,8 +10,8 @@ import {
   copyFile,
   removeFile,
   calculateSha256,
+  getLatestVersionOfDep,
 } from 'flex-dev-utils/dist/fs';
-import packageJson from 'package-json';
 import { flags } from '@oclif/parser';
 import { TwilioApiError, TwilioCliError, progress, semver } from 'flex-dev-utils';
 import { spawn } from 'flex-dev-utils/dist/spawn';
@@ -142,7 +142,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         break;
     }
 
-    const pkgJson = await this.getLatestVersionOfDep(flexPluginScript, this._flags.beta);
+    const pkgJson = await getLatestVersionOfDep(flexPluginScript, this._flags.beta, false);
     const latestVersion = pkgJson ? semver.coerce(pkgJson.version as string)?.major : 0;
     if (currentPkgVersion !== latestVersion) {
       await this.cleanupNodeModules();
@@ -333,7 +333,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
             }
 
             // Now find the latest
-            const scriptPkg = await this.getLatestVersionOfDep(dep, beta);
+            const scriptPkg = await getLatestVersionOfDep(dep, beta, false);
             if (!scriptPkg) {
               this.prints.packageNotFound(dep);
               this.exit(1);
@@ -468,16 +468,6 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         'react-test-renderer': react,
       },
     };
-  }
-
-  /**
-   * Returns the latest version of a package
-   * @param dep the package to check
-   * @param isBeta  whether to check beta tag
-   */
-  async getLatestVersionOfDep(dep: string, isBeta: boolean): Promise<packageJson.AbbreviatedMetadata> {
-    const option = FlexPluginsUpgradePlugin.pluginBuilderScripts.includes(dep) && isBeta ? { version: 'beta' } : {};
-    return packageJson(dep, option);
   }
 
   /**

@@ -8,6 +8,8 @@ import globby from 'globby';
 import mkdirp from 'mkdirp';
 import rimRaf from 'rimraf';
 import appModule from 'app-module-path';
+/* eslint-disable import/no-extraneous-dependencies */
+import packageJson from 'package-json';
 
 import { confirm } from './inquirer';
 
@@ -662,4 +664,21 @@ export const packageDependencyVersion = (pkg: PackageJson, name: string): string
  */
 export const flexUIPackageDependencyVersion = (name: string): string | null => {
   return packageDependencyVersion(_require(getPaths().app.flexUIPkgPath) as PackageJson, name);
+};
+
+/**
+ * Fetches the version corresponding to the dependency inside the flex-ui package.json
+ * @param name the package to check
+ */
+/* istanbul ignore next */
+export const getLatestVersionOfDep = async (
+  dep: string,
+  isBeta: boolean,
+  isAlpha: boolean,
+): Promise<packageJson.AbbreviatedMetadata> => {
+  let option = {};
+  if (isAlpha || isBeta) {
+    option = isBeta ? { version: 'beta' } : { version: 'alpha' };
+  }
+  return packageJson(dep, option);
 };
