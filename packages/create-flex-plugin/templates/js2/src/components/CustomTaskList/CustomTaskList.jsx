@@ -5,7 +5,7 @@ import { Theme } from '@twilio-paste/core/theme';
 import { Text } from '@twilio-paste/core/text';
 
 const CustomTaskList = () => {
-const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(true);
   if (!isOpen) {
     return null;
   }

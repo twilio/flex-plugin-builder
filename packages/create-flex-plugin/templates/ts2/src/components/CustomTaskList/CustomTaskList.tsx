@@ -6,20 +6,20 @@ import { Text } from '@twilio-paste/core/text';
 
 const CustomTaskList = (): JSX.Element | null => {
   const [isOpen, setIsOpen] = useState(true);
-    if (!isOpen) {
-      return null;
-    }
+  if (!isOpen) {
+    return null;
+  }
   
-    const dismiss = () => setIsOpen(false);
+  const dismiss = () => setIsOpen(false);
   
-    return (
-      <Theme.Provider theme="default">
-        <Alert onDismiss={dismiss} variant="neutral">
-          <Text>This is a dismissible demo component.</Text>
-        </Alert>
-      </Theme.Provider>
-    );
-  };
+  return (
+    <Theme.Provider theme="default">
+      <Alert onDismiss={dismiss} variant="neutral">
+        <Text>This is a dismissible demo component.</Text>
+      </Alert>
+    </Theme.Provider>
+  );
+};
 
 CustomTaskList.displayName = 'foo';
 
