@@ -77,8 +77,6 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
 
   private static cracoConfigSha = '4a8ecfec7b70da88a0849b7b0163808b2cc46eee08c9ab599c8aa3525ff01546';
 
-  private static pluginBuilderScripts = [flexPluginScript, flexPlugin];
-
   private static packagesToRemove = [
     flexPluginScript, // remove and then re-add
     'react-app-rewire-flex-plugin',
