@@ -10,10 +10,9 @@ import {
   copyFile,
   removeFile,
   calculateSha256,
-  getLatestVersionOfDep,
 } from 'flex-dev-utils/dist/fs';
 import { flags } from '@oclif/parser';
-import { TwilioApiError, TwilioCliError, progress, semver } from 'flex-dev-utils';
+import { TwilioApiError, TwilioCliError, progress, semver, packages } from 'flex-dev-utils';
 import { spawn } from 'flex-dev-utils/dist/spawn';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
@@ -142,7 +141,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         break;
     }
 
-    const pkgJson = await getLatestVersionOfDep(flexPluginScript, this._flags.beta, false);
+    const pkgJson = await packages.getRegistryVersion(flexPluginScript, this._flags.beta ? 'beta' : 'latest');
     const latestVersion = pkgJson ? semver.coerce(pkgJson.version as string)?.major : 0;
     if (currentPkgVersion !== latestVersion) {
       await this.cleanupNodeModules();
@@ -333,7 +332,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
             }
 
             // Now find the latest
-            const scriptPkg = await getLatestVersionOfDep(dep, beta, false);
+            const scriptPkg = await packages.getRegistryVersion(dep, beta ? 'beta' : 'latest');
             if (!scriptPkg) {
               this.prints.packageNotFound(dep);
               this.exit(1);
