@@ -10,12 +10,10 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "prop-types": "^15.7.2",
-    "@testing-library/react": "^12.1.2",
     "@twilio-paste/core": "^10.14.0",
     "@twilio-paste/icons": "^5.7.0"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.15.0",
     "@twilio/flex-ui": "{{flexSdkVersion}}",
     "react-test-renderer": "17.0.2"
   }
