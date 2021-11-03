@@ -42,7 +42,7 @@
     "flex-plugins-utils-env": "4.2.1",
     "flex-plugins-utils-exception": "4.2.1",
     "flex-plugins-utils-logger": "4.2.1",
-    "flex-plugins-utils-spawn": "4.2.1",
+    "execa": "^4.1.0",
     "globby": "^11.0.4",
     "lodash": "^4.17.21",
     "marked": "^2.1.3",

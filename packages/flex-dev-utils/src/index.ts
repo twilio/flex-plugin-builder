@@ -14,7 +14,6 @@ export { default as keychain, KeychainCredential, Keychain } from './keychain';
 export { default as sids } from './sids';
 export { default as random } from './random';
 export { default as validators } from './validators';
-export { default as spawn, SpawnPromise } from './spawn';
 export { default as axios } from './axios';
 export { default as prints } from './prints';
 export { default as open } from './open';
@@ -37,3 +36,5 @@ export { default as exit } from './exit';
 
 export type FunctionalCallback<D, R> = (data: D) => R;
 export type Callback<D> = FunctionalCallback<D, void>;
+
+export * as spawn from './spawn';

@@ -1,11 +1,10 @@
 /* eslint-disable import/no-unused-modules, @typescript-eslint/ban-types, @typescript-eslint/promise-function-async */
-
 import os from 'os';
 
 import execa from 'execa';
 import { logger, singleLineString } from 'flex-plugins-utils-logger';
 
-const DefaultOptions = { stdio: 'inherit' };
+export const DefaultOptions = { stdio: 'inherit' };
 
 export interface SpawnReturn {
   exitCode: number;
@@ -13,13 +12,10 @@ export interface SpawnReturn {
   stderr: string;
 }
 
-interface SPromise<T> extends Promise<T> {
+export type SpawnPromise = {
   cancel: () => void;
-
   kill: (signal?: NodeJS.Signals | number) => boolean;
-}
-
-export type SpawnPromise = SPromise<SpawnReturn>;
+} & Promise<SpawnReturn>;
 
 /**
  * A wrapper for spawn
@@ -28,7 +24,8 @@ export type SpawnPromise = SPromise<SpawnReturn>;
  * @param args      the spawn arguments
  * @param options   the spawn options
  */
-export const spawn = (cmd: string, args: string[], options: object = DefaultOptions): SpawnPromise => {
+// @ts-ignore
+const spawn = async (cmd: string, args: string[], options: object = DefaultOptions): SpawnPromise => {
   const defaultOptions = {
     shell: process.env.SHELL,
   };
@@ -80,29 +77,5 @@ export const spawn = (cmd: string, args: string[], options: object = DefaultOpti
 
   return Object.assign(promise, { cancel, kill });
 };
-
-/**
- * Spawns a node
- *
- * @param args      the spawn arguments
- * @param options   the spawn options
- */
-export const node = (args: string[], options: object = DefaultOptions): SpawnPromise => spawn('node', args, options);
-
-/**
- * Spawns an npm
- *
- * @param args      the spawn arguments
- * @param options   the spawn options
- */
-export const npm = (args: string[], options: object = DefaultOptions): SpawnPromise => spawn('npm', args, options);
-
-/**
- * Spawns a yarn
- *
- * @param args      the spawn arguments
- * @param options   the spawn options
- */
-export const yarn = (args: string[], options: object = DefaultOptions): SpawnPromise => spawn('yarn', args, options);
 
 export default spawn;

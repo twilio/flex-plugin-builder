@@ -8,33 +8,36 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
   if (scenario.isTS) {
     flags.push('--typescript');
   }
-  const twilioCliResult = await spawn('twilio', ['flex:plugins:create', scenario.plugin.name, ...flags]);
+  const plugin = scenario.plugins[0];
+  assertion.not.isNull(plugin);
 
+  const twilioCliResult = await spawn('twilio', ['flex:plugins:create', plugin.name, ...flags]);
   logResult(twilioCliResult);
 
   // Assert files/directories exist
-  assertion.fileExists([scenario.plugin.dir], 'Plugin directory does not exist');
-  assertion.fileExists([scenario.plugin.dir, 'src']);
-  assertion.fileExists([scenario.plugin.dir, 'src', 'components']);
-  assertion.fileExists([scenario.plugin.dir, 'src', 'components', '__tests__']);
-  assertion.not.dirIsEmpty([scenario.plugin.dir, 'src', 'components', '__tests__']);
-  assertion.fileExists([scenario.plugin.dir, 'public']);
-  assertion.fileExists([scenario.plugin.dir, 'package.json']);
-  assertion.fileExists([scenario.plugin.dir, 'webpack.config.js']);
-  assertion.fileExists([scenario.plugin.dir, 'webpack.dev.js']);
-  assertion.fileExists([scenario.plugin.dir, 'jest.config.js']);
-  assertion.fileExists([scenario.plugin.dir, 'public', 'appConfig.js']);
-  assertion.fileExists([scenario.plugin.dir, 'public', 'appConfig.example.js']);
+  assertion.fileExists([plugin.dir], 'Plugin directory does not exist');
+  assertion.fileExists([plugin.dir], 'Plugin directory does not exist');
+  assertion.fileExists([plugin.dir, 'src']);
+  assertion.fileExists([plugin.dir, 'src', 'components']);
+  assertion.fileExists([plugin.dir, 'src', 'components', '__tests__']);
+  assertion.not.dirIsEmpty([plugin.dir, 'src', 'components', '__tests__']);
+  assertion.fileExists([plugin.dir, 'public']);
+  assertion.fileExists([plugin.dir, 'package.json']);
+  assertion.fileExists([plugin.dir, 'webpack.config.js']);
+  assertion.fileExists([plugin.dir, 'webpack.dev.js']);
+  assertion.fileExists([plugin.dir, 'jest.config.js']);
+  assertion.fileExists([plugin.dir, 'public', 'appConfig.js']);
+  assertion.fileExists([plugin.dir, 'public', 'appConfig.example.js']);
 
   // Assert package.json
   assertion.jsonFileContains(
-    [scenario.plugin.dir, 'package.json'],
+    [plugin.dir, 'package.json'],
     "dependencies['flex-plugin-scripts']",
     scenario.packageVersion,
   );
-  assertion.jsonFileContains([scenario.plugin.dir, 'package.json'], "dependencies['react']", `16.5.2`);
-  assertion.jsonFileContains([scenario.plugin.dir, 'package.json'], "dependencies['react-dom']", `16.5.2`);
-  assertion.jsonFileContains([scenario.plugin.dir, 'package.json'], "devDependencies['react-test-renderer']", `16.5.2`);
+  assertion.jsonFileContains([plugin.dir, 'package.json'], "dependencies['react']", `16.5.2`);
+  assertion.jsonFileContains([plugin.dir, 'package.json'], "dependencies['react-dom']", `16.5.2`);
+  assertion.jsonFileContains([plugin.dir, 'package.json'], "devDependencies['react-test-renderer']", `16.5.2`);
 
   const { region } = config;
   if (region) {
@@ -64,10 +67,7 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
       },
     };
 
-    writeFileSync(
-      joinPath(scenario.plugin.dir, 'public', 'appConfig.js'),
-      `var appConfig = ${JSON.stringify(appConfig)}`,
-    );
+    writeFileSync(joinPath(plugin.dir, 'public', 'appConfig.js'), `var appConfig = ${JSON.stringify(appConfig)}`);
   }
 };
 

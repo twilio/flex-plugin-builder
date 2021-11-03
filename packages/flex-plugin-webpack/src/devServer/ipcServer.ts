@@ -12,11 +12,13 @@ interface Client {
 export enum IPCType {
   onCompileComplete = 'onCompileComplete',
   onDevServerCrashed = 'onDevServerCrashed',
+  onEmitAllCompilesComplete = 'onEmitAllCompilesComplete',
 }
 
 export interface OnCompileCompletePayload {
   result: ToJsonOutput;
   appName: string;
+  lastPluginBundle: boolean;
 }
 
 export interface OnDevServerCrashedPayload {
@@ -29,6 +31,7 @@ export interface OnDevServerCrashedPayload {
 export interface IPCPayload {
   onCompileComplete: OnCompileCompletePayload;
   onDevServerCrashed: OnDevServerCrashedPayload;
+  onEmitAllCompilesComplete: unknown;
 }
 
 type MessageCallback<T extends IPCType> = (payload: IPCPayload[T]) => void;
@@ -154,11 +157,22 @@ export const onIPCServerMessage = <T extends IPCType>(type: T, callback: Message
 };
 
 /**
+ * Emits to the server that all of the JS Bundles have completed compiling
+ * @param payload
+ * @returns
+ */
+export const emitAllCompilesComplete = async (): Promise<void> => _emitToServer(IPCType.onEmitAllCompilesComplete, {});
+
+/**
  * Emits a compilation complete event
  * @param payload
  */
-export const emitCompileComplete = async (payload: OnCompileCompletePayload): Promise<void> =>
-  _emitToServer(IPCType.onCompileComplete, payload);
+export const emitCompileComplete = async (payload: OnCompileCompletePayload): Promise<void> => {
+  await _emitToServer(IPCType.onCompileComplete, payload);
+  if (payload.lastPluginBundle) {
+    await emitAllCompilesComplete();
+  }
+};
 
 /**
  * Emits a dev-server failed event
