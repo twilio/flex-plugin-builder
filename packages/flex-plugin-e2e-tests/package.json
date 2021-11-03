@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-e2e-tests",
-  "version": "4.2.1",
+  "version": "4.2.2",
   "description": "Flex Plugin E2E Tests framework",
   "keywords": [
     "flex",
@@ -35,8 +35,8 @@
   },
   "dependencies": {
     "axios": "^0.21.4",
-    "flex-plugins-api-client": "4.2.1",
-    "flex-plugins-utils-logger": "4.2.1",
+    "flex-plugins-api-client": "4.2.2",
+    "flex-plugins-utils-logger": "4.2.2",
     "lodash": "4.17.21",
     "package-json": "^6.5.0",
     "puppeteer": "^10.4.0",
