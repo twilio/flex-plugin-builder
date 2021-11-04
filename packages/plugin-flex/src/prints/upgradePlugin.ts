@@ -35,6 +35,15 @@ const scriptStarted = (logger: Logger) => (version: string) => {
 };
 
 /**
+ * Upgrade to Flex UI 2.0
+ */
+const upgradeToFlexUI2 = (logger: Logger) => () => {
+  logger.info(`@@You are about to upgrade your plugin in the following ways:@@`);
+  logger.info('\t1. Updating the dependencies to be compatible with Flex UI 2.0');
+  logger.info('\t2. Updating to use the latest ({version}) of Flex Plugin CLI.');
+};
+
+/**
  * Script succeeded
  */
 const scriptSucceeded = (logger: Logger) => (needsInstall: boolean) => {
@@ -172,6 +181,7 @@ export default (logger: Logger) => ({
   scriptStarted: scriptStarted(logger),
   upgradeToLatest: upgradeToLatest(logger),
   scriptSucceeded: scriptSucceeded(logger),
+  upgradeToFlexUI2: upgradeToFlexUI2(logger),
   updatePluginUrl: updatePluginUrl(logger),
   cannotRemoveCraco: cannotRemoveCraco(logger),
   packageNotFound: packageNotFound(logger),
