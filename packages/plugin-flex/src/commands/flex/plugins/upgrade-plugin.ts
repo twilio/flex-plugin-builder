@@ -74,7 +74,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     yes: flags.boolean({
       description: FlexPluginsUpgradePlugin.topic.flags.yes,
     }),
-    'flexui2.0': flags.boolean({
+    'flex-ui-2.0': flags.boolean({
       description: FlexPluginsUpgradePlugin.topic.flags.flexui2,
     }),
   };
@@ -105,26 +105,26 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     flexPlugin,
   ];
 
-  private static packagesToRemoveFlexUI2 = new Map([
-    ['react-router', 'react-router-dom'],
-    ['react-router-redux', 'react-router-dom'],
-    ['emotion', '@emotion/css'],
-    ['emotion-theming', '@emotion/react'],
-    ['react-emotion', '@emotion/react'],
-    ['create-emotion-styled', '@emotion/styled'],
-  ]);
+  private static packagesToRemoveFlexUI2 = {
+    'react-router': 'react-router-dom',
+    'react-router-redux': 'react-router-dom',
+    emotion: '@emotion/css',
+    'emotion-theming': '@emotion/react',
+    'react-emotion': '@emotion/react',
+    'create-emotion-styled': '@emotion/styled',
+  };
 
-  private static packageVersionsFlexUI2 = new Map([
-    ['react', '^17.0.2'],
-    ['react-dom', '^17.0.2'],
-    ['react-redux', '^7.2.2'],
-    ['redux', '^4.0.5'],
-    ['react-router-dom', '^5.2.0'],
-    ['@emotion/css', '^11.1.3'],
-    ['@emotion/react', '^11.1.5'],
-    ['@emotion/styled', '^11.1.5'],
-    ['@material-ui/core', '^4.11.3'],
-  ]);
+  private static packageVersionsFlexUI2 = {
+    react: '^17.0.2',
+    'react-dom': '^17.0.2',
+    'react-redux': '^7.2.2',
+    redux: '^4.0.5',
+    'react-router-dom': '^5.2.0',
+    '@emotion/css': '^11.1.3',
+    '@emotion/react': '^11.1.5',
+    '@emotion/styled': '^11.1.5',
+    '@material-ui/core': '^4.11.3',
+  };
 
   // @ts-ignore
   private prints;
@@ -170,7 +170,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       await this.cleanupNodeModules();
     }
 
-    if (this._flags['flexui2.0']) {
+    if (this._flags['flex-ui-2.0']) {
       const flexUI2Version = await packages.getLatestFlexUIVersion(2);
       await this.upgradeToFlexUI2(flexUI2Version);
     }
@@ -509,24 +509,28 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     };
   }
 
+  /**
+   * Returns the dependencies which need to be removed and installed for the plugin
+   * to be compatible with flex ui 2.0
+   * @param flexUIVersion the flex ui version retrieved for 2.0
+   */
   getDependencyUpdatesFlexUI2(flexUIVersion: string): DependencyUpdates {
     const packagesToRemove: string[] = [];
     const packagesToInstall: Record<string, string> = {}; // might need to add [flexPluginScript]: '*' ??
     const { pkg } = this;
 
     // Find which packages must be removed and which counterpart must be installed in place of it
-    for (const dep of FlexPluginsUpgradePlugin.packagesToRemoveFlexUI2) {
-      if (pkg.dependencies[dep[0]]) {
-        packagesToRemove.push(dep[0]);
-        // @ts-ignore
-        packagesToInstall[dep[1]] = FlexPluginsUpgradePlugin.packageVersionsFlexUI2.get(dep[1]);
+    for (const [remove, replace] of Object.entries(FlexPluginsUpgradePlugin.packagesToRemoveFlexUI2)) {
+      if (pkg.dependencies[remove]) {
+        packagesToRemove.push(remove);
+        packagesToInstall[replace] = FlexPluginsUpgradePlugin.packageVersionsFlexUI2[replace];
       }
     }
 
     // Find which packages must be upgraded
-    for (const dep of FlexPluginsUpgradePlugin.packageVersionsFlexUI2) {
-      if (pkg.dependencies[dep[0]]) {
-        packagesToInstall[dep[0]] = dep[1];
+    for (const [dep, version] of Object.entries(FlexPluginsUpgradePlugin.packageVersionsFlexUI2)) {
+      if (pkg.dependencies[dep]) {
+        packagesToInstall[dep] = version;
       }
     }
 

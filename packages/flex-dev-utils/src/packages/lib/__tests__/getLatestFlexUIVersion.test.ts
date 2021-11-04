@@ -78,4 +78,32 @@ describe('getLatestFlexUIVersion', () => {
       done();
     }
   });
+
+  it('should go to beta if latest is undefined', async () => {
+    const getRegistryVersion = jest.spyOn(getRegistryVersionScripts, 'default');
+    // @ts-ignore
+    getRegistryVersion.mockResolvedValueOnce(undefined);
+    // @ts-ignore
+    getRegistryVersion.mockResolvedValueOnce({ version: '2.0.0-beta' });
+
+    await getLatestFlexUIVersion(2);
+
+    expect(getRegistryVersion).toHaveBeenCalledTimes(2);
+    expect(getRegistryVersion).toHaveBeenNthCalledWith(1, '@twilio/flex-ui', 'latest');
+    expect(getRegistryVersion).toHaveBeenNthCalledWith(2, '@twilio/flex-ui', 'beta');
+  });
+
+  it('should go to beta if latest doesnt contain a version', async () => {
+    const getRegistryVersion = jest.spyOn(getRegistryVersionScripts, 'default');
+    // @ts-ignore
+    getRegistryVersion.mockResolvedValueOnce({ xyz: 'not-a-version' });
+    // @ts-ignore
+    getRegistryVersion.mockResolvedValueOnce({ version: '2.0.0-beta' });
+
+    await getLatestFlexUIVersion(2);
+
+    expect(getRegistryVersion).toHaveBeenCalledTimes(2);
+    expect(getRegistryVersion).toHaveBeenNthCalledWith(1, '@twilio/flex-ui', 'latest');
+    expect(getRegistryVersion).toHaveBeenNthCalledWith(2, '@twilio/flex-ui', 'beta');
+  });
 });

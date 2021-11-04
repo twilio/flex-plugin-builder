@@ -373,7 +373,7 @@ describe('Commands/FlexPluginsStart', () => {
     });
 
     it('should upgrade to flex ui 2.0', async () => {
-      const cmd = await createTest(FlexPluginsUpgradePlugin)('--flexui2.0');
+      const cmd = await createTest(FlexPluginsUpgradePlugin)('--flex-ui-2.0');
       mockForDoRun(cmd);
       jest.spyOn(cmd, 'upgradeToFlexUI2').mockReturnThis();
       jest.spyOn(packages, 'getLatestFlexUIVersion').mockResolvedValue('2.0.0-alpha');
@@ -571,7 +571,7 @@ describe('Commands/FlexPluginsStart', () => {
     };
 
     it('should return the correct DependencyUpdates', async () => {
-      const cmd = await createTest(FlexPluginsUpgradePlugin)('--flexui2.0');
+      const cmd = await createTest(FlexPluginsUpgradePlugin)('--flex-ui-2.0');
 
       jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
       jest.spyOn(cmd, 'upgradeToLatest').mockReturnThis();
@@ -606,7 +606,7 @@ describe('Commands/FlexPluginsStart', () => {
     };
 
     it('should call all methods', async () => {
-      const cmd = await createTest(FlexPluginsUpgradePlugin)('--flexui2.0');
+      const cmd = await createTest(FlexPluginsUpgradePlugin)('--flex-ui-2.0');
 
       jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
       jest.spyOn(cmd, 'upgradeToLatest').mockReturnThis();
