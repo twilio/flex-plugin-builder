@@ -65,4 +65,17 @@ describe('getLatestFlexUIVersion', () => {
       done();
     }
   });
+
+  it('should throw error if versions returned are undefined', async (done) => {
+    const getRegistryVersion = jest.spyOn(getRegistryVersionScripts, 'default');
+    // @ts-ignore
+    getRegistryVersion.mockResolvedValue(undefined);
+
+    try {
+      await getLatestFlexUIVersion(2);
+    } catch (e) {
+      expect(e.message).toEqual('The major version you requested for flex ui (2) does not exist.');
+      done();
+    }
+  });
 });
