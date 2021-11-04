@@ -11,9 +11,8 @@ import {
   removeFile,
   calculateSha256,
 } from 'flex-dev-utils/dist/fs';
-import packageJson from 'package-json';
 import { flags } from '@oclif/parser';
-import { TwilioApiError, TwilioCliError, progress, semver } from 'flex-dev-utils';
+import { TwilioApiError, TwilioCliError, progress, semver, packages } from 'flex-dev-utils';
 import { spawn } from 'flex-dev-utils/dist/spawn';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
@@ -78,8 +77,6 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
 
   private static cracoConfigSha = '4a8ecfec7b70da88a0849b7b0163808b2cc46eee08c9ab599c8aa3525ff01546';
 
-  private static pluginBuilderScripts = [flexPluginScript, flexPlugin];
-
   private static packagesToRemove = [
     flexPluginScript, // remove and then re-add
     'react-app-rewire-flex-plugin',
@@ -142,7 +139,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         break;
     }
 
-    const pkgJson = await this.getLatestVersionOfDep(flexPluginScript, this._flags.beta);
+    const pkgJson = await packages.getRegistryVersion(flexPluginScript, this._flags.beta ? 'beta' : 'latest');
     const latestVersion = pkgJson ? semver.coerce(pkgJson.version as string)?.major : 0;
     if (currentPkgVersion !== latestVersion) {
       await this.cleanupNodeModules();
@@ -333,7 +330,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
             }
 
             // Now find the latest
-            const scriptPkg = await this.getLatestVersionOfDep(dep, beta);
+            const scriptPkg = await packages.getRegistryVersion(dep, beta ? 'beta' : 'latest');
             if (!scriptPkg) {
               this.prints.packageNotFound(dep);
               this.exit(1);
@@ -468,16 +465,6 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         'react-test-renderer': react,
       },
     };
-  }
-
-  /**
-   * Returns the latest version of a package
-   * @param dep the package to check
-   * @param isBeta  whether to check beta tag
-   */
-  async getLatestVersionOfDep(dep: string, isBeta: boolean): Promise<packageJson.AbbreviatedMetadata> {
-    const option = FlexPluginsUpgradePlugin.pluginBuilderScripts.includes(dep) && isBeta ? { version: 'beta' } : {};
-    return packageJson(dep, option);
   }
 
   /**

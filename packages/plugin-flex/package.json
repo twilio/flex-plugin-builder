@@ -56,7 +56,6 @@
     "flex-plugins-api-toolkit": "4.2.2",
     "lodash.startcase": "^4.4.0",
     "mkdirp": "^1.0.4",
-    "package-json": "^6.5.0",
     "phin": "^3.6.0",
     "rimraf": "^3.0.2",
     "yargs": "^16.2.0"

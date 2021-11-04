@@ -1,4 +1,4 @@
-import { TwilioApiError, TwilioCliError } from 'flex-dev-utils';
+import { TwilioApiError, TwilioCliError, packages } from 'flex-dev-utils';
 import * as fs from 'flex-dev-utils/dist/fs';
 
 import { Pkg } from '../../../../sub-commands/flex-plugin';
@@ -277,7 +277,7 @@ describe('Commands/FlexPluginsStart', () => {
      */
     const mockForDoRun = (cmd: FlexPluginsUpgradePlugin) => {
       // @ts-ignore
-      jest.spyOn(cmd, 'getLatestVersionOfDep').mockResolvedValue({ version: '4.0.0' });
+      jest.spyOn(packages, 'getRegistryVersion').mockResolvedValue({ version: '4.0.0' });
       // @ts-ignore
       jest.spyOn(cmd.prints, 'upgradeNotification').mockReturnThis();
       jest.spyOn(cmd, 'upgradeFromV1').mockReturnThis();
@@ -312,7 +312,7 @@ describe('Commands/FlexPluginsStart', () => {
       const cmd = await createTest(FlexPluginsUpgradePlugin)();
       mockForDoRun(cmd);
       // @ts-ignore
-      jest.spyOn(cmd, 'getLatestVersionOfDep').mockResolvedValue({ version: '3.0.0' });
+      jest.spyOn(packages, 'getRegistryVersion').mockResolvedValue({ version: '3.0.0' });
       jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
 
       await cmd.doRun();
