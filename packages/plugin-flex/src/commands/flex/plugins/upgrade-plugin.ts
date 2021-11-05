@@ -516,23 +516,23 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
    */
   getDependencyUpdatesFlexUI2(flexUIVersion: string): DependencyUpdates {
     const packagesToRemove: string[] = [];
-    const packagesToInstall: Record<string, string> = {}; // might need to add [flexPluginScript]: '*' ??
+    const packagesToInstall: Record<string, string> = {};
     const { pkg } = this;
 
     // Find which packages must be removed and which counterpart must be installed in place of it
-    for (const [remove, replace] of Object.entries(FlexPluginsUpgradePlugin.packagesToRemoveFlexUI2)) {
+    Object.entries(FlexPluginsUpgradePlugin.packagesToRemoveFlexUI2).forEach(([remove, replace]) => {
       if (pkg.dependencies[remove]) {
         packagesToRemove.push(remove);
         packagesToInstall[replace] = FlexPluginsUpgradePlugin.packageVersionsFlexUI2[replace];
       }
-    }
+    });
 
     // Find which packages must be upgraded
-    for (const [dep, version] of Object.entries(FlexPluginsUpgradePlugin.packageVersionsFlexUI2)) {
+    Object.entries(FlexPluginsUpgradePlugin.packageVersionsFlexUI2).forEach(([dep, version]) => {
       if (pkg.dependencies[dep]) {
         packagesToInstall[dep] = version;
       }
-    }
+    });
 
     return {
       remove: packagesToRemove,
