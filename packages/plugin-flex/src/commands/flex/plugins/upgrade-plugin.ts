@@ -115,8 +115,8 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   };
 
   private static packageVersionsFlexUI2 = {
-    react: '^17.0.2',
-    'react-dom': '^17.0.2',
+    react: '17.0.2',
+    'react-dom': '17.0.2',
     'react-redux': '^7.2.2',
     redux: '^4.0.5',
     'react-router-dom': '^5.2.0',
@@ -141,7 +141,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
    */
   async doRun(): Promise<void> {
     const uiVersion = this.flexUIVersion;
-    if (uiVersion && uiVersion >= 2 && !this._flags['flex-ui-2.0']) {
+    if (uiVersion >= 2 && !this._flags['flex-ui-2.0']) {
       throw new TwilioCliError(
         'Incomplete arguments passed. As your plugin is compatible with Flex UI 2.0, pass the argument --flex-ui-2.0 to upgrade it to use the latest version of cli compatible with Flex UI 2.0',
       );
@@ -499,9 +499,6 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   }
 
   getDependencyUpdates(): DependencyUpdates {
-    const { pkg } = this;
-    const majorUIVersion = semver.coerce(pkg.devDependencies[flexUI])?.major;
-    const ui = majorUIVersion && majorUIVersion >= 2 ? pkg.devDependencies[flexUI] : '^1';
     const react = 'react || 16.5.2';
     return {
       remove: FlexPluginsUpgradePlugin.packagesToRemove,
@@ -511,7 +508,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         'react-dom': react,
       },
       devDeps: {
-        '@twilio/flex-ui': ui,
+        '@twilio/flex-ui': '^1',
         'react-test-renderer': react,
       },
     };
@@ -547,7 +544,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       deps: packagesToInstall,
       devDeps: {
         '@twilio/flex-ui': flexUIVersion,
-        'react-test-renderer': '^17.0.2',
+        'react-test-renderer': '17.0.2',
       },
     };
   }
@@ -563,22 +560,6 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       this.pkg.devDependencies[flexPlugin];
     if (!pkg) {
       throw new TwilioCliError(`Package '${flexPluginScript}' was not found`);
-    }
-
-    return semver.coerce(pkg)?.major;
-  }
-
-  /**
-   * Returns the flex-ui version from the plugin
-   */
-  get flexUIVersion(): number | undefined {
-    const pkg =
-      this.pkg.dependencies[flexUI] ||
-      this.pkg.devDependencies[flexUI] ||
-      this.pkg.dependencies[flexUI] ||
-      this.pkg.devDependencies[flexUI];
-    if (!pkg) {
-      throw new TwilioCliError(`Package '${flexUI}' was not found`);
     }
 
     return semver.coerce(pkg)?.major;

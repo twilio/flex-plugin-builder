@@ -73,43 +73,6 @@ describe('Commands/FlexPluginsStart', () => {
     }
   });
 
-  it('should should return then version of flex-plugin-scripts from dependencies', async () => {
-    const cmd = await createTest(FlexPluginsUpgradePlugin)();
-
-    mockGetPkg(cmd, {
-      dependencies: { '@twilio/flex-ui': '1.0.0' },
-    });
-    expect(cmd.flexUIVersion).toEqual(1);
-  });
-
-  it('should should return the version of flex-plugin-scripts from devDependencies', async () => {
-    const cmd = await createTest(FlexPluginsUpgradePlugin)();
-
-    mockGetPkg(cmd, {
-      dependencies: {},
-      devDependencies: { '@twilio/flex-ui': '2.0.0' },
-    });
-
-    expect(cmd.flexUIVersion).toEqual(2);
-  });
-
-  it('should should throw exception if no version is found', async () => {
-    const cmd = await createTest(FlexPluginsUpgradePlugin)();
-
-    mockGetPkg(cmd, {
-      dependencies: {},
-      devDependencies: {},
-    });
-
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const x = cmd.flexUIVersion;
-    } catch (e) {
-      expect(e).toBeInstanceOf(TwilioCliError);
-      expect(e.message).toContain('not found');
-    }
-  });
-
   it('should remove packages that have no post/post', async () => {
     const cmd = await createTest(FlexPluginsUpgradePlugin)();
 
@@ -607,8 +570,8 @@ describe('Commands/FlexPluginsStart', () => {
         'create-emotion-styled',
       ],
       deps: {
-        react: '^17.0.2',
-        'react-dom': '^17.0.2',
+        react: '17.0.2',
+        'react-dom': '17.0.2',
         'react-redux': '^7.2.2',
         redux: '^4.0.5',
         'react-router-dom': '^5.2.0',
@@ -619,7 +582,7 @@ describe('Commands/FlexPluginsStart', () => {
       },
       devDeps: {
         '@twilio/flex-ui': '2.0.0-alpha',
-        'react-test-renderer': '^17.0.2',
+        'react-test-renderer': '17.0.2',
       },
     };
 
@@ -647,14 +610,14 @@ describe('Commands/FlexPluginsStart', () => {
     const returnPkg: DependencyUpdates = {
       remove: ['react-router'],
       deps: {
-        react: '^17.0.2',
-        'react-dom': '^17.0.2',
+        react: '17.0.2',
+        'react-dom': '17.0.2',
         'react-router-dom': '^5.2.0',
         '@material-ui/core': '^4.11.3',
       },
       devDeps: {
         '@twilio/flex-ui': '2.0.0-alpha',
-        'react-test-renderer': '^17.0.2',
+        'react-test-renderer': '17.0.2',
       },
     };
 
@@ -725,33 +688,6 @@ describe('Commands/FlexPluginsStart', () => {
       },
       devDeps: {
         '@twilio/flex-ui': '^1',
-        'react-test-renderer': 'react || 16.5.2',
-      },
-    };
-
-    const flexui2Pkg: Pkg = {
-      name: 'test-package',
-      version: '1.2.3',
-      scripts: {},
-      devDependencies: {
-        '@twilio/flex-ui': '2.0.0-alpha',
-        'react-test-renderer': '17.0.2',
-      },
-      dependencies: {
-        react: '^17.0.2',
-        'react-dom': '^17.0.2',
-        'flex-plugin-scripts': '4.2.2',
-      },
-    };
-    const flexui2PkgReturn: DependencyUpdates = {
-      remove,
-      deps: {
-        'flex-plugin-scripts': '*',
-        react: 'react || 16.5.2',
-        'react-dom': 'react || 16.5.2',
-      },
-      devDeps: {
-        '@twilio/flex-ui': '2.0.0-alpha',
         'react-test-renderer': 'react || 16.5.2',
       },
     };
