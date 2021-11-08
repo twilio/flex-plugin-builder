@@ -1,6 +1,6 @@
 import semver from 'semver';
 
-import getRegistryVersion from './getRegistryVersion';
+import getRegistryVersion, { Tag } from './getRegistryVersion';
 
 /**
  * Returns the latest flex ui version for a given major
@@ -8,7 +8,7 @@ import getRegistryVersion from './getRegistryVersion';
  * @param version the flex ui major version
  */
 export default async function getLatestFlexUIVersion(majorVersion: 1 | 2 | 3 | 4): Promise<string> {
-  const tags: ('latest' | 'beta' | 'alpha')[] = ['latest', 'beta', 'alpha'];
+  const tags: Tag[] = ['latest', 'beta', 'alpha'];
   for (const tag of tags) {
     const pkg = await getRegistryVersion('@twilio/flex-ui', tag);
     if (!pkg || !pkg.version) {

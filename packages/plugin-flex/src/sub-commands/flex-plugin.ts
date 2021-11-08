@@ -380,16 +380,12 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    */
   get flexUIVersion(): number {
     const flexUI = '@twilio/flex-ui';
-    const pkg =
-      this.pkg.dependencies[flexUI] ||
-      this.pkg.devDependencies[flexUI] ||
-      this.pkg.dependencies[flexUI] ||
-      this.pkg.devDependencies[flexUI];
-    if (!pkg) {
+    const dep = this.pkg.dependencies[flexUI] || this.pkg.devDependencies[flexUI];
+    if (!dep) {
       throw new TwilioCliError(`Package '${flexUI}' was not found`);
     }
 
-    return semver.coerce(pkg)?.major || FlexPlugin.DEFAULT_FLEX_UI_VERSION;
+    return semver.coerce(dep)?.major || FlexPlugin.DEFAULT_FLEX_UI_VERSION;
   }
 
   /**

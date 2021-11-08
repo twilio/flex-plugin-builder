@@ -313,7 +313,7 @@ describe('SubCommands/FlexPlugin', () => {
     expect(cmd.flexUIVersion).toEqual(1);
   });
 
-  it('should throw exception if no @twilio/flex-ui version is found', async () => {
+  it('should throw exception if no @twilio/flex-ui version is found', async (done) => {
     const cmd = await createTest(FlexPlugin)();
 
     mockGetPkg(cmd, {
@@ -327,6 +327,7 @@ describe('SubCommands/FlexPlugin', () => {
     } catch (e) {
       expect(e).toBeInstanceOf(TwilioCliError);
       expect(e.message).toContain('not found');
+      done();
     }
   });
 
