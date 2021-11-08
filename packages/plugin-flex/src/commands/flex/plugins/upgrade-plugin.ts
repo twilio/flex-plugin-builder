@@ -140,8 +140,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
    * @override
    */
   async doRun(): Promise<void> {
-    const uiVersion = this.flexUIVersion;
-    if (uiVersion >= 2 && !this._flags['flex-ui-2.0']) {
+    if (this.flexUIVersion >= 2 && !this._flags['flex-ui-2.0']) {
       throw new TwilioCliError(
         'Incomplete arguments passed. As your plugin is compatible with Flex UI 2.0, pass the argument --flex-ui-2.0 to upgrade it to use the latest version of cli compatible with Flex UI 2.0',
       );
