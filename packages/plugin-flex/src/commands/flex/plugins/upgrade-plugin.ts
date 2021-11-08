@@ -24,6 +24,7 @@ const crackoConfig = 'craco.config.js';
 
 const flexPluginScript = 'flex-plugin-scripts';
 const flexPlugin = 'flex-plugin';
+const flexUI = '@twilio/flex-ui';
 
 interface ScriptsToRemove {
   name: string;
@@ -73,6 +74,9 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     yes: flags.boolean({
       description: FlexPluginsUpgradePlugin.topic.flags.yes,
     }),
+    'flex-ui-2.0': flags.boolean({
+      description: FlexPluginsUpgradePlugin.topic.flags.flexui2,
+    }),
   };
 
   private static cracoConfigSha = '4a8ecfec7b70da88a0849b7b0163808b2cc46eee08c9ab599c8aa3525ff01546';
@@ -101,6 +105,27 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     flexPlugin,
   ];
 
+  private static packagesToRemoveFlexUI2 = {
+    'react-router': 'react-router-dom',
+    'react-router-redux': 'react-router-dom',
+    emotion: '@emotion/css',
+    'emotion-theming': '@emotion/react',
+    'react-emotion': '@emotion/react',
+    'create-emotion-styled': '@emotion/styled',
+  };
+
+  private static packageVersionsFlexUI2 = {
+    react: '17.0.2',
+    'react-dom': '17.0.2',
+    'react-redux': '^7.2.2',
+    redux: '^4.0.5',
+    'react-router-dom': '^5.2.0',
+    '@emotion/css': '^11.1.3',
+    '@emotion/react': '^11.1.5',
+    '@emotion/styled': '^11.1.5',
+    '@material-ui/core': '^4.11.3',
+  };
+
   // @ts-ignore
   private prints;
 
@@ -115,6 +140,12 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
    * @override
    */
   async doRun(): Promise<void> {
+    if (this.flexUIVersion >= 2 && !this._flags['flex-ui-2.0']) {
+      throw new TwilioCliError(
+        'Incomplete arguments passed. As your plugin is compatible with Flex UI 2.0, pass the argument --flex-ui-2.0 to upgrade it to use the latest version of cli compatible with Flex UI 2.0',
+      );
+    }
+
     if (this._flags['remove-legacy-plugin']) {
       await this.removeLegacyPlugin();
       this.prints.removeLegacyPluginSucceeded(this.pkg.name);
@@ -143,6 +174,12 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     const latestVersion = pkgJson ? semver.coerce(pkgJson.version as string)?.major : 0;
     if (currentPkgVersion !== latestVersion) {
       await this.cleanupNodeModules();
+    }
+
+    if (this._flags['flex-ui-2.0']) {
+      const flexUI2Version = await packages.getLatestFlexUIVersion(2);
+      await this.upgradeToFlexUI2(flexUI2Version);
+      this.prints.flexUIUpdateSucceeded();
     }
 
     await this.npmInstall();
@@ -220,6 +257,15 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     this.prints.upgradeToLatest();
 
     await this.updatePackageJson(this.getDependencyUpdates());
+  }
+
+  /**
+   * Upgrades the packages to the latest version needed for flexui 2.0
+   */
+  async upgradeToFlexUI2(flexUIVersion: string): Promise<void> {
+    this.prints.upgradeToFlexUI2();
+
+    await this.updatePackageJson(this.getDependencyUpdatesFlexUI2(flexUIVersion));
   }
 
   /**
@@ -463,6 +509,41 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       devDeps: {
         '@twilio/flex-ui': '^1',
         'react-test-renderer': react,
+      },
+    };
+  }
+
+  /**
+   * Returns the dependencies which need to be removed and installed for the plugin
+   * to be compatible with flex ui 2.0
+   * @param flexUIVersion the flex ui version retrieved for 2.0
+   */
+  getDependencyUpdatesFlexUI2(flexUIVersion: string): DependencyUpdates {
+    const packagesToRemove: string[] = [];
+    const packagesToInstall: Record<string, string> = {};
+    const { pkg } = this;
+
+    // Find which packages must be removed and which counterpart must be installed in place of it
+    Object.entries(FlexPluginsUpgradePlugin.packagesToRemoveFlexUI2).forEach(([remove, replace]) => {
+      if (pkg.dependencies[remove]) {
+        packagesToRemove.push(remove);
+        packagesToInstall[replace] = FlexPluginsUpgradePlugin.packageVersionsFlexUI2[replace];
+      }
+    });
+
+    // Find which packages must be upgraded
+    Object.entries(FlexPluginsUpgradePlugin.packageVersionsFlexUI2).forEach(([dep, version]) => {
+      if (pkg.dependencies[dep]) {
+        packagesToInstall[dep] = version;
+      }
+    });
+
+    return {
+      remove: packagesToRemove,
+      deps: packagesToInstall,
+      devDeps: {
+        '@twilio/flex-ui': flexUIVersion,
+        'react-test-renderer': '17.0.2',
       },
     };
   }
