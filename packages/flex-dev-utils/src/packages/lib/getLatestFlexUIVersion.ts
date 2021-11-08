@@ -8,14 +8,16 @@ import getRegistryVersion from './getRegistryVersion';
  * @param version the flex ui major version
  */
 export default async function getLatestFlexUIVersion(majorVersion: 1 | 2 | 3 | 4): Promise<string> {
-  const tags = ['latest', 'beta', 'alpha'];
+  const tags: ('latest' | 'beta' | 'alpha')[] = ['latest', 'beta', 'alpha'];
   for (const tag of tags) {
-    // @ts-ignore
     const pkg = await getRegistryVersion('@twilio/flex-ui', tag);
-    if (semver.coerce(pkg?.version as string)?.major === majorVersion) {
-      // @ts-ignore
-      return pkg.version;
+    if (!pkg || !pkg.version) {
+      continue;
+    }
+    if (semver.coerce(pkg.version as string)?.major === majorVersion) {
+      return pkg.version as string;
     }
   }
+
   throw new Error(`The major version you requested for flex ui (${majorVersion}) does not exist.`);
 }

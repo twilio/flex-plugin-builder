@@ -140,6 +140,13 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
    * @override
    */
   async doRun(): Promise<void> {
+    const uiVersion = this.flexUIVersion;
+    if (uiVersion && uiVersion >= 2 && !this._flags['flex-ui-2.0']) {
+      throw new TwilioCliError(
+        'Incomplete arguments passed. As your plugin is compatible with Flex UI 2.0, pass the argument --flex-ui-2.0 to upgrade it to use the latest version of cli compatible with Flex UI 2.0',
+      );
+    }
+
     if (this._flags['remove-legacy-plugin']) {
       await this.removeLegacyPlugin();
       this.prints.removeLegacyPluginSucceeded(this.pkg.name);
@@ -173,6 +180,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     if (this._flags['flex-ui-2.0']) {
       const flexUI2Version = await packages.getLatestFlexUIVersion(2);
       await this.upgradeToFlexUI2(flexUI2Version);
+      this.prints.flexUIUpdateSucceeded();
     }
 
     await this.npmInstall();
@@ -555,6 +563,22 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       this.pkg.devDependencies[flexPlugin];
     if (!pkg) {
       throw new TwilioCliError(`Package '${flexPluginScript}' was not found`);
+    }
+
+    return semver.coerce(pkg)?.major;
+  }
+
+  /**
+   * Returns the flex-ui version from the plugin
+   */
+  get flexUIVersion(): number | undefined {
+    const pkg =
+      this.pkg.dependencies[flexUI] ||
+      this.pkg.devDependencies[flexUI] ||
+      this.pkg.dependencies[flexUI] ||
+      this.pkg.devDependencies[flexUI];
+    if (!pkg) {
+      throw new TwilioCliError(`Package '${flexUI}' was not found`);
     }
 
     return semver.coerce(pkg)?.major;

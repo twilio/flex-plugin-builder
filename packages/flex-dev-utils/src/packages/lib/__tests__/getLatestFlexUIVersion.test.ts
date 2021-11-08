@@ -69,23 +69,9 @@ describe('getLatestFlexUIVersion', () => {
     }
   });
 
-  it('should throw error if versions returned are undefined', async (done) => {
+  it('should try beta if latest doesnt contain a version', async () => {
     const getRegistryVersion = jest.spyOn(getRegistryVersionScripts, 'default');
-    // @ts-ignore
-    getRegistryVersion.mockResolvedValue(undefined);
-
-    try {
-      await getLatestFlexUIVersion(2);
-    } catch (e) {
-      expect(e.message).toEqual('The major version you requested for flex ui (2) does not exist.');
-      done();
-    }
-  });
-
-  it('should go to beta if latest is undefined', async () => {
-    const getRegistryVersion = jest.spyOn(getRegistryVersionScripts, 'default');
-    // @ts-ignore
-    getRegistryVersion.mockResolvedValueOnce(undefined);
+    getRegistryVersion.mockResolvedValueOnce({ ...abbreviatedMetadata });
     getRegistryVersion.mockResolvedValueOnce({ version: '2.0.0-beta', ...abbreviatedMetadata });
 
     await getLatestFlexUIVersion(2);
@@ -95,9 +81,21 @@ describe('getLatestFlexUIVersion', () => {
     expect(getRegistryVersion).toHaveBeenNthCalledWith(2, flexUI, 'beta');
   });
 
-  it('should go to beta if latest doesnt contain a version', async () => {
+  it('should try beta if latest version is not semver valid', async () => {
     const getRegistryVersion = jest.spyOn(getRegistryVersionScripts, 'default');
-    getRegistryVersion.mockResolvedValueOnce({ ...abbreviatedMetadata });
+    getRegistryVersion.mockResolvedValueOnce({ version: 'a.b.c', ...abbreviatedMetadata });
+    getRegistryVersion.mockResolvedValueOnce({ version: '2.0.0-beta', ...abbreviatedMetadata });
+
+    await getLatestFlexUIVersion(2);
+
+    expect(getRegistryVersion).toHaveBeenCalledTimes(2);
+    expect(getRegistryVersion).toHaveBeenNthCalledWith(1, flexUI, 'latest');
+    expect(getRegistryVersion).toHaveBeenNthCalledWith(2, flexUI, 'beta');
+  });
+
+  it('should try beta if latest version is not semver valid', async () => {
+    const getRegistryVersion = jest.spyOn(getRegistryVersionScripts, 'default');
+    getRegistryVersion.mockResolvedValueOnce({ version: '*', ...abbreviatedMetadata });
     getRegistryVersion.mockResolvedValueOnce({ version: '2.0.0-beta', ...abbreviatedMetadata });
 
     await getLatestFlexUIVersion(2);

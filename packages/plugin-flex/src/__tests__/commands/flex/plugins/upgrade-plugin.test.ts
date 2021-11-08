@@ -73,6 +73,43 @@ describe('Commands/FlexPluginsStart', () => {
     }
   });
 
+  it('should should return then version of flex-plugin-scripts from dependencies', async () => {
+    const cmd = await createTest(FlexPluginsUpgradePlugin)();
+
+    mockGetPkg(cmd, {
+      dependencies: { '@twilio/flex-ui': '1.0.0' },
+    });
+    expect(cmd.flexUIVersion).toEqual(1);
+  });
+
+  it('should should return the version of flex-plugin-scripts from devDependencies', async () => {
+    const cmd = await createTest(FlexPluginsUpgradePlugin)();
+
+    mockGetPkg(cmd, {
+      dependencies: {},
+      devDependencies: { '@twilio/flex-ui': '2.0.0' },
+    });
+
+    expect(cmd.flexUIVersion).toEqual(2);
+  });
+
+  it('should should throw exception if no version is found', async () => {
+    const cmd = await createTest(FlexPluginsUpgradePlugin)();
+
+    mockGetPkg(cmd, {
+      dependencies: {},
+      devDependencies: {},
+    });
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const x = cmd.flexUIVersion;
+    } catch (e) {
+      expect(e).toBeInstanceOf(TwilioCliError);
+      expect(e.message).toContain('not found');
+    }
+  });
+
   it('should remove packages that have no post/post', async () => {
     const cmd = await createTest(FlexPluginsUpgradePlugin)();
 
@@ -285,12 +322,14 @@ describe('Commands/FlexPluginsStart', () => {
       jest.spyOn(cmd, 'upgradeFromV3').mockReturnThis();
       jest.spyOn(cmd, 'upgradeToLatest').mockReturnThis();
       jest.spyOn(cmd, 'cleanupNodeModules').mockReturnThis();
+      jest.spyOn(cmd, 'flexUIVersion', 'get').mockReturnValue(1);
     };
 
     it('should call removeLegacyPlugin', async () => {
       const cmd = await createTest(FlexPluginsUpgradePlugin)('--remove-legacy-plugin');
 
       jest.spyOn(cmd, 'removeLegacyPlugin').mockReturnThis();
+      jest.spyOn(cmd, 'flexUIVersion', 'get').mockReturnValue(1);
 
       await cmd.doRun();
 
@@ -385,6 +424,20 @@ describe('Commands/FlexPluginsStart', () => {
       expect(packages.getLatestFlexUIVersion).toHaveBeenCalledWith(2);
       expect(cmd.upgradeToFlexUI2).toHaveBeenCalledTimes(1);
       expect(cmd.upgradeToLatest).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw error if flex ui is already 2.0 and --flex-ui-2.0 is not passed', async (done) => {
+      const cmd = await createTest(FlexPluginsUpgradePlugin)();
+      mockForDoRun(cmd);
+      jest.spyOn(cmd, 'flexUIVersion', 'get').mockReturnValue(2);
+
+      try {
+        await cmd.doRun();
+      } catch (e) {
+        expect(e).toBeInstanceOf(TwilioCliError);
+        expect(e.message).toContain('Incomplete arguments passed.');
+        done();
+      }
     });
   });
 
@@ -716,6 +769,7 @@ describe('Commands/FlexPluginsStart', () => {
       // @ts-ignore
       jest.spyOn(packages, 'getRegistryVersion').mockResolvedValue({ version: '4.2.2' });
       jest.spyOn(cmd, 'cleanupNodeModules').mockReturnThis();
+      jest.spyOn(cmd, 'flexUIVersion', 'get').mockReturnValue(1);
 
       await cmd.run();
 
@@ -732,18 +786,6 @@ describe('Commands/FlexPluginsStart', () => {
 
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveReturnedWith(olderReturn);
-    });
-
-    it('should return dependency updates and keep flexui 2.0', async () => {
-      const cmd = await getDependencyUpdates();
-
-      jest.spyOn(cmd, 'pkg', 'get').mockReturnValue(flexui2Pkg);
-      const spy = jest.spyOn(cmd, 'getDependencyUpdates');
-
-      cmd.getDependencyUpdates();
-
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveReturnedWith(flexui2PkgReturn);
     });
   });
 });
