@@ -5,8 +5,13 @@ import createTest, { mockGetPkg } from '../framework';
 import FlexPlugin from '../../sub-commands/flex-plugin';
 import DoneCallback = jest.DoneCallback;
 
+jest.mock('flex-dev-utils/dist/fs');
+
 describe('SubCommands/FlexPlugin', () => {
   const { env } = process;
+  const paths = {
+    app: { isTSProject: () => false },
+  };
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -109,10 +114,7 @@ describe('SubCommands/FlexPlugin', () => {
     }
   });
 
-  it('should call setEnvironment', async () => {
-    const paths = {
-      app: { isTSProject: () => false },
-    };
+  it.only('should call setEnvironment', async () => {
     // @ts-ignore
     jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
 
@@ -128,8 +130,6 @@ describe('SubCommands/FlexPlugin', () => {
     expect(process.env.TWILIO_ACCOUNT_SID).toBeDefined();
     expect(process.env.TWILIO_AUTH_TOKEN).toBeDefined();
     expect(process.env.DEBUG).toBeUndefined();
-
-    ;
   });
 
   it('should set debug env to true', async () => {
