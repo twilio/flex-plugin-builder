@@ -39,6 +39,7 @@
   "dependencies": {
     "axios": "^0.21.4",
     "axios-cache-adapter": "^2.7.3",
+    "flex-dev-utils": "4.2.2",
     "flex-plugins-utils-env": "4.2.2",
     "flex-plugins-utils-exception": "4.2.2",
     "flex-plugins-utils-logger": "4.2.2",
