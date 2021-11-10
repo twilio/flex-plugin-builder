@@ -26,6 +26,10 @@ describe('HttpClient', () => {
     jest.resetModules();
   });
 
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   describe('constructor', () => {
     it('should not user-agent', () => {
       const http = new HttpClient({ ...config });
@@ -66,6 +70,10 @@ describe('HttpClient', () => {
   });
 
   describe('getUserAgent', () => {
+    beforeEach(() => {
+      jest.spyOn(fsScripts, 'getDependencyVersion').mockReturnThis();
+    });
+
     it('should return default user-agent for node if nothing is set', () => {
       const isNode = jest.spyOn(env, 'isNode').mockReturnValue(true);
       const isCI = jest.spyOn(env, 'isCI').mockReturnValue(false);
