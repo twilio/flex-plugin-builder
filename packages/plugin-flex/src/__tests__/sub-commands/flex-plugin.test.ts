@@ -114,7 +114,7 @@ describe('SubCommands/FlexPlugin', () => {
     }
   });
 
-  it.only('should call setEnvironment', async () => {
+  it('should call setEnvironment', async () => {
     // @ts-ignore
     jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
 
@@ -145,7 +145,6 @@ describe('SubCommands/FlexPlugin', () => {
     await cmd.run();
 
     expect(process.env.DEBUG).toEqual('true');
-    ;
   });
 
   it('should run the main command successfully', async () => {
@@ -170,7 +169,6 @@ describe('SubCommands/FlexPlugin', () => {
     expect(cmd.isPluginFolder).toHaveBeenCalledTimes(1);
     expect(cmd.setupEnvironment).toHaveBeenCalledTimes(1);
     expect(cmd.doRun).toHaveBeenCalledTimes(1);
-    ;
   });
 
   it('should return raw format', async () => {
@@ -188,7 +186,6 @@ describe('SubCommands/FlexPlugin', () => {
 
     // @ts-ignore
     expect(cmd._logger.info).toHaveBeenCalledWith('{"object":"result"}');
-    ;
   });
 
   it('should not return raw format', async () => {
@@ -206,7 +203,6 @@ describe('SubCommands/FlexPlugin', () => {
 
     // @ts-ignore
     expect(cmd._logger.info).not.toHaveBeenCalledWith('{"object":"result"}');
-    ;
   });
 
   it('should throw exception if script needs to run in plugin directory but is not', async (done) => {
@@ -287,12 +283,12 @@ describe('SubCommands/FlexPlugin', () => {
     jest.spyOn(cmd, 'checkCompatibility', 'get').mockReturnValue(true);
     jest.spyOn(cmd, 'exit').mockReturnThis();
     jest.spyOn(cmd, 'doRun').mockReturnThis();
+    jest.spyOn(cmd, 'pkg', 'get').mockReturnThis();
 
     await cmd.run();
     // @ts-ignore
     expect(cmd.exit).toHaveBeenCalledTimes(1);
     expect(cmd.exit).toHaveBeenCalledWith(1);
-    ;
   });
 
   it('should not quit if builder version is correct', async () => {
@@ -311,7 +307,6 @@ describe('SubCommands/FlexPlugin', () => {
     await cmd.run();
     // @ts-ignore
     expect(cmd.exit).not.toHaveBeenCalled();
-    ;
   });
 
   it('should return then version of @twilio/flex-ui from dependencies', async () => {
@@ -381,7 +376,6 @@ describe('SubCommands/FlexPlugin', () => {
 
     await cmd.run();
     expect(cmd.flexConfigurationClient).toHaveProperty('options.region', 'stage');
-    ;
   });
 
   it('should not set a region in config client if flag is not passed in', async () => {
@@ -399,7 +393,6 @@ describe('SubCommands/FlexPlugin', () => {
 
     await cmd.run();
     expect(cmd.flexConfigurationClient).not.toHaveProperty('options.region');
-    ;
   });
 
   describe('setupEnvironment', () => {

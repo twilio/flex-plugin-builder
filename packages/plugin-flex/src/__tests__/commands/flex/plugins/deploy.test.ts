@@ -60,6 +60,7 @@ describe('Commands/FlexPluginsDeploy', () => {
   const paths = {
     app: {
       version: '1.0.0',
+      isTSProject: () => false,
     },
     assetBaseUrlTemplate: 'template',
   };
@@ -162,30 +163,45 @@ describe('Commands/FlexPluginsDeploy', () => {
   });
 
   it('should get major bump level', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     const cmd = await getCommand('--major');
 
     expect(cmd.bumpLevel).toEqual('major');
   });
 
   it('should get minor bump level', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     const cmd = await getCommand('--minor');
 
     expect(cmd.bumpLevel).toEqual('minor');
   });
 
   it('should get patch bump level', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     const cmd = await getCommand('--patch');
 
     expect(cmd.bumpLevel).toEqual('patch');
   });
 
   it('should get patch bump level without any flags', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     const cmd = await getCommand();
 
     expect(cmd.bumpLevel).toEqual('patch');
   });
 
   it('should call registerPluginVersion without any changelog', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     const cmd = await getPluginVersionsCommand();
     const result = await cmd.registerPluginVersion(deployResult);
 
@@ -200,6 +216,9 @@ describe('Commands/FlexPluginsDeploy', () => {
   });
 
   it('should call registerPluginVersion with changelog', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     const cmd = await getPluginVersionsCommand('the-changelog');
 
     const result = await cmd.registerPluginVersion(deployResult);
@@ -215,6 +234,9 @@ describe('Commands/FlexPluginsDeploy', () => {
   });
 
   it('should call registerPlugin', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     const cmd = await getCommand();
 
     jest.spyOn(cmd.pluginsClient, 'upsert').mockResolvedValue(pluginResource);
@@ -231,6 +253,9 @@ describe('Commands/FlexPluginsDeploy', () => {
   });
 
   it('should call registerPlugin with custom description', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     const cmd = await getCommand('--description', 'some description');
 
     jest.spyOn(cmd.pluginsClient, 'upsert').mockResolvedValue(pluginResource);
@@ -246,6 +271,9 @@ describe('Commands/FlexPluginsDeploy', () => {
   });
 
   it('should validate brand new plugin', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     const cmd = await getCommand();
 
     jest.spyOn(cmd.pluginsClient, 'get').mockRejectedValue(new TwilioCliError());
@@ -264,6 +292,9 @@ describe('Commands/FlexPluginsDeploy', () => {
   });
 
   it('should validate plugin as a minor bump', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     const cmd = await getCommand('--minor');
 
     jest.spyOn(cmd.pluginsClient, 'get').mockResolvedValue(pluginResource);
@@ -282,6 +313,9 @@ describe('Commands/FlexPluginsDeploy', () => {
   });
 
   it('should invalidate plugin because next version is smaller', async (done) => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     const cmd = await getCommand('--version', '0.0.1');
 
     jest.spyOn(cmd.pluginsClient, 'get').mockResolvedValue(pluginResource);
@@ -302,6 +336,9 @@ describe('Commands/FlexPluginsDeploy', () => {
   });
 
   it('should do nothing if no serviceSid is found', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     const cmd = await getCommand();
 
     getServerlessSid.mockResolvedValue(null);
@@ -313,6 +350,9 @@ describe('Commands/FlexPluginsDeploy', () => {
   });
 
   it('should print nothing if no legacy plugin is found', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     const cmd = await getCommand();
 
     getServerlessSid.mockResolvedValue(serviceSid2);
@@ -329,6 +369,9 @@ describe('Commands/FlexPluginsDeploy', () => {
   });
 
   it('should print warning if legacy plugin found', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     const cmd = await getCommand();
 
     getServerlessSid.mockResolvedValue(serviceSid2);
@@ -345,6 +388,9 @@ describe('Commands/FlexPluginsDeploy', () => {
   });
 
   it('should do nothing if service already exists and has correct name', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     const cmd = await getCommand();
 
     getServerlessSid.mockResolvedValue(serviceSid);
@@ -369,6 +415,9 @@ describe('Commands/FlexPluginsDeploy', () => {
   });
 
   it('should do update service name', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     const cmd = await getCommand();
 
     getServerlessSid.mockResolvedValue(serviceSid);
@@ -394,6 +443,9 @@ describe('Commands/FlexPluginsDeploy', () => {
   });
 
   it('should create new service', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     const cmd = await getCommand();
 
     getServerlessSid.mockResolvedValue(null);
@@ -420,6 +472,9 @@ describe('Commands/FlexPluginsDeploy', () => {
   });
 
   it('should re-create new service', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     const cmd = await getCommand();
 
     mockGetter(cmd, 'serverlessClient', {
@@ -445,12 +500,18 @@ describe('Commands/FlexPluginsDeploy', () => {
   });
 
   it('should have compatibility set', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     const cmd = await getCommand();
 
     expect(cmd.checkCompatibility).toEqual(true);
   });
 
   it('should check for collision if not in CI', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     process.env.CI = 'false';
     const cmd = await getCommand();
     const getCredential = jest
@@ -473,6 +534,9 @@ describe('Commands/FlexPluginsDeploy', () => {
   });
 
   it('should throw error if runtime environment not found when checking for collision if not in CI', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     process.env.CI = 'false';
     const cmd = await getCommand();
     const getCredential = jest
@@ -499,6 +563,9 @@ describe('Commands/FlexPluginsDeploy', () => {
   });
 
   it('should not check for collision if in CI', async () => {
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+
     process.env.CI = 'true';
     const cmd = await getCommand();
     const getCredential = jest.spyOn(credentials, 'getCredential');
