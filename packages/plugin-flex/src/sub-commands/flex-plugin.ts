@@ -2,7 +2,7 @@ import { join } from 'path';
 import { homedir } from 'os';
 
 import PluginsApiToolkit from 'flex-plugins-api-toolkit';
-import { checkAFileExists, readJsonFile, writeJSONFile } from 'flex-dev-utils/dist/fs';
+import { checkAFileExists, getPaths, readJsonFile, writeJSONFile } from 'flex-dev-utils/dist/fs';
 import { baseCommands, services } from '@twilio/cli-core';
 import {
   PluginServiceHTTPClient,
@@ -43,10 +43,16 @@ interface FlexPluginOption {
 }
 
 const flexPluginScripts = 'flex-plugin-scripts';
-const flexPluginsApiUtils = 'flex-plugins-api-utils';
-const flexPluginsApiClient = 'flex-plugins-api-client';
+/* eslint-disable camelcase */
+const userAgentAdditions = {
+  react: 'react',
+  react_dom: 'react-dom',
+  'flex-plugins-api-toolkit': 'flex-plugins-api-toolkit',
+  flex_ui: '@twilio/flex-ui',
+};
 const twilioCLI = '@twilio/cli-core';
 const twilioCliFlexPlugin = 'twilio-cli-flex-plugin';
+const isTS = 'it_ts';
 
 export type ConfigData = typeof services.config.ConfigData;
 export type SecureStorage = typeof services.secureStorage.SecureStorage;
@@ -424,10 +430,13 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       caller: 'twilio-cli',
       packages: {
         [flexPluginScripts]: FlexPlugin.getPackageVersion(flexPluginScripts),
-        [flexPluginsApiUtils]: FlexPlugin.getPackageVersion(flexPluginsApiUtils),
-        [flexPluginsApiClient]: FlexPlugin.getPackageVersion(flexPluginsApiClient),
         [twilioCLI]: FlexPlugin.getPackageVersion(twilioCLI),
         [twilioCliFlexPlugin]: FlexPlugin.getPackageVersion(this.pluginRootDir),
+        [Object.keys(userAgentAdditions)[0]]: FlexPlugin.getPackageVersion(Object.values(userAgentAdditions)[0]),
+        [Object.keys(userAgentAdditions)[1]]: FlexPlugin.getPackageVersion(Object.values(userAgentAdditions)[1]),
+        [Object.keys(userAgentAdditions)[2]]: FlexPlugin.getPackageVersion(Object.values(userAgentAdditions)[2]),
+        [Object.keys(userAgentAdditions)[3]]: FlexPlugin.getPackageVersion(Object.values(userAgentAdditions)[3]),
+        [isTS]: getPaths().app.isTSProject().toString(),
       },
     };
     const flexConfigOptions: FlexConfigurationClientOptions = {

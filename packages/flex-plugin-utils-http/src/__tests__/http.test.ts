@@ -77,18 +77,14 @@ describe('HttpClient', () => {
     it('should return default user-agent for node if nothing is set', () => {
       const isNode = jest.spyOn(env, 'isNode').mockReturnValue(true);
       const isCI = jest.spyOn(env, 'isCI').mockReturnValue(false);
-      // @ts-ignore
-      const isTS = jest.spyOn(fsScripts, 'getPaths').mockReturnValue(paths);
 
       // @ts-ignore
       const userAgent = HttpClient.getUserAgent({});
 
       expect(isNode).toHaveBeenCalledTimes(1);
       expect(isCI).toHaveBeenCalledTimes(1);
-      expect(isTS).toHaveBeenCalledTimes(1);
       expect(userAgent).toContain('Node.js');
       expect(userAgent).toContain('is_ci/false');
-      expect(userAgent).toContain(`is_ts/${paths.app.isTSProject()}`);
       expect(userAgent).toContain(process.version.slice(1));
       expect(userAgent).toContain(process.platform);
       expect(userAgent).toContain(process.arch);
@@ -97,18 +93,14 @@ describe('HttpClient', () => {
     it('should return default user-agent for windows if nothing is set', () => {
       const isNode = jest.spyOn(env, 'isNode').mockReturnValue(false);
       const isCI = jest.spyOn(env, 'isCI').mockReturnValue(false);
-      // @ts-ignore
-      const isTS = jest.spyOn(fsScripts, 'getPaths').mockReturnValue(paths);
 
       // @ts-ignore
       const userAgent = HttpClient.getUserAgent({});
 
       expect(isNode).toHaveBeenCalledTimes(1);
       expect(isCI).toHaveBeenCalledTimes(1);
-      expect(isTS).toHaveBeenCalledTimes(1);
       expect(userAgent).not.toContain('Node.js');
       expect(userAgent).toContain('is_ci/false');
-      expect(userAgent).toContain(`is_ts/${paths.app.isTSProject()}`);
       expect(userAgent).not.toContain(process.version.slice(1));
     });
 
@@ -140,22 +132,6 @@ describe('HttpClient', () => {
       expect(userAgent).toContain(`package-b/4.5.6`);
     });
 
-    it('should add all of the necessary values to user-agent', () => {
-      const propsToAdd = ['react', 'react-dom', 'flex-plugins-api-toolkit', '@twilio/flex-ui'];
-
-      jest.spyOn(env, 'isNode').mockReturnValue(true);
-      jest.spyOn(env, 'isCI').mockReturnValue(false);
-      // @ts-ignore
-      jest.spyOn(fsScripts, 'getPaths').mockReturnValue(paths);
-
-      // @ts-ignore
-      const userAgent = HttpClient.getUserAgent({});
-
-      propsToAdd.forEach((element) => {
-        expect(userAgent).toContain(element);
-      });
-    });
-
     it('should remove certain packages if found in user-agent', () => {
       const propsToRemove = ['flex-plugin-utils-http', 'flex-plugins-api-utils', 'flex-plugins-api-client'];
 
@@ -176,6 +152,18 @@ describe('HttpClient', () => {
       propsToRemove.forEach((element) => {
         expect(userAgent).not.toContain(element);
       });
+    });
+
+    it('should add shell if it exists', () => {
+      jest.spyOn(env, 'isNode').mockReturnValue(true);
+      jest.spyOn(env, 'isCI').mockReturnValue(false);
+      // @ts-ignore
+      jest.spyOn(fsScripts, 'getPaths').mockReturnValue(paths);
+
+      // @ts-ignore
+      const userAgent = HttpClient.getUserAgent({});
+
+      expect(userAgent).toContain('shell');
     });
   });
 

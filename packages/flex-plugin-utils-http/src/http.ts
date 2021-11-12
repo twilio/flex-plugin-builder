@@ -40,8 +40,6 @@ export interface HttpConfig extends OptionalHttpConfig {
   baseURL: string;
 }
 
-const propsToAdd = ['react', 'react-dom', 'flex-plugins-api-toolkit', '@twilio/flex-ui'];
-
 export default class Http {
   static DEFAULT_CONCURRENT_REQUESTS = 5;
 
@@ -105,6 +103,8 @@ export default class Http {
     const userAgent: string[] = [];
     if (env.isNode()) {
       userAgent.push(`Node.js/${process.version.slice(1)}`, `(${process.platform}; ${process.arch})`);
+      const shell = process.env.SHELL?.split('/')[process.env.SHELL?.split('/').length - 1] || 'unknown';
+      userAgent.push(`shell/${shell}`);
     } else {
       userAgent.push(window.navigator.userAgent);
     }
@@ -112,15 +112,8 @@ export default class Http {
       userAgent.push(`caller/${config.caller}`);
     }
 
-    // Add to user agent
     Object.entries(packages).forEach(([key, value]) => userAgent.push(`${key}/${value}`));
-    propsToAdd.forEach((element) => userAgent.push(`${element}/${getDependencyVersion(element)}`));
     userAgent.push(`is_ci/${env.isCI()}`);
-    userAgent.push(`is_ts/${getPaths().app.isTSProject()}`);
-    const shell = process.env.SHELL?.split('/');
-    if (shell) {
-      userAgent.push(`shell/${shell[shell.length - 1]}`);
-    }
 
     return userAgent
       .filter((element) => {
