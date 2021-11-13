@@ -4,7 +4,6 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { env } from 'flex-plugins-utils-env';
 import logger from 'flex-plugins-utils-logger/dist/lib/logger';
 import { TwilioApiError } from 'flex-plugins-utils-exception';
-import { getDependencyVersion, getPaths } from 'flex-dev-utils/dist/fs';
 
 type RequestInterceptor = (req: AxiosRequestConfig) => Promise<AxiosRequestConfig>;
 interface Concurrency {
@@ -103,8 +102,14 @@ export default class Http {
     const userAgent: string[] = [];
     if (env.isNode()) {
       userAgent.push(`Node.js/${process.version.slice(1)}`, `(${process.platform}; ${process.arch})`);
-      const shell = process.env.SHELL?.split('/')[process.env.SHELL?.split('/').length - 1] || 'unknown';
+      const shell = process.env.SHELL?.split('/').pop() || 'unknown';
       userAgent.push(`shell/${shell}`);
+      if (process.versions.yarn) {
+        userAgent.push(`yarn/${process.versions.yarn}`);
+      }
+      if (process.versions.npm) {
+        userAgent.push(`npm/${process.versions.npm}`);
+      }
     } else {
       userAgent.push(window.navigator.userAgent);
     }
@@ -115,15 +120,7 @@ export default class Http {
     Object.entries(packages).forEach(([key, value]) => userAgent.push(`${key}/${value}`));
     userAgent.push(`is_ci/${env.isCI()}`);
 
-    return userAgent
-      .filter((element) => {
-        return (
-          !element.includes('flex-plugins-api-utils') &&
-          !element.includes('flex-plugins-api-client') &&
-          !element.includes('flex-plugin-utils-http')
-        );
-      })
-      .join(' ');
+    return userAgent.join(' ');
   }
 
   /**

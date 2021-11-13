@@ -43,13 +43,10 @@ interface FlexPluginOption {
 }
 
 const flexPluginScripts = 'flex-plugin-scripts';
-/* eslint-disable camelcase */
-const userAgentAdditions = {
-  react: 'react',
-  react_dom: 'react-dom',
-  'flex-plugins-api-toolkit': 'flex-plugins-api-toolkit',
-  flex_ui: '@twilio/flex-ui',
-};
+const flexUI = 'flex-ui';
+const react = 'react';
+const reactDom = 'react-dom';
+const flexPluginsApiToolkit = 'flex-plugins-api-toolkit';
 const twilioCLI = '@twilio/cli-core';
 const twilioCliFlexPlugin = 'twilio-cli-flex-plugin';
 const isTS = 'it_ts';
@@ -432,11 +429,11 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
         [flexPluginScripts]: FlexPlugin.getPackageVersion(flexPluginScripts),
         [twilioCLI]: FlexPlugin.getPackageVersion(twilioCLI),
         [twilioCliFlexPlugin]: FlexPlugin.getPackageVersion(this.pluginRootDir),
-        [Object.keys(userAgentAdditions)[0]]: FlexPlugin.getPackageVersion(Object.values(userAgentAdditions)[0]),
-        [Object.keys(userAgentAdditions)[1]]: FlexPlugin.getPackageVersion(Object.values(userAgentAdditions)[1]),
-        [Object.keys(userAgentAdditions)[2]]: FlexPlugin.getPackageVersion(Object.values(userAgentAdditions)[2]),
-        [Object.keys(userAgentAdditions)[3]]: FlexPlugin.getPackageVersion(Object.values(userAgentAdditions)[3]),
         [isTS]: getPaths().app.isTSProject().toString(),
+        [react]: FlexPlugin.getPackageVersion(react),
+        [reactDom]: FlexPlugin.getPackageVersion(reactDom),
+        [flexPluginsApiToolkit]: FlexPlugin.getPackageVersion(flexPluginsApiToolkit),
+        [flexUI]: FlexPlugin.getPackageVersion(`@twilio/${flexUI}`),
       },
     };
     const flexConfigOptions: FlexConfigurationClientOptions = {
@@ -473,7 +470,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     this._serverlessClient = new ServerlessClient(this.twilioClient.serverless.v1.services, this._logger);
 
     if (!this.skipEnvironmentalSetup) {
-      this.setupEnvironment();
+      await this.setupEnvironment();
     }
 
     if (!this.isJson) {
@@ -543,7 +540,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   /**
    * Setups the environment. This must run after run command
    */
-  setupEnvironment(): void {
+  async setupEnvironment(): Promise<void> {
     process.env.SKIP_CREDENTIALS_SAVING = 'true';
     process.env.TWILIO_ACCOUNT_SID = this.twilioClient.username;
     process.env.TWILIO_AUTH_TOKEN = this.twilioClient.password;
@@ -556,6 +553,14 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
     if (this._flags.region) {
       env.setRegion(this._flags.region as any);
+    }
+
+    const shellCmd = ['npm', 'yarn'];
+    for (const cmd of shellCmd) {
+      const result = await spawn(cmd, ['-v'], {});
+      if (!result.stderr) {
+        process.versions[cmd] = result.stdout;
+      }
     }
   }
 
