@@ -49,6 +49,7 @@ const reactDom = 'react-dom';
 const flexPluginsApiToolkit = 'flex-plugins-api-toolkit';
 const twilioCLI = '@twilio/cli-core';
 const twilioCliFlexPlugin = 'twilio-cli-flex-plugin';
+const twilioDashCli = 'twilio-cli';
 const isTS = 'it_ts';
 
 export type ConfigData = typeof services.config.ConfigData;
@@ -409,10 +410,10 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
     const pluginServiceOptions: PluginServiceHttpOption = {
       setUserAgent: true,
-      caller: 'twilio-cli',
+      caller: twilioDashCli,
       packages: {
         [flexPluginScripts]: FlexPlugin.getPackageVersion(flexPluginScripts),
-        [twilioCLI]: FlexPlugin.getPackageVersion(twilioCLI),
+        [twilioDashCli]: FlexPlugin.getPackageVersion(twilioCLI),
         [twilioCliFlexPlugin]: FlexPlugin.getPackageVersion(this.pluginRootDir),
         [isTS]: getPaths().app.isTSProject().toString(),
         [react]: FlexPlugin.getPackageVersion(react),
@@ -543,7 +544,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     const shellCmd = ['npm', 'yarn'];
     for (const cmd of shellCmd) {
       const result = await spawn(cmd, ['-v'], {});
-      if (!result.stderr) {
+      if (result.exitCode === 0) {
         process.versions[cmd] = result.stdout;
       }
     }

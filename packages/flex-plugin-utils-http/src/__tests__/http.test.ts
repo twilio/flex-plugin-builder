@@ -70,19 +70,22 @@ describe('HttpClient', () => {
   });
 
   describe('getUserAgent', () => {
-    beforeEach(() => {
+    let isNode = jest.spyOn(env, 'isNode').mockReturnThis();
+    let isCI = jest.spyOn(env, 'isCI').mockReturnThis();
+
+    const getUserAgent = (node: boolean, ci: boolean, options?: HttpConfig) => {
       // @ts-ignore
       jest.spyOn(fsScripts, 'getPaths').mockReturnValue(paths);
-      jest.spyOn(env, 'isNode').mockReturnValue(true);
-      jest.spyOn(env, 'isCI').mockReturnValue(false);
-    });
 
-    it('should return default user-agent for node if nothing is set', () => {
-      const isNode = jest.spyOn(env, 'isNode').mockReturnValue(true);
-      const isCI = jest.spyOn(env, 'isCI').mockReturnValue(false);
+      isNode = jest.spyOn(env, 'isNode').mockReturnValue(node);
+      isCI = jest.spyOn(env, 'isCI').mockReturnValue(ci);
 
       // @ts-ignore
-      const userAgent = HttpClient.getUserAgent({});
+      return HttpClient.getUserAgent(options || {});
+    };
+
+    it('should return default user-agent for node if nothing is set', () => {
+      const userAgent = getUserAgent(true, false);
 
       expect(isNode).toHaveBeenCalledTimes(1);
       expect(isCI).toHaveBeenCalledTimes(1);
@@ -94,11 +97,7 @@ describe('HttpClient', () => {
     });
 
     it('should return default user-agent for windows if nothing is set', () => {
-      const isNode = jest.spyOn(env, 'isNode').mockReturnValue(false);
-      const isCI = jest.spyOn(env, 'isCI').mockReturnValue(false);
-
-      // @ts-ignore
-      const userAgent = HttpClient.getUserAgent({});
+      const userAgent = getUserAgent(false, false);
 
       expect(isNode).toHaveBeenCalledTimes(1);
       expect(isCI).toHaveBeenCalledTimes(1);
@@ -109,64 +108,51 @@ describe('HttpClient', () => {
 
     it('should set caller', () => {
       // @ts-ignore
-      const userAgent = HttpClient.getUserAgent({ caller: 'test-caller' });
+      const userAgent = getUserAgent(true, true, { caller: 'test-caller' });
+
       expect(userAgent).toContain(`caller/test-caller`);
     });
 
     it('should set packages', () => {
       // @ts-ignore
-      const userAgent = HttpClient.getUserAgent({
-        packages: {
-          'package-a': '1.2.3',
-          'package-b': '4.5.6',
-        },
-      });
+      const userAgent = getUserAgent(true, true, { packages: { 'package-a': '1.2.3', 'package-b': '4.5.6' } });
+
       expect(userAgent).toContain(`package-a/1.2.3`);
       expect(userAgent).toContain(`package-b/4.5.6`);
     });
 
     it('should not add yarn and npm if they exist', () => {
-      jest.spyOn(env, 'isNode').mockReturnValue(true);
-      // @ts-ignore
-      const userAgent = HttpClient.getUserAgent({});
+      const userAgent = getUserAgent(true, true);
 
       expect(userAgent).not.toContain('yarn');
       expect(userAgent).not.toContain('npm');
     });
 
     it('should add yarn and npm if they exist', () => {
-      jest.spyOn(env, 'isNode').mockReturnValue(true);
       process.versions.npm = '1.0.0';
       process.versions.yarn = '2.0.0';
-      // @ts-ignore
-      const userAgent = HttpClient.getUserAgent({});
+      const userAgent = getUserAgent(true, true);
 
       expect(userAgent).toContain('yarn');
       expect(userAgent).toContain('npm');
     });
 
     it('should add shell if exists', () => {
-      jest.spyOn(env, 'isNode').mockReturnValue(true);
       process.env.SHELL = '/bin/bash';
-      // @ts-ignore
-      const userAgent = HttpClient.getUserAgent({});
+      const userAgent = getUserAgent(true, true);
 
       expect(userAgent).toContain('shell/bash');
     });
 
     it('should add unknown to shell if doesnt exist', () => {
-      jest.spyOn(env, 'isNode').mockReturnValue(true);
       process.env.SHELL = '';
-      // @ts-ignore
-      const userAgent = HttpClient.getUserAgent({});
+      const userAgent = getUserAgent(true, true);
 
       expect(userAgent).toContain('shell/unknown');
     });
 
     it('should not add shell, npm, yarn, or node if not isNode', () => {
-      jest.spyOn(env, 'isNode').mockReturnValue(false);
-      // @ts-ignore
-      const userAgent = HttpClient.getUserAgent({});
+      const userAgent = getUserAgent(false, false);
 
       expect(userAgent).not.toContain('Node');
       expect(userAgent).not.toContain('yarn');
