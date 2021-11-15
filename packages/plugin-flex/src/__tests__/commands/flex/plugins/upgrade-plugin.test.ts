@@ -219,6 +219,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should print warning about plugins-api registration required before remove-legacy', async () => {
+    jest.setTimeout(10000);
     const cmd = await removeLegacyPlugin();
 
     jest.spyOn(cmd.pluginsClient, 'get').mockRejectedValue(new TwilioApiError(0, '', 404));
@@ -232,6 +233,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should exit if no serviceSid is found', async () => {
+    jest.setTimeout(10000);
     const cmd = await removeLegacyPlugin();
 
     jest.spyOn(cmd, 'pkg', 'get').mockReturnThis();
