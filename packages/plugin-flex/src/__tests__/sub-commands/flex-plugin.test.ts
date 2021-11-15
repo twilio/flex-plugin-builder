@@ -19,6 +19,8 @@ describe('SubCommands/FlexPlugin', () => {
     jest.resetAllMocks();
     jest.restoreAllMocks();
     jest.spyOn(spawn, 'spawn').mockReturnThis();
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
 
     process.env = { ...env };
   });
@@ -118,9 +120,6 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should call setEnvironment', async () => {
-    // @ts-ignore
-    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
-
     const cmd = await createTest(FlexPlugin)();
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
@@ -136,9 +135,6 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should set debug env to true', async () => {
-    // @ts-ignore
-    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
-
     const cmd = await createTest(FlexPlugin)('-l', 'debug');
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
@@ -151,9 +147,6 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should run the main command successfully', async () => {
-    // @ts-ignore
-    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
-
     const cmd = await createTest(FlexPlugin)();
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
@@ -175,9 +168,6 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should return raw format', async () => {
-    // @ts-ignore
-    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
-
     const cmd = await createTest(FlexPlugin)('--json');
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
@@ -192,9 +182,6 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should not return raw format', async () => {
-    // @ts-ignore
-    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
-
     const cmd = await createTest(FlexPlugin)();
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
@@ -275,9 +262,6 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should quit if builder version is incorrect', async () => {
-    // @ts-ignore
-    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
-
     const cmd = await createTest(FlexPlugin)();
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
@@ -295,9 +279,6 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should not quit if builder version is correct', async () => {
-    // @ts-ignore
-    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
-
     const cmd = await createTest(FlexPlugin)();
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
@@ -368,9 +349,6 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should set region in config client if flag is passed in', async () => {
-    // @ts-ignore
-    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
-
     const cmd = await createTest(FlexPlugin)('--region', 'stage');
 
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
@@ -382,12 +360,6 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should not set a region in config client if flag is not passed in', async () => {
-    const paths = {
-      app: { isTSProject: () => false },
-    };
-    // @ts-ignore
-    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
-
     const cmd = await createTest(FlexPlugin)();
 
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
