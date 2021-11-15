@@ -128,13 +128,6 @@ describe('HttpClient', () => {
       expect(userAgent).toContain(`package-b/4.5.6`);
     });
 
-    it('should add shell if it exists', () => {
-      // @ts-ignore
-      const userAgent = HttpClient.getUserAgent({});
-
-      expect(userAgent).toContain('shell');
-    });
-
     it('should not add yarn and npm if they exist', () => {
       jest.spyOn(env, 'isNode').mockReturnValue(true);
       // @ts-ignore
@@ -144,15 +137,44 @@ describe('HttpClient', () => {
       expect(userAgent).not.toContain('npm');
     });
 
-    // THIS TEST ISN'T WORKING
     it('should add yarn and npm if they exist', () => {
-      jest.spyOn(env, 'isNode').mockReturnValue(false);
-      jest.spyOn(spawn, 'spawn').mockResolvedValue({ exitCode: 0, stdout: '1.0.0', stderr: '' });
+      jest.spyOn(env, 'isNode').mockReturnValue(true);
+      process.versions.npm = '1.0.0';
+      process.versions.yarn = '2.0.0';
       // @ts-ignore
       const userAgent = HttpClient.getUserAgent({});
 
       expect(userAgent).toContain('yarn');
       expect(userAgent).toContain('npm');
+    });
+
+    it('should add shell if exists', () => {
+      jest.spyOn(env, 'isNode').mockReturnValue(true);
+      process.env.SHELL = '/bin/bash';
+      // @ts-ignore
+      const userAgent = HttpClient.getUserAgent({});
+
+      expect(userAgent).toContain('shell/bash');
+    });
+
+    it('should add unknown to shell if doesnt exist', () => {
+      jest.spyOn(env, 'isNode').mockReturnValue(true);
+      process.env.SHELL = '';
+      // @ts-ignore
+      const userAgent = HttpClient.getUserAgent({});
+
+      expect(userAgent).toContain('shell/unknown');
+    });
+
+    it('should not add shell, npm, yarn, or node if not isNode', () => {
+      jest.spyOn(env, 'isNode').mockReturnValue(false);
+      // @ts-ignore
+      const userAgent = HttpClient.getUserAgent({});
+
+      expect(userAgent).not.toContain('Node');
+      expect(userAgent).not.toContain('yarn');
+      expect(userAgent).not.toContain('npm');
+      expect(userAgent).not.toContain('shell');
     });
   });
 
