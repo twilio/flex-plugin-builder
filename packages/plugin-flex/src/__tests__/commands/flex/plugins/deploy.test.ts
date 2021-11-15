@@ -60,6 +60,7 @@ describe('Commands/FlexPluginsDeploy', () => {
   const paths = {
     app: {
       version: '1.0.0',
+      isTSProject: () => false,
     },
     assetBaseUrlTemplate: 'template',
   };
@@ -71,6 +72,8 @@ describe('Commands/FlexPluginsDeploy', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     jest.restoreAllMocks();
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
     process.env = { ...OLD_ENV };
   });
 
@@ -464,8 +467,6 @@ describe('Commands/FlexPluginsDeploy', () => {
       version: '1.0.0',
       name: pluginName,
     });
-    // @ts-ignore
-    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
 
     await cmd.hasCollisionAndOverwrite();
 
@@ -486,8 +487,6 @@ describe('Commands/FlexPluginsDeploy', () => {
       version: '1.0.0',
       name: pluginName,
     });
-    // @ts-ignore
-    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
 
     try {
       await cmd.hasCollisionAndOverwrite();
@@ -510,8 +509,6 @@ describe('Commands/FlexPluginsDeploy', () => {
       version: '1.0.0',
       name: pluginName,
     });
-    // @ts-ignore
-    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
 
     await cmd.hasCollisionAndOverwrite();
 

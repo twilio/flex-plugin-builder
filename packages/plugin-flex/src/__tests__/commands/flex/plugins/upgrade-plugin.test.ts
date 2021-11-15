@@ -5,11 +5,16 @@ import { Pkg } from '../../../../sub-commands/flex-plugin';
 import createTest, { getPrintMethod, implementFileExists, mockGetPkg, mockPrintMethod } from '../../../framework';
 import FlexPluginsUpgradePlugin, { DependencyUpdates } from '../../../../commands/flex/plugins/upgrade-plugin';
 
+jest.mock('flex-dev-utils/dist/fs');
+
 describe('Commands/FlexPluginsStart', () => {
   const serverlessSid = 'ZS00000000000000000000000000000000';
   const originalCommand = 'original command';
   const cwdPath = 'cwd';
   const appConfigPath = 'appConfig.js';
+  const paths = {
+    app: { isTSProject: () => false },
+  };
 
   const removeLegacyPlugin = async () => {
     const cmd = await createTest(FlexPluginsUpgradePlugin)();
@@ -30,6 +35,8 @@ describe('Commands/FlexPluginsStart', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     jest.restoreAllMocks();
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
   });
 
   it('should have flag as own property', () => {
@@ -215,6 +222,7 @@ describe('Commands/FlexPluginsStart', () => {
     const cmd = await removeLegacyPlugin();
 
     jest.spyOn(cmd.pluginsClient, 'get').mockRejectedValue(new TwilioApiError(0, '', 404));
+    jest.spyOn(cmd, 'pkg', 'get').mockReturnThis();
 
     await cmd.removeLegacyPlugin();
 
@@ -226,6 +234,7 @@ describe('Commands/FlexPluginsStart', () => {
   it('should exit if no serviceSid is found', async () => {
     const cmd = await removeLegacyPlugin();
 
+    jest.spyOn(cmd, 'pkg', 'get').mockReturnThis();
     jest.spyOn(cmd.pluginsClient, 'get').mockReturnThis();
     jest.spyOn(cmd.flexConfigurationClient, 'getServerlessSid').mockResolvedValue(null);
     jest.spyOn(cmd.serverlessClient, 'hasLegacy');
@@ -240,6 +249,11 @@ describe('Commands/FlexPluginsStart', () => {
   it('should notify no legacy plugin is found', async () => {
     const cmd = await removeLegacyPlugin();
 
+    mockGetPkg(cmd, {
+      name: 'plugin-test',
+      dependencies: {},
+      devDependencies: {},
+    });
     jest.spyOn(cmd.pluginsClient, 'get').mockReturnThis();
     jest.spyOn(cmd.flexConfigurationClient, 'getServerlessSid').mockResolvedValue(serverlessSid);
     jest.spyOn(cmd.serverlessClient, 'hasLegacy').mockResolvedValue(false);
@@ -256,6 +270,11 @@ describe('Commands/FlexPluginsStart', () => {
   it('should remove legacy', async () => {
     const cmd = await removeLegacyPlugin();
 
+    mockGetPkg(cmd, {
+      name: 'plugin-test',
+      dependencies: {},
+      devDependencies: {},
+    });
     jest.spyOn(cmd.pluginsClient, 'get').mockReturnThis();
     jest.spyOn(cmd.flexConfigurationClient, 'getServerlessSid').mockResolvedValue(serverlessSid);
     jest.spyOn(cmd.serverlessClient, 'hasLegacy').mockResolvedValue(true);
@@ -290,6 +309,7 @@ describe('Commands/FlexPluginsStart', () => {
     it('should call removeLegacyPlugin', async () => {
       const cmd = await createTest(FlexPluginsUpgradePlugin)('--remove-legacy-plugin');
 
+      jest.spyOn(cmd, 'pkg', 'get').mockReturnThis();
       jest.spyOn(cmd, 'removeLegacyPlugin').mockReturnThis();
 
       await cmd.doRun();

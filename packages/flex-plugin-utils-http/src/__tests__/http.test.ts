@@ -3,6 +3,7 @@ import { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { env } from 'flex-plugins-utils-env';
 import { TwilioApiError } from 'flex-plugins-utils-exception';
+import * as fsScripts from 'flex-dev-utils/dist/fs';
 
 import HttpClient, { HttpConfig } from '../http';
 
@@ -14,12 +15,19 @@ describe('HttpClient', () => {
       password: 'abc123',
     },
   };
+  const paths = {
+    app: { isTSProject: () => false },
+  };
 
   const payloadStr = 'payload=value';
 
   beforeEach(() => {
     jest.resetAllMocks();
     jest.resetModules();
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
   });
 
   describe('constructor', () => {
@@ -31,6 +39,8 @@ describe('HttpClient', () => {
     });
 
     it('should set user-agent', () => {
+      // @ts-ignore
+      jest.spyOn(fsScripts, 'getPaths').mockReturnValue(paths);
       const http = new HttpClient({ ...config, setUserAgent: true });
 
       // @ts-ignore
@@ -60,46 +70,50 @@ describe('HttpClient', () => {
   });
 
   describe('getUserAgent', () => {
-    // eslint-disable-next-line  global-require, @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-    const pkg = require('../../package.json');
+    beforeEach(() => {
+      // @ts-ignore
+      jest.spyOn(fsScripts, 'getPaths').mockReturnValue(paths);
+      jest.spyOn(env, 'isNode').mockReturnValue(true);
+      jest.spyOn(env, 'isCI').mockReturnValue(false);
+    });
 
     it('should return default user-agent for node if nothing is set', () => {
       const isNode = jest.spyOn(env, 'isNode').mockReturnValue(true);
+      const isCI = jest.spyOn(env, 'isCI').mockReturnValue(false);
 
       // @ts-ignore
       const userAgent = HttpClient.getUserAgent({});
 
       expect(isNode).toHaveBeenCalledTimes(1);
+      expect(isCI).toHaveBeenCalledTimes(1);
       expect(userAgent).toContain('Node.js');
+      expect(userAgent).toContain('is_ci/false');
       expect(userAgent).toContain(process.version.slice(1));
       expect(userAgent).toContain(process.platform);
       expect(userAgent).toContain(process.arch);
-      expect(userAgent).toContain(`${pkg.name}/${pkg.version}`);
     });
 
     it('should return default user-agent for windows if nothing is set', () => {
       const isNode = jest.spyOn(env, 'isNode').mockReturnValue(false);
+      const isCI = jest.spyOn(env, 'isCI').mockReturnValue(false);
 
       // @ts-ignore
       const userAgent = HttpClient.getUserAgent({});
 
       expect(isNode).toHaveBeenCalledTimes(1);
+      expect(isCI).toHaveBeenCalledTimes(1);
       expect(userAgent).not.toContain('Node.js');
+      expect(userAgent).toContain('is_ci/false');
       expect(userAgent).not.toContain(process.version.slice(1));
-      expect(userAgent).toContain(`${pkg.name}/${pkg.version}`);
     });
 
     it('should set caller', () => {
-      jest.spyOn(env, 'isNode').mockReturnValue(true);
-
       // @ts-ignore
       const userAgent = HttpClient.getUserAgent({ caller: 'test-caller' });
       expect(userAgent).toContain(`caller/test-caller`);
     });
 
     it('should set packages', () => {
-      jest.spyOn(env, 'isNode').mockReturnValue(true);
-
       // @ts-ignore
       const userAgent = HttpClient.getUserAgent({
         packages: {
@@ -109,6 +123,55 @@ describe('HttpClient', () => {
       });
       expect(userAgent).toContain(`package-a/1.2.3`);
       expect(userAgent).toContain(`package-b/4.5.6`);
+    });
+
+    it('should not add yarn and npm if they exist', () => {
+      jest.spyOn(env, 'isNode').mockReturnValue(true);
+      // @ts-ignore
+      const userAgent = HttpClient.getUserAgent({});
+
+      expect(userAgent).not.toContain('yarn');
+      expect(userAgent).not.toContain('npm');
+    });
+
+    it('should add yarn and npm if they exist', () => {
+      jest.spyOn(env, 'isNode').mockReturnValue(true);
+      process.versions.npm = '1.0.0';
+      process.versions.yarn = '2.0.0';
+      // @ts-ignore
+      const userAgent = HttpClient.getUserAgent({});
+
+      expect(userAgent).toContain('yarn');
+      expect(userAgent).toContain('npm');
+    });
+
+    it('should add shell if exists', () => {
+      jest.spyOn(env, 'isNode').mockReturnValue(true);
+      process.env.SHELL = '/bin/bash';
+      // @ts-ignore
+      const userAgent = HttpClient.getUserAgent({});
+
+      expect(userAgent).toContain('shell/bash');
+    });
+
+    it('should add unknown to shell if doesnt exist', () => {
+      jest.spyOn(env, 'isNode').mockReturnValue(true);
+      process.env.SHELL = '';
+      // @ts-ignore
+      const userAgent = HttpClient.getUserAgent({});
+
+      expect(userAgent).toContain('shell/unknown');
+    });
+
+    it('should not add shell, npm, yarn, or node if not isNode', () => {
+      jest.spyOn(env, 'isNode').mockReturnValue(false);
+      // @ts-ignore
+      const userAgent = HttpClient.getUserAgent({});
+
+      expect(userAgent).not.toContain('Node');
+      expect(userAgent).not.toContain('yarn');
+      expect(userAgent).not.toContain('npm');
+      expect(userAgent).not.toContain('shell');
     });
   });
 
