@@ -6,6 +6,7 @@ import * as fs from 'flex-dev-utils/dist/fs';
 import { PluginsConfig } from 'flex-plugin-scripts';
 import { PluginVersionResource } from 'flex-plugins-api-client';
 import * as updateNotifier from 'flex-dev-utils/dist/updateNotifier';
+import * as spawn from 'flex-dev-utils/dist/spawn';
 
 import createTest, { mockGetPkg } from '../../../framework';
 import FlexPluginsStart from '../../../../commands/flex/plugins/start';
@@ -15,6 +16,7 @@ const flexUiSource = 'flex-ui-source';
 
 jest.mock('flex-dev-utils/dist/fs');
 jest.mock('flex-dev-utils/dist/updateNotifier');
+jest.mock('flex-dev-utils/dist/spawn');
 
 describe('Commands/FlexPluginsStart', () => {
   const name = 'plugin-test';
@@ -70,6 +72,7 @@ describe('Commands/FlexPluginsStart', () => {
     jest.restoreAllMocks();
     // @ts-ignore
     jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+    jest.spyOn(spawn, 'spawn').mockReturnThis();
     process.env = { ...OLD_ENV };
 
     findPortAvailablePort = jest.spyOn(pluginBuilderStartScript, 'findPortAvailablePort');

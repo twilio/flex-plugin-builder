@@ -7,6 +7,7 @@ import * as fs from 'flex-dev-utils/dist/fs';
 import { PluginVersionResource } from 'flex-plugins-api-client/dist/clients/pluginVersions';
 import { PluginResource } from 'flex-plugins-api-client';
 import * as deployScript from 'flex-plugin-scripts/dist/scripts/deploy';
+import * as spawn from 'flex-dev-utils/dist/spawn';
 
 import createTest, { getPrintMethod, mockGetPkg, mockGetter, mockPrintMethod } from '../../../framework';
 import FlexPluginsDeploy, { parseVersionInput } from '../../../../commands/flex/plugins/deploy';
@@ -16,6 +17,7 @@ jest.mock('flex-dev-utils/dist/credentials');
 jest.mock('flex-plugin-scripts/dist/utils/runtime');
 jest.mock('flex-dev-utils/dist/fs');
 jest.mock('flex-dev-utils/dist/updateNotifier');
+jest.mock('flex-dev-utils/dist/spawn');
 
 describe('Commands/FlexPluginsDeploy', () => {
   jest.setTimeout(10000);
@@ -74,6 +76,7 @@ describe('Commands/FlexPluginsDeploy', () => {
     jest.restoreAllMocks();
     // @ts-ignore
     jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+    jest.spyOn(spawn, 'spawn').mockReturnThis();
     process.env = { ...OLD_ENV };
   });
 

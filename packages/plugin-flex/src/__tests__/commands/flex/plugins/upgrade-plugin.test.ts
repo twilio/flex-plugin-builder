@@ -1,11 +1,13 @@
 import { TwilioApiError, TwilioCliError } from 'flex-dev-utils';
 import * as fs from 'flex-dev-utils/dist/fs';
+import * as spawn from 'flex-dev-utils/dist/spawn';
 
 import { Pkg } from '../../../../sub-commands/flex-plugin';
 import createTest, { getPrintMethod, implementFileExists, mockGetPkg, mockPrintMethod } from '../../../framework';
 import FlexPluginsUpgradePlugin, { DependencyUpdates } from '../../../../commands/flex/plugins/upgrade-plugin';
 
 jest.mock('flex-dev-utils/dist/fs');
+jest.mock('flex-dev-utils/dist/spawn');
 
 describe('Commands/FlexPluginsStart', () => {
   const serverlessSid = 'ZS00000000000000000000000000000000';
@@ -37,6 +39,7 @@ describe('Commands/FlexPluginsStart', () => {
     jest.restoreAllMocks();
     // @ts-ignore
     jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+    jest.spyOn(spawn, 'spawn').mockReturnThis();
   });
 
   it('should have flag as own property', () => {
@@ -219,7 +222,6 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should print warning about plugins-api registration required before remove-legacy', async () => {
-    jest.setTimeout(10000);
     const cmd = await removeLegacyPlugin();
 
     jest.spyOn(cmd.pluginsClient, 'get').mockRejectedValue(new TwilioApiError(0, '', 404));
@@ -233,7 +235,6 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should exit if no serviceSid is found', async () => {
-    jest.setTimeout(10000);
     const cmd = await removeLegacyPlugin();
 
     jest.spyOn(cmd, 'pkg', 'get').mockReturnThis();
