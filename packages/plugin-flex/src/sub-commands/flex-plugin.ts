@@ -49,7 +49,7 @@ const reactDom = 'react-dom';
 const flexPluginsApiToolkit = 'flex-plugins-api-toolkit';
 const twilioCLI = '@twilio/cli-core';
 const twilioCliFlexPlugin = 'twilio-cli-flex-plugin';
-const cli = 'twilio-cli';
+const cli = 'cli';
 const isTS = 'it_ts';
 
 export type ConfigData = typeof services.config.ConfigData;
@@ -410,7 +410,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
     const pluginServiceOptions: PluginServiceHttpOption = {
       setUserAgent: true,
-      caller: cli,
+      caller: 'twilio-cli',
       packages: {
         [flexPluginScripts]: FlexPlugin.getPackageVersion(flexPluginScripts),
         [cli]: FlexPlugin.getPackageVersion(twilioCLI),
