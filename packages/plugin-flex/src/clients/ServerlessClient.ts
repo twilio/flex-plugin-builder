@@ -3,7 +3,11 @@ import {
   ServiceListInstance,
   ServiceListInstanceCreateOptions,
 } from 'twilio/lib/rest/serverless/v1/service';
-import { BuildInstance, BuildListInstanceCreateOptions } from 'twilio/lib/rest/serverless/v1/service/build';
+import {
+  BuildInstance,
+  BuildListInstance,
+  BuildListInstanceCreateOptions,
+} from 'twilio/lib/rest/serverless/v1/service/build';
 import { TwilioApiError, Logger } from 'flex-dev-utils';
 import { EnvironmentInstance } from 'twilio/lib/rest/serverless/v1/service/environment';
 
@@ -111,15 +115,45 @@ export default class ServerlessClient {
       .filter((asset) => !asset.path.includes(`/plugins/${pluginName}/0.0.0/bundle.js`))
       .map((asset) => asset.sid);
     const functions = build.functionVersions.map((func) => func as FileVersion).map((func) => func.sid);
-    const data: BuildListInstanceCreateOptions = {
+    const request: BuildListInstanceCreateOptions = {
       assetVersions: assets,
       functionVersions: functions,
       // @ts-ignore this is a type definition error in Twilio; dependencies should be object[] not a string
       dependencies: build.dependencies as string,
     };
 
-    const newBuild = await this.createBuild(serviceSid, data);
+    await this.createBuildAndDeploy(serviceSid, pluginName, request);
+  }
+
+  /**
+   * Creates a {@link BuildInstance} and deploys/activates it
+   * @param serviceSid  the serviceSid the {@link BuildInstance} belongs to
+   * @param pluginName the plugin name that the build belongs to
+   * @param request   the {@link BuildListInstanceCreateOptions} option
+   */
+  async createBuildAndDeploy(
+    serviceSid: string,
+    pluginName: string,
+    request: BuildListInstanceCreateOptions,
+  ): Promise<void> {
+    const { environment } = await this.getBuildAndEnvironment(serviceSid, pluginName);
+    if (!environment) {
+      return;
+    }
+
+    const newBuild = await this.createBuild(serviceSid, request);
     await environment.deployments().create({ buildSid: newBuild.sid });
+  }
+
+  /**
+   * Returns the {@link BuildInstance} belonging to the plugin name
+   * @param serviceSid  the service sid
+   * @param pluginName  the plugin name
+   */
+  async getBuild(serviceSid: string, pluginName: string): Promise<BuildInstance | undefined> {
+    const { build } = await this.getBuildAndEnvironment(serviceSid, pluginName);
+
+    return build;
   }
 
   /**
