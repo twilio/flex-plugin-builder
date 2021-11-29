@@ -1,10 +1,12 @@
 import { ServiceListInstance } from 'twilio/lib/rest/serverless/v1/service';
 import { Logger } from '@oclif/errors';
+import { BuildListInstanceCreateOptions } from 'twilio/lib/rest/serverless/v1/service/build';
 
 import ServerlessClient from '../../clients/ServerlessClient';
 
 describe('ServerlessClient', () => {
   const serviceSid = 'ZS00000000000000000000000000000000';
+  const buildSid = 'ZB00000000000000000000000000000000';
   const pluginName = 'plugin-name';
   const mainPath = '/some/path';
   const anotherPath = '/another/path';
@@ -140,6 +142,63 @@ describe('ServerlessClient', () => {
       expect(client.listServices).toHaveBeenCalledTimes(1);
       expect(createService).toHaveBeenCalledTimes(1);
       expect(createService).toHaveBeenCalledWith(ServerlessClient.NewService);
+    });
+  });
+
+  describe('createBuildAndDeploy', () => {
+    const request: BuildListInstanceCreateOptions = {
+      assetVersions: [],
+      functionVersions: [],
+      dependencies: '',
+    };
+    const build = { sid: buildSid };
+
+    it('should not create a build if no environment is found', async () => {
+      // @ts-ignore
+      const getBuildAndEnvironment = jest.spyOn(client, 'getBuildAndEnvironment').mockResolvedValue({});
+      // @ts-ignore
+      const createBuild = jest.spyOn(client, 'createBuild');
+
+      await client.createBuildAndDeploy(serviceSid, pluginName, request);
+
+      expect(getBuildAndEnvironment).toHaveBeenCalledTimes(1);
+      expect(getBuildAndEnvironment).toHaveBeenCalledWith(serviceSid, pluginName);
+      expect(createBuild).not.toHaveBeenCalled();
+    });
+
+    it('should create a new build and deploy it', async () => {
+      const create = jest.fn();
+      const environment = {
+        deployments: () => ({ create }),
+      };
+      // @ts-ignore
+      const getBuildAndEnvironment = jest.spyOn(client, 'getBuildAndEnvironment').mockResolvedValue({ environment });
+      // @ts-ignore
+      const createBuild = jest.spyOn(client, 'createBuild').mockResolvedValue(build);
+
+      await client.createBuildAndDeploy(serviceSid, pluginName, request);
+
+      expect(getBuildAndEnvironment).toHaveBeenCalledTimes(1);
+      expect(getBuildAndEnvironment).toHaveBeenCalledWith(serviceSid, pluginName);
+      expect(createBuild).toHaveBeenCalledTimes(1);
+      expect(createBuild).toHaveBeenCalledWith(serviceSid, request);
+      expect(create).toHaveBeenCalledTimes(1);
+      expect(create).toHaveBeenCalledWith({ buildSid: build.sid });
+    });
+  });
+
+  describe('getBuild', () => {
+    const build = { sid: buildSid };
+
+    it('should get the build', async () => {
+      // @ts-ignore
+      const getBuildAndEnvironment = jest.spyOn(client, 'getBuildAndEnvironment').mockResolvedValue({ build });
+
+      const resp = await client.getBuild(serviceSid, pluginName);
+
+      expect(resp).toEqual(build);
+      expect(getBuildAndEnvironment).toHaveBeenCalledTimes(1);
+      expect(getBuildAndEnvironment).toHaveBeenCalledWith(serviceSid, pluginName);
     });
   });
 });

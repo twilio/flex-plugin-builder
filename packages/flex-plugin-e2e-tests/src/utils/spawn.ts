@@ -26,6 +26,7 @@ export const promisifiedSpawn = async (
     const defaultOptions = {
       cwd: homeDir,
       env: {
+        HOME: homeDir,
         PATH: `${testParams.environment.path}:/${homeDir}/bin`,
         TWILIO_ACCOUNT_SID: testParams.secrets.api.accountSid,
         TWILIO_AUTH_TOKEN: testParams.secrets.api.authToken,
@@ -35,7 +36,7 @@ export const promisifiedSpawn = async (
     };
     const spawnOptions = { ...defaultOptions, ...options };
     logger.info(`Running spawn command: **${cmd} ${args.join(' ').replace(/-/g, '\\-')}**`);
-    logger.debug(`Spawn options are **${JSON.stringify(options)}**`);
+    logger.debug(`Spawn options are **${JSON.stringify(spawnOptions)}**`);
 
     const child = spawn(cmd, args, spawnOptions);
 
