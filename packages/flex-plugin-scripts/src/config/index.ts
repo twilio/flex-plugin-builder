@@ -38,6 +38,7 @@ interface Configurations {
 const getConfiguration = async <T extends ConfigurationType>(
   name: T,
   env: Environment,
+  script: string,
   type: WebpackType = WebpackType.Complete,
 ): Promise<Configurations[T]> => {
   const args = {
@@ -56,7 +57,11 @@ const getConfiguration = async <T extends ConfigurationType>(
       try {
         return require(getPaths().app.webpackConfigPath)(config, args);
       } catch (exception) {
-        await emitDevServerCrashed(exception);
+        if (script === 'start') {
+          await emitDevServerCrashed(exception);
+        } else {
+          throw new Error(`Error found in webpack.config.js: ${exception}`);
+        }
       }
     }
 
@@ -85,7 +90,11 @@ const getConfiguration = async <T extends ConfigurationType>(
     const config = jestFactory();
 
     if (checkFilesExist(getPaths().app.jestConfigPath)) {
-      return require(getPaths().app.jestConfigPath)(config, args);
+      try {
+        return require(getPaths().app.jestConfigPath)(config, args);
+      } catch (exception) {
+        throw new Error(`Error found in jest.config.js: ${exception}`);
+      }
     }
 
     return config as Configurations[T];

@@ -57,7 +57,7 @@ export const _handler =
 // eslint-disable-next-line import/no-unused-modules
 export const _runWebpack = async (): Promise<BuildBundle> => {
   return new Promise(async (resolve, reject) => {
-    const config = await getConfiguration(ConfigurationType.Webpack, Environment.Production);
+    const config = await getConfiguration(ConfigurationType.Webpack, Environment.Production, 'build');
     webpack(config).run(_handler(resolve, reject));
   });
 };
