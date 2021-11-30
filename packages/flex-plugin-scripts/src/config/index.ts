@@ -60,7 +60,7 @@ const getConfiguration = async <T extends ConfigurationType>(
         if (script === 'start') {
           await emitDevServerCrashed(exception);
         } else {
-          throw new Error(`Error found in webpack.config.js: ${exception}`);
+          throw(exception);
         }
       }
     }
@@ -93,7 +93,7 @@ const getConfiguration = async <T extends ConfigurationType>(
       try {
         return require(getPaths().app.jestConfigPath)(config, args);
       } catch (exception) {
-        throw new Error(`Error found in jest.config.js: ${exception}`);
+        throw(exception);
       }
     }
 
