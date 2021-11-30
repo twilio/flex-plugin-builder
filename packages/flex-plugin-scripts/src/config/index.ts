@@ -60,7 +60,7 @@ const getConfiguration = async <T extends ConfigurationType>(
         if (script === 'start') {
           await emitDevServerCrashed(exception);
         } else {
-          throw(exception);
+          throw exception;
         }
       }
     }
@@ -90,11 +90,7 @@ const getConfiguration = async <T extends ConfigurationType>(
     const config = jestFactory();
 
     if (checkFilesExist(getPaths().app.jestConfigPath)) {
-      try {
-        return require(getPaths().app.jestConfigPath)(config, args);
-      } catch (exception) {
-        throw(exception);
-      }
+      return require(getPaths().app.jestConfigPath)(config, args);
     }
 
     return config as Configurations[T];
