@@ -99,16 +99,26 @@ export default class Http {
     const pkg = require('../package.json');
     packages[pkg.name] = pkg.version;
 
-    const userAgent = [];
+    const userAgent: string[] = [];
     if (env.isNode()) {
       userAgent.push(`Node.js/${process.version.slice(1)}`, `(${process.platform}; ${process.arch})`);
+      const shell = process.env.SHELL?.split('/').pop() || 'unknown';
+      userAgent.push(`shell/${shell}`);
+      if (process.versions.yarn) {
+        userAgent.push(`yarn/${process.versions.yarn}`);
+      }
+      if (process.versions.npm) {
+        userAgent.push(`npm/${process.versions.npm}`);
+      }
     } else {
       userAgent.push(window.navigator.userAgent);
     }
     if (config.caller) {
       userAgent.push(`caller/${config.caller}`);
     }
+
     Object.entries(packages).forEach(([key, value]) => userAgent.push(`${key}/${value}`));
+    userAgent.push(`is_ci/${env.isCI()}`);
 
     return userAgent.join(' ');
   }
