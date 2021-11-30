@@ -12,7 +12,7 @@ import getConfiguration, { ConfigurationType } from '../../config';
  */
 /* istanbul ignore next */
 export default async (env: string, ...args: string[]): Promise<void> => {
-  const config = await getConfiguration(ConfigurationType.Jest, Environment.Test, 'test');
+  const config = await getConfiguration(ConfigurationType.Jest, Environment.Test, false);
   const runArgs: string[] = [...args];
 
   runArgs.push('--config', JSON.stringify(config));
