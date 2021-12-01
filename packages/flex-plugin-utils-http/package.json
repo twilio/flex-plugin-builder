@@ -37,7 +37,7 @@
     "test:watch": "cd ../.. && jest packages/flex-plugin-utils-http --watch --color"
   },
   "dependencies": {
-    "axios": "^0.21.4",
+    "axios": "^0.24.0",
     "axios-cache-adapter": "^2.7.3",
     "flex-plugins-utils-env": "4.2.2",
     "flex-dev-utils": "4.2.2",
