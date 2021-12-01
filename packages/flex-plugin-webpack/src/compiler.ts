@@ -74,17 +74,20 @@ export default (
         });
       });
 
-      ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).receive.tap('afterTSCheck', (diagnostics, lints) => {
-        const allMsgs = [...diagnostics, ...lints];
-        const format = (issue: Issue) => `${issue.file}\n${typescriptFormatter(issue)}`;
+      ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).receive.tap(
+        'afterTSCheck',
+        (diagnostics: Issue[], lints: Issue[]) => {
+          const allMsgs = [...diagnostics, ...lints];
+          const format = (issue: Issue) => `${issue.file}\n${typescriptFormatter(issue)}`;
 
-        if (tsMessagesResolver) {
-          tsMessagesResolver({
-            errors: allMsgs.filter((msg) => msg.severity === 'error').map(format),
-            warnings: allMsgs.filter((msg) => msg.severity === 'warning').map(format),
-          });
-        }
-      });
+          if (tsMessagesResolver) {
+            tsMessagesResolver({
+              errors: allMsgs.filter((msg) => msg.severity === 'error').map(format),
+              warnings: allMsgs.filter((msg) => msg.severity === 'warning').map(format),
+            });
+          }
+        },
+      );
     }
 
     // invalid is `bundle invalidated` and is invoked when files are modified in dev-server.

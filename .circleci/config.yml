@@ -273,7 +273,7 @@ jobs:
       - cmd_run-build
       - when:
           condition:
-            equal: [<< parameters.node-version >>, "14.16"]
+            equal: [<< parameters.node-version >>, "14.18.1"]
           steps:
             - cmd_codecov
 
@@ -285,18 +285,18 @@ workflows:
           matrix:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
-              node-version: ["14.17.1"]
+              node-version: ["14.18.1"]
       - job_e2e-test-win:
           matrix:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
               shell: ["bash.exe"]
-              node-version: ["14.17.1"]
+              node-version: ["14.18.1"]
       - job_e2e-test-macos:
           matrix:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
-              node-version: ["14.17.1"]
+              node-version: ["14.18.1"]
               npm-version: ["6.14.14"]
 
   workflow_publisher:
@@ -315,11 +315,11 @@ workflows:
           matrix:
             parameters:
               shell: ["bash.exe", "powershell.exe"]
-              node-version: ["12.21", "14.16", "16.5"]
+              node-version: ["12.22", "14.18.1", "16.13"]
       - job_pr-validator-node:
           matrix:
             parameters:
-              node-version: ["12.21", "14.16", "16.5"]
+              node-version: ["12.22", "14.18.1", "16.13"]
           post-steps:
             - cmd_slack-notification-error:
                 text: "$CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}*."
@@ -347,7 +347,7 @@ workflows:
           matrix:
             parameters:
               package_version: ["latest"]
-              node-version: ["14.17.1"]
+              node-version: ["14.18.1"]
           post-steps:
             - cmd_slack-notification-error:
                 text: "nightly E2E tests failed on Linux."
@@ -355,7 +355,7 @@ workflows:
           matrix:
             parameters:
               package_version: ["latest"]
-              node-version: ["14.17.1"]
+              node-version: ["14.18.1"]
               npm-version: ["6.14.14"]
           post-steps:
             - cmd_slack-notification-error:
@@ -365,7 +365,7 @@ workflows:
             parameters:
               package_version: ["latest"]
               shell: ["bash.exe"]
-              node-version: ["14.17.1"]
+              node-version: ["14.18.1"]
           post-steps:
             - cmd_slack-notification-error:
                 text: "nightly E2E tests failed on Windows."

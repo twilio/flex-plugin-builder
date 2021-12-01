@@ -73,6 +73,9 @@ export default class Http {
       };
     }
     if (config.setUserAgent) {
+      if (!axiosConfig.headers) {
+        axiosConfig.headers = {};
+      }
       axiosConfig.headers[Http.UserAgent] = Http.getUserAgent(config);
     }
     this.client = axios.create(axiosConfig);
