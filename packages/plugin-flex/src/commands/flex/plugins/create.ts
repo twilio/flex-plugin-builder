@@ -2,6 +2,7 @@ import { baseCommands } from '@twilio/cli-core';
 import CreateFlexPlugin from 'create-flex-plugin';
 import { flags } from '@oclif/command';
 import { Options } from 'yargs';
+import { TwilioCliError } from 'flex-dev-utils';
 
 import { createDescription } from '../../../utils/general';
 import { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
@@ -80,10 +81,27 @@ export default class FlexPluginsCreate extends baseCommands.TwilioClientCommand 
   async run(): Promise<void> {
     // @ts-ignore
     const { flags: instanceFlags, args } = this.parse(FlexPluginsCreate);
+    if (instanceFlags['flexui1.0'] && instanceFlags['flexui2.0']) {
+      throw new TwilioCliError(
+        'Error message: Incompatible parameters passed. Pass either --flexui1.0 or --flexui2.0 to create a plugin compatible with the Flex UI version',
+      );
+    }
+
     const createFlexPlugin = new CreateFlexPlugin();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const scriptArgs = FlexPluginsCreate.toArgv(instanceFlags as any);
     scriptArgs.unshift(args.name);
+
+    // Make the flag readable to the parser
+    if (scriptArgs.includes('--flexui2.0')) {
+      scriptArgs.splice(scriptArgs.indexOf('--flexui2.0'), 1);
+      scriptArgs.push('--flexui2', 'true');
+    }
+
+    // Remove this flag if present since it is just the default functionality
+    if (scriptArgs.includes('--flexui1.0')) {
+      scriptArgs.splice(scriptArgs.indexOf('--flexui1.0'), 1);
+    }
 
     await createFlexPlugin.parse(...scriptArgs);
   }
