@@ -73,6 +73,7 @@ export default class Http {
       };
     }
     if (config.setUserAgent) {
+      /* istanbul ignore next */
       if (!axiosConfig.headers) {
         axiosConfig.headers = {};
       }
