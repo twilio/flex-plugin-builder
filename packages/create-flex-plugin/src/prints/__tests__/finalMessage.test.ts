@@ -13,6 +13,7 @@ describe('finalMessage', () => {
     pluginScriptsVersion: '1.2.3-plugin-script',
     pluginClassName: 'PluginFinalMessage',
     pluginNamespace: 'PluginFinalMessage',
+    flexui2: false,
   };
 
   beforeEach(() => {
