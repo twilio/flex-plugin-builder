@@ -1,5 +1,5 @@
 import { ConfigurationsClient, ConfiguredPluginsClient, ReleasesClient } from 'flex-plugins-api-client';
-import { TwilioError, TwilioApiError } from 'flex-plugins-utils-exception';
+import { TwilioError, TwilioApiError } from 'flex-dev-utils/dist/errors';
 
 import { Script } from '.';
 import { internalDescribeConfiguration } from './describeConfiguration';

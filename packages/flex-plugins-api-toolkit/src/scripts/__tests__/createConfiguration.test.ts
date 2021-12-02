@@ -11,7 +11,7 @@ import {
   ReleaseResource,
   ReleasesClient,
 } from 'flex-plugins-api-client';
-import { TwilioError } from 'flex-plugins-utils-exception';
+import { TwilioError } from 'flex-dev-utils/dist/errors';
 
 import createConfigurationScript from '../createConfiguration';
 

@@ -1,4 +1,4 @@
-import { Region } from 'flex-plugins-utils-env';
+import { Region } from 'flex-dev-utils/dist/env';
 import { OptionalHttpConfig } from 'flex-plugin-utils-http';
 
 import ServiceHttpClient from './serviceHttpClient';

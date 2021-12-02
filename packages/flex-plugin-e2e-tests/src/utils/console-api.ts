@@ -1,7 +1,7 @@
 import { stringify } from 'querystring';
 
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { logger } from 'flex-plugins-utils-logger';
+import { logger } from 'flex-dev-utils';
 
 const csrfTokenRegex = new RegExp(/name="CSRF"\svalue="(.*?)"/m);
 const twVisitorCookieRegex = new RegExp(/tw-visitor=(.*?);/m);
