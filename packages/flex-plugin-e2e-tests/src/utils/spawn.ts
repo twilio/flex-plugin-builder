@@ -1,6 +1,6 @@
 import { ChildProcessWithoutNullStreams, spawn, SpawnOptionsWithoutStdio } from 'child_process';
 
-import { logger } from 'flex-plugins-utils-logger';
+import { logger } from 'flex-dev-utils';
 
 import { homeDir, testParams } from '../core';
 

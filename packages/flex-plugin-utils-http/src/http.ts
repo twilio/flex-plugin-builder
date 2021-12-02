@@ -1,9 +1,8 @@
 import qs from 'qs';
 import { setupCache } from 'axios-cache-adapter';
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { env } from 'flex-plugins-utils-env';
-import logger from 'flex-plugins-utils-logger/dist/lib/logger';
-import { TwilioApiError } from 'flex-plugins-utils-exception';
+import { env, logger } from 'flex-dev-utils';
+import { TwilioApiError } from 'flex-dev-utils/dist/errors';
 
 type RequestInterceptor = (req: AxiosRequestConfig) => Promise<AxiosRequestConfig>;
 interface Concurrency {
