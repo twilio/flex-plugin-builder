@@ -74,29 +74,15 @@ export default class FlexPluginsCreate extends baseCommands.TwilioClientCommand 
   }
 
   /**
-   *
+   * Make sure user passed a valid combination arguement
    * @param argv the argv
-   * @returns the edited argv array
    */
-  static editArgv(argv: string[]): string[] {
-    if (argv.includes('--flexui2.0') && argv.includes('--flexui1.0')) {
+  static checkArgv(argv: string[]): void {
+    if (argv.includes('--flexui2') && argv.includes('--flexui1')) {
       throw new TwilioCliError(
-        'Error message: Incompatible parameters passed. Pass either --flexui1.0 or --flexui2.0 to create a plugin compatible with the Flex UI version',
+        'Error message: Incompatible parameters passed. Pass either --flexui1 or --flexui2 to create a plugin compatible with the Flex UI version',
       );
     }
-
-    // Make the flag readable to the parser
-    if (argv.includes('--flexui2.0')) {
-      argv.splice(argv.indexOf('--flexui2.0'), 1);
-      argv.push('--flexui2', 'true');
-    }
-
-    // Remove this flag if passed since it represents the default functionality
-    if (argv.includes('--flexui1.0')) {
-      argv.splice(argv.indexOf('--flexui1.0'), 1);
-    }
-
-    return argv;
   }
 
   /**
@@ -112,8 +98,9 @@ export default class FlexPluginsCreate extends baseCommands.TwilioClientCommand 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const scriptArgs = FlexPluginsCreate.toArgv(instanceFlags as any);
     scriptArgs.unshift(args.name);
+    FlexPluginsCreate.checkArgv(scriptArgs);
 
-    await createFlexPlugin.parse(...FlexPluginsCreate.editArgv(scriptArgs));
+    await createFlexPlugin.parse(...scriptArgs);
   }
 
   async runCommand(): Promise<void> {

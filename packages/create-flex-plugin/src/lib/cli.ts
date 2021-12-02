@@ -74,11 +74,11 @@ export default class CLI {
     version: {
       alias: 'v',
     },
-    'flexui1.0': {
+    flexui1: {
       type: 'boolean',
       describe: 'Creates a plugin compatible with Flex UI major version 1.0',
     },
-    'flexui2.0': {
+    flexui2: {
       type: 'boolean',
       describe: 'Creates a plugin compatible with Flex UI major version 2.0',
     },
