@@ -77,10 +77,12 @@ export default class CLI {
     flexui1: {
       type: 'boolean',
       describe: 'Creates a plugin compatible with Flex UI major version 1.0',
+      conflicts: 'flexui2',
     },
     flexui2: {
       type: 'boolean',
       describe: 'Creates a plugin compatible with Flex UI major version 2.0',
+      conflicts: 'flexui1',
     },
   };
 

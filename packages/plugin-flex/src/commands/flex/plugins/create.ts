@@ -2,7 +2,6 @@ import { baseCommands } from '@twilio/cli-core';
 import CreateFlexPlugin from 'create-flex-plugin';
 import { flags } from '@oclif/command';
 import { Options } from 'yargs';
-import { TwilioCliError } from 'flex-dev-utils';
 
 import { createDescription } from '../../../utils/general';
 import { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
@@ -74,18 +73,6 @@ export default class FlexPluginsCreate extends baseCommands.TwilioClientCommand 
   }
 
   /**
-   * Make sure user passed a valid combination arguement
-   * @param argv the argv
-   */
-  static checkArgv(argv: string[]): void {
-    if (argv.includes('--flexui2') && argv.includes('--flexui1')) {
-      throw new TwilioCliError(
-        'Error message: Incompatible parameters passed. Pass either --flexui1 or --flexui2 to create a plugin compatible with the Flex UI version',
-      );
-    }
-  }
-
-  /**
    * Main script to run
    *
    * @returns {Promise<void>}
@@ -98,7 +85,6 @@ export default class FlexPluginsCreate extends baseCommands.TwilioClientCommand 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const scriptArgs = FlexPluginsCreate.toArgv(instanceFlags as any);
     scriptArgs.unshift(args.name);
-    FlexPluginsCreate.checkArgv(scriptArgs);
 
     await createFlexPlugin.parse(...scriptArgs);
   }
