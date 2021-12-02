@@ -187,5 +187,53 @@ describe('create-flex-plugin', () => {
         expect.anything(),
       );
     });
+
+    it('should use typescript 2.0 template', async () => {
+      const config = {
+        name: pluginName,
+        accountSid,
+        install: true,
+        typescript: true,
+        targetDirectory: '',
+        flexui2: true,
+      } as createFlexPluginScripts.FlexPluginArguments;
+
+      const copyTemplateDir = jest.spyOn(fsScripts, 'copyTemplateDir').mockReturnThis();
+      jest.spyOn(fs, 'renameSync').mockReturnThis();
+      const downloadFromGitHub = jest.spyOn(commands, 'downloadFromGitHub').mockReturnThis();
+
+      await createFlexPluginScripts._scaffold(config);
+      expect(downloadFromGitHub).not.toHaveBeenCalled();
+      expect(copyTemplateDir).toHaveBeenCalledTimes(2);
+      expect(copyTemplateDir).toHaveBeenCalledWith(
+        expect.toMatchPathContaining('templates/ts2'),
+        expect.anything(),
+        expect.anything(),
+      );
+    });
+
+    it('should use javascript 2.0 template', async () => {
+      const config = {
+        name: pluginName,
+        accountSid,
+        install: true,
+        typescript: false,
+        targetDirectory: '',
+        flexui2: true,
+      } as createFlexPluginScripts.FlexPluginArguments;
+
+      const copyTemplateDir = jest.spyOn(fsScripts, 'copyTemplateDir').mockReturnThis();
+      jest.spyOn(fs, 'renameSync').mockReturnThis();
+      const downloadFromGitHub = jest.spyOn(commands, 'downloadFromGitHub').mockReturnThis();
+
+      await createFlexPluginScripts._scaffold(config);
+      expect(downloadFromGitHub).not.toHaveBeenCalled();
+      expect(copyTemplateDir).toHaveBeenCalledTimes(2);
+      expect(copyTemplateDir).toHaveBeenCalledWith(
+        expect.toMatchPathContaining('templates/js2'),
+        expect.anything(),
+        expect.anything(),
+      );
+    });
   });
 });
