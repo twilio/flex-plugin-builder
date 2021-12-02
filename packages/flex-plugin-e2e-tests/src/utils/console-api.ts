@@ -85,7 +85,7 @@ export class ConsoleAPI {
 
     const twVisitorCookie = ConsoleAPI.getValueFromResponse(
       new RegExp(twVisitorCookieRegex),
-      loginResponse.headers[SET_COOKIE].join(),
+      loginResponse.headers?.[SET_COOKIE]?.join() || '',
       `${Cookie.visitor} cookie`,
     );
 
@@ -105,7 +105,7 @@ export class ConsoleAPI {
       }),
     });
 
-    const loginPasswordCookies = loginPasswordResponse.headers[SET_COOKIE].join();
+    const loginPasswordCookies = loginPasswordResponse.headers?.[SET_COOKIE]?.join() || '';
 
     const serverIdentityCookie = ConsoleAPI.getValueFromResponse(
       new RegExp(serverIdentityCookieRegex),

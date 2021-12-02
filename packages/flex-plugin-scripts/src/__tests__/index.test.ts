@@ -1,13 +1,11 @@
 import { logger } from 'flex-dev-utils';
 import * as fsScripts from 'flex-dev-utils/dist/fs';
-import { render as markedRender } from 'flex-dev-utils/dist/marked';
 import * as exit from 'flex-dev-utils/dist/exit';
 
 import index from '..';
 
 jest.mock('flex-dev-utils/dist/spawn');
 jest.mock('flex-dev-utils/dist/logger');
-jest.mock('flex-dev-utils/dist/marked');
 
 /* eslint-disable */
 const { spawn } = require('flex-dev-utils/dist/spawn');
@@ -66,17 +64,6 @@ describe('index', () => {
     expect(runExit).toHaveBeenCalledWith(0, ['build', 'foo']);
     expect(spawn).toHaveBeenCalledTimes(1);
     assertSpawn([expect.stringContaining('build'), 'foo', disallowVersioningFlag, '--name', pluginName, runFlag]);
-  });
-
-  it('should render doc', async () => {
-    spawn.mockResolvedValue({ exitCode: 0 });
-
-    await index('build', '--help');
-
-    expect(runExit).toHaveBeenCalledTimes(1);
-    expect(runExit).toHaveBeenCalledWith(0);
-    expect(spawn).not.toHaveBeenCalled();
-    expect(markedRender).toHaveBeenCalledTimes(1);
   });
 
   it('should call exit', async () => {
