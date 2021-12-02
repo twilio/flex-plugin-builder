@@ -95,8 +95,8 @@ export const _startDevServer = async (
   const { type, port, remoteAll } = options;
   const isJavaScriptServer = type === WebpackType.JavaScript;
   const isStaticServer = type === WebpackType.Static;
-  const config = await getConfiguration(ConfigurationType.Webpack, Environment.Development, type);
-  const devConfig = await getConfiguration(ConfigurationType.DevServer, Environment.Development, type);
+  const config = await getConfiguration(ConfigurationType.Webpack, Environment.Development, true, type);
+  const devConfig = await getConfiguration(ConfigurationType.DevServer, Environment.Development, true, type);
   const localPlugins = plugins.filter((p) => !p.remote);
   const pluginRequest = {
     local: localPlugins.map((p) => p.name),
