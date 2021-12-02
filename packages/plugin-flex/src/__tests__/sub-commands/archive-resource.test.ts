@@ -60,7 +60,7 @@ describe('SubCommands/ArchiveResource', () => {
 
     expect(doArchive).toHaveBeenCalledTimes(1);
     expect(getName).toHaveBeenCalledTimes(2);
-    expect(getResourceType).toHaveBeenCalledTimes(1);
+    expect(getResourceType).toHaveBeenCalledTimes(2);
     expect(confirm).toHaveBeenCalledTimes(1);
     expect(exit).not.toHaveBeenCalled();
 
@@ -79,7 +79,7 @@ describe('SubCommands/ArchiveResource', () => {
 
     expect(doArchive).not.toHaveBeenCalled();
     expect(getName).toHaveBeenCalledTimes(2);
-    expect(getResourceType).toHaveBeenCalledTimes(1);
+    expect(getResourceType).toHaveBeenCalledTimes(2);
     expect(confirm).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(0);

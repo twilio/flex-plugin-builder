@@ -3,11 +3,7 @@ import {
   ServiceListInstance,
   ServiceListInstanceCreateOptions,
 } from 'twilio/lib/rest/serverless/v1/service';
-import {
-  BuildInstance,
-  BuildListInstance,
-  BuildListInstanceCreateOptions,
-} from 'twilio/lib/rest/serverless/v1/service/build';
+import { BuildInstance, BuildListInstanceCreateOptions } from 'twilio/lib/rest/serverless/v1/service/build';
 import { TwilioApiError, Logger } from 'flex-dev-utils';
 import { EnvironmentInstance } from 'twilio/lib/rest/serverless/v1/service/environment';
 
@@ -154,6 +150,30 @@ export default class ServerlessClient {
     const { build } = await this.getBuildAndEnvironment(serviceSid, pluginName);
 
     return build;
+  }
+
+  /**
+   * Deletes the {@link EnvironmentInstance}
+   * @param serviceSid  the service sid
+   * @param pluginName  the plugin name
+   */
+  async deleteEnvironment(serviceSid: string, pluginName: string): Promise<boolean> {
+    return this.client
+      .get(serviceSid)
+      .fetch()
+      .then(async (service) => {
+        if (!service) {
+          return Promise.resolve(false);
+        }
+
+        const list = await this.client.get(serviceSid).environments.list();
+        const environment = list.find((e) => e.uniqueName === pluginName);
+        if (!environment || !environment.sid) {
+          return Promise.resolve(false);
+        }
+
+        return service.environments().get(environment.sid).remove();
+      });
   }
 
   /**

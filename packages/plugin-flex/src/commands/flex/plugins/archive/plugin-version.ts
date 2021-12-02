@@ -95,6 +95,7 @@ export default class FlexPluginsArchivePluginVersion extends ArchiveResource<Plu
 
     // TODO: remove Environment when the other ticket is done
     if (request.assetVersions?.length === 0 && request.functionVersions?.length === 0) {
+      // TODO: delete environment
       return;
     }
 
