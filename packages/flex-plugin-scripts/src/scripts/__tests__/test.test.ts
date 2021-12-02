@@ -4,7 +4,7 @@ import * as testScripts from '../test';
 import * as innerTestScript from '../test/test';
 import * as prints from '../../prints';
 
-jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/logger/lib/logger');
 jest.mock('flex-dev-utils/dist/env');
 jest.mock('../../prints/jestNotInstalled');
 

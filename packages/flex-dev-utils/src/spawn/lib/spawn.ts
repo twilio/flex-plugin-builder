@@ -2,7 +2,8 @@
 import os from 'os';
 
 import execa from 'execa';
-import { logger, singleLineString } from 'flex-plugins-utils-logger';
+
+import { logger, singleLineString } from '../../logger/';
 
 export const DefaultOptions = { stdio: 'inherit' };
 

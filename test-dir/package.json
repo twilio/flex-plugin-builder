@@ -1,0 +1,17 @@
+{
+  "name": "plugin-test",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "postinstall": "flex-plugin pre-script-check"
+  },
+  "dependencies": {
+    "flex-plugin-scripts": "",
+    "react": "16.5.2",
+    "react-dom": "16.5.2"
+  },
+  "devDependencies": {
+    "@twilio/flex-ui": "",
+    "react-test-renderer": "16.5.2"
+  }
+}
