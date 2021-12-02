@@ -221,7 +221,7 @@ jobs:
       CI: ""
     executor:
       name: node
-      tag: "lts"
+      tag: "14.18.1"
     steps:
       - checkout
       - cmd_install-prerequisites
