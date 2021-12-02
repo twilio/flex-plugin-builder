@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
 import { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { env } from 'flex-plugins-utils-env';
-import { TwilioApiError } from 'flex-plugins-utils-exception';
+import { env } from 'flex-dev-utils';
+import { TwilioApiError } from 'flex-dev-utils/dist/errors';
 import * as fsScripts from 'flex-dev-utils/dist/fs';
 
 import HttpClient, { HttpConfig } from '../http';

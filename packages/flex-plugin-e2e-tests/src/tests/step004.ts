@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unused-modules */
-import { logger } from 'flex-plugins-utils-logger';
+import { logger } from 'flex-dev-utils';
 
 import { TestSuite, TestParams } from '../core';
 import { spawn, logResult } from '../utils';

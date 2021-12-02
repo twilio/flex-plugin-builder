@@ -1,6 +1,6 @@
 import upperFirst from 'lodash.upperfirst';
-import { Region, env } from 'flex-plugins-utils-env';
-import logger from 'flex-plugins-utils-logger/dist/lib/logger';
+import { Region } from 'flex-dev-utils/dist/env';
+import { env, logger } from 'flex-dev-utils';
 import { HttpClient } from 'flex-plugin-utils-http';
 
 export interface Pagination {
