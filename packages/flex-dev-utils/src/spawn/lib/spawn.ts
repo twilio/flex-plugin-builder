@@ -3,7 +3,7 @@ import os from 'os';
 
 import execa from 'execa';
 
-import { logger, singleLineString } from '../../logger/';
+import { logger, singleLineString } from '../../logger';
 
 export const DefaultOptions = { stdio: 'inherit' };
 
