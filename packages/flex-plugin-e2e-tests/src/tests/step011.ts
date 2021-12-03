@@ -24,7 +24,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   plugin2.version = semver.inc(oldVersion, 'patch') as string;
   await spawn(
     'twilio',
-    ['flex:plugins:deploy', '--changelog', `"${plugin2.changelog}"`, '--patch', ...config.regionFlag],
+    ['flex:plugins:deploy', '--changelog', `"${plugin2.changelog}"`, '--patch', '-l', 'debug', ...config.regionFlag],
     {
       cwd: plugin2.dir,
     },
@@ -35,6 +35,8 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     'flex:plugins:release',
     '--plugin',
     `${plugin2.name}@${plugin2.version}`,
+    '-l',
+    'debug',
     ...config.regionFlag,
   ]);
 

@@ -29,7 +29,7 @@ const testSuite: TestSuite = async ({ scenario }: TestParams): Promise<void> => 
     countMatches: true,
   });
 
-  const result = await spawn('twilio', ['flex:plugins:build'], { cwd: plugin.dir });
+  const result = await spawn('twilio', ['flex:plugins:build', '-l', 'debug'], { cwd: plugin.dir });
   logResult(result);
 
   assertion.not.dirIsEmpty([plugin.dir, 'build']);

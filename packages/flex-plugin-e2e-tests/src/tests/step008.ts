@@ -11,6 +11,8 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
     'flex:plugins:release',
     '--plugin',
     `${plugin.name}@${plugin.version}`,
+    '-l',
+    'debug',
     ...config.regionFlag,
   ]);
   logResult(result);
