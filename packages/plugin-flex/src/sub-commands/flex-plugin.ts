@@ -43,14 +43,6 @@ interface FlexPluginOption {
 }
 
 const flexPluginScripts = 'flex-plugin-scripts';
-const flexUI = 'flex-ui';
-const react = 'react';
-const reactDom = 'react-dom';
-const flexPluginsApiToolkit = 'flex-plugins-api-toolkit';
-const twilioCLI = '@twilio/cli-core';
-const twilioCliFlexPlugin = 'twilio-cli-flex-plugin';
-const cli = 'cli';
-const isTS = 'it_ts';
 
 export type ConfigData = typeof services.config.ConfigData;
 export type SecureStorage = typeof services.secureStorage.SecureStorage;
@@ -408,20 +400,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       }
     }
 
-    const pluginServiceOptions: PluginServiceHttpOption = {
-      setUserAgent: true,
-      caller: 'twilio-cli',
-      packages: {
-        [flexPluginScripts]: FlexPlugin.getPackageVersion(flexPluginScripts),
-        [cli]: FlexPlugin.getPackageVersion(twilioCLI),
-        [twilioCliFlexPlugin]: FlexPlugin.getPackageVersion(this.pluginRootDir),
-        [isTS]: getPaths().app.isTSProject().toString(),
-        [react]: FlexPlugin.getPackageVersion(react),
-        [reactDom]: FlexPlugin.getPackageVersion(reactDom),
-        [flexPluginsApiToolkit]: FlexPlugin.getPackageVersion(flexPluginsApiToolkit),
-        [flexUI]: FlexPlugin.getPackageVersion(`@twilio/${flexUI}`),
-      },
-    };
+    const pluginServiceOptions = this.getPluginServiceOptions();
     const flexConfigOptions: FlexConfigurationClientOptions = {
       accountSid: this.currentProfile.accountSid,
       username: this.twilioApiClient.username,
@@ -676,5 +655,31 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     argv = this.argv,
   ): Parser.Output<F, A> {
     return parser(super.parse)(options, argv);
+  }
+
+  /**
+   * Generates the {@link PluginServiceHttpOption} options
+   * @private
+   */
+  private getPluginServiceOptions(): PluginServiceHttpOption {
+    const packages = {
+      [flexPluginScripts]: FlexPlugin.getPackageVersion(flexPluginScripts),
+      cli: FlexPlugin.getPackageVersion('@twilio/cli-core'),
+      'twilio-cli-flex-plugin': FlexPlugin.getPackageVersion(this.pluginRootDir),
+      react: FlexPlugin.getPackageVersion('react'),
+      'react-dom': FlexPlugin.getPackageVersion('react-dom'),
+      'flex-plugins-api-toolkit': FlexPlugin.getPackageVersion('flex-plugins-api-toolkit'),
+      'flex-ui': FlexPlugin.getPackageVersion(`@twilio/flex-ui`),
+      isTs: 'unknown',
+    };
+    if (this.opts.runInDirectory) {
+      packages.isTs = getPaths().app.isTSProject().toString();
+    }
+
+    return {
+      setUserAgent: true,
+      caller: 'twilio-cli',
+      packages,
+    };
   }
 }
