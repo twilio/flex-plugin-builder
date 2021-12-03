@@ -35,6 +35,7 @@ export const promisifiedSpawn = async (
       shell: true,
     };
     const spawnOptions = { ...defaultOptions, ...options };
+    args.push('-l', 'debug');
     logger.info(`Running spawn command: **${cmd} ${args.join(' ').replace(/-/g, '\\-')}**`);
     logger.debug(`Spawn options are **${JSON.stringify(spawnOptions)}**`);
 
