@@ -4,7 +4,8 @@ import createTest from '../../../../framework';
 import FlexPluginsArchivePlugin from '../../../../../commands/flex/plugins/archive/plugin';
 
 describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
-  const serviceSid = 'ZE00000000000000000000000000000000';
+  const serviceSid = 'ZS00000000000000000000000000000000';
+  const environment = { sid: 'ZE00000000000000000000000000000000' };
   const plugin: Plugin = {
     sid: 'FP00000000000000000000000000000',
     name: 'plugin-name',
@@ -17,6 +18,7 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
   const archivePlugin = jest.fn();
   const getServerlessSid = jest.fn();
   const deleteEnvironment = jest.fn();
+  const getEnvironment = jest.fn();
 
   const mockPluginsApiToolkit = (cmd: FlexPluginsArchivePlugin) => {
     // @ts-ignore
@@ -26,7 +28,7 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
     jest.spyOn(cmd, 'pluginsApiToolkit', 'get').mockReturnValue({ archivePlugin });
 
     // @ts-ignore
-    jest.spyOn(cmd, 'serverlessClient', 'get').mockReturnValue({ deleteEnvironment });
+    jest.spyOn(cmd, 'serverlessClient', 'get').mockReturnValue({ deleteEnvironment, getEnvironment });
   };
   const createCmd = async () => createTest(FlexPluginsArchivePlugin)('--name', plugin.name);
 
@@ -40,6 +42,7 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
     mockPluginsApiToolkit(cmd);
 
     getServerlessSid.mockResolvedValue(serviceSid);
+    getEnvironment.mockResolvedValue(environment);
 
     const result = await cmd.doArchive();
 
