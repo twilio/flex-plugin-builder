@@ -3,7 +3,7 @@ import * as fsScripts from 'flex-dev-utils/dist/fs';
 
 import * as run from '../run';
 
-jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/logger/lib/logger');
 
 describe('run', () => {
   const runFlag = '--run-script';

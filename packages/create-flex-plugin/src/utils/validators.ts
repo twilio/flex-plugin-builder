@@ -1,4 +1,4 @@
-import { prompt } from 'flex-dev-utils/dist/inquirer';
+import { prompt } from 'flex-dev-utils';
 import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
 import { isValidUrl, validateAccountSid, validateGitHubUrl } from 'flex-dev-utils/dist/validators';
 

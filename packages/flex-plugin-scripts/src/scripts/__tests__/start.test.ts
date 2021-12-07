@@ -13,7 +13,7 @@ import * as startScripts from '../start';
 import * as configScripts from '../../config';
 import * as prints from '../../prints';
 
-jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/logger/lib/logger');
 jest.mock('flex-dev-utils/dist/fs');
 jest.mock('flex-dev-utils/dist/urls');
 jest.mock('flex-dev-utils/dist/env');

@@ -23,7 +23,7 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
   plugin.version = semver.inc(resource?.version || '0.0.0', 'patch') as string;
   const result = await spawn(
     'twilio',
-    ['flex:plugins:deploy', '--changelog', `"${plugin.changelog}"`, '--patch', ...config.regionFlag],
+    ['flex:plugins:deploy', '--changelog', `"${plugin.changelog}"`, '--patch', '-l', 'debug', ...config.regionFlag],
     {
       cwd: plugin.dir,
     },

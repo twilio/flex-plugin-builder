@@ -1,6 +1,6 @@
 import env from 'flex-plugins-utils-env';
 
-import logger from './logger';
+import { logger } from '../../logger';
 
 export type Callback<R> = () => Promise<R>;
 

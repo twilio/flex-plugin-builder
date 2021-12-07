@@ -1,5 +1,4 @@
-import { logger, boxen } from 'flex-dev-utils';
-import { multilineString } from 'flex-dev-utils/dist/strings';
+import { logger, boxen, multilineString } from 'flex-dev-utils';
 
 import { FlexPluginArguments } from '../lib/create-flex-plugin';
 

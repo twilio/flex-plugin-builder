@@ -7,7 +7,7 @@ import * as prints from '../../prints';
 import * as preScriptCheck from '../pre-script-check';
 import * as parser from '../../utils/parser';
 
-jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/logger/lib/logger');
 jest.mock('../../prints/unbundledReactMismatch');
 jest.mock('../../prints/expectedDependencyNotFound');
 jest.mock('../../prints/typescriptNotInstalled');

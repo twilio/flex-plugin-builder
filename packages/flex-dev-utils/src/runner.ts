@@ -1,4 +1,4 @@
-import logger from './logger';
+import { logger } from './logger';
 import { FlexPluginError } from './errors';
 
 // eslint-disable-next-line import/no-unused-modules

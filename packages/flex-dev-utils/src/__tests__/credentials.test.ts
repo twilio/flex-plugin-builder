@@ -3,12 +3,12 @@ import * as keychain from '../keychain';
 import { FlexPluginError } from '../errors';
 
 jest.mock('../logger');
-jest.mock('../inquirer');
+jest.mock('../questions');
 jest.mock('../validators');
 jest.mock('../keychain');
 
 /* eslint-disable */
-const inquirer = require('../inquirer');
+const questions = require('../questions');
 const validators = require('../validators');
 /* eslint-enable */
 
@@ -207,7 +207,7 @@ describe('credentials', () => {
 
       const creds = await credentials.getCredential();
 
-      expect(inquirer.prompt).not.toHaveBeenCalled();
+      expect(questions.prompt).not.toHaveBeenCalled();
       expect(creds).toEqual({
         username: accountSid,
         password: authToken,
@@ -218,7 +218,7 @@ describe('credentials', () => {
       jest.spyOn(credentials, '_findCredential').mockResolvedValue(null);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      jest.spyOn(inquirer, 'prompt').mockImplementation((question: any) => {
+      jest.spyOn(questions, 'prompt').mockImplementation((question: any) => {
         if (question.type === 'input') {
           return 'promptAccountSid';
         }
@@ -227,7 +227,7 @@ describe('credentials', () => {
 
       const creds = await credentials.getCredential();
 
-      expect(inquirer.prompt).toHaveBeenCalledTimes(2);
+      expect(questions.prompt).toHaveBeenCalledTimes(2);
       expect(creds).toEqual({
         username: 'promptAccountSid',
         password: 'promptAuthToken',
@@ -269,7 +269,7 @@ describe('credentials', () => {
       const cred = await credentials._findCredential(apiKey);
 
       expect(cred).toEqual(credential2);
-      expect(inquirer.prompt).not.toHaveBeenCalled();
+      expect(questions.prompt).not.toHaveBeenCalled();
     });
 
     it('should return the passed accountSid if match found', async () => {
@@ -278,7 +278,7 @@ describe('credentials', () => {
       const cred = await credentials._findCredential(accountSid1);
 
       expect(cred).toEqual(credential1);
-      expect(inquirer.prompt).not.toHaveBeenCalled();
+      expect(questions.prompt).not.toHaveBeenCalled();
     });
 
     it('should return null if credentials is empty', async () => {
@@ -286,7 +286,7 @@ describe('credentials', () => {
 
       const cred = await credentials._findCredential();
 
-      expect(inquirer.prompt).not.toHaveBeenCalled();
+      expect(questions.prompt).not.toHaveBeenCalled();
       expect(cred).toBeNull();
     });
 
@@ -295,7 +295,7 @@ describe('credentials', () => {
 
       const cred = await credentials._findCredential();
 
-      expect(inquirer.prompt).not.toHaveBeenCalled();
+      expect(questions.prompt).not.toHaveBeenCalled();
       expect(cred).toEqual(credential);
     });
 
@@ -304,14 +304,14 @@ describe('credentials', () => {
 
       const cred = await credentials._findCredential();
 
-      expect(inquirer.prompt).not.toHaveBeenCalled();
+      expect(questions.prompt).not.toHaveBeenCalled();
       expect(cred).toBeNull();
     });
 
     it('should ask for you to choose if multiple credentials found', async () => {
       jest.spyOn(credentials, '_getService').mockResolvedValue([keyCredential, keyCredential]);
 
-      const choose = jest.spyOn(inquirer, 'choose').mockResolvedValue(accountSid);
+      const choose = jest.spyOn(questions, 'choose').mockResolvedValue(accountSid);
 
       const cred = await credentials._findCredential();
 

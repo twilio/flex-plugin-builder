@@ -9,7 +9,7 @@ import mkdirp from 'mkdirp';
 import rimRaf from 'rimraf';
 import appModule from 'app-module-path';
 
-import { confirm } from './inquirer';
+import { confirm } from './questions';
 
 const flexUI = '@twilio/flex-ui';
 const react = 'react';

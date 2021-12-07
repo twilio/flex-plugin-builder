@@ -1,10 +1,10 @@
 import { TwilioError } from 'flex-plugins-utils-exception';
 
-import FlexPluginError from '../../errors/FlexPluginError';
-import logger from '../../logger';
-import * as fs from '../../fs';
+import FlexPluginError from '../FlexPluginError';
+import { logger } from '../../../logger';
+import * as fs from '../../../fs';
 
-jest.mock('../../logger');
+jest.mock('../../../logger');
 
 describe('FlexPluginError', () => {
   beforeEach(() => {

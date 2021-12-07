@@ -1,5 +1,5 @@
-import FlexPluginError from '../../errors/FlexPluginError';
-import ValidationError from '../../errors/ValidationError';
+import FlexPluginError from '../FlexPluginError';
+import ValidationError from '../ValidationError';
 
 describe('ValidationError', () => {
   beforeEach(() => {

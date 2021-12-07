@@ -6,7 +6,7 @@ import * as preStartCheck from '../pre-start-check';
 import * as preScriptCheck from '../pre-script-check';
 import * as prints from '../../prints';
 
-jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/logger/lib/logger');
 jest.mock('../../prints/appConfigMissing');
 
 describe('PreStartCheck', () => {

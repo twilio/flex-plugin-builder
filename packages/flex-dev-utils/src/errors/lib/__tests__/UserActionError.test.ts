@@ -1,5 +1,5 @@
-import FlexPluginError from '../../errors/FlexPluginError';
-import UserActionError from '../../errors/UserActionError';
+import FlexPluginError from '../FlexPluginError';
+import UserActionError from '../UserActionError';
 
 describe('UserActionError', () => {
   const errMsg = 'the-reason';

@@ -5,7 +5,7 @@ import * as exit from 'flex-dev-utils/dist/exit';
 import index from '..';
 
 jest.mock('flex-dev-utils/dist/spawn');
-jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/logger/lib/logger');
 
 /* eslint-disable */
 const { spawn } = require('flex-dev-utils/dist/spawn');

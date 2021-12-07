@@ -6,7 +6,7 @@ import * as fsScripts from 'flex-dev-utils/dist/fs';
 import * as createFlexPluginScripts from '../create-flex-plugin';
 import * as commands from '../commands';
 
-jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/logger/lib/logger');
 jest.mock('../../prints/finalMessage');
 
 describe('create-flex-plugin', () => {
