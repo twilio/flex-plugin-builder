@@ -61,9 +61,10 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
       return await this.pluginsApiToolkit.archivePlugin({ name: this._flags.name });
     } catch (e) {
       if (instanceOf(e, TwilioApiError) && e.status === 400) {
-        return this.pluginsApiToolkit.describePlugin({
-          name: this._flags.name,
-        });
+        const serviceSid = await this.flexConfigurationClient.getServerlessSid();
+        if (serviceSid) {
+          // TODO: clean up environment?
+        }
       }
 
       throw e;

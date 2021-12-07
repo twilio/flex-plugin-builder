@@ -36,7 +36,7 @@ export default abstract class ArchiveResource<T extends Archivable> extends Flex
   async doRun(): Promise<void> {
     const name = `**${this.getName()}**`;
     const assetsRemovalMsg =
-      this.getResourceType() === 'Plugin'
+      this.getResourceType() === 'Flex Plugin'
         ? `This will remove the plugin's packages uploaded to Twilio Assets and cannot be undone. `
         : '';
     const doArchive = await confirm(
