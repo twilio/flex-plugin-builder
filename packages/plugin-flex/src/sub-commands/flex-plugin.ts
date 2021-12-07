@@ -2,7 +2,7 @@ import { join } from 'path';
 import { homedir } from 'os';
 
 import PluginsApiToolkit from 'flex-plugins-api-toolkit';
-import { checkAFileExists, getPaths, readJsonFile, writeJSONFile } from 'flex-dev-utils/dist/fs';
+import { checkAFileExists, getPaths, readJsonFile, writeJSONFile, addCWDNodeModule } from 'flex-dev-utils/dist/fs';
 import { baseCommands, services } from '@twilio/cli-core';
 import {
   PluginServiceHTTPClient,
@@ -376,6 +376,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   async run(): Promise<void> {
     await super.run();
     this.checkForUpdate();
+    addCWDNodeModule();
 
     this.logger.debug(`Using Plugins CLI version ${this.cliPkg.version}`);
     this.logger.debug(`Using Flex Plugins Config File: ${this.pluginsConfigPath}`);
