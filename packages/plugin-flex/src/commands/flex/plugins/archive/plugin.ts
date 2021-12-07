@@ -29,7 +29,10 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
       if (!serviceSid) {
         throw new TwilioApiError(20400, 'Plugin is already archived', 400);
       }
-      await this.serverlessClient.deleteEnvironment(serviceSid, this._flags.name);
+      const isDeleteSuccessful = await this.serverlessClient.deleteEnvironment(serviceSid, this._flags.name);
+      if (!isDeleteSuccessful) {
+        // TODO: let user know the cleanup was unsuccessful and to try again?
+      }
     });
 
     return plugin;
