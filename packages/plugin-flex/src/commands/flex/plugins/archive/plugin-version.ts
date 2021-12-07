@@ -94,7 +94,12 @@ export default class FlexPluginsArchivePluginVersion extends ArchiveResource<Plu
     };
 
     if (request.assetVersions?.length === 0 && request.functionVersions?.length === 0) {
-      await this.serverlessClient.deleteEnvironment(build.sid, this._flags.name);
+      const environment = await this.serverlessClient.getEnvironment(build.sid, this._flags.name);
+      if (!environment.sid) {
+        return;
+      }
+
+      await this.serverlessClient.deleteEnvironment(build.sid, environment.sid);
       return;
     }
 
