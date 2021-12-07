@@ -25,13 +25,9 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
   async doArchive(): Promise<Plugin> {
     const plugin = await progress('Archiving Flex Plugin', async () => this.archiveOnPluginsAPI());
     await progress('Cleaning up Twilio Environment', async () => {
-      const serviceSid = await this.flexConfigurationClient.getServerlessSid();
-      if (!serviceSid) {
-        throw new TwilioApiError(20400, 'Plugin is already archived', 400);
-      }
-      const isDeleteSuccessful = await this.serverlessClient.deleteEnvironment(serviceSid, this._flags.name);
+      const isDeleteSuccessful = await this.removeServerlessFiles();
       if (!isDeleteSuccessful) {
-        // TODO: let user know the cleanup was unsuccessful and to try again?
+        // TODO: let user know the cleanup was unsuccessful and to try again
       }
     });
 
@@ -61,14 +57,30 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
       return await this.pluginsApiToolkit.archivePlugin({ name: this._flags.name });
     } catch (e) {
       if (instanceOf(e, TwilioApiError) && e.status === 400) {
-        const serviceSid = await this.flexConfigurationClient.getServerlessSid();
-        if (serviceSid) {
-          // TODO: clean up environment?
+        const isDeleteSuccessful = await this.removeServerlessFiles();
+        if (isDeleteSuccessful) {
+          return this.pluginsApiToolkit.describePlugin({
+            name: this._flags.name,
+          });
         }
       }
 
       throw e;
     }
+  }
+
+  /**
+   * Removes the serverless files
+   * @param build  the active {@link BuildInstance} to remove the files from
+   * @private
+   */
+  private async removeServerlessFiles() {
+    const serviceSid = await this.flexConfigurationClient.getServerlessSid();
+    if (!serviceSid) {
+      throw new TwilioApiError(20400, 'Plugin is already archived', 400);
+    }
+
+    return this.serverlessClient.deleteEnvironment(serviceSid, this._flags.name);
   }
 
   /**
