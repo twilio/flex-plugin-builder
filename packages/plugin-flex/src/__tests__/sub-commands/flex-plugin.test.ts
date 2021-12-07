@@ -153,6 +153,7 @@ describe('SubCommands/FlexPlugin', () => {
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'setupEnvironment').mockReturnThis();
     jest.spyOn(cmd, 'doRun').mockResolvedValue(null);
+    jest.spyOn(fs, 'addCWDNodeModule');
 
     await cmd.run();
 
@@ -165,6 +166,7 @@ describe('SubCommands/FlexPlugin', () => {
     expect(cmd.isPluginFolder).toHaveBeenCalledTimes(1);
     expect(cmd.setupEnvironment).toHaveBeenCalledTimes(1);
     expect(cmd.doRun).toHaveBeenCalledTimes(1);
+    expect(fs.addCWDNodeModule).toHaveBeenCalledTimes(1);
   });
 
   it('should return raw format', async () => {
