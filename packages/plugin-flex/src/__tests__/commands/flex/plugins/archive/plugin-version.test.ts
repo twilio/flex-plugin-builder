@@ -5,7 +5,8 @@ import createTest from '../../../../framework';
 import FlexPluginsArchivePluginVersion from '../../../../../commands/flex/plugins/archive/plugin-version';
 
 describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
-  const serviceSid = 'ZE00000000000000000000000000000000';
+  const serviceSid = 'ZS00000000000000000000000000000000';
+  const environment = { sid: 'ZE00000000000000000000000000000000' };
   const pluginName = 'plugin-name';
   const pluginVersion: PluginVersion = {
     sid: 'PV00000000000000000000000000000',
@@ -21,6 +22,8 @@ describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
   const getServerlessSid = jest.fn();
   const getBuild = jest.fn();
   const createBuildAndDeploy = jest.fn();
+  const deleteEnvironment = jest.fn();
+  const getEnvironment = jest.fn();
 
   const mockPluginsApiToolkit = (cmd: FlexPluginsArchivePluginVersion) => {
     // @ts-ignore
@@ -30,7 +33,9 @@ describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
     jest.spyOn(cmd, 'flexConfigurationClient', 'get').mockReturnValue({ getServerlessSid });
 
     // @ts-ignore
-    jest.spyOn(cmd, 'serverlessClient', 'get').mockReturnValue({ getBuild, createBuildAndDeploy });
+    jest
+      .spyOn(cmd, 'serverlessClient', 'get')
+      .mockReturnValue({ getBuild, createBuildAndDeploy, getEnvironment, deleteEnvironment });
   };
   const createCmd = async () =>
     createTest(FlexPluginsArchivePluginVersion)('--name', pluginName, '--version', pluginVersion.version);
@@ -169,6 +174,83 @@ describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
         expect(createBuildAndDeploy).not.toHaveBeenCalled();
         done();
       }
+    });
+
+    it('should clean up environment if there are no more asset and function versions', async () => {
+      const build = {
+        serviceSid,
+        dependencies: {
+          abc: '123',
+        },
+        functionVersions: [],
+        assetVersions: [
+          {
+            sid: 'FV000000000000000000000000000001',
+            path: `/plugins/${pluginName}/${pluginVersion.version}/bundle.js`,
+          },
+        ],
+      };
+      const cmd = await createCmd();
+      mockPluginsApiToolkit(cmd);
+
+      archivePluginVersion.mockResolvedValue(pluginVersion);
+      getServerlessSid.mockResolvedValue(serviceSid);
+      getBuild.mockResolvedValue(build);
+      getEnvironment.mockResolvedValue(environment);
+      deleteEnvironment.mockResolvedValue(true);
+
+      const result = await cmd.doArchive();
+
+      expect(result).toEqual(pluginVersion);
+      expect(archivePluginVersion).toHaveBeenCalledTimes(1);
+      expect(archivePluginVersion).toHaveBeenCalledWith({ name: pluginName, version: pluginVersion.version });
+      expect(describePluginVersion).not.toHaveBeenCalled();
+      expect(getServerlessSid).toHaveBeenCalledTimes(1);
+      expect(getBuild).toHaveBeenCalledTimes(1);
+      expect(getBuild).toHaveBeenCalledWith(serviceSid, pluginName);
+      expect(getEnvironment).toHaveBeenCalledTimes(1);
+      expect(deleteEnvironment).toHaveBeenCalledTimes(1);
+      expect(deleteEnvironment).toHaveBeenCalledWith(serviceSid, environment.sid);
+      expect(createBuildAndDeploy).not.toHaveBeenCalled();
+    });
+
+    it('should not clean up environment if there are no more asset versions but there are function versions', async () => {
+      const build = {
+        serviceSid,
+        dependencies: {
+          abc: '123',
+        },
+        functionVersions: [
+          {
+            sid: 'FV000000000000000000000000000000',
+          },
+        ],
+        assetVersions: [
+          {
+            sid: 'FV000000000000000000000000000001',
+            path: `/plugins/${pluginName}/${pluginVersion.version}/bundle.js`,
+          },
+        ],
+      };
+      const cmd = await createCmd();
+      mockPluginsApiToolkit(cmd);
+
+      archivePluginVersion.mockResolvedValue(pluginVersion);
+      getServerlessSid.mockResolvedValue(serviceSid);
+      getBuild.mockResolvedValue(build);
+
+      const result = await cmd.doArchive();
+
+      expect(result).toEqual(pluginVersion);
+      expect(archivePluginVersion).toHaveBeenCalledTimes(1);
+      expect(archivePluginVersion).toHaveBeenCalledWith({ name: pluginName, version: pluginVersion.version });
+      expect(describePluginVersion).not.toHaveBeenCalled();
+      expect(getServerlessSid).toHaveBeenCalledTimes(1);
+      expect(getBuild).toHaveBeenCalledTimes(1);
+      expect(getBuild).toHaveBeenCalledWith(serviceSid, pluginName);
+      expect(getEnvironment).not.toHaveBeenCalled();
+      expect(deleteEnvironment).not.toHaveBeenCalled();
+      expect(createBuildAndDeploy).toHaveBeenCalledTimes(1);
     });
 
     it('should archive configuration', async () => {
