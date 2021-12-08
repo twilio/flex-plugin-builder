@@ -7,12 +7,14 @@ import ServerlessClient from '../../clients/ServerlessClient';
 describe('ServerlessClient', () => {
   const serviceSid = 'ZS00000000000000000000000000000000';
   const buildSid = 'ZB00000000000000000000000000000000';
+  const environmentSid = 'ZE00000000000000000000000000000000';
   const pluginName = 'plugin-name';
   const mainPath = '/some/path';
   const anotherPath = '/another/path';
   const pluginPath = `/plugins/${pluginName}/0.0.0/bundle.js`;
 
   const listEnv = jest.fn();
+  const removeEnv = jest.fn();
   const getBuild = jest.fn();
   const getService = jest.fn();
   const createService = jest.fn();
@@ -93,6 +95,26 @@ describe('ServerlessClient', () => {
 
       const result = await client.hasLegacy(serviceSid, pluginName);
 
+      expect(result).toEqual(true);
+    });
+  });
+
+  describe('deleteEnvironment', () => {
+    it('should delete the environment', async () => {
+      jest.spyOn(client, 'getService').mockResolvedValue({
+        environments: () => ({
+          // @ts-ignore
+          get: () => ({
+            remove: removeEnv,
+          }),
+        }),
+      });
+
+      removeEnv.mockResolvedValue(true);
+
+      const result = await client.deleteEnvironment(serviceSid, environmentSid);
+
+      expect(removeEnv).toHaveBeenCalledTimes(1);
       expect(result).toEqual(true);
     });
   });

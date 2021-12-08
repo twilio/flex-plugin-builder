@@ -158,10 +158,7 @@ export default class ServerlessClient {
    * @param environment  the environment sid
    */
   async deleteEnvironment(serviceSid: string, environmentSid: string): Promise<boolean> {
-    return this.client
-      .get(serviceSid)
-      .fetch()
-      .then(async (service) => service.environments().get(environmentSid).remove());
+    return this.getService(serviceSid).then(async (service) => service.environments().get(environmentSid).remove());
   }
 
   /**
@@ -170,22 +167,19 @@ export default class ServerlessClient {
    * @param pluginName  the plugin name
    */
   async getEnvironment(serviceSid: string, pluginName: string): Promise<EnvironmentInstance | null> {
-    return this.client
-      .get(serviceSid)
-      .fetch()
-      .then(async (service) => {
-        if (!service) {
-          return Promise.resolve(null);
-        }
+    return this.getService(serviceSid).then(async (service) => {
+      if (!service) {
+        return Promise.resolve(null);
+      }
 
-        const list = await this.client.get(serviceSid).environments.list();
-        const environment = list.find((e) => e.uniqueName === pluginName);
-        if (!environment || !environment.sid) {
-          return Promise.resolve(null);
-        }
+      const list = await this.client.get(serviceSid).environments.list();
+      const environment = list.find((e) => e.uniqueName === pluginName);
+      if (!environment || !environment.sid) {
+        return Promise.resolve(null);
+      }
 
-        return environment;
-      });
+      return environment;
+    });
   }
 
   /**
