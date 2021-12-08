@@ -81,11 +81,11 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
     }
 
     const environment = await this.serverlessClient.getEnvironment(serviceSid, this._flags.name);
-    if (!environment.sid) {
+    if (!environment) {
       throw new TwilioApiError(20400, 'Plugin is already archived', 400);
     }
 
-    return this.serverlessClient.deleteEnvironment(serviceSid, this._flags.name);
+    return this.serverlessClient.deleteEnvironment(serviceSid, environment.sid);
   }
 
   /**
