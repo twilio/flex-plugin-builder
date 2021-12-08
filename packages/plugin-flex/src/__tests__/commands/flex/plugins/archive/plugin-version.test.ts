@@ -32,9 +32,9 @@ describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
     // @ts-ignore
     jest.spyOn(cmd, 'flexConfigurationClient', 'get').mockReturnValue({ getServerlessSid });
 
-    // @ts-ignore
     jest
       .spyOn(cmd, 'serverlessClient', 'get')
+      // @ts-ignore
       .mockReturnValue({ getBuild, createBuildAndDeploy, getEnvironment, deleteEnvironment });
   };
   const createCmd = async () =>
