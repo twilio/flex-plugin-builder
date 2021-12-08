@@ -57,12 +57,9 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
       return await this.pluginsApiToolkit.archivePlugin({ name: this._flags.name });
     } catch (e) {
       if (instanceOf(e, TwilioApiError) && e.status === 400) {
-        const isDeleteSuccessful = await this.removeServerlessFiles();
-        if (isDeleteSuccessful) {
-          return this.pluginsApiToolkit.describePlugin({
-            name: this._flags.name,
-          });
-        }
+        return this.pluginsApiToolkit.describePlugin({
+          name: this._flags.name,
+        });
       }
 
       throw e;

@@ -1,4 +1,5 @@
 import { Plugin } from 'flex-plugins-api-toolkit';
+import { TwilioApiError } from 'flex-dev-utils';
 
 import createTest from '../../../../framework';
 import FlexPluginsArchivePlugin from '../../../../../commands/flex/plugins/archive/plugin';
@@ -16,6 +17,7 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
     dateUpdated: '',
   };
   const archivePlugin = jest.fn();
+  const describePlugin = jest.fn();
   const getServerlessSid = jest.fn();
   const deleteEnvironment = jest.fn();
   const getEnvironment = jest.fn();
@@ -25,7 +27,7 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
     jest.spyOn(cmd, 'flexConfigurationClient', 'get').mockReturnValue({ getServerlessSid });
 
     // @ts-ignore
-    jest.spyOn(cmd, 'pluginsApiToolkit', 'get').mockReturnValue({ archivePlugin });
+    jest.spyOn(cmd, 'pluginsApiToolkit', 'get').mockReturnValue({ archivePlugin, describePlugin });
 
     // @ts-ignore
     jest.spyOn(cmd, 'serverlessClient', 'get').mockReturnValue({ deleteEnvironment, getEnvironment });
@@ -43,12 +45,86 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
 
     getServerlessSid.mockResolvedValue(serviceSid);
     getEnvironment.mockResolvedValue(environment);
+    deleteEnvironment.mockResolvedValue(true);
 
     const result = await cmd.doArchive();
 
     expect(result).toEqual(plugin);
     expect(cmd.pluginsApiToolkit.archivePlugin).toHaveBeenCalledTimes(1);
     expect(cmd.pluginsApiToolkit.archivePlugin).toHaveBeenCalledWith({ name: plugin.name });
+    expect(cmd.serverlessClient.deleteEnvironment).toHaveBeenCalledTimes(1);
+    expect(cmd.serverlessClient.deleteEnvironment).toHaveBeenCalledWith(serviceSid, environment.sid);
+  });
+
+  it('should quit if already archived and no serviceSid is found', async (done) => {
+    const err = new TwilioApiError(20400, 'message', 400);
+
+    const cmd = await createCmd();
+    mockPluginsApiToolkit(cmd);
+
+    archivePlugin.mockRejectedValue(err);
+    describePlugin.mockResolvedValue(plugin);
+    getServerlessSid.mockResolvedValue(null);
+
+    try {
+      await cmd.doArchive();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TwilioApiError);
+      expect(archivePlugin).toHaveBeenCalledTimes(1);
+      expect(archivePlugin).toHaveBeenCalledWith({ name: plugin.name });
+      expect(archivePlugin).toHaveBeenCalledTimes(1);
+      expect(archivePlugin).toHaveBeenCalledWith({ name: plugin.name });
+      expect(getServerlessSid).toHaveBeenCalledTimes(1);
+      done();
+    }
+  });
+
+  it('should quit if already archived and no environment is found', async (done) => {
+    const err = new TwilioApiError(20400, 'message', 400);
+
+    const cmd = await createCmd();
+    mockPluginsApiToolkit(cmd);
+
+    archivePlugin.mockRejectedValue(err);
+    describePlugin.mockResolvedValue(plugin);
+    getServerlessSid.mockResolvedValue(serviceSid);
+    getEnvironment.mockResolvedValue(null);
+
+    try {
+      await cmd.doArchive();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TwilioApiError);
+      expect(archivePlugin).toHaveBeenCalledTimes(1);
+      expect(archivePlugin).toHaveBeenCalledWith({ name: plugin.name });
+      expect(archivePlugin).toHaveBeenCalledTimes(1);
+      expect(archivePlugin).toHaveBeenCalledWith({ name: plugin.name });
+      expect(getServerlessSid).toHaveBeenCalledTimes(1);
+      expect(getEnvironment).toHaveBeenCalledTimes(1);
+      done();
+    }
+  });
+
+  it('should clean up environment if it still exists and plugin is already archived', async () => {
+    const err = new TwilioApiError(20400, 'message', 400);
+
+    const cmd = await createCmd();
+    mockPluginsApiToolkit(cmd);
+
+    archivePlugin.mockRejectedValue(err);
+    describePlugin.mockResolvedValue(plugin);
+    getServerlessSid.mockResolvedValue(serviceSid);
+    getEnvironment.mockResolvedValue(environment);
+    deleteEnvironment.mockResolvedValue(true);
+
+    const result = await cmd.doArchive();
+
+    expect(result).toEqual(plugin);
+    expect(archivePlugin).toHaveBeenCalledTimes(1);
+    expect(archivePlugin).toHaveBeenCalledWith({ name: plugin.name });
+    expect(getServerlessSid).toHaveBeenCalledTimes(1);
+    expect(getEnvironment).toHaveBeenCalledTimes(1);
+    expect(deleteEnvironment).toHaveBeenCalledTimes(1);
+    expect(deleteEnvironment).toHaveBeenCalledWith(serviceSid, environment.sid);
   });
 
   it('should get name', async () => {
