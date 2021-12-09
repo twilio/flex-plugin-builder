@@ -9,6 +9,7 @@ describe('ServerlessClient', () => {
   const buildSid = 'ZB00000000000000000000000000000000';
   const environmentSid = 'ZE00000000000000000000000000000000';
   const pluginName = 'plugin-name';
+  const environment = { sid: environmentSid, uniqueName: pluginName, buildSid };
   const mainPath = '/some/path';
   const anotherPath = '/another/path';
   const pluginPath = `/plugins/${pluginName}/0.0.0/bundle.js`;
@@ -18,7 +19,8 @@ describe('ServerlessClient', () => {
   const getBuild = jest.fn();
   const getService = jest.fn();
   const createService = jest.fn();
-  getService.mockReturnValue({
+  const fetch = jest.fn();
+  const service = {
     environments: {
       list: listEnv,
     },
@@ -27,6 +29,10 @@ describe('ServerlessClient', () => {
         fetch: getBuild,
       }),
     },
+  };
+  getService.mockReturnValue({
+    fetch,
+    ...service,
   });
   const debug = jest.fn();
   // @ts-ignore
@@ -34,11 +40,14 @@ describe('ServerlessClient', () => {
 
   // @ts-ignore
   const twilioClient = { get: getService, create: createService } as ServiceListInstance;
-  // @ts-ignore
-  const client = new ServerlessClient(twilioClient, logger as Logger);
+
+  let client: ServerlessClient;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
+
+    // @ts-ignore
+    client = new ServerlessClient(twilioClient, logger as Logger);
   });
 
   describe('getLegacyAsset', () => {
@@ -116,6 +125,37 @@ describe('ServerlessClient', () => {
 
       expect(removeEnv).toHaveBeenCalledTimes(1);
       expect(result).toEqual(true);
+    });
+  });
+
+  describe('getEnvironment', () => {
+    it('should get the environment', async () => {
+      fetch.mockResolvedValue(service);
+      listEnv.mockResolvedValue([environment]);
+
+      const result = await client.getEnvironment(serviceSid, pluginName);
+
+      expect(listEnv).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(environment);
+    });
+
+    it('should return null if the service does not exist', async () => {
+      fetch.mockResolvedValue(null);
+
+      const result = await client.getEnvironment(serviceSid, pluginName);
+
+      expect(listEnv).not.toHaveBeenCalled();
+      expect(result).toEqual(null);
+    });
+
+    it('should return null if the environment does not exist', async () => {
+      fetch.mockResolvedValue(service);
+      listEnv.mockResolvedValue([]);
+
+      const result = await client.getEnvironment(serviceSid, pluginName);
+
+      expect(listEnv).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(null);
     });
   });
 
