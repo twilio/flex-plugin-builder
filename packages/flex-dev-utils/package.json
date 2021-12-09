@@ -42,6 +42,8 @@
     "chalk": "^4.1.2",
     "columnify": "^1.5.4",
     "copy-template-dir": "^1.4.0",
+    "axios-cache-adapter": "^2.7.3",
+    "qs": "^6.10.1",
     "execa": "^5.1.1",
     "flex-plugins-utils-env": "4.2.2",
     "flex-plugins-utils-exception": "4.2.2",
@@ -63,6 +65,8 @@
     "wrap-ansi": "^4.0.0"
   },
   "devDependencies": {
+    "@types/qs": "^6.9.7",
+    "axios-mock-adapter": "^1.20.0",
     "@types/app-module-path": "^2.2.0",
     "@types/columnify": "^1.5.1",
     "@types/inquirer": "^7.3.3",

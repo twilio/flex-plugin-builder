@@ -1,9 +1,8 @@
-import { HttpClient } from 'flex-plugin-utils-http';
-import { env } from 'flex-dev-utils';
+import { env, HttpClient } from 'flex-dev-utils';
 
 import PluginServiceHttp from '../client';
 
-jest.mock('flex-plugin-utils-http');
+jest.mock('flex-dev-utils/dist/http');
 jest.mock('flex-dev-utils/dist/logger/lib/logger');
 
 describe('PluginServiceHttp', () => {

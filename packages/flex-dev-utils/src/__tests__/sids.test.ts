@@ -1,6 +1,19 @@
-import { isValidSid, isSidOfType } from '../sids';
+import { isValidSid, isSidOfType, looksLikeSid } from '../sids';
 
 describe('sids', () => {
+  describe('looksLikeSid', () => {
+    it('should return true', () => {
+      expect(looksLikeSid('AC00000000000000000000000000000000')).toEqual(true);
+      expect(looksLikeSid('AC0000000000000000000000000000000a')).toEqual(true);
+    });
+
+    it('should return false', () => {
+      expect(looksLikeSid('')).toEqual(false);
+      expect(looksLikeSid('AC000')).toEqual(false);
+      expect(looksLikeSid('AC0000000000000000000000000000000000000000000')).toEqual(false);
+    });
+  });
+
   describe('isValidSid', () => {
     it('should test valid sids', () => {
       const sids = [

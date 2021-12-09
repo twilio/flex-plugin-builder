@@ -3,11 +3,7 @@ import {
   ServiceListInstance,
   ServiceListInstanceCreateOptions,
 } from 'twilio/lib/rest/serverless/v1/service';
-import {
-  BuildInstance,
-  BuildListInstance,
-  BuildListInstanceCreateOptions,
-} from 'twilio/lib/rest/serverless/v1/service/build';
+import { BuildInstance, BuildListInstanceCreateOptions } from 'twilio/lib/rest/serverless/v1/service/build';
 import { TwilioApiError, Logger } from 'flex-dev-utils';
 import { EnvironmentInstance } from 'twilio/lib/rest/serverless/v1/service/environment';
 

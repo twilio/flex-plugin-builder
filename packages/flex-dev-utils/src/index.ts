@@ -3,6 +3,7 @@
 export { default as fs } from './fs';
 export { default as lodash } from './lodash';
 export { default as updateNotifier, checkForUpdate } from './updateNotifier';
+export { HttpClient, OptionalHttpClientConfig } from './http';
 export { logger, Logger, coloredStrings, chalk, table, boxen, singleLineString, multilineString } from './logger';
 export { progress } from './progress';
 export { default as credentials, Credential, getCredential } from './credentials';
