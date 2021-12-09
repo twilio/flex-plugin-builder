@@ -1,6 +1,6 @@
 import { Plugin } from 'flex-plugins-api-toolkit';
 import { OutputFlags } from '@oclif/parser/lib/parse';
-import { progress, TwilioApiError } from 'flex-dev-utils';
+import { progress, TwilioApiError, TwilioCliError } from 'flex-dev-utils';
 
 import * as flags from '../../../../utils/flags';
 import ArchiveResource from '../../../../sub-commands/archive-resource';
@@ -27,7 +27,9 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
     await progress('Cleaning up Twilio Environment', async () => {
       const isDeleteSuccessful = await this.removeServerlessFiles();
       if (!isDeleteSuccessful) {
-        // TODO: let user know the cleanup was unsuccessful and to try again
+        throw new TwilioCliError(
+          'Could not archive your plugin due to failure in deleting the environment hosting your plugin. Please retry by running the archive command.',
+        );
       }
     });
 

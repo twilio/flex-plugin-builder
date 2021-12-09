@@ -1,5 +1,5 @@
 import { Plugin } from 'flex-plugins-api-toolkit';
-import { TwilioApiError } from 'flex-dev-utils';
+import { TwilioApiError, TwilioCliError } from 'flex-dev-utils';
 
 import createTest from '../../../../framework';
 import FlexPluginsArchivePlugin from '../../../../../commands/flex/plugins/archive/plugin';
@@ -100,6 +100,30 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
       expect(archivePlugin).toHaveBeenCalledWith({ name: plugin.name });
       expect(getServerlessSid).toHaveBeenCalledTimes(1);
       expect(getEnvironment).toHaveBeenCalledTimes(1);
+      done();
+    }
+  });
+
+  it('should quit if archive on plugins API is successful but environment cleanup is not', async (done) => {
+    const cmd = await createCmd();
+    mockPluginsApiToolkit(cmd);
+
+    archivePlugin.mockResolvedValue(plugin);
+    describePlugin.mockResolvedValue(plugin);
+    getServerlessSid.mockResolvedValue(serviceSid);
+    getEnvironment.mockResolvedValue(environment);
+    deleteEnvironment.mockResolvedValue(false);
+
+    try {
+      await cmd.doArchive();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TwilioCliError);
+      expect(archivePlugin).toHaveBeenCalledTimes(1);
+      expect(archivePlugin).toHaveBeenCalledWith({ name: plugin.name });
+      expect(getServerlessSid).toHaveBeenCalledTimes(1);
+      expect(getEnvironment).toHaveBeenCalledTimes(1);
+      expect(deleteEnvironment).toHaveBeenCalledTimes(1);
+      expect(deleteEnvironment).toHaveBeenCalledWith(serviceSid, environment.sid);
       done();
     }
   });
