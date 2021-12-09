@@ -107,9 +107,8 @@ describe('ServerlessClient', () => {
 
   describe('deleteEnvironment', () => {
     it('should delete the environment', async () => {
-      jest.spyOn(client, 'getService').mockResolvedValue({
+      fetch.mockResolvedValue({
         environments: () => ({
-          // @ts-ignore
           get: () => ({
             remove: removeEnv,
           }),
@@ -122,6 +121,15 @@ describe('ServerlessClient', () => {
 
       expect(removeEnv).toHaveBeenCalledTimes(1);
       expect(result).toEqual(true);
+    });
+
+    it('should return false if the service does not exist', async () => {
+      fetch.mockResolvedValue(null);
+
+      const result = await client.deleteEnvironment(serviceSid, environmentSid);
+
+      expect(removeEnv).toHaveBeenCalledTimes(0);
+      expect(result).toEqual(false);
     });
   });
 
@@ -142,6 +150,7 @@ describe('ServerlessClient', () => {
 
     it('should return null if the service does not exist', async () => {
       fetch.mockResolvedValue(null);
+
       const result = await client.getEnvironment(serviceSid, pluginName);
 
       expect(listEnv).not.toHaveBeenCalled();
