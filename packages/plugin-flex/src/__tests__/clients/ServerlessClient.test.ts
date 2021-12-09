@@ -20,7 +20,8 @@ describe('ServerlessClient', () => {
   const getService = jest.fn();
   const createService = jest.fn();
   const fetch = jest.fn();
-  const service = {
+  getService.mockReturnValue({
+    fetch,
     environments: {
       list: listEnv,
     },
@@ -29,10 +30,6 @@ describe('ServerlessClient', () => {
         fetch: getBuild,
       }),
     },
-  };
-  getService.mockReturnValue({
-    fetch,
-    ...service,
   });
   const debug = jest.fn();
   // @ts-ignore
@@ -130,7 +127,11 @@ describe('ServerlessClient', () => {
 
   describe('getEnvironment', () => {
     it('should get the environment', async () => {
-      fetch.mockResolvedValue(service);
+      fetch.mockResolvedValue({
+        environments: () => ({
+          list: listEnv,
+        }),
+      });
       listEnv.mockResolvedValue([environment]);
 
       const result = await client.getEnvironment(serviceSid, pluginName);
@@ -141,7 +142,6 @@ describe('ServerlessClient', () => {
 
     it('should return null if the service does not exist', async () => {
       fetch.mockResolvedValue(null);
-
       const result = await client.getEnvironment(serviceSid, pluginName);
 
       expect(listEnv).not.toHaveBeenCalled();
@@ -149,7 +149,11 @@ describe('ServerlessClient', () => {
     });
 
     it('should return null if the environment does not exist', async () => {
-      fetch.mockResolvedValue(service);
+      fetch.mockResolvedValue({
+        environments: () => ({
+          list: listEnv,
+        }),
+      });
       listEnv.mockResolvedValue([]);
 
       const result = await client.getEnvironment(serviceSid, pluginName);

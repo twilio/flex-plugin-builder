@@ -172,12 +172,12 @@ export default class ServerlessClient {
    * @param pluginName  the plugin name
    */
   async getEnvironment(serviceSid: string, pluginName: string): Promise<EnvironmentInstance | null> {
-    const service = this.client.get(serviceSid);
-    if (!(await service.fetch())) {
+    const service = await this.getService(serviceSid);
+    if (!service) {
       return null;
     }
 
-    const list = await service.environments.list();
+    const list = await service.environments().list();
     const environment = list.find((e) => e.uniqueName === pluginName);
     if (!environment || !environment.sid) {
       return null;
