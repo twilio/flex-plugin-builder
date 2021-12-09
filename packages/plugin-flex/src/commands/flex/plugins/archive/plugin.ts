@@ -25,7 +25,7 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
   async doArchive(): Promise<Plugin> {
     const plugin = await progress('Archiving Flex Plugin', async () => this.archiveOnPluginsAPI());
     await progress('Cleaning up Twilio Environment', async () => {
-      const isDeleteSuccessful = await this.removeServerlessFiles();
+      const isDeleteSuccessful = await this.removeServerlessEnvironment();
       if (!isDeleteSuccessful) {
         throw new TwilioCliError(
           'Could not archive your plugin due to failure in deleting the environment hosting your plugin. Please retry by running the archive command.',
@@ -69,11 +69,10 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
   }
 
   /**
-   * Removes the serverless files
-   * @param build  the active {@link BuildInstance} to remove the files from
+   * Removes the {@link EnvironmentInstance}
    * @private
    */
-  private async removeServerlessFiles() {
+  private async removeServerlessEnvironment() {
     const serviceSid = await this.flexConfigurationClient.getServerlessSid();
     if (!serviceSid) {
       throw new TwilioApiError(20400, 'Plugin is already archived', 400);
