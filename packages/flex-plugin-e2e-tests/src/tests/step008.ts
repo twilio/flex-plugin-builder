@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unused-modules, @typescript-eslint/no-non-null-assertion */
-import { assertion, logResult, spawn, api, sleep } from '../utils';
+import { assertion, spawn, api, sleep } from '../utils';
 import { TestSuite, TestParams } from '../core';
 
 // Release plugin
@@ -15,7 +15,6 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
     'debug',
     ...config.regionFlag,
   ]);
-  logResult(result);
   await sleep(1000);
 
   const release = await api.getActiveRelease();

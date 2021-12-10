@@ -49,7 +49,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
 
   // Start the 2 local plugins and 1 versioned plugin (Note: cwd is plugin3 in this scenario since plugin is the remote one)
   const flags = ['--name', `${plugin1.name}@${oldVersion}`, '--name', plugin2.name];
-  const twilioCliResult = await spawn('twilio', ['flex:plugins:start', ...flags], {
+  const twilioCliResult = await spawn('twilio', ['flex:plugins:start', '-l', 'debug', ...flags], {
     detached: true,
     cwd: plugin3.dir,
   });
