@@ -2,7 +2,7 @@
 import { replaceInFile } from 'replace-in-file';
 import semver from 'semver';
 
-import { assertion, joinPath, logResult, spawn, api } from '../utils';
+import { assertion, joinPath, spawn, api } from '../utils';
 import { TestSuite, TestParams } from '../core';
 
 // Deploy plugin
@@ -28,7 +28,6 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
       cwd: plugin.dir,
     },
   );
-  logResult(result);
 
   assertion.fileExists([plugin.dir, 'build', `${plugin.name}.js`]);
   assertion.fileContains([plugin.dir, 'build', `${plugin.name}.js`], plugin.newlineValue);

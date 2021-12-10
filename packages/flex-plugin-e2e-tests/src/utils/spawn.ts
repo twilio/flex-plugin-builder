@@ -11,6 +11,16 @@ interface SpawnResult {
 }
 
 /**
+ * Logs the output in real time
+ */
+const logInfo = (data: string | Buffer, level: 'info' | 'warning'): void => {
+  data = data.toString().trim();
+  if (data) {
+    logger[level](`[${new Date().toUTCString()}] -`, data.toString().replace(/-/g, '\\-'));
+  }
+};
+
+/**
  * Promisified spawn
  * @param cmd the command to spawn
  * @param args the args to that command
@@ -50,6 +60,8 @@ export const promisifiedSpawn = async (
     child.stderr.setEncoding('utf8');
     child.stderr.on('error', reject);
     child.stderr.on('data', (data) => {
+      logInfo(data, 'warning');
+
       if (typeof data === 'string') {
         stderrArr.push(Buffer.from(data, 'utf-8'));
       } else {
@@ -59,6 +71,8 @@ export const promisifiedSpawn = async (
 
     // data
     child.stdout.on('data', (data) => {
+      logInfo(data, 'info');
+
       if (typeof data === 'string') {
         stdoutArr.push(Buffer.from(data, 'utf-8'));
       } else {

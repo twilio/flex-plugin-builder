@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unused-modules, sonarjs/no-duplicate-string */
 import { TestSuite, TestParams } from '../core';
-import { spawn, logResult, assertion, joinPath, writeFileSync } from '../utils';
+import { spawn, assertion, joinPath, writeFileSync } from '../utils';
 
 // Create a plugin
 const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<void> => {
@@ -11,8 +11,7 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
   const plugin = scenario.plugins[0];
   assertion.not.isNull(plugin);
 
-  const twilioCliResult = await spawn('twilio', ['flex:plugins:create', plugin.name, ...flags]);
-  logResult(twilioCliResult);
+  await spawn('twilio', ['flex:plugins:create', plugin.name, ...flags]);
 
   // Assert files/directories exist
   assertion.fileExists([plugin.dir], 'Plugin directory does not exist');
