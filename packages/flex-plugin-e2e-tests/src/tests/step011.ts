@@ -4,7 +4,7 @@ import semver from 'semver';
 import { TestSuite, TestParams, testParams } from '../core';
 import { spawn, Browser, pluginHelper, ConsoleAPI, api, assertion, killChildProcess } from '../utils';
 
-// Starting mulitple plugins using --include-remote works
+// Starting multiple plugins using --include-remote works
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
   const plugin1 = scenario.plugins[0];
   const plugin2 = scenario.plugins[1];
