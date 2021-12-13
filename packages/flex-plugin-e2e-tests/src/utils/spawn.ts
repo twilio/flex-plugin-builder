@@ -36,7 +36,6 @@ export const promisifiedSpawn = async (
     const defaultOptions = {
       cwd: homeDir,
       env: {
-        HOME: homeDir,
         PATH: `${testParams.environment.path}:/${homeDir}/bin`,
         TWILIO_ACCOUNT_SID: testParams.secrets.api.accountSid,
         TWILIO_AUTH_TOKEN: testParams.secrets.api.authToken,
