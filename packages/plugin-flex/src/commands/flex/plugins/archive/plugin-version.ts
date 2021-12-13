@@ -93,8 +93,12 @@ export default class FlexPluginsArchivePluginVersion extends ArchiveResource<Plu
       runtime: 'node12',
     };
 
-    // TODO: remove Environment when the other ticket is done
     if (request.assetVersions?.length === 0 && request.functionVersions?.length === 0) {
+      const environment = await this.serverlessClient.getEnvironment(build.serviceSid, this._flags.name);
+      if (environment) {
+        await this.serverlessClient.deleteEnvironment(build.serviceSid, environment.sid);
+      }
+
       return;
     }
 

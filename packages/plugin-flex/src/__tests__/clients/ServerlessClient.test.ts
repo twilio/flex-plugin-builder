@@ -7,16 +7,21 @@ import ServerlessClient from '../../clients/ServerlessClient';
 describe('ServerlessClient', () => {
   const serviceSid = 'ZS00000000000000000000000000000000';
   const buildSid = 'ZB00000000000000000000000000000000';
+  const environmentSid = 'ZE00000000000000000000000000000000';
   const pluginName = 'plugin-name';
+  const environment = { sid: environmentSid, uniqueName: pluginName, buildSid };
   const mainPath = '/some/path';
   const anotherPath = '/another/path';
   const pluginPath = `/plugins/${pluginName}/0.0.0/bundle.js`;
 
   const listEnv = jest.fn();
+  const removeEnv = jest.fn();
   const getBuild = jest.fn();
   const getService = jest.fn();
   const createService = jest.fn();
+  const fetch = jest.fn();
   getService.mockReturnValue({
+    fetch,
     environments: {
       list: listEnv,
     },
@@ -32,11 +37,14 @@ describe('ServerlessClient', () => {
 
   // @ts-ignore
   const twilioClient = { get: getService, create: createService } as ServiceListInstance;
-  // @ts-ignore
-  const client = new ServerlessClient(twilioClient, logger as Logger);
+
+  let client: ServerlessClient;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
+
+    // @ts-ignore
+    client = new ServerlessClient(twilioClient, logger as Logger);
   });
 
   describe('getLegacyAsset', () => {
@@ -94,6 +102,73 @@ describe('ServerlessClient', () => {
       const result = await client.hasLegacy(serviceSid, pluginName);
 
       expect(result).toEqual(true);
+    });
+  });
+
+  describe('deleteEnvironment', () => {
+    it('should delete the environment', async () => {
+      fetch.mockResolvedValue({
+        environments: () => ({
+          get: () => ({
+            remove: removeEnv,
+          }),
+        }),
+      });
+
+      removeEnv.mockResolvedValue(true);
+
+      const result = await client.deleteEnvironment(serviceSid, environmentSid);
+
+      expect(removeEnv).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(true);
+    });
+
+    it('should return false if the service does not exist', async () => {
+      fetch.mockResolvedValue(null);
+
+      const result = await client.deleteEnvironment(serviceSid, environmentSid);
+
+      expect(removeEnv).toHaveBeenCalledTimes(0);
+      expect(result).toEqual(false);
+    });
+  });
+
+  describe('getEnvironment', () => {
+    it('should get the environment', async () => {
+      fetch.mockResolvedValue({
+        environments: () => ({
+          list: listEnv,
+        }),
+      });
+      listEnv.mockResolvedValue([environment]);
+
+      const result = await client.getEnvironment(serviceSid, pluginName);
+
+      expect(listEnv).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(environment);
+    });
+
+    it('should return null if the service does not exist', async () => {
+      fetch.mockResolvedValue(null);
+
+      const result = await client.getEnvironment(serviceSid, pluginName);
+
+      expect(listEnv).not.toHaveBeenCalled();
+      expect(result).toEqual(null);
+    });
+
+    it('should return null if the environment does not exist', async () => {
+      fetch.mockResolvedValue({
+        environments: () => ({
+          list: listEnv,
+        }),
+      });
+      listEnv.mockResolvedValue([]);
+
+      const result = await client.getEnvironment(serviceSid, pluginName);
+
+      expect(listEnv).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(null);
     });
   });
 
