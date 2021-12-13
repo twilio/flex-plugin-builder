@@ -1,7 +1,6 @@
 import { join } from 'path';
 import { homedir } from 'os';
 
-import PluginsApiToolkit from 'flex-plugins-api-toolkit';
 import { checkAFileExists, getPaths, readJsonFile, writeJSONFile, addCWDNodeModule } from 'flex-dev-utils/dist/fs';
 import { baseCommands, services } from '@twilio/cli-core';
 import {
@@ -10,6 +9,7 @@ import {
   PluginVersionsClient,
   ConfigurationsClient,
   ReleasesClient,
+  FlexPluginsAPIToolkit,
 } from 'flex-plugins-api-client';
 import {
   TwilioError,
@@ -143,7 +143,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   // Contains all the flags that are passed after --, i.e. `twilio flex:plugins:foo -- --arg1 --arg2
   protected internalScriptArgs: string[];
 
-  private _pluginsApiToolkit?: PluginsApiToolkit;
+  private _pluginsApiToolkit?: FlexPluginsAPIToolkit;
 
   private _pluginsClient?: PluginsClient;
 
@@ -286,10 +286,10 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   }
 
   /**
-   * Gets an instantiated {@link PluginsApiToolkit}
-   * @returns {PluginsApiToolkit}
+   * Gets an instantiated {@link FlexPluginsAPIToolkit}
+   * @returns {FlexPluginsAPIToolkit}
    */
-  get pluginsApiToolkit(): PluginsApiToolkit {
+  get pluginsApiToolkit(): FlexPluginsAPIToolkit {
     if (!this._pluginsApiToolkit) {
       throw new TwilioCliError('PluginsApiToolkit is not initialized yet');
     }
@@ -420,7 +420,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       this.twilioApiClient.password,
       pluginServiceOptions,
     );
-    this._pluginsApiToolkit = new PluginsApiToolkit(
+    this._pluginsApiToolkit = new FlexPluginsAPIToolkit(
       this.twilioApiClient.username,
       this.twilioApiClient.password,
       pluginServiceOptions,
@@ -669,7 +669,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       'twilio-cli-flex-plugin': FlexPlugin.getPackageVersion(this.pluginRootDir),
       react: FlexPlugin.getPackageVersion('react'),
       'react-dom': FlexPlugin.getPackageVersion('react-dom'),
-      'flex-plugins-api-toolkit': FlexPlugin.getPackageVersion('flex-plugins-api-toolkit'),
+      'flex-plugins-api-client': FlexPlugin.getPackageVersion('flex-plugins-api-client'),
       'flex-ui': FlexPlugin.getPackageVersion(`@twilio/flex-ui`),
       isTs: 'unknown',
     };

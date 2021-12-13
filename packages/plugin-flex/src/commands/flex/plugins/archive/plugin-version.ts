@@ -1,4 +1,4 @@
-import { PluginVersion } from 'flex-plugins-api-toolkit';
+import { PluginVersion } from 'flex-plugins-api-client';
 import { progress, TwilioApiError } from 'flex-dev-utils';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 import { BuildInstance, BuildListInstanceCreateOptions } from 'twilio/lib/rest/serverless/v1/service/build';

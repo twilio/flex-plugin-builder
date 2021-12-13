@@ -53,7 +53,6 @@
     "flex-dev-utils": "4.2.2",
     "flex-plugin-scripts": "4.2.2",
     "flex-plugins-api-client": "4.2.2",
-    "flex-plugins-api-toolkit": "4.2.2",
     "lodash.startcase": "^4.4.0",
     "mkdirp": "^1.0.4",
     "package-json": "^7.0.0",

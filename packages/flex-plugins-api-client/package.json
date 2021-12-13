@@ -39,13 +39,10 @@
     "test:watch": "cd ../.. && jest packages/flex-plugins-api-client --watch --color"
   },
   "dependencies": {
-    "flex-plugin-utils-http": "4.2.2",
     "flex-dev-utils": "4.2.2",
-    "lodash.upperfirst": "^4.3.1",
     "url-join": "^4.0.1"
   },
   "devDependencies": {
-    "@types/lodash.upperfirst": "^4.3.6",
     "@types/url-join": "^4.0.1"
   }
 }

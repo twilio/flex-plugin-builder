@@ -1,4 +1,4 @@
-import { Configuration } from 'flex-plugins-api-toolkit';
+import { Configuration } from 'flex-plugins-api-client';
 
 import createTest from '../../../../framework';
 import FlexPluginsArchiveConfiguration from '../../../../../commands/flex/plugins/archive/configuration';

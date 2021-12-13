@@ -1,34 +1,70 @@
-export { default as PluginServiceHTTPClient } from './clients/client';
-export { default as ServiceHTTPClient } from './clients/serviceHttpClient';
 export {
-  default as PluginsClient,
+  PluginServiceHTTPClient,
+  ServiceHTTPClient,
+  PluginsClient,
   PluginResource,
   PluginResourcePage,
   UpdatePluginResource,
   CreatePluginResource,
-} from './clients/plugins';
-export {
-  default as PluginVersionsClient,
+  PluginVersionsClient,
   PluginVersionResource,
   PluginVersionResourcePage,
   CreatePluginVersionResource,
-} from './clients/pluginVersions';
-export {
-  default as ConfigurationsClient,
+  ConfigurationsClient,
   ConfigurationResource,
   ConfigurationResourcePage,
   CreateConfiguredPlugin,
   CreateConfigurationResource,
-} from './clients/configurations';
-export {
-  default as ConfiguredPluginsClient,
+  ConfiguredPluginsClient,
   ConfiguredPluginResource,
   ConfiguredPluginResourcePage,
-} from './clients/configuredPlugins';
-export {
-  default as ReleasesClient,
+  ReleasesClient,
   ReleaseResource,
   ReleaseResourcePage,
   CreateReleaseResource,
-} from './clients/releases';
-export { default as ServiceHttpClient, PaginationMeta, Meta, Pagination } from './clients/serviceHttpClient';
+  ServiceHttpClient,
+  PaginationMeta,
+  Meta,
+  Pagination,
+} from './clients';
+
+export {
+  default as FlexPluginsAPIToolkit,
+  DeployOption,
+  DeployPlugin,
+  CreateConfigurationOption,
+  CreateConfiguration,
+  ReleaseOption,
+  Release,
+  DescribePluginOption,
+  DescribePlugin,
+  Plugin,
+  DescribePluginVersionOption,
+  DescribePluginVersion,
+  PluginVersion,
+  DescribeConfigurationOption,
+  DescribeConfiguration,
+  DescribeReleaseOption,
+  DescribeRelease,
+  Configuration,
+  InstalledPlugin,
+  ListPluginsOption,
+  ListPluginsResource,
+  ListPlugins,
+  ListPluginVersionsOption,
+  ListPluginVersions,
+  ListPluginVersionsResource,
+  ListConfigurationsOption,
+  ListConfigurationsResource,
+  ListConfigurations,
+  ListReleasesOption,
+  ListReleasesResource,
+  ListReleases,
+  ArchivePluginOption,
+  ArchivePluginVersionOption,
+  ArchiveConfigurationOption,
+  DiffOption,
+  Diff,
+  Difference,
+  FlexPluginsAPIToolkitBase,
+} from './toolkit';
