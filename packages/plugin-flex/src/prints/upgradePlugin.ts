@@ -8,7 +8,7 @@ const cracoUpgradeGuideLink = 'https://twilio.com';
  * Upgrade notification
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const upgradeNotification = (logger: Logger) => async (skip: boolean, version: string) => {
+const upgradeNotification = (logger: Logger) => async (skip: boolean, version?: string) => {
   const latestVersion = version ? `version ${version}` : 'the latest version';
   boxen.warning(`You are about to upgrade your plugin to use ${latestVersion} of the Flex Plugin CLI.`);
   if (!skip) {
