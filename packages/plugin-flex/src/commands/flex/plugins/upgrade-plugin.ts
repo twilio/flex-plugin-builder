@@ -127,7 +127,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     const pkgJson = await this.getLatestVersionOfDep(flexPluginScript, this._flags.beta);
     const latestVersion = pkgJson ? semver.coerce(pkgJson.version as string) : '';
     const latestMajorVersion = latestVersion ? latestVersion.major : 0;
-    await this.prints.upgradeNotification(this._flags.yes, latestVersion as string);
+    await this.prints.upgradeNotification(this._flags.yes, latestVersion ? latestVersion.version : '');
 
     const currentPkgVersion = this.pkgVersion;
     switch (currentPkgVersion) {
