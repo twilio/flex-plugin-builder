@@ -320,6 +320,32 @@ describe('Commands/FlexPluginsStart', () => {
       expect(cmd.removeLegacyPlugin).toHaveBeenCalledTimes(1);
     });
 
+    it('should call upgrade notification', async () => {
+      const cmd = await createTest(FlexPluginsUpgradePlugin)('--yes');
+      mockForDoRun(cmd);
+      // @ts-ignore
+      const upgradeNotification = jest.spyOn(cmd.prints, 'upgradeNotification');
+      jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
+
+      await cmd.doRun();
+
+      expect(upgradeNotification).toHaveBeenCalledTimes(1);
+      expect(upgradeNotification).toHaveBeenCalledWith(true, '4.0.0');
+    });
+
+    it('should call upgrade notification without yes flag', async () => {
+      const cmd = await createTest(FlexPluginsUpgradePlugin)();
+      mockForDoRun(cmd);
+      // @ts-ignore
+      const upgradeNotification = jest.spyOn(cmd.prints, 'upgradeNotification');
+      jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
+
+      await cmd.doRun();
+
+      expect(upgradeNotification).toHaveBeenCalledTimes(1);
+      expect(upgradeNotification).toHaveBeenCalledWith(undefined, '4.0.0');
+    });
+
     it('should not call cleanupNodeModules if already latest version', async () => {
       const cmd = await createTest(FlexPluginsUpgradePlugin)();
       mockForDoRun(cmd);
