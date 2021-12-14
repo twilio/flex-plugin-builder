@@ -346,21 +346,6 @@ describe('Commands/FlexPluginsStart', () => {
       expect(upgradeNotification).toHaveBeenCalledWith(undefined, '4.0.0');
     });
 
-    it('should call upgrade notification without a latest version if not found', async () => {
-      const cmd = await createTest(FlexPluginsUpgradePlugin)('--yes');
-      mockForDoRun(cmd);
-      // @ts-ignore
-      const upgradeNotification = jest.spyOn(cmd.prints, 'upgradeNotification');
-      jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
-      // @ts-ignore
-      jest.spyOn(cmd, 'getLatestVersionOfDep').mockResolvedValue({});
-
-      await cmd.doRun();
-
-      expect(upgradeNotification).toHaveBeenCalledTimes(1);
-      expect(upgradeNotification).toHaveBeenCalledWith(true, '');
-    });
-
     it('should not call cleanupNodeModules if already latest version', async () => {
       const cmd = await createTest(FlexPluginsUpgradePlugin)();
       mockForDoRun(cmd);

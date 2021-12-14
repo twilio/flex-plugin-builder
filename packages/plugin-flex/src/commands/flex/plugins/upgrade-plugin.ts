@@ -125,9 +125,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     }
 
     const pkgJson = await this.getLatestVersionOfDep(flexPluginScript, this._flags.beta);
-    const latestVersion = pkgJson ? semver.coerce(pkgJson.version as string) : '';
-    const latestMajorVersion = latestVersion ? latestVersion.major : 0;
-    await this.prints.upgradeNotification(this._flags.yes, latestVersion ? latestVersion.version : '');
+    await this.prints.upgradeNotification(this._flags.yes, pkgJson.version as string);
 
     const currentPkgVersion = this.pkgVersion;
     switch (currentPkgVersion) {
@@ -145,7 +143,8 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         break;
     }
 
-    if (currentPkgVersion !== latestMajorVersion) {
+    const latestVersion = pkgJson ? semver.coerce(pkgJson.version as string)?.major : 0;
+    if (currentPkgVersion !== latestVersion) {
       await this.cleanupNodeModules();
     }
 
