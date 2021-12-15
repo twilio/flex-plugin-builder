@@ -6,7 +6,7 @@ import * as pluginServerScripts from 'flex-plugin-webpack/dist/devServer/pluginS
 import * as devServerScripts from 'flex-plugin-webpack/dist/devServer/webpackDevServer';
 import * as ipcServerScripts from 'flex-plugin-webpack/dist/devServer/ipcServer';
 import * as compilerScripts from 'flex-plugin-webpack/dist/compiler';
-import { PluginsConfig } from 'flex-plugin-webpack';
+import { PluginsConfig, DelayRenderStaticPlugin } from 'flex-plugin-webpack';
 
 import * as parserUtils from '../../utils/parser';
 import * as startScripts from '../start';
@@ -316,7 +316,7 @@ describe('StartScript', () => {
       await startScripts._startDevServer([plugin], { ...opts, type: configScripts.WebpackType.JavaScript }, {});
       expect(compiler).toHaveBeenCalledTimes(1);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect(compiler).toHaveBeenCalledWith(expect.any(Object), true, emitCompileComplete as any);
+      expect(compiler).toHaveBeenCalledWith(expect.any(Object), true, true, emitCompileComplete as any);
     });
 
     it('should use default compiler for static/complete', async () => {
@@ -326,7 +326,7 @@ describe('StartScript', () => {
         pluginsConfig,
       );
       expect(compiler).toHaveBeenCalledTimes(1);
-      expect(compiler).toHaveBeenCalledWith(expect.any(Object), true, defaultOnCompile);
+      expect(compiler).toHaveBeenCalledWith(expect.any(Object), true, false, defaultOnCompile);
 
       compiler.mockReset();
       await startScripts._startDevServer(
@@ -335,7 +335,7 @@ describe('StartScript', () => {
         pluginsConfig,
       );
       expect(compiler).toHaveBeenCalledTimes(1);
-      expect(compiler).toHaveBeenCalledWith(expect.any(Object), true, defaultOnCompile);
+      expect(compiler).toHaveBeenCalledWith(expect.any(Object), true, false, defaultOnCompile);
     });
   });
 

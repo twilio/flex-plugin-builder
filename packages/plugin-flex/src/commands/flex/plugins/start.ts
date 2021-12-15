@@ -110,6 +110,9 @@ export default class FlexPluginsStart extends FlexPlugin {
     flexArgs.push('--port', flexPort.toString());
 
     if (flexArgs.length && localPluginNames.length) {
+      // Verify the users environment is ready to run plugins locally
+      await this.checkLocalEnvironment(localPluginNames);
+
       // Verify all plugins are correct
       for (let i = 0; localPluginNames && i < localPluginNames.length; i++) {
         await this.checkPlugin(localPluginNames[i]);
@@ -162,6 +165,13 @@ export default class FlexPluginsStart extends FlexPlugin {
     if (!scriptVersion) {
       scriptVersion = semver.coerce(pkg.devDependencies['flex-plugin-scripts']);
     }
+  }
+
+  /**
+   * Checks that the user's environment is ready to run plugins locally
+   */
+  async checkLocalEnvironment(args: string[]): Promise<void> {
+    await this.runScript('pre-localrun-check', args);
   }
 
   /**

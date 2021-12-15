@@ -1,5 +1,5 @@
 import { findUp, resolveCwd } from 'flex-dev-utils/dist/fs';
-import { spawn } from 'flex-dev-utils';
+import { spawn } from 'flex-dev-utils/dist/spawn';
 import { camelCase, upperFirst } from 'flex-dev-utils/dist/lodash';
 
 import * as github from '../utils/github';

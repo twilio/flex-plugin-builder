@@ -13,7 +13,8 @@ import {
 } from 'flex-dev-utils/dist/fs';
 import packageJson from 'package-json';
 import { flags } from '@oclif/parser';
-import { TwilioApiError, TwilioCliError, spawn, progress, semver } from 'flex-dev-utils';
+import { TwilioApiError, TwilioCliError, progress, semver } from 'flex-dev-utils';
+import { spawn } from 'flex-dev-utils/dist/spawn';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import FlexPlugin, { ConfigData, PkgCallback, SecureStorage } from '../../../sub-commands/flex-plugin';

@@ -6,7 +6,7 @@ import { SyncHook } from 'tapable';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import typescriptFormatter, { Issue } from '@k88/typescript-compile-error-formatter';
 import webpack, { Compiler as WebpackCompiler, Configuration } from 'webpack';
-import { getPaths } from 'flex-dev-utils/dist/fs';
+import { getCliPaths, getPaths, readRunPluginsJson, writeJSONFile } from 'flex-dev-utils/dist/fs';
 import webpackFormatMessages from '@k88/format-webpack-messages';
 import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
 
@@ -48,7 +48,12 @@ const results: OnCompileResult = {};
  * @param localPlugins  the names of plugins to run locally
  */
 /* istanbul ignore next */
-export default (config: Configuration, devServer: boolean, onCompile: OnCompile): Compiler => {
+export default (
+  config: Configuration,
+  devServer: boolean,
+  isJavaScriptServer: boolean,
+  onCompile: OnCompile,
+): Compiler => {
   logger.debug('Creating webpack compiler');
 
   try {
@@ -107,7 +112,20 @@ export default (config: Configuration, devServer: boolean, onCompile: OnCompile)
         compiler.hooks.tsCompiled.call(messages.warnings, messages.errors);
       }
 
-      onCompile({ result, appName: getPaths().app.name });
+      const config = readRunPluginsJson();
+
+      // Add the plugin to the loaded plugins configuration file
+      if (isJavaScriptServer) {
+        config.loadedPlugins.push(getPaths().app.name);
+        writeJSONFile(config, getCliPaths().localPluginsJsonPath);
+      }
+
+      // Check to see if the plugin is the last bundle to be loaded
+      onCompile({
+        result,
+        appName: getPaths().app.name,
+        lastPluginBundle: config.plugins.length === config.loadedPlugins.length,
+      });
     });
 
     return compiler;
