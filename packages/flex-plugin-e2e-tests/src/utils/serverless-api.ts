@@ -8,16 +8,6 @@ interface Service {
   sid: string;
 }
 
-interface Environment {
-  // eslint-disable-next-line camelcase
-  unique_name: string;
-  // eslint-disable-next-line camelcase
-  build_sid: string;
-  sid: string;
-}
-
-interface Build {}
-
 const realm = testParams.config.region ? `${testParams.config.region}.` : '';
 const baseUrl = `https://serverless.${realm}twilio.com/v1`;
 const auth = {
