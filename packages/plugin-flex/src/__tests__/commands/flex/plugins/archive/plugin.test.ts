@@ -79,6 +79,27 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
     }
   });
 
+  it('should quit if archiving on the api fails', async (done) => {
+    const err = new TwilioApiError(20400, 'message', 500);
+
+    const cmd = await createCmd();
+    mockPluginsApiToolkit(cmd);
+
+    archivePlugin.mockRejectedValue(err);
+
+    try {
+      await cmd.doArchive();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TwilioApiError);
+      expect(e.status).toEqual(500);
+      expect(e.message).toEqual('message');
+      expect(archivePlugin).toHaveBeenCalledTimes(1);
+      expect(archivePlugin).toHaveBeenCalledWith({ name: plugin.name });
+      expect(describePlugin).not.toHaveBeenCalled();
+      done();
+    }
+  });
+
   it('should quit if already archived and no environment is found', async (done) => {
     const err = new TwilioApiError(20400, 'message', 400);
 
@@ -149,6 +170,64 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
     expect(getEnvironment).toHaveBeenCalledTimes(1);
     expect(deleteEnvironment).toHaveBeenCalledTimes(1);
     expect(deleteEnvironment).toHaveBeenCalledWith(serviceSid, environment.sid);
+  });
+
+  it('should throw an if no environment is found and there plugin is already archive', async (done) => {
+    const err = new TwilioApiError(20400, 'message', 400);
+
+    const cmd = await createCmd();
+    mockPluginsApiToolkit(cmd);
+
+    archivePlugin.mockRejectedValue(err);
+    describePlugin.mockResolvedValue(plugin);
+    getServerlessSid.mockResolvedValue(null);
+
+    try {
+      await cmd.doArchive();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TwilioApiError);
+      expect(e.message).toContain('already archived');
+      expect(archivePlugin).toHaveBeenCalledTimes(1);
+      expect(archivePlugin).toHaveBeenCalledWith({ name: plugin.name });
+      expect(getServerlessSid).toHaveBeenCalledTimes(1);
+      expect(getEnvironment).not.toHaveBeenCalled();
+      expect(deleteEnvironment).not.toHaveBeenCalled();
+
+      done();
+    }
+  });
+
+  it('should continue without without removing environment if service already removed from archiving versions', async () => {
+    const cmd = await createCmd();
+    mockPluginsApiToolkit(cmd);
+
+    archivePlugin.mockResolvedValue(plugin);
+    describePlugin.mockResolvedValue(plugin);
+    getServerlessSid.mockResolvedValue(null);
+
+    await cmd.doArchive();
+    expect(archivePlugin).toHaveBeenCalledTimes(1);
+    expect(archivePlugin).toHaveBeenCalledWith({ name: plugin.name });
+    expect(getServerlessSid).toHaveBeenCalledTimes(1);
+    expect(getEnvironment).not.toHaveBeenCalled();
+    expect(deleteEnvironment).not.toHaveBeenCalled();
+  });
+
+  it('should continue without without removing environment if environment already removed from archiving versions', async () => {
+    const cmd = await createCmd();
+    mockPluginsApiToolkit(cmd);
+
+    archivePlugin.mockResolvedValue(plugin);
+    describePlugin.mockResolvedValue(plugin);
+    getServerlessSid.mockResolvedValue(serviceSid);
+    getEnvironment.mockResolvedValue(null);
+
+    await cmd.doArchive();
+    expect(archivePlugin).toHaveBeenCalledTimes(1);
+    expect(archivePlugin).toHaveBeenCalledWith({ name: plugin.name });
+    expect(getServerlessSid).toHaveBeenCalledTimes(1);
+    expect(getEnvironment).toHaveBeenCalledTimes(1);
+    expect(deleteEnvironment).not.toHaveBeenCalled();
   });
 
   it('should get name', async () => {
