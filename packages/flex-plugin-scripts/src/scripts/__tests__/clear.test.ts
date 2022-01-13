@@ -2,7 +2,7 @@ import * as credentials from 'flex-dev-utils/dist/credentials';
 
 import * as clearScript from '../clear';
 
-jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/logger/lib/logger');
 
 describe('clear', () => {
   it('should clear credentials', async () => {

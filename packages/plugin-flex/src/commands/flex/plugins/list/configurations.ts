@@ -1,4 +1,4 @@
-import { ListConfigurations } from 'flex-plugins-api-toolkit/dist/scripts';
+import { ListConfigurations } from 'flex-plugins-api-client';
 
 import { createDescription } from '../../../../utils/general';
 import InformationFlexPlugin from '../../../../sub-commands/information-flex-plugin';

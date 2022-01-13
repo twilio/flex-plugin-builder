@@ -7,7 +7,7 @@ import * as listScript from '../list';
 
 jest.mock('../../prints/pluginVersions');
 jest.mock('../../utils/runtime');
-jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/logger/lib/logger');
 jest.mock('flex-dev-utils/dist/credentials');
 
 /* eslint-disable */

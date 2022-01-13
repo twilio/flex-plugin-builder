@@ -31,7 +31,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   plugin1.version = semver.inc(oldVersion, 'patch') as string;
   await spawn(
     'twilio',
-    ['flex:plugins:deploy', '--changelog', `"${plugin1.changelog}"`, '--patch', ...config.regionFlag],
+    ['flex:plugins:deploy', '--changelog', `"${plugin1.changelog}"`, '--patch', '-l', 'debug', ...config.regionFlag],
     {
       cwd: plugin1.dir,
     },
@@ -41,13 +41,15 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   await spawn('twilio', [
     'flex:plugins:release',
     '--plugin',
+    '-l',
+    'debug',
     `${plugin1.name}@${plugin1.version}`,
     ...config.regionFlag,
   ]);
 
   // Start the 2 local plugins and 1 versioned plugin (Note: cwd is plugin3 in this scenario since plugin is the remote one)
   const flags = ['--name', `${plugin1.name}@${oldVersion}`, '--name', plugin2.name];
-  const twilioCliResult = await spawn('twilio', ['flex:plugins:start', ...flags], {
+  const twilioCliResult = await spawn('twilio', ['flex:plugins:start', '-l', 'debug', ...flags], {
     detached: true,
     cwd: plugin3.dir,
   });

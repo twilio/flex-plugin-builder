@@ -1,5 +1,5 @@
 import { flags } from '@oclif/command';
-import { DescribePluginVersion } from 'flex-plugins-api-toolkit';
+import { DescribePluginVersion } from 'flex-plugins-api-client';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import { createDescription } from '../../../../utils/general';

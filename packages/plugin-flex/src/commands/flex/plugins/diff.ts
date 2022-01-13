@@ -1,6 +1,5 @@
-import { Difference } from 'flex-plugins-api-toolkit/dist/tools/diff';
+import { Difference, Diff } from 'flex-plugins-api-client';
 import { TwilioCliError } from 'flex-dev-utils';
-import { Diff } from 'flex-plugins-api-toolkit';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import { createDescription } from '../../../utils/general';

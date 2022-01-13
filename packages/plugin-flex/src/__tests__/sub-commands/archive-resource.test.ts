@@ -1,10 +1,10 @@
 import { TwilioApiError } from 'flex-dev-utils';
-import * as inquirer from 'flex-dev-utils/dist/inquirer';
+import * as questions from 'flex-dev-utils/dist/questions';
 
 import ArchiveResource from '../../sub-commands/archive-resource';
 import createTest from '../framework';
 
-jest.mock('flex-dev-utils/dist/inquirer');
+jest.mock('flex-dev-utils/dist/questions');
 
 describe('SubCommands/ArchiveResource', () => {
   interface Resource {
@@ -19,7 +19,7 @@ describe('SubCommands/ArchiveResource', () => {
   const doArchive = jest.fn();
   const getName = jest.fn();
   const getResourceType = jest.fn();
-  const confirm = jest.spyOn(inquirer, 'confirm');
+  const confirm = jest.spyOn(questions, 'confirm');
 
   class Plugin extends ArchiveResource<Resource> {
     async doArchive(): Promise<Resource> {
@@ -60,7 +60,7 @@ describe('SubCommands/ArchiveResource', () => {
 
     expect(doArchive).toHaveBeenCalledTimes(1);
     expect(getName).toHaveBeenCalledTimes(2);
-    expect(getResourceType).toHaveBeenCalledTimes(1);
+    expect(getResourceType).toHaveBeenCalledTimes(2);
     expect(confirm).toHaveBeenCalledTimes(1);
     expect(exit).not.toHaveBeenCalled();
 
@@ -79,7 +79,7 @@ describe('SubCommands/ArchiveResource', () => {
 
     expect(doArchive).not.toHaveBeenCalled();
     expect(getName).toHaveBeenCalledTimes(2);
-    expect(getResourceType).toHaveBeenCalledTimes(1);
+    expect(getResourceType).toHaveBeenCalledTimes(2);
     expect(confirm).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(0);

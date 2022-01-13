@@ -4,12 +4,12 @@ import os, { homedir } from 'os';
 import { promisify } from 'util';
 import crypto from 'crypto';
 
-import globby from 'globby';
+import { sync as globbySync } from 'globby';
 import mkdirp from 'mkdirp';
 import rimRaf from 'rimraf';
 import appModule from 'app-module-path';
 
-import { confirm } from './inquirer';
+import { confirm } from './questions';
 
 const flexUI = '@twilio/flex-ui';
 const react = 'react';
@@ -340,7 +340,7 @@ export const resolveCwd = (...paths: string[]): string => resolveRelative(getCwd
  * @param patterns the patterns
  */
 export const findGlobsIn = (dir: string, ...patterns: string[]): string[] => {
-  return globby.sync(patterns, { cwd: dir });
+  return globbySync(patterns, { cwd: dir });
 };
 
 /**
