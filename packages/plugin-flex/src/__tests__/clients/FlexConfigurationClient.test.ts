@@ -97,11 +97,11 @@ describe('FlexConfigurationClient', () => {
         fetch.mockResolvedValue({ serverlessServiceSids: [] });
 
         // @ts-ignore
-        phin.mockImplementation((options) => { 
-          return { statusCode: 200 }
+        phin.mockImplementation((options) => {
+          return { statusCode: 200 };
         });
 
-        process.env.HTTP_PROXY = "http://proxy_url/";
+        process.env.HTTP_PROXY = 'http://proxy_url/';
         await client.registerServerlessSid(sid1);
 
         expect(fetch).toHaveBeenCalledTimes(2);
