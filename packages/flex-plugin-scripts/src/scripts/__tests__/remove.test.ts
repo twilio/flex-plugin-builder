@@ -1,13 +1,13 @@
 import * as fsScript from 'flex-dev-utils/dist/fs';
 import { logger } from 'flex-dev-utils';
-import * as inquirer from 'flex-dev-utils/dist/inquirer';
+import * as questions from 'flex-dev-utils/dist/questions';
 
 import * as runtimeScripts from '../../utils/runtime';
 import * as removeScript from '../remove';
 
 jest.mock('../../clients/environments');
-jest.mock('flex-dev-utils/dist/logger');
-jest.mock('flex-dev-utils/dist/inquirer');
+jest.mock('flex-dev-utils/dist/logger/lib/logger');
+jest.mock('flex-dev-utils/dist/questions');
 jest.mock('flex-dev-utils/dist/credentials', () => ({
   getCredential: jest.fn(),
 }));
@@ -55,7 +55,7 @@ describe('remove', () => {
     });
 
     it('should quit if confirmation is rejected', async () => {
-      const confirm = jest.spyOn(inquirer, 'confirm').mockResolvedValue(false);
+      const confirm = jest.spyOn(questions, 'confirm').mockResolvedValue(false);
 
       await removeScript.default();
 
@@ -66,7 +66,7 @@ describe('remove', () => {
     });
 
     it('should doRemove if confirmed', async () => {
-      const confirm = jest.spyOn(inquirer, 'confirm').mockResolvedValue(true);
+      const confirm = jest.spyOn(questions, 'confirm').mockResolvedValue(true);
 
       await removeScript.default();
 

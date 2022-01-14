@@ -2,11 +2,9 @@ import appModule from 'app-module-path';
 import * as globby from 'globby';
 
 import * as fs from '../fs';
-import * as inquirer from '../inquirer';
+import * as questions from '../questions';
 import { PackageJson } from '../fs';
-import { readJsonFile } from '../../dist/fs';
 
-jest.mock('flex-plugins-utils-logger/dist/lib/inquirer');
 jest.mock('globby');
 jest.mock('app-module-path');
 
@@ -347,7 +345,7 @@ describe('fs', () => {
     let mkdirpSync = jest.spyOn(fs, 'mkdirpSync');
     let writeFileSync = jest.spyOn(fs.default, 'writeFileSync');
     let readJsonFile = jest.spyOn(fs, 'readJsonFile');
-    let confirm = jest.spyOn(inquirer, 'confirm');
+    let confirm = jest.spyOn(questions, 'confirm');
     let getCliPaths = jest.spyOn(fs, 'getCliPaths');
 
     beforeEach(() => {
@@ -355,7 +353,7 @@ describe('fs', () => {
       mkdirpSync = jest.spyOn(fs, 'mkdirpSync');
       writeFileSync = jest.spyOn(fs.default, 'writeFileSync');
       readJsonFile = jest.spyOn(fs, 'readJsonFile');
-      confirm = jest.spyOn(inquirer, 'confirm');
+      confirm = jest.spyOn(questions, 'confirm');
       getCliPaths = jest.spyOn(fs, 'getCliPaths');
 
       mkdirpSync.mockReturnThis();

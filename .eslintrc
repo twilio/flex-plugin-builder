@@ -5,6 +5,12 @@
   "parserOptions": {
     "project": "./tsconfig.lint.json"
   },
+  "overrides": [{
+    "files": ["*.test.ts"],
+    "rules": {
+      "sonarjs/no-duplicate-string": "off"
+    }
+  }],
   "rules": {
     "prefer-promise-reject-errors": "off",
     "import/no-named-as-default-member": "off",

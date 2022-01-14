@@ -38,6 +38,7 @@ interface Configurations {
 const getConfiguration = async <T extends ConfigurationType>(
   name: T,
   env: Environment,
+  emitErrors: boolean,
   type: WebpackType = WebpackType.Complete,
 ): Promise<Configurations[T]> => {
   const args = {
@@ -56,7 +57,11 @@ const getConfiguration = async <T extends ConfigurationType>(
       try {
         return require(getPaths().app.webpackConfigPath)(config, args);
       } catch (exception) {
-        await emitDevServerCrashed(exception);
+        if (emitErrors) {
+          await emitDevServerCrashed(exception);
+        } else {
+          throw exception;
+        }
       }
     }
 

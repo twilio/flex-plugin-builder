@@ -34,18 +34,18 @@
     "test": "exit 0"
   },
   "dependencies": {
-    "axios": "^0.21.4",
+    "axios": "^0.24.0",
     "flex-plugins-api-client": "4.2.2",
-    "flex-plugins-utils-logger": "4.2.2",
+    "flex-dev-utils": "4.2.2",
     "lodash": "4.17.21",
-    "package-json": "^6.5.0",
+    "package-json": "^7.0.0",
     "puppeteer": "^10.4.0",
-    "replace-in-file": "^6.2.0",
+    "replace-in-file": "^6.3.2",
     "semver": "^7.3.5"
   },
   "devDependencies": {
-    "@types/lodash": "4.14.173",
-    "@types/semver": "^7.3.8"
+    "@types/lodash": "4.14.177",
+    "@types/semver": "^7.3.9"
   },
   "engines": {
     "node": ">=10.12.0"

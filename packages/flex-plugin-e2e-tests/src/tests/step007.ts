@@ -2,7 +2,7 @@
 import { replaceInFile } from 'replace-in-file';
 import semver from 'semver';
 
-import { assertion, joinPath, logResult, spawn, api } from '../utils';
+import { assertion, joinPath, spawn, api } from '../utils';
 import { TestSuite, TestParams } from '../core';
 
 // Deploy plugin
@@ -23,12 +23,11 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
   plugin.version = semver.inc(resource?.version || '0.0.0', 'patch') as string;
   const result = await spawn(
     'twilio',
-    ['flex:plugins:deploy', '--changelog', `"${plugin.changelog}"`, '--patch', ...config.regionFlag],
+    ['flex:plugins:deploy', '--changelog', `"${plugin.changelog}"`, '--patch', '-l', 'debug', ...config.regionFlag],
     {
       cwd: plugin.dir,
     },
   );
-  logResult(result);
 
   assertion.fileExists([plugin.dir, 'build', `${plugin.name}.js`]);
   assertion.fileContains([plugin.dir, 'build', `${plugin.name}.js`], plugin.newlineValue);

@@ -8,8 +8,9 @@ const cracoUpgradeGuideLink = 'https://twilio.com';
  * Upgrade notification
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const upgradeNotification = (logger: Logger) => async (skip: boolean) => {
-  boxen.warning('You are about to upgrade your plugin to use the latest version of Flex Plugin CLI.');
+const upgradeNotification = (logger: Logger) => async (skip: boolean, version?: string) => {
+  const latestVersion = version ? `version ${version}` : 'the latest version';
+  boxen.warning(`You are about to upgrade your plugin to use ${latestVersion} of the Flex Plugin CLI.`);
   if (!skip) {
     const answer = await confirm('Please backup your plugin either locally or on GitHub. Do you want to continue?');
     if (!answer) {

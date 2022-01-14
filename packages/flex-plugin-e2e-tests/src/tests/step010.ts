@@ -2,7 +2,7 @@
 import { replaceInFile } from 'replace-in-file';
 
 import { TestSuite, TestParams, testParams } from '../core';
-import { spawn, Browser, pluginHelper, ConsoleAPI, joinPath, assertion, killChildProcess, logResult } from '../utils';
+import { spawn, Browser, pluginHelper, ConsoleAPI, joinPath, assertion, killChildProcess } from '../utils';
 import { PluginType } from '../core/parameters';
 
 // Starting multiple plugins using 2 local and one remote works
@@ -28,11 +28,8 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
 
   // Create and setup a new plugin
   const setup = async (plugin: PluginType) => {
-    const createResult = await spawn('twilio', ['flex:plugins:create', plugin.name, ...flags]);
-    logResult(createResult);
-
-    const installResult = await spawn('npm', ['i'], { cwd: plugin.dir });
-    logResult(installResult);
+    await spawn('twilio', ['flex:plugins:create', plugin.name, ...flags]);
+    await spawn('npm', ['i'], { cwd: plugin.dir });
 
     await replaceInFile({
       files: joinPath(plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),

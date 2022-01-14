@@ -6,14 +6,14 @@ import * as pluginServerScripts from 'flex-plugin-webpack/dist/devServer/pluginS
 import * as devServerScripts from 'flex-plugin-webpack/dist/devServer/webpackDevServer';
 import * as ipcServerScripts from 'flex-plugin-webpack/dist/devServer/ipcServer';
 import * as compilerScripts from 'flex-plugin-webpack/dist/compiler';
-import { PluginsConfig, DelayRenderStaticPlugin } from 'flex-plugin-webpack';
+import { PluginsConfig } from 'flex-plugin-webpack';
 
 import * as parserUtils from '../../utils/parser';
 import * as startScripts from '../start';
 import * as configScripts from '../../config';
 import * as prints from '../../prints';
 
-jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/logger/lib/logger');
 jest.mock('flex-dev-utils/dist/fs');
 jest.mock('flex-dev-utils/dist/urls');
 jest.mock('flex-dev-utils/dist/env');

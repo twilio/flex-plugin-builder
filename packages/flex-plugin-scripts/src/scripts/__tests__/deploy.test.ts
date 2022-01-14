@@ -1,6 +1,6 @@
 import { logger, FlexPluginError, UserActionError } from 'flex-dev-utils';
 import * as fsScript from 'flex-dev-utils/dist/fs';
-import * as inquirer from 'flex-dev-utils/dist/inquirer';
+import * as questions from 'flex-dev-utils/dist/questions';
 
 import * as prints from '../../prints';
 import * as deployScript from '../deploy';
@@ -13,9 +13,9 @@ jest.mock('../../clients/environments');
 jest.mock('../../clients/builds');
 jest.mock('../../clients/deployments');
 jest.mock('../../prints/deploySuccessful');
-jest.mock('flex-dev-utils/dist/inquirer');
+jest.mock('flex-dev-utils/dist/questions');
 jest.mock('flex-dev-utils/dist/fs');
-jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/logger/lib/logger');
 jest.mock('flex-dev-utils/dist/updateNotifier');
 jest.mock('flex-dev-utils/dist/credentials', () => ({
   getCredential: jest.fn(),
@@ -452,7 +452,7 @@ describe('DeployScript', () => {
       const getUIDependencies = jest.fn().mockResolvedValue(flexUIDependencies);
       ConfigurationClient.mockImplementation(() => ({ getFlexUIVersion, getUIDependencies }));
 
-      const confirm = jest.spyOn(inquirer, 'confirm');
+      const confirm = jest.spyOn(questions, 'confirm');
       const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.5.2');
 
       await deployScript._verifyFlexUIConfiguration();
@@ -476,7 +476,7 @@ describe('DeployScript', () => {
       const getUIDependencies = jest.fn().mockResolvedValue({});
       ConfigurationClient.mockImplementation(() => ({ getFlexUIVersion, getUIDependencies }));
 
-      const confirm = jest.spyOn(inquirer, 'confirm').mockResolvedValue(true);
+      const confirm = jest.spyOn(questions, 'confirm').mockResolvedValue(true);
       const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.13.1');
       await deployScript._verifyFlexUIConfiguration();
 
@@ -489,7 +489,7 @@ describe('DeployScript', () => {
       const getUIDependencies = jest.fn().mockResolvedValue(dependencies);
       ConfigurationClient.mockImplementation(() => ({ getFlexUIVersion, getUIDependencies }));
 
-      const confirm = jest.spyOn(inquirer, 'confirm');
+      const confirm = jest.spyOn(questions, 'confirm');
       const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.13.1');
 
       await deployScript._verifyFlexUIConfiguration();
@@ -503,7 +503,7 @@ describe('DeployScript', () => {
       const getUIDependencies = jest.fn().mockResolvedValue(dependencies);
       ConfigurationClient.mockImplementation(() => ({ getFlexUIVersion, getUIDependencies }));
 
-      const confirm = jest.spyOn(inquirer, 'confirm').mockResolvedValue(true);
+      const confirm = jest.spyOn(questions, 'confirm').mockResolvedValue(true);
       const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.12.1');
 
       await deployScript._verifyFlexUIConfiguration();
@@ -517,7 +517,7 @@ describe('DeployScript', () => {
       const getUIDependencies = jest.fn().mockResolvedValue(dependencies);
       ConfigurationClient.mockImplementation(() => ({ getFlexUIVersion, getUIDependencies }));
 
-      const confirm = jest.spyOn(inquirer, 'confirm').mockResolvedValue(false);
+      const confirm = jest.spyOn(questions, 'confirm').mockResolvedValue(false);
       const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.12.1');
 
       try {

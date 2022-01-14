@@ -1,4 +1,4 @@
-import { Configuration } from 'flex-plugins-api-toolkit';
+import { Configuration } from 'flex-plugins-api-client';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import * as flags from '../../../../utils/flags';

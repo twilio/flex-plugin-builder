@@ -18,7 +18,7 @@ export interface HttpConfig {
 }
 
 interface UploadRequestConfig extends AxiosRequestConfig {
-  headers: Record<string, unknown>;
+  headers: Record<string, string>;
   auth: {
     username: string;
     password: string;

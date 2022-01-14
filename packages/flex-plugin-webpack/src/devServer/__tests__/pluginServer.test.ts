@@ -4,7 +4,7 @@ import { FlexPluginError } from 'flex-dev-utils';
 
 import * as pluginServerScript from '../pluginServer';
 
-jest.mock('flex-dev-utils/dist/logger');
+jest.mock('flex-dev-utils/dist/logger/lib/logger');
 
 describe('pluginServer', () => {
   const pluginName = 'plugin-test';
