@@ -41,6 +41,10 @@ USAGE
 ...
 ```
 
+## HTTP Proxy
+
+To deploy behind a http proxy, export the environment variable `HTTP_PROXY` before calling the `flex:plugins:deploy` command.
+
 # Commands
 
 <!-- commands -->
