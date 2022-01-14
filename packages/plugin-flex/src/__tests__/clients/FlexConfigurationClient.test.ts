@@ -1,6 +1,11 @@
+import { HttpsProxyAgent } from 'https-proxy-agent';
+import phin from 'phin';
 import { ConfigurationContext } from 'twilio/lib/rest/flexApi/v1/configuration';
 
 import FlexConfigurationClient from '../../clients/FlexConfigurationClient';
+
+jest.mock('https-proxy-agent');
+jest.mock('phin');
 
 describe('FlexConfigurationClient', () => {
   const fetch = jest.fn();
@@ -20,6 +25,7 @@ describe('FlexConfigurationClient', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('fetch', () => {
@@ -83,6 +89,27 @@ describe('FlexConfigurationClient', () => {
       expect(fetch).toHaveBeenCalledTimes(2);
       expect(updateServerlessSids).toHaveBeenCalledTimes(1);
       expect(updateServerlessSids).toHaveBeenCalledWith([sid1]);
+    });
+
+    it('should use HttpsProxyAgent if env variable is set', async () => {
+      const oldProxy = process.env.HTTP_PROXY;
+      try {
+        fetch.mockResolvedValue({ serverlessServiceSids: [] });
+
+        // @ts-ignore
+        phin.mockImplementation((options) => { 
+          return { statusCode: 200 }
+        });
+
+        process.env.HTTP_PROXY = "http://proxy_url/";
+        await client.registerServerlessSid(sid1);
+
+        expect(fetch).toHaveBeenCalledTimes(2);
+        expect(phin).toHaveBeenCalledTimes(1);
+        expect(HttpsProxyAgent).toHaveBeenCalledTimes(1);
+      } finally {
+        process.env.HTTP_PROXY = oldProxy;
+      }
     });
   });
 
