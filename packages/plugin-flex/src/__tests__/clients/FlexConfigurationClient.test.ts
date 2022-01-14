@@ -91,6 +91,21 @@ describe('FlexConfigurationClient', () => {
       expect(updateServerlessSids).toHaveBeenCalledWith([sid1]);
     });
 
+    it('should not use HttpsProxyAgent if env variable is not set', async () => {
+      fetch.mockResolvedValue({ serverlessServiceSids: [] });
+
+      // @ts-ignore
+      phin.mockImplementation((options) => {
+        return { statusCode: 200 };
+      });
+
+      await client.registerServerlessSid(sid1);
+
+      expect(fetch).toHaveBeenCalledTimes(2);
+      expect(phin).toHaveBeenCalledTimes(1);
+      expect(HttpsProxyAgent).toHaveBeenCalledTimes(0);
+    });
+
     it('should use HttpsProxyAgent if env variable is set', async () => {
       const oldProxy = process.env.HTTP_PROXY;
       try {
