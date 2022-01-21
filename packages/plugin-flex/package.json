@@ -73,7 +73,9 @@
     "twilio": "^3.71.2"
   },
   "engines": {
-    "node": "^12 || ^14 || ^16"
+    "@twilio/cli-core": "^5",
+    "node": "^12 || ^14 || ^16",
+    "twilio-cli": "^2"
   },
   "oclif": {
     "name": "flex",
