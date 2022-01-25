@@ -8,7 +8,8 @@
   "dependencies": {
     "flex-plugin-scripts": "{{pluginScriptsVersion}}",
     "react": "16.5.2",
-    "react-dom": "16.5.2"
+    "react-dom": "16.5.2",
+    "react-emotion": "9.2.12"
   },
   "devDependencies": {
     "@twilio/flex-ui": "{{flexSdkVersion}}",
