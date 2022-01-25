@@ -88,7 +88,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     'enzyme',
     'babel-polyfill',
     'enzyme-adapter-react-16',
-    'react-emotion',
+    'react-emotion', // remove and then re-add
     '@craco/craco',
     'craco-config-flex-plugin',
     'core-j',
@@ -462,6 +462,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         [flexPluginScript]: '*',
         react,
         'react-dom': react,
+        'react-emotion': '9.2.12',
       },
       devDeps: {
         '@twilio/flex-ui': '^1',
