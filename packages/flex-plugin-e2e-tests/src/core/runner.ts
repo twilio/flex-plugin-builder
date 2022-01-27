@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, @typescript-eslint/prefer-for-of, global-require */
-import { existsSync, mkdirSync, rmdirSync } from 'fs';
+import { existsSync, mkdirSync, rmdir } from 'fs';
 
 import packageJson from 'package-json';
 import { logger } from 'flex-dev-utils';
@@ -72,11 +72,28 @@ const beforeAll = async (testParams: TestParams) => {
 };
 
 /**
+ * Removes the directory and all sub directories
+ * @param directory the directory to remove
+ */
+const removeDirectory = async (directory: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    rmdir(directory, { recursive: true }, (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
+/**
  * Runs before the test
  */
 const beforeEach = async () => {
   if (existsSync(homeDir)) {
-    rmdirSync(homeDir, { recursive: true });
+    logger.info('Home directory exists, cleaning it before starting scenario');
+    await removeDirectory(homeDir);
   }
   mkdirSync(homeDir);
 
