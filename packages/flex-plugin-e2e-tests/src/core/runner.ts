@@ -5,7 +5,7 @@ import packageJson from 'package-json';
 import { logger } from 'flex-dev-utils';
 
 import { homeDir, TestParams, TestScenario, TestSuite, testSuites } from '.';
-import { api } from '../utils';
+import { api, spawn } from '../utils';
 
 /**
  * Main method for running a test
@@ -91,6 +91,8 @@ const removeDirectory = async (directory: string): Promise<void> => {
  * Runs before the test
  */
 const beforeEach = async () => {
+  await spawn('npm', ['cache', 'verify']);
+
   if (existsSync(homeDir)) {
     logger.info('Home directory exists, cleaning it before starting scenario');
     await removeDirectory(homeDir);
