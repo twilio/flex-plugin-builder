@@ -93,6 +93,7 @@ const removeDirectory = async (directory: string): Promise<void> => {
 const beforeEach = async () => {
   if (existsSync(homeDir)) {
     await sleep(10000);
+    await spawn('ls', ['-al']);
     logger.info('Home directory exists, cleaning it before starting scenario');
     await removeDirectory(homeDir);
   }
