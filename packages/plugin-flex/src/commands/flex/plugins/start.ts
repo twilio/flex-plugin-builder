@@ -2,8 +2,8 @@ import { flags } from '@oclif/command';
 import { PluginsConfig, PLUGIN_INPUT_PARSER_REGEX } from 'flex-plugin-scripts';
 import { findPortAvailablePort } from 'flex-plugin-scripts/dist/scripts/start';
 import { FLAG_MULTI_PLUGINS } from 'flex-plugin-scripts/dist/scripts/pre-script-check';
-import { TwilioCliError, semver, env, TwilioApiError } from 'flex-dev-utils';
-import { readJsonFile } from 'flex-dev-utils/dist/fs';
+import { TwilioCliError, semver, env, TwilioApiError } from '@twilio/flex-dev-utils';
+import { readJsonFile } from '@twilio/flex-dev-utils/dist/fs';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import { createDescription } from '../../../utils/general';

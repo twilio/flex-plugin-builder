@@ -1,4 +1,4 @@
-import { TwilioApiError, confirm } from 'flex-dev-utils';
+import { TwilioApiError, confirm } from '@twilio/flex-dev-utils';
 
 import FlexPlugin, { ConfigData, SecureStorage } from './flex-plugin';
 import { createDescription, instanceOf } from '../utils/general';

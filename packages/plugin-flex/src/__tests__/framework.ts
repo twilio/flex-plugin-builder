@@ -4,8 +4,8 @@
 import OClifConfig from '@oclif/config';
 import { Config, ConfigData } from '@twilio/cli-core/src/services/config';
 import tmp, { DirResult } from 'tmp';
-import { Logger } from 'flex-dev-utils';
-import * as fs from 'flex-dev-utils/dist/fs';
+import { Logger } from '@twilio/flex-dev-utils';
+import * as fs from '@twilio/flex-dev-utils/dist/fs';
 
 import FlexPlugin from '../sub-commands/flex-plugin';
 

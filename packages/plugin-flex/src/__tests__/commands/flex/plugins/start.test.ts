@@ -1,12 +1,12 @@
 /* eslint-disable camelcase */
 
 import * as pluginBuilderStartScript from 'flex-plugin-scripts/dist/scripts/start';
-import { TwilioCliError, env, TwilioError, TwilioApiError } from 'flex-dev-utils';
-import * as fs from 'flex-dev-utils/dist/fs';
+import { TwilioCliError, env, TwilioError, TwilioApiError } from '@twilio/flex-dev-utils';
+import * as fs from '@twilio/flex-dev-utils/dist/fs';
 import { PluginsConfig } from 'flex-plugin-scripts';
 import { PluginVersionResource } from 'flex-plugins-api-client';
-import * as updateNotifier from 'flex-dev-utils/dist/updateNotifier';
-import * as spawn from 'flex-dev-utils/dist/spawn';
+import * as updateNotifier from '@twilio/flex-dev-utils/dist/updateNotifier';
+import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
 
 import createTest, { mockGetPkg } from '../../../framework';
 import FlexPluginsStart from '../../../../commands/flex/plugins/start';
@@ -14,9 +14,9 @@ import FlexPluginsStart from '../../../../commands/flex/plugins/start';
 const includeRemote = 'include-remote';
 const flexUiSource = 'flex-ui-source';
 
-jest.mock('flex-dev-utils/dist/fs');
-jest.mock('flex-dev-utils/dist/updateNotifier');
-jest.mock('flex-dev-utils/dist/spawn');
+jest.mock('@twilio/flex-dev-utils/dist/fs');
+jest.mock('@twilio/flex-dev-utils/dist/updateNotifier');
+jest.mock('@twilio/flex-dev-utils/dist/spawn');
 
 describe('Commands/FlexPluginsStart', () => {
   const name = 'plugin-test';

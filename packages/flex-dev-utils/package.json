@@ -1,5 +1,5 @@
 {
-  "name": "flex-dev-utils",
+  "name": "@twilio/flex-dev-utils",
   "version": "4.3.1",
   "description": "Common development utility for creating a Flex plugin",
   "keywords": [

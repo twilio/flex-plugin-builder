@@ -2,8 +2,8 @@
 import fs from 'fs';
 import path from 'path';
 
-import axios, { AxiosRequestConfig } from 'flex-dev-utils/dist/axios';
-import { mkdirpSync } from 'flex-dev-utils/dist/fs';
+import axios, { AxiosRequestConfig } from '@twilio/flex-dev-utils/dist/axios';
+import { mkdirpSync } from '@twilio/flex-dev-utils/dist/fs';
 
 export interface GitHubInfo {
   owner: string;

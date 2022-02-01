@@ -1,5 +1,5 @@
-import { Credential, logger } from 'flex-dev-utils';
-import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
+import { Credential, logger } from '@twilio/flex-dev-utils';
+import { isSidOfType, SidPrefix } from '@twilio/flex-dev-utils/dist/sids';
 
 import BaseClient from './baseClient';
 import { Build, BuildStatus } from './serverless-types';

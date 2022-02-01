@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ConfiguredPluginResource } from 'flex-plugins-api-client';
-import { logger } from 'flex-dev-utils';
+import { logger } from '@twilio/flex-dev-utils';
 
 import { Browser } from './browser';
 import { sleep } from './timers';

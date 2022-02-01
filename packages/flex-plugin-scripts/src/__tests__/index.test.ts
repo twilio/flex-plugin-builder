@@ -1,14 +1,14 @@
-import { logger } from 'flex-dev-utils';
-import * as fsScripts from 'flex-dev-utils/dist/fs';
-import * as exit from 'flex-dev-utils/dist/exit';
+import { logger } from '@twilio/flex-dev-utils';
+import * as fsScripts from '@twilio/flex-dev-utils/dist/fs';
+import * as exit from '@twilio/flex-dev-utils/dist/exit';
 
 import index from '..';
 
-jest.mock('flex-dev-utils/dist/spawn');
-jest.mock('flex-dev-utils/dist/logger/lib/logger');
+jest.mock('@twilio/flex-dev-utils/dist/spawn');
+jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
 
 /* eslint-disable */
-const { spawn } = require('flex-dev-utils/dist/spawn');
+const { spawn } = require('@twilio/flex-dev-utils/dist/spawn');
 /* eslint-enable */
 
 describe('index', () => {

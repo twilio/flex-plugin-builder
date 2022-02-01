@@ -1,12 +1,12 @@
 import * as webpack from 'webpack';
-import { Environment } from 'flex-dev-utils/dist/env';
-import * as fs from 'flex-dev-utils/dist/fs';
+import { Environment } from '@twilio/flex-dev-utils/dist/env';
+import * as fs from '@twilio/flex-dev-utils/dist/fs';
 
 import * as webpackConfig from '../webpack.config';
 import * as clientVariables from '../clientVariables';
 import { WebpackType } from '../..';
 
-jest.mock('flex-dev-utils/dist/fs');
+jest.mock('@twilio/flex-dev-utils/dist/fs');
 jest.mock('webpack/lib/DefinePlugin');
 
 describe('WebpackConfiguration', () => {

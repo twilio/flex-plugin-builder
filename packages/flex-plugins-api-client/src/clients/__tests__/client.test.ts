@@ -1,9 +1,9 @@
-import { env, HttpClient } from 'flex-dev-utils';
+import { env, HttpClient } from '@twilio/flex-dev-utils';
 
 import PluginServiceHttp from '../client';
 
-jest.mock('flex-dev-utils/dist/http');
-jest.mock('flex-dev-utils/dist/logger/lib/logger');
+jest.mock('@twilio/flex-dev-utils/dist/http');
+jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
 
 describe('PluginServiceHttp', () => {
   beforeEach(() => {

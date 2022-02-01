@@ -1,13 +1,13 @@
-import { TwilioCliError, env as utilsEnv } from 'flex-dev-utils';
-import * as fs from 'flex-dev-utils/dist/fs';
-import * as spawn from 'flex-dev-utils/dist/spawn';
+import { TwilioCliError, env as utilsEnv } from '@twilio/flex-dev-utils';
+import * as fs from '@twilio/flex-dev-utils/dist/fs';
+import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
 
 import createTest, { mockGetPkg } from '../framework';
 import FlexPlugin from '../../sub-commands/flex-plugin';
 import DoneCallback = jest.DoneCallback;
 
-jest.mock('flex-dev-utils/dist/fs');
-jest.mock('flex-dev-utils/dist/spawn');
+jest.mock('@twilio/flex-dev-utils/dist/fs');
+jest.mock('@twilio/flex-dev-utils/dist/spawn');
 
 describe('SubCommands/FlexPlugin', () => {
   const { env } = process;

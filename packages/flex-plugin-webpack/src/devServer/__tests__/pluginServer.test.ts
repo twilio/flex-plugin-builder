@@ -1,10 +1,10 @@
-import * as fsScript from 'flex-dev-utils/dist/fs';
+import * as fsScript from '@twilio/flex-dev-utils/dist/fs';
 import { Request, Response } from 'express-serve-static-core';
-import { FlexPluginError } from 'flex-dev-utils';
+import { FlexPluginError } from '@twilio/flex-dev-utils';
 
 import * as pluginServerScript from '../pluginServer';
 
-jest.mock('flex-dev-utils/dist/logger/lib/logger');
+jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
 
 describe('pluginServer', () => {
   const pluginName = 'plugin-test';

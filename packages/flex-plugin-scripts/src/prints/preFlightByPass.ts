@@ -1,4 +1,4 @@
-import { logger, env, multilineString } from 'flex-dev-utils';
+import { logger, env, multilineString } from '@twilio/flex-dev-utils';
 
 /**
  * Prints the SKIP_PREFLIGHT_CHECK message

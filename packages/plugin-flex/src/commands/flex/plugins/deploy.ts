@@ -11,8 +11,8 @@ import {
   semver,
   ReleaseType,
   confirm,
-} from 'flex-dev-utils';
-import { getPaths } from 'flex-dev-utils/dist/fs';
+} from '@twilio/flex-dev-utils';
+import { getPaths } from '@twilio/flex-dev-utils/dist/fs';
 import { PluginResource } from 'flex-plugins-api-client';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 

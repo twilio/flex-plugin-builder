@@ -4,9 +4,9 @@
 import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
 import ModuleScopePlugin from '@k88/module-scope-plugin';
 import typescriptFormatter from '@k88/typescript-compile-error-formatter';
-import { semver, env } from 'flex-dev-utils';
-import { Environment } from 'flex-dev-utils/dist/env';
-import { getDependencyVersion, getPaths, resolveModulePath } from 'flex-dev-utils/dist/fs';
+import { semver, env } from '@twilio/flex-dev-utils';
+import { Environment } from '@twilio/flex-dev-utils/dist/env';
+import { getDependencyVersion, getPaths, resolveModulePath } from '@twilio/flex-dev-utils/dist/fs';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import PnpWebpackPlugin from 'pnp-webpack-plugin';

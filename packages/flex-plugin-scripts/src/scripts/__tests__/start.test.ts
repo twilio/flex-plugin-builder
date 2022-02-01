@@ -1,7 +1,7 @@
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import * as exit from 'flex-dev-utils/dist/exit';
-import * as fs from 'flex-dev-utils/dist/fs';
-import * as urlScripts from 'flex-dev-utils/dist/urls';
+import { FlexPluginError } from '@twilio/flex-dev-utils/dist/errors';
+import * as exit from '@twilio/flex-dev-utils/dist/exit';
+import * as fs from '@twilio/flex-dev-utils/dist/fs';
+import * as urlScripts from '@twilio/flex-dev-utils/dist/urls';
 import * as pluginServerScripts from 'flex-plugin-webpack/dist/devServer/pluginServer';
 import * as devServerScripts from 'flex-plugin-webpack/dist/devServer/webpackDevServer';
 import * as ipcServerScripts from 'flex-plugin-webpack/dist/devServer/ipcServer';
@@ -13,10 +13,10 @@ import * as startScripts from '../start';
 import * as configScripts from '../../config';
 import * as prints from '../../prints';
 
-jest.mock('flex-dev-utils/dist/logger/lib/logger');
-jest.mock('flex-dev-utils/dist/fs');
-jest.mock('flex-dev-utils/dist/urls');
-jest.mock('flex-dev-utils/dist/env');
+jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
+jest.mock('@twilio/flex-dev-utils/dist/fs');
+jest.mock('@twilio/flex-dev-utils/dist/urls');
+jest.mock('@twilio/flex-dev-utils/dist/env');
 jest.mock('../../prints');
 
 describe('StartScript', () => {

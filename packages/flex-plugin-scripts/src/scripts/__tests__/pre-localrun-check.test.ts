@@ -1,4 +1,4 @@
-import * as fsScripts from 'flex-dev-utils/dist/fs';
+import * as fsScripts from '@twilio/flex-dev-utils/dist/fs';
 
 import * as preLocalRunCheck from '../pre-localrun-check';
 

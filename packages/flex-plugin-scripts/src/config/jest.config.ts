@@ -1,7 +1,7 @@
 import { join } from 'path';
 
 import { InitialOptions } from '@jest/types/build/Config';
-import { getPaths } from 'flex-dev-utils/dist/fs';
+import { getPaths } from '@twilio/flex-dev-utils/dist/fs';
 
 export { JestConfigurations } from 'flex-plugin-test';
 

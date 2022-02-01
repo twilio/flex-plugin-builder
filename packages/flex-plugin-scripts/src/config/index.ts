@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires, global-require, @typescript-eslint/no-require-imports */
-import { Environment } from 'flex-dev-utils/dist/env';
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import { checkFilesExist, getPaths } from 'flex-dev-utils/dist/fs';
+import { Environment } from '@twilio/flex-dev-utils/dist/env';
+import { FlexPluginError } from '@twilio/flex-dev-utils/dist/errors';
+import { checkFilesExist, getPaths } from '@twilio/flex-dev-utils/dist/fs';
 import {
   webpackFactory,
   webpackDevFactory,

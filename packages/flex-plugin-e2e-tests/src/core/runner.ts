@@ -2,7 +2,7 @@
 import { existsSync, mkdirSync, rmdirSync } from 'fs';
 
 import packageJson from 'package-json';
-import { logger } from 'flex-dev-utils';
+import { logger } from '@twilio/flex-dev-utils';
 
 import { homeDir, TestParams, TestScenario, TestSuite, testSuites } from '.';
 import { api } from '../utils';

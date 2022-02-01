@@ -2,7 +2,7 @@ import CLI from '../cli';
 import { createFlexPlugin } from '../create-flex-plugin';
 
 jest.mock('../create-flex-plugin');
-jest.mock('flex-dev-utils/dist/logger/lib/logger');
+jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
 
 describe('CLI', () => {
   const exit = jest.spyOn(process, 'exit').mockReturnThis();

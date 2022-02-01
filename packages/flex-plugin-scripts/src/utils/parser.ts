@@ -1,5 +1,5 @@
-import { FlexConfigurationPlugin, readPluginsJson } from 'flex-dev-utils/dist/fs';
-import { FlexPluginError, semver } from 'flex-dev-utils';
+import { FlexConfigurationPlugin, readPluginsJson } from '@twilio/flex-dev-utils/dist/fs';
+import { FlexPluginError, semver } from '@twilio/flex-dev-utils';
 import { PLUGIN_INPUT_PARSER_REGEX } from 'flex-plugin-webpack';
 
 export interface UserInputPlugin {

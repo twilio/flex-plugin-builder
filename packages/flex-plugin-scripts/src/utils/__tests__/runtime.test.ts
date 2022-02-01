@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
-import { Credential } from 'flex-dev-utils';
-import * as fsScript from 'flex-dev-utils/dist/fs';
+import { Credential } from '@twilio/flex-dev-utils';
+import * as fsScript from '@twilio/flex-dev-utils/dist/fs';
 
 import getRuntime from '../runtime';
 
@@ -8,7 +8,7 @@ jest.mock('../../clients/builds');
 jest.mock('../../clients/configurations');
 jest.mock('../../clients/environments');
 jest.mock('../../clients/services');
-jest.mock('flex-dev-utils/dist/credentials');
+jest.mock('@twilio/flex-dev-utils/dist/credentials');
 
 /* eslint-disable */
 const ServiceClient: jest.Mock = require('../../clients/services').default;

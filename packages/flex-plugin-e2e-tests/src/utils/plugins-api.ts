@@ -12,7 +12,7 @@ import {
   ConfiguredPluginResourcePage,
 } from 'flex-plugins-api-client';
 import { PluginServiceHttpOption } from 'flex-plugins-api-client/dist/clients/client';
-import { logger } from 'flex-dev-utils';
+import { logger } from '@twilio/flex-dev-utils';
 
 import { testParams } from '../core';
 import * as serverlessApi from './serverless-api';

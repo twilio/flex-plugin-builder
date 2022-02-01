@@ -1,7 +1,7 @@
 import { copyFileSync, readFileSync } from 'fs';
 import { join } from 'path';
 
-import { env, logger, semver, FlexPluginError, exit, versionSatisfiesRange } from 'flex-dev-utils';
+import { env, logger, semver, FlexPluginError, exit, versionSatisfiesRange } from '@twilio/flex-dev-utils';
 import {
   checkFilesExist,
   findGlobs,
@@ -19,7 +19,7 @@ import {
   isPluginDir,
   packageDependencyVersion,
   PackageJson,
-} from 'flex-dev-utils/dist/fs';
+} from '@twilio/flex-dev-utils/dist/fs';
 
 import {
   unbundledReactMismatch,

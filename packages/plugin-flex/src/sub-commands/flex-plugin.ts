@@ -1,7 +1,7 @@
 import { join } from 'path';
 import { homedir } from 'os';
 
-import { checkAFileExists, getPaths, readJsonFile, writeJSONFile, addCWDNodeModule } from 'flex-dev-utils/dist/fs';
+import { checkAFileExists, getPaths, readJsonFile, writeJSONFile, addCWDNodeModule } from '@twilio/flex-dev-utils/dist/fs';
 import { baseCommands, services } from '@twilio/cli-core';
 import {
   PluginServiceHTTPClient,
@@ -20,8 +20,8 @@ import {
   semver,
   updateNotifier,
   chalk,
-} from 'flex-dev-utils';
-import { spawn, SpawnPromise } from 'flex-dev-utils/dist/spawn';
+} from '@twilio/flex-dev-utils';
+import { spawn, SpawnPromise } from '@twilio/flex-dev-utils/dist/spawn';
 import dayjs from 'dayjs';
 import * as Errors from '@oclif/errors';
 import mkdirp from 'mkdirp';

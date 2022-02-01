@@ -1,6 +1,6 @@
-import { logger, FlexPluginError, exit } from 'flex-dev-utils';
-import { getCredential } from 'flex-dev-utils/dist/credentials';
-import { getPaths } from 'flex-dev-utils/dist/fs';
+import { logger, FlexPluginError, exit } from '@twilio/flex-dev-utils';
+import { getCredential } from '@twilio/flex-dev-utils/dist/credentials';
+import { getPaths } from '@twilio/flex-dev-utils/dist/fs';
 
 import run from '../utils/run';
 import { Visibility } from '../clients/serverless-types';
