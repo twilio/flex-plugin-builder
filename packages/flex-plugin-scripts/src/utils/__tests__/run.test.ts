@@ -17,7 +17,7 @@ describe('run', () => {
     name: 'test-script',
     version: '0.0.0',
     dependencies: {
-      'flex-plugin': '1.2.3',
+      '@twilio/flex-plugin': '1.2.3',
       'flex-plugin-scripts': '4.5.6',
     },
     devDependencies: {},

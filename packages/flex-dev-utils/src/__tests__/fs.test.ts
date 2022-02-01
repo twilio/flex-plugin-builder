@@ -22,7 +22,7 @@ describe('fs', () => {
     name: pluginName,
     dependencies: {
       [flexPluginScripts]: '1',
-      'flex-plugin': '2',
+      '@twilio/flex-plugin': '2',
     },
     devDependencies: {},
   };
@@ -596,7 +596,7 @@ describe('fs', () => {
       version: '1.2.3',
       dependencies: {
         [flexPluginScripts]: '1',
-        'flex-plugin': '2',
+        '@twilio/flex-plugin': '2',
       },
       devDependencies: {},
     };

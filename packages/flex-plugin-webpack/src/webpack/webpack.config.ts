@@ -244,7 +244,7 @@ export const _getBasePlugins = (environment: Environment): Plugin[] => {
     __FPB_PLUGIN_UNIQUE_NAME: `'${getPaths().app.name}'`,
     __FPB_PLUGIN_VERSION: `'${getPaths().app.version}'`,
     __FPB_FLEX_PLUGIN_SCRIPTS_VERSION: `'${getDependencyVersion('flex-plugin-scripts')}'`,
-    __FPB_FLEX_PLUGIN_VERSION: `'${getDependencyVersion('flex-plugin')}'`,
+    __FPB_FLEX_PLUGIN_VERSION: `'${getDependencyVersion('@twilio/flex-plugin')}'`,
     __FPB_FLEX_UI_VERSION: `'${flexUIVersion}'`,
     __FPB_REACT_VERSION: `'${reactVersion}'`,
     __FPB_REACT_DOM_VERSION: `'${reactDOMVersion}'`,

@@ -24,7 +24,7 @@ const appConfig = 'appConfig.js';
 const crackoConfig = 'craco.config.js';
 
 const flexPluginScript = 'flex-plugin-scripts';
-const flexPlugin = 'flex-plugin';
+const flexPlugin = '@twilio/flex-plugin';
 
 interface ScriptsToRemove {
   name: string;

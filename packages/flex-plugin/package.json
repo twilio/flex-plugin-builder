@@ -1,5 +1,5 @@
 {
-  "name": "flex-plugin",
+  "name": "@twilio/flex-plugin",
   "version": "4.3.1",
   "description": "Runtime for Flex plugins",
   "keywords": [

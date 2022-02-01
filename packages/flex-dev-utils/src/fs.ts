@@ -25,7 +25,7 @@ export interface PackageJson {
 
 export interface AppPackageJson extends PackageJson {
   dependencies: {
-    'flex-plugin': string;
+    '@twilio/flex-plugin': string;
     'flex-plugin-scripts': string;
   };
 }

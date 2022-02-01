@@ -2,7 +2,7 @@ import { join } from 'path';
 
 import { _require, resolveModulePath } from '@twilio/flex-dev-utils/dist/fs';
 
-export const FLEX_PACKAGES: string[] = ['@twilio/flex-ui', 'flex-plugin-scripts', 'flex-plugin', '@twilio/flex-dev-utils'];
+export const FLEX_PACKAGES: string[] = ['@twilio/flex-ui', 'flex-plugin-scripts', '@twilio/flex-plugin', '@twilio/flex-dev-utils'];
 
 /* istanbul ignore next */
 export const LIST_OF_PACKAGES: string[] = [...FLEX_PACKAGES, 'react', 'react-dom', 'redux', 'react-redux'];
