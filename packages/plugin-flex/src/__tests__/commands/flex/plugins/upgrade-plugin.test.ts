@@ -50,7 +50,7 @@ describe('Commands/FlexPluginsStart', () => {
     const cmd = await createTest(FlexPluginsUpgradePlugin)();
 
     mockGetPkg(cmd, {
-      dependencies: { 'flex-plugin-scripts': '3.0.0' },
+      dependencies: { '@twilio/flex-plugin-scripts': '3.0.0' },
     });
     expect(cmd.pkgVersion).toEqual(3);
   });
@@ -60,7 +60,7 @@ describe('Commands/FlexPluginsStart', () => {
 
     mockGetPkg(cmd, {
       dependencies: {},
-      devDependencies: { 'flex-plugin-scripts': '4.0.0' },
+      devDependencies: { '@twilio/flex-plugin-scripts': '4.0.0' },
     });
 
     expect(cmd.pkgVersion).toEqual(4);

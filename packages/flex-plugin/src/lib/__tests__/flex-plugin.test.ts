@@ -67,7 +67,7 @@ describe('@twilio/flex-plugin', () => {
       expect(plugin.name).toEqual(PLUGIN_NAME);
       expect(plugin.version).toEqual(PLUGIN_VERSION);
       expect(plugin.uniqueName).toEqual(UNIQUE_NAME);
-      expect(plugin.dependencies['flex-plugin-scripts']).toEqual(FLEX_PLUGIN_SCRIPTS_VERSION);
+      expect(plugin.dependencies['@twilio/flex-plugin-scripts']).toEqual(FLEX_PLUGIN_SCRIPTS_VERSION);
       expect(plugin.dependencies['@twilio/flex-plugin']).toEqual(FLEX_PLUGIN_VERSION);
       expect(plugin.dependencies['flex-ui']).toEqual(FLEX_UI_VERSION);
       expect(plugin.dependencies.react).toEqual(REACT_VERSION);

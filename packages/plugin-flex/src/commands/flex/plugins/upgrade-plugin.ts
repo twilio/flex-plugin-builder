@@ -23,7 +23,7 @@ import { createDescription, instanceOf } from '../../../utils/general';
 const appConfig = 'appConfig.js';
 const crackoConfig = 'craco.config.js';
 
-const flexPluginScript = 'flex-plugin-scripts';
+const flexPluginScript = '@twilio/flex-plugin-scripts';
 const flexPlugin = '@twilio/flex-plugin';
 
 interface ScriptsToRemove {

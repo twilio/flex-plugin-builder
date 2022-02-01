@@ -18,7 +18,7 @@ describe('run', () => {
     version: '0.0.0',
     dependencies: {
       '@twilio/flex-plugin': '1.2.3',
-      'flex-plugin-scripts': '4.5.6',
+      '@twilio/flex-plugin-scripts': '4.5.6',
     },
     devDependencies: {},
   });

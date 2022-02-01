@@ -45,7 +45,7 @@ export const setupConfiguration = (config: FlexPluginArguments): FlexPluginArgum
   config.runtimeUrl = config.runtimeUrl || 'http://localhost:3000';
   config.targetDirectory = resolveCwd(name);
   config.flexSdkVersion = pkg.devDependencies['@twilio/flex-ui'];
-  config.pluginScriptsVersion = pkg.devDependencies['flex-plugin-scripts'];
+  config.pluginScriptsVersion = pkg.devDependencies['@twilio/flex-plugin-scripts'];
 
   return config;
 };

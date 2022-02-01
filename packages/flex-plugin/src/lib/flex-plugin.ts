@@ -21,7 +21,7 @@ export abstract class FlexPlugin implements IFlexPlugin {
   public version: string = __FPB_PLUGIN_VERSION;
 
   public dependencies: Record<string, string> = {
-    'flex-plugin-scripts': __FPB_FLEX_PLUGIN_SCRIPTS_VERSION,
+    '@twilio/flex-plugin-scripts': __FPB_FLEX_PLUGIN_SCRIPTS_VERSION,
     '@twilio/flex-plugin': __FPB_FLEX_PLUGIN_VERSION,
     'flex-ui': __FPB_FLEX_UI_VERSION,
     react: __FPB_REACT_VERSION,

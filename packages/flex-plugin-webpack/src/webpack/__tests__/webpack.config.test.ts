@@ -183,7 +183,7 @@ describe('WebpackConfiguration', () => {
 
   describe('_getBasePlugins', () => {
     const depVersions = {
-      'flex-plugin-scripts': '1.0.0',
+      '@twilio/flex-plugin-scripts': '1.0.0',
       '@twilio/flex-plugin': '1.1.0',
       '@twilio/flex-ui': '1.2.0',
       react: '1.3.0',
@@ -198,7 +198,7 @@ describe('WebpackConfiguration', () => {
         expect.objectContaining({
           __FPB_PLUGIN_UNIQUE_NAME: `'${paths.app.name}'`,
           __FPB_PLUGIN_VERSION: `'${paths.app.version}'`,
-          __FPB_FLEX_PLUGIN_SCRIPTS_VERSION: `'${depVersions['flex-plugin-scripts']}'`,
+          __FPB_FLEX_PLUGIN_SCRIPTS_VERSION: `'${depVersions['@twilio/flex-plugin-scripts']}'`,
           __FPB_FLEX_PLUGIN_VERSION: `'${depVersions['@twilio/flex-plugin']}'`,
           __FPB_FLEX_UI_VERSION: `'${depVersions['@twilio/flex-ui']}'`,
           __FPB_REACT_VERSION: `'${depVersions.react}'`,

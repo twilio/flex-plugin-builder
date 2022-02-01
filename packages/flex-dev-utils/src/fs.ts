@@ -26,7 +26,7 @@ export interface PackageJson {
 export interface AppPackageJson extends PackageJson {
   dependencies: {
     '@twilio/flex-plugin': string;
-    'flex-plugin-scripts': string;
+    '@twilio/flex-plugin-scripts': string;
   };
 }
 
@@ -469,9 +469,9 @@ export const resolveModulePath = (pkg: string, ...paths: string[]): string | fal
  * Returns the path to flex-plugin-scripts
  */
 export const _getFlexPluginScripts = (): string => {
-  const flexPluginScriptPath = resolveModulePath('flex-plugin-scripts');
+  const flexPluginScriptPath = resolveModulePath('@twilio/flex-plugin-scripts');
   if (flexPluginScriptPath === false) {
-    throw new Error('Could not resolve flex-plugin-scripts');
+    throw new Error('Could not resolve @twilio/flex-plugin-scripts');
   }
 
   return path.join(path.dirname(flexPluginScriptPath), '..');

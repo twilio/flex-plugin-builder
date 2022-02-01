@@ -1,9 +1,9 @@
 /* eslint-disable camelcase */
 
-import * as pluginBuilderStartScript from 'flex-plugin-scripts/dist/scripts/start';
+import * as pluginBuilderStartScript from '@twilio/flex-plugin-scripts/dist/scripts/start';
 import { TwilioCliError, env, TwilioError, TwilioApiError } from '@twilio/flex-dev-utils';
 import * as fs from '@twilio/flex-dev-utils/dist/fs';
-import { PluginsConfig } from 'flex-plugin-scripts';
+import { PluginsConfig } from '@twilio/flex-plugin-scripts';
 import { PluginVersionResource } from 'flex-plugins-api-client';
 import * as updateNotifier from '@twilio/flex-dev-utils/dist/updateNotifier';
 import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
@@ -34,14 +34,14 @@ describe('Commands/FlexPluginsStart', () => {
   const pkg = {
     name: pluginNameOne,
     dependencies: {
-      'flex-plugin-scripts': '4.0.0',
+      '@twilio/flex-plugin-scripts': '4.0.0',
     },
   };
   const badVersionPkg = {
     name: pluginNameBad,
     dependencies: {
       '@twilio/flex-ui': '1.0.0',
-      'flex-plugin-scripts': '3.9.9',
+      '@twilio/flex-plugin-scripts': '3.9.9',
     },
     devDependencies: {},
   };
@@ -50,7 +50,7 @@ describe('Commands/FlexPluginsStart', () => {
     devDependencies: {},
     dependencies: {
       '@twilio/flex-ui': '1.0.0',
-      'flex-plugin-scripts': '4.0.0',
+      '@twilio/flex-plugin-scripts': '4.0.0',
     },
   };
   const config = {

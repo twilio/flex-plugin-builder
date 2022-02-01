@@ -11,7 +11,7 @@ const cp = require('child_process');
 const os = require('os');
 
 // These packages are ignored and no jest runs for them
-const ignorePackages = ['flex-plugin-e2e-tests'];
+const ignorePackages = ['@twilio/flex-plugin-e2e-tests'];
 
 // Helper commands
 const isCI = () => process.env.CI;

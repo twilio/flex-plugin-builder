@@ -1,7 +1,7 @@
 import { flags } from '@oclif/command';
-import { PluginsConfig, PLUGIN_INPUT_PARSER_REGEX } from 'flex-plugin-scripts';
-import { findPortAvailablePort } from 'flex-plugin-scripts/dist/scripts/start';
-import { FLAG_MULTI_PLUGINS } from 'flex-plugin-scripts/dist/scripts/pre-script-check';
+import { PluginsConfig, PLUGIN_INPUT_PARSER_REGEX } from '@twilio/flex-plugin-scripts';
+import { findPortAvailablePort } from '@twilio/flex-plugin-scripts/dist/scripts/start';
+import { FLAG_MULTI_PLUGINS } from '@twilio/flex-plugin-scripts/dist/scripts/pre-script-check';
 import { TwilioCliError, semver, env, TwilioApiError } from '@twilio/flex-dev-utils';
 import { readJsonFile } from '@twilio/flex-dev-utils/dist/fs';
 import { OutputFlags } from '@oclif/parser/lib/parse';
@@ -161,9 +161,9 @@ export default class FlexPluginsStart extends FlexPlugin {
     // Verify plugin's flex-plugin-scripts is v4
     const pkgDir = `${plugin.dir}/package.json`;
     const pkg = readJsonFile<Pkg>(pkgDir);
-    let scriptVersion = semver.coerce(pkg.dependencies['flex-plugin-scripts']);
+    let scriptVersion = semver.coerce(pkg.dependencies['@twilio/flex-plugin-scripts']);
     if (!scriptVersion) {
-      scriptVersion = semver.coerce(pkg.devDependencies['flex-plugin-scripts']);
+      scriptVersion = semver.coerce(pkg.devDependencies['@twilio/flex-plugin-scripts']);
     }
   }
 

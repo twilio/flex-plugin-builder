@@ -33,7 +33,7 @@ describe('FlexPluginError', () => {
       version: '1.2.3',
       dependencies: {
         '@twilio/flex-plugin': '2.0.0',
-        'flex-plugin-scripts': '3.0.0',
+        '@twilio/flex-plugin-scripts': '3.0.0',
       },
       devDependencies: {},
     });

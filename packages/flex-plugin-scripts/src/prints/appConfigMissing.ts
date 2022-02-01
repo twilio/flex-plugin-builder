@@ -9,7 +9,7 @@ export default (): void => {
   const nameColor = logger.coloredStrings.name;
   const { headline } = logger.coloredStrings;
 
-  const scriptName = nameColor('flex-plugin-scripts');
+  const scriptName = nameColor('@twilio/flex-plugin-scripts');
 
   env.setQuiet(false);
   logger.newline();

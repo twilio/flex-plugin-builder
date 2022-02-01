@@ -183,10 +183,10 @@ export const _comparePluginAndCLIVersions = (): void => {
   const cliPackageJson = readPackageJson(join(getCliPaths().dir, packageJsonName));
   const pluginPackageJson = readPackageJson(join(getCwd(), packageJsonName));
   const cliVersion = semver.coerce(packageDependencyVersion(cliPackageJson, '@twilio-labs/plugin-flex'));
-  const pluginVersion = semver.coerce(packageDependencyVersion(pluginPackageJson, 'flex-plugin-scripts'));
+  const pluginVersion = semver.coerce(packageDependencyVersion(pluginPackageJson, '@twilio/flex-plugin-scripts'));
 
   if (cliVersion && pluginVersion && cliVersion.version !== pluginVersion.version) {
-    const earlierVersion = cliVersion.version < pluginVersion.version ? 'CLI' : 'flex-plugin-scripts';
+    const earlierVersion = cliVersion.version < pluginVersion.version ? 'CLI' : '@twilio/flex-plugin-scripts';
     logger.warning(
       `The Flex Plugins CLI version installed is different from the version used by your plugin. The Plugins CLI version installed is ${cliVersion.version} and the version used by your plugin is ${pluginVersion.version}. Run the upgrade plugin command to use the installed version.`,
     );

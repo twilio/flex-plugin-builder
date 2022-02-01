@@ -51,7 +51,7 @@
     "@twilio/flex-ui": "^1",
     "@types/tmp": "^0.2.1",
     "@types/yargs": "^16.0.4",
-    "flex-plugin": "4.3.1",
-    "flex-plugin-scripts": "4.3.1"
+    "@twilio/flex-plugin": "4.3.1",
+    "@twilio/flex-plugin-scripts": "4.3.1"
   }
 }

@@ -42,7 +42,7 @@ interface FlexPluginOption {
   runInDirectory: boolean;
 }
 
-const flexPluginScripts = 'flex-plugin-scripts';
+const flexPluginScripts = '@twilio/flex-plugin-scripts';
 
 export type ConfigData = typeof services.config.ConfigData;
 export type SecureStorage = typeof services.secureStorage.SecureStorage;

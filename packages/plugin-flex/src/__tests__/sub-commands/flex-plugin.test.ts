@@ -97,7 +97,7 @@ describe('SubCommands/FlexPlugin', () => {
     mockGetPkg(cmd, {
       dependencies: {},
       devDependencies: {
-        'flex-plugin-scripts': '',
+        '@twilio/flex-plugin-scripts': '',
         '@twilio/flex-ui': '',
       },
     });
@@ -230,7 +230,7 @@ describe('SubCommands/FlexPlugin', () => {
     jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {},
       dependencies: {
-        'flex-plugin-scripts': '1.2.3',
+        '@twilio/flex-plugin-scripts': '1.2.3',
       },
     });
 
@@ -242,7 +242,7 @@ describe('SubCommands/FlexPlugin', () => {
 
     jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {
-        'flex-plugin-scripts': '^2.3.4-beta.0',
+        '@twilio/flex-plugin-scripts': '^2.3.4-beta.0',
       },
       dependencies: {},
     });
@@ -255,7 +255,7 @@ describe('SubCommands/FlexPlugin', () => {
 
     jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {
-        'flex-plugin-scripts': 'not-a-semver',
+        '@twilio/flex-plugin-scripts': 'not-a-semver',
       },
       dependencies: {},
     });

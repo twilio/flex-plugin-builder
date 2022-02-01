@@ -32,7 +32,7 @@ interface LoaderOption {
 }
 
 const IMAGE_SIZE_BYTE = 10 * 1024;
-const FLEX_SHIM = 'flex-plugin-scripts/dev_assets/flex-shim.js';
+const FLEX_SHIM = '@twilio/flex-plugin-scripts/dev_assets/flex-shim.js';
 const EXTERNALS = {
   react: 'React',
   'react-dom': 'ReactDOM',
@@ -243,7 +243,7 @@ export const _getBasePlugins = (environment: Environment): Plugin[] => {
   const defined = {
     __FPB_PLUGIN_UNIQUE_NAME: `'${getPaths().app.name}'`,
     __FPB_PLUGIN_VERSION: `'${getPaths().app.version}'`,
-    __FPB_FLEX_PLUGIN_SCRIPTS_VERSION: `'${getDependencyVersion('flex-plugin-scripts')}'`,
+    __FPB_FLEX_PLUGIN_SCRIPTS_VERSION: `'${getDependencyVersion('@twilio/flex-plugin-scripts')}'`,
     __FPB_FLEX_PLUGIN_VERSION: `'${getDependencyVersion('@twilio/flex-plugin')}'`,
     __FPB_FLEX_UI_VERSION: `'${flexUIVersion}'`,
     __FPB_REACT_VERSION: `'${reactVersion}'`,

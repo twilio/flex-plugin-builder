@@ -9,7 +9,7 @@ jest.mock('globby');
 jest.mock('app-module-path');
 
 describe('fs', () => {
-  const flexPluginScripts = 'flex-plugin-scripts';
+  const flexPluginScripts = '@twilio/flex-plugin-scripts';
   const flexPluginWebpack = 'flex-plugin-webpack';
   const flexPluginScriptsPath = `/path/to/${flexPluginScripts}`;
   const flexPluginWebpackPath = `/path/to/${flexPluginWebpack}`;
