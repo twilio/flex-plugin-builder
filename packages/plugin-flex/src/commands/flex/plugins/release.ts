@@ -2,7 +2,7 @@ import { progress } from '@twilio/flex-dev-utils';
 import { flags } from '@oclif/command';
 import { RequiredFlagError } from '@oclif/parser/lib/errors';
 import { OutputFlags } from '@oclif/parser/lib/parse';
-import { Release } from 'flex-plugins-api-client';
+import { Release } from '@twilio/flex-plugins-api-client';
 
 import { createDescription } from '../../../utils/general';
 import { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';

@@ -18,7 +18,7 @@ import {
   OnDevServerCrashedPayload,
   PluginsConfig,
   DelayRenderStaticPlugin,
-} from 'flex-plugin-webpack';
+} from '@twilio/flex-plugin-webpack';
 
 import getConfiguration, { ConfigurationType, WebpackType } from '../config';
 import run from '../utils/run';

@@ -1,4 +1,4 @@
-import { Plugin } from 'flex-plugins-api-client';
+import { Plugin } from '@twilio/flex-plugins-api-client';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 import { progress, TwilioApiError, TwilioCliError } from '@twilio/flex-dev-utils';
 

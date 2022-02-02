@@ -1,5 +1,5 @@
 {
-  "name": "flex-plugin-test",
+  "name": "@twilio/flex-plugin-test",
   "version": "4.3.1",
   "description": "Flex Plugin default test framework that uses Jest Preset",
   "keywords": [

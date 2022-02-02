@@ -16,7 +16,7 @@ npm i -S flex-plugins-api-client
 
 # Using yarn
 yarn add flex-plugins-api-client
-``` 
+```
 
 ## Usage
 
@@ -27,7 +27,7 @@ import {
     PluginServiceHttpClient,
     PluginsClient,
     PluginVersionsClient
-} from 'flex-plugins-api-client';
+} from '@twilio/flex-plugins-api-client';
 
 // Instantiate the HTTP client
 const httpClient = new PluginServiceHttpClient(process.env.USERNAME, process.env.PASSWORD);
@@ -38,7 +38,7 @@ const pluginsVersionClient = new PluginVersionsClient(httpClient);
 ```
 ## Clients
 
-The available clients are listed below. All endpoints return a promise. 
+The available clients are listed below. All endpoints return a promise.
 
 **Note**: If you are using the JWE token for authentication, then _all_ identifiers (such as `pluginId`, `versionId`, etc) _must_ be the sid of the resource only.
 
@@ -48,7 +48,7 @@ This is the HTTP client for [plugins](https://www.twilio.com/docs/flex/plugins/a
 
 #### list(pagination?: Pagination)
 
-This endpoint lists all plugins. 
+This endpoint lists all plugins.
 
 #### get(pluginId)
 
@@ -162,6 +162,6 @@ interface PaginationMeta {
     previous_token?: string;
   };
 }
-``` 
+```
 
 The `next_token` and `previous_token` will be parsed from the `next_page_url` and `previous_page_url` if available and can be used to be passed as `Pagination` parameter to the next `list` call.

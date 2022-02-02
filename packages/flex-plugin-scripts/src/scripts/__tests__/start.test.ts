@@ -2,11 +2,11 @@ import { FlexPluginError } from '@twilio/flex-dev-utils/dist/errors';
 import * as exit from '@twilio/flex-dev-utils/dist/exit';
 import * as fs from '@twilio/flex-dev-utils/dist/fs';
 import * as urlScripts from '@twilio/flex-dev-utils/dist/urls';
-import * as pluginServerScripts from 'flex-plugin-webpack/dist/devServer/pluginServer';
-import * as devServerScripts from 'flex-plugin-webpack/dist/devServer/webpackDevServer';
-import * as ipcServerScripts from 'flex-plugin-webpack/dist/devServer/ipcServer';
-import * as compilerScripts from 'flex-plugin-webpack/dist/compiler';
-import { PluginsConfig } from 'flex-plugin-webpack';
+import * as pluginServerScripts from '@twilio/flex-plugin-webpack/dist/devServer/pluginServer';
+import * as devServerScripts from '@twilio/flex-plugin-webpack/dist/devServer/webpackDevServer';
+import * as ipcServerScripts from '@twilio/flex-plugin-webpack/dist/devServer/ipcServer';
+import * as compilerScripts from '@twilio/flex-plugin-webpack/dist/compiler';
+import { PluginsConfig } from '@twilio/flex-plugin-webpack';
 
 import * as parserUtils from '../../utils/parser';
 import * as startScripts from '../start';

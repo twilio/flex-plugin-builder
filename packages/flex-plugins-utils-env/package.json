@@ -1,5 +1,5 @@
 {
-  "name": "flex-plugins-utils-env",
+  "name": "@twilio/flex-plugins-utils-env",
   "version": "4.3.1",
   "description": "Flex Plugins Environments",
   "keywords": [
@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@types/lodash.get": "^4.4.6",
-    "flex-plugins-utils-exception": "4.3.1",
+    "@twilio/flex-plugins-utils-exception": "4.3.1",
     "lodash.get": "^4.4.2"
   }
 }

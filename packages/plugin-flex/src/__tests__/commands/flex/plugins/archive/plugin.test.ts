@@ -1,4 +1,4 @@
-import { Plugin } from 'flex-plugins-api-client';
+import { Plugin } from '@twilio/flex-plugins-api-client';
 import { TwilioApiError, TwilioCliError } from '@twilio/flex-dev-utils';
 
 import createTest from '../../../../framework';

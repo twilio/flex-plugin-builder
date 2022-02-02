@@ -1,7 +1,7 @@
 import { env, logger, exit, Callback } from '@twilio/flex-dev-utils';
 import { Environment } from '@twilio/flex-dev-utils/dist/env';
 import { addCWDNodeModule, getFileSizeInMB, getPaths, updateAppVersion } from '@twilio/flex-dev-utils/dist/fs';
-import { webpack, WebpackCompiler } from 'flex-plugin-webpack';
+import { webpack, WebpackCompiler } from '@twilio/flex-plugin-webpack';
 
 import getConfiguration, { ConfigurationType } from '../config';
 import { setEnvironment } from '..';

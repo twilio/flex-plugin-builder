@@ -99,7 +99,7 @@ const runNyc = async () => {
 
 // List of packages/directory names - test will run for these packages
 if (isWin()) {
-  ignorePackages.push('flex-plugin-utils-jest');
+  ignorePackages.push('@twilio/flex-plugin-utils-jest');
 }
 const packages = fs
   .readdirSync(pkgDir)

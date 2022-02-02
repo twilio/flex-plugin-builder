@@ -1,4 +1,4 @@
-import { OnDevServerCrashedPayload } from 'flex-plugin-webpack';
+import { OnDevServerCrashedPayload } from '@twilio/flex-plugin-webpack';
 import { logger } from '@twilio/flex-dev-utils';
 
 export default (payload: OnDevServerCrashedPayload): void => {

@@ -10,7 +10,7 @@ jest.mock('app-module-path');
 
 describe('fs', () => {
   const flexPluginScripts = '@twilio/flex-plugin-scripts';
-  const flexPluginWebpack = 'flex-plugin-webpack';
+  const flexPluginWebpack = '@twilio/flex-plugin-webpack';
   const flexPluginScriptsPath = `/path/to/${flexPluginScripts}`;
   const flexPluginWebpackPath = `/path/to/${flexPluginWebpack}`;
   const pluginName = 'plugin-test';

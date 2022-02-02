@@ -4,8 +4,8 @@ import { TwilioCliError, FlexPluginError } from '@twilio/flex-dev-utils';
 import * as credentials from '@twilio/flex-dev-utils/dist/credentials';
 import * as runtime from '@twilio/flex-plugin-scripts/dist/utils/runtime';
 import * as fs from '@twilio/flex-dev-utils/dist/fs';
-import { PluginVersionResource } from 'flex-plugins-api-client/dist/clients/pluginVersions';
-import { PluginResource } from 'flex-plugins-api-client';
+import { PluginVersionResource } from '@twilio/flex-plugins-api-client/dist/clients/pluginVersions';
+import { PluginResource } from '@twilio/flex-plugins-api-client';
 import * as deployScript from '@twilio/flex-plugin-scripts/dist/scripts/deploy';
 import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
 

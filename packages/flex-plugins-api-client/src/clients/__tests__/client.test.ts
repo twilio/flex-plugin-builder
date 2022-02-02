@@ -30,7 +30,7 @@ describe('PluginServiceHttp', () => {
       new PluginServiceHttp('username', 'password');
 
       expect(HttpClient).toHaveBeenCalledTimes(1);
-      expect(HttpClient).toHaveBeenCalledWith(expect.objectContaining({ caller: 'flex-plugins-api-client' }));
+      expect(HttpClient).toHaveBeenCalledWith(expect.objectContaining({ caller: '@twilio/flex-plugins-api-client' }));
     });
 
     it('should pass default packages', () => {

@@ -481,9 +481,9 @@ export const _getFlexPluginScripts = (): string => {
  * Returns the path to flex-plugin-webpack
  */
 export const _getFlexPluginWebpackPath = (scriptsNodeModulesDir: string): string => {
-  const flexPluginWebpackPath = resolveModulePath('flex-plugin-webpack', scriptsNodeModulesDir);
+  const flexPluginWebpackPath = resolveModulePath('@twilio/flex-plugin-webpack', scriptsNodeModulesDir);
   if (flexPluginWebpackPath === false) {
-    throw new Error(`Could not resolve flex-plugin-webpack`);
+    throw new Error(`Could not resolve @twilio/flex-plugin-webpack`);
   }
 
   return path.join(path.dirname(flexPluginWebpackPath), '..');

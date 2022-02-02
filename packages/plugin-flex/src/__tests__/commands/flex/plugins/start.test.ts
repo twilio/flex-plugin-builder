@@ -4,7 +4,7 @@ import * as pluginBuilderStartScript from '@twilio/flex-plugin-scripts/dist/scri
 import { TwilioCliError, env, TwilioError, TwilioApiError } from '@twilio/flex-dev-utils';
 import * as fs from '@twilio/flex-dev-utils/dist/fs';
 import { PluginsConfig } from '@twilio/flex-plugin-scripts';
-import { PluginVersionResource } from 'flex-plugins-api-client';
+import { PluginVersionResource } from '@twilio/flex-plugins-api-client';
 import * as updateNotifier from '@twilio/flex-dev-utils/dist/updateNotifier';
 import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
 

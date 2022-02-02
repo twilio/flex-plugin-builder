@@ -10,7 +10,7 @@ import {
   ConfigurationsClient,
   ReleasesClient,
   FlexPluginsAPIToolkit,
-} from 'flex-plugins-api-client';
+} from '@twilio/flex-plugins-api-client';
 import {
   TwilioError,
   Logger,
@@ -25,7 +25,7 @@ import { spawn, SpawnPromise } from '@twilio/flex-dev-utils/dist/spawn';
 import dayjs from 'dayjs';
 import * as Errors from '@oclif/errors';
 import mkdirp from 'mkdirp';
-import { PluginServiceHttpOption } from 'flex-plugins-api-client/dist/clients/client';
+import { PluginServiceHttpOption } from '@twilio/flex-plugins-api-client/dist/clients/client';
 import * as Parser from '@oclif/parser';
 
 import parser from '../utils/parser';
@@ -669,7 +669,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       'twilio-cli-flex-plugin': FlexPlugin.getPackageVersion(this.pluginRootDir),
       react: FlexPlugin.getPackageVersion('react'),
       'react-dom': FlexPlugin.getPackageVersion('react-dom'),
-      'flex-plugins-api-client': FlexPlugin.getPackageVersion('flex-plugins-api-client'),
+      '@twilio/flex-plugins-api-client': FlexPlugin.getPackageVersion('@twilio/flex-plugins-api-client'),
       'flex-ui': FlexPlugin.getPackageVersion(`@twilio/flex-ui`),
       isTs: 'unknown',
     };

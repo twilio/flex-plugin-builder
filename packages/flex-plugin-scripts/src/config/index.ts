@@ -9,7 +9,7 @@ import {
   WebpackConfigurations,
   WebpackDevConfigurations,
   emitDevServerCrashed,
-} from 'flex-plugin-webpack';
+} from '@twilio/flex-plugin-webpack';
 
 import jestFactory, { JestConfigurations } from './jest.config';
 

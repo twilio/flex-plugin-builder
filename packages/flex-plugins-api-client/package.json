@@ -1,5 +1,5 @@
 {
-  "name": "flex-plugins-api-client",
+  "name": "@twilio/flex-plugins-api-client",
   "version": "4.3.1",
   "description": "Flex Plugins API Client",
   "keywords": [
