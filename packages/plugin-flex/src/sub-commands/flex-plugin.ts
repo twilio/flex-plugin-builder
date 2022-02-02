@@ -1,7 +1,13 @@
 import { join } from 'path';
 import { homedir } from 'os';
 
-import { checkAFileExists, getPaths, readJsonFile, writeJSONFile, addCWDNodeModule } from '@twilio/flex-dev-utils/dist/fs';
+import {
+  checkAFileExists,
+  getPaths,
+  readJsonFile,
+  writeJSONFile,
+  addCWDNodeModule,
+} from '@twilio/flex-dev-utils/dist/fs';
 import { baseCommands, services } from '@twilio/cli-core';
 import {
   PluginServiceHTTPClient,

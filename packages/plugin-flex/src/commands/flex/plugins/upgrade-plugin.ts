@@ -250,11 +250,22 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       });
 
       copyFile(
-        [require.resolve('@twilio/create-flex-plugin'), '..', '..', 'templates', 'core', 'public', 'appConfig.example.js'],
+        [
+          require.resolve('@twilio/create-flex-plugin'),
+          '..',
+          '..',
+          'templates',
+          'core',
+          'public',
+          'appConfig.example.js',
+        ],
         [this.cwd, 'public', 'appConfig.example.js'],
       );
       ['jest.config.js', 'webpack.config.js', 'webpack.dev.js'].forEach((file) => {
-        copyFile([require.resolve('@twilio/create-flex-plugin'), '..', '..', 'templates', 'core', file], [this.cwd, file]);
+        copyFile(
+          [require.resolve('@twilio/create-flex-plugin'), '..', '..', 'templates', 'core', file],
+          [this.cwd, file],
+        );
       });
 
       if (checkAFileExists(this.cwd, 'public', appConfig)) {

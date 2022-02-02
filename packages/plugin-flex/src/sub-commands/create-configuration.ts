@@ -1,5 +1,8 @@
 import { progress } from '@twilio/flex-dev-utils';
-import { CreateConfigurationOption, CreateConfiguration as ICreateConfiguration } from '@twilio/flex-plugins-api-client';
+import {
+  CreateConfigurationOption,
+  CreateConfiguration as ICreateConfiguration,
+} from '@twilio/flex-plugins-api-client';
 
 import * as flags from '../utils/flags';
 import { createDescription } from '../utils/general';
