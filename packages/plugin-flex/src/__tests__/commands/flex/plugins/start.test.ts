@@ -1,12 +1,12 @@
 /* eslint-disable camelcase */
 
-import * as pluginBuilderStartScript from 'flex-plugin-scripts/dist/scripts/start';
-import { TwilioCliError, env, TwilioError, TwilioApiError } from 'flex-dev-utils';
-import * as fs from 'flex-dev-utils/dist/fs';
-import { PluginsConfig } from 'flex-plugin-scripts';
-import { PluginVersionResource } from 'flex-plugins-api-client';
-import * as updateNotifier from 'flex-dev-utils/dist/updateNotifier';
-import * as spawn from 'flex-dev-utils/dist/spawn';
+import * as pluginBuilderStartScript from '@twilio/flex-plugin-scripts/dist/scripts/start';
+import { TwilioCliError, env, TwilioError, TwilioApiError } from '@twilio/flex-dev-utils';
+import * as fs from '@twilio/flex-dev-utils/dist/fs';
+import { PluginsConfig } from '@twilio/flex-plugin-scripts';
+import { PluginVersionResource } from '@twilio/flex-plugins-api-client';
+import * as updateNotifier from '@twilio/flex-dev-utils/dist/updateNotifier';
+import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
 
 import createTest, { mockGetPkg } from '../../../framework';
 import FlexPluginsStart from '../../../../commands/flex/plugins/start';
@@ -14,9 +14,9 @@ import FlexPluginsStart from '../../../../commands/flex/plugins/start';
 const includeRemote = 'include-remote';
 const flexUiSource = 'flex-ui-source';
 
-jest.mock('flex-dev-utils/dist/fs');
-jest.mock('flex-dev-utils/dist/updateNotifier');
-jest.mock('flex-dev-utils/dist/spawn');
+jest.mock('@twilio/flex-dev-utils/dist/fs');
+jest.mock('@twilio/flex-dev-utils/dist/updateNotifier');
+jest.mock('@twilio/flex-dev-utils/dist/spawn');
 
 describe('Commands/FlexPluginsStart', () => {
   const name = 'plugin-test';
@@ -34,14 +34,14 @@ describe('Commands/FlexPluginsStart', () => {
   const pkg = {
     name: pluginNameOne,
     dependencies: {
-      'flex-plugin-scripts': '4.0.0',
+      '@twilio/flex-plugin-scripts': '4.0.0',
     },
   };
   const badVersionPkg = {
     name: pluginNameBad,
     dependencies: {
       '@twilio/flex-ui': '1.0.0',
-      'flex-plugin-scripts': '3.9.9',
+      '@twilio/flex-plugin-scripts': '3.9.9',
     },
     devDependencies: {},
   };
@@ -50,7 +50,7 @@ describe('Commands/FlexPluginsStart', () => {
     devDependencies: {},
     dependencies: {
       '@twilio/flex-ui': '1.0.0',
-      'flex-plugin-scripts': '4.0.0',
+      '@twilio/flex-plugin-scripts': '4.0.0',
     },
   };
   const config = {

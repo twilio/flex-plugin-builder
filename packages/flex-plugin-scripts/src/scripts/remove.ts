@@ -1,6 +1,6 @@
-import { logger, progress, Credential, getCredential, exit, confirm } from 'flex-dev-utils';
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import { getPaths } from 'flex-dev-utils/dist/fs';
+import { logger, progress, Credential, getCredential, exit, confirm } from '@twilio/flex-dev-utils';
+import { FlexPluginError } from '@twilio/flex-dev-utils/dist/errors';
+import { getPaths } from '@twilio/flex-dev-utils/dist/fs';
 
 import { EnvironmentClient } from '../clients';
 import { Runtime } from '../clients/serverless-types';

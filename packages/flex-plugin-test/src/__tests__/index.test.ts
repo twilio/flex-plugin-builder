@@ -1,4 +1,4 @@
-import * as fsScript from 'flex-dev-utils/dist/fs';
+import * as fsScript from '@twilio/flex-dev-utils/dist/fs';
 
 import jestFactory from '..';
 

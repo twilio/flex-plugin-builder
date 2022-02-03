@@ -1,5 +1,5 @@
 import get from 'lodash.get';
-import { TwilioError } from 'flex-plugins-utils-exception';
+import { TwilioError } from '@twilio/flex-plugins-utils-exception';
 
 declare global {
   interface Window {

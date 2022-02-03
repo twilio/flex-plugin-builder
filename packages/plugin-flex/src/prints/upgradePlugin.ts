@@ -1,4 +1,4 @@
-import { Logger, singleLineString, boxen, confirm, coloredStrings } from 'flex-dev-utils';
+import { Logger, singleLineString, boxen, confirm, coloredStrings } from '@twilio/flex-dev-utils';
 
 import { exit } from '../utils/general';
 

@@ -1,9 +1,9 @@
-import { env, HttpClient } from 'flex-dev-utils';
+import { env, HttpClient } from '@twilio/flex-dev-utils';
 
 import PluginServiceHttp from '../client';
 
-jest.mock('flex-dev-utils/dist/http');
-jest.mock('flex-dev-utils/dist/logger/lib/logger');
+jest.mock('@twilio/flex-dev-utils/dist/http');
+jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
 
 describe('PluginServiceHttp', () => {
   beforeEach(() => {
@@ -30,7 +30,7 @@ describe('PluginServiceHttp', () => {
       new PluginServiceHttp('username', 'password');
 
       expect(HttpClient).toHaveBeenCalledTimes(1);
-      expect(HttpClient).toHaveBeenCalledWith(expect.objectContaining({ caller: 'flex-plugins-api-client' }));
+      expect(HttpClient).toHaveBeenCalledWith(expect.objectContaining({ caller: '@twilio/flex-plugins-api-client' }));
     });
 
     it('should pass default packages', () => {

@@ -4,7 +4,7 @@ import {
   ServiceListInstanceCreateOptions,
 } from 'twilio/lib/rest/serverless/v1/service';
 import { BuildInstance, BuildListInstanceCreateOptions } from 'twilio/lib/rest/serverless/v1/service/build';
-import { TwilioApiError, Logger } from 'flex-dev-utils';
+import { TwilioApiError, Logger } from '@twilio/flex-dev-utils';
 import { EnvironmentInstance } from 'twilio/lib/rest/serverless/v1/service/environment';
 
 interface FileVersion {

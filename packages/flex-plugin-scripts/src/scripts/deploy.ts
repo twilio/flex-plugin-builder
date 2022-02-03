@@ -11,8 +11,8 @@ import {
   versionSatisfiesRange,
   confirm,
   singleLineString,
-} from 'flex-dev-utils';
-import { checkFilesExist, updateAppVersion, getPackageVersion, getPaths } from 'flex-dev-utils/dist/fs';
+} from '@twilio/flex-dev-utils';
+import { checkFilesExist, updateAppVersion, getPackageVersion, getPaths } from '@twilio/flex-dev-utils/dist/fs';
 
 import AccountsClient from '../clients/accounts';
 import { setEnvironment } from '..';

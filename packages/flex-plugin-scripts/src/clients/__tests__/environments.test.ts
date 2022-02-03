@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
-import { Credential } from 'flex-dev-utils';
-import * as fsScripts from 'flex-dev-utils/dist/fs';
-import * as random from 'flex-dev-utils/dist/random';
+import { Credential } from '@twilio/flex-dev-utils';
+import * as fsScripts from '@twilio/flex-dev-utils/dist/fs';
+import * as random from '@twilio/flex-dev-utils/dist/random';
 
 import EnvironmentClient from '../environments';
 

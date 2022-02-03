@@ -1,4 +1,4 @@
-import { TwilioError } from 'flex-dev-utils/dist/errors';
+import { TwilioError } from '@twilio/flex-dev-utils/dist/errors';
 
 import {
   ConfigurationResource,

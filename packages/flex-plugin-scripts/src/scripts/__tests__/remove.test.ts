@@ -1,14 +1,14 @@
-import * as fsScript from 'flex-dev-utils/dist/fs';
-import { logger } from 'flex-dev-utils';
-import * as questions from 'flex-dev-utils/dist/questions';
+import * as fsScript from '@twilio/flex-dev-utils/dist/fs';
+import { logger } from '@twilio/flex-dev-utils';
+import * as questions from '@twilio/flex-dev-utils/dist/questions';
 
 import * as runtimeScripts from '../../utils/runtime';
 import * as removeScript from '../remove';
 
 jest.mock('../../clients/environments');
-jest.mock('flex-dev-utils/dist/logger/lib/logger');
-jest.mock('flex-dev-utils/dist/questions');
-jest.mock('flex-dev-utils/dist/credentials', () => ({
+jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
+jest.mock('@twilio/flex-dev-utils/dist/questions');
+jest.mock('@twilio/flex-dev-utils/dist/credentials', () => ({
   getCredential: jest.fn(),
 }));
 

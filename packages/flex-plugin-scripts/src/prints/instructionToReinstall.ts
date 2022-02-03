@@ -1,5 +1,5 @@
-import { logger, env } from 'flex-dev-utils';
-import { printList } from 'flex-dev-utils/dist/prints';
+import { logger, env } from '@twilio/flex-dev-utils';
+import { printList } from '@twilio/flex-dev-utils/dist/prints';
 
 /**
  * Instructions for removing node_modules and lock files and re-installing

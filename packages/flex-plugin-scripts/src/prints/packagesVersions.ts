@@ -1,4 +1,4 @@
-import { logger } from 'flex-dev-utils';
+import { logger } from '@twilio/flex-dev-utils';
 
 import { PackageDetail } from '../utils/package';
 import instructionToReinstall from './instructionToReinstall';

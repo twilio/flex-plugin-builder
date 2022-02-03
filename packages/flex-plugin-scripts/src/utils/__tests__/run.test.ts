@@ -1,9 +1,9 @@
-import { logger, FlexPluginError } from 'flex-dev-utils';
-import * as fsScripts from 'flex-dev-utils/dist/fs';
+import { logger, FlexPluginError } from '@twilio/flex-dev-utils';
+import * as fsScripts from '@twilio/flex-dev-utils/dist/fs';
 
 import * as run from '../run';
 
-jest.mock('flex-dev-utils/dist/logger/lib/logger');
+jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
 
 describe('run', () => {
   const runFlag = '--run-script';
@@ -17,8 +17,8 @@ describe('run', () => {
     name: 'test-script',
     version: '0.0.0',
     dependencies: {
-      'flex-plugin': '1.2.3',
-      'flex-plugin-scripts': '4.5.6',
+      '@twilio/flex-plugin': '1.2.3',
+      '@twilio/flex-plugin-scripts': '4.5.6',
     },
     devDependencies: {},
   });

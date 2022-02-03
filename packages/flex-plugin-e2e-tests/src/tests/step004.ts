@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unused-modules */
-import { logger } from 'flex-dev-utils';
+import { logger } from '@twilio/flex-dev-utils';
 
 import { TestSuite, TestParams } from '../core';
 import { spawn } from '../utils';

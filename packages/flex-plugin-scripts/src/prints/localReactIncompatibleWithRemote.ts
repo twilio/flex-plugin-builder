@@ -1,4 +1,4 @@
-import { logger, singleLineString } from 'flex-dev-utils';
+import { logger, singleLineString } from '@twilio/flex-dev-utils';
 
 export default (localVersion: string, remoteVersion: string): void => {
   logger.newline();

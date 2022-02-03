@@ -1,13 +1,13 @@
-import { TwilioCliError, env as utilsEnv } from 'flex-dev-utils';
-import * as fs from 'flex-dev-utils/dist/fs';
-import * as spawn from 'flex-dev-utils/dist/spawn';
+import { TwilioCliError, env as utilsEnv } from '@twilio/flex-dev-utils';
+import * as fs from '@twilio/flex-dev-utils/dist/fs';
+import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
 
 import createTest, { mockGetPkg } from '../framework';
 import FlexPlugin from '../../sub-commands/flex-plugin';
 import DoneCallback = jest.DoneCallback;
 
-jest.mock('flex-dev-utils/dist/fs');
-jest.mock('flex-dev-utils/dist/spawn');
+jest.mock('@twilio/flex-dev-utils/dist/fs');
+jest.mock('@twilio/flex-dev-utils/dist/spawn');
 
 describe('SubCommands/FlexPlugin', () => {
   const { env } = process;
@@ -97,7 +97,7 @@ describe('SubCommands/FlexPlugin', () => {
     mockGetPkg(cmd, {
       dependencies: {},
       devDependencies: {
-        'flex-plugin-scripts': '',
+        '@twilio/flex-plugin-scripts': '',
         '@twilio/flex-ui': '',
       },
     });
@@ -230,7 +230,7 @@ describe('SubCommands/FlexPlugin', () => {
     jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {},
       dependencies: {
-        'flex-plugin-scripts': '1.2.3',
+        '@twilio/flex-plugin-scripts': '1.2.3',
       },
     });
 
@@ -242,7 +242,7 @@ describe('SubCommands/FlexPlugin', () => {
 
     jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {
-        'flex-plugin-scripts': '^2.3.4-beta.0',
+        '@twilio/flex-plugin-scripts': '^2.3.4-beta.0',
       },
       dependencies: {},
     });
@@ -255,7 +255,7 @@ describe('SubCommands/FlexPlugin', () => {
 
     jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {
-        'flex-plugin-scripts': 'not-a-semver',
+        '@twilio/flex-plugin-scripts': 'not-a-semver',
       },
       dependencies: {},
     });

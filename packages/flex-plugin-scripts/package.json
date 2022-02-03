@@ -1,5 +1,5 @@
 {
-  "name": "flex-plugin-scripts",
+  "name": "@twilio/flex-plugin-scripts",
   "version": "4.3.1",
   "description": "Scripts to run, build and deploy Flex plugins",
   "keywords": [
@@ -48,10 +48,10 @@
     "@types/react-redux": "5.0.22",
     "emotion": "9.2.12",
     "esm": "^3.2.25",
-    "flex-dev-utils": "4.3.1",
-    "flex-plugin": "4.3.1",
-    "flex-plugin-test": "4.3.1",
-    "flex-plugin-webpack": "4.3.1",
+    "@twilio/flex-dev-utils": "4.3.1",
+    "@twilio/flex-plugin": "4.3.1",
+    "@twilio/flex-plugin-test": "4.3.1",
+    "@twilio/flex-plugin-webpack": "4.3.1",
     "form-data": "^4.0.0",
     "jest": "26.6.3",
     "prop-types": "^15.7.2",

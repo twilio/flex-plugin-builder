@@ -1,4 +1,4 @@
-import { Logger } from 'flex-dev-utils';
+import { Logger } from '@twilio/flex-dev-utils';
 
 import upgradePlugin from './upgradePlugin';
 import deploy from './deploy';

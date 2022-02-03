@@ -1,5 +1,5 @@
 {
-  "name": "flex-plugin-webpack",
+  "name": "@twilio/flex-plugin-webpack",
   "version": "4.3.1",
   "description": "Flex Plugin Webpack and Webpack dev-server configurations",
   "keywords": [
@@ -48,7 +48,7 @@
     "css-loader": "^5.1.3",
     "dotenv": "^10.0.0",
     "dotenv-webpack": "^6.0.4",
-    "flex-dev-utils": "4.3.1",
+    "@twilio/flex-dev-utils": "4.3.1",
     "fork-ts-checker-webpack-plugin": "^4.1.6",
     "html-webpack-plugin": "^4.5.0",
     "node-ipc": "^9.1.4",

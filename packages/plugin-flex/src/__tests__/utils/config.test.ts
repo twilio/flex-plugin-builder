@@ -1,4 +1,4 @@
-import * as fs from 'flex-dev-utils/dist/fs';
+import * as fs from '@twilio/flex-dev-utils/dist/fs';
 
 import * as config from '../../utils/config';
 

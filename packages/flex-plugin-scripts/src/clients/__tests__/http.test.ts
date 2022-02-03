@@ -1,6 +1,6 @@
-import axios, { MockAdapter } from 'flex-dev-utils/dist/axios';
-import { clone } from 'flex-dev-utils/dist/lodash';
-import { env } from 'flex-dev-utils';
+import axios, { MockAdapter } from '@twilio/flex-dev-utils/dist/axios';
+import { clone } from '@twilio/flex-dev-utils/dist/lodash';
+import { env } from '@twilio/flex-dev-utils';
 import FormData from 'form-data';
 
 import HttpClient, { HttpConfig } from '../http';

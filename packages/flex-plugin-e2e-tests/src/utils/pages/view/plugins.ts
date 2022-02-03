@@ -1,4 +1,4 @@
-import { logger } from 'flex-dev-utils';
+import { logger } from '@twilio/flex-dev-utils';
 import { ElementHandle, Page } from 'puppeteer';
 
 import { Base } from './base';

@@ -1,6 +1,6 @@
-import { PluginVersionResource } from 'flex-plugins-api-client/dist/clients/pluginVersions';
-import { DeployResult, _verifyPath, _verifyFlexUIConfiguration } from 'flex-plugin-scripts/dist/scripts/deploy';
-import getRuntime from 'flex-plugin-scripts/dist/utils/runtime';
+import { PluginVersionResource } from '@twilio/flex-plugins-api-client/dist/clients/pluginVersions';
+import { DeployResult, _verifyPath, _verifyFlexUIConfiguration } from '@twilio/flex-plugin-scripts/dist/scripts/deploy';
+import getRuntime from '@twilio/flex-plugin-scripts/dist/utils/runtime';
 import { CLIParseError } from '@oclif/parser/lib/errors';
 import {
   FlexPluginError,
@@ -11,9 +11,9 @@ import {
   semver,
   ReleaseType,
   confirm,
-} from 'flex-dev-utils';
-import { getPaths } from 'flex-dev-utils/dist/fs';
-import { PluginResource } from 'flex-plugins-api-client';
+} from '@twilio/flex-dev-utils';
+import { getPaths } from '@twilio/flex-dev-utils/dist/fs';
+import { PluginResource } from '@twilio/flex-plugins-api-client';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import * as flags from '../../../utils/flags';
