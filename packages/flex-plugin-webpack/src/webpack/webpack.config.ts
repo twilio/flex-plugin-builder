@@ -21,6 +21,7 @@ import webpack, {
   RuleSetRule,
   SourceMapDevToolPlugin,
 } from 'webpack';
+import { ForkTsCheckerWebpackPluginOptions } from 'fork-ts-checker-webpack-plugin/lib/ForkTsCheckerWebpackPluginOptions';
 
 import { getSanitizedProcessEnv } from './clientVariables';
 import { WebpackType } from '..';
@@ -318,28 +319,41 @@ export const _getJSPlugins = (environment: Environment): Plugin[] => {
       }),
     );
   }
-  const hasPnp = 'pnp' in process.versions;
+  // const hasPnp = 'pnp' in process.versions;
 
   if (getPaths().app.isTSProject()) {
     const typescriptPath = resolveModulePath('typescript');
-    const config: Partial<ForkTsCheckerWebpackPlugin.Options> = {
-      typescript: typescriptPath || undefined,
+    // This entire Type changed and having trouble finding replacements to some attributes (commented below)
+    const config: Partial<ForkTsCheckerWebpackPluginOptions> = {
       async: isDev,
-      useTypescriptIncrementalApi: true,
-      checkSyntacticErrors: true,
-      resolveModuleNameModule: hasPnp ? `${__dirname}/webpack/pnpTs.js` : undefined,
-      resolveTypeReferenceDirectiveModule: hasPnp ? `${__dirname}/webpack/pnpTs.js` : undefined,
-      tsconfig: getPaths().app.tsConfigPath,
-      reportFiles: [
-        '**',
-        '!**/__tests__/**',
-        '!**/__mocks__/**',
-        '!**/?(*.)(spec|test).*',
-        '!**/src/setupProxy.*',
-        '!**/src/setupTests.*',
-      ],
-      silent: true,
+      typescript: {
+        context: typescriptPath || undefined,
+        configFile: getPaths().app.tsConfigPath,
+        diagnosticOptions: {
+          syntactic: true,
+        },
+      },
+      eslint: {
+        files: [
+          '**',
+          '!**/__tests__/**',
+          '!**/__mocks__/**',
+          '!**/?(*.)(spec|test).*',
+          '!**/src/setupProxy.*',
+          '!**/src/setupTests.*',
+        ],
+      },
+      logger: {
+        infrastructure: 'silent',
+      },
+      /*
+       * These are things I have not been able to find the replacement for yet
+       * useTypescriptIncrementalApi: true,
+       * resolveModuleNameModule: hasPnp ? `${__dirname}/webpack/pnpTs.js` : undefined,
+       * resolveTypeReferenceDirectiveModule: hasPnp ? `${__dirname}/webpack/pnpTs.js` : undefined,
+       */
     };
+
     if (isProd) {
       config.formatter = typescriptFormatter;
     }

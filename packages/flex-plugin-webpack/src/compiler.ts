@@ -74,20 +74,19 @@ export default (
         });
       });
 
-      ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).receive.tap(
-        'afterTSCheck',
-        (diagnostics: Issue[], lints: Issue[]) => {
-          const allMsgs = [...diagnostics, ...lints];
-          const format = (issue: Issue) => `${issue.file}\n${typescriptFormatter(issue)}`;
+      // Not sure if this is correct bc the recieve hook no longer exists and now hooks.tap require a return.
+      ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).issues.tap('afterTSCheck', (issues) => {
+        const format = (issue: Issue) => `${issue.file}\n${typescriptFormatter(issue)}`;
 
-          if (tsMessagesResolver) {
-            tsMessagesResolver({
-              errors: allMsgs.filter((msg) => msg.severity === 'error').map(format),
-              warnings: allMsgs.filter((msg) => msg.severity === 'warning').map(format),
-            });
-          }
-        },
-      );
+        if (tsMessagesResolver) {
+          tsMessagesResolver({
+            errors: issues.filter((msg) => msg.severity === 'error').map(format),
+            warnings: issues.filter((msg) => msg.severity === 'warning').map(format),
+          });
+        }
+        // Feel like this is wrong but needs a return now
+        return [];
+      });
     }
 
     // invalid is `bundle invalidated` and is invoked when files are modified in dev-server.

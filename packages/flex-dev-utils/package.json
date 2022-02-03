@@ -36,7 +36,7 @@
     "@k88/pipe-compose": "^2.5.0",
     "address": "^1.1.2",
     "app-module-path": "^2.2.0",
-    "axios": "^0.24.0",
+    "axios": "~0.21.1",
     "axios-cache-adapter": "^2.7.3",
     "axios-mock-adapter": "^1.20.0",
     "boxen": "^5.1.2",
