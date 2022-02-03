@@ -11,7 +11,7 @@ const cp = require('child_process');
 const os = require('os');
 
 // These packages are ignored and no jest runs for them
-const ignorePackages = ['@twilio/flex-plugin-e2e-tests'];
+const ignorePackages = ['flex-plugin-e2e-tests'];
 
 // Helper commands
 const isCI = () => process.env.CI;
@@ -99,7 +99,7 @@ const runNyc = async () => {
 
 // List of packages/directory names - test will run for these packages
 if (isWin()) {
-  ignorePackages.push('@twilio/flex-plugin-utils-jest');
+  ignorePackages.push('flex-plugin-utils-jest');
 }
 const packages = fs
   .readdirSync(pkgDir)
