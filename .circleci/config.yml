@@ -332,7 +332,7 @@ workflows:
             - job_pr-validator-node
           filters:
             branches:
-              only: "dev"
+              only: dev
 
   workflow_nightly-e2e:
     triggers:

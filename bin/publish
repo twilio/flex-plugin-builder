@@ -72,15 +72,6 @@ if [ "${tag}" == "public" ] ; then
     --exact \
     --yes \
     "${bump}"
-elif [ "${tag}" == "beta" ] ; then
-  ./node_modules/.bin/lerna publish \
-    --force-publish="*" \
-    --preid "${tag}" \
-    --pre-dist-tag "${tag}" \
-    --dist-tag "${tag}" \
-    --exact \
-    --yes \
-    "${bump}"
 else
   ./node_modules/.bin/lerna publish \
     --force-publish="*" \
@@ -93,4 +84,11 @@ else
     --exact \
     --yes \
     "${bump}"
+
+  if [ "${tag}" == "beta" ] ; then
+    git commit add .
+    git commit -m "${bump}" --no-verify
+    git push --no-verify
+    git push origin ${tag} --no-verify
+  fi
 fi
