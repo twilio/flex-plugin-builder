@@ -401,7 +401,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
         );
       }
 
-      if (this.checkCompatibility && this.builderVersion !== 4) {
+      if (this.checkCompatibility && this.builderVersion !== 5) {
         this._prints.flexPlugin.incompatibleVersion(this.pkg.name, this.builderVersion);
         this.exit(1);
       }
