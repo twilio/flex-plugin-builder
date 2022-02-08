@@ -39,5 +39,8 @@
     "@twilio/flex-plugins-utils-exception": "5.0.0-beta.0",
     "@types/lodash.get": "^4.4.6",
     "lodash.get": "^4.4.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -84,11 +84,4 @@ else
     --exact \
     --yes \
     "${bump}"
-
-  if [ "${tag}" == "beta" ] ; then
-    git commit add .
-    git commit -m "${bump}" --no-verify
-    git push --no-verify
-    git push origin ${tag} --no-verify
-  fi
 fi

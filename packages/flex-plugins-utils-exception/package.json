@@ -34,5 +34,8 @@
     "lint:fix": "npm run lint -- --fix",
     "test": "cd ../.. && jest packages/flex-plugins-utils-exception --color",
     "test:watch": "cd ../.. && jest packages/flex-plugins-utils-exception --watch --color"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

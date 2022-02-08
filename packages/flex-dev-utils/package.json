@@ -81,5 +81,8 @@
   },
   "optionalDependencies": {
     "keytar": "^7.7.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
