@@ -41,7 +41,7 @@
     "@k88/format-webpack-messages": "^1.1.0",
     "@k88/interpolate-html-plugin": "^1.0.5",
     "@k88/module-scope-plugin": "^1.1.0",
-    "@k88/typescript-compile-error-formatter": "^2.1.0",
+    "@k88/typescript-compile-error-formatter": "^1.0.3",
     "babel-loader": "^8.2.3",
     "babel-plugin-named-asset-import": "^0.3.7",
     "babel-preset-react-app": "^10.0.0",
