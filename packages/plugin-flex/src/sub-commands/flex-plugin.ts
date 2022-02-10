@@ -94,6 +94,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
   static topicName = 'flex:plugins';
 
+  static BUILDER_VERSION = 5;
+
   /**
    * Getter for the topic
    */
@@ -401,7 +403,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
         );
       }
 
-      if (this.checkCompatibility && this.builderVersion !== 5) {
+      if (this.checkCompatibility && this.builderVersion !== FlexPlugin.BUILDER_VERSION) {
         this._prints.flexPlugin.incompatibleVersion(this.pkg.name, this.builderVersion);
         this.exit(1);
       }

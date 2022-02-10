@@ -11,6 +11,7 @@ import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
 
 import createTest, { getPrintMethod, mockGetPkg, mockGetter, mockPrintMethod } from '../../../framework';
 import FlexPluginsDeploy, { parseVersionInput } from '../../../../commands/flex/plugins/deploy';
+import FlexPlugin from '../../../../sub-commands/flex-plugin';
 import ServerlessClient from '../../../../clients/ServerlessClient';
 
 jest.mock('@twilio/flex-dev-utils/dist/credentials');
@@ -87,7 +88,7 @@ describe('Commands/FlexPluginsDeploy', () => {
     const cmd = await createTest(FlexPluginsDeploy)('--changelog', defaultChangelog, ...args);
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
-    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'doRun').mockReturnThis();
 
