@@ -54,7 +54,15 @@ const mockUserConfig = async <C extends FlexPlugin>(command: C): Promise<C> => {
   // @ts-ignore
   command.userConfig = new ConfigData();
   // @ts-ignore
-  command.userConfig.addProfile('default', constants.FAKE_ACCOUNT_SID);
+  command.userConfig.addProfile(
+    'default',
+    constants.FAKE_ACCOUNT_SID,
+    '',
+    constants.FAKE_API_KEY,
+    constants.FAKE_API_SECRET,
+  );
+  // @ts-ignore
+  command.userConfig.setActiveProfile('default');
 
   return command;
 };
