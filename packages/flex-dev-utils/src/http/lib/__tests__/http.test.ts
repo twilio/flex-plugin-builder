@@ -405,16 +405,20 @@ describe('HttpClient', () => {
       const httpClient = new HttpClient(config);
 
       // @ts-ignore
-      const maxAge = httpClient.cacheAge;
+      const ttl = httpClient.cacheAge;
       // @ts-ignore
-      expect(httpClient.getRequestOption({ cacheable: true })).toEqual({ cache: { maxAge } });
+      expect(httpClient.getRequestOption({ cacheable: true })).toEqual({
+        cache: { interpretHeader: false, ttl },
+      });
     });
 
     it('should return requested maxAge', () => {
       const httpClient = new HttpClient(config);
 
       // @ts-ignore
-      expect(httpClient.getRequestOption({ cacheable: true, cacheAge: 123 })).toEqual({ cache: { maxAge: 123 } });
+      expect(httpClient.getRequestOption({ cacheable: true, cacheAge: 123 })).toEqual({
+        cache: { interpretHeader: false, ttl: 123 },
+      });
     });
   });
 
@@ -434,7 +438,7 @@ describe('HttpClient', () => {
 
       // @ts-ignore
       const mockAxios = new MockAdapter(httpClient.client);
-      mockAxios.onGet().reply(async (config) => Promise.resolve([200, config.url]));
+      mockAxios.onGet().reply(async (config) => Promise.resolve([200, config.url, {}]));
       // @ts-ignore
       const incrementConcurrentRequests = jest.spyOn(httpClient, 'incrementConcurrentRequests');
       // @ts-ignore
@@ -476,7 +480,7 @@ describe('HttpClient', () => {
           const id = setInterval(() => {
             if (doResolve[config.url as string]) {
               clearInterval(id);
-              resolve([200, config.url]);
+              resolve([200, config.url, {}]);
             }
           }, 10);
         });
@@ -535,7 +539,7 @@ describe('HttpClient', () => {
 
       // @ts-ignore
       const mockAxios = new MockAdapter(httpClient.client);
-      mockAxios.onGet().reply(async (config) => Promise.resolve([200, config.url]));
+      mockAxios.onGet().reply(async (config) => Promise.resolve([200, config.url, {}]));
       // @ts-ignore
       const incrementConcurrentRequests = jest.spyOn(httpClient, 'incrementConcurrentRequests');
       // @ts-ignore

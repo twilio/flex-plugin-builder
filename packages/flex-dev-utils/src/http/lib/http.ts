@@ -1,6 +1,7 @@
 import qs from 'qs';
-import { setupCache } from 'axios-cache-adapter';
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { CacheAxiosResponse, CacheRequestConfig, setupCache } from 'axios-cache-interceptor';
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import { CacheOptions } from 'axios-cache-interceptor/src/cache/create';
 
 import { env } from '../../env';
 import { logger } from '../../logger';
@@ -57,7 +58,6 @@ export default class Http {
 
   constructor(config: HttpClientConfig) {
     this.cacheAge = 15 * 60 * 1000;
-    const cache = setupCache({ maxAge: 0 });
 
     const axiosConfig: AxiosRequestConfig = {
       baseURL: config.baseURL,
@@ -65,7 +65,6 @@ export default class Http {
         'Content-Type': Http.ContentType,
         ...config.headers,
       },
-      adapter: cache.adapter,
     };
     if (config.auth) {
       axiosConfig.auth = {
@@ -80,7 +79,10 @@ export default class Http {
       }
       axiosConfig.headers[Http.UserAgent] = Http.getUserAgent(config);
     }
-    this.client = axios.create(axiosConfig);
+    const cacheOptions: CacheOptions = {
+      interpretHeader: true,
+    };
+    this.client = setupCache(axios.create(axiosConfig), cacheOptions);
 
     this.concurrency = {
       pending: 0,
@@ -91,6 +93,7 @@ export default class Http {
         [this.concurrencyRequestTransform, Http.transformRequestFormData].concat(config.requestInterceptors || []),
       ),
     );
+    // @ts-ignore
     this.client.interceptors.response.use(this.transformResponse, this.transformResponseError);
   }
 
@@ -247,14 +250,14 @@ export default class Http {
    * Transforms the response object
    * @param resp
    */
-  private transformResponse = (resp: AxiosResponse) => {
+  private transformResponse = (resp: CacheAxiosResponse) => {
     this.decrementConcurrentRequests();
     const { data } = resp;
 
-    const servedFromCache = resp.request.fromCache === true ? '(served from cache) ' : '';
+    const servedFromCache = resp.cached ? '(served from cache) ' : '';
     const pretty = Http.prettyPrint(data);
     const url = `${resp.config.baseURL}/${resp.config.url}`;
-    const method = resp.request.method || '';
+    const method = resp.config.method || '';
     logger.debug(
       `${method} request to ${url} ${servedFromCache}responded with statusCode ${resp.status} and data\n${pretty}\n`,
     );
@@ -299,7 +302,7 @@ export default class Http {
    * @param option  request configuration
    */
   private getRequestOption(option?: RequestOption) {
-    const opt: AxiosRequestConfig = {};
+    const opt: CacheRequestConfig = {};
 
     if (!option) {
       return opt;
@@ -307,7 +310,8 @@ export default class Http {
 
     if (option.cacheable) {
       opt.cache = {
-        maxAge: option.cacheAge || this.cacheAge,
+        ttl: option.cacheAge || this.cacheAge,
+        interpretHeader: false,
       };
     }
 
