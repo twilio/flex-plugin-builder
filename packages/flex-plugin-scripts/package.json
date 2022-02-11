@@ -1,6 +1,6 @@
 {
   "name": "flex-plugin-scripts",
-  "version": "4.3.2",
+  "version": "4.3.3",
   "description": "Scripts to run, build and deploy Flex plugins",
   "keywords": [
     "flex",
@@ -48,10 +48,10 @@
     "@types/react-redux": "5.0.22",
     "emotion": "9.2.12",
     "esm": "^3.2.25",
-    "flex-dev-utils": "4.3.2",
-    "flex-plugin": "4.3.2",
-    "flex-plugin-test": "4.3.2",
-    "flex-plugin-webpack": "4.3.2",
+    "flex-dev-utils": "4.3.3",
+    "flex-plugin": "4.3.3",
+    "flex-plugin-test": "4.3.3",
+    "flex-plugin-webpack": "4.3.3",
     "form-data": "^4.0.0",
     "jest": "26.6.3",
     "prop-types": "^15.7.2",
