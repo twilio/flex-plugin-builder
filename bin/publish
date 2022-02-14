@@ -84,4 +84,9 @@ else
     --exact \
     --yes \
     "${bump}"
+
+    if [ "${tag}" == "beta" ] ; then
+      git status
+      git push
+    fi
 fi
