@@ -88,9 +88,8 @@ else
     version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
 
     if [ "${tag}" == "beta" ] ; then
-      git status
       git add .
-      git commit -m "v${version}" --no-verify
+      git commit -am "v${version}" --no-verify
       git push --no-verify
     fi
 fi
