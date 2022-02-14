@@ -90,6 +90,6 @@ else
     if [ "${tag}" == "beta" ] ; then
       git add .
       git commit -am "v${version}" --no-verify
-      git push --no-verify
+      git push --set-upstream origin $(git branch --show-current) --no-verify
     fi
 fi
