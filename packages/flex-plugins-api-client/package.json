@@ -1,6 +1,6 @@
 {
   "name": "flex-plugins-api-client",
-  "version": "4.3.3",
+  "version": "4.3.4",
   "description": "Flex Plugins API Client",
   "keywords": [
     "flex",
@@ -39,7 +39,7 @@
     "test:watch": "cd ../.. && jest packages/flex-plugins-api-client --watch --color"
   },
   "dependencies": {
-    "flex-dev-utils": "4.3.3",
+    "flex-dev-utils": "4.3.4",
     "url-join": "^4.0.1"
   },
   "devDependencies": {

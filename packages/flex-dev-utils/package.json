@@ -1,6 +1,6 @@
 {
   "name": "flex-dev-utils",
-  "version": "4.3.3",
+  "version": "4.3.4",
   "description": "Common development utility for creating a Flex plugin",
   "keywords": [
     "flex",
@@ -44,8 +44,8 @@
     "columnify": "^1.5.4",
     "copy-template-dir": "^1.4.0",
     "execa": "^5.1.1",
-    "flex-plugins-utils-env": "4.3.3",
-    "flex-plugins-utils-exception": "4.3.3",
+    "flex-plugins-utils-env": "4.3.4",
+    "flex-plugins-utils-exception": "4.3.4",
     "globby": "^11.0.4",
     "inquirer": "7.3.3",
     "lodash": "^4.17.21",
