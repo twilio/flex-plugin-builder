@@ -10,11 +10,11 @@ import {
   copyFile,
   removeFile,
   calculateSha256,
-} from 'flex-dev-utils/dist/fs';
+} from '@twilio/flex-dev-utils/dist/fs';
 import packageJson from 'package-json';
 import { flags } from '@oclif/parser';
-import { TwilioApiError, TwilioCliError, progress, semver } from 'flex-dev-utils';
-import { spawn } from 'flex-dev-utils/dist/spawn';
+import { TwilioApiError, TwilioCliError, progress, semver } from '@twilio/flex-dev-utils';
+import { spawn } from '@twilio/flex-dev-utils/dist/spawn';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import FlexPlugin, { ConfigData, PkgCallback, SecureStorage } from '../../../sub-commands/flex-plugin';
@@ -23,8 +23,8 @@ import { createDescription, instanceOf } from '../../../utils/general';
 const appConfig = 'appConfig.js';
 const crackoConfig = 'craco.config.js';
 
-const flexPluginScript = 'flex-plugin-scripts';
-const flexPlugin = 'flex-plugin';
+const flexPluginScript = '@twilio/flex-plugin-scripts';
+const flexPlugin = '@twilio/flex-plugin';
 
 interface ScriptsToRemove {
   name: string;
@@ -250,11 +250,22 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       });
 
       copyFile(
-        [require.resolve('create-flex-plugin'), '..', '..', 'templates', 'core', 'public', 'appConfig.example.js'],
+        [
+          require.resolve('@twilio/create-flex-plugin'),
+          '..',
+          '..',
+          'templates',
+          'core',
+          'public',
+          'appConfig.example.js',
+        ],
         [this.cwd, 'public', 'appConfig.example.js'],
       );
       ['jest.config.js', 'webpack.config.js', 'webpack.dev.js'].forEach((file) => {
-        copyFile([require.resolve('create-flex-plugin'), '..', '..', 'templates', 'core', file], [this.cwd, file]);
+        copyFile(
+          [require.resolve('@twilio/create-flex-plugin'), '..', '..', 'templates', 'core', file],
+          [this.cwd, file],
+        );
       });
 
       if (checkAFileExists(this.cwd, 'public', appConfig)) {

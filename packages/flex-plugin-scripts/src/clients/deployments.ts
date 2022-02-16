@@ -1,5 +1,5 @@
-import { Credential } from 'flex-dev-utils';
-import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
+import { Credential } from '@twilio/flex-dev-utils';
+import { isSidOfType, SidPrefix } from '@twilio/flex-dev-utils/dist/sids';
 
 import BaseClient from './baseClient';
 import { Deployment } from './serverless-types';

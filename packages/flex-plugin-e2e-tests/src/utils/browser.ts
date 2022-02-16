@@ -1,4 +1,4 @@
-import { logger } from 'flex-dev-utils';
+import { logger } from '@twilio/flex-dev-utils';
 import { launch, Browser as PuppeteerBrowser, Page, ConsoleMessage, ConsoleMessageType } from 'puppeteer';
 
 import assertion from './assertion';

@@ -1,4 +1,4 @@
-import { TwilioError, TwilioApiError } from 'flex-dev-utils/dist/errors';
+import { TwilioError, TwilioApiError } from '@twilio/flex-dev-utils/dist/errors';
 
 import { ConfigurationsClient, ConfiguredPluginsClient, ReleasesClient } from '../../clients';
 import { Script } from '.';

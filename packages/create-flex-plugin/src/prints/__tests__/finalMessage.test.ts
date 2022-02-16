@@ -1,9 +1,9 @@
-import { boxen } from 'flex-dev-utils';
+import { boxen } from '@twilio/flex-dev-utils';
 
 import finalMessage from '../finalMessage';
 import { FlexPluginArguments } from '../../lib/create-flex-plugin';
 
-jest.mock('flex-dev-utils/dist/logger/lib/boxen');
+jest.mock('@twilio/flex-dev-utils/dist/logger/lib/boxen');
 
 describe('finalMessage', () => {
   const config: FlexPluginArguments = {

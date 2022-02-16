@@ -1,7 +1,7 @@
-import { Credential } from 'flex-dev-utils';
-import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
-import { randomString } from 'flex-dev-utils/dist/random';
-import { getPaths } from 'flex-dev-utils/dist/fs';
+import { Credential } from '@twilio/flex-dev-utils';
+import { isSidOfType, SidPrefix } from '@twilio/flex-dev-utils/dist/sids';
+import { randomString } from '@twilio/flex-dev-utils/dist/random';
+import { getPaths } from '@twilio/flex-dev-utils/dist/fs';
 
 import BaseClient from './baseClient';
 import { Environment, EnvironmentResource } from './serverless-types';

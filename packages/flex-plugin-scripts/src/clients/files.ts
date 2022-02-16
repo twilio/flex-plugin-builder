@@ -1,9 +1,9 @@
 import { createReadStream } from 'fs';
 import { basename } from 'path';
 
-import { Credential } from 'flex-dev-utils';
+import { Credential } from '@twilio/flex-dev-utils';
 import FormData from 'form-data';
-import { isSidOfType } from 'flex-dev-utils/dist/sids';
+import { isSidOfType } from '@twilio/flex-dev-utils/dist/sids';
 
 import BaseClient from './baseClient';
 import Http from './http';

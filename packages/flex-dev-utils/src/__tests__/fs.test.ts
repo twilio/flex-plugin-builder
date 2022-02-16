@@ -9,8 +9,8 @@ jest.mock('globby');
 jest.mock('app-module-path');
 
 describe('fs', () => {
-  const flexPluginScripts = 'flex-plugin-scripts';
-  const flexPluginWebpack = 'flex-plugin-webpack';
+  const flexPluginScripts = '@twilio/flex-plugin-scripts';
+  const flexPluginWebpack = '@twilio/flex-plugin-webpack';
   const flexPluginScriptsPath = `/path/to/${flexPluginScripts}`;
   const flexPluginWebpackPath = `/path/to/${flexPluginWebpack}`;
   const pluginName = 'plugin-test';
@@ -22,7 +22,7 @@ describe('fs', () => {
     name: pluginName,
     dependencies: {
       [flexPluginScripts]: '1',
-      'flex-plugin': '2',
+      '@twilio/flex-plugin': '2',
     },
     devDependencies: {},
   };
@@ -596,7 +596,7 @@ describe('fs', () => {
       version: '1.2.3',
       dependencies: {
         [flexPluginScripts]: '1',
-        'flex-plugin': '2',
+        '@twilio/flex-plugin': '2',
       },
       devDependencies: {},
     };

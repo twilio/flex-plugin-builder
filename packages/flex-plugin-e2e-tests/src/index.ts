@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, @typescript-eslint/prefer-for-of, global-require */
-import { logger } from 'flex-dev-utils';
+import { logger } from '@twilio/flex-dev-utils';
 
 import { runner, testParams, testScenarios } from './core';
 

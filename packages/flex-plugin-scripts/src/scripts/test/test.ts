@@ -1,6 +1,6 @@
-import { logger } from 'flex-dev-utils';
-import { Environment } from 'flex-dev-utils/dist/env';
-import { resolveModulePath } from 'flex-dev-utils/dist/fs';
+import { logger } from '@twilio/flex-dev-utils';
+import { Environment } from '@twilio/flex-dev-utils/dist/env';
+import { resolveModulePath } from '@twilio/flex-dev-utils/dist/fs';
 import * as jest from 'jest';
 
 import getConfiguration, { ConfigurationType } from '../../config';

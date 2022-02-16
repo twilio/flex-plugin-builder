@@ -2,8 +2,8 @@ import { stringify } from 'querystring';
 import { format } from 'util';
 import { Transform } from 'stream';
 
-import axios, { AxiosInstance, AxiosRequestConfig, httpAdapter, settle } from 'flex-dev-utils/dist/axios';
-import { logger, env, Credential } from 'flex-dev-utils';
+import axios, { AxiosInstance, AxiosRequestConfig, httpAdapter, settle } from '@twilio/flex-dev-utils/dist/axios';
+import { logger, env, Credential } from '@twilio/flex-dev-utils';
 import FormData from 'form-data';
 
 const applicationUrlEncoded = 'application/x-www-form-urlencoded';

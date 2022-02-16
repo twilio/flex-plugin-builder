@@ -1,6 +1,6 @@
 import WebpackDevServer, { Configuration } from 'webpack-dev-server';
-import { env, logger, open, exit } from 'flex-dev-utils';
-import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
+import { env, logger, open, exit } from '@twilio/flex-dev-utils';
+import { getLocalAndNetworkUrls } from '@twilio/flex-dev-utils/dist/urls';
 
 import { WebpackType } from '..';
 import { Compiler } from '../compiler';

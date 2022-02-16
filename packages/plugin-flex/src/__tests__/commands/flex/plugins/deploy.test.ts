@@ -1,23 +1,24 @@
 /* eslint-disable camelcase */
 import { CLIParseError } from '@oclif/parser/lib/errors';
-import { TwilioCliError, FlexPluginError } from 'flex-dev-utils';
-import * as credentials from 'flex-dev-utils/dist/credentials';
-import * as runtime from 'flex-plugin-scripts/dist/utils/runtime';
-import * as fs from 'flex-dev-utils/dist/fs';
-import { PluginVersionResource } from 'flex-plugins-api-client/dist/clients/pluginVersions';
-import { PluginResource } from 'flex-plugins-api-client';
-import * as deployScript from 'flex-plugin-scripts/dist/scripts/deploy';
-import * as spawn from 'flex-dev-utils/dist/spawn';
+import { TwilioCliError, FlexPluginError } from '@twilio/flex-dev-utils';
+import * as credentials from '@twilio/flex-dev-utils/dist/credentials';
+import * as runtime from '@twilio/flex-plugin-scripts/dist/utils/runtime';
+import * as fs from '@twilio/flex-dev-utils/dist/fs';
+import { PluginVersionResource } from '@twilio/flex-plugins-api-client/dist/clients/pluginVersions';
+import { PluginResource } from '@twilio/flex-plugins-api-client';
+import * as deployScript from '@twilio/flex-plugin-scripts/dist/scripts/deploy';
+import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
 
 import createTest, { getPrintMethod, mockGetPkg, mockGetter, mockPrintMethod } from '../../../framework';
 import FlexPluginsDeploy, { parseVersionInput } from '../../../../commands/flex/plugins/deploy';
+import FlexPlugin from '../../../../sub-commands/flex-plugin';
 import ServerlessClient from '../../../../clients/ServerlessClient';
 
-jest.mock('flex-dev-utils/dist/credentials');
-jest.mock('flex-plugin-scripts/dist/utils/runtime');
-jest.mock('flex-dev-utils/dist/fs');
-jest.mock('flex-dev-utils/dist/updateNotifier');
-jest.mock('flex-dev-utils/dist/spawn');
+jest.mock('@twilio/flex-dev-utils/dist/credentials');
+jest.mock('@twilio/flex-plugin-scripts/dist/utils/runtime');
+jest.mock('@twilio/flex-dev-utils/dist/fs');
+jest.mock('@twilio/flex-dev-utils/dist/updateNotifier');
+jest.mock('@twilio/flex-dev-utils/dist/spawn');
 
 describe('Commands/FlexPluginsDeploy', () => {
   jest.setTimeout(10000);
@@ -87,7 +88,7 @@ describe('Commands/FlexPluginsDeploy', () => {
     const cmd = await createTest(FlexPluginsDeploy)('--changelog', defaultChangelog, ...args);
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
-    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'doRun').mockReturnThis();
 

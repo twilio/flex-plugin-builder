@@ -1,13 +1,13 @@
-import { TwilioApiError, TwilioCliError } from 'flex-dev-utils';
-import * as fs from 'flex-dev-utils/dist/fs';
-import * as spawn from 'flex-dev-utils/dist/spawn';
+import { TwilioApiError, TwilioCliError } from '@twilio/flex-dev-utils';
+import * as fs from '@twilio/flex-dev-utils/dist/fs';
+import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
 
 import { Pkg } from '../../../../sub-commands/flex-plugin';
 import createTest, { getPrintMethod, implementFileExists, mockGetPkg, mockPrintMethod } from '../../../framework';
 import FlexPluginsUpgradePlugin, { DependencyUpdates } from '../../../../commands/flex/plugins/upgrade-plugin';
 
-jest.mock('flex-dev-utils/dist/fs');
-jest.mock('flex-dev-utils/dist/spawn');
+jest.mock('@twilio/flex-dev-utils/dist/fs');
+jest.mock('@twilio/flex-dev-utils/dist/spawn');
 
 describe('Commands/FlexPluginsStart', () => {
   const serverlessSid = 'ZS00000000000000000000000000000000';
@@ -50,7 +50,7 @@ describe('Commands/FlexPluginsStart', () => {
     const cmd = await createTest(FlexPluginsUpgradePlugin)();
 
     mockGetPkg(cmd, {
-      dependencies: { 'flex-plugin-scripts': '3.0.0' },
+      dependencies: { '@twilio/flex-plugin-scripts': '3.0.0' },
     });
     expect(cmd.pkgVersion).toEqual(3);
   });
@@ -60,7 +60,7 @@ describe('Commands/FlexPluginsStart', () => {
 
     mockGetPkg(cmd, {
       dependencies: {},
-      devDependencies: { 'flex-plugin-scripts': '4.0.0' },
+      devDependencies: { '@twilio/flex-plugin-scripts': '4.0.0' },
     });
 
     expect(cmd.pkgVersion).toEqual(4);

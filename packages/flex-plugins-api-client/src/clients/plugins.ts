@@ -1,5 +1,5 @@
 import urlJoin from 'url-join';
-import { TwilioApiError } from 'flex-dev-utils/dist/errors';
+import { TwilioApiError } from '@twilio/flex-dev-utils/dist/errors';
 
 import ServiceHttpClient, { Pagination, PaginationMeta } from './serviceHttpClient';
 

@@ -4,7 +4,7 @@ import { format } from 'util';
 import chalk from 'chalk';
 import wrapAnsi from 'wrap-ansi';
 import { pipe } from '@k88/pipe-compose';
-import env from 'flex-plugins-utils-env';
+import env from '@twilio/flex-plugins-utils-env';
 import stringWidth from 'string-width';
 
 import columnify from './columnify';

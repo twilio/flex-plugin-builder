@@ -2,7 +2,7 @@
 import { existsSync, mkdirSync, rmdirSync } from 'fs';
 
 import packageJson from 'package-json';
-import { logger } from 'flex-dev-utils';
+import { logger } from '@twilio/flex-dev-utils';
 
 import { homeDir, TestParams, TestScenario, TestSuite, testSuites } from '.';
 import { api } from '../utils';
@@ -66,7 +66,7 @@ const getArgs = (flag: string): string[] => {
  */
 const beforeAll = async (testParams: TestParams) => {
   if (testParams.scenario.packageVersion === 'latest') {
-    const pkg = await packageJson('flex-plugin-scripts', { version: 'latest' });
+    const pkg = await packageJson('twilio/flex-plugin-scripts', { version: 'latest' });
     testParams.scenario.packageVersion = pkg.version as string;
   }
 };

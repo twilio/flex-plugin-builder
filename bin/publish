@@ -72,15 +72,6 @@ if [ "${tag}" == "public" ] ; then
     --exact \
     --yes \
     "${bump}"
-elif [ "${tag}" == "beta" ] ; then
-  ./node_modules/.bin/lerna publish \
-    --force-publish="*" \
-    --preid "${tag}" \
-    --pre-dist-tag "${tag}" \
-    --dist-tag "${tag}" \
-    --exact \
-    --yes \
-    "${bump}"
 else
   ./node_modules/.bin/lerna publish \
     --force-publish="*" \
@@ -93,4 +84,12 @@ else
     --exact \
     --yes \
     "${bump}"
+
+    version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
+
+    if [ "${tag}" == "beta" ] ; then
+      git add .
+      git commit -am "v${version}" --no-verify
+      git push --set-upstream origin $(git branch --show-current) --no-verify
+    fi
 fi

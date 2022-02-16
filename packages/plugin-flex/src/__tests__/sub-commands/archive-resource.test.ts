@@ -1,10 +1,10 @@
-import { TwilioApiError } from 'flex-dev-utils';
-import * as questions from 'flex-dev-utils/dist/questions';
+import { TwilioApiError } from '@twilio/flex-dev-utils';
+import * as questions from '@twilio/flex-dev-utils/dist/questions';
 
 import ArchiveResource from '../../sub-commands/archive-resource';
 import createTest from '../framework';
 
-jest.mock('flex-dev-utils/dist/questions');
+jest.mock('@twilio/flex-dev-utils/dist/questions');
 
 describe('SubCommands/ArchiveResource', () => {
   interface Resource {

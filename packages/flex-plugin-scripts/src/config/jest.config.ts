@@ -1,9 +1,9 @@
 import { join } from 'path';
 
 import { InitialOptions } from '@jest/types/build/Config';
-import { getPaths } from 'flex-dev-utils/dist/fs';
+import { getPaths } from '@twilio/flex-dev-utils/dist/fs';
 
-export { JestConfigurations } from 'flex-plugin-test';
+export { JestConfigurations } from '@twilio/flex-plugin-test';
 
 /**
  * Main method for generating a default Jest configuration
@@ -11,6 +11,6 @@ export { JestConfigurations } from 'flex-plugin-test';
 export default (): Partial<InitialOptions> => {
   return {
     rootDir: getPaths().cwd,
-    preset: join(require.resolve('flex-plugin-test'), '..', '..'),
+    preset: join(require.resolve('@twilio/flex-plugin-test'), '..', '..'),
   };
 };

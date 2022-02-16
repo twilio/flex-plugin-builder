@@ -1,6 +1,6 @@
 {
-  "name": "flex-plugin-utils-jest",
-  "version": "4.3.4",
+  "name": "@twilio/flex-plugin-utils-jest",
+  "version": "5.0.4-beta.0",
   "description": "Flex Plugin E2E Tests framework",
   "keywords": [
     "flex",
@@ -36,6 +36,9 @@
     "jest-matcher-utils": "^26.6.2"
   },
   "engines": {
-    "node": ">=10.12.0"
+    "node": "^12 || ^14 || ^16"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

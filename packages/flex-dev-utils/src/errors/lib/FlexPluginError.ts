@@ -1,4 +1,4 @@
-import { TwilioError } from 'flex-plugins-utils-exception';
+import { TwilioError } from '@twilio/flex-plugins-utils-exception';
 
 import { AppPackageJson, readAppPackageJson } from '../../fs';
 import { logger } from '../../logger';
@@ -27,7 +27,7 @@ export default class FlexPluginError extends TwilioError {
     const { headline } = logger.coloredStrings;
     if (this.pkg) {
       const deps = this.pkg.dependencies;
-      const names = ['flex-plugin', 'flex-plugin-scripts'];
+      const names = ['@twilio/flex-plugin', '@twilio/flex-plugin-scripts'];
 
       logger.newline();
       logger.info(`Your plugin ${this.pkg.name} is using the following versions:`);

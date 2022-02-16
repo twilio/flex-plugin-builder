@@ -1,4 +1,4 @@
-import { logger, env, singleLineString } from 'flex-dev-utils';
+import { logger, env, singleLineString } from '@twilio/flex-dev-utils';
 
 const { link } = logger.coloredStrings;
 
@@ -9,7 +9,7 @@ export default (): void => {
   const nameColor = logger.coloredStrings.name;
   const { headline } = logger.coloredStrings;
 
-  const scriptName = nameColor('flex-plugin-scripts');
+  const scriptName = nameColor('@twilio/flex-plugin-scripts');
 
   env.setQuiet(false);
   logger.newline();

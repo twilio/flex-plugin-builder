@@ -1,5 +1,5 @@
-import { PluginVersion } from 'flex-plugins-api-client';
-import { TwilioApiError } from 'flex-dev-utils';
+import { PluginVersion } from '@twilio/flex-plugins-api-client';
+import { TwilioApiError } from '@twilio/flex-dev-utils';
 
 import createTest from '../../../../framework';
 import FlexPluginsArchivePluginVersion from '../../../../../commands/flex/plugins/archive/plugin-version';

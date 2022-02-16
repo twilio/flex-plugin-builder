@@ -1,4 +1,4 @@
-import { Credential, env } from 'flex-dev-utils';
+import { Credential, env } from '@twilio/flex-dev-utils';
 
 import Http, { ContentType, HttpConfig } from './http';
 import { getPackageDetails, FLEX_PACKAGES } from '../utils/package';
