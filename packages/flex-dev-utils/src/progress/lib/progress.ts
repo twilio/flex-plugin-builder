@@ -1,5 +1,4 @@
-import env from '@twilio/flex-plugins-utils-env';
-
+import env from '../../env';
 import { logger } from '../../logger';
 
 export type Callback<R> = () => Promise<R>;
