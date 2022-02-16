@@ -1,5 +1,5 @@
 import { ConfigurationContext, ConfigurationInstance } from 'twilio/lib/rest/flexApi/v1/configuration';
-import { TwilioCliError } from 'flex-dev-utils';
+import { TwilioCliError } from '@twilio/flex-dev-utils';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import phin from 'phin';
 

@@ -1,6 +1,6 @@
-import { env, logger, exit } from 'flex-dev-utils';
-import { Environment } from 'flex-dev-utils/dist/env';
-import { checkFilesExist, getPaths, addCWDNodeModule, resolveModulePath } from 'flex-dev-utils/dist/fs';
+import { env, logger, exit } from '@twilio/flex-dev-utils';
+import { Environment } from '@twilio/flex-dev-utils/dist/env';
+import { checkFilesExist, getPaths, addCWDNodeModule, resolveModulePath } from '@twilio/flex-dev-utils/dist/fs';
 
 import { jestNotInstalled } from '../prints';
 import run from '../utils/run';

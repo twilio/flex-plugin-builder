@@ -1,5 +1,5 @@
-import { logger } from 'flex-dev-utils';
-import { checkRunPluginConfigurationExists } from 'flex-dev-utils/dist/fs';
+import { logger } from '@twilio/flex-dev-utils';
+import { checkRunPluginConfigurationExists } from '@twilio/flex-dev-utils/dist/fs';
 
 import run from '../utils/run';
 

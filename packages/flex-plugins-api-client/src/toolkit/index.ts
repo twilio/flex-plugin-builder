@@ -1,5 +1,5 @@
-import { Region } from 'flex-dev-utils/dist/env';
-import { OptionalHttpClientConfig } from 'flex-dev-utils';
+import { Region } from '@twilio/flex-dev-utils/dist/env';
+import { OptionalHttpClientConfig } from '@twilio/flex-dev-utils';
 
 import { PluginServiceHTTPClient } from '../clients';
 import FlexPluginsAPIToolkitBase from './flexPluginsAPIToolkitBase';

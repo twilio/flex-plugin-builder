@@ -1,4 +1,4 @@
-import { logger, env, singleLineString } from 'flex-dev-utils';
+import { logger, env, singleLineString } from '@twilio/flex-dev-utils';
 
 import preFlightByPass from './preFlightByPass';
 

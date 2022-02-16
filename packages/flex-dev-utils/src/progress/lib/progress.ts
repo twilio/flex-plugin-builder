@@ -1,4 +1,4 @@
-import env from 'flex-plugins-utils-env';
+import env from '@twilio/flex-plugins-utils-env';
 
 import { logger } from '../../logger';
 

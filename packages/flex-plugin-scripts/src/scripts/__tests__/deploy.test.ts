@@ -1,6 +1,6 @@
-import { logger, FlexPluginError, UserActionError } from 'flex-dev-utils';
-import * as fsScript from 'flex-dev-utils/dist/fs';
-import * as questions from 'flex-dev-utils/dist/questions';
+import { logger, FlexPluginError, UserActionError } from '@twilio/flex-dev-utils';
+import * as fsScript from '@twilio/flex-dev-utils/dist/fs';
+import * as questions from '@twilio/flex-dev-utils/dist/questions';
 
 import * as prints from '../../prints';
 import * as deployScript from '../deploy';
@@ -13,17 +13,17 @@ jest.mock('../../clients/environments');
 jest.mock('../../clients/builds');
 jest.mock('../../clients/deployments');
 jest.mock('../../prints/deploySuccessful');
-jest.mock('flex-dev-utils/dist/questions');
-jest.mock('flex-dev-utils/dist/fs');
-jest.mock('flex-dev-utils/dist/logger/lib/logger');
-jest.mock('flex-dev-utils/dist/updateNotifier');
-jest.mock('flex-dev-utils/dist/credentials', () => ({
+jest.mock('@twilio/flex-dev-utils/dist/questions');
+jest.mock('@twilio/flex-dev-utils/dist/fs');
+jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
+jest.mock('@twilio/flex-dev-utils/dist/updateNotifier');
+jest.mock('@twilio/flex-dev-utils/dist/credentials', () => ({
   getCredential: jest.fn(),
 }));
 jest.mock('../../utils/runtime');
 
 /* eslint-disable */
-const fs = require('flex-dev-utils/dist/fs');
+const fs = require('@twilio/flex-dev-utils/dist/fs');
 const Runtime = require('../../utils/runtime').default;
 const AccountClient = require('../../clients/accounts').default;
 const AssetClient = require('../../clients/assets').default;
@@ -486,6 +486,20 @@ describe('DeployScript', () => {
 
     it('should not ask for confirmation if react versions match', async () => {
       const getFlexUIVersion = jest.fn().mockResolvedValue('^1');
+      const getUIDependencies = jest.fn().mockResolvedValue(dependencies);
+      ConfigurationClient.mockImplementation(() => ({ getFlexUIVersion, getUIDependencies }));
+
+      const confirm = jest.spyOn(questions, 'confirm');
+      const getPackageVersion = jest.spyOn(fsScript, 'getPackageVersion').mockReturnValue('16.13.1');
+
+      await deployScript._verifyFlexUIConfiguration();
+
+      expect(confirm).not.toHaveBeenCalled();
+      expect(getPackageVersion).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not ask for confirmation if react versions match using 1.n convention', async () => {
+      const getFlexUIVersion = jest.fn().mockResolvedValue('1.n');
       const getUIDependencies = jest.fn().mockResolvedValue(dependencies);
       ConfigurationClient.mockImplementation(() => ({ getFlexUIVersion, getUIDependencies }));
 

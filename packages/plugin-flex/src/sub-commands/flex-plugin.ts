@@ -1,7 +1,13 @@
 import { join } from 'path';
 import { homedir } from 'os';
 
-import { checkAFileExists, getPaths, readJsonFile, writeJSONFile, addCWDNodeModule } from 'flex-dev-utils/dist/fs';
+import {
+  checkAFileExists,
+  getPaths,
+  readJsonFile,
+  writeJSONFile,
+  addCWDNodeModule,
+} from '@twilio/flex-dev-utils/dist/fs';
 import { baseCommands, services } from '@twilio/cli-core';
 import {
   PluginServiceHTTPClient,
@@ -10,7 +16,7 @@ import {
   ConfigurationsClient,
   ReleasesClient,
   FlexPluginsAPIToolkit,
-} from 'flex-plugins-api-client';
+} from '@twilio/flex-plugins-api-client';
 import {
   TwilioError,
   Logger,
@@ -20,12 +26,12 @@ import {
   semver,
   updateNotifier,
   chalk,
-} from 'flex-dev-utils';
-import { spawn, SpawnPromise } from 'flex-dev-utils/dist/spawn';
+} from '@twilio/flex-dev-utils';
+import { spawn, SpawnPromise } from '@twilio/flex-dev-utils/dist/spawn';
 import dayjs from 'dayjs';
 import * as Errors from '@oclif/errors';
 import mkdirp from 'mkdirp';
-import { PluginServiceHttpOption } from 'flex-plugins-api-client/dist/clients/client';
+import { PluginServiceHttpOption } from '@twilio/flex-plugins-api-client/dist/clients/client';
 import * as Parser from '@oclif/parser';
 
 import parser from '../utils/parser';
@@ -42,7 +48,7 @@ interface FlexPluginOption {
   runInDirectory: boolean;
 }
 
-const flexPluginScripts = 'flex-plugin-scripts';
+const flexPluginScripts = '@twilio/flex-plugin-scripts';
 
 export type ConfigData = typeof services.config.ConfigData;
 export type SecureStorage = typeof services.secureStorage.SecureStorage;
@@ -87,6 +93,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   static checkForUpdateFrequency = 1000 * 60 * 60 * 24; // daily
 
   static topicName = 'flex:plugins';
+
+  static BUILDER_VERSION = 5;
 
   /**
    * Getter for the topic
@@ -395,7 +403,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
         );
       }
 
-      if (this.checkCompatibility && this.builderVersion !== 4) {
+      if (this.checkCompatibility && this.builderVersion !== FlexPlugin.BUILDER_VERSION) {
         this._prints.flexPlugin.incompatibleVersion(this.pkg.name, this.builderVersion);
         this.exit(1);
       }
@@ -669,7 +677,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       'twilio-cli-flex-plugin': FlexPlugin.getPackageVersion(this.pluginRootDir),
       react: FlexPlugin.getPackageVersion('react'),
       'react-dom': FlexPlugin.getPackageVersion('react-dom'),
-      'flex-plugins-api-client': FlexPlugin.getPackageVersion('flex-plugins-api-client'),
+      '@twilio/flex-plugins-api-client': FlexPlugin.getPackageVersion('@twilio/flex-plugins-api-client'),
       'flex-ui': FlexPlugin.getPackageVersion(`@twilio/flex-ui`),
       isTs: 'unknown',
     };

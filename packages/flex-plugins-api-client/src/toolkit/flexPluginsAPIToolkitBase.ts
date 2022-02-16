@@ -1,4 +1,4 @@
-import { lodash } from 'flex-dev-utils';
+import { lodash } from '@twilio/flex-dev-utils';
 
 import {
   ConfigurationsClient,

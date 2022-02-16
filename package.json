@@ -1,5 +1,5 @@
 {
-  "name": "flex-plugin-builder",
+  "name": "@twilio/flex-plugin-builder",
   "private": true,
   "homepage": "https://github.com/twilio/flex-plugin-builder#readme",
   "bugs": {

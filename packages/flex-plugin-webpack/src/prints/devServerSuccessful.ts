@@ -1,6 +1,6 @@
-import { logger } from 'flex-dev-utils';
-import { ServiceUrl } from 'flex-dev-utils/dist/urls';
-import { FlexConfigurationPlugin, readPluginsJson } from 'flex-dev-utils/dist/fs';
+import { logger } from '@twilio/flex-dev-utils';
+import { ServiceUrl } from '@twilio/flex-dev-utils/dist/urls';
+import { FlexConfigurationPlugin, readPluginsJson } from '@twilio/flex-dev-utils/dist/fs';
 
 import { Plugin } from '../devServer/pluginServer';
 

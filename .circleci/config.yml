@@ -332,7 +332,17 @@ workflows:
             - job_pr-validator-node
           filters:
             branches:
-              only: "dev"
+              only: dev
+      - job_npm-publish:
+          matrix:
+            parameters:
+              dist_tag: [ "beta" ]
+              version_bump: [ "patch" ]
+          requires:
+            - job_pr-validator-node
+          filters:
+            branches:
+              only: /v\d-beta/
 
   workflow_nightly-e2e:
     triggers:

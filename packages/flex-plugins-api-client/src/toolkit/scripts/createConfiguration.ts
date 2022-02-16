@@ -1,5 +1,5 @@
-import { TwilioError } from 'flex-dev-utils/dist/errors';
-import { logger, sids } from 'flex-dev-utils';
+import { TwilioError } from '@twilio/flex-dev-utils/dist/errors';
+import { logger, sids } from '@twilio/flex-dev-utils';
 
 import {
   ConfigurationsClient,

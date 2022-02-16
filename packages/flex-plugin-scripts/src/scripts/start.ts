@@ -1,8 +1,8 @@
-import { env, exit, logger } from 'flex-dev-utils';
-import { Environment } from 'flex-dev-utils/dist/env';
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import { addCWDNodeModule, setCwd } from 'flex-dev-utils/dist/fs';
-import { findPort, getDefaultPort } from 'flex-dev-utils/dist/urls';
+import { env, exit, logger } from '@twilio/flex-dev-utils';
+import { Environment } from '@twilio/flex-dev-utils/dist/env';
+import { FlexPluginError } from '@twilio/flex-dev-utils/dist/errors';
+import { addCWDNodeModule, setCwd } from '@twilio/flex-dev-utils/dist/fs';
+import { findPort, getDefaultPort } from '@twilio/flex-dev-utils/dist/urls';
 import {
   compiler,
   compilerRenderer,
@@ -18,7 +18,7 @@ import {
   OnDevServerCrashedPayload,
   PluginsConfig,
   DelayRenderStaticPlugin,
-} from 'flex-plugin-webpack';
+} from '@twilio/flex-plugin-webpack';
 
 import getConfiguration, { ConfigurationType, WebpackType } from '../config';
 import run from '../utils/run';

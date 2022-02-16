@@ -1,14 +1,14 @@
 /* eslint-disable camelcase */
-import { FlexPluginError } from 'flex-dev-utils';
-import * as fsScript from 'flex-dev-utils/dist/fs';
+import { FlexPluginError } from '@twilio/flex-dev-utils';
+import * as fsScript from '@twilio/flex-dev-utils/dist/fs';
 
 import { Visibility } from '../../clients/serverless-types';
 import * as listScript from '../list';
 
 jest.mock('../../prints/pluginVersions');
 jest.mock('../../utils/runtime');
-jest.mock('flex-dev-utils/dist/logger/lib/logger');
-jest.mock('flex-dev-utils/dist/credentials');
+jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
+jest.mock('@twilio/flex-dev-utils/dist/credentials');
 
 /* eslint-disable */
 const getRuntime = require('../../utils/runtime').default;

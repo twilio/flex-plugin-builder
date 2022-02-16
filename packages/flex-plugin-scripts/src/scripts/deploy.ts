@@ -11,8 +11,8 @@ import {
   versionSatisfiesRange,
   confirm,
   singleLineString,
-} from 'flex-dev-utils';
-import { checkFilesExist, updateAppVersion, getPackageVersion, getPaths } from 'flex-dev-utils/dist/fs';
+} from '@twilio/flex-dev-utils';
+import { checkFilesExist, updateAppVersion, getPackageVersion, getPaths } from '@twilio/flex-dev-utils/dist/fs';
 
 import AccountsClient from '../clients/accounts';
 import { setEnvironment } from '..';
@@ -99,7 +99,9 @@ export const _verifyFlexUIConfiguration = async (): Promise<void> => {
   const reactDOMSupported = semver.satisfies(reactDomVersion, `${uiDependencies['react-dom']}`);
   const defaultReactSupported = semver.satisfies('16.5.2', reactVersion) && semver.satisfies('16.5.2', reactDomVersion);
   const UISupports =
-    semver.satisfies('1.19.0', uiVersion) || versionSatisfiesRange(uiVersion, '>=1.19.0') || defaultReactSupported;
+    semver.satisfies('1.19.0', uiVersion.replace('.n', '.x')) ||
+    versionSatisfiesRange(uiVersion, '>=1.19.0') ||
+    defaultReactSupported;
 
   if (!UISupports) {
     throw new FlexPluginError(

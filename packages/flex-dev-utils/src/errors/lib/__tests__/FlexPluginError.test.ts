@@ -1,4 +1,4 @@
-import { TwilioError } from 'flex-plugins-utils-exception';
+import { TwilioError } from '@twilio/flex-plugins-utils-exception';
 
 import FlexPluginError from '../FlexPluginError';
 import { logger } from '../../../logger';
@@ -32,8 +32,8 @@ describe('FlexPluginError', () => {
       name: 'plugin-test',
       version: '1.2.3',
       dependencies: {
-        'flex-plugin': '2.0.0',
-        'flex-plugin-scripts': '3.0.0',
+        '@twilio/flex-plugin': '2.0.0',
+        '@twilio/flex-plugin-scripts': '3.0.0',
       },
       devDependencies: {},
     });

@@ -1,13 +1,13 @@
 import fs from 'fs';
 
-import * as fsScripts from 'flex-dev-utils/dist/fs';
-import { logger } from 'flex-dev-utils';
+import * as fsScripts from '@twilio/flex-dev-utils/dist/fs';
+import { logger } from '@twilio/flex-dev-utils';
 
 import * as prints from '../../prints';
 import * as preScriptCheck from '../pre-script-check';
 import * as parser from '../../utils/parser';
 
-jest.mock('flex-dev-utils/dist/logger/lib/logger');
+jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
 jest.mock('../../prints/unbundledReactMismatch');
 jest.mock('../../prints/expectedDependencyNotFound');
 jest.mock('../../prints/typescriptNotInstalled');

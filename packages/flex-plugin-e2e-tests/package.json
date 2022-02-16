@@ -1,6 +1,6 @@
 {
-  "name": "flex-plugin-e2e-tests",
-  "version": "4.3.3",
+  "name": "@twilio/flex-plugin-e2e-tests",
+  "version": "5.0.0",
   "description": "Flex Plugin E2E Tests framework",
   "keywords": [
     "flex",
@@ -34,9 +34,9 @@
     "test": "exit 0"
   },
   "dependencies": {
+    "@twilio/flex-dev-utils": "5.0.0",
+    "@twilio/flex-plugins-api-client": "5.0.0",
     "axios": "^0.24.0",
-    "flex-dev-utils": "4.3.3",
-    "flex-plugins-api-client": "4.3.3",
     "lodash": "4.17.21",
     "package-json": "^7.0.0",
     "puppeteer": "^10.4.0",
@@ -48,6 +48,9 @@
     "@types/semver": "^7.3.9"
   },
   "engines": {
-    "node": ">=10.12.0"
+    "node": "^12 || ^14 || ^16"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

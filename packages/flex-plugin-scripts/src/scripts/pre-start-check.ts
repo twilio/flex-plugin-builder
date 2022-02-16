@@ -1,7 +1,7 @@
 import { existsSync } from 'fs';
 
-import { logger, exit } from 'flex-dev-utils';
-import { getPaths, addCWDNodeModule } from 'flex-dev-utils/dist/fs';
+import { logger, exit } from '@twilio/flex-dev-utils';
+import { getPaths, addCWDNodeModule } from '@twilio/flex-dev-utils/dist/fs';
 
 import { appConfigMissing } from '../prints';
 import run from '../utils/run';

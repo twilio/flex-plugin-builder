@@ -1,5 +1,5 @@
-import { Region } from 'flex-dev-utils/dist/env';
-import { env, logger, HttpClient, lodash } from 'flex-dev-utils';
+import { Region } from '@twilio/flex-dev-utils/dist/env';
+import { env, logger, HttpClient, lodash } from '@twilio/flex-dev-utils';
 
 export interface Pagination {
   pageSize?: number;

@@ -1,6 +1,6 @@
-import { Plugin } from 'flex-plugins-api-client';
+import { Plugin } from '@twilio/flex-plugins-api-client';
 import { OutputFlags } from '@oclif/parser/lib/parse';
-import { progress, TwilioApiError, TwilioCliError } from 'flex-dev-utils';
+import { progress, TwilioApiError, TwilioCliError } from '@twilio/flex-dev-utils';
 
 import * as flags from '../../../../utils/flags';
 import ArchiveResource from '../../../../sub-commands/archive-resource';

@@ -1,5 +1,5 @@
 import { baseCommands } from '@twilio/cli-core';
-import CreateFlexPlugin from 'create-flex-plugin';
+import CreateFlexPlugin from '@twilio/create-flex-plugin';
 import { flags } from '@oclif/command';
 import { Options } from 'yargs';
 

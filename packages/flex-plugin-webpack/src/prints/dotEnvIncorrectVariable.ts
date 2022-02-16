@@ -1,4 +1,4 @@
-import { logger, env } from 'flex-dev-utils';
+import { logger, env } from '@twilio/flex-dev-utils';
 
 export default (filename: string, key: string): void => {
   env.persistTerminal();

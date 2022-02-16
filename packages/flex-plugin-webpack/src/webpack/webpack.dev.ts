@@ -1,7 +1,7 @@
-import { env } from 'flex-dev-utils';
-import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
+import { env } from '@twilio/flex-dev-utils';
+import { getLocalAndNetworkUrls } from '@twilio/flex-dev-utils/dist/urls';
 import { Configuration } from 'webpack-dev-server';
-import { getPaths } from 'flex-dev-utils/dist/fs';
+import { getPaths } from '@twilio/flex-dev-utils/dist/fs';
 
 import { WebpackType } from '..';
 

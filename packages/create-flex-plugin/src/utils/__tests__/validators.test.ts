@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as questions from 'flex-dev-utils/dist/questions';
+import * as questions from '@twilio/flex-dev-utils/dist/questions';
 
 import * as validators from '../validators';
 
-jest.mock('flex-dev-utils/dist/logger/lib/logger');
-jest.mock('flex-dev-utils/dist/questions');
+jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
+jest.mock('@twilio/flex-dev-utils/dist/questions');
 
 describe('validators', () => {
   const pluginName = 'plugin-test';
