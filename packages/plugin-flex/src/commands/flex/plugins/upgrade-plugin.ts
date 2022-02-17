@@ -82,6 +82,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
 
   private static packagesToRemove = [
     flexPluginScript, // remove and then re-add
+    'flex-plugin-scripts',
     'react-app-rewire-flex-plugin',
     'react-app-rewired',
     'react-scripts',
@@ -497,8 +498,10 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
    */
   get pkgVersion(): number | undefined {
     const pkg =
-      this.pkg.dependencies[flexPluginScript] ||
+      this.pkg.dependencies['flex-plugin-scripts'] ||
+      this.pkg.devDependencies['flex-plugin-scripts'] ||
       this.pkg.devDependencies[flexPluginScript] ||
+      this.pkg.dependencies[flexPluginScript] ||
       this.pkg.dependencies[flexPlugin] ||
       this.pkg.devDependencies[flexPlugin];
     if (!pkg) {
