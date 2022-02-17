@@ -1,5 +1,4 @@
-import { TwilioError } from '@twilio/flex-plugins-utils-exception';
-
+import TwilioError from '../TwilioError';
 import FlexPluginError from '../FlexPluginError';
 import { logger } from '../../../logger';
 import * as fs from '../../../fs';

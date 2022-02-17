@@ -2,7 +2,7 @@ import qs from 'qs';
 import { setupCache } from 'axios-cache-adapter';
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
-import { env } from '../../env';
+import env from '../../env';
 import { logger } from '../../logger';
 import { TwilioApiError } from '../../errors';
 

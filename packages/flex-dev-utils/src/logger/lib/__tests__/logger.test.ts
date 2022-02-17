@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires */
 import logger, { _logger, Logger, coloredStrings } from '../logger';
+import env from '../../../env';
 
 jest.mock('wrap-ansi');
-jest.mock('@twilio/flex-plugins-utils-env');
 jest.mock('chalk', () => {
   const bold = jest.fn();
   // @ts-ignore
@@ -25,7 +25,6 @@ jest.mock('chalk', () => {
 
 const chalk = require('chalk');
 const wrapAnsi = require('wrap-ansi');
-const env = require('@twilio/flex-plugins-utils-env').default;
 
 describe('logger', () => {
   const info = jest.fn();

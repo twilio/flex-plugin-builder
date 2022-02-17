@@ -1,5 +1,4 @@
-import { TwilioError } from '@twilio/flex-plugins-utils-exception';
-
+import { TwilioError } from '../errors';
 import * as env from '../env';
 
 describe('env', () => {
