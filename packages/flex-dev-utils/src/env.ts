@@ -2,7 +2,8 @@
 
 import { get } from 'lodash';
 
-import { TwilioError } from './errors';
+// This must be imported directly to prevent a circular dependency
+import TwilioError from './errors/lib/TwilioError';
 
 export type Region = 'dev' | 'stage';
 
@@ -215,7 +216,7 @@ export const getRegion = (): Region | string => {
   return '';
 };
 
-export const env = {
+export default {
   setProcessEnv,
   getProcessEnv,
   isNode,
@@ -260,5 +261,3 @@ export const env = {
   getWDSSocketPort,
   getWSSocket,
 };
-
-export default env;

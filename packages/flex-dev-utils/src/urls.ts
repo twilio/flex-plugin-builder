@@ -3,7 +3,7 @@ import net from 'net';
 
 import address from 'address';
 
-import { env } from './env';
+import env from './env';
 
 export interface ServiceUrl {
   url: string;

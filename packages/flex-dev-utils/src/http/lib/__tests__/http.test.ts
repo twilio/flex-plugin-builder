@@ -3,7 +3,7 @@ import { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
 import * as fsScripts from '../../../fs';
-import { env } from '../../../env';
+import env from '../../../env';
 import { TwilioApiError } from '../../../errors';
 import HttpClient, { HttpClientConfig } from '../http';
 
