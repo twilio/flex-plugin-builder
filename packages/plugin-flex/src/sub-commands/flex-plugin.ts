@@ -280,7 +280,11 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    */
   get builderVersion(): number | null {
     const { pkg } = this;
-    const script = pkg.dependencies[flexPluginScripts] || pkg.devDependencies[flexPluginScripts];
+    const script =
+      pkg.dependencies[flexPluginScripts] ||
+      pkg.devDependencies[flexPluginScripts] ||
+      pkg.dependencies['flex-plugin-scripts'] ||
+      pkg.devDependencies['flex-plugin-scripts'];
     if (!script) {
       return null;
     }
