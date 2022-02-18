@@ -46,11 +46,33 @@ describe('Commands/FlexPluginsStart', () => {
     expect(FlexPluginsUpgradePlugin.hasOwnProperty('flags')).toEqual(true);
   });
 
-  it('should should return then version of flex-plugin-scripts from dependencies', async () => {
+  it('should should return then version of @twilio/flex-plugin-scripts from dependencies', async () => {
     const cmd = await createTest(FlexPluginsUpgradePlugin)();
 
     mockGetPkg(cmd, {
       dependencies: { '@twilio/flex-plugin-scripts': '3.0.0' },
+      devDependencies: {},
+    });
+    expect(cmd.pkgVersion).toEqual(3);
+  });
+
+  it('should should return the version of @twilio/flex-plugin-scripts from devDependencies', async () => {
+    const cmd = await createTest(FlexPluginsUpgradePlugin)();
+
+    mockGetPkg(cmd, {
+      dependencies: {},
+      devDependencies: { '@twilio/flex-plugin-scripts': '4.0.0' },
+    });
+
+    expect(cmd.pkgVersion).toEqual(4);
+  });
+
+  it('should should return then version of flex-plugin-scripts from dependencies', async () => {
+    const cmd = await createTest(FlexPluginsUpgradePlugin)();
+
+    mockGetPkg(cmd, {
+      dependencies: { 'flex-plugin-scripts': '3.0.0' },
+      devDependencies: {},
     });
     expect(cmd.pkgVersion).toEqual(3);
   });
@@ -60,7 +82,7 @@ describe('Commands/FlexPluginsStart', () => {
 
     mockGetPkg(cmd, {
       dependencies: {},
-      devDependencies: { '@twilio/flex-plugin-scripts': '4.0.0' },
+      devDependencies: { 'flex-plugin-scripts': '4.0.0' },
     });
 
     expect(cmd.pkgVersion).toEqual(4);

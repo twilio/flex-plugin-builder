@@ -498,12 +498,14 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
    */
   get pkgVersion(): number | undefined {
     const pkg =
+      this.pkg.dependencies[flexPluginScript] ||
+      this.pkg.devDependencies[flexPluginScript] ||
       this.pkg.dependencies['flex-plugin-scripts'] ||
       this.pkg.devDependencies['flex-plugin-scripts'] ||
-      this.pkg.devDependencies[flexPluginScript] ||
-      this.pkg.dependencies[flexPluginScript] ||
       this.pkg.dependencies[flexPlugin] ||
-      this.pkg.devDependencies[flexPlugin];
+      this.pkg.devDependencies[flexPlugin] ||
+      this.pkg.dependencies['flex-plugin'] ||
+      this.pkg.devDependencies['flex-plugin'];
     if (!pkg) {
       throw new TwilioCliError(`Package '${flexPluginScript}' was not found`);
     }
