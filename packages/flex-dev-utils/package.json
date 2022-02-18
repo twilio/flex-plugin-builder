@@ -46,6 +46,7 @@
     "columnify": "^1.5.4",
     "copy-template-dir": "^1.4.0",
     "execa": "^5.1.1",
+    "find-in-files": "^0.5.0",
     "globby": "^11.0.4",
     "inquirer": "7.3.3",
     "lodash": "^4.17.21",
@@ -67,6 +68,7 @@
   "devDependencies": {
     "@types/app-module-path": "^2.2.0",
     "@types/columnify": "^1.5.1",
+    "@types/find-in-files": "^0.5.1",
     "@types/inquirer": "^7.3.3",
     "@types/lodash": "^4.14.177",
     "@types/mkdirp": "^1.0.2",

@@ -4,6 +4,7 @@ import os, { homedir } from 'os';
 import { promisify } from 'util';
 import crypto from 'crypto';
 
+import FindInFiles from 'find-in-files';
 import { sync as globbySync } from 'globby';
 import mkdirp from 'mkdirp';
 import rimRaf from 'rimraf';
@@ -663,3 +664,5 @@ export const packageDependencyVersion = (pkg: PackageJson, name: string): string
 export const flexUIPackageDependencyVersion = (name: string): string | null => {
   return packageDependencyVersion(_require(getPaths().app.flexUIPkgPath) as PackageJson, name);
 };
+
+export const findInFiles = FindInFiles.find;

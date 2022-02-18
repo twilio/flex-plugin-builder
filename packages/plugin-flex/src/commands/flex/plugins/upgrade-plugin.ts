@@ -1,5 +1,5 @@
 /* eslint-disable sonarjs/no-identical-functions */
-import { join } from 'path';
+import path, { join } from 'path';
 
 import rimraf from 'rimraf';
 import {
@@ -10,6 +10,7 @@ import {
   copyFile,
   removeFile,
   calculateSha256,
+  findInFiles,
 } from '@twilio/flex-dev-utils/dist/fs';
 import packageJson from 'package-json';
 import { flags } from '@oclif/parser';
@@ -142,6 +143,11 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       default:
         await this.upgradeToLatest();
         break;
+    }
+    const files = await findInFiles(/"flex-plugin"|'flex-plugin'/, path.join(this.cwd, 'src'));
+    if (files && Object.keys(files).length) {
+      this.prints.manualUpgrade(Object.keys(files));
+      return;
     }
 
     const latestVersion = pkgJson ? semver.coerce(pkgJson.version as string)?.major : 0;

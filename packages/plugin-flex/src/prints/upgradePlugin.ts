@@ -1,4 +1,5 @@
 import { Logger, singleLineString, boxen, confirm, coloredStrings } from '@twilio/flex-dev-utils';
+import { printList } from '@twilio/flex-dev-utils/dist/prints';
 
 import { exit } from '../utils/general';
 
@@ -40,7 +41,7 @@ const scriptStarted = (logger: Logger) => (version: string) => {
  */
 const scriptSucceeded = (logger: Logger) => (needsInstall: boolean) => {
   logger.newline();
-  logger.success('🎉 Your plugin was successfully migrated to use the latest (v4) version of Flex Plugins CLI.');
+  logger.success('🎉 Your plugin was successfully migrated to use the latest (v5) version of Flex Plugins CLI.');
   logger.newline();
 
   logger.info('**Next Steps:**');
@@ -153,7 +154,7 @@ const removeLegacyPluginSucceeded = (logger: Logger) => (pluginName: string) => 
 };
 
 /**
- * Warning about plugin not registed with plugins api yet
+ * Warning about plugin not registered with plugins api yet
  */
 const warningPluginNotInAPI = (logger: Logger) => (pluginName: string) => {
   const name = coloredStrings.name(pluginName);
@@ -165,6 +166,22 @@ const warningPluginNotInAPI = (logger: Logger) => (pluginName: string) => {
     `Run {{$ twilio flex:plugins:deploy \\-\\-changelog "migrating to Flex Plugins API" \\-\\-major}} to register with Plugins API.`,
   );
   logger.info(`Run {{$ twilio flex:plugins:upgrade-plugin --remove-legacy-plugin}} again after to finish migration.`);
+};
+
+/**
+ * Manual upgrade message
+ */
+const manualUpgrade = (logger: Logger) => (files: string[]) => {
+  logger.newline();
+  logger.warning('You are planning from older version of the Plugin Builder that require some manual change.');
+  logger.newline();
+  logger.info(
+    "Please change all instances of {{import { FlexPlugin } from 'flex-plugin';}} to {{import { FlexPlugin } from '@twilio/flex-plugin';}} in the following files:",
+  );
+  printList(...files);
+  logger.info(
+    'Once you have made the changes, you can then run the {{twilio flex:plugins:upgrade-plugin}} again to continue.',
+  );
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -182,4 +199,5 @@ export default (logger: Logger) => ({
   noLegacyPluginFound: noLegacyPluginFound(logger),
   removeLegacyPluginSucceeded: removeLegacyPluginSucceeded(logger),
   warningPluginNotInAPI: warningPluginNotInAPI(logger),
+  manualUpgrade: manualUpgrade(logger),
 });

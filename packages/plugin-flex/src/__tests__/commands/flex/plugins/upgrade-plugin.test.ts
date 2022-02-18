@@ -442,6 +442,26 @@ describe('Commands/FlexPluginsStart', () => {
       expect(cmd.upgradeFromV3).not.toHaveBeenCalled();
       expect(cmd.upgradeToLatest).toHaveBeenCalledTimes(1);
     });
+
+    it('should quit if it requires manual changes', async () => {
+      const cmd = await createTest(FlexPluginsUpgradePlugin)();
+      mockForDoRun(cmd);
+      jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
+
+      // @ts-ignore
+      jest.spyOn(fs, 'findInFiles').mockResolvedValue({ 'file/path': {} });
+
+      // @ts-ignore
+      const manualUpgrade = jest.spyOn(cmd.prints, 'manualUpgrade').mockReturnThis();
+      // @ts-ignore
+      const scriptSucceeded = jest.spyOn(cmd.prints, 'scriptSucceeded').mockReturnThis();
+
+      await cmd.doRun();
+
+      expect(manualUpgrade).toHaveBeenCalledTimes(1);
+      expect(manualUpgrade).toHaveBeenCalledWith(['file/path']);
+      expect(scriptSucceeded).not.toHaveBeenCalled();
+    });
   });
 
   describe('updatePackageJson', () => {
