@@ -65,6 +65,8 @@ const getArgs = (flag: string): string[] => {
  * @param testParams the {@link TestParams} to use
  */
 const beforeAll = async (testParams: TestParams) => {
+  logger.info('Preparing test environment');
+
   if (testParams.scenario.packageVersion === 'latest') {
     const pkg = await packageJson('twilio/flex-plugin-scripts', { version: 'latest' });
     testParams.scenario.packageVersion = pkg.version as string;
