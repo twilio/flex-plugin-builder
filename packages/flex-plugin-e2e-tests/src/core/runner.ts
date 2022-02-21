@@ -68,9 +68,13 @@ const beforeAll = async (testParams: TestParams) => {
   logger.info('Preparing test environment');
 
   if (testParams.scenario.packageVersion === 'latest') {
-    const pkg = await packageJson('twilio/flex-plugin-scripts', { version: 'latest' });
+    logger.info(1);
+    const pkg = await packageJson('@twilio/flex-plugin-scripts', { version: 'latest' });
+    logger.info(2);
     testParams.scenario.packageVersion = pkg.version as string;
+    logger.info(3);
   }
+  logger.info(4);
 };
 
 /**
