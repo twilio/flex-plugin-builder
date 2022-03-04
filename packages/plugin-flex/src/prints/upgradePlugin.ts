@@ -176,7 +176,7 @@ const manualUpgrade = (logger: Logger) => (files: string[]) => {
   logger.warning('You are planning from older version of the Plugin Builder that require some manual change.');
   logger.newline();
   logger.info(
-    "Please change all instances of {{import { FlexPlugin } from 'flex-plugin';}} to {{import { FlexPlugin } from '@twilio/flex-plugin';}} in the following files:",
+    "Please change all instances of {{import * as FlexPlugin from 'flex-plugin';}} to {{import * as FlexPlugin from '@twilio/flex-plugin';}} in the following files:",
   );
   printList(...files);
   logger.info(
