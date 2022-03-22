@@ -1,6 +1,6 @@
 {
   "name": "@twilio/flex-plugins-utils-env",
-  "version": "5.0.4",
+  "version": "5.0.5",
   "description": "Flex Plugins Environments",
   "keywords": [
     "flex",
@@ -36,7 +36,7 @@
     "test:watch": "cd ../.. && jest packages/flex-plugins-utils-env --watch --color"
   },
   "dependencies": {
-    "@twilio/flex-plugins-utils-exception": "5.0.4",
+    "@twilio/flex-plugins-utils-exception": "5.0.5",
     "@types/lodash.get": "^4.4.6",
     "lodash.get": "^4.4.2"
   },

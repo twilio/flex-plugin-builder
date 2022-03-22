@@ -1,6 +1,6 @@
 {
   "name": "@twilio/flex-plugin-scripts",
-  "version": "5.0.4",
+  "version": "5.0.5",
   "description": "Scripts to run, build and deploy Flex plugins",
   "keywords": [
     "flex",
@@ -40,10 +40,10 @@
   },
   "dependencies": {
     "@jest/types": "^26.6.2",
-    "@twilio/flex-dev-utils": "5.0.4",
-    "@twilio/flex-plugin": "5.0.4",
-    "@twilio/flex-plugin-test": "5.0.4",
-    "@twilio/flex-plugin-webpack": "5.0.4",
+    "@twilio/flex-dev-utils": "5.0.5",
+    "@twilio/flex-plugin": "5.0.5",
+    "@twilio/flex-plugin-test": "5.0.5",
+    "@twilio/flex-plugin-webpack": "5.0.5",
     "@types/enzyme": "^3.10.10",
     "@types/jest": "26.0.24",
     "@types/node": "^14.17.18",
