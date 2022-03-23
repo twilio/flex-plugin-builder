@@ -36,7 +36,7 @@ export default class BuildClient extends BaseClient {
    */
   public create = async (data: BuildData): Promise<Build> => {
     return new Promise(async (resolve, reject) => {
-      data.Runtime = 'node12';
+      data.Runtime = 'node14';
       const newBuild = await this._create(data);
       const { sid } = newBuild;
 
