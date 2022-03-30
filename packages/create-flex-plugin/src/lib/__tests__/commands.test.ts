@@ -1,13 +1,13 @@
-import { packages } from 'flex-dev-utils';
+import { packages } from '@twilio/flex-dev-utils';
 
 import * as commands from '../commands';
 import { FlexPluginArguments } from '../create-flex-plugin';
 import * as github from '../../utils/github';
 
-jest.mock('flex-dev-utils/dist/spawn');
+jest.mock('@twilio/flex-dev-utils/dist/spawn');
 
 /* eslint-disable */
-const { spawn } = require('flex-dev-utils/dist/spawn');
+const { spawn } = require('@twilio/flex-dev-utils/dist/spawn');
 /* eslint-enable */
 
 describe('commands', () => {

@@ -1,4 +1,4 @@
-import { TwilioApiError, TwilioError } from 'flex-dev-utils';
+import { TwilioApiError, TwilioError } from '@twilio/flex-dev-utils';
 
 import * as generalUtils from '../../utils/general';
 

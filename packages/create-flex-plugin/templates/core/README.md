@@ -22,7 +22,7 @@ brew tap twilio/brew && brew install twilio
 Finally, install the [Flex Plugin extension](https://github.com/twilio-labs/plugin-flex/tree/v1-beta) for the Twilio CLI:
 
 ```bash
-twilio plugins:install @twilio-labs/plugin-flex@beta
+twilio plugins:install @twilio-labs/plugin-flex
 ```
 
 ## Development

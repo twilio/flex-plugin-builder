@@ -1,4 +1,4 @@
-import { progress, Credential } from 'flex-dev-utils';
+import { progress, Credential } from '@twilio/flex-dev-utils';
 
 import { BuildClient, ConfigurationClient, EnvironmentClient, ServiceClient } from '../clients';
 import { Runtime } from '../clients/serverless-types';

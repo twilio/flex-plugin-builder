@@ -1,16 +1,23 @@
 /* eslint-disable camelcase */
 
-import * as pluginBuilderStartScript from 'flex-plugin-scripts/dist/scripts/start';
-import { TwilioCliError, env, TwilioError, TwilioApiError } from 'flex-dev-utils';
-import * as fs from 'flex-dev-utils/dist/fs';
-import { PluginsConfig } from 'flex-plugin-scripts';
-import { PluginVersionResource } from 'flex-plugins-api-client';
+import * as pluginBuilderStartScript from '@twilio/flex-plugin-scripts/dist/scripts/start';
+import { TwilioCliError, env, TwilioError, TwilioApiError } from '@twilio/flex-dev-utils';
+import * as fs from '@twilio/flex-dev-utils/dist/fs';
+import { PluginsConfig } from '@twilio/flex-plugin-scripts';
+import { PluginVersionResource } from '@twilio/flex-plugins-api-client';
+import * as updateNotifier from '@twilio/flex-dev-utils/dist/updateNotifier';
+import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
 
 import createTest, { mockGetPkg } from '../../../framework';
 import FlexPluginsStart from '../../../../commands/flex/plugins/start';
+import FlexPlugin from '../../../../sub-commands/flex-plugin';
 
 const includeRemote = 'include-remote';
 const flexUiSource = 'flex-ui-source';
+
+jest.mock('@twilio/flex-dev-utils/dist/fs');
+jest.mock('@twilio/flex-dev-utils/dist/updateNotifier');
+jest.mock('@twilio/flex-dev-utils/dist/spawn');
 
 describe('Commands/FlexPluginsStart', () => {
   const name = 'plugin-test';
@@ -28,14 +35,14 @@ describe('Commands/FlexPluginsStart', () => {
   const pkg = {
     name: pluginNameOne,
     dependencies: {
-      'flex-plugin-scripts': '4.0.0',
+      '@twilio/flex-plugin-scripts': '4.0.0',
     },
   };
   const badVersionPkg = {
     name: pluginNameBad,
     dependencies: {
       '@twilio/flex-ui': '1.0.0',
-      'flex-plugin-scripts': '3.9.9',
+      '@twilio/flex-plugin-scripts': '3.9.9',
     },
     devDependencies: {},
   };
@@ -44,7 +51,7 @@ describe('Commands/FlexPluginsStart', () => {
     devDependencies: {},
     dependencies: {
       '@twilio/flex-ui': '1.0.0',
-      'flex-plugin-scripts': '4.0.0',
+      '@twilio/flex-plugin-scripts': '4.0.0',
     },
   };
   const config = {
@@ -54,6 +61,9 @@ describe('Commands/FlexPluginsStart', () => {
       { name: pluginNameBad, dir: 'test-dir' },
     ],
   };
+  const paths = {
+    app: { isTSProject: () => false },
+  };
 
   let findPortAvailablePort = jest.spyOn(pluginBuilderStartScript, 'findPortAvailablePort');
   const OLD_ENV = process.env;
@@ -61,6 +71,9 @@ describe('Commands/FlexPluginsStart', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     jest.restoreAllMocks();
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
+    jest.spyOn(spawn, 'spawn').mockReturnThis();
     process.env = { ...OLD_ENV };
 
     findPortAvailablePort = jest.spyOn(pluginBuilderStartScript, 'findPortAvailablePort');
@@ -73,7 +86,7 @@ describe('Commands/FlexPluginsStart', () => {
   it('should run start script for the directory plugin', async () => {
     const cmd = await createTest(FlexPluginsStart)();
 
-    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
@@ -103,9 +116,12 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should error due to bad versioning', async () => {
+    jest.spyOn(updateNotifier, 'checkForUpdate').mockReturnThis();
+
     const cmd = await createTest(FlexPluginsStart)();
 
-    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
@@ -131,9 +147,12 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should error due to not being in the plugins.json file', async () => {
+    jest.spyOn(updateNotifier, 'checkForUpdate').mockReturnThis();
+
     const cmd = await createTest(FlexPluginsStart)();
 
-    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
@@ -166,7 +185,8 @@ describe('Commands/FlexPluginsStart', () => {
       '--include-remote',
     );
 
-    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
@@ -187,7 +207,7 @@ describe('Commands/FlexPluginsStart', () => {
   it('should read the port flag', async () => {
     const cmd = await createTest(FlexPluginsStart)('--name', pluginNameOne, '--name', pluginNameTwo, '--port', '4000');
 
-    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
@@ -195,6 +215,7 @@ describe('Commands/FlexPluginsStart', () => {
     jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
     findPortAvailablePort.mockResolvedValueOnce(4000);
     findPortAvailablePort.mockResolvedValueOnce(4100);
+    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
 
     await cmd.run();
 
@@ -209,7 +230,7 @@ describe('Commands/FlexPluginsStart', () => {
     const flexUISrc = 'http://localhost:8080/twilio-flex-ui.dev.browser.js';
     const cmd = await createTest(FlexPluginsStart)('--flex-ui-source', flexUISrc);
 
-    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
@@ -218,6 +239,7 @@ describe('Commands/FlexPluginsStart', () => {
     jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
     findPortAvailablePort.mockResolvedValueOnce(3000);
     findPortAvailablePort.mockResolvedValueOnce(100);
+    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
 
     await cmd.run();
 
@@ -244,7 +266,7 @@ describe('Commands/FlexPluginsStart', () => {
     const flexUISrc = 'invalid-flex-ui-source';
     const cmd = await createTest(FlexPluginsStart)('--flex-ui-source', flexUISrc);
 
-    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
@@ -252,6 +274,7 @@ describe('Commands/FlexPluginsStart', () => {
     jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
     jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
     findPortAvailablePort.mockResolvedValue(100);
+    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
 
     try {
       await cmd.run();
@@ -268,13 +291,14 @@ describe('Commands/FlexPluginsStart', () => {
   it('should process the one plugin', async () => {
     const cmd = await createTest(FlexPluginsStart)('--name', pluginNameOne);
 
-    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
     jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
     jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
     findPortAvailablePort.mockResolvedValue(100);
+    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
 
     await cmd.run();
 
@@ -287,7 +311,7 @@ describe('Commands/FlexPluginsStart', () => {
   it('should throw an error due to a user inputted port being unavailable', async (done) => {
     const cmd = await createTest(FlexPluginsStart)('--name', pluginNameOne, '--port', '3000');
 
-    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
@@ -295,6 +319,7 @@ describe('Commands/FlexPluginsStart', () => {
     jest.spyOn(fs, 'readJsonFile').mockReturnValue(pkg);
     findPortAvailablePort.mockResolvedValueOnce(3100);
     findPortAvailablePort.mockResolvedValueOnce(3200);
+    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
 
     try {
       await cmd.run();
@@ -314,6 +339,7 @@ describe('Commands/FlexPluginsStart', () => {
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
+    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
 
     try {
       await cmd.run();
@@ -327,11 +353,12 @@ describe('Commands/FlexPluginsStart', () => {
 
   it('should throw an error if not in a plugin directory and no plugins given', async () => {
     const cmd = await createTest(FlexPluginsStart)('');
-    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
     jest.spyOn(cmd, 'pluginsConfig', 'get').mockReturnValue(config);
+    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
 
     try {
       await cmd.run();
@@ -406,6 +433,7 @@ describe('Commands/FlexPluginsStart', () => {
 
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
 
     try {
       await cmd.run();
@@ -424,6 +452,7 @@ describe('Commands/FlexPluginsStart', () => {
 
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
+    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
 
     try {
       await cmd.run();
@@ -440,7 +469,7 @@ describe('Commands/FlexPluginsStart', () => {
   it('should error due to version not found', async (done) => {
     const cmd = await createTest(FlexPluginsStart)('--name', 'plugin-testOne', '--name', `${name}@${goodVersion}`);
 
-    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
@@ -479,7 +508,7 @@ describe('Commands/FlexPluginsStart', () => {
     };
     const cmd = await createTest(FlexPluginsStart)('--name', 'plugin-testOne', '--name', `${name}@${goodVersion}`);
 
-    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);

@@ -1,4 +1,4 @@
-import { TwilioApiError, confirm } from 'flex-dev-utils';
+import { TwilioApiError, confirm } from '@twilio/flex-dev-utils';
 
 import FlexPlugin, { ConfigData, SecureStorage } from './flex-plugin';
 import { createDescription, instanceOf } from '../utils/general';
@@ -35,8 +35,12 @@ export default abstract class ArchiveResource<T extends Archivable> extends Flex
    */
   async doRun(): Promise<void> {
     const name = `**${this.getName()}**`;
+    const assetsRemovalMsg =
+      this.getResourceType() === 'Flex Plugin'
+        ? `This will remove the plugin's packages uploaded to Twilio Assets and cannot be undone. `
+        : '';
     const doArchive = await confirm(
-      `Are you sure you want to archive ${this.getResourceType()} ${this.getName()}? Once archived, it cannot be undone.`,
+      `Are you sure you want to archive ${this.getResourceType()} ${this.getName()}? ${assetsRemovalMsg}Once archived, it cannot be undone.`,
       'N',
     );
     if (!doArchive) {

@@ -1,7 +1,7 @@
 import { stringify } from 'querystring';
 
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { logger } from 'flex-plugins-utils-logger';
+import { logger } from '@twilio/flex-dev-utils';
 
 const csrfTokenRegex = new RegExp(/name="CSRF"\svalue="(.*?)"/m);
 const twVisitorCookieRegex = new RegExp(/tw-visitor=(.*?);/m);
@@ -85,7 +85,7 @@ export class ConsoleAPI {
 
     const twVisitorCookie = ConsoleAPI.getValueFromResponse(
       new RegExp(twVisitorCookieRegex),
-      loginResponse.headers[SET_COOKIE].join(),
+      loginResponse.headers?.[SET_COOKIE]?.join() || '',
       `${Cookie.visitor} cookie`,
     );
 
@@ -105,7 +105,7 @@ export class ConsoleAPI {
       }),
     });
 
-    const loginPasswordCookies = loginPasswordResponse.headers[SET_COOKIE].join();
+    const loginPasswordCookies = loginPasswordResponse.headers?.[SET_COOKIE]?.join() || '';
 
     const serverIdentityCookie = ConsoleAPI.getValueFromResponse(
       new RegExp(serverIdentityCookieRegex),

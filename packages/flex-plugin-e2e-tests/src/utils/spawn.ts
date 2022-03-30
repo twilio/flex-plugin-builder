@@ -1,6 +1,6 @@
 import { ChildProcessWithoutNullStreams, spawn, SpawnOptionsWithoutStdio } from 'child_process';
 
-import { logger } from 'flex-plugins-utils-logger';
+import { logger } from '@twilio/flex-dev-utils';
 
 import { homeDir, testParams } from '../core';
 
@@ -9,6 +9,16 @@ interface SpawnResult {
   stderr: string;
   child?: ChildProcessWithoutNullStreams;
 }
+
+/**
+ * Logs the output in real time
+ */
+const logInfo = (data: string | Buffer, level: 'info' | 'warning'): void => {
+  data = data.toString().trim();
+  if (data) {
+    logger[level](`[${new Date().toUTCString()}] -`, data.toString().replace(/-/g, '\\-'));
+  }
+};
 
 /**
  * Promisified spawn
@@ -35,7 +45,7 @@ export const promisifiedSpawn = async (
     };
     const spawnOptions = { ...defaultOptions, ...options };
     logger.info(`Running spawn command: **${cmd} ${args.join(' ').replace(/-/g, '\\-')}**`);
-    logger.debug(`Spawn options are **${JSON.stringify(options)}**`);
+    logger.debug(`Spawn options are **${JSON.stringify(spawnOptions)}**`);
 
     const child = spawn(cmd, args, spawnOptions);
 
@@ -49,6 +59,8 @@ export const promisifiedSpawn = async (
     child.stderr.setEncoding('utf8');
     child.stderr.on('error', reject);
     child.stderr.on('data', (data) => {
+      logInfo(data, 'warning');
+
       if (typeof data === 'string') {
         stderrArr.push(Buffer.from(data, 'utf-8'));
       } else {
@@ -58,6 +70,8 @@ export const promisifiedSpawn = async (
 
     // data
     child.stdout.on('data', (data) => {
+      logInfo(data, 'info');
+
       if (typeof data === 'string') {
         stdoutArr.push(Buffer.from(data, 'utf-8'));
       } else {

@@ -1,4 +1,4 @@
-import { logger, semver, table } from 'flex-dev-utils';
+import { logger, semver, table } from '@twilio/flex-dev-utils';
 
 import { AssetVersion, Visibility } from '../clients/serverless-types';
 import { Order } from '../scripts/list';

@@ -3,12 +3,9 @@
 export { default as fs } from './fs';
 export { default as lodash } from './lodash';
 export { default as updateNotifier, checkForUpdate } from './updateNotifier';
-export { default as progress } from './progress';
-export { default as logger, Logger, coloredStrings, chalk } from './logger';
-export { default as boxen } from './boxen';
-export { default as strings, multilineString, singleLineString } from './strings';
-export { default as inquirer, prompt, confirm, choose, Question } from './inquirer';
-export { default as table } from './table';
+export { HttpClient, OptionalHttpClientConfig } from './http';
+export { logger, Logger, coloredStrings, chalk, table, boxen, singleLineString, multilineString } from './logger';
+export { progress } from './progress';
 export { default as credentials, Credential, getCredential } from './credentials';
 export { default as keychain, KeychainCredential, Keychain } from './keychain';
 export { default as sids } from './sids';
@@ -33,6 +30,7 @@ export { default as env } from './env';
 export { getPaths as paths } from './fs';
 export { default as semver, ReleaseType, SemVer, versionSatisfiesRange } from './semver';
 export { default as exit } from './exit';
+export { inquirer, prompt, confirm, choose, Question } from './questions';
 
 export type FunctionalCallback<D, R> = (data: D) => R;
 export type Callback<D> = FunctionalCallback<D, void>;

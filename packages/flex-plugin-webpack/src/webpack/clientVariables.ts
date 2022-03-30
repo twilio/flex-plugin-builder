@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
-import { readFileSync, getPaths, resolveRelative, checkAFileExists } from 'flex-dev-utils/dist/fs';
-import { env } from 'flex-dev-utils';
+import { readFileSync, getPaths, resolveRelative, checkAFileExists } from '@twilio/flex-dev-utils/dist/fs';
+import { env } from '@twilio/flex-dev-utils';
 import { DefinePlugin } from 'webpack';
 
 import { dotEnvIncorrectVariable } from '../prints';

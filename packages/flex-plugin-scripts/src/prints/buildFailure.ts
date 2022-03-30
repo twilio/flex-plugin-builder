@@ -1,5 +1,5 @@
-import { logger, env } from 'flex-dev-utils';
-import { getPaths } from 'flex-dev-utils/dist/fs';
+import { logger, env } from '@twilio/flex-dev-utils';
+import { getPaths } from '@twilio/flex-dev-utils/dist/fs';
 
 const GITHUB_FEATURE_REQUEST = 'https://bit.ly/2UMdbbj';
 

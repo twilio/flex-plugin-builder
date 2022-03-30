@@ -1,8 +1,8 @@
 import https from 'https';
 
-import { logger, FlexPluginError, exit, env } from 'flex-dev-utils';
+import { logger, FlexPluginError, exit, env } from '@twilio/flex-dev-utils';
 import { Request, Response } from 'express-serve-static-core';
-import { FlexConfigurationPlugin, readPluginsJson } from 'flex-dev-utils/dist/fs';
+import { FlexConfigurationPlugin, readPluginsJson } from '@twilio/flex-dev-utils/dist/fs';
 import { Configuration } from 'webpack-dev-server';
 
 import { remotePluginNotFound } from '../prints';

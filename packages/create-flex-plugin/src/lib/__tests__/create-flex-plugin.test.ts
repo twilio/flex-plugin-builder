@@ -1,12 +1,12 @@
 import fs from 'fs';
 
-import { logger, FlexPluginError } from 'flex-dev-utils';
-import * as fsScripts from 'flex-dev-utils/dist/fs';
+import { logger, FlexPluginError } from '@twilio/flex-dev-utils';
+import * as fsScripts from '@twilio/flex-dev-utils/dist/fs';
 
 import * as createFlexPluginScripts from '../create-flex-plugin';
 import * as commands from '../commands';
 
-jest.mock('flex-dev-utils/dist/logger');
+jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
 jest.mock('../../prints/finalMessage');
 
 describe('create-flex-plugin', () => {

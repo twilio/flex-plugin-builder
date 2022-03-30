@@ -1,7 +1,7 @@
-import { env, logger, exit, Callback } from 'flex-dev-utils';
-import { Environment } from 'flex-dev-utils/dist/env';
-import { addCWDNodeModule, getFileSizeInMB, getPaths, updateAppVersion } from 'flex-dev-utils/dist/fs';
-import { webpack, WebpackCompiler } from 'flex-plugin-webpack';
+import { env, logger, exit, Callback } from '@twilio/flex-dev-utils';
+import { Environment } from '@twilio/flex-dev-utils/dist/env';
+import { addCWDNodeModule, getFileSizeInMB, getPaths, updateAppVersion } from '@twilio/flex-dev-utils/dist/fs';
+import { webpack, WebpackCompiler } from '@twilio/flex-plugin-webpack';
 
 import getConfiguration, { ConfigurationType } from '../config';
 import { setEnvironment } from '..';
@@ -57,7 +57,7 @@ export const _handler =
 // eslint-disable-next-line import/no-unused-modules
 export const _runWebpack = async (): Promise<BuildBundle> => {
   return new Promise(async (resolve, reject) => {
-    const config = await getConfiguration(ConfigurationType.Webpack, Environment.Production);
+    const config = await getConfiguration(ConfigurationType.Webpack, Environment.Production, false);
     webpack(config).run(_handler(resolve, reject));
   });
 };

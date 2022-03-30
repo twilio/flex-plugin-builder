@@ -1,4 +1,5 @@
-import { Logger, singleLineString, boxen, confirm, coloredStrings } from 'flex-dev-utils';
+import { Logger, singleLineString, boxen, confirm, coloredStrings } from '@twilio/flex-dev-utils';
+import { printList } from '@twilio/flex-dev-utils/dist/prints';
 
 import { exit } from '../utils/general';
 
@@ -8,8 +9,9 @@ const cracoUpgradeGuideLink = 'https://twilio.com';
  * Upgrade notification
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const upgradeNotification = (logger: Logger) => async (skip: boolean) => {
-  boxen.warning('You are about to upgrade your plugin to use the latest version of Flex Plugin CLI.');
+const upgradeNotification = (logger: Logger) => async (skip: boolean, version?: string) => {
+  const latestVersion = version ? `version ${version}` : 'the latest version';
+  boxen.warning(`You are about to upgrade your plugin to use ${latestVersion} of the Flex Plugin CLI.`);
   if (!skip) {
     const answer = await confirm('Please backup your plugin either locally or on GitHub. Do you want to continue?');
     if (!answer) {
@@ -50,7 +52,7 @@ const upgradeToFlexUI2 = (logger: Logger) => () => {
  */
 const scriptSucceeded = (logger: Logger) => (needsInstall: boolean) => {
   logger.newline();
-  logger.success('🎉 Your plugin was successfully migrated to use the latest (v4) version of Flex Plugins CLI.');
+  logger.success('🎉 Your plugin was successfully migrated to use the latest (v5) version of Flex Plugins CLI.');
   logger.newline();
 
   logger.info('**Next Steps:**');
@@ -171,7 +173,7 @@ const removeLegacyPluginSucceeded = (logger: Logger) => (pluginName: string) => 
 };
 
 /**
- * Warning about plugin not registed with plugins api yet
+ * Warning about plugin not registered with plugins api yet
  */
 const warningPluginNotInAPI = (logger: Logger) => (pluginName: string) => {
   const name = coloredStrings.name(pluginName);
@@ -183,6 +185,22 @@ const warningPluginNotInAPI = (logger: Logger) => (pluginName: string) => {
     `Run {{$ twilio flex:plugins:deploy \\-\\-changelog "migrating to Flex Plugins API" \\-\\-major}} to register with Plugins API.`,
   );
   logger.info(`Run {{$ twilio flex:plugins:upgrade-plugin --remove-legacy-plugin}} again after to finish migration.`);
+};
+
+/**
+ * Manual upgrade message
+ */
+const manualUpgrade = (logger: Logger) => (files: string[]) => {
+  logger.newline();
+  logger.warning('You are planning from older version of the Plugin Builder that require some manual change.');
+  logger.newline();
+  logger.info(
+    "Please change all instances of {{import * as FlexPlugin from 'flex-plugin';}} to {{import * as FlexPlugin from '@twilio/flex-plugin';}} in the following files:",
+  );
+  printList(...files);
+  logger.info(
+    'Once you have made the changes, you can then run the {{twilio flex:plugins:upgrade-plugin}} again to continue.',
+  );
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -202,4 +220,5 @@ export default (logger: Logger) => ({
   noLegacyPluginFound: noLegacyPluginFound(logger),
   removeLegacyPluginSucceeded: removeLegacyPluginSucceeded(logger),
   warningPluginNotInAPI: warningPluginNotInAPI(logger),
+  manualUpgrade: manualUpgrade(logger),
 });

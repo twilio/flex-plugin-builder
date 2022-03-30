@@ -1,5 +1,5 @@
 /* eslint-disable sonarjs/no-identical-functions */
-import { join } from 'path';
+import path, { join } from 'path';
 
 import rimraf from 'rimraf';
 import {
@@ -10,10 +10,11 @@ import {
   copyFile,
   removeFile,
   calculateSha256,
-} from 'flex-dev-utils/dist/fs';
+  findInFiles,
+} from '@twilio/flex-dev-utils/dist/fs';
 import { flags } from '@oclif/parser';
-import { TwilioApiError, TwilioCliError, progress, semver, packages } from 'flex-dev-utils';
-import { spawn } from 'flex-dev-utils/dist/spawn';
+import { TwilioApiError, TwilioCliError, progress, semver, packages } from '@twilio/flex-dev-utils';
+import { spawn } from '@twilio/flex-dev-utils/dist/spawn';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import FlexPlugin, { ConfigData, PkgCallback, SecureStorage } from '../../../sub-commands/flex-plugin';
@@ -22,9 +23,9 @@ import { createDescription, instanceOf } from '../../../utils/general';
 const appConfig = 'appConfig.js';
 const crackoConfig = 'craco.config.js';
 
-const flexPluginScript = 'flex-plugin-scripts';
-const flexPlugin = 'flex-plugin';
 const flexUI = '@twilio/flex-ui';
+const flexPluginScript = '@twilio/flex-plugin-scripts';
+const flexPlugin = '@twilio/flex-plugin';
 
 interface ScriptsToRemove {
   name: string;
@@ -169,6 +170,11 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         await this.upgradeToLatest();
         break;
     }
+    const files = await findInFiles(/"flex-plugin"|'flex-plugin'/, path.join(this.cwd, 'src'));
+    if (files && Object.keys(files).length) {
+      this.prints.manualUpgrade(Object.keys(files));
+      return;
+    }
 
     const pkgJson = await packages.getRegistryVersion(flexPluginScript, this._flags.beta ? 'beta' : 'latest');
     const latestVersion = pkgJson ? semver.coerce(pkgJson.version as string)?.major : 0;
@@ -293,11 +299,22 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       });
 
       copyFile(
-        [require.resolve('create-flex-plugin'), '..', '..', 'templates', 'core', 'public', 'appConfig.example.js'],
+        [
+          require.resolve('@twilio/create-flex-plugin'),
+          '..',
+          '..',
+          'templates',
+          'core',
+          'public',
+          'appConfig.example.js',
+        ],
         [this.cwd, 'public', 'appConfig.example.js'],
       );
       ['jest.config.js', 'webpack.config.js', 'webpack.dev.js'].forEach((file) => {
-        copyFile([require.resolve('create-flex-plugin'), '..', '..', 'templates', 'core', file], [this.cwd, file]);
+        copyFile(
+          [require.resolve('@twilio/create-flex-plugin'), '..', '..', 'templates', 'core', file],
+          [this.cwd, file],
+        );
       });
 
       if (checkAFileExists(this.cwd, 'public', appConfig)) {
@@ -507,7 +524,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         'react-dom': react,
       },
       devDeps: {
-        '@twilio/flex-ui': '^1',
+        [flexUI]: '^1',
         'react-test-renderer': react,
       },
     };
@@ -542,7 +559,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       remove: packagesToRemove,
       deps: packagesToInstall,
       devDeps: {
-        '@twilio/flex-ui': flexUIVersion,
+        [flexUI]: flexUIVersion,
         'react-test-renderer': '17.0.2',
       },
     };

@@ -1,10 +1,10 @@
-import { logger } from 'flex-plugins-utils-logger';
-
 // eslint-disable-next-line import/no-named-as-default
 import spawn from '../spawn';
+import { logger } from '../../../logger';
 
-jest.mock('flex-plugins-utils-logger');
+// jest.mock('flex-plugins-utils-logger');
 jest.mock('execa');
+jest.mock('../../../logger');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const execa = require('execa');

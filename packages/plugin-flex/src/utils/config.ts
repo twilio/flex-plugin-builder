@@ -1,4 +1,4 @@
-import { readJsonFile } from 'flex-dev-utils/dist/fs';
+import { readJsonFile } from '@twilio/flex-dev-utils/dist/fs';
 
 import { Pkg } from '../sub-commands/flex-plugin';
 

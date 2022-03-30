@@ -10,10 +10,12 @@ import {
   ReleaseResource,
   ConfigurationResource,
   ConfiguredPluginResourcePage,
-} from 'flex-plugins-api-client';
-import { PluginServiceHttpOption } from 'flex-plugins-api-client/dist/clients/client';
+} from '@twilio/flex-plugins-api-client';
+import { PluginServiceHttpOption } from '@twilio/flex-plugins-api-client/dist/clients/client';
+import { logger } from '@twilio/flex-dev-utils';
 
 import { testParams } from '../core';
+import * as serverlessApi from './serverless-api';
 
 const options: PluginServiceHttpOption = {};
 if (testParams.config.region) {
@@ -33,6 +35,8 @@ const configuredPluginsClient = new ConfiguredPluginsClient(client);
 const releasesClient = new ReleasesClient(client);
 
 const cleanup = async (): Promise<void> => {
+  logger.info('Cleaning up plugins-api');
+
   // Fetch active plugin - later we will clean archive every entry
   const activeRelease = await releasesClient.active();
 
@@ -53,6 +57,10 @@ const cleanup = async (): Promise<void> => {
       await versionsClient.archive(plugin.plugin_sid, plugin.plugin_version_sid);
     }
   }
+
+  // Remove serverless files
+  const service = await serverlessApi.getServiceSid();
+  await serverlessApi.deleteEnvironments(service.sid);
 };
 
 const getPluginVersion = async (name: string, version: string): Promise<PluginVersionResource> => {

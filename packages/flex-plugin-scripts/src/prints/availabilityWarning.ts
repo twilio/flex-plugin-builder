@@ -1,4 +1,4 @@
-import { boxen, env } from 'flex-dev-utils';
+import { boxen, env } from '@twilio/flex-dev-utils';
 
 /**
  * Prints a warning message about the availability of the release script

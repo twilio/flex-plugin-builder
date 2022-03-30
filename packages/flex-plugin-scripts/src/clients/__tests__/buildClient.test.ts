@@ -1,4 +1,4 @@
-import { Credential } from 'flex-dev-utils';
+import { Credential } from '@twilio/flex-dev-utils';
 
 import BaseClient, { BaseClientOptions } from '../baseClient';
 import * as packageUtil from '../../utils/package';

@@ -1,5 +1,5 @@
-import { env, logger } from 'flex-dev-utils';
-import { printList } from 'flex-dev-utils/dist/prints';
+import { env, logger } from '@twilio/flex-dev-utils';
+import { printList } from '@twilio/flex-dev-utils/dist/prints';
 
 export default (type: 'bundle' | 'sourcemap', size: number, max: number): void => {
   env.setQuiet(false);

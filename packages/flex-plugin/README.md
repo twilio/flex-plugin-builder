@@ -15,7 +15,7 @@ npm install flex-plugin
 ## Usage
 
 ```js
-import { loadPlugin, FlexPlugin } from 'flex-plugin';
+import { loadPlugin, FlexPlugin } from '@twilio/flex-plugin';
 
 class MyPlugin extends FlexPlugin {
   pluginName = 'MyPlugin';
@@ -38,7 +38,7 @@ Visit [Twilio Docs](https://www.twilio.com/docs/flex/tutorials/building-flex-plu
 To load external JS/CSS files into your plugin, we provide two helper methods: `loadJS` and `loadCSS`. Use them by calling these methods at the start of plugin initialization.
 
 ```js
-import { FlexPlugin, loadJS, loadCSS } from 'flex-plugin';
+import { FlexPlugin, loadJS, loadCSS } from '@twilio/flex-plugin';
 
 class MyPlugin extends FlexPlugin {
   pluginName = 'MyPlugin';

@@ -1,12 +1,12 @@
 import fs from 'fs';
 
-import * as fsScripts from 'flex-dev-utils/dist/fs';
+import * as fsScripts from '@twilio/flex-dev-utils/dist/fs';
 
 import * as preStartCheck from '../pre-start-check';
 import * as preScriptCheck from '../pre-script-check';
 import * as prints from '../../prints';
 
-jest.mock('flex-dev-utils/dist/logger');
+jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
 jest.mock('../../prints/appConfigMissing');
 
 describe('PreStartCheck', () => {

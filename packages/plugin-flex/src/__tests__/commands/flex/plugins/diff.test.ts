@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { Diff } from 'flex-plugins-api-toolkit';
+import { Diff } from '@twilio/flex-plugins-api-client';
 
 import createTest from '../../../framework';
 import FlexPluginsDiff from '../../../../commands/flex/plugins/diff';

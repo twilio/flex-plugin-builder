@@ -1,5 +1,5 @@
-import { logger, progress } from 'flex-dev-utils';
-import { clearCredentials } from 'flex-dev-utils/dist/credentials';
+import { logger, progress } from '@twilio/flex-dev-utils';
+import { clearCredentials } from '@twilio/flex-dev-utils/dist/credentials';
 
 import run from '../utils/run';
 

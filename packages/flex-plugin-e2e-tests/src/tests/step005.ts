@@ -4,7 +4,7 @@ import { writeFileSync } from 'fs';
 import { replaceInFile } from 'replace-in-file';
 
 import { TestSuite, TestParams } from '../core';
-import { spawn, logResult, assertion, joinPath } from '../utils';
+import { spawn, assertion, joinPath } from '../utils';
 
 // Build plugin
 const testSuite: TestSuite = async ({ scenario }: TestParams): Promise<void> => {
@@ -29,8 +29,7 @@ const testSuite: TestSuite = async ({ scenario }: TestParams): Promise<void> => 
     countMatches: true,
   });
 
-  const result = await spawn('twilio', ['flex:plugins:build'], { cwd: plugin.dir });
-  logResult(result);
+  await spawn('twilio', ['flex:plugins:build', '-l', 'debug'], { cwd: plugin.dir });
 
   assertion.not.dirIsEmpty([plugin.dir, 'build']);
   assertion.fileExists([plugin.dir, 'build', `${plugin.name}.js`]);

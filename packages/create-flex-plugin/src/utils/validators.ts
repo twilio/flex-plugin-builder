@@ -1,6 +1,6 @@
-import { prompt } from 'flex-dev-utils/dist/inquirer';
-import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
-import { isValidUrl, validateAccountSid, validateGitHubUrl } from 'flex-dev-utils/dist/validators';
+import { prompt } from '@twilio/flex-dev-utils';
+import { isSidOfType, SidPrefix } from '@twilio/flex-dev-utils/dist/sids';
+import { isValidUrl, validateAccountSid, validateGitHubUrl } from '@twilio/flex-dev-utils/dist/validators';
 
 import { FlexPluginArguments } from '../lib/create-flex-plugin';
 

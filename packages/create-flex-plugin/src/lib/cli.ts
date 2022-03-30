@@ -1,5 +1,5 @@
 import yargs, { Argv, Options } from 'yargs';
-import { runner, exit, multilineString } from 'flex-dev-utils';
+import { runner, exit, multilineString } from '@twilio/flex-dev-utils';
 
 import { FlexPluginArguments, createFlexPlugin } from './create-flex-plugin';
 

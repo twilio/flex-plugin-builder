@@ -1,5 +1,5 @@
-import { env } from 'flex-dev-utils';
-import * as fs from 'flex-dev-utils/dist/fs';
+import { env } from '@twilio/flex-dev-utils';
+import * as fs from '@twilio/flex-dev-utils/dist/fs';
 import dotenv from 'dotenv';
 
 import * as prints from '../../prints';

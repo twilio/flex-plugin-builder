@@ -1,4 +1,4 @@
-import { Logger } from 'flex-dev-utils';
+import { Logger } from '@twilio/flex-dev-utils';
 
 const archivedSuccessfully =
   (logger: Logger) =>

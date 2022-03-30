@@ -1,8 +1,8 @@
-import { env, exit, logger } from 'flex-dev-utils';
-import { Environment } from 'flex-dev-utils/dist/env';
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
-import { addCWDNodeModule, setCwd } from 'flex-dev-utils/dist/fs';
-import { findPort, getDefaultPort } from 'flex-dev-utils/dist/urls';
+import { env, exit, logger } from '@twilio/flex-dev-utils';
+import { Environment } from '@twilio/flex-dev-utils/dist/env';
+import { FlexPluginError } from '@twilio/flex-dev-utils/dist/errors';
+import { addCWDNodeModule, setCwd } from '@twilio/flex-dev-utils/dist/fs';
+import { findPort, getDefaultPort } from '@twilio/flex-dev-utils/dist/urls';
 import {
   compiler,
   compilerRenderer,
@@ -18,7 +18,7 @@ import {
   OnDevServerCrashedPayload,
   PluginsConfig,
   DelayRenderStaticPlugin,
-} from 'flex-plugin-webpack';
+} from '@twilio/flex-plugin-webpack';
 
 import getConfiguration, { ConfigurationType, WebpackType } from '../config';
 import run from '../utils/run';
@@ -95,8 +95,8 @@ export const _startDevServer = async (
   const { type, port, remoteAll } = options;
   const isJavaScriptServer = type === WebpackType.JavaScript;
   const isStaticServer = type === WebpackType.Static;
-  const config = await getConfiguration(ConfigurationType.Webpack, Environment.Development, type);
-  const devConfig = await getConfiguration(ConfigurationType.DevServer, Environment.Development, type);
+  const config = await getConfiguration(ConfigurationType.Webpack, Environment.Development, true, type);
+  const devConfig = await getConfiguration(ConfigurationType.DevServer, Environment.Development, true, type);
   const localPlugins = plugins.filter((p) => !p.remote);
   const pluginRequest = {
     local: localPlugins.map((p) => p.name),
