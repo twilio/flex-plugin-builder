@@ -1,7 +1,10 @@
 import { findUp, resolveCwd } from '@twilio/flex-dev-utils/dist/fs';
 import { spawn } from '@twilio/flex-dev-utils/dist/spawn';
 import { camelCase, upperFirst } from '@twilio/flex-dev-utils/dist/lodash';
+<<<<<<< HEAD
 import { packages } from '@twilio/flex-dev-utils';
+=======
+>>>>>>> fbd54e79e14a215431d720fb406a94baa663e507
 
 import * as github from '../utils/github';
 import { FlexPluginArguments } from './create-flex-plugin';

@@ -85,13 +85,14 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
 
   private static packagesToRemove = [
     flexPluginScript, // remove and then re-add
+    'flex-plugin-scripts',
     'react-app-rewire-flex-plugin',
     'react-app-rewired',
     'react-scripts',
     'enzyme',
     'babel-polyfill',
     'enzyme-adapter-react-16',
-    'react-emotion',
+    'react-emotion', // remove and then re-add
     '@craco/craco',
     'craco-config-flex-plugin',
     'core-j',
@@ -154,7 +155,8 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       return;
     }
 
-    await this.prints.upgradeNotification(this._flags.yes);
+    const pkgJson = await this.getLatestVersionOfDep(flexPluginScript, this._flags.beta);
+    await this.prints.upgradeNotification(this._flags.yes, pkgJson.version as string);
 
     const currentPkgVersion = this.pkgVersion;
     switch (currentPkgVersion) {
@@ -523,6 +525,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         [flexPluginScript]: '*',
         react,
         'react-dom': react,
+        'react-emotion': '9.2.12',
       },
       devDeps: {
         [flexUI]: '^1',
@@ -573,8 +576,12 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     const pkg =
       this.pkg.dependencies[flexPluginScript] ||
       this.pkg.devDependencies[flexPluginScript] ||
+      this.pkg.dependencies['flex-plugin-scripts'] ||
+      this.pkg.devDependencies['flex-plugin-scripts'] ||
       this.pkg.dependencies[flexPlugin] ||
-      this.pkg.devDependencies[flexPlugin];
+      this.pkg.devDependencies[flexPlugin] ||
+      this.pkg.dependencies['flex-plugin'] ||
+      this.pkg.devDependencies['flex-plugin'];
     if (!pkg) {
       throw new TwilioCliError(`Package '${flexPluginScript}' was not found`);
     }
