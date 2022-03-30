@@ -1,4 +1,4 @@
-import { DescribeConfiguration } from 'flex-plugins-api-toolkit';
+import { DescribeConfiguration } from '@twilio/flex-plugins-api-client';
 
 import createTest from '../../../../framework';
 import FlexPluginsDescribeConfiguration from '../../../../../commands/flex/plugins/describe/configuration';

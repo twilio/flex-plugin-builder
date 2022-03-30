@@ -1,8 +1,7 @@
 import * as prints from '../prints';
-import * as strings from '../strings';
+import * as strings from '../logger';
 
 jest.mock('../logger');
-jest.mock('../strings');
 
 describe('prints', () => {
   beforeEach(() => {

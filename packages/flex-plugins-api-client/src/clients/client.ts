@@ -1,9 +1,9 @@
-import { Region } from 'flex-plugins-utils-env';
-import { OptionalHttpConfig } from 'flex-plugin-utils-http';
+import { Region } from '@twilio/flex-dev-utils/dist/env';
+import { OptionalHttpClientConfig } from '@twilio/flex-dev-utils';
 
 import ServiceHttpClient from './serviceHttpClient';
 
-export interface PluginServiceHttpOption extends OptionalHttpConfig {
+export interface PluginServiceHttpOption extends OptionalHttpClientConfig {
   region?: Region;
 }
 

@@ -1,4 +1,4 @@
-import { ListPluginVersions } from 'flex-plugins-api-toolkit/dist/scripts';
+import { ListPluginVersions } from '@twilio/flex-plugins-api-client';
 import { flags } from '@oclif/command';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 

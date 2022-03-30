@@ -1,5 +1,5 @@
 import ipc from 'node-ipc';
-import { env, logger } from 'flex-dev-utils';
+import { env, logger } from '@twilio/flex-dev-utils';
 import webpack from 'webpack';
 
 import ToJsonOutput = webpack.Stats.ToJsonOutput;

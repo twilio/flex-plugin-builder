@@ -1,8 +1,8 @@
 /* eslint-disable import/no-unused-modules */
-import { logger } from 'flex-plugins-utils-logger';
+import { logger } from '@twilio/flex-dev-utils';
 
 import { TestSuite, TestParams } from '../core';
-import { spawn, logResult } from '../utils';
+import { spawn } from '../utils';
 
 // Run plugin tests
 const testSuite: TestSuite = async ({ scenario, environment }: TestParams): Promise<void> => {
@@ -10,10 +10,9 @@ const testSuite: TestSuite = async ({ scenario, environment }: TestParams): Prom
   if (environment.operatingSystem === 'win32') {
     logger.warning('Skipping [flex:plugins:test] on Win32');
   } else {
-    const result = await spawn('twilio', ['flex:plugins:test'], {
+    await spawn('twilio', ['flex:plugins:test', '-l', 'debug'], {
       cwd: scenario.plugins[0].dir,
     });
-    logResult(result);
   }
 };
 testSuite.description = 'Running {{twilio flex:plugins:test}}';

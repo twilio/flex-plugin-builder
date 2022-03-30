@@ -1,4 +1,4 @@
-import { Credential } from 'flex-dev-utils';
+import { Credential } from '@twilio/flex-dev-utils';
 
 import FileClient from '../files';
 import BaseClient from '../baseClient';

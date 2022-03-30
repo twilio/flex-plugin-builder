@@ -45,7 +45,7 @@ declare module '@twilio/cli-core' {
 
 declare module '@twilio/cli-test' {
   import { baseCommands } from '@twilio/cli-core';
-  import { Logger } from 'flex-dev-utils';
+  import { Logger } from '@twilio/flex-dev-utils';
   import { ConfigData, Config } from '@twilio/cli-core/src/services/config';
   import { expect } from 'chai';
   import { FancyTypes } from 'fancy-test';

@@ -1,11 +1,11 @@
-import * as fsScripts from 'flex-dev-utils/dist/fs';
+import * as fsScripts from '@twilio/flex-dev-utils/dist/fs';
 
 import * as testScripts from '../test';
 import * as innerTestScript from '../test/test';
 import * as prints from '../../prints';
 
-jest.mock('flex-dev-utils/dist/logger');
-jest.mock('flex-dev-utils/dist/env');
+jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
+jest.mock('@twilio/flex-dev-utils/dist/env');
 jest.mock('../../prints/jestNotInstalled');
 
 describe('TestScript', () => {

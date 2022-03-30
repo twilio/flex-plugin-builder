@@ -1,5 +1,5 @@
-import { Credential, logger } from 'flex-dev-utils';
-import { isSidOfType, SidPrefix } from 'flex-dev-utils/dist/sids';
+import { Credential, logger } from '@twilio/flex-dev-utils';
+import { isSidOfType, SidPrefix } from '@twilio/flex-dev-utils/dist/sids';
 
 import BaseClient from './baseClient';
 import { Build, BuildStatus } from './serverless-types';
@@ -36,7 +36,7 @@ export default class BuildClient extends BaseClient {
    */
   public create = async (data: BuildData): Promise<Build> => {
     return new Promise(async (resolve, reject) => {
-      data.Runtime = 'node12';
+      data.Runtime = 'node14';
       const newBuild = await this._create(data);
       const { sid } = newBuild;
 

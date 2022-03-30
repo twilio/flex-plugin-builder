@@ -1,5 +1,5 @@
-import * as fs from 'flex-dev-utils/dist/fs';
-import { FlexPluginError } from 'flex-dev-utils';
+import * as fs from '@twilio/flex-dev-utils/dist/fs';
+import { FlexPluginError } from '@twilio/flex-dev-utils';
 
 import * as parserScripts from '../parser';
 

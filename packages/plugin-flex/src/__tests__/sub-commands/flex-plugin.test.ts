@@ -1,16 +1,26 @@
-import { TwilioCliError, env as utilsEnv } from 'flex-dev-utils';
-import * as fs from 'flex-dev-utils/dist/fs';
+import { TwilioCliError, env as utilsEnv } from '@twilio/flex-dev-utils';
+import * as fs from '@twilio/flex-dev-utils/dist/fs';
+import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
 
 import createTest, { mockGetPkg } from '../framework';
 import FlexPlugin from '../../sub-commands/flex-plugin';
 import DoneCallback = jest.DoneCallback;
 
+jest.mock('@twilio/flex-dev-utils/dist/fs');
+jest.mock('@twilio/flex-dev-utils/dist/spawn');
+
 describe('SubCommands/FlexPlugin', () => {
   const { env } = process;
+  const paths = {
+    app: { isTSProject: () => false },
+  };
 
   beforeEach(() => {
     jest.resetAllMocks();
     jest.restoreAllMocks();
+    jest.spyOn(spawn, 'spawn').mockReturnThis();
+    // @ts-ignore
+    jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
 
     process.env = { ...env };
   });
@@ -87,7 +97,7 @@ describe('SubCommands/FlexPlugin', () => {
     mockGetPkg(cmd, {
       dependencies: {},
       devDependencies: {
-        'flex-plugin-scripts': '',
+        '@twilio/flex-plugin-scripts': '',
         '@twilio/flex-ui': '',
       },
     });
@@ -143,6 +153,7 @@ describe('SubCommands/FlexPlugin', () => {
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'setupEnvironment').mockReturnThis();
     jest.spyOn(cmd, 'doRun').mockResolvedValue(null);
+    jest.spyOn(fs, 'addCWDNodeModule');
 
     await cmd.run();
 
@@ -155,6 +166,7 @@ describe('SubCommands/FlexPlugin', () => {
     expect(cmd.isPluginFolder).toHaveBeenCalledTimes(1);
     expect(cmd.setupEnvironment).toHaveBeenCalledTimes(1);
     expect(cmd.doRun).toHaveBeenCalledTimes(1);
+    expect(fs.addCWDNodeModule).toHaveBeenCalledTimes(1);
   });
 
   it('should return raw format', async () => {
@@ -218,7 +230,7 @@ describe('SubCommands/FlexPlugin', () => {
     jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {},
       dependencies: {
-        'flex-plugin-scripts': '1.2.3',
+        '@twilio/flex-plugin-scripts': '1.2.3',
       },
     });
 
@@ -230,7 +242,7 @@ describe('SubCommands/FlexPlugin', () => {
 
     jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {
-        'flex-plugin-scripts': '^2.3.4-beta.0',
+        '@twilio/flex-plugin-scripts': '^2.3.4-beta.0',
       },
       dependencies: {},
     });
@@ -243,7 +255,7 @@ describe('SubCommands/FlexPlugin', () => {
 
     jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {
-        'flex-plugin-scripts': 'not-a-semver',
+        '@twilio/flex-plugin-scripts': 'not-a-semver',
       },
       dependencies: {},
     });
@@ -260,6 +272,7 @@ describe('SubCommands/FlexPlugin', () => {
     jest.spyOn(cmd, 'checkCompatibility', 'get').mockReturnValue(true);
     jest.spyOn(cmd, 'exit').mockReturnThis();
     jest.spyOn(cmd, 'doRun').mockReturnThis();
+    jest.spyOn(cmd, 'pkg', 'get').mockReturnThis();
 
     await cmd.run();
     // @ts-ignore
@@ -272,7 +285,7 @@ describe('SubCommands/FlexPlugin', () => {
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
-    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(5);
     jest.spyOn(cmd, 'checkCompatibility', 'get').mockReturnValue(true);
     jest.spyOn(cmd, 'exit').mockReturnThis();
     jest.spyOn(cmd, 'doRun').mockReturnThis();
@@ -373,13 +386,14 @@ describe('SubCommands/FlexPlugin', () => {
       jest.spyOn(utilsEnv, 'setDebug');
       jest.spyOn(utilsEnv, 'persistTerminal');
       jest.spyOn(utilsEnv, 'setRegion');
+      jest.spyOn(spawn, 'spawn').mockReturnThis();
     };
 
     it('should setup environment', async () => {
       const cmd = await createTest(FlexPlugin)();
       setupMocks(cmd);
 
-      cmd.setupEnvironment();
+      await cmd.setupEnvironment();
       expect(process.env.SKIP_CREDENTIALS_SAVING).toEqual('true');
       expect(process.env.TWILIO_ACCOUNT_SID).toEqual(username);
       expect(process.env.TWILIO_AUTH_TOKEN).toEqual(password);
@@ -394,7 +408,7 @@ describe('SubCommands/FlexPlugin', () => {
       const cmd = await createTest(FlexPlugin)('-l', 'debug');
       setupMocks(cmd);
 
-      cmd.setupEnvironment();
+      await cmd.setupEnvironment();
       expect(process.env.SKIP_CREDENTIALS_SAVING).toEqual('true');
       expect(process.env.TWILIO_ACCOUNT_SID).toEqual(username);
       expect(process.env.TWILIO_AUTH_TOKEN).toEqual(password);
@@ -409,7 +423,7 @@ describe('SubCommands/FlexPlugin', () => {
       const cmd = await createTest(FlexPlugin)('--region', 'stage');
       setupMocks(cmd);
 
-      cmd.setupEnvironment();
+      await cmd.setupEnvironment();
       expect(process.env.SKIP_CREDENTIALS_SAVING).toEqual('true');
       expect(process.env.TWILIO_ACCOUNT_SID).toEqual(username);
       expect(process.env.TWILIO_AUTH_TOKEN).toEqual(password);
@@ -418,6 +432,30 @@ describe('SubCommands/FlexPlugin', () => {
       expect(utilsEnv.setDebug).not.toHaveBeenCalled();
       expect(utilsEnv.persistTerminal).not.toHaveBeenCalled();
       expect(utilsEnv.setRegion).toHaveBeenCalledWith('stage');
+    });
+
+    it('should not add yarn or npm to process.versions if versions dont exist', async () => {
+      const cmd = await createTest(FlexPlugin)('--region', 'stage');
+      setupMocks(cmd);
+      jest.spyOn(spawn, 'spawn').mockResolvedValueOnce({ exitCode: 127, stdout: '', stderr: 'error' });
+      jest.spyOn(spawn, 'spawn').mockResolvedValueOnce({ exitCode: 127, stdout: '', stderr: 'error' });
+
+      await cmd.setupEnvironment();
+
+      expect(process.versions.npm).not.toBeDefined();
+      expect(process.versions.yarn).not.toBeDefined();
+    });
+
+    it('should add yarn and npm to process.versions if version exists', async () => {
+      const cmd = await createTest(FlexPlugin)('--region', 'stage');
+      setupMocks(cmd);
+      const spwn = jest.spyOn(spawn, 'spawn').mockResolvedValue({ exitCode: 0, stdout: '1.0.0', stderr: '' });
+
+      await cmd.setupEnvironment();
+
+      expect(spwn).toHaveBeenCalledTimes(2);
+      expect(process.versions.npm).toEqual('1.0.0');
+      expect(process.versions.yarn).toEqual('1.0.0');
     });
   });
 

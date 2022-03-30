@@ -1,5 +1,5 @@
-import { runner } from 'flex-dev-utils';
-import { Callback } from 'flex-dev-utils/dist/runner';
+import { runner } from '@twilio/flex-dev-utils';
+import { Callback } from '@twilio/flex-dev-utils/dist/runner';
 
 /**
  * Runs the callback function if the process is spawned.

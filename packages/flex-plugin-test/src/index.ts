@@ -2,7 +2,7 @@
 import { join } from 'path';
 
 import { InitialOptions } from '@jest/types/build/Config';
-import { checkFilesExist, getPaths } from 'flex-dev-utils/dist/fs';
+import { checkFilesExist, getPaths } from '@twilio/flex-dev-utils/dist/fs';
 
 interface RegexObject {
   [regex: string]: string;

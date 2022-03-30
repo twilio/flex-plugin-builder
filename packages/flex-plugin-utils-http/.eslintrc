@@ -1,7 +1,0 @@
-{
-  "extends": "../../.eslintrc",
-  "rules": {
-    "camelcase": "off",
-    "import/no-unused-modules": "off"
-  }
-}

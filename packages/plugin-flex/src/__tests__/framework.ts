@@ -1,11 +1,12 @@
+/* eslint-disable import/no-unused-modules */
 // eslint-disable-next-line spaced-comment, @typescript-eslint/triple-slash-reference
 /// <reference path="../module.d.ts" />
 
 import OClifConfig from '@oclif/config';
 import { Config, ConfigData } from '@twilio/cli-core/src/services/config';
 import tmp, { DirResult } from 'tmp';
-import { Logger } from 'flex-dev-utils';
-import * as fs from 'flex-dev-utils/dist/fs';
+import { Logger } from '@twilio/flex-dev-utils';
+import * as fs from '@twilio/flex-dev-utils/dist/fs';
 
 import FlexPlugin from '../sub-commands/flex-plugin';
 
@@ -54,7 +55,15 @@ const mockUserConfig = async <C extends FlexPlugin>(command: C): Promise<C> => {
   // @ts-ignore
   command.userConfig = new ConfigData();
   // @ts-ignore
-  command.userConfig.addProfile('default', constants.FAKE_ACCOUNT_SID);
+  command.userConfig.addProfile(
+    'default',
+    constants.FAKE_ACCOUNT_SID,
+    '',
+    constants.FAKE_API_KEY,
+    constants.FAKE_API_SECRET,
+  );
+  // @ts-ignore
+  command.userConfig.setActiveProfile('default');
 
   return command;
 };

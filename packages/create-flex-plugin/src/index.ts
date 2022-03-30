@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unused-modules */
-import { checkForUpdate } from 'flex-dev-utils/dist/updateNotifier';
+import { checkForUpdate } from '@twilio/flex-dev-utils/dist/updateNotifier';
 
 checkForUpdate();
 

@@ -1,15 +1,14 @@
 #!/usr/bin/env node
 
-import { readdirSync, existsSync } from 'fs';
+import { readdirSync } from 'fs';
 import { join, dirname } from 'path';
 
-import { env, exit, logger } from 'flex-dev-utils';
-import { spawn } from 'flex-dev-utils/dist/spawn';
-import { checkForUpdate } from 'flex-dev-utils/dist/updateNotifier';
-import { render as markedRender } from 'flex-dev-utils/dist/marked';
-import { getPaths, getCwd, addCWDNodeModule } from 'flex-dev-utils/dist/fs';
+import { env, exit, logger } from '@twilio/flex-dev-utils';
+import { spawn } from '@twilio/flex-dev-utils/dist/spawn';
+import { checkForUpdate } from '@twilio/flex-dev-utils/dist/updateNotifier';
+import { getPaths, getCwd, addCWDNodeModule } from '@twilio/flex-dev-utils/dist/fs';
 // eslint-disable-next-line import/no-unused-modules
-export { PluginsConfig, PLUGIN_INPUT_PARSER_REGEX } from 'flex-plugin-webpack';
+export { PluginsConfig, PLUGIN_INPUT_PARSER_REGEX } from '@twilio/flex-plugin-webpack';
 
 checkForUpdate();
 
@@ -39,20 +38,6 @@ const spawnScript = async (...argv: string[]): Promise<void> => {
     const options = logger.colors.blue(scripts.join(', '));
     logger.error(`Unknown script '${script}'; please choose from one of: ${options}.`);
     exit(1);
-    return;
-  }
-
-  // Print help doc and quit
-  if (argv.includes('--help') && script) {
-    const docPath = `${join(dir, '../docs', script)}.md`;
-    if (!existsSync(docPath)) {
-      logger.warning(`No documentation was found for ${script}`);
-      exit(1);
-      return;
-    }
-
-    markedRender(docPath);
-    exit(0);
     return;
   }
 

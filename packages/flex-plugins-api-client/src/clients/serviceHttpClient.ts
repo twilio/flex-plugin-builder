@@ -1,7 +1,5 @@
-import upperFirst from 'lodash.upperfirst';
-import { Region, env } from 'flex-plugins-utils-env';
-import logger from 'flex-plugins-utils-logger/dist/lib/logger';
-import { HttpClient } from 'flex-plugin-utils-http';
+import { Region } from '@twilio/flex-dev-utils/dist/env';
+import { env, logger, HttpClient, lodash } from '@twilio/flex-dev-utils';
 
 export interface Pagination {
   pageSize?: number;
@@ -58,7 +56,7 @@ export default abstract class ServiceHttpClient extends HttpClient {
   public async list<R extends PaginationMeta>(uri: string, responseKey: string, pagination?: Pagination): Promise<R> {
     const params = new URLSearchParams();
     if (pagination) {
-      Object.entries(pagination).forEach(([key, value]) => params.set(upperFirst(key), value));
+      Object.entries(pagination).forEach(([key, value]) => params.set(lodash.upperFirst(key), value));
     }
 
     const resp = await this.get<R>(`${uri}?${params.toString()}`);

@@ -1,4 +1,4 @@
-import { logger, env } from 'flex-dev-utils';
+import { logger, env } from '@twilio/flex-dev-utils';
 
 /**
  * Prints an error if typescript module is not installed

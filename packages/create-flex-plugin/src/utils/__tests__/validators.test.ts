@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as inquirer from 'flex-dev-utils/dist/inquirer';
+import * as questions from '@twilio/flex-dev-utils/dist/questions';
 
 import * as validators from '../validators';
 
-jest.mock('flex-dev-utils/dist/logger');
-jest.mock('flex-dev-utils/dist/inquirer');
+jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
+jest.mock('@twilio/flex-dev-utils/dist/questions');
 
 describe('validators', () => {
   const pluginName = 'plugin-test';
@@ -16,7 +16,7 @@ describe('validators', () => {
   describe('_promptForAccountSid', () => {
     it('should ask for an accountSid if not specified', async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const prompt = jest.spyOn(inquirer, 'prompt').mockResolvedValue('test-sid');
+      const prompt = jest.spyOn(questions, 'prompt').mockResolvedValue('test-sid');
 
       await validators._promptForAccountSid();
       expect(prompt).toHaveBeenCalledTimes(1);
@@ -25,7 +25,7 @@ describe('validators', () => {
 
   describe('_promptForTemplateUrl', () => {
     it('should ask for a url if url is invalid', async () => {
-      const prompt = jest.spyOn(inquirer, 'prompt').mockResolvedValue('twilio');
+      const prompt = jest.spyOn(questions, 'prompt').mockResolvedValue('twilio');
 
       await validators._promptForTemplateUrl();
       expect(prompt).toHaveBeenCalledTimes(1);
@@ -34,7 +34,7 @@ describe('validators', () => {
 
   describe('validate', () => {
     it('should not ask for an accountSid if already specified', async () => {
-      const prompt = jest.spyOn(inquirer, 'prompt');
+      const prompt = jest.spyOn(questions, 'prompt');
 
       await validators.default({
         name: pluginName,
@@ -45,7 +45,7 @@ describe('validators', () => {
     });
 
     it('should not ask for an accountSid if no sid is provided', async () => {
-      const prompt = jest.spyOn(inquirer, 'prompt');
+      const prompt = jest.spyOn(questions, 'prompt');
 
       await validators.default({
         name: pluginName,
@@ -55,7 +55,7 @@ describe('validators', () => {
     });
 
     it('should ask for an accountSid if incorrect accountSid', async () => {
-      const prompt = jest.spyOn(inquirer, 'prompt').mockResolvedValue(accountSid);
+      const prompt = jest.spyOn(questions, 'prompt').mockResolvedValue(accountSid);
 
       const config = await validators.default({
         name: pluginName,
@@ -67,7 +67,7 @@ describe('validators', () => {
     });
 
     it('should not ask for a template url if already specified', async () => {
-      const prompt = jest.spyOn(inquirer, 'prompt');
+      const prompt = jest.spyOn(questions, 'prompt');
 
       await validators.default({
         name: pluginName,
@@ -79,7 +79,7 @@ describe('validators', () => {
     });
 
     it('should ask for template url if invalid url is provided', async () => {
-      const prompt = jest.spyOn(inquirer, 'prompt').mockResolvedValue(url);
+      const prompt = jest.spyOn(questions, 'prompt').mockResolvedValue(url);
 
       const config = await validators.default({
         name: pluginName,

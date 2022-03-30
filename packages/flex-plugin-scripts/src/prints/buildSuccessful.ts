@@ -1,6 +1,6 @@
-import { env, logger } from 'flex-dev-utils';
-import { Lifecycle } from 'flex-dev-utils/dist/env';
-import { getPaths } from 'flex-dev-utils/dist/fs';
+import { env, logger } from '@twilio/flex-dev-utils';
+import { Lifecycle } from '@twilio/flex-dev-utils/dist/env';
+import { getPaths } from '@twilio/flex-dev-utils/dist/fs';
 
 import { Bundle } from '../scripts/build';
 

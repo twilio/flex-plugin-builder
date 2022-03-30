@@ -1,3 +1,5 @@
+/* eslint-disable import/no-unused-modules */
+
 export { promisifiedSpawn as spawn, logResult, killChildProcess } from './spawn';
 export { default as assertion } from './assertion';
 export { writeFileSync } from 'fs';

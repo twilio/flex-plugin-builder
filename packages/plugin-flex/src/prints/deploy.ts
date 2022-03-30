@@ -1,5 +1,5 @@
-import { Logger, singleLineString, boxen, coloredStrings } from 'flex-dev-utils';
-import { DeployResult } from 'flex-plugin-scripts/dist/scripts/deploy';
+import { Logger, singleLineString, boxen, coloredStrings } from '@twilio/flex-dev-utils';
+import { DeployResult } from '@twilio/flex-plugin-scripts/dist/scripts/deploy';
 
 import { getTopic } from '../utils';
 

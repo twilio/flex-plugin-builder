@@ -1,4 +1,4 @@
-import { ListReleases } from 'flex-plugins-api-toolkit/dist/scripts';
+import { ListReleases } from '@twilio/flex-plugins-api-client';
 
 import { createDescription } from '../../../../utils/general';
 import InformationFlexPlugin from '../../../../sub-commands/information-flex-plugin';

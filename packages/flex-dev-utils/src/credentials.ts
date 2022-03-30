@@ -1,6 +1,6 @@
 /* eslint-disable prefer-destructuring */
 import { FlexPluginError } from './errors';
-import { prompt, choose, Question } from './inquirer';
+import { prompt, choose, Question } from './questions';
 import { env } from './env';
 import keychain, { Keychain, KeychainCredential } from './keychain';
 import { isInputNotEmpty, validateAccountSid, validateApiKey } from './validators';

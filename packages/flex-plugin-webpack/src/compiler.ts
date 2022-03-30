@@ -1,14 +1,14 @@
 /* istanbul ignore file */
 
-import { logger, FunctionalCallback } from 'flex-dev-utils';
-import { FlexPluginError } from 'flex-dev-utils/dist/errors';
+import { logger, FunctionalCallback } from '@twilio/flex-dev-utils';
+import { FlexPluginError } from '@twilio/flex-dev-utils/dist/errors';
 import { SyncHook } from 'tapable';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import typescriptFormatter, { Issue } from '@k88/typescript-compile-error-formatter';
 import webpack, { Compiler as WebpackCompiler, Configuration } from 'webpack';
-import { getCliPaths, getPaths, readRunPluginsJson, writeJSONFile } from 'flex-dev-utils/dist/fs';
+import { getCliPaths, getPaths, readRunPluginsJson, writeJSONFile } from '@twilio/flex-dev-utils/dist/fs';
 import webpackFormatMessages from '@k88/format-webpack-messages';
-import { getLocalAndNetworkUrls } from 'flex-dev-utils/dist/urls';
+import { getLocalAndNetworkUrls } from '@twilio/flex-dev-utils/dist/urls';
 
 import { OnCompileCompletePayload } from './devServer/ipcServer';
 import { OnRemotePlugins, Plugin } from './devServer/pluginServer';
@@ -74,17 +74,20 @@ export default (
         });
       });
 
-      ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).receive.tap('afterTSCheck', (diagnostics, lints) => {
-        const allMsgs = [...diagnostics, ...lints];
-        const format = (issue: Issue) => `${issue.file}\n${typescriptFormatter(issue)}`;
+      ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).receive.tap(
+        'afterTSCheck',
+        (diagnostics: Issue[], lints: Issue[]) => {
+          const allMsgs = [...diagnostics, ...lints];
+          const format = (issue: Issue) => `${issue.file}\n${typescriptFormatter(issue)}`;
 
-        if (tsMessagesResolver) {
-          tsMessagesResolver({
-            errors: allMsgs.filter((msg) => msg.severity === 'error').map(format),
-            warnings: allMsgs.filter((msg) => msg.severity === 'warning').map(format),
-          });
-        }
-      });
+          if (tsMessagesResolver) {
+            tsMessagesResolver({
+              errors: allMsgs.filter((msg) => msg.severity === 'error').map(format),
+              warnings: allMsgs.filter((msg) => msg.severity === 'warning').map(format),
+            });
+          }
+        },
+      );
     }
 
     // invalid is `bundle invalidated` and is invoked when files are modified in dev-server.
