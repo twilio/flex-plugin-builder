@@ -1,6 +1,6 @@
 {
   "name": "@twilio/flex-dev-utils",
-  "version": "5.0.5",
+  "version": "5.0.6",
   "description": "Common development utility for creating a Flex plugin",
   "keywords": [
     "flex",
@@ -34,8 +34,8 @@
   },
   "dependencies": {
     "@k88/pipe-compose": "^2.5.0",
-    "@twilio/flex-plugins-utils-env": "5.0.5",
-    "@twilio/flex-plugins-utils-exception": "5.0.5",
+    "@twilio/flex-plugins-utils-env": "5.0.6",
+    "@twilio/flex-plugins-utils-exception": "5.0.6",
     "address": "^1.1.2",
     "app-module-path": "^2.2.0",
     "axios": "^0.24.0",

@@ -1,6 +1,6 @@
 {
   "name": "@twilio/create-flex-plugin",
-  "version": "5.0.5",
+  "version": "5.0.6",
   "description": "Toolkit to create a new Twilio Flex plugin",
   "keywords": [
     "flex",
@@ -42,14 +42,14 @@
     "test:watch": "cd ../.. && jest packages/create-flex-plugin --watch --color"
   },
   "dependencies": {
-    "@twilio/flex-dev-utils": "5.0.5",
+    "@twilio/flex-dev-utils": "5.0.6",
     "esm": "^3.2.25",
     "tmp": "^0.2.1",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
-    "@twilio/flex-plugin": "5.0.5",
-    "@twilio/flex-plugin-scripts": "5.0.5",
+    "@twilio/flex-plugin": "5.0.6",
+    "@twilio/flex-plugin-scripts": "5.0.6",
     "@twilio/flex-ui": "^1",
     "@types/tmp": "^0.2.1",
     "@types/yargs": "^16.0.4"

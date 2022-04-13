@@ -1,6 +1,6 @@
 {
   "name": "@twilio/flex-plugin-e2e-tests",
-  "version": "5.0.5",
+  "version": "5.0.6",
   "description": "Flex Plugin E2E Tests framework",
   "keywords": [
     "flex",
@@ -34,8 +34,8 @@
     "test": "exit 0"
   },
   "dependencies": {
-    "@twilio/flex-dev-utils": "5.0.5",
-    "@twilio/flex-plugins-api-client": "5.0.5",
+    "@twilio/flex-dev-utils": "5.0.6",
+    "@twilio/flex-plugins-api-client": "5.0.6",
     "axios": "^0.24.0",
     "lodash": "4.17.21",
     "package-json": "^7.0.0",

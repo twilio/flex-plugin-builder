@@ -1,6 +1,6 @@
 {
   "name": "@twilio/flex-plugins-api-client",
-  "version": "5.0.5",
+  "version": "5.0.6",
   "description": "Flex Plugins API Client",
   "keywords": [
     "flex",
@@ -39,7 +39,7 @@
     "test:watch": "cd ../.. && jest packages/flex-plugins-api-client --watch --color"
   },
   "dependencies": {
-    "@twilio/flex-dev-utils": "5.0.5",
+    "@twilio/flex-dev-utils": "5.0.6",
     "url-join": "^4.0.1"
   },
   "devDependencies": {
