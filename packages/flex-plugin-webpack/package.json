@@ -1,6 +1,6 @@
 {
   "name": "@twilio/flex-plugin-webpack",
-  "version": "5.0.5",
+  "version": "5.0.6",
   "description": "Flex Plugin Webpack and Webpack dev-server configurations",
   "keywords": [
     "flex",
@@ -42,7 +42,7 @@
     "@k88/interpolate-html-plugin": "^1.0.5",
     "@k88/module-scope-plugin": "^1.1.0",
     "@k88/typescript-compile-error-formatter": "^1.0.3",
-    "@twilio/flex-dev-utils": "5.0.5",
+    "@twilio/flex-dev-utils": "5.0.6",
     "babel-loader": "^8.2.3",
     "babel-plugin-named-asset-import": "^0.3.7",
     "babel-preset-react-app": "^10.0.0",
