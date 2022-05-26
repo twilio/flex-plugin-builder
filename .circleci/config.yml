@@ -19,6 +19,9 @@ parameters:
   package_version:
     default: ""
     type: string
+  flex_ui_verion:
+    default: ""
+    type: string
 
 executors:
   node:
@@ -141,7 +144,6 @@ jobs:
         type: string
       flex_ui_version:
         type: string
-        default: 'latest'
       node-version:
         type: string
     environment:
@@ -168,7 +170,6 @@ jobs:
         type: string
       flex_ui_version:
         type: string
-        default: 'latest'
       shell:
         type: string
       node-version:
@@ -196,7 +197,6 @@ jobs:
     parameters:
       flex_ui_version:
         type: string
-        default: 'latest'
       package_version:
         type: string
       node-version:
@@ -372,7 +372,6 @@ workflows:
           matrix:
             parameters:
               package_version: ["latest"]
-              flex_ui_version: ["latest"]
               node-version: ["14.18.1"]
           post-steps:
             - cmd_slack-notification-error:
@@ -381,7 +380,6 @@ workflows:
           matrix:
             parameters:
               package_version: ["latest"]
-              flex_ui_version: ["latest"]
               node-version: ["14.18.1"]
               npm-version: ["6.14.14"]
           post-steps:
@@ -391,7 +389,6 @@ workflows:
           matrix:
             parameters:
               package_version: ["latest"]
-              flex_ui_version: ["latest"]
               shell: ["bash.exe"]
               node-version: ["14.18.1"]
           post-steps:
