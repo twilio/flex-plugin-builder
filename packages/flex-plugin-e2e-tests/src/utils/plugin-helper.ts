@@ -1,9 +1,12 @@
 import axios from 'axios';
 import { ConfiguredPluginResource } from '@twilio/flex-plugins-api-client';
 import { logger } from '@twilio/flex-dev-utils';
+import { readPackageJson, writeJSONFile } from '@twilio/flex-dev-utils/dist/fs';
 
 import { Browser } from './browser';
 import { sleep } from './timers';
+import { TestScenario, PluginType } from '../core';
+import { joinPath } from '.';
 
 /**
  * Waits for plugin to start at the given url
@@ -66,7 +69,22 @@ const waitForPluginToRelease = async (
   }
 };
 
+/**
+ * Changes the @twilio/flex-ui version in package.json if required
+ * @param scenario
+ * @param plugin
+ */
+const changeFlexUIVersionIfRequired = (scenario: TestScenario, plugin: PluginType) => {
+  if (scenario.flexUIVersion) {
+    const pkgPath = joinPath(plugin.dir, 'package.json');
+    const pkg = readPackageJson(pkgPath);
+    pkg.devDependencies['@twilio/flex-ui'] = scenario.flexUIVersion;
+    writeJSONFile(pkg, pkgPath);
+  }
+};
+
 export default {
   waitForPluginToStart,
   waitForPluginToRelease,
+  changeFlexUIVersionIfRequired,
 };
