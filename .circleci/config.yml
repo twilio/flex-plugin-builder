@@ -19,7 +19,7 @@ parameters:
   package_version:
     default: ""
     type: string
-  flex_ui_verion:
+  flex_ui_version:
     default: ""
     type: string
 
