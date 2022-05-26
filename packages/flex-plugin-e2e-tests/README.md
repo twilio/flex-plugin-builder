@@ -28,10 +28,16 @@ npm run build
 
 # This is the sandbox environment created to test CLI installation and to create plugin. Remove before re-running a test
 rm -rf ~/.local
-TWILIO_ACCOUNT_SID=ACxxx TWILIO_AUTH_TOKEN=123 PACKAGE_VERSION="4.7.5-beta.0" npm start
+TWILIO_ACCOUNT_SID_drawin=ACxxx TWILIO_AUTH_TOKEN_darwin=123 CONSOLE_EMAIL="username@twilio.com" CONSOLE_PASSWORD="abc123" PACKAGE_VERSION="4.7.5-beta.0" npm start
 ```
 
-You can also run a specific step by using:
+You can also override certain defaults by setting these additional environment variables:
+
+- `FLEX_UI_VERSION` - the flexUIVersion to use. Defaults to `^1` otherwise
+- `PLUGIN_BASE_URL` - the baseUrl. Defaults to `http://localhost:3000` otherwise
+- `TWILIO_REGION` - the twilio region to use
+
+You can also run a specific step by using (don't forget the environment variables):
 
 ```bash
 ... npm start -- --step 2
