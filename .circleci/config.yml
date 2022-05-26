@@ -141,6 +141,7 @@ jobs:
         type: string
       flex_ui_version:
         type: string
+        default: 'latest'
       node-version:
         type: string
     environment:
@@ -167,6 +168,7 @@ jobs:
         type: string
       flex_ui_version:
         type: string
+        default: 'latest'
       shell:
         type: string
       node-version:
@@ -194,6 +196,7 @@ jobs:
     parameters:
       flex_ui_version:
         type: string
+        default: 'latest'
       package_version:
         type: string
       node-version:
