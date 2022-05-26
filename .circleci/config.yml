@@ -372,6 +372,7 @@ workflows:
           matrix:
             parameters:
               package_version: ["latest"]
+              flex_ui_version: ["latest"]
               node-version: ["14.18.1"]
           post-steps:
             - cmd_slack-notification-error:
@@ -380,6 +381,7 @@ workflows:
           matrix:
             parameters:
               package_version: ["latest"]
+              flex_ui_version: ["latest"]
               node-version: ["14.18.1"]
               npm-version: ["6.14.14"]
           post-steps:
@@ -389,6 +391,7 @@ workflows:
           matrix:
             parameters:
               package_version: ["latest"]
+              flex_ui_version: ["latest"]
               shell: ["bash.exe"]
               node-version: ["14.18.1"]
           post-steps:
