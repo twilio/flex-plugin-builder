@@ -139,11 +139,14 @@ jobs:
     parameters:
       package_version:
         type: string
+      flex_ui_version:
+        type: string
       node-version:
         type: string
     environment:
       NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
+      FLEX_UI_VERSION: << parameters.flex_ui_version >>
       NODE_VERSION: "lts"
     executor:
       name: node
@@ -162,6 +165,8 @@ jobs:
     parameters:
       package_version:
         type: string
+      flex_ui_version:
+        type: string
       shell:
         type: string
       node-version:
@@ -169,6 +174,7 @@ jobs:
     environment:
       NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
+      FLEX_UI_VERSION: << parameters.flex_ui_version >>
     executor:
       name: win/default
       shell: << parameters.shell >>
@@ -186,6 +192,8 @@ jobs:
   job_e2e-test-macos:
     resource_class: medium
     parameters:
+      flex_ui_version:
+        type: string
       package_version:
         type: string
       node-version:
@@ -195,6 +203,7 @@ jobs:
     environment:
       NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
+      FLEX_UI_VERSION: << parameters.flex_ui_version >>
     executor:
       name: macos
     steps:
