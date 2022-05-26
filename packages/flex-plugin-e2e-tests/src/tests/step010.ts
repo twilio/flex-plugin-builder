@@ -1,9 +1,8 @@
 /* eslint-disable import/no-unused-modules */
 import { replaceInFile } from 'replace-in-file';
 
-import { TestSuite, TestParams, testParams } from '../core';
+import { TestSuite, TestParams, testParams, PluginType } from '../core';
 import { spawn, Browser, pluginHelper, ConsoleAPI, joinPath, assertion, killChildProcess } from '../utils';
-import { PluginType } from '../core/parameters';
 
 // Starting multiple plugins using 2 local and one remote works
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
@@ -29,6 +28,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   // Create and setup a new plugin
   const setup = async (plugin: PluginType) => {
     await spawn('twilio', ['flex:plugins:create', plugin.name, ...flags]);
+    pluginHelper.changeFlexUIVersionIfRequired(scenario, plugin);
     await spawn('npm', ['i'], { cwd: plugin.dir });
 
     await replaceInFile({
