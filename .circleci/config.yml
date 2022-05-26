@@ -294,17 +294,20 @@ workflows:
           matrix:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
+              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               node-version: ["14.18.1"]
       - job_e2e-test-win:
           matrix:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
+              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               shell: ["bash.exe"]
               node-version: ["14.18.1"]
       - job_e2e-test-macos:
           matrix:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
+              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               node-version: ["14.18.1"]
               npm-version: ["6.14.14"]
 
@@ -366,6 +369,7 @@ workflows:
           matrix:
             parameters:
               package_version: ["latest"]
+              flex_ui_version: ["latest"]
               node-version: ["14.18.1"]
           post-steps:
             - cmd_slack-notification-error:
@@ -374,6 +378,7 @@ workflows:
           matrix:
             parameters:
               package_version: ["latest"]
+              flex_ui_version: ["latest"]
               node-version: ["14.18.1"]
               npm-version: ["6.14.14"]
           post-steps:
@@ -383,6 +388,7 @@ workflows:
           matrix:
             parameters:
               package_version: ["latest"]
+              flex_ui_version: ["latest"]
               shell: ["bash.exe"]
               node-version: ["14.18.1"]
           post-steps:

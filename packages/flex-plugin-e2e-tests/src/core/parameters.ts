@@ -1,6 +1,8 @@
 import { join } from 'path';
 import { platform } from 'os';
 
+import semver from 'semver';
+
 import { ConsoleAuthOptions } from '../utils';
 
 interface Hidden {
@@ -145,7 +147,7 @@ if (testParams.config.region) {
 }
 
 // Overwrite flexUIVersion
-if (process.env.FLEX_UI_VERSION) {
+if (process.env.FLEX_UI_VERSION && semver.valid(process.env.FLEX_UI_VERSION)) {
   testParams.scenario.flexUIVersion = process.env.FLEX_UI_VERSION as string;
 }
 
