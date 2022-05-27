@@ -124,6 +124,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
   protected static ACCESS_FIELDS = ['private', 'isprivate'];
 
+  protected static DEFAULT_FLEX_UI_VERSION = 1;
+
   private static defaultOptions: FlexPluginOption = {
     strict: true,
     runInDirectory: true,
@@ -379,6 +381,19 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     }
 
     return this._serverlessClient;
+  }
+
+  /**
+   * Returns the flex-ui version from the plugin
+   */
+  get flexUIVersion(): number {
+    const flexUI = '@twilio/flex-ui';
+    const dep = this.pkg.dependencies[flexUI] || this.pkg.devDependencies[flexUI];
+    if (!dep) {
+      throw new TwilioCliError(`Package '${flexUI}' was not found`);
+    }
+
+    return semver.coerce(dep)?.major || FlexPlugin.DEFAULT_FLEX_UI_VERSION;
   }
 
   /**

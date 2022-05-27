@@ -24,6 +24,7 @@ export interface CLIArguments {
   t?: string;
   typescript?: boolean;
   s?: boolean;
+  flexui2?: boolean;
 }
 
 export default class CLI {
@@ -72,6 +73,16 @@ export default class CLI {
     },
     version: {
       alias: 'v',
+    },
+    flexui1: {
+      type: 'boolean',
+      describe: 'Creates a plugin compatible with Flex UI major version 1.0',
+      conflicts: 'flexui2',
+    },
+    flexui2: {
+      type: 'boolean',
+      describe: 'Creates a plugin compatible with Flex UI major version 2.0',
+      conflicts: 'flexui1',
     },
   };
 

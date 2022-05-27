@@ -36,3 +36,4 @@ export type FunctionalCallback<D, R> = (data: D) => R;
 export type Callback<D> = FunctionalCallback<D, void>;
 
 export * as spawn from './spawn';
+export * as packages from './packages';

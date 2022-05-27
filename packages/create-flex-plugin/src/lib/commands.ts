@@ -1,6 +1,7 @@
 import { findUp, resolveCwd } from '@twilio/flex-dev-utils/dist/fs';
 import { spawn } from '@twilio/flex-dev-utils/dist/spawn';
 import { camelCase, upperFirst } from '@twilio/flex-dev-utils/dist/lodash';
+import { packages } from '@twilio/flex-dev-utils';
 
 import * as github from '../utils/github';
 import { FlexPluginArguments } from './create-flex-plugin';
@@ -37,7 +38,7 @@ export const installDependencies = async (config: FlexPluginArguments): Promise<
  * @param config {FlexPluginArguments}  the plugin configuration
  * @return {FlexPluginArguments} the updated configuration
  */
-export const setupConfiguration = (config: FlexPluginArguments): FlexPluginArguments => {
+export const setupConfiguration = async (config: FlexPluginArguments): Promise<FlexPluginArguments> => {
   const name = config.name || '';
 
   config.pluginClassName = `${upperFirst(camelCase(name)).replace('Plugin', '')}Plugin`;
@@ -46,6 +47,12 @@ export const setupConfiguration = (config: FlexPluginArguments): FlexPluginArgum
   config.targetDirectory = resolveCwd(name);
   config.flexSdkVersion = pkg.devDependencies['@twilio/flex-ui'];
   config.pluginScriptsVersion = pkg.devDependencies['@twilio/flex-plugin-scripts'];
+  config.flexui2 = config.flexui2 || false;
+
+  // Upgrade to latest Flex UI Version for 2.0 if selected
+  if (config.flexui2) {
+    config.flexSdkVersion = await packages.getLatestFlexUIVersion(2);
+  }
 
   return config;
 };

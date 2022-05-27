@@ -295,6 +295,55 @@ describe('SubCommands/FlexPlugin', () => {
     expect(cmd.exit).not.toHaveBeenCalled();
   });
 
+  it('should return then version of @twilio/flex-ui from dependencies', async () => {
+    const cmd = await createTest(FlexPlugin)();
+
+    mockGetPkg(cmd, {
+      dependencies: { '@twilio/flex-ui': '1.0.0' },
+    });
+    expect(cmd.flexUIVersion).toEqual(1);
+  });
+
+  it('should return the version of @twilio/flex-ui from devDependencies', async () => {
+    const cmd = await createTest(FlexPlugin)();
+
+    mockGetPkg(cmd, {
+      dependencies: {},
+      devDependencies: { '@twilio/flex-ui': '2.0.0' },
+    });
+
+    expect(cmd.flexUIVersion).toEqual(2);
+  });
+
+  it('should return the default version 1 of @twilio/flex-ui', async () => {
+    const cmd = await createTest(FlexPlugin)();
+
+    mockGetPkg(cmd, {
+      dependencies: {},
+      devDependencies: { '@twilio/flex-ui': 'a.b.c' },
+    });
+
+    expect(cmd.flexUIVersion).toEqual(1);
+  });
+
+  it('should throw exception if no @twilio/flex-ui version is found', async (done) => {
+    const cmd = await createTest(FlexPlugin)();
+
+    mockGetPkg(cmd, {
+      dependencies: {},
+      devDependencies: {},
+    });
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const x = cmd.flexUIVersion;
+    } catch (e) {
+      expect(e).toBeInstanceOf(TwilioCliError);
+      expect(e.message).toContain('not found');
+      done();
+    }
+  });
+
   it('should have compatibility set to false', async () => {
     const cmd = await createTest(FlexPlugin)();
 

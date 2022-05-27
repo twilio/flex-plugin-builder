@@ -12,9 +12,8 @@ import {
   calculateSha256,
   findInFiles,
 } from '@twilio/flex-dev-utils/dist/fs';
-import packageJson from 'package-json';
 import { flags } from '@oclif/parser';
-import { TwilioApiError, TwilioCliError, progress, semver } from '@twilio/flex-dev-utils';
+import { TwilioApiError, TwilioCliError, progress, semver, packages } from '@twilio/flex-dev-utils';
 import { spawn } from '@twilio/flex-dev-utils/dist/spawn';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
@@ -24,6 +23,7 @@ import { createDescription, instanceOf } from '../../../utils/general';
 const appConfig = 'appConfig.js';
 const crackoConfig = 'craco.config.js';
 
+const flexUI = '@twilio/flex-ui';
 const flexPluginScript = '@twilio/flex-plugin-scripts';
 const flexPlugin = '@twilio/flex-plugin';
 
@@ -75,22 +75,22 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     yes: flags.boolean({
       description: FlexPluginsUpgradePlugin.topic.flags.yes,
     }),
+    'flex-ui-2.0': flags.boolean({
+      description: FlexPluginsUpgradePlugin.topic.flags.flexui2,
+    }),
   };
 
   private static cracoConfigSha = '4a8ecfec7b70da88a0849b7b0163808b2cc46eee08c9ab599c8aa3525ff01546';
 
-  private static pluginBuilderScripts = [flexPluginScript, flexPlugin];
-
   private static packagesToRemove = [
     flexPluginScript, // remove and then re-add
-    'flex-plugin-scripts',
     'react-app-rewire-flex-plugin',
     'react-app-rewired',
     'react-scripts',
     'enzyme',
     'babel-polyfill',
     'enzyme-adapter-react-16',
-    'react-emotion', // remove and then re-add
+    'react-emotion',
     '@craco/craco',
     'craco-config-flex-plugin',
     'core-j',
@@ -106,6 +106,27 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     flexPlugin,
   ];
 
+  private static packagesToRemoveFlexUI2 = {
+    'react-router': 'react-router-dom',
+    'react-router-redux': 'react-router-dom',
+    emotion: '@emotion/css',
+    'emotion-theming': '@emotion/react',
+    'react-emotion': '@emotion/react',
+    'create-emotion-styled': '@emotion/styled',
+  };
+
+  private static packageVersionsFlexUI2 = {
+    react: '17.0.2',
+    'react-dom': '17.0.2',
+    'react-redux': '^7.2.2',
+    redux: '^4.0.5',
+    'react-router-dom': '^5.2.0',
+    '@emotion/css': '^11.1.3',
+    '@emotion/react': '^11.1.5',
+    '@emotion/styled': '^11.1.5',
+    '@material-ui/core': '^4.11.3',
+  };
+
   // @ts-ignore
   private prints;
 
@@ -120,14 +141,19 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
    * @override
    */
   async doRun(): Promise<void> {
+    if (this.flexUIVersion >= 2 && !this._flags['flex-ui-2.0']) {
+      throw new TwilioCliError(
+        'Incomplete arguments passed. As your plugin is compatible with Flex UI 2.0, pass the argument --flex-ui-2.0 to upgrade it to use the latest version of cli compatible with Flex UI 2.0',
+      );
+    }
+
     if (this._flags['remove-legacy-plugin']) {
       await this.removeLegacyPlugin();
       this.prints.removeLegacyPluginSucceeded(this.pkg.name);
       return;
     }
 
-    const pkgJson = await this.getLatestVersionOfDep(flexPluginScript, this._flags.beta);
-    await this.prints.upgradeNotification(this._flags.yes, pkgJson.version as string);
+    await this.prints.upgradeNotification(this._flags.yes);
 
     const currentPkgVersion = this.pkgVersion;
     switch (currentPkgVersion) {
@@ -150,9 +176,16 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       return;
     }
 
+    const pkgJson = await packages.getRegistryVersion(flexPluginScript, this._flags.beta ? 'beta' : 'latest');
     const latestVersion = pkgJson ? semver.coerce(pkgJson.version as string)?.major : 0;
     if (currentPkgVersion !== latestVersion) {
       await this.cleanupNodeModules();
+    }
+
+    if (this._flags['flex-ui-2.0']) {
+      const flexUI2Version = await packages.getLatestFlexUIVersion(2);
+      await this.upgradeToFlexUI2(flexUI2Version);
+      this.prints.flexUIUpdateSucceeded();
     }
 
     await this.npmInstall();
@@ -230,6 +263,15 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     this.prints.upgradeToLatest();
 
     await this.updatePackageJson(this.getDependencyUpdates());
+  }
+
+  /**
+   * Upgrades the packages to the latest version needed for flexui 2.0
+   */
+  async upgradeToFlexUI2(flexUIVersion: string): Promise<void> {
+    this.prints.upgradeToFlexUI2();
+
+    await this.updatePackageJson(this.getDependencyUpdatesFlexUI2(flexUIVersion));
   }
 
   /**
@@ -351,7 +393,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
             }
 
             // Now find the latest
-            const scriptPkg = await this.getLatestVersionOfDep(dep, beta);
+            const scriptPkg = await packages.getRegistryVersion(dep, beta ? 'beta' : 'latest');
             if (!scriptPkg) {
               this.prints.packageNotFound(dep);
               this.exit(1);
@@ -480,23 +522,47 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         [flexPluginScript]: '*',
         react,
         'react-dom': react,
-        'react-emotion': '9.2.12',
       },
       devDeps: {
-        '@twilio/flex-ui': '^1',
+        [flexUI]: '^1',
         'react-test-renderer': react,
       },
     };
   }
 
   /**
-   * Returns the latest version of a package
-   * @param dep the package to check
-   * @param isBeta  whether to check beta tag
+   * Returns the dependencies which need to be removed and installed for the plugin
+   * to be compatible with flex ui 2.0
+   * @param flexUIVersion the flex ui version retrieved for 2.0
    */
-  async getLatestVersionOfDep(dep: string, isBeta: boolean): Promise<packageJson.AbbreviatedMetadata> {
-    const option = FlexPluginsUpgradePlugin.pluginBuilderScripts.includes(dep) && isBeta ? { version: 'beta' } : {};
-    return packageJson(dep, option);
+  getDependencyUpdatesFlexUI2(flexUIVersion: string): DependencyUpdates {
+    const packagesToRemove: string[] = [];
+    const packagesToInstall: Record<string, string> = {};
+    const { pkg } = this;
+
+    // Find which packages must be removed and which counterpart must be installed in place of it
+    Object.entries(FlexPluginsUpgradePlugin.packagesToRemoveFlexUI2).forEach(([remove, replace]) => {
+      if (pkg.dependencies[remove]) {
+        packagesToRemove.push(remove);
+        packagesToInstall[replace] = FlexPluginsUpgradePlugin.packageVersionsFlexUI2[replace];
+      }
+    });
+
+    // Find which packages must be upgraded
+    Object.entries(FlexPluginsUpgradePlugin.packageVersionsFlexUI2).forEach(([dep, version]) => {
+      if (pkg.dependencies[dep]) {
+        packagesToInstall[dep] = version;
+      }
+    });
+
+    return {
+      remove: packagesToRemove,
+      deps: packagesToInstall,
+      devDeps: {
+        [flexUI]: flexUIVersion,
+        'react-test-renderer': '17.0.2',
+      },
+    };
   }
 
   /**
@@ -506,12 +572,8 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     const pkg =
       this.pkg.dependencies[flexPluginScript] ||
       this.pkg.devDependencies[flexPluginScript] ||
-      this.pkg.dependencies['flex-plugin-scripts'] ||
-      this.pkg.devDependencies['flex-plugin-scripts'] ||
       this.pkg.dependencies[flexPlugin] ||
-      this.pkg.devDependencies[flexPlugin] ||
-      this.pkg.dependencies['flex-plugin'] ||
-      this.pkg.devDependencies['flex-plugin'];
+      this.pkg.devDependencies[flexPlugin];
     if (!pkg) {
       throw new TwilioCliError(`Package '${flexPluginScript}' was not found`);
     }

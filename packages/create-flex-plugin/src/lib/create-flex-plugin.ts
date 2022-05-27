@@ -14,6 +14,8 @@ const templatesRootDir = resolve(__dirname, '../../templates');
 const templateCorePath = resolve(templatesRootDir, 'core');
 const templateJsPath = resolve(templatesRootDir, 'js');
 const templateTsPath = resolve(templatesRootDir, 'ts');
+const templateJs2Path = resolve(templatesRootDir, 'js2');
+const templateTs2Path = resolve(templatesRootDir, 'ts2');
 
 export interface FlexPluginArguments extends CLIArguments {
   name: string;
@@ -22,6 +24,7 @@ export interface FlexPluginArguments extends CLIArguments {
   pluginScriptsVersion: string;
   pluginClassName: string;
   pluginNamespace: string;
+  flexui2: boolean;
 }
 
 /**
@@ -51,9 +54,10 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
     await copyTemplateDir(templateCorePath, config.targetDirectory, config);
 
     // Get src directory from template URL if provided
-    let srcPath = templateJsPath;
+    let srcPath = config.flexui2 ? templateJs2Path : templateJsPath;
+
     if (config.typescript) {
-      srcPath = templateTsPath;
+      srcPath = config.flexui2 ? templateTs2Path : templateTsPath;
     }
     if (config.template) {
       dirObject = tmpDirSync();
@@ -94,7 +98,7 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
  */
 export const createFlexPlugin = async (config: FlexPluginArguments): Promise<void> => {
   config = await validate(config);
-  config = setupConfiguration(config);
+  config = await setupConfiguration(config);
 
   // Check folder does not exist
   if (fs.existsSync(config.targetDirectory)) {
