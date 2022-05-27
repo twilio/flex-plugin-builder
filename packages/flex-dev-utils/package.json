@@ -1,6 +1,6 @@
 {
   "name": "@twilio/flex-dev-utils",
-  "version": "5.0.6",
+  "version": "5.1.0",
   "description": "Common development utility for creating a Flex plugin",
   "keywords": [
     "flex",
@@ -34,8 +34,8 @@
   },
   "dependencies": {
     "@k88/pipe-compose": "^2.5.0",
-    "@twilio/flex-plugins-utils-env": "5.0.6",
-    "@twilio/flex-plugins-utils-exception": "5.0.6",
+    "@twilio/flex-plugins-utils-env": "5.1.0",
+    "@twilio/flex-plugins-utils-exception": "5.1.0",
     "address": "^1.1.2",
     "app-module-path": "^2.2.0",
     "axios": "^0.24.0",
@@ -54,8 +54,8 @@
     "mkdirp": "^1.0.4",
     "net": "^1.0.2",
     "open": "^8.2.1",
-    "package-json": "^6.5.0",
     "ora": "^5.4.1",
+    "package-json": "^6.5.0",
     "qs": "^6.10.1",
     "rimraf": "^3.0.2",
     "semver": "^7.3.5",

@@ -1,6 +1,6 @@
 {
   "name": "@twilio/flex-plugins-utils-exception",
-  "version": "5.0.6",
+  "version": "5.1.0",
   "description": "Flex Plugins Exceptions",
   "keywords": [
     "flex",
