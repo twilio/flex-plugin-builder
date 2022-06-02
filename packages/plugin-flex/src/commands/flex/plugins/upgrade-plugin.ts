@@ -82,9 +82,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     }),
   };
 
-  private static cracoConfigSha = '4a8ecfec7b70da88a0849b7b0163808b2cc46eee08c9ab599c8aa3525ff01546';
-
-  private static packagesToRemove = [
+  static packagesToRemove = [
     scopedFlexPluginScriptPackage, // remove and then re-add
     'react-app-rewire-flex-plugin',
     'react-app-rewired',
@@ -109,6 +107,8 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     flexPluginScriptPackage,
     flexPluginPackage,
   ];
+
+  private static cracoConfigSha = '4a8ecfec7b70da88a0849b7b0163808b2cc46eee08c9ab599c8aa3525ff01546';
 
   private static packagesToRemoveFlexUI2 = {
     'react-router': 'react-router-dom',
