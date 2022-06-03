@@ -16,7 +16,7 @@ export default class {{pluginClassName}} extends FlexPlugin {
    *
    * @param flex { typeof import('@twilio/flex-ui') }
    */
-  async init(flex) {
+  async init(flex, manager) {
     const options = { sortOrder: -1 };
     flex.AgentDesktopView.Panel1.Content.add(<CustomTaskList key="{{pluginClassName}}-component" />, options);
   }
