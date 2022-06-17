@@ -712,29 +712,6 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   describe('getDependencyUpdates', () => {
-    const remove = [
-      '@twilio/flex-plugin-scripts',
-      'react-app-rewire-flex-plugin',
-      'react-app-rewired',
-      'react-scripts',
-      'enzyme',
-      'babel-polyfill',
-      'enzyme-adapter-react-16',
-      'react-emotion',
-      '@craco/craco',
-      'craco-config-flex-plugin',
-      'core-j',
-      'react-test-renderer',
-      'react-scripts',
-      'rimraf',
-      '@types/enzyme',
-      '@types/jest',
-      '@types/node',
-      '@types/react',
-      '@types/react-dom',
-      '@types/react-redux',
-      '@twilio/flex-plugin',
-    ];
     const olderPkg: Pkg = {
       name: 'test-package',
       version: '1.2.3',
@@ -750,7 +727,7 @@ describe('Commands/FlexPluginsStart', () => {
       },
     };
     const olderReturn: DependencyUpdates = {
-      remove,
+      remove: FlexPluginsUpgradePlugin.packagesToRemove,
       deps: {
         '@twilio/flex-plugin-scripts': '*',
         react: 'react || 16.5.2',
