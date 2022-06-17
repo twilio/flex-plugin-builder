@@ -17,7 +17,7 @@ export default class {{pluginClassName}} extends FlexPlugin {
    *
    * @param flex { typeof Flex }
    */
-  async init(flex: typeof Flex): Promise<void> {
+  async init(flex: typeof Flex, manager: Flex.Manager): Promise<void> {
     const options: Flex.ContentFragmentProps = { sortOrder: -1 };
     flex.AgentDesktopView.Panel1.Content.add(<CustomTaskList key="{{pluginClassName}}-component" />, options);
   }
