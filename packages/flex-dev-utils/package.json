@@ -61,7 +61,7 @@
     "semver": "^7.3.5",
     "string-width": "^4.2.3",
     "table": "^6.7.3",
-    "update-notifier": "^5.1.0",
+    "update-notifier": "^6.0.0",
     "url": "^0.11.0",
     "util": "^0.12.4",
     "wrap-ansi": "^4.0.0"
