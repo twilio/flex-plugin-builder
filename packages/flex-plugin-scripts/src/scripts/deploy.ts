@@ -14,13 +14,21 @@ import {
 } from '@twilio/flex-dev-utils';
 import { checkFilesExist, updateAppVersion, getPackageVersion, getPaths } from '@twilio/flex-dev-utils/dist/fs';
 
-import AccountsClient from '../clients/accounts';
 import { setEnvironment } from '..';
 import { deploySuccessful, localReactIncompatibleWithRemote } from '../prints';
-import { UIDependencies } from '../clients/configuration-types';
 import run from '../utils/run';
-import { Build, Runtime, Version } from '../clients/serverless-types';
-import { AssetClient, BuildClient, DeploymentClient, ConfigurationClient } from '../clients';
+import {
+  AssetClient,
+  BuildClient,
+  DeploymentClient,
+  ConfigurationClient,
+  UIDependencies,
+  AccountsClient,
+  ServerlessClient,
+  ServerlessBuild,
+  ServerlessRuntime,
+  ServerlessFileVersion,
+} from '../clients';
 import getRuntime from '../utils/runtime';
 
 const allowedBumps = ['major', 'minor', 'patch', 'version'];
@@ -47,14 +55,14 @@ export interface DeployResult {
  * @param baseUrl   the baseURL of the file
  * @param build     the existing build
  */
-export const _verifyPath = (baseUrl: string, build: Build): boolean => {
+export const _verifyPath = (baseUrl: string, build: ServerlessBuild): boolean => {
   const bundlePath = `${baseUrl}/bundle.js`;
   const sourceMapPath = `${baseUrl}/bundle.js.map`;
 
   const existingAssets = build.asset_versions;
   const existingFunctions = build.function_versions;
 
-  const checkPathIsUnused = (v: Version) => v.path !== bundlePath && v.path !== sourceMapPath;
+  const checkPathIsUnused = (v: ServerlessFileVersion) => v.path !== bundlePath && v.path !== sourceMapPath;
 
   return existingAssets.every(checkPathIsUnused) && existingFunctions.every(checkPathIsUnused);
 };
@@ -86,7 +94,7 @@ export const _getDefaultUIDependencies = (uiVersion: string, uiDependencies: UID
  */
 export const _verifyFlexUIConfiguration = async (): Promise<void> => {
   const credentials = await getCredential();
-  const configurationClient = new ConfigurationClient(credentials);
+  const configurationClient = new ConfigurationClient(credentials.username, credentials.password);
 
   // Validate Flex UI version
   const uiVersion = await configurationClient.getFlexUIVersion();
@@ -133,8 +141,8 @@ export const _verifyFlexUIConfiguration = async (): Promise<void> => {
  * @param credentials the {@link Credential}
  * @private
  */
-export const _getAccount = async (runtime: Runtime, credentials: Credential): Promise<{ sid: string }> => {
-  const accountClient = new AccountsClient(credentials);
+export const _getAccount = async (runtime: ServerlessRuntime, credentials: Credential): Promise<{ sid: string }> => {
+  const accountClient = new AccountsClient(credentials.username, credentials.password);
 
   if (credentials.username.startsWith('AC')) {
     return accountClient.get(runtime.service.account_sid);
@@ -176,10 +184,12 @@ export const _doDeploy = async (nextVersion: string, options: Options): Promise<
   }
   const pluginUrl = `https://${runtime.environment.domain_name}${bundleUri}`;
 
-  const configurationClient = new ConfigurationClient(credentials);
-  const buildClient = new BuildClient(credentials, runtime.service.sid);
-  const assetClient = new AssetClient(credentials, runtime.service.sid);
-  const deploymentClient = new DeploymentClient(credentials, runtime.service.sid, runtime.environment.sid);
+  const configurationClient = new ConfigurationClient(credentials.username, credentials.password);
+
+  const serverlessClient = new ServerlessClient(credentials.username, credentials.password);
+  const buildClient = new BuildClient(serverlessClient, runtime.service.sid);
+  const assetClient = new AssetClient(serverlessClient, runtime.service.sid);
+  const deploymentClient = new DeploymentClient(serverlessClient, runtime.service.sid, runtime.environment.sid);
 
   if (!env.isCLI()) {
     await _verifyFlexUIConfiguration();

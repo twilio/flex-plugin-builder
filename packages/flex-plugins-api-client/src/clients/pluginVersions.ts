@@ -1,6 +1,6 @@
-import urlJoin from 'url-join';
+import { urlJoin, Pagination, PaginationMeta } from '@twilio/flex-dev-utils';
 
-import ServiceHttpClient, { Pagination, PaginationMeta } from './serviceHttpClient';
+import PluginServiceHttp from './client';
 
 export interface PluginVersionResource {
   sid: string;
@@ -32,9 +32,9 @@ export interface CreatePluginVersionResource {
  * @link https://www.twilio.com/docs/flex/plugins/api/plugin-version
  */
 export default class PluginVersionsClient {
-  private readonly client: ServiceHttpClient;
+  private readonly client: PluginServiceHttp;
 
-  constructor(client: ServiceHttpClient) {
+  constructor(client: PluginServiceHttp) {
     this.client = client;
   }
 

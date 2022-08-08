@@ -1,4 +1,6 @@
-import ServiceHttpClient, { PaginationMeta } from './serviceHttpClient';
+import { PaginationMeta } from '@twilio/flex-dev-utils';
+
+import PluginServiceHttp from './client';
 
 export interface ConfiguredPluginResource {
   plugin_sid: string;
@@ -28,9 +30,9 @@ export interface ConfiguredPluginResourcePage extends PaginationMeta {
  * @link https://www.twilio.com/docs/flex/plugins/api/plugin-configuration
  */
 export default class ConfiguredPluginsClient {
-  private readonly client: ServiceHttpClient;
+  private readonly client: PluginServiceHttp;
 
-  constructor(client: ServiceHttpClient) {
+  constructor(client: PluginServiceHttp) {
     this.client = client;
   }
 

@@ -1,7 +1,6 @@
 import { Credential } from '@twilio/flex-dev-utils';
 
-import BuildClient, { BuildData } from '../builds';
-import { BuildStatus } from '../serverless-types';
+import BuildClient, { BuildData, BuildStatus } from '../builds';
 
 describe('BuildClient', () => {
   const auth: Credential = {

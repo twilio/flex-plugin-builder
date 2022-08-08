@@ -3,7 +3,7 @@ import { getCredential } from '@twilio/flex-dev-utils/dist/credentials';
 import { getPaths } from '@twilio/flex-dev-utils/dist/fs';
 
 import run from '../utils/run';
-import { Visibility } from '../clients/serverless-types';
+import { Visibility } from '../clients';
 import pluginVersions from '../prints/pluginVersions';
 import getRuntime from '../utils/runtime';
 

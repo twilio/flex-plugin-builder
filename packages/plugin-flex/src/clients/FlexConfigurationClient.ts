@@ -1,13 +1,10 @@
 import { ConfigurationContext, ConfigurationInstance } from 'twilio/lib/rest/flexApi/v1/configuration';
-import { TwilioCliError } from '@twilio/flex-dev-utils';
-import { HttpsProxyAgent } from 'https-proxy-agent';
-import phin from 'phin';
+import { TwilioCliError, HttpClient } from '@twilio/flex-dev-utils';
 
 export interface FlexConfigurationClientOptions {
   accountSid: string;
   username: string;
   password: string;
-  region?: 'dev' | 'stage';
 }
 
 /**
@@ -83,31 +80,22 @@ export default class FlexConfigurationClient {
    * @private
    */
   private async updateServerlessSids(sids: string[]): Promise<void> {
-    const auth = Buffer.from(`${this.options.username}:${this.options.password}`, 'utf8').toString('base64');
     // eslint-disable-next-line camelcase
     const data = { account_sid: this.options.accountSid, serverless_service_sids: sids };
-    const url = this.options.region
-      ? `https://flex-api.${this.options.region}.twilio.com/v1/Configuration`
-      : 'https://flex-api.twilio.com/v1/Configuration';
-
-    // use proxy
-    const agent = process.env.HTTP_PROXY ? new HttpsProxyAgent(process.env.HTTP_PROXY) : undefined;
-
-    const response = await phin({
-      url,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Basic ${auth}`,
+    const client = new HttpClient({
+      baseURL: 'https://flex-api.twilio.com/v1',
+      supportProxy: true,
+      auth: {
+        username: this.options.username,
+        password: this.options.password,
       },
-      parse: 'json',
-      data,
-      core: {
-        agent,
-      },
+      json: true,
     });
-    if (response.statusCode !== 200) {
-      throw new TwilioCliError(response.body as string);
+
+    try {
+      await client.post('Configuration', data);
+    } catch (e) {
+      throw new TwilioCliError(e);
     }
   }
 }

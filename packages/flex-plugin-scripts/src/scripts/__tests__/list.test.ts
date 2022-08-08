@@ -2,7 +2,7 @@
 import { FlexPluginError } from '@twilio/flex-dev-utils';
 import * as fsScript from '@twilio/flex-dev-utils/dist/fs';
 
-import { Visibility } from '../../clients/serverless-types';
+import { Visibility } from '../../clients';
 import * as listScript from '../list';
 
 jest.mock('../../prints/pluginVersions');

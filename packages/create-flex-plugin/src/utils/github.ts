@@ -1,9 +1,7 @@
 /* eslint-disable camelcase */
-import fs from 'fs';
 import path from 'path';
 
-import axios, { AxiosRequestConfig } from '@twilio/flex-dev-utils/dist/axios';
-import { mkdirpSync } from '@twilio/flex-dev-utils/dist/fs';
+import { HttpClient } from '@twilio/flex-dev-utils';
 
 export interface GitHubInfo {
   owner: string;
@@ -65,10 +63,9 @@ export const _getBaseRegex = (info: GitHubInfo, hasTemplateDir: boolean): string
 export const _hasTemplateDir = async (info: GitHubInfo): Promise<boolean> => {
   const url = `https://api.github.com/repos/${info.owner}/${info.repo}/contents?ref=${info.ref}`;
 
-  return axios
-    .get<GitHubContent[]>(url)
-    .then((resp) => resp.data)
-    .then((contents) => contents.some((content) => content.name === 'template' && content.type === 'dir'));
+  return HttpClient.get<GitHubContent[]>(url).then((contents) =>
+    contents.some((content) => content.name === 'template' && content.type === 'dir'),
+  );
 };
 
 /**
@@ -79,16 +76,7 @@ export const _hasTemplateDir = async (info: GitHubInfo): Promise<boolean> => {
  * @private
  */
 export const _downloadFile = async (url: string, output: string): Promise<void> => {
-  const config: AxiosRequestConfig = {
-    url,
-    responseType: 'arraybuffer',
-    method: 'GET',
-  };
-
-  const dir = path.dirname(output);
-  await mkdirpSync(dir);
-
-  return axios.request(config).then((result) => fs.writeFileSync(output, result.data));
+  return HttpClient.download(url, output);
 };
 
 /**
@@ -100,31 +88,28 @@ export const _downloadFile = async (url: string, output: string): Promise<void> 
  * @private
  */
 export const _downloadDir = async (url: string, dir: string, baseRegex: string): Promise<void> => {
-  return axios
-    .get<GitHubContent[]>(url)
-    .then((resp) => resp.data)
-    .then(async (contents) => {
-      const promises = contents.map(async (content) => {
-        if (content.type === GitHubContentType.Dir) {
-          return _downloadDir(content.url, dir, baseRegex);
-        }
+  return HttpClient.get<GitHubContent[]>(url).then(async (contents) => {
+    const promises = contents.map(async (content) => {
+      if (content.type === GitHubContentType.Dir) {
+        return _downloadDir(content.url, dir, baseRegex);
+      }
 
-        if (content.type !== GitHubContentType.File) {
-          throw new Error(`Unexpected content type ${content.type}`);
-        }
+      if (content.type !== GitHubContentType.File) {
+        throw new Error(`Unexpected content type ${content.type}`);
+      }
 
-        const regex = new RegExp(`${baseRegex}(.+)\\??`);
-        const relativePath = content.download_url.match(regex);
-        if (!relativePath || relativePath.length !== 2) {
-          throw new Error('Received invalid URL template');
-        }
-        const output = path.resolve(dir, relativePath[1]);
+      const regex = new RegExp(`${baseRegex}(.+)\\??`);
+      const relativePath = content.download_url.match(regex);
+      if (!relativePath || relativePath.length !== 2) {
+        throw new Error('Received invalid URL template');
+      }
+      const output = path.resolve(dir, relativePath[1]);
 
-        return _downloadFile(content.download_url, output);
-      });
-
-      await Promise.all(promises);
+      return _downloadFile(content.download_url, output);
     });
+
+    await Promise.all(promises);
+  });
 };
 
 /**
@@ -148,10 +133,9 @@ export const parseGitHubUrl = async (url: string): Promise<GitHubInfo> => {
 
   // Check whether master or main exists
   if (info.ref === 'master' || info.ref === 'main') {
-    const branches = await axios
-      .get<GitHubBranches[]>(`https://api.github.com/repos/${info.owner}/${info.repo}/branches`)
-      .then((resp) => resp.data);
-
+    const branches = await HttpClient.get<GitHubBranches[]>(
+      `https://api.github.com/repos/${info.owner}/${info.repo}/branches`,
+    );
     const hasMaster = branches.find((branch) => branch.name === 'master');
     const hasMain = branches.find((branch) => branch.name === 'main');
 

@@ -1,34 +1,41 @@
 /* eslint-disable camelcase */
-import { Credential } from '@twilio/flex-dev-utils';
+import { HttpClient } from '@twilio/flex-dev-utils';
 
-import BaseClient from './baseClient';
-import { Configuration, UIDependencies } from './configuration-types';
+export interface UIDependencies {
+  react?: string;
+  'react-dom'?: string;
+}
+
+interface Configuration {
+  ui_version: string;
+  serverless_service_sids: string[] | null;
+  account_sid: string;
+  ui_dependencies?: UIDependencies;
+}
 
 interface UpdateConfigurationPayload extends Partial<Configuration> {
   account_sid: string;
 }
 
-export default class ConfigurationClient extends BaseClient {
+export default class ConfigurationClient {
   public static BaseUrl = 'Configuration';
 
   private static version = 'v1';
 
-  constructor(auth: Credential) {
-    super(auth, ConfigurationClient.getBaseUrl(), { contentType: 'application/json' });
-  }
+  private readonly client: HttpClient;
 
-  /**
-   * Gets the base URL
-   */
-  public static getBaseUrl = (): string => {
-    return BaseClient.getBaseUrl('flex-api', ConfigurationClient.version);
-  };
+  constructor(username: string, password: string) {
+    this.client = new HttpClient({
+      baseURL: `https://flex-api.twilio.com/${ConfigurationClient.version}`,
+      auth: { username, password },
+    });
+  }
 
   /**
    * Returns the {@link Configuration}
    */
   public get = async (): Promise<Configuration> => {
-    return this.http.get<Configuration>(ConfigurationClient.BaseUrl);
+    return this.client.get<Configuration>('Configuration');
   };
 
   /**
@@ -37,7 +44,7 @@ export default class ConfigurationClient extends BaseClient {
    * @param payload the payload to update
    */
   public update = async (payload: UpdateConfigurationPayload): Promise<Configuration> => {
-    return this.http.post<Configuration>(ConfigurationClient.BaseUrl, payload);
+    return this.client.post<Configuration>('Configuration', payload);
   };
 
   /**

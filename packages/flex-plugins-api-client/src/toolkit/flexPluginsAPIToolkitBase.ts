@@ -1,4 +1,4 @@
-import { lodash } from '@twilio/flex-dev-utils';
+import { lodash, HttpClient } from '@twilio/flex-dev-utils';
 
 import {
   ConfigurationsClient,
@@ -6,7 +6,6 @@ import {
   PluginsClient,
   PluginVersionsClient,
   ReleasesClient,
-  ServiceHttpClient,
 } from '../clients';
 import {
   createConfigurationScript,
@@ -73,7 +72,7 @@ export default class FlexPluginsAPIToolkitBase {
 
   public readonly diff: DiffScript;
 
-  constructor(httpClient: ServiceHttpClient) {
+  constructor(httpClient: HttpClient) {
     const pluginClient = new PluginsClient(httpClient);
     const pluginVersionsClient = new PluginVersionsClient(httpClient);
     const configurationsClient = new ConfigurationsClient(httpClient);

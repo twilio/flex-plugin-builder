@@ -405,6 +405,10 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     this.checkForUpdate();
     addCWDNodeModule();
 
+    if (!this.skipEnvironmentalSetup) {
+      await this.setupEnvironment();
+    }
+
     this.logger.debug(`Using Plugins CLI version ${this.cliPkg.version}`);
     this.logger.debug(`Using Flex Plugins Config File: ${this.pluginsConfigPath}`);
 
@@ -435,13 +439,6 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       password: this.twilioApiClient.password,
     };
 
-    if (this._flags.region) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      pluginServiceOptions.region = this._flags.region as any;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      flexConfigOptions.region = this._flags.region as any;
-    }
-
     const httpClient = new PluginServiceHTTPClient(
       this.twilioApiClient.username,
       this.twilioApiClient.password,
@@ -461,10 +458,6 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       flexConfigOptions,
     );
     this._serverlessClient = new ServerlessClient(this.twilioClient.serverless.v1.services, this._logger);
-
-    if (!this.skipEnvironmentalSetup) {
-      await this.setupEnvironment();
-    }
 
     if (!this.isJson) {
       this._logger.notice(`Using profile **${this.currentProfile.id}** (${this.currentProfile.accountSid})`);
@@ -546,6 +539,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
     if (this._flags.region) {
       env.setRegion(this._flags.region as any);
+    } else if (this.currentProfile.region) {
+      env.setRegion(this.currentProfile.region);
     }
 
     const shellCmd = ['npm', 'yarn'];

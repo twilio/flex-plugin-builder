@@ -1,5 +1,5 @@
+export { PaginationMeta, Meta, Pagination } from '@twilio/flex-dev-utils';
 export { default as PluginServiceHTTPClient } from './client';
-export { default as ServiceHTTPClient } from './serviceHttpClient';
 export {
   default as PluginsClient,
   PluginResource,
@@ -26,4 +26,3 @@ export {
   ConfiguredPluginResourcePage,
 } from './configuredPlugins';
 export { default as ReleasesClient, ReleaseResource, ReleaseResourcePage, CreateReleaseResource } from './releases';
-export { default as ServiceHttpClient, PaginationMeta, Meta, Pagination } from './serviceHttpClient';

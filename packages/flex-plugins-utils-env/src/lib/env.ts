@@ -78,6 +78,8 @@ const setValidJSFile = (source: string) => {
 };
 
 /* istanbul ignore next */
+export const hasHttpProxy = (): boolean => isNode() && isDefined(getProcessEnv('HTTP_PROXY'));
+export const getHttpProxy = (): string => getProcessEnv('HTTP_PROXY');
 export const skipPreflightCheck = (): boolean => getProcessEnv('SKIP_PREFLIGHT_CHECK') === 'true';
 export const getAccountSid = (): string | undefined => getProcessEnv('TWILIO_ACCOUNT_SID');
 export const getAuthToken = (): string | undefined => getProcessEnv('TWILIO_AUTH_TOKEN');
@@ -233,6 +235,8 @@ export default {
   isNode,
   isWin32,
   persistTerminal,
+  hasHttpProxy,
+  getHttpProxy,
   skipPreflightCheck,
   isTerminalPersisted,
   setTwilioProfile,

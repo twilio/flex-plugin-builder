@@ -1,6 +1,5 @@
 export {
   PluginServiceHTTPClient,
-  ServiceHTTPClient,
   PluginsClient,
   PluginResource,
   PluginResourcePage,
@@ -22,7 +21,6 @@ export {
   ReleaseResource,
   ReleaseResourcePage,
   CreateReleaseResource,
-  ServiceHttpClient,
   PaginationMeta,
   Meta,
   Pagination,

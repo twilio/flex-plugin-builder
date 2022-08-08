@@ -1,6 +1,6 @@
 import { logger, semver, table } from '@twilio/flex-dev-utils';
 
-import { AssetVersion, Visibility } from '../clients/serverless-types';
+import { AssetVersion, Visibility } from '../clients';
 import { Order } from '../scripts/list';
 
 interface DisplayList {
