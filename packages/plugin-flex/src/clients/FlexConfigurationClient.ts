@@ -11,6 +11,12 @@ export interface FlexConfigurationClientOptions {
  * Wrapper Twilio Flex Configuration Public API
  */
 export default class FlexConfigurationClient {
+  private static HttpClientOption = {
+    baseURL: 'https://flex-api.twilio.com/v1',
+    supportProxy: true,
+    json: true,
+  };
+
   private client: ConfigurationContext;
 
   private options: FlexConfigurationClientOptions;
@@ -82,15 +88,7 @@ export default class FlexConfigurationClient {
   private async updateServerlessSids(sids: string[]): Promise<void> {
     // eslint-disable-next-line camelcase
     const data = { account_sid: this.options.accountSid, serverless_service_sids: sids };
-    const client = new HttpClient({
-      baseURL: 'https://flex-api.twilio.com/v1',
-      supportProxy: true,
-      auth: {
-        username: this.options.username,
-        password: this.options.password,
-      },
-      json: true,
-    });
+    const client = this.createHttpClient();
 
     try {
       await client.post('Configuration', data);
@@ -98,4 +96,17 @@ export default class FlexConfigurationClient {
       throw new TwilioCliError(e);
     }
   }
+
+  /**
+   * Creates a new {@link HttpClient}
+   */
+  private createHttpClient = () => {
+    return new HttpClient({
+      ...FlexConfigurationClient.HttpClientOption,
+      auth: {
+        username: this.options.username,
+        password: this.options.password,
+      },
+    });
+  };
 }

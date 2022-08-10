@@ -318,6 +318,24 @@ describe('HttpClient', () => {
     });
   });
 
+  describe('upload', () => {
+    it('should upload', async () => {
+      const httpClient = new HttpClient(config);
+      // @ts-ignore
+      const { client } = httpClient;
+      // @ts-ignore
+      jest.spyOn(httpClient, 'getUploadOptions').mockResolvedValue({ param: '123' });
+      const post = jest.spyOn(client, 'post').mockResolvedValue('post-result');
+      const formData = new FormData();
+
+      const response = await httpClient.upload('the-uri', formData);
+
+      expect(response).toEqual('post-result');
+      expect(post).toHaveBeenCalledTimes(1);
+      expect(post).toHaveBeenCalledWith('the-uri', formData, { param: '123' });
+    });
+  });
+
   describe('delete', () => {
     it('should delete', async () => {
       const httpClient = new HttpClient(config);

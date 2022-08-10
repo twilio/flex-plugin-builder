@@ -1,13 +1,15 @@
 import { ConfigurationContext } from 'twilio/lib/rest/flexApi/v1/configuration';
+import { HttpClient, TwilioCliError } from '@twilio/flex-dev-utils';
 
 import FlexConfigurationClient from '../../clients/FlexConfigurationClient';
 
 describe('FlexConfigurationClient', () => {
+  const accountSid = 'AC00000000000000000000000000000000';
   const fetch = jest.fn();
   const auth = {
     username: 'test-username',
     password: 'test-password',
-    accountSid: 'AC00000000000000000000000000000000',
+    accountSid,
   };
   const sid0 = 'ZS00000000000000000000000000000000';
   const sid1 = 'ZS00000000000000000000000000000001';
@@ -110,6 +112,53 @@ describe('FlexConfigurationClient', () => {
       expect(fetch).toHaveBeenCalledTimes(2);
       expect(updateServerlessSids).toHaveBeenCalledTimes(1);
       expect(updateServerlessSids).toHaveBeenCalledWith([sid1, sid3]);
+    });
+  });
+
+  describe('updateServerlessSids', () => {
+    const auth = {
+      username: accountSid,
+      password: 'password',
+    };
+
+    it('should create update sids', async () => {
+      // @ts-ignore
+      const baseClient = new HttpClient({ ...FlexConfigurationClient.HttpClientOption, auth });
+      // @ts-ignore
+      const createHttpClient = jest.spyOn(client, 'createHttpClient').mockReturnValue(baseClient);
+      jest.spyOn(baseClient, 'post').mockResolvedValue(null);
+
+      // @ts-ignore
+      await client.updateServerlessSids([]);
+
+      expect(createHttpClient).toHaveBeenCalledTimes(1);
+      expect(baseClient.post).toHaveBeenCalledTimes(1);
+      expect(baseClient.post).toHaveBeenCalledWith('Configuration', {
+        // eslint-disable-next-line camelcase
+        account_sid: accountSid,
+        // eslint-disable-next-line camelcase
+        serverless_service_sids: [],
+      });
+
+      createHttpClient.mockRestore();
+    });
+
+    it('should throw an exception', async (done) => {
+      // @ts-ignore
+      const baseClient = new HttpClient({ ...FlexConfigurationClient.HttpClientOption, auth });
+      // @ts-ignore
+      const createHttpClient = jest.spyOn(client, 'createHttpClient').mockReturnValue(baseClient);
+      jest.spyOn(baseClient, 'post').mockRejectedValue(null);
+
+      try {
+        // @ts-ignore
+        await client.updateServerlessSids([]);
+      } catch (e) {
+        expect(e).toBeInstanceOf(TwilioCliError);
+        done();
+      }
+
+      createHttpClient.mockRestore();
     });
   });
 });
