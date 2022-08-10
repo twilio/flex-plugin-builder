@@ -4,6 +4,7 @@ import { isSidOfType, SidPrefix } from '@twilio/flex-dev-utils/dist/sids';
 
 import ServerlessClient from './serverless-client';
 
+// eslint-disable-next-line import/no-unused-modules
 export interface ServerlessDeployment {
   sid: string;
   account_sid: string;
@@ -16,13 +17,13 @@ export interface ServerlessDeployment {
 }
 
 export default class DeploymentClient {
-  private readonly client: ServerlessClient;
+  private readonly http: ServerlessClient;
 
   private readonly serviceSid: string;
 
   private readonly environmentSid: string;
 
-  constructor(client: ServerlessClient, serviceSid: string, environmentSid: string) {
+  constructor(http: ServerlessClient, serviceSid: string, environmentSid: string) {
     if (!isSidOfType(serviceSid, SidPrefix.ServiceSid)) {
       throw new TwilioCliError(`${serviceSid} is not of type ${SidPrefix.ServiceSid}`);
     }
@@ -31,7 +32,7 @@ export default class DeploymentClient {
       throw new TwilioCliError(`${environmentSid} is not of type ${SidPrefix.EnvironmentSid}`);
     }
 
-    this.client = client;
+    this.http = http;
     this.serviceSid = serviceSid;
     this.environmentSid = environmentSid;
   }
@@ -46,7 +47,7 @@ export default class DeploymentClient {
       throw new TwilioCliError(`${buildSid} is not of type ${SidPrefix.BuildSid}`);
     }
 
-    return this.client.post<ServerlessDeployment>(
+    return this.http.post<ServerlessDeployment>(
       urlJoin('Services', this.serviceSid, 'Environments', this.environmentSid, 'Deployments'),
       { BuildSid: buildSid },
     );

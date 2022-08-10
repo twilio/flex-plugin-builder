@@ -6,12 +6,14 @@ import getRuntime from '../runtime';
 
 jest.mock('../../clients/builds');
 jest.mock('../../clients/configurations');
+jest.mock('../../clients/serverless-client');
 jest.mock('../../clients/environments');
 jest.mock('../../clients/services');
 jest.mock('@twilio/flex-dev-utils/dist/credentials');
 
 /* eslint-disable */
 const ServiceClient: jest.Mock = require('../../clients/services').default;
+const ServerlessClient: jest.Mock = require('../../clients/serverless-client').default;
 const EnvironmentClient: jest.Mock = require('../../clients/environments').default;
 const BuildClient: jest.Mock = require('../../clients/builds').default;
 const ConfigurationClient: jest.Mock = require('../../clients/configurations').default;
@@ -53,13 +55,15 @@ describe('runtime', () => {
 
   const expectConfigurationClientCalled = () => {
     expect(ConfigurationClient).toHaveBeenCalledTimes(1);
-    expect(ConfigurationClient).toHaveBeenCalledWith(auth);
+    expect(ConfigurationClient).toHaveBeenCalledWith(auth.username, auth.password);
     expect(configGetServiceSids).toHaveBeenCalledTimes(1);
   };
 
   const expectServiceClientCalled = (getDefaultCalled = true) => {
+    expect(ServerlessClient).toHaveBeenCalledTimes(1);
+    expect(ServerlessClient).toHaveBeenCalledWith(auth.username, auth.password);
     expect(ServiceClient).toHaveBeenCalledTimes(1);
-    expect(ServiceClient).toHaveBeenCalledWith(auth);
+    expect(ServiceClient).toHaveBeenCalledWith(expect.any(ServerlessClient));
     if (getDefaultCalled) {
       expect(getServiceDefault).toHaveBeenCalledTimes(1);
       expect(serviceGet).not.toHaveBeenCalled();
@@ -70,14 +74,18 @@ describe('runtime', () => {
   };
 
   const expectEnvironmentClientCalled = () => {
+    expect(ServerlessClient).toHaveBeenCalledTimes(1);
+    expect(ServerlessClient).toHaveBeenCalledWith(auth.username, auth.password);
     expect(EnvironmentClient).toHaveBeenCalledTimes(1);
-    expect(EnvironmentClient).toHaveBeenCalledWith(auth, serviceSid);
+    expect(EnvironmentClient).toHaveBeenCalledWith(expect.any(ServerlessClient), serviceSid);
     expect(getEnvironment).toHaveBeenCalledTimes(1);
   };
 
   const expectBuildClientCalled = () => {
+    expect(ServerlessClient).toHaveBeenCalledTimes(1);
+    expect(ServerlessClient).toHaveBeenCalledWith(auth.username, auth.password);
     expect(BuildClient).toHaveBeenCalledTimes(1);
-    expect(BuildClient).toHaveBeenCalledWith(auth, serviceSid);
+    expect(BuildClient).toHaveBeenCalledWith(expect.any(ServerlessClient), serviceSid);
     expect(getBuild).toHaveBeenCalledTimes(1);
     expect(getBuild).toHaveBeenCalledWith(buildSid);
   };

@@ -1,17 +1,18 @@
 import { Credential } from '@twilio/flex-dev-utils';
 
 import FileClient from '../files';
-import BaseClient from '../baseClient';
-
-jest.mock('../baseClient');
+import ServerlessClient from '../serverless-client';
 
 describe('FileClient', () => {
-  const serviceSid = 'ZS00000000000000000000000000000000';
-  const auth = {} as Credential;
+  const auth = {
+    username: 'AC00000000000000000000000000000000',
+    password: 'abc',
+  } as Credential;
+  const baseClient = new ServerlessClient(auth.username, auth.password);
 
   class Test extends FileClient {
     constructor(sid: string) {
-      super(auth, 'Assets', sid);
+      super(baseClient, 'Assets', sid);
     }
   }
 
@@ -24,18 +25,12 @@ describe('FileClient', () => {
     it('should throw error if invalid sid is provided', (done) => {
       try {
         // eslint-disable-next-line no-new
-        new Test('ZSxxx');
+        new Test('ZB00000000000000000000000000000000');
       } catch (e) {
-        expect(e.message).toContain('not valid');
-        expect(e.message).toContain('ZSxxx');
+        expect(e.message).toContain('is not of type ZS');
+        expect(e.message).toContain('ZB00000000000000000000000000000000');
         done();
       }
-    });
-
-    it('should instantiate', () => {
-      // eslint-disable-next-line no-new
-      new Test(serviceSid);
-      expect(BaseClient).toHaveBeenCalledTimes(1);
     });
   });
 });

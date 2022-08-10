@@ -11,7 +11,7 @@ import { HttpsProxyAgent } from 'https-proxy-agent';
 import httpAdapter from 'axios/lib/adapters/http';
 // @ts-ignore
 import settle from 'axios/lib/core/settle';
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 import * as fs from '../../fs';
 import { env } from '../../env';
@@ -173,7 +173,7 @@ export default class Http {
   /**
    * Creates an instance of the http client and calls the {@link #delete} method.
    */
-  public static async delete<R>(uri: string): Promise<void> {
+  public static async delete(uri: string): Promise<void> {
     return new Http({ baseURL: '' }).delete(uri);
   }
 
@@ -207,7 +207,9 @@ export default class Http {
     }
 
     if (!Http.REGIONS.includes(region)) {
-      throw new Error(`Invalid region ${region} was provided. Region must be one of ${Http.REGIONS.join(',')}`);
+      throw new TwilioCliError(
+        `Invalid region ${region} was provided. Region must be one of ${Http.REGIONS.join(',')}`,
+      );
     }
 
     Http.REGIONS.forEach((r) => {

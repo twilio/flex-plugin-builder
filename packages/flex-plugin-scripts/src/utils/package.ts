@@ -1,6 +1,6 @@
 import { join } from 'path';
 
-import { _require, resolveModulePath } from '@twilio/flex-dev-utils/dist/fs';
+import { resolveModulePath } from '@twilio/flex-dev-utils/dist/fs';
 
 export const FLEX_PACKAGES: string[] = [
   '@twilio/flex-ui',

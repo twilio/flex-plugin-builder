@@ -53,7 +53,6 @@
     "@twilio/flex-plugin-scripts": "5.1.2",
     "@twilio/flex-plugins-api-client": "5.1.2",
     "dayjs": "^1.10.7",
-    "https-proxy-agent": "^5.0.0",
     "lodash.startcase": "^4.4.0",
     "mkdirp": "^1.0.4",
     "package-json": "^7.0.0",

@@ -22,6 +22,7 @@ export interface ServerlessService {
 
 const RESPONSE_KEY = 'services';
 
+// eslint-disable-next-line import/no-unused-modules
 export interface ServerlessServiceResourcePage extends PaginationMeta {
   [RESPONSE_KEY]: ServerlessService[];
 }
@@ -32,10 +33,10 @@ export default class ServiceClient {
     FriendlyName: 'Flex Plugins Default Service',
   };
 
-  private readonly client: ServerlessClient;
+  private readonly http: ServerlessClient;
 
-  constructor(client: ServerlessClient) {
-    this.client = client;
+  constructor(http: ServerlessClient) {
+    this.http = http;
   }
 
   /**
@@ -44,14 +45,14 @@ export default class ServiceClient {
    * @param sid the service sid
    */
   public get = async (sid: string): Promise<ServerlessService> => {
-    return this.client.get<ServerlessService>(`Services/${sid}`);
+    return this.http.get<ServerlessService>(`Services/${sid}`);
   };
 
   /**
    * Fetches the default {@link Service}.
    */
   public getDefault = async (): Promise<ServerlessService> => {
-    const resource = await this.client.list<ServerlessServiceResourcePage>('Services', RESPONSE_KEY);
+    const resource = await this.http.list<ServerlessServiceResourcePage>('Services', RESPONSE_KEY);
     const service = resource.services.find((s) => s.unique_name === 'default');
     if (service) {
       return service;
@@ -64,6 +65,6 @@ export default class ServiceClient {
    * Creates a {@link Service} with unique name `default`
    */
   public create = async (): Promise<ServerlessService> => {
-    return this.client.post('Services', ServiceClient.NewService);
+    return this.http.post('Services', ServiceClient.NewService);
   };
 }

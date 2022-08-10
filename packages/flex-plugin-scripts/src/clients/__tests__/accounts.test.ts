@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 import { Credential } from '@twilio/flex-dev-utils';
 
-import BaseClient from '../baseClient';
 import AccountClient from '../accounts';
 
 describe('AccountClient', () => {
@@ -10,20 +9,9 @@ describe('AccountClient', () => {
     password: 'abc',
   };
 
-  describe('getBaseUrl', () => {
-    it('should get prod baseUrl', () => {
-      const getBaseUrl = jest.spyOn(BaseClient, 'getBaseUrl');
-      const baseUrl = AccountClient.getBaseUrl();
-
-      expect(baseUrl).toEqual('https://api.twilio.com/2010-04-01');
-      expect(getBaseUrl).toHaveBeenCalledTimes(1);
-      expect(getBaseUrl).toHaveBeenCalledWith('api', '2010-04-01');
-    });
-  });
-
   describe('get', () => {
     it('should get configuration', async () => {
-      const client = new AccountClient(auth);
+      const client = new AccountClient(auth.username, auth.password);
       const account = {
         account_sid: auth.username,
         friendly_name: 'test-account',
@@ -34,7 +22,7 @@ describe('AccountClient', () => {
       const result = await client.get(auth.username);
 
       expect(get).toHaveBeenCalledTimes(1);
-      expect(get).toHaveBeenCalledWith(expect.stringContaining(AccountClient.BaseUrl));
+      expect(get).toHaveBeenCalledWith(expect.stringContaining(auth.username));
       expect(get).toHaveBeenCalledWith(expect.stringContaining('.json'));
       expect(result).toEqual(account);
     });

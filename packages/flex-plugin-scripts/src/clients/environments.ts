@@ -28,16 +28,16 @@ interface ServerlessEnvironmentResourcePage extends PaginationMeta {
 export default class EnvironmentClient {
   public static DomainSuffixLength = 5;
 
-  private readonly client: ServerlessClient;
+  private readonly http: ServerlessClient;
 
   private readonly serviceSid: string;
 
-  constructor(client: ServerlessClient, serviceSid: string) {
+  constructor(http: ServerlessClient, serviceSid: string) {
     if (!isSidOfType(serviceSid, SidPrefix.ServiceSid)) {
       throw new TwilioCliError(`${serviceSid} is not of type ${SidPrefix.ServiceSid}`);
     }
 
-    this.client = client;
+    this.http = http;
     this.serviceSid = serviceSid;
   }
 
@@ -69,7 +69,7 @@ export default class EnvironmentClient {
     const existingDomains = environments.map((environment) => environment.domain_suffix);
     const domainSuffix = randomString(EnvironmentClient.DomainSuffixLength, existingDomains);
 
-    return this.client.post(urlJoin('Services', this.serviceSid, 'Environments'), {
+    return this.http.post(urlJoin('Services', this.serviceSid, 'Environments'), {
       UniqueName: getPaths().app.name,
       DomainSuffix: domainSuffix,
     });
@@ -83,14 +83,14 @@ export default class EnvironmentClient {
       throw new Error(`${sid} is not of type ${SidPrefix.EnvironmentSid}`);
     }
 
-    return this.client.delete(urlJoin('Services', this.serviceSid, 'Environments', sid));
+    return this.http.delete(urlJoin('Services', this.serviceSid, 'Environments', sid));
   };
 
   /**
    * Fetches the list of {@link ServerlessEnvironment}
    */
   public list = async (): Promise<ServerlessEnvironment[]> => {
-    return this.client
+    return this.http
       .list<ServerlessEnvironmentResourcePage>(urlJoin('Services', this.serviceSid, 'Environments'), RESPONSE_KEY)
       .then((resp) => resp[RESPONSE_KEY]);
   };

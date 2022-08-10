@@ -22,10 +22,10 @@ export default class ConfigurationClient {
 
   private static version = 'v1';
 
-  private readonly client: HttpClient;
+  private readonly http: HttpClient;
 
   constructor(username: string, password: string) {
-    this.client = new HttpClient({
+    this.http = new HttpClient({
       baseURL: `https://flex-api.twilio.com/${ConfigurationClient.version}`,
       auth: { username, password },
     });
@@ -35,7 +35,7 @@ export default class ConfigurationClient {
    * Returns the {@link Configuration}
    */
   public get = async (): Promise<Configuration> => {
-    return this.client.get<Configuration>('Configuration');
+    return this.http.get<Configuration>('Configuration');
   };
 
   /**
@@ -44,7 +44,7 @@ export default class ConfigurationClient {
    * @param payload the payload to update
    */
   public update = async (payload: UpdateConfigurationPayload): Promise<Configuration> => {
-    return this.client.post<Configuration>('Configuration', payload);
+    return this.http.post<Configuration>('Configuration', payload);
   };
 
   /**

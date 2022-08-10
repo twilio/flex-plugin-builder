@@ -288,8 +288,8 @@ describe('env', () => {
 
   describe('accountSid', () => {
     it('should return accountSid', () => {
-      process.env.TWILIO_ACCOUNT_SID = 'ACxxx';
-      expect(env.getAccountSid()).toEqual('ACxxx');
+      process.env.TWILIO_ACCOUNT_SID = 'AC00000000000000000000000000000000';
+      expect(env.getAccountSid()).toEqual('AC00000000000000000000000000000000');
     });
 
     it('getAccountSid should return nothing', () => {
@@ -339,6 +339,23 @@ describe('env', () => {
     it('should set port', () => {
       env.setPort(123);
       expect(env.getPort()).toEqual(123);
+    });
+  });
+
+  describe('httpProxy', () => {
+    it('should return httpProxy', () => {
+      process.env.HTTP_PROXY = '1234';
+      expect(env.getHttpProxy()).toEqual('1234');
+      expect(env.hasHttpProxy()).toEqual(true);
+    });
+
+    it('should check httpProxy', () => {
+      expect(env.hasHttpProxy()).toEqual(false);
+    });
+
+    it('should set httpProxy', () => {
+      env.setHttpProxy('123');
+      expect(env.getHttpProxy()).toEqual('123');
     });
   });
 

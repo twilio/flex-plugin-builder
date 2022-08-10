@@ -1,10 +1,12 @@
 /* eslint-disable camelcase */
+
+import FormData from 'form-data';
 import { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
 import * as fsScripts from '../../../fs';
 import { env } from '../../../env';
-import { TwilioApiError } from '../../../errors';
+import { TwilioApiError, TwilioCliError } from '../../../errors';
 import HttpClient, { HttpClientConfig } from '../http';
 
 describe('HttpClient', () => {
@@ -51,7 +53,7 @@ describe('HttpClient', () => {
       const http = new HttpClient({ ...config });
 
       // @ts-ignore
-      expect(http.client.defaults.headers['Content-Type']).toEqual(HttpClient.ContentType);
+      expect(http.client.defaults.headers['Content-Type']).toEqual(HttpClient.ContentTypeUrlEncoded);
     });
 
     it('should not set auth when not defined', () => {
@@ -66,6 +68,131 @@ describe('HttpClient', () => {
 
       // @ts-ignore
       expect(http.client.defaults.headers.custom).toEqual('test');
+    });
+
+    it('should support proxy if env is set and config is passed', () => {
+      process.env.HTTP_PROXY = 'test';
+      const http = new HttpClient({ ...config, supportProxy: true });
+
+      // @ts-ignore
+      expect(http.client.defaults.proxy).toEqual(false);
+      // @ts-ignore
+      expect(http.client.defaults.httpsAgent).not.toBeUndefined();
+    });
+
+    it('should not support proxy if env is set but config is not', () => {
+      process.env.HTTP_PROXY = 'test';
+      const http = new HttpClient({ ...config, supportProxy: false });
+
+      // @ts-ignore
+      expect(http.client.defaults.httpsAgent).toBeUndefined();
+    });
+  });
+
+  describe('getBaseUrl', () => {
+    it('should return baseUrl no matter the region if not twilio.com domain', () => {
+      expect(HttpClient.getBaseUrl('https://something.else.com')).toEqual('https://something.else.com');
+      jest.spyOn(env, 'getRegion').mockReturnValue('stage');
+      expect(HttpClient.getBaseUrl('https://something.else.com')).toEqual('https://something.else.com');
+    });
+
+    it('should throw a TwilioCliError if invalid stage is provided', (done) => {
+      try {
+        jest.spyOn(env, 'getRegion').mockReturnValue('random');
+        HttpClient.getBaseUrl('https://api.twilio.com');
+      } catch (e) {
+        expect(e).toBeInstanceOf(TwilioCliError);
+        done();
+      }
+    });
+
+    it('should throw getBaseUrl', () => {
+      jest.spyOn(env, 'getRegion').mockReturnValue('stage');
+      const urls = [
+        ['https://api.twilio.com', 'https://api.stage.twilio.com'],
+        ['https://api-prefix.twilio.com', 'https://api-prefix.stage.twilio.com'],
+        ['https://api.twilio.com/v1/service?query=true', 'https://api.stage.twilio.com/v1/service?query=true'],
+      ];
+
+      urls.forEach(([url, expected]) => {
+        expect(HttpClient.getBaseUrl(url)).toEqual(expected);
+      });
+    });
+
+    describe('list', () => {
+      const http = new HttpClient({ ...config });
+      const get = jest.spyOn(http, 'get');
+
+      it('should create no query parameter if no pagination is provided', async () => {
+        get.mockResolvedValue({ meta: {}, data: [] });
+        const result = await http.list('/the-url', 'data');
+
+        expect(result).toEqual({ meta: {}, data: [] });
+        expect(get).toHaveBeenCalledTimes(1);
+        expect(get).toHaveBeenCalledWith('/the-url?');
+      });
+
+      it('should add one pagination parameter', async () => {
+        get.mockResolvedValue({ meta: {}, data: [] });
+        const result = await http.list('/the-url', 'data', { pageSize: 5 });
+
+        expect(result).toEqual({ meta: {}, data: [] });
+        expect(get).toHaveBeenCalledTimes(1);
+        expect(get).toHaveBeenCalledWith('/the-url?PageSize=5');
+      });
+
+      it('should add multiple pagination parameters', async () => {
+        get.mockResolvedValue({ meta: {}, data: [] });
+        const result = await http.list('/the-url', 'data', { page: 1, pageSize: 5 });
+
+        expect(result).toEqual({ meta: {}, data: [] });
+        expect(get).toHaveBeenCalledTimes(1);
+        expect(get).toHaveBeenCalledWith('/the-url?Page=1&PageSize=5');
+      });
+
+      it('should return meta with next token', async () => {
+        get.mockResolvedValue({
+          meta: {
+            next_page_url: 'https://api.twilio.com/Data?PageToken=123',
+          },
+          data: [],
+        });
+        const result = await http.list('/the-url', 'data');
+
+        expect(result.meta.next_token).toEqual('123');
+        expect(get).toHaveBeenCalledTimes(1);
+        expect(get).toHaveBeenCalledWith('/the-url?');
+      });
+
+      it('should return meta with previous token', async () => {
+        get.mockResolvedValue({
+          meta: {
+            previous_page_url: 'https://api.twilio.com/Data?PageToken=321',
+          },
+          data: [],
+        });
+        const result = await http.list('/the-url', 'data');
+
+        expect(result.meta.previous_token).toEqual('321');
+        expect(get).toHaveBeenCalledTimes(1);
+        expect(get).toHaveBeenCalledWith('/the-url?');
+      });
+
+      it('should change response key with provided key', async () => {
+        get.mockResolvedValue({
+          meta: {
+            previous_token: '321',
+          },
+          results: [],
+        });
+        const result = await http.list('/the-url', 'plugins');
+
+        expect(result.meta.previous_token).toEqual('321');
+        expect(get).toHaveBeenCalledTimes(1);
+        expect(get).toHaveBeenCalledWith('/the-url?');
+        // @ts-ignore
+        expect(result.plugins).toEqual([]);
+      });
     });
   });
 
@@ -187,7 +314,7 @@ describe('HttpClient', () => {
 
       expect(response).toEqual('post-result');
       expect(post).toHaveBeenCalledTimes(1);
-      expect(post).toHaveBeenCalledWith('the-uri', { payload: 'the-payload' });
+      expect(post).toHaveBeenCalledWith('the-uri', { payload: 'the-payload' }, undefined);
     });
   });
 
@@ -255,7 +382,7 @@ describe('HttpClient', () => {
         method: 'post',
         data: { payload: 'value' },
         headers: {
-          'Content-Type': HttpClient.ContentType,
+          'Content-Type': HttpClient.ContentTypeUrlEncoded,
         },
       };
       const mockTransformer = jest.fn();
@@ -289,7 +416,7 @@ describe('HttpClient', () => {
         method: 'post',
         data: { payload: 'value' },
         headers: {
-          'Content-Type': HttpClient.ContentType,
+          'Content-Type': HttpClient.ContentTypeUrlEncoded,
         },
       };
       // @ts-ignore
@@ -303,7 +430,7 @@ describe('HttpClient', () => {
         method: 'post',
         data: payloadStr,
         headers: {
-          'Content-Type': HttpClient.ContentType,
+          'Content-Type': HttpClient.ContentTypeUrlEncoded,
         },
       };
       // @ts-ignore
@@ -316,7 +443,7 @@ describe('HttpClient', () => {
       const req: AxiosRequestConfig = {
         method: 'post',
         headers: {
-          'Content-Type': HttpClient.ContentType,
+          'Content-Type': HttpClient.ContentTypeUrlEncoded,
         },
         data: {
           payload: 'value',
@@ -546,6 +673,93 @@ describe('HttpClient', () => {
       expect(result).toEqual(['url-0', 'url-1', 'url-2', 'url-3', 'url-4', 'url-5', 'url-6']);
       expect(incrementConcurrentRequests).toHaveBeenCalledTimes(7);
       expect(decrementConcurrentRequests).toHaveBeenCalledTimes(7);
+    });
+  });
+
+  describe('download', () => {
+    it('should call request', async () => {
+      const httpClient = new HttpClient({ ...config });
+      const result = { data: 'the-data' };
+      const writeFileSync = jest.spyOn(fsScripts.default, 'writeFileSync').mockReturnValue(undefined);
+      const mkdirpSync = jest.spyOn(fsScripts, 'mkdirpSync').mockReturnValue(undefined);
+      // @ts-ignore
+      const request = jest.spyOn(httpClient.client, 'request').mockResolvedValue(result);
+
+      await httpClient.download('the-url', 'the-output');
+
+      expect(request).toHaveBeenCalledTimes(1);
+      expect(request).toHaveBeenCalledWith({
+        method: 'GET',
+        responseType: 'arraybuffer',
+        url: 'the-url',
+      });
+      expect(mkdirpSync).toHaveBeenCalledTimes(1);
+      expect(writeFileSync).toHaveBeenCalledTimes(1);
+      expect(writeFileSync).toHaveBeenCalledWith('the-output', expect.anything());
+
+      writeFileSync.mockRestore();
+      mkdirpSync.mockRestore();
+      request.mockRestore();
+    });
+  });
+
+  describe('getUploadOptions', () => {
+    it('should return config without adapter', async () => {
+      const httpClient = new HttpClient(config);
+      const form = new FormData();
+
+      // @ts-ignore
+      const options = await httpClient.getUploadOptions(form);
+
+      expect(options.headers['Content-Type']).toEqual(form.getHeaders()['content-type']);
+      expect(options.headers['content-type']).toEqual(form.getHeaders()['content-type']);
+      expect('adapter' in options).toEqual(false);
+    });
+
+    it('should return config adapter', async () => {
+      jest.spyOn(env, 'isDebug').mockReturnValue(true);
+      const httpClient = new HttpClient(config);
+      const form = new FormData();
+
+      // @ts-ignore
+      const options = await httpClient.getUploadOptions(form);
+
+      expect(options.headers['Content-Type']).toEqual(form.getHeaders()['content-type']);
+      expect(options.headers['content-type']).toEqual(form.getHeaders()['content-type']);
+      expect('adapter' in options).toEqual(true);
+    });
+
+    it('should throw an error if no auth is provided', async (done) => {
+      const httpClient = new HttpClient({ baseURL: '' });
+      const form = new FormData();
+
+      try {
+        // @ts-ignore
+        await httpClient.getUploadOptions(form);
+      } catch (e) {
+        expect(e).toBeInstanceOf(TwilioCliError);
+        done();
+      }
+    });
+  });
+
+  describe('getFormDataSize', () => {
+    it('should get data size of empty form', async () => {
+      const httpClient = new HttpClient(config);
+      const form = new FormData();
+      // @ts-ignore
+      const length = await httpClient.getFormDataSize(form);
+      expect(length).toEqual(0);
+    });
+
+    it('should get data size of empty form', async () => {
+      const httpClient = new HttpClient(config);
+      const form = new FormData();
+      form.append('someKey', 'someValue');
+
+      // @ts-ignore
+      const length = await httpClient.getFormDataSize(form);
+      expect(length).toEqual(171);
     });
   });
 });

@@ -4,13 +4,17 @@ import * as fsScripts from '@twilio/flex-dev-utils/dist/fs';
 import * as random from '@twilio/flex-dev-utils/dist/random';
 
 import EnvironmentClient from '../environments';
+import ServerlessClient from '../serverless-client';
 
 describe('EnvironmentClient', () => {
   const pluginName = 'plugin-test';
+  const serviceSid = 'ZS00000000000000000000000000000000';
   const auth: Credential = {
-    username: 'ACxxx',
+    username: 'AC00000000000000000000000000000000',
     password: 'abc',
   };
+  const baseClient = new ServerlessClient(auth.username, auth.password);
+
   const environmentMatch = {
     sid: 'ZE00000000000000000000000000000000',
     unique_name: pluginName,
@@ -21,12 +25,8 @@ describe('EnvironmentClient', () => {
     unique_name: 'plugin-sample',
     domain_suffix: 'another-suffix',
   };
-  const resourceWithMatch = {
-    environments: [environmentMatch, environmentAnother],
-  };
-  const resourceWithNoMatch = {
-    environments: [environmentAnother],
-  };
+  const resourceWithMatch = [environmentMatch, environmentAnother];
+  const resourceWithNoMatch = [environmentAnother];
 
   const paths = {
     app: { name: pluginName },
@@ -43,10 +43,10 @@ describe('EnvironmentClient', () => {
     it('should fail if incorrect serviceSid is provided', (done) => {
       try {
         // eslint-disable-next-line no-new
-        new EnvironmentClient(auth, 'ZFxxx');
+        new EnvironmentClient(baseClient, 'ZF00000000000000000000000000000000');
       } catch (e) {
-        expect(e.message).toContain('not valid');
-        expect(e.message).toContain('ZFxxx');
+        expect(e.message).toContain('is not of type ZS');
+        expect(e.message).toContain('ZF00000000000000000000000000000000');
         done();
       }
     });
@@ -54,7 +54,7 @@ describe('EnvironmentClient', () => {
 
   describe('get', () => {
     it('should get and find environment', async () => {
-      const client = new EnvironmentClient(auth, 'ZS00000000000000000000000000000000');
+      const client = new EnvironmentClient(baseClient, serviceSid);
       // @ts-ignore
       const list = jest.spyOn(client, 'list').mockResolvedValue(resourceWithMatch);
       const create = jest.spyOn(client, 'create');
@@ -70,7 +70,7 @@ describe('EnvironmentClient', () => {
     });
 
     it('should not find environment, but then create it', async () => {
-      const client = new EnvironmentClient(auth, 'ZS00000000000000000000000000000000');
+      const client = new EnvironmentClient(baseClient, serviceSid);
       // @ts-ignore
       const list = jest.spyOn(client, 'list').mockResolvedValue(resourceWithNoMatch);
       // @ts-ignore
@@ -87,7 +87,7 @@ describe('EnvironmentClient', () => {
     });
 
     it('should not find environment, and throw an exception', async (done) => {
-      const client = new EnvironmentClient(auth, 'ZS00000000000000000000000000000000');
+      const client = new EnvironmentClient(baseClient, serviceSid);
       // @ts-ignore
       const list = jest.spyOn(client, 'list').mockResolvedValue(resourceWithNoMatch);
       const create = jest.spyOn(client, 'create');
@@ -105,10 +105,10 @@ describe('EnvironmentClient', () => {
 
   describe('remove', () => {
     it('should warn if incorrect sid is provided to remove', async (done) => {
-      const client = new EnvironmentClient(auth, 'ZS00000000000000000000000000000000');
+      const client = new EnvironmentClient(baseClient, serviceSid);
 
       try {
-        await client.remove('ZS00000000000000000000000000000000');
+        await client.remove(serviceSid);
       } catch (e) {
         expect(e.message).toContain('not of type ZE');
         done();
@@ -117,30 +117,29 @@ describe('EnvironmentClient', () => {
 
     it('should remove', async () => {
       const sid = 'ZE00000000000000000000000000000000';
-      const client = new EnvironmentClient(auth, 'ZS00000000000000000000000000000000');
+      const client = new EnvironmentClient(baseClient, serviceSid);
       // @ts-ignore
       const del = jest.spyOn(client.http, 'delete').mockResolvedValue(environmentMatch);
 
       await client.remove(sid);
       expect(del).toHaveBeenCalledTimes(1);
-      expect(del).toHaveBeenCalledWith(`${EnvironmentClient.BaseUri}/${sid}`);
+      expect(del).toHaveBeenCalledWith(`Services/${serviceSid}/Environments/${sid}`);
     });
   });
 
   describe('create', () => {
     it('should check create method', async () => {
-      const client = new EnvironmentClient(auth, 'ZS00000000000000000000000000000000');
+      const client = new EnvironmentClient(baseClient, serviceSid);
       const randomString = jest.spyOn(random, 'randomString').mockReturnValue('foo');
-      const resource = { environments: [environmentMatch, environmentAnother] };
       // @ts-ignore
       const post = jest.spyOn(client.http, 'post').mockResolvedValue(environmentMatch);
       // @ts-ignore
-      const list = jest.spyOn(client, 'list').mockResolvedValue(resource);
+      const list = jest.spyOn(client, 'list').mockResolvedValue([environmentMatch, environmentAnother]);
 
       const environment = await client.create();
 
       expect(post).toHaveBeenCalledTimes(1);
-      expect(post).toHaveBeenCalledWith(EnvironmentClient.BaseUri, {
+      expect(post).toHaveBeenCalledWith(`Services/${serviceSid}/Environments`, {
         UniqueName: pluginName,
         DomainSuffix: 'foo',
       });
@@ -156,19 +155,18 @@ describe('EnvironmentClient', () => {
 
   describe('list', () => {
     it('should list all', async () => {
-      const client = new EnvironmentClient(auth, 'ZS00000000000000000000000000000000');
+      const client = new EnvironmentClient(baseClient, serviceSid);
       // @ts-ignore
-      const get = jest.spyOn(client.http, 'get').mockResolvedValue([environmentMatch]);
+      const list = jest.spyOn(client.http, 'list').mockResolvedValue({ environments: [environmentMatch] });
 
-      const list = await client.list();
+      const result = await client.list();
 
-      expect(list).toHaveLength(1);
-      expect(list[0]).toEqual(environmentMatch);
-      expect(get).toHaveBeenCalledTimes(1);
-      expect(get).toHaveBeenCalledWith(EnvironmentClient.BaseUri);
-      expect(get).toHaveBeenCalledWith(EnvironmentClient.BaseUri);
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual(environmentMatch);
+      expect(list).toHaveBeenCalledTimes(1);
+      expect(list).toHaveBeenCalledWith(`Services/${serviceSid}/Environments`, 'environments');
 
-      get.mockRestore();
+      list.mockRestore();
     });
   });
 });
