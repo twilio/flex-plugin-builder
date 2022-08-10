@@ -412,6 +412,23 @@ describe('SubCommands/FlexPlugin', () => {
       expect(utilsEnv.setRegion).toHaveBeenCalledWith('stage');
     });
 
+    it('should set region from the profile', async () => {
+      const cmd = await createTest(FlexPlugin)();
+      setupMocks(cmd);
+      // @ts-ignore
+      cmd.currentProfile.region = 'stage';
+
+      await cmd.setupEnvironment();
+      expect(process.env.SKIP_CREDENTIALS_SAVING).toEqual('true');
+      expect(process.env.TWILIO_ACCOUNT_SID).toEqual(username);
+      expect(process.env.TWILIO_AUTH_TOKEN).toEqual(password);
+      expect(utilsEnv.setTwilioProfile).toHaveBeenCalledTimes(1);
+      expect(utilsEnv.setTwilioProfile).toHaveBeenCalledWith(id);
+      expect(utilsEnv.setDebug).not.toHaveBeenCalled();
+      expect(utilsEnv.persistTerminal).not.toHaveBeenCalled();
+      expect(utilsEnv.setRegion).toHaveBeenCalledWith('stage');
+    });
+
     it('should not add yarn or npm to process.versions if versions dont exist', async () => {
       const cmd = await createTest(FlexPlugin)('--region', 'stage');
       setupMocks(cmd);
