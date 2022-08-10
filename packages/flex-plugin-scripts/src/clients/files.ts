@@ -25,18 +25,24 @@ export enum FileVisibility {
 type FileTypes = 'Functions' | 'Assets';
 
 export default abstract class FilesClient {
-  private readonly client: ServerlessClient;
+  private static ContentTypeApplicationJson = 'application/json';
+
+  private static ContentTypeApplicationJavaScript = 'application/javascript';
+
+  private static ContentTypeApplicationOctet = 'application/octet-stream';
+
+  private readonly http: ServerlessClient;
 
   private readonly fileType: FileTypes;
 
   private readonly serviceSid: string;
 
-  protected constructor(client: ServerlessClient, fileType: FileTypes, serviceSid: string) {
+  protected constructor(http: ServerlessClient, fileType: FileTypes, serviceSid: string) {
     if (!isSidOfType(serviceSid, SidPrefix.ServiceSid)) {
       throw new TwilioCliError(`${serviceSid} is not of type ${SidPrefix.ServiceSid}`);
     }
 
-    this.client = client;
+    this.http = http;
     this.serviceSid = serviceSid;
     this.fileType = fileType;
   }
@@ -51,12 +57,12 @@ export default abstract class FilesClient {
     const ext = filePath.split('.').pop();
 
     if (ext === 'js') {
-      return 'application/javascript';
+      return FilesClient.ContentTypeApplicationJavaScript;
     } else if (ext === 'map') {
-      return 'application/json';
+      return FilesClient.ContentTypeApplicationJson;
     }
 
-    return 'application/octet-stream';
+    return FilesClient.ContentTypeApplicationOctet;
   };
 
   /**
@@ -89,7 +95,7 @@ export default abstract class FilesClient {
     const baseURL = HttpClient.getBaseUrl('https://serverless-upload.twilio.com/v1');
     const url = urlJoin('Services', this.serviceSid, this.fileType, file.sid, 'Versions');
 
-    return this.client.upload(url, form, { baseURL });
+    return this.http.upload(url, form, { baseURL });
   };
 
   /**
@@ -100,6 +106,6 @@ export default abstract class FilesClient {
   private _create = async (friendlyName: string): Promise<ServerlessFile> => {
     const url = urlJoin('Services', this.serviceSid, this.fileType);
 
-    return this.client.post<ServerlessFile>(url, { FriendlyName: friendlyName });
+    return this.http.post<ServerlessFile>(url, { FriendlyName: friendlyName });
   };
 }
