@@ -1,6 +1,6 @@
 {
   "name": "@twilio/flex-plugin",
-  "version": "5.1.2",
+  "version": "5.1.3",
   "description": "Runtime for Flex plugins",
   "keywords": [
     "builder",
