@@ -96,7 +96,7 @@ describe('HttpClient', () => {
       expect(HttpClient.getBaseUrl('https://something.else.com')).toEqual('https://something.else.com');
     });
 
-    it('should throw a TwilioCliError if invalid stage is provided', (done) => {
+    it('should throw a TwilioCliError if invalid region is provided', (done) => {
       try {
         jest.spyOn(env, 'getRegion').mockReturnValue('random');
         HttpClient.getBaseUrl('https://api.twilio.com');
