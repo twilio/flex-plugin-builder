@@ -106,7 +106,7 @@ describe('HttpClient', () => {
       }
     });
 
-    it('should return the correct stage urls, () => {
+    it('should return the correct stage urls', () => {
       jest.spyOn(env, 'getRegion').mockReturnValue('stage');
       const urls = [
         ['https://api.twilio.com', 'https://api.stage.twilio.com'],

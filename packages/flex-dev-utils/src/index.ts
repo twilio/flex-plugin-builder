@@ -5,7 +5,7 @@ import urlJoin from 'url-join';
 export { default as fs } from './fs';
 export { default as lodash } from './lodash';
 export { default as updateNotifier, checkForUpdate } from './updateNotifier';
-export { HttpClient, OptionalHttpClientConfig, Pagination, PaginationMeta, Meta } from './http';
+export { HttpClient, HttpClientConfig, OptionalHttpClientConfig, Pagination, PaginationMeta, Meta } from './http';
 export { logger, Logger, coloredStrings, chalk, table, boxen, singleLineString, multilineString } from './logger';
 export { progress } from './progress';
 export { default as credentials, Credential, getCredential } from './credentials';
