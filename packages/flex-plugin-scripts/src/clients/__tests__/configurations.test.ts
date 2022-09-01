@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 import { Credential } from '@twilio/flex-dev-utils';
 
-import BaseClient from '../baseClient';
 import ConfigurationClient from '../configurations';
 
 describe('ConfigurationClient', () => {
@@ -20,20 +19,9 @@ describe('ConfigurationClient', () => {
     jest.clearAllMocks();
   });
 
-  describe('getBaseUrl', () => {
-    it('should get prod baseUrl', () => {
-      const getBaseUrl = jest.spyOn(BaseClient, 'getBaseUrl');
-      const baseUrl = ConfigurationClient.getBaseUrl();
-
-      expect(baseUrl).toEqual('https://flex-api.twilio.com/v1');
-      expect(getBaseUrl).toHaveBeenCalledTimes(1);
-      expect(getBaseUrl).toHaveBeenCalledWith('flex-api', 'v1');
-    });
-  });
-
   describe('get', () => {
     it('should get configuration', async () => {
-      const client = new ConfigurationClient(auth);
+      const client = new ConfigurationClient(auth.username, auth.password);
       const config = { account_sid: accountSid, serverless_service_sids: [serviceSid] };
       // @ts-ignore
       const get = jest.spyOn(client.http, 'get').mockResolvedValue(config);
@@ -48,7 +36,7 @@ describe('ConfigurationClient', () => {
 
   describe('update', () => {
     it('should update configuration', async () => {
-      const client = new ConfigurationClient(auth);
+      const client = new ConfigurationClient(auth.username, auth.password);
       const payload = { account_sid: accountSid, serverless_service_sids: [serviceSid] };
       // @ts-ignore
       const post = jest.spyOn(client.http, 'post').mockResolvedValue('updated');
@@ -63,7 +51,7 @@ describe('ConfigurationClient', () => {
 
   describe('getServiceSids', () => {
     it('should return empty array if key is null', async () => {
-      const client = new ConfigurationClient(auth);
+      const client = new ConfigurationClient(auth.username, auth.password);
       const config = {
         account_sid: accountSid,
         serverless_service_sids: null,
@@ -79,7 +67,7 @@ describe('ConfigurationClient', () => {
     });
 
     it('should return sids', async () => {
-      const client = new ConfigurationClient(auth);
+      const client = new ConfigurationClient(auth.username, auth.password);
       const config = {
         account_sid: accountSid,
         serverless_service_sids: [serviceSid],
@@ -97,7 +85,7 @@ describe('ConfigurationClient', () => {
 
   describe('registerSid', () => {
     it('should append sid to existing sids', async () => {
-      const client = new ConfigurationClient(auth);
+      const client = new ConfigurationClient(auth.username, auth.password);
       const config = {
         account_sid: accountSid,
         serverless_service_sids: [serviceSid],
@@ -126,7 +114,7 @@ describe('ConfigurationClient', () => {
     });
 
     it('should add the first sid to null', async () => {
-      const client = new ConfigurationClient(auth);
+      const client = new ConfigurationClient(auth.username, auth.password);
       const config = {
         account_sid: accountSid,
         serverless_service_sids: null,
@@ -155,7 +143,7 @@ describe('ConfigurationClient', () => {
     });
 
     it('should return the original config if sid is already added', async () => {
-      const client = new ConfigurationClient(auth);
+      const client = new ConfigurationClient(auth.username, auth.password);
       const config = {
         account_sid: accountSid,
         serverless_service_sids: [serviceSid],
@@ -176,7 +164,7 @@ describe('ConfigurationClient', () => {
 
   describe('getFlexUIVersion', () => {
     it('should get the ui_version field', async () => {
-      const client = new ConfigurationClient(auth);
+      const client = new ConfigurationClient(auth.username, auth.password);
       const config = {
         account_sid: accountSid,
         serverless_service_sids: [],
@@ -194,7 +182,7 @@ describe('ConfigurationClient', () => {
 
   describe('getUIDependencies', () => {
     it('should return empty object if no ui_dependencies is set', async () => {
-      const client = new ConfigurationClient(auth);
+      const client = new ConfigurationClient(auth.username, auth.password);
       const config = {
         account_sid: accountSid,
         serverless_service_sids: [],
@@ -207,7 +195,7 @@ describe('ConfigurationClient', () => {
     });
 
     it('should get the ui_dependencies field', async () => {
-      const client = new ConfigurationClient(auth);
+      const client = new ConfigurationClient(auth.username, auth.password);
       const config = {
         account_sid: accountSid,
         serverless_service_sids: [],

@@ -18,7 +18,10 @@ jest.mock('@twilio/flex-dev-utils/dist/fs');
 jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
 jest.mock('@twilio/flex-dev-utils/dist/updateNotifier');
 jest.mock('@twilio/flex-dev-utils/dist/credentials', () => ({
-  getCredential: jest.fn(),
+  getCredential: () => ({
+    username: 'username',
+    password: 'password',
+  }),
 }));
 jest.mock('../../utils/runtime');
 

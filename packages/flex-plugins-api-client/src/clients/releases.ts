@@ -1,4 +1,6 @@
-import ServiceHttpClient, { Pagination, PaginationMeta } from './serviceHttpClient';
+import { Pagination, PaginationMeta } from '@twilio/flex-dev-utils';
+
+import PluginServiceHttp from './client';
 
 export interface ReleaseResource {
   sid: string;
@@ -22,9 +24,9 @@ export interface CreateReleaseResource {
  * @url https://www.twilio.com/docs/flex/plugins/api/release
  */
 export default class ReleasesClient {
-  private readonly client: ServiceHttpClient;
+  private readonly client: PluginServiceHttp;
 
-  constructor(client: ServiceHttpClient) {
+  constructor(client: PluginServiceHttp) {
     this.client = client;
   }
 

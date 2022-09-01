@@ -2,8 +2,7 @@ import { logger, progress, Credential, getCredential, exit, confirm } from '@twi
 import { FlexPluginError } from '@twilio/flex-dev-utils/dist/errors';
 import { getPaths } from '@twilio/flex-dev-utils/dist/fs';
 
-import { EnvironmentClient } from '../clients';
-import { Runtime } from '../clients/serverless-types';
+import { ServerlessRuntime, EnvironmentClient, ServerlessClient } from '../clients';
 import run from '../utils/run';
 import getRuntime from '../utils/runtime';
 
@@ -13,9 +12,10 @@ import getRuntime from '../utils/runtime';
  * @param credentials the credentials
  * @private
  */
-export const _getRuntime = async (credentials: Credential): Promise<Runtime> => {
+export const _getRuntime = async (credentials: Credential): Promise<ServerlessRuntime> => {
   const runtime = await getRuntime(credentials, true);
-  const environmentClient = new EnvironmentClient(credentials, runtime.service.sid);
+  const serverlessClient = new ServerlessClient(credentials.username, credentials.password);
+  const environmentClient = new EnvironmentClient(serverlessClient, runtime.service.sid);
 
   try {
     const environment = await environmentClient.get(false);
@@ -33,7 +33,7 @@ export const _getRuntime = async (credentials: Credential): Promise<Runtime> => 
     exit(0);
 
     // This is to make TS happy
-    return {} as Runtime;
+    return {} as ServerlessRuntime;
   }
 };
 
@@ -51,7 +51,9 @@ export const _doRemove = async (): Promise<void> => {
   const { environment } = runtime;
 
   await progress(`Deleting plugin ${pluginName}`, async () => {
-    const environmentClient = new EnvironmentClient(credentials, runtime.service.sid);
+    const serverlessClient = new ServerlessClient(credentials.username, credentials.password);
+    const environmentClient = new EnvironmentClient(serverlessClient, runtime.service.sid);
+
     await environmentClient.remove(environment.sid);
   });
 

@@ -1,6 +1,7 @@
 import { Credential } from '@twilio/flex-dev-utils';
 
 import AssetClient from '../assets';
+import ServerlessClient from '../serverless-client';
 import FileClient from '../files';
 
 jest.mock('../files');
@@ -11,9 +12,10 @@ describe('AssetClient', () => {
 
   describe('constructor', () => {
     it('should instantiate as an Asset', () => {
-      const client = new AssetClient(auth, serviceSid);
+      const baseClient = new ServerlessClient(auth.username, auth.password);
+      const client = new AssetClient(baseClient, serviceSid);
       expect(FileClient).toHaveBeenCalledTimes(1);
-      expect(FileClient).toHaveBeenCalledWith(auth, 'Assets', serviceSid);
+      expect(FileClient).toHaveBeenCalledWith(baseClient, 'Assets', serviceSid);
       expect(client).toBeInstanceOf(FileClient);
     });
   });

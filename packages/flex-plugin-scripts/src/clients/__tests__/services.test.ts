@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
 import { Credential } from '@twilio/flex-dev-utils';
 
-import BaseClient from '../baseClient';
 import ServiceClient from '../services';
+import ServerlessClient from '../serverless-client';
 
 describe('ServiceClient', () => {
   const auth: Credential = {
@@ -17,6 +17,7 @@ describe('ServiceClient', () => {
     sid: 'ZS00000000000000000000000000000001',
     unique_name: 'default2',
   };
+  const baseClient = new ServerlessClient(auth.username, auth.password);
 
   const OLD_ENV = process.env;
 
@@ -26,29 +27,9 @@ describe('ServiceClient', () => {
     jest.clearAllMocks();
   });
 
-  describe('getBaseUrl', () => {
-    it('should get prod baseUrl', () => {
-      const getBaseUrl = jest.spyOn(BaseClient, 'getBaseUrl');
-      const baseUrl = ServiceClient.getBaseUrl();
-
-      expect(baseUrl).toEqual('https://serverless.twilio.com/v1');
-      expect(getBaseUrl).toHaveBeenCalledTimes(1);
-      expect(getBaseUrl).toHaveBeenCalledWith('serverless', 'v1');
-    });
-
-    it('should get prod baseUrl with custom baseUrl', () => {
-      const getBaseUrl = jest.spyOn(BaseClient, 'getBaseUrl');
-      const baseUrl = ServiceClient.getBaseUrl('another');
-
-      expect(baseUrl).toEqual('https://another.twilio.com/v1');
-      expect(getBaseUrl).toHaveBeenCalledTimes(1);
-      expect(getBaseUrl).toHaveBeenCalledWith('another', 'v1');
-    });
-  });
-
   describe('get', () => {
     it('should get service by sid', async () => {
-      const client = new ServiceClient(auth);
+      const client = new ServiceClient(baseClient);
       // @ts-ignore
       const get = jest.spyOn(client.http, 'get').mockResolvedValue(service);
 
@@ -56,17 +37,17 @@ describe('ServiceClient', () => {
 
       expect(get).toHaveBeenCalledTimes(1);
       expect(get).toHaveBeenCalledWith(expect.stringContaining(service.sid));
-      expect(get).toHaveBeenCalledWith(expect.stringContaining(ServiceClient.BASE_URI));
+      expect(get).toHaveBeenCalledWith(expect.stringContaining(`Services/${service.sid}`));
       expect(response).toEqual(service);
     });
   });
 
   describe('getDefault', () => {
     it('should find service', async () => {
-      const client = new ServiceClient(auth);
+      const client = new ServiceClient(baseClient);
       const resource = { services: [service, anotherService] };
       // @ts-ignore
-      const list = jest.spyOn(client, 'list').mockResolvedValue(resource);
+      const list = jest.spyOn(client.http, 'list').mockResolvedValue(resource);
       // @ts-ignore
       const create = jest.spyOn(client, 'create').mockResolvedValue(anotherService);
 
@@ -81,10 +62,10 @@ describe('ServiceClient', () => {
     });
 
     it('should not find service and instead create a new one', async () => {
-      const client = new ServiceClient(auth);
+      const client = new ServiceClient(baseClient);
       const resource = { services: [anotherService] };
       // @ts-ignore
-      const list = jest.spyOn(client, 'list').mockResolvedValue(resource);
+      const list = jest.spyOn(client.http, 'list').mockResolvedValue(resource);
       // @ts-ignore
       const create = jest.spyOn(client, 'create').mockResolvedValue(anotherService);
 
@@ -101,35 +82,17 @@ describe('ServiceClient', () => {
 
   describe('create', () => {
     it('should check create method', async () => {
-      const client = new ServiceClient(auth);
+      const client = new ServiceClient(baseClient);
       // @ts-ignore
       const post = jest.spyOn(client.http, 'post').mockResolvedValue(service);
 
       const newService = await client.create();
 
       expect(post).toHaveBeenCalledTimes(1);
-      expect(post).toHaveBeenCalledWith(ServiceClient.BASE_URI, ServiceClient.NewService);
+      expect(post).toHaveBeenCalledWith('Services', ServiceClient.NewService);
       expect(newService).toEqual(service);
 
       post.mockRestore();
-    });
-  });
-
-  describe('list', () => {
-    it('should list all', async () => {
-      const client = new ServiceClient(auth);
-      // @ts-ignore
-      const get = jest.spyOn(client.http, 'get').mockResolvedValue([service]);
-
-      const list = await client.list();
-
-      expect(list).toHaveLength(1);
-      expect(list[0]).toEqual(service);
-      expect(get).toHaveBeenCalledTimes(1);
-      expect(get).toHaveBeenCalledWith(ServiceClient.BASE_URI);
-      expect(get).toHaveBeenCalledWith(ServiceClient.BASE_URI);
-
-      get.mockRestore();
     });
   });
 });

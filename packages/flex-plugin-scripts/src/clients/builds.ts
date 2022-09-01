@@ -1,9 +1,32 @@
-import { Credential, logger } from '@twilio/flex-dev-utils';
+/* eslint-disable camelcase */
+
+import { stringify } from 'querystring';
+
+import { logger, TwilioCliError, urlJoin } from '@twilio/flex-dev-utils';
 import { isSidOfType, SidPrefix } from '@twilio/flex-dev-utils/dist/sids';
 
-import BaseClient from './baseClient';
-import { Build, BuildStatus } from './serverless-types';
-import ServiceClient from './services';
+import ServerlessClient from './serverless-client';
+import { AssetVersion, FunctionVersion } from './assets';
+
+export enum BuildStatus {
+  Building = 'building',
+  Completed = 'completed',
+  Failed = 'failed',
+}
+
+export interface ServerlessBuild {
+  sid: string;
+  account_sid: string;
+  url: string;
+  date_updated: string;
+  date_created: string;
+  status: BuildStatus;
+  asset_versions: AssetVersion[];
+  function_versions: FunctionVersion[];
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  dependencies: object;
+  service_sid: string;
+}
 
 export interface BuildData {
   FunctionVersions: string[];
@@ -13,19 +36,24 @@ export interface BuildData {
   Runtime?: string;
 }
 
-export default class BuildClient extends BaseClient {
-  public static BaseUri = 'Builds';
+export default class BuildClient {
+  private static NodeEngine = 'node14';
 
-  private static timeoutMsec: number = 60000;
+  private static timeoutMsec: number = 60_000;
 
   private static pollingIntervalMsec: number = 500;
 
-  constructor(auth: Credential, serviceSid: string) {
-    super(auth, `${ServiceClient.getBaseUrl()}/Services/${serviceSid}`);
+  private readonly client: ServerlessClient;
 
+  private readonly serviceSid: string;
+
+  constructor(client: ServerlessClient, serviceSid: string) {
     if (!isSidOfType(serviceSid, SidPrefix.ServiceSid)) {
-      throw new Error(`ServiceSid ${serviceSid} is not valid`);
+      throw new TwilioCliError(`${serviceSid} is not of type ${SidPrefix.ServiceSid}`);
     }
+
+    this.client = client;
+    this.serviceSid = serviceSid;
   }
 
   /**
@@ -34,15 +62,17 @@ export default class BuildClient extends BaseClient {
    *
    * @param data  the build data
    */
-  public create = async (data: BuildData): Promise<Build> => {
+  public create = async (data: BuildData): Promise<ServerlessBuild> => {
     return new Promise(async (resolve, reject) => {
-      data.Runtime = 'node14';
+      data.Runtime = BuildClient.NodeEngine;
       const newBuild = await this._create(data);
       const { sid } = newBuild;
 
       const timeoutId = setTimeout(() => {
+        /* istanbul ignore next */
         // eslint-disable-next-line no-use-before-define, @typescript-eslint/no-use-before-define
         clearInterval(intervalId);
+        /* istanbul ignore next */
         reject('Timeout while waiting for new Twilio Runtime build status to change to complete.');
       }, BuildClient.timeoutMsec);
 
@@ -74,21 +104,29 @@ export default class BuildClient extends BaseClient {
    *
    * @param sid  the build sid to fetch
    */
-  public get = async (sid: string): Promise<Build> => {
+  public get = async (sid: string): Promise<ServerlessBuild> => {
     if (!isSidOfType(sid, SidPrefix.BuildSid)) {
       throw new Error(`${sid} is not of type ${SidPrefix.BuildSid}`);
     }
 
-    return this.http.get<Build>(`${BuildClient.BaseUri}/${sid}`);
+    return this.client.get<ServerlessBuild>(urlJoin('Services', this.serviceSid, 'Builds', sid));
   };
 
   /**
    * Creates a new instance of build
    *
-   * @param data  the build data
+   * @param data  the {@link BuildData}
    * @private
    */
-  private _create = async (data: BuildData): Promise<Build> => {
-    return this.http.post<Build>(BuildClient.BaseUri, data);
+  private _create = async (data: BuildData): Promise<ServerlessBuild> => {
+    return this.client.post<ServerlessBuild>(
+      urlJoin('Services', this.serviceSid, 'Builds'),
+      { ...data },
+      {
+        // Serverless does not follow default Twilio API so we need to overwrite the transform here
+        /* istanbul ignore next */
+        transformRequest: () => stringify(data as any),
+      },
+    );
   };
 }

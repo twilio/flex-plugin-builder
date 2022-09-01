@@ -1,64 +1,70 @@
-import { Credential } from '@twilio/flex-dev-utils';
+/* eslint-disable camelcase */
+import { PaginationMeta } from '@twilio/flex-dev-utils';
 
-import BaseClient from './baseClient';
-import { Service, ServiceResource } from './serverless-types';
+import ServerlessClient from './serverless-client';
 
-export default class ServiceClient extends BaseClient {
-  public static BASE_URI = 'Services';
+export interface ServerlessService {
+  sid: string;
+  account_sid: string;
+  url: string;
+  date_updated: string;
+  date_created: string;
+  unique_name: string;
+  include_credentials: boolean;
+  friendly_name: string;
+  links: {
+    functions: string;
+    assets: string;
+    environments: string;
+    builds: string;
+  };
+}
 
+const RESPONSE_KEY = 'services';
+
+// eslint-disable-next-line import/no-unused-modules
+export interface ServerlessServiceResourcePage extends PaginationMeta {
+  [RESPONSE_KEY]: ServerlessService[];
+}
+
+export default class ServiceClient {
   public static NewService = {
     UniqueName: 'default',
     FriendlyName: 'Flex Plugins Default Service',
   };
 
-  private static version = 'v1';
+  private readonly http: ServerlessClient;
 
-  constructor(auth: Credential) {
-    super(auth, ServiceClient.getBaseUrl());
+  constructor(http: ServerlessClient) {
+    this.http = http;
   }
-
-  /**
-   * Returns the base URL
-   */
-  public static getBaseUrl = (baseUrl = 'serverless'): string => {
-    return BaseClient.getBaseUrl(baseUrl, ServiceClient.version);
-  };
 
   /**
    * Fetches an instance of Serverless service
    *
    * @param sid the service sid
    */
-  public get = async (sid: string): Promise<Service> => {
-    return this.http.get<Service>(`${ServiceClient.BASE_URI}/${sid}`);
+  public get = async (sid: string): Promise<ServerlessService> => {
+    return this.http.get<ServerlessService>(`Services/${sid}`);
   };
 
   /**
    * Fetches the default {@link Service}.
    */
-  public getDefault = async (): Promise<Service> => {
-    return this.list()
-      .then((resource) => resource.services.find((s) => s.unique_name === 'default'))
-      .then((service) => {
-        if (!service) {
-          return this.create();
-        }
+  public getDefault = async (): Promise<ServerlessService> => {
+    const resource = await this.http.list<ServerlessServiceResourcePage>('Services', RESPONSE_KEY);
+    const service = resource.services.find((s) => s.unique_name === 'default');
+    if (service) {
+      return service;
+    }
 
-        return service as Service;
-      });
+    return this.create();
   };
 
   /**
    * Creates a {@link Service} with unique name `default`
    */
-  public create = async (): Promise<Service> => {
-    return this.http.post(ServiceClient.BASE_URI, ServiceClient.NewService);
-  };
-
-  /**
-   * Fetches the list of {@link Service}
-   */
-  public list = async (): Promise<ServiceResource> => {
-    return this.http.get<ServiceResource>(ServiceClient.BASE_URI);
+  public create = async (): Promise<ServerlessService> => {
+    return this.http.post('Services', ServiceClient.NewService);
   };
 }

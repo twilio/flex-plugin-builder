@@ -1,9 +1,11 @@
 /* eslint-disable import/no-unused-modules */
 
+import urlJoin from 'url-join';
+
 export { default as fs } from './fs';
 export { default as lodash } from './lodash';
 export { default as updateNotifier, checkForUpdate } from './updateNotifier';
-export { HttpClient, OptionalHttpClientConfig } from './http';
+export { HttpClient, HttpClientConfig, OptionalHttpClientConfig, Pagination, PaginationMeta, Meta } from './http';
 export { logger, Logger, coloredStrings, chalk, table, boxen, singleLineString, multilineString } from './logger';
 export { progress } from './progress';
 export { default as credentials, Credential, getCredential } from './credentials';
@@ -11,7 +13,6 @@ export { default as keychain, KeychainCredential, Keychain } from './keychain';
 export { default as sids } from './sids';
 export { default as random } from './random';
 export { default as validators } from './validators';
-export { default as axios } from './axios';
 export { default as prints } from './prints';
 export { default as open } from './open';
 export {
@@ -37,3 +38,7 @@ export type Callback<D> = FunctionalCallback<D, void>;
 
 export * as spawn from './spawn';
 export * as packages from './packages';
+
+export { default as FormData } from 'form-data';
+export { default as axios } from './axios';
+export { urlJoin };

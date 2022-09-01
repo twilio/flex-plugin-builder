@@ -1,11 +1,10 @@
 /* eslint-disable camelcase */
-import axios, { MockAdapter } from '@twilio/flex-dev-utils/dist/axios';
+import { HttpClient } from '@twilio/flex-dev-utils';
 import * as fsScripts from '@twilio/flex-dev-utils/dist/fs';
 
 import * as github from '../github';
 
 describe('github', () => {
-  let mockAxios: MockAdapter;
   const org = 'twilio';
   const branch = 'master';
   const repo = 'flex-plugin-builder';
@@ -28,8 +27,6 @@ describe('github', () => {
 
     // @ts-ignore
     jest.spyOn(fsScripts, 'getPaths').mockReturnValue(paths);
-
-    mockAxios = new MockAdapter(axios);
   });
 
   afterAll(() => {
@@ -43,7 +40,7 @@ describe('github', () => {
     const branchesWithNeither = [{ name: 'something-else' }, { name: anotherBranch }];
 
     it('should get repo with master ref', async () => {
-      mockAxios.onGet().reply(async () => Promise.resolve([200, branchesWithMaster]));
+      jest.spyOn(HttpClient, 'get').mockResolvedValue(branchesWithMaster);
       const resp = await github.parseGitHubUrl(gitHubUrl);
 
       expect(resp.ref).toEqual(branch);
@@ -52,7 +49,7 @@ describe('github', () => {
     });
 
     it('should get repo with main ref', async () => {
-      mockAxios.onGet().reply(async () => Promise.resolve([200, branchesWithMain]));
+      jest.spyOn(HttpClient, 'get').mockResolvedValue(branchesWithMain);
       const resp = await github.parseGitHubUrl(gitHubUrl);
 
       expect(resp.ref).toEqual('main');
@@ -61,7 +58,7 @@ describe('github', () => {
     });
 
     it('should reject because main/main is not found', async (done) => {
-      mockAxios.onGet().reply(async () => Promise.resolve([200, branchesWithNeither]));
+      jest.spyOn(HttpClient, 'get').mockResolvedValue(branchesWithNeither);
       try {
         await github.parseGitHubUrl(gitHubUrl);
       } catch (e) {
@@ -145,8 +142,7 @@ describe('github', () => {
           type: 'dir',
         },
       ];
-
-      mockAxios.onGet().reply(async () => Promise.resolve([200, resp]));
+      jest.spyOn(HttpClient, 'get').mockResolvedValue(resp);
 
       expect(await github._hasTemplateDir(githubInfo)).toEqual(true);
     });
@@ -161,8 +157,7 @@ describe('github', () => {
           type: 'file',
         },
       ];
-
-      mockAxios.onGet().reply(async () => Promise.resolve([200, resp]));
+      jest.spyOn(HttpClient, 'get').mockResolvedValue(resp);
 
       expect(await github._hasTemplateDir(githubInfo)).toEqual(false);
     });
@@ -177,8 +172,7 @@ describe('github', () => {
           type: 'dir',
         },
       ];
-
-      mockAxios.onGet().reply(async () => Promise.resolve([200, resp]));
+      jest.spyOn(HttpClient, 'get').mockResolvedValue(resp);
 
       expect(await github._hasTemplateDir(githubInfo)).toEqual(false);
     });
@@ -197,7 +191,7 @@ describe('github', () => {
     });
 
     it('should do nothing if api returns empty result', async () => {
-      mockAxios.onGet().reply(async () => Promise.resolve([200, []]));
+      jest.spyOn(HttpClient, 'get').mockResolvedValue([]);
       await github._downloadDir(apiGithubUrlTemplated, '/dir', '');
 
       expect(_downloadFile).not.toHaveBeenCalled();
@@ -214,8 +208,8 @@ describe('github', () => {
           download_url: 'github.com/twilio/template/file2.js',
         },
       ];
+      jest.spyOn(HttpClient, 'get').mockResolvedValue(resp);
 
-      mockAxios.onGet().reply(async () => Promise.resolve([200, resp]));
       await github._downloadDir(apiGithubUrlTemplated, '/dir', githubUrl);
 
       expect(_downloadFile).toHaveBeenCalledTimes(2);
@@ -236,13 +230,14 @@ describe('github', () => {
           download_url: 'github.com/twilio/template/file2.js',
         },
       ];
-
-      mockAxios.onGet().reply(async (request) => {
-        if (request.url === apiGithubUrlTemplated) {
-          return Promise.resolve([200, firstResp]);
+      jest.spyOn(HttpClient, 'get').mockImplementation(async (url) => {
+        if (url === apiGithubUrlTemplated) {
+          return Promise.resolve(firstResp);
         }
-        return Promise.resolve([200, secondResp]);
+
+        return Promise.resolve(secondResp);
       });
+
       await github._downloadDir(apiGithubUrlTemplated, '/dir', githubUrl);
 
       expect(_downloadFile).toHaveBeenCalledTimes(1);
@@ -256,8 +251,7 @@ describe('github', () => {
           download_url: 'github.com/twilio/template/file1.js',
         },
       ];
-
-      mockAxios.onGet().reply(async () => Promise.resolve([200, resp]));
+      jest.spyOn(HttpClient, 'get').mockResolvedValue(resp);
 
       try {
         await github._downloadDir(apiGithubUrlTemplated, '/dir', githubUrl);
@@ -274,8 +268,7 @@ describe('github', () => {
           download_url: 'broken-url/file1.js',
         },
       ];
-
-      mockAxios.onGet().reply(async () => Promise.resolve([200, resp]));
+      jest.spyOn(HttpClient, 'get').mockResolvedValue(resp);
 
       try {
         await github._downloadDir(apiGithubUrlTemplated, '/dir', 'github.com/twilio/template/');
@@ -288,26 +281,13 @@ describe('github', () => {
 
   describe('_downloadFile', () => {
     it('should call request', async () => {
-      const result = { data: 'the-data' };
-      const writeFileSync = jest.spyOn(fsScripts.default, 'writeFileSync').mockReturnValue(undefined);
-      const mkdirpSync = jest.spyOn(fsScripts, 'mkdirpSync').mockReturnValue(undefined);
-      const request = jest.spyOn(axios, 'request').mockResolvedValue(result);
-
+      const download = jest.spyOn(HttpClient, 'download').mockReturnThis();
       await github._downloadFile('the-url', 'the-output');
 
-      expect(request).toHaveBeenCalledTimes(1);
-      expect(request).toHaveBeenCalledWith({
-        method: 'GET',
-        responseType: 'arraybuffer',
-        url: 'the-url',
-      });
-      expect(mkdirpSync).toHaveBeenCalledTimes(1);
-      expect(writeFileSync).toHaveBeenCalledTimes(1);
-      expect(writeFileSync).toHaveBeenCalledWith('the-output', 'the-data');
+      expect(download).toHaveBeenCalledTimes(1);
+      expect(download).toHaveBeenCalledWith('the-url', 'the-output');
 
-      writeFileSync.mockRestore();
-      mkdirpSync.mockRestore();
-      request.mockRestore();
+      download.mockRestore();
     });
   });
 });

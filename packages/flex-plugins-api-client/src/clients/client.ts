@@ -1,16 +1,11 @@
-import { Region } from '@twilio/flex-dev-utils/dist/env';
-import { OptionalHttpClientConfig } from '@twilio/flex-dev-utils';
+import { HttpClient, OptionalHttpClientConfig } from '@twilio/flex-dev-utils';
 
-import ServiceHttpClient from './serviceHttpClient';
-
-export interface PluginServiceHttpOption extends OptionalHttpClientConfig {
-  region?: Region;
-}
+export type PluginServiceHttpOption = OptionalHttpClientConfig;
 
 /**
  * An implementation of the raw {@link HttpClient} but made for PluginService
  */
-export default class PluginServiceHttp extends ServiceHttpClient {
+export default class PluginServiceHttp extends HttpClient {
   private static version = 'v1';
 
   constructor(username: string, password: string, options?: PluginServiceHttpOption) {
@@ -22,12 +17,11 @@ export default class PluginServiceHttp extends ServiceHttpClient {
 
     super({
       ...options,
-      baseURL: `https://flex-api${PluginServiceHttp.getRegion(options && options.region)}.twilio.com/${
-        PluginServiceHttp.version
-      }/PluginService`,
+      baseURL: `https://flex-api.twilio.com/${PluginServiceHttp.version}/PluginService`,
       auth: { username, password },
       caller,
       packages,
+      supportProxy: true,
     });
   }
 }

@@ -350,28 +350,6 @@ describe('SubCommands/FlexPlugin', () => {
     expect(cmd.checkCompatibility).toEqual(false);
   });
 
-  it('should set region in config client if flag is passed in', async () => {
-    const cmd = await createTest(FlexPlugin)('--region', 'stage');
-
-    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
-    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
-    jest.spyOn(cmd, 'doRun').mockReturnThis();
-
-    await cmd.run();
-    expect(cmd.flexConfigurationClient).toHaveProperty('options.region', 'stage');
-  });
-
-  it('should not set a region in config client if flag is not passed in', async () => {
-    const cmd = await createTest(FlexPlugin)();
-
-    jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
-    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
-    jest.spyOn(cmd, 'doRun').mockReturnThis();
-
-    await cmd.run();
-    expect(cmd.flexConfigurationClient).not.toHaveProperty('options.region');
-  });
-
   describe('setupEnvironment', () => {
     const username = 'test-username';
     const password = 'test-password';
@@ -422,6 +400,23 @@ describe('SubCommands/FlexPlugin', () => {
     it('should setup environment and twilio region', async () => {
       const cmd = await createTest(FlexPlugin)('--region', 'stage');
       setupMocks(cmd);
+
+      await cmd.setupEnvironment();
+      expect(process.env.SKIP_CREDENTIALS_SAVING).toEqual('true');
+      expect(process.env.TWILIO_ACCOUNT_SID).toEqual(username);
+      expect(process.env.TWILIO_AUTH_TOKEN).toEqual(password);
+      expect(utilsEnv.setTwilioProfile).toHaveBeenCalledTimes(1);
+      expect(utilsEnv.setTwilioProfile).toHaveBeenCalledWith(id);
+      expect(utilsEnv.setDebug).not.toHaveBeenCalled();
+      expect(utilsEnv.persistTerminal).not.toHaveBeenCalled();
+      expect(utilsEnv.setRegion).toHaveBeenCalledWith('stage');
+    });
+
+    it('should set region from the profile', async () => {
+      const cmd = await createTest(FlexPlugin)();
+      setupMocks(cmd);
+      // @ts-ignore
+      cmd.currentProfile.region = 'stage';
 
       await cmd.setupEnvironment();
       expect(process.env.SKIP_CREDENTIALS_SAVING).toEqual('true');

@@ -9,7 +9,10 @@ jest.mock('../../clients/environments');
 jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
 jest.mock('@twilio/flex-dev-utils/dist/questions');
 jest.mock('@twilio/flex-dev-utils/dist/credentials', () => ({
-  getCredential: jest.fn(),
+  getCredential: () => ({
+    username: 'username',
+    password: 'password',
+  }),
 }));
 
 /* eslint-disable */

@@ -1,12 +1,14 @@
 import { Credential } from '@twilio/flex-dev-utils';
 
 import DeploymentClient from '../deployments';
+import ServerlessClient from '../serverless-client';
 
 describe('DeploymentClient', () => {
   const auth: Credential = {
-    username: 'ACxxx',
+    username: 'AC00000000000000000000000000000000',
     password: 'abc',
   };
+  const baseClient = new ServerlessClient(auth.username, auth.password);
 
   describe('constructor', () => {
     it('should throw error if invalid serviceSid is provided', (done) => {
@@ -15,9 +17,9 @@ describe('DeploymentClient', () => {
 
       try {
         // eslint-disable-next-line no-new
-        new DeploymentClient(auth, serviceSid, environmentSid);
+        new DeploymentClient(baseClient, serviceSid, environmentSid);
       } catch (e) {
-        expect(e.message).toContain('not valid');
+        expect(e.message).toContain('is not of type ZS');
         expect(e.message).toContain(serviceSid);
         done();
       }
@@ -29,9 +31,9 @@ describe('DeploymentClient', () => {
 
       try {
         // eslint-disable-next-line no-new
-        new DeploymentClient(auth, serviceSid, environmentSid);
+        new DeploymentClient(baseClient, serviceSid, environmentSid);
       } catch (e) {
-        expect(e.message).toContain('not valid');
+        expect(e.message).toContain('is not of type ZE');
         expect(e.message).toContain(environmentSid);
         done();
       }
@@ -44,12 +46,12 @@ describe('DeploymentClient', () => {
 
     it('should warn if incorrect sid is provided to remove', async (done) => {
       const sid = 'ZS00000000000000000000000000000000';
-      const client = new DeploymentClient(auth, serviceSid, environmentSid);
+      const client = new DeploymentClient(baseClient, serviceSid, environmentSid);
 
       try {
         await client.create(sid);
       } catch (e) {
-        expect(e.message).toContain('not of type ZB');
+        expect(e.message).toContain('is not of type ZB');
         expect(e.message).toContain(sid);
         done();
       }
@@ -58,7 +60,7 @@ describe('DeploymentClient', () => {
     it('should create deployment', async () => {
       const sid = 'ZB00000000000000000000000000000000';
       const deploy = { sid: 'ZDxxx' };
-      const client = new DeploymentClient(auth, serviceSid, environmentSid);
+      const client = new DeploymentClient(baseClient, serviceSid, environmentSid);
       // @ts-ignore
       const post = jest.spyOn(client.http, 'post').mockResolvedValue(deploy);
 
@@ -66,7 +68,9 @@ describe('DeploymentClient', () => {
 
       expect(result).toEqual(deploy);
       expect(post).toHaveBeenCalledTimes(1);
-      expect(post).toHaveBeenCalledWith(DeploymentClient.BaseUri, { BuildSid: sid });
+      expect(post).toHaveBeenCalledWith(`Services/${serviceSid}/Environments/${environmentSid}/Deployments`, {
+        BuildSid: sid,
+      });
 
       post.mockRestore();
     });
