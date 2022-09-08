@@ -81,11 +81,17 @@ describe('Commands/FlexPluginsDeploy', () => {
     process.env = { ...OLD_ENV };
   });
 
+  const createCommand = async (...args: string[]): Promise<FlexPluginsDeploy> => {
+    const cmd = await createTest(FlexPluginsDeploy)(...args);
+    await cmd.init();
+    return cmd;
+  };
+
   const getCommand = async (...args: string[]) => {
     getServerlessSid.mockResolvedValue(null);
     hasLegacy.mockResolvedValue(false);
 
-    const cmd = await createTest(FlexPluginsDeploy)('--changelog', defaultChangelog, ...args);
+    const cmd = await createCommand('--changelog', defaultChangelog, ...args);
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
@@ -140,7 +146,7 @@ describe('Commands/FlexPluginsDeploy', () => {
   });
 
   it('should run deploy and verify flex ui configuration', async () => {
-    const cmd = await createTest(FlexPluginsDeploy)('--changelog', defaultChangelog);
+    const cmd = await createCommand('--changelog', defaultChangelog);
 
     jest.spyOn(cmd, 'checkServerlessInstance').mockReturnThis();
     jest.spyOn(cmd, 'checkForLegacy').mockReturnThis();

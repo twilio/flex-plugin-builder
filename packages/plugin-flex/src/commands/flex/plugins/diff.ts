@@ -6,6 +6,10 @@ import { createDescription } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { isNullOrUndefined } from '../../../utils/strings';
 
+type Args = {
+  [name: string]: any;
+};
+
 /**
  * Configuration sid parser
  * @param input the input from the CLI
@@ -54,8 +58,17 @@ export default class FlexPluginsDiff extends FlexPlugin {
     ...baseFlags,
   };
 
+  protected _parsedFlags?: OutputFlags<typeof FlexPluginsDiff.flags>;
+
+  private _parsedArgs?: Args;
+
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, { runInDirectory: false });
+  }
+
+  async init(): Promise<void> {
+    this._parsedFlags = (await this.parseCommand(FlexPluginsDiff)).flags;
+    this._parsedArgs = (await this.parseCommand(FlexPluginsDiff)).args;
   }
 
   /**
@@ -134,12 +147,20 @@ export default class FlexPluginsDiff extends FlexPlugin {
    */
   /* istanbul ignore next */
   get _flags(): OutputFlags<typeof FlexPluginsDiff.flags> {
-    return this.parse(FlexPluginsDiff).flags;
+    if (!this._parsedFlags) {
+      throw new TwilioCliError('Flags are not parsed yet');
+    }
+
+    return this._parsedFlags;
   }
 
   /* istanbul ignore next */
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   get _args() {
-    return this.parse(FlexPluginsDiff).args;
+    if (!this._parsedArgs) {
+      throw new TwilioCliError('Args are not parsed yet');
+    }
+
+    return this._parsedArgs;
   }
 }

@@ -25,15 +25,21 @@ describe('SubCommands/FlexPlugin', () => {
     process.env = { ...env };
   });
 
+  const createCommand = async (...args: string[]): Promise<FlexPlugin> => {
+    const cmd = await createTest(FlexPlugin)(...args);
+    await cmd.init();
+    return cmd;
+  };
+
   it('should have flag as own property', () => {
     expect(FlexPlugin.hasOwnProperty('flags')).toEqual(true);
   });
 
   it('should set internal args', async () => {
-    const cmd1 = await createTest(FlexPlugin)('--arg1', '--', '--internal1');
-    const cmd2 = await createTest(FlexPlugin)('--', '--internal2');
-    const cmd3 = await createTest(FlexPlugin)('--');
-    const cmd4 = await createTest(FlexPlugin)('--', '--internal4a', '--internal4b');
+    const cmd1 = await createCommand('--arg1', '--', '--internal1');
+    const cmd2 = await createCommand('--', '--internal2');
+    const cmd3 = await createCommand('--');
+    const cmd4 = await createCommand('--', '--internal4a', '--internal4b');
 
     // @ts-ignore
     expect(cmd1.internalScriptArgs).toEqual(['--internal1']);
@@ -46,7 +52,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should test isPluginFolder to be false if no package.json is found', async () => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     const checkAFileExists = jest.spyOn(fs, 'checkAFileExists').mockReturnValue(false);
 
@@ -57,7 +63,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should test isPluginFolder to be false if package was not found in package.json', async () => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     const checkAFileExists = jest.spyOn(fs, 'checkAFileExists').mockReturnValue(true);
     mockGetPkg(cmd, {
@@ -74,7 +80,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should test isPluginFolder to be true if script is found in dependencies', async () => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     const checkAFileExists = jest.spyOn(fs, 'checkAFileExists').mockReturnValue(true);
     mockGetPkg(cmd, {
@@ -91,7 +97,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should test isPluginFolder to be true if both scripts found in devDependencies', async () => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     const checkAFileExists = jest.spyOn(fs, 'checkAFileExists').mockReturnValue(true);
     mockGetPkg(cmd, {
@@ -109,7 +115,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should tet doRun throws exception', async (done) => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     try {
       await cmd.doRun();
@@ -120,7 +126,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should call setEnvironment', async () => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
@@ -135,7 +141,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should set debug env to true', async () => {
-    const cmd = await createTest(FlexPlugin)('-l', 'debug');
+    const cmd = await createCommand('-l', 'debug');
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
@@ -147,7 +153,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should run the main command successfully', async () => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
@@ -170,7 +176,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should return raw format', async () => {
-    const cmd = await createTest(FlexPlugin)('--json');
+    const cmd = await createCommand('--json');
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
@@ -184,7 +190,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should not return raw format', async () => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
@@ -198,7 +204,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should throw exception if script needs to run in plugin directory but is not', async (done) => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
@@ -214,7 +220,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should return null for builderVersion if script is not found', async () => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {},
@@ -225,7 +231,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should return version from dependencies', async () => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {},
@@ -238,7 +244,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should return version from devDependencies', async () => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {
@@ -251,7 +257,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should return null if invalid version', async () => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {
@@ -264,7 +270,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should quit if builder version is incorrect', async () => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
@@ -281,7 +287,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should not quit if builder version is correct', async () => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
@@ -296,7 +302,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should return then version of @twilio/flex-ui from dependencies', async () => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     mockGetPkg(cmd, {
       dependencies: { '@twilio/flex-ui': '1.0.0' },
@@ -305,7 +311,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should return the version of @twilio/flex-ui from devDependencies', async () => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     mockGetPkg(cmd, {
       dependencies: {},
@@ -316,7 +322,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should return the default version 1 of @twilio/flex-ui', async () => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     mockGetPkg(cmd, {
       dependencies: {},
@@ -327,7 +333,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should throw exception if no @twilio/flex-ui version is found', async (done) => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     mockGetPkg(cmd, {
       dependencies: {},
@@ -345,7 +351,7 @@ describe('SubCommands/FlexPlugin', () => {
   });
 
   it('should have compatibility set to false', async () => {
-    const cmd = await createTest(FlexPlugin)();
+    const cmd = await createCommand();
 
     expect(cmd.checkCompatibility).toEqual(false);
   });
@@ -368,7 +374,7 @@ describe('SubCommands/FlexPlugin', () => {
     };
 
     it('should setup environment', async () => {
-      const cmd = await createTest(FlexPlugin)();
+      const cmd = await createCommand();
       setupMocks(cmd);
 
       await cmd.setupEnvironment();
@@ -383,7 +389,7 @@ describe('SubCommands/FlexPlugin', () => {
     });
 
     it('should setup environment as debug level', async () => {
-      const cmd = await createTest(FlexPlugin)('-l', 'debug');
+      const cmd = await createCommand('-l', 'debug');
       setupMocks(cmd);
 
       await cmd.setupEnvironment();
@@ -398,7 +404,7 @@ describe('SubCommands/FlexPlugin', () => {
     });
 
     it('should setup environment and twilio region', async () => {
-      const cmd = await createTest(FlexPlugin)('--region', 'stage');
+      const cmd = await createCommand('--region', 'stage');
       setupMocks(cmd);
 
       await cmd.setupEnvironment();
@@ -413,7 +419,7 @@ describe('SubCommands/FlexPlugin', () => {
     });
 
     it('should set region from the profile', async () => {
-      const cmd = await createTest(FlexPlugin)();
+      const cmd = await createCommand();
       setupMocks(cmd);
       // @ts-ignore
       cmd.currentProfile.region = 'stage';
@@ -430,7 +436,7 @@ describe('SubCommands/FlexPlugin', () => {
     });
 
     it('should not add yarn or npm to process.versions if versions dont exist', async () => {
-      const cmd = await createTest(FlexPlugin)('--region', 'stage');
+      const cmd = await createCommand('--region', 'stage');
       setupMocks(cmd);
       jest.spyOn(spawn, 'spawn').mockResolvedValueOnce({ exitCode: 127, stdout: '', stderr: 'error' });
       jest.spyOn(spawn, 'spawn').mockResolvedValueOnce({ exitCode: 127, stdout: '', stderr: 'error' });
@@ -442,7 +448,7 @@ describe('SubCommands/FlexPlugin', () => {
     });
 
     it('should add yarn and npm to process.versions if version exists', async () => {
-      const cmd = await createTest(FlexPlugin)('--region', 'stage');
+      const cmd = await createCommand('--region', 'stage');
       setupMocks(cmd);
       const spwn = jest.spyOn(spawn, 'spawn').mockResolvedValue({ exitCode: 0, stdout: '1.0.0', stderr: '' });
 
@@ -456,7 +462,7 @@ describe('SubCommands/FlexPlugin', () => {
 
   describe('pkg', () => {
     it('should set default empty object if devDep or dep not set', async () => {
-      const cmd = await createTest(FlexPlugin)();
+      const cmd = await createCommand();
 
       jest.spyOn(fs, 'readJsonFile').mockReturnValue({
         devDependencies: null,
@@ -468,7 +474,7 @@ describe('SubCommands/FlexPlugin', () => {
     });
 
     it('should have devDep and dep', async () => {
-      const cmd = await createTest(FlexPlugin)();
+      const cmd = await createCommand();
 
       const dep = { package1: '123' };
       const devDep = { package2: '234' };
@@ -484,7 +490,7 @@ describe('SubCommands/FlexPlugin', () => {
 
   describe('client initialization', () => {
     const callAndVerifyNotInitialized = async (method: string, done: DoneCallback) => {
-      const cmd = await createTest(FlexPlugin)();
+      const cmd = await createCommand();
 
       try {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -496,7 +502,7 @@ describe('SubCommands/FlexPlugin', () => {
     };
 
     const callAndVerifyInitialized = async (method: string) => {
-      const cmd = await createTest(FlexPlugin)();
+      const cmd = await createCommand();
       const client = `the-${method}-client`;
       cmd[`_${method}`] = client;
 

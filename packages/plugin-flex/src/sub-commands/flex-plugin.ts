@@ -147,6 +147,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
   protected readonly _logger: Logger;
 
+  protected _parsedFlags?: FlexPluginFlags;
+
   // Contains all the raw flags
   protected scriptArgs: string[];
 
@@ -396,6 +398,10 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     return semver.coerce(dep)?.major || FlexPlugin.DEFAULT_FLEX_UI_VERSION;
   }
 
+  async init(): Promise<void> {
+    this._parsedFlags = (await this.parseCommand(FlexPlugin)).flags;
+  }
+
   /**
    * The main run command
    * @override
@@ -412,7 +418,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     this.logger.debug(`Using Plugins CLI version ${this.cliPkg.version}`);
     this.logger.debug(`Using Flex Plugins Config File: ${this.pluginsConfigPath}`);
 
-    if (this._flags['clear-terminal']) {
+    if (this._flags?.['clear-terminal']) {
       this._logger.clearTerminal();
     }
 
@@ -463,7 +469,6 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       this._logger.notice(`Using profile **${this.currentProfile.id}** (${this.currentProfile.accountSid})`);
       this._logger.newline();
     }
-
     const result = await this.doRun();
     if (result && this.isJson && typeof result === 'object') {
       this._logger.info(JSON.stringify(result));
@@ -633,7 +638,11 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @protected
    */
   get _flags(): FlexPluginFlags {
-    return this.parse(FlexPlugin).flags;
+    if (!this._parsedFlags) {
+      throw new TwilioCliError('Flags are not parsed yet');
+    }
+
+    return this._parsedFlags;
   }
 
   /**
@@ -673,10 +682,10 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * The command parse override
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected parse<F, A extends { [name: string]: any }>(
+  protected async parseCommand<F, A extends { [name: string]: any }>(
     options?: Parser.Input<F>,
     argv = this.argv,
-  ): Parser.Output<F, A> {
+  ): Promise<Parser.Output<F, A>> {
     return parser(super.parse)(options, argv);
   }
 

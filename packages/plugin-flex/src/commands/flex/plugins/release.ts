@@ -1,7 +1,7 @@
-import { progress } from '@twilio/flex-dev-utils';
+import { progress, TwilioCliError } from '@twilio/flex-dev-utils';
 import { flags } from '@oclif/command';
 import { RequiredFlagError } from '@oclif/parser/lib/errors';
-import { OutputFlags } from '@oclif/parser/lib/parse';
+import { OutputFlags, ParserOutput } from '@oclif/parser/lib/parse';
 import { Release } from '@twilio/flex-plugins-api-client';
 
 import { createDescription } from '../../../utils/general';
@@ -59,11 +59,17 @@ export default class FlexPluginsRelease extends CreateConfiguration {
   // @ts-ignore
   private prints;
 
+  private _parsed?: ParserOutput<any, any>;
+
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, { runInDirectory: false });
 
     this.scriptArgs = [];
     this.prints = this._prints.release;
+  }
+
+  async init(): Promise<void> {
+    this._parsed = await this.parseCommand(FlexPluginsRelease);
   }
 
   /**
@@ -100,36 +106,38 @@ export default class FlexPluginsRelease extends CreateConfiguration {
    * Parses the flags passed to this command
    */
   get _flags(): OutputFlags<typeof FlexPluginsRelease.flags> {
-    const parse = this.parse(FlexPluginsRelease);
-    if (parse.flags[configurationSidFlex]) {
-      return parse.flags;
+    if (!this._parsed) {
+      throw new TwilioCliError('Parser not run yet');
+    }
+    if (this._parsed.flags[configurationSidFlex]) {
+      return this._parsed.flags;
     }
 
     [descriptionFlex, nameFlex].forEach((key) => {
-      if (!parse.flags[key]) {
+      if (!this._parsed?.flags[key]) {
         throw new RequiredFlagError({
           flag: FlexPluginsRelease.flags[key],
           parse: {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             input: {} as any,
-            output: parse,
+            output: this._parsed,
           },
         });
       }
     });
 
-    const hasChange = [enablePluginFlex, disablePluginFlex].some((x) => parse.flags[x]);
+    const hasChange = [enablePluginFlex, disablePluginFlex].some((x) => this._parsed?.flags[x]);
     if (!hasChange) {
       throw new RequiredFlagError({
         flag: FlexPluginsRelease.flags[enablePluginFlex],
         parse: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           input: {} as any,
-          output: parse,
+          output: this._parsed,
         },
       });
     }
 
-    return parse.flags;
+    return this._parsed.flags;
   }
 }

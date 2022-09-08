@@ -24,6 +24,12 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
     }),
   };
 
+  protected _parsedFlags?: OutputFlags<typeof FlexPluginsArchivePlugin.flags>;
+
+  async init(): Promise<void> {
+    this._parsedFlags = (await this.parseCommand(FlexPluginsArchivePlugin)).flags;
+  }
+
   /**
    * @override
    */
@@ -111,6 +117,9 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
    */
   /* istanbul ignore next */
   get _flags(): OutputFlags<typeof FlexPluginsArchivePlugin.flags> {
-    return this.parse(FlexPluginsArchivePlugin).flags;
+    if (!this._parsedFlags) {
+      throw new TwilioCliError('Flags are not parsed yet');
+    }
+    return this._parsedFlags;
   }
 }

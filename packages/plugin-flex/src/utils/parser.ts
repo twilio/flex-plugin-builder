@@ -123,9 +123,9 @@ export const _combineFlags = <F, A extends { [name: string]: any }>(
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parser =
   <F, A extends { [name: string]: any }>(OclifParser: (options?: Input<F>, argv?: string[]) => Output<F, A>) =>
-  (options?: Input<F>, argv: string[] = []): Output<F, A> => {
-    const parsed: Output<F, A> = _combineFlags(OclifParser(_prepareFlags(options), argv), options);
-
+  async (options?: Input<F>, argv: string[] = []): Promise<Output<F, A>> => {
+    const preparedFlags = _prepareFlags(options);
+    const parsed: Output<F, A> = _combineFlags(await OclifParser(preparedFlags, argv), options);
     parsed.flags = _trim(parsed.flags);
     parsed.args = _trim(parsed.args);
 

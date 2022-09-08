@@ -6,12 +6,18 @@ describe('Build2', () => {
     jest.resetAllMocks();
   });
 
+  const createCommand = async (...args: string[]): Promise<FlexPluginsBuild> => {
+    const cmd = await createTest(FlexPluginsBuild)(...args);
+    await cmd.init();
+    return cmd;
+  };
+
   it('should have flag as own property', () => {
     expect(FlexPluginsBuild.hasOwnProperty('flags')).toEqual(true);
   });
 
   it('should run build script', async () => {
-    const cmd = await createTest(FlexPluginsBuild)();
+    const cmd = await createCommand();
 
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
     jest.spyOn(cmd, 'runScript').mockReturnThis();

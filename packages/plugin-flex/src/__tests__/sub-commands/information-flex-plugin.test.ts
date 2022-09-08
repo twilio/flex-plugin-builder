@@ -25,6 +25,12 @@ describe('SubCommands/InformationFlexPlugin', () => {
 
   const { env } = process;
 
+  const createCommand = async (...args: string[]): Promise<SamplePlugin> => {
+    const cmd = await createTest(SamplePlugin)(...args);
+    await cmd.init();
+    return cmd;
+  };
+
   beforeEach(() => {
     jest.resetAllMocks();
     process.env = { ...env };
@@ -35,7 +41,7 @@ describe('SubCommands/InformationFlexPlugin', () => {
   });
 
   it('should call getResource and then print result', async () => {
-    const cmd = await createTest(SamplePlugin)();
+    const cmd = await createCommand();
 
     jest.spyOn(cmd, 'notFound');
     jest.spyOn(cmd, 'print');
@@ -50,7 +56,7 @@ describe('SubCommands/InformationFlexPlugin', () => {
   });
 
   it('should call notFound if getResource throws error not-found', async () => {
-    const cmd = await createTest(SamplePlugin)();
+    const cmd = await createCommand();
 
     jest.spyOn(cmd, 'notFound');
     jest.spyOn(cmd, 'print');
@@ -66,7 +72,7 @@ describe('SubCommands/InformationFlexPlugin', () => {
   });
 
   it('should should return --json if flag is set', async () => {
-    const cmd = await createTest(SamplePlugin)('--json');
+    const cmd = await createCommand('--json');
 
     jest.spyOn(cmd, 'notFound');
     jest.spyOn(cmd, 'print');

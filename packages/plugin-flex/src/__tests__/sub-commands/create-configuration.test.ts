@@ -29,12 +29,18 @@ describe('SubCommands/CreateConfiguration', () => {
     jest.restoreAllMocks();
   });
 
+  const createCommand = async (...args: string[]): Promise<Plugin> => {
+    const cmd = await createTest(Plugin)(...args);
+    await cmd.init();
+    return cmd;
+  };
+
   it('should have flag as own property', () => {
     expect(CreateConfiguration.hasOwnProperty('flags')).toEqual(true);
   });
 
   it('should call createConfiguration from the toolkit with enablePlugins', async () => {
-    const cmd = await createTest(Plugin)(nameFlex, name, descriptionFlex, description, enablePluginFlex, enablePlugin);
+    const cmd = await createCommand(nameFlex, name, descriptionFlex, description, enablePluginFlex, enablePlugin);
     mockPluginsApiToolkit(cmd);
 
     // @ts-ignore
@@ -51,7 +57,7 @@ describe('SubCommands/CreateConfiguration', () => {
   });
 
   it('should support using --plugin', async () => {
-    const cmd = await createTest(Plugin)(nameFlex, name, descriptionFlex, description, pluginFlex, aliasPlugin);
+    const cmd = await createCommand(nameFlex, name, descriptionFlex, description, pluginFlex, aliasPlugin);
     mockPluginsApiToolkit(cmd);
 
     // @ts-ignore
@@ -67,7 +73,7 @@ describe('SubCommands/CreateConfiguration', () => {
   });
 
   it('should support enable and disable', async () => {
-    const cmd = await createTest(Plugin)(
+    const cmd = await createCommand(
       nameFlex,
       name,
       descriptionFlex,
@@ -92,7 +98,7 @@ describe('SubCommands/CreateConfiguration', () => {
   });
 
   it('should support enable and disable and alias', async () => {
-    const cmd = await createTest(Plugin)(
+    const cmd = await createCommand(
       nameFlex,
       name,
       descriptionFlex,
@@ -119,7 +125,7 @@ describe('SubCommands/CreateConfiguration', () => {
   });
 
   it('should support --new', async () => {
-    const cmd = await createTest(Plugin)(nameFlex, name, descriptionFlex, description, newFlex);
+    const cmd = await createCommand(nameFlex, name, descriptionFlex, description, newFlex);
     mockPluginsApiToolkit(cmd);
 
     // @ts-ignore

@@ -1,6 +1,7 @@
 import { flags } from '@oclif/command';
 import { DescribePluginVersion } from '@twilio/flex-plugins-api-client';
 import { OutputFlags } from '@oclif/parser/lib/parse';
+import { TwilioCliError } from '@twilio/flex-dev-utils';
 
 import { createDescription } from '../../../../utils/general';
 import FlexPlugin from '../../../../sub-commands/flex-plugin';
@@ -25,6 +26,12 @@ export default class FlexPluginsDescribePluginVersion extends InformationFlexPlu
       required: true,
     }),
   };
+
+  protected _parsedFlags?: OutputFlags<typeof FlexPluginsDescribePluginVersion.flags>;
+
+  async init(): Promise<void> {
+    this._parsedFlags = (await this.parseCommand(FlexPluginsDescribePluginVersion)).flags;
+  }
 
   /**
    * @override
@@ -66,6 +73,9 @@ export default class FlexPluginsDescribePluginVersion extends InformationFlexPlu
    */
   /* istanbul ignore next */
   get _flags(): OutputFlags<typeof FlexPluginsDescribePluginVersion.flags> {
-    return this.parse(FlexPluginsDescribePluginVersion).flags;
+    if (!this._parsedFlags) {
+      throw new TwilioCliError('Flags are not parsed yet');
+    }
+    return this._parsedFlags;
   }
 }

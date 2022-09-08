@@ -1,4 +1,4 @@
-import { progress } from '@twilio/flex-dev-utils';
+import { progress, TwilioCliError } from '@twilio/flex-dev-utils';
 import {
   CreateConfigurationOption,
   CreateConfiguration as ICreateConfiguration,
@@ -75,6 +75,12 @@ export default abstract class CreateConfiguration extends FlexPlugin {
     description: flags.string(CreateConfiguration.descriptionFlag),
   };
 
+  protected _parsedFlags?: CreateConfigurationFlags;
+
+  async init(): Promise<void> {
+    this._parsedFlags = (await this.parseCommand(CreateConfiguration)).flags;
+  }
+
   /**
    * Performs the actual task of validating and creating configuration. This method is also usd by release script.
    */
@@ -107,6 +113,9 @@ export default abstract class CreateConfiguration extends FlexPlugin {
   }
 
   get _flags(): CreateConfigurationFlags {
-    return this.parse(CreateConfiguration).flags;
+    if (!this._parsedFlags) {
+      throw new TwilioCliError('Flags are not parsed yet');
+    }
+    return this._parsedFlags;
   }
 }
