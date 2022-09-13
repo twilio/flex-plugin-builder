@@ -22,6 +22,10 @@
     </a>
 </p>
 
+## V6-Beta Development Branch
+
+This branch contains the Plugins CLI for the next major release. It is considered unsafe to be used in production. Continue at your own risk.
+
 ## Getting Started
 
 Flex Plugin Builder requires [Node.js](https://nodejs.org/). We support and recommend the [LTS versions](https://nodejs.org/en/about/releases/) of Node. This is a monorepo project managed by [lerna](https://github.com/lerna/lerna) for creating Twilio Flex plugins.
