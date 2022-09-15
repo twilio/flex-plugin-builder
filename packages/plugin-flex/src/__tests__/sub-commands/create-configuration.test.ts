@@ -1,3 +1,5 @@
+import { TwilioCliError } from '@twilio/flex-dev-utils';
+
 import CreateConfiguration from '../../sub-commands/create-configuration';
 import FlexPlugin from '../../sub-commands/flex-plugin';
 import createTest from '../framework';
@@ -38,6 +40,25 @@ describe('SubCommands/CreateConfiguration', () => {
 
   it('should have own flags', () => {
     expect(CreateConfiguration.flags).not.toBeSameObject(FlexPlugin.flags);
+  });
+
+  it('should set parsed flags', async () => {
+    const cmd = await createCommand(nameFlex, name, descriptionFlex, description, newFlex);
+    mockPluginsApiToolkit(cmd);
+    expect(cmd._flags).toBeDefined();
+  });
+
+  it('should throw error if command init not called', async (done) => {
+    const cmd = await createTest(Plugin)(nameFlex, name, descriptionFlex, description, newFlex);
+    mockPluginsApiToolkit(cmd);
+    try {
+      // @ts-ignore
+      await cmd.doCreateConfiguration();
+    } catch (e) {
+      expect(e instanceof TwilioCliError).toEqual(true);
+      expect(e.message).toContain('Flags are not parsed yet');
+      done();
+    }
   });
 
   it('should call createConfiguration from the toolkit with enablePlugins', async () => {
