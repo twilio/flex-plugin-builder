@@ -85,8 +85,8 @@ describe('Commands/FlexPluginsStart', () => {
     return cmd;
   };
 
-  it('should have flag as own property', () => {
-    expect(FlexPluginsStart.hasOwnProperty('flags')).toEqual(true);
+  it('should have own flags', () => {
+    expect(FlexPluginsStart.flags).not.toBeSameObject(FlexPlugin.flags);
   });
 
   it('should run start script for the directory plugin', async () => {
@@ -352,7 +352,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should throw an error if not in a plugin directory and no plugins given', async () => {
-    const cmd = await createCommand('');
+    const cmd = await createCommand();
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();

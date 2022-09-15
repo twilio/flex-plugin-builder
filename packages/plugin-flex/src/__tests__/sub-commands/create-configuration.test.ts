@@ -1,4 +1,5 @@
 import CreateConfiguration from '../../sub-commands/create-configuration';
+import FlexPlugin from '../../sub-commands/flex-plugin';
 import createTest from '../framework';
 
 const descriptionFlex = '--description';
@@ -35,8 +36,8 @@ describe('SubCommands/CreateConfiguration', () => {
     return cmd;
   };
 
-  it('should have flag as own property', () => {
-    expect(CreateConfiguration.hasOwnProperty('flags')).toEqual(true);
+  it('should have own flags', () => {
+    expect(CreateConfiguration.flags).not.toBeSameObject(FlexPlugin.flags);
   });
 
   it('should call createConfiguration from the toolkit with enablePlugins', async () => {

@@ -1,6 +1,7 @@
 import { TwilioCliError, env as utilsEnv } from '@twilio/flex-dev-utils';
 import * as fs from '@twilio/flex-dev-utils/dist/fs';
 import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
+import { baseCommands } from '@twilio/cli-core';
 
 import createTest, { mockGetPkg } from '../framework';
 import FlexPlugin from '../../sub-commands/flex-plugin';
@@ -31,15 +32,15 @@ describe('SubCommands/FlexPlugin', () => {
     return cmd;
   };
 
-  it('should have flag as own property', () => {
-    expect(FlexPlugin.hasOwnProperty('flags')).toEqual(true);
+  it('should have own flags', () => {
+    expect(FlexPlugin.flags).not.toBeSameObject(baseCommands.TwilioClientCommand.flags);
   });
 
   it('should set internal args', async () => {
-    const cmd1 = await createCommand('--arg1', '--', '--internal1');
-    const cmd2 = await createCommand('--', '--internal2');
-    const cmd3 = await createCommand('--');
-    const cmd4 = await createCommand('--', '--internal4a', '--internal4b');
+    const cmd1 = await createTest(FlexPlugin)('--arg1', '--', '--internal1');
+    const cmd2 = await createTest(FlexPlugin)('--', '--internal2');
+    const cmd3 = await createTest(FlexPlugin)('--');
+    const cmd4 = await createTest(FlexPlugin)('--', '--internal4a', '--internal4b');
 
     // @ts-ignore
     expect(cmd1.internalScriptArgs).toEqual(['--internal1']);

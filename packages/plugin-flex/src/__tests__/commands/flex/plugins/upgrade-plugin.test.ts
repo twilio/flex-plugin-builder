@@ -2,7 +2,7 @@ import { TwilioApiError, TwilioCliError, packages } from '@twilio/flex-dev-utils
 import * as fs from '@twilio/flex-dev-utils/dist/fs';
 import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
 
-import { Pkg } from '../../../../sub-commands/flex-plugin';
+import FlexPlugin, { Pkg } from '../../../../sub-commands/flex-plugin';
 import createTest, { getPrintMethod, implementFileExists, mockGetPkg, mockPrintMethod } from '../../../framework';
 import FlexPluginsUpgradePlugin, { DependencyUpdates } from '../../../../commands/flex/plugins/upgrade-plugin';
 
@@ -48,8 +48,8 @@ describe('Commands/FlexPluginsStart', () => {
     jest.spyOn(spawn, 'spawn').mockReturnThis();
   });
 
-  it('should have flag as own property', () => {
-    expect(FlexPluginsUpgradePlugin.hasOwnProperty('flags')).toEqual(true);
+  it('should have own flags', () => {
+    expect(FlexPluginsUpgradePlugin.flags).not.toBeSameObject(FlexPlugin.flags);
   });
 
   it('should should return then version of @twilio/flex-plugin-scripts from dependencies', async () => {

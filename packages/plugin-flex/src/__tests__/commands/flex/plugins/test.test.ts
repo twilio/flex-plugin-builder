@@ -1,5 +1,6 @@
 import createTest from '../../../framework';
 import FlexPluginsTest from '../../../../commands/flex/plugins/test';
+import FlexPlugin from '../../../../sub-commands/flex-plugin';
 
 describe('Commands/FlexPluginsTest', () => {
   beforeEach(() => {
@@ -12,8 +13,8 @@ describe('Commands/FlexPluginsTest', () => {
     return cmd;
   };
 
-  it('should have flag as own property', () => {
-    expect(FlexPluginsTest.hasOwnProperty('flags')).toEqual(true);
+  it('should have own flags', () => {
+    expect(FlexPluginsTest.flags).not.toBeSameObject(FlexPlugin.flags);
   });
 
   it('should run test script without extra args', async () => {

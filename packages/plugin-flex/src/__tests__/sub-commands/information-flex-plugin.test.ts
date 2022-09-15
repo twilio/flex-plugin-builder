@@ -2,6 +2,7 @@ import { TwilioApiError } from '@twilio/flex-dev-utils';
 
 import createTest from '../framework';
 import InformationFlexPlugin from '../../sub-commands/information-flex-plugin';
+import FlexPlugin from '../../sub-commands/flex-plugin';
 
 describe('SubCommands/InformationFlexPlugin', () => {
   interface Sample {
@@ -36,8 +37,8 @@ describe('SubCommands/InformationFlexPlugin', () => {
     process.env = { ...env };
   });
 
-  it('should have flag as own property', () => {
-    expect(InformationFlexPlugin.hasOwnProperty('flags')).toEqual(true);
+  it('should have own flags', () => {
+    expect(InformationFlexPlugin.flags).not.toBeSameObject(FlexPlugin.flags);
   });
 
   it('should call getResource and then print result', async () => {

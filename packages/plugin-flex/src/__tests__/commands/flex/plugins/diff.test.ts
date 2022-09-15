@@ -3,6 +3,7 @@ import { Diff } from '@twilio/flex-plugins-api-client';
 
 import createTest from '../../../framework';
 import FlexPluginsDiff from '../../../../commands/flex/plugins/diff';
+import FlexPlugin from '../../../../sub-commands/flex-plugin';
 
 describe('Commands/FlexPluginsDeploy', () => {
   const configId1 = 'FJ00000000000000000000000000001';
@@ -71,8 +72,8 @@ describe('Commands/FlexPluginsDeploy', () => {
     return cmd;
   };
 
-  it('should have flag as own property', () => {
-    expect(FlexPluginsDiff.hasOwnProperty('flags')).toEqual(true);
+  it('should have own flags', () => {
+    expect(FlexPluginsDiff.flags).not.toBeSameObject(FlexPlugin.flags);
   });
 
   it('should call toolkit and get the diff', async () => {

@@ -1,5 +1,6 @@
 import createTest from '../../../framework';
 import FlexPluginsBuild from '../../../../commands/flex/plugins/build';
+import FlexPlugin from '../../../../sub-commands/flex-plugin';
 
 describe('Build2', () => {
   beforeEach(() => {
@@ -12,8 +13,8 @@ describe('Build2', () => {
     return cmd;
   };
 
-  it('should have flag as own property', () => {
-    expect(FlexPluginsBuild.hasOwnProperty('flags')).toEqual(true);
+  it('should have own flags', () => {
+    expect(FlexPluginsBuild.flags).not.toBeSameObject(FlexPlugin.flags);
   });
 
   it('should run build script', async () => {

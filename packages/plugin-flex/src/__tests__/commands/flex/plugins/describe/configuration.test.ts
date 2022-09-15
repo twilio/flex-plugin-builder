@@ -2,6 +2,8 @@ import { DescribeConfiguration } from '@twilio/flex-plugins-api-client';
 
 import createTest from '../../../../framework';
 import FlexPluginsDescribeConfiguration from '../../../../../commands/flex/plugins/describe/configuration';
+import InformationFlexPlugin from '../../../../../sub-commands/information-flex-plugin';
+import FlexPlugin from '../../../../../sub-commands/flex-plugin';
 
 describe('Commands/Describe/FlexPluginsDescribeConfiguration', () => {
   const configuration: DescribeConfiguration = {
@@ -31,8 +33,9 @@ describe('Commands/Describe/FlexPluginsDescribeConfiguration', () => {
     return cmd;
   };
 
-  it('should have flag as own property', () => {
-    expect(FlexPluginsDescribeConfiguration.hasOwnProperty('flags')).toEqual(true);
+  it('should have own flags', () => {
+    expect(FlexPluginsDescribeConfiguration.flags).not.toBeSameObject(InformationFlexPlugin.flags);
+    expect(FlexPluginsDescribeConfiguration.flags).not.toBeSameObject(FlexPlugin.flags);
   });
 
   it('should call describeConfiguration from the toolkit', async () => {

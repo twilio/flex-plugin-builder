@@ -170,8 +170,8 @@ describe('Commands/FlexPluginsDeploy', () => {
     expect(cmd.registerPluginVersion).toHaveBeenCalledTimes(1);
   });
 
-  it('should have flag as own property', () => {
-    expect(FlexPluginsDeploy.hasOwnProperty('flags')).toEqual(true);
+  it('should have own flags', () => {
+    expect(FlexPluginsDeploy.flags).not.toBeSameObject(FlexPlugin.flags);
   });
 
   it('should get major bump level', async () => {
