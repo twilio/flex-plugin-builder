@@ -1,3 +1,4 @@
+import { RequiredFlagError } from '@oclif/parser/lib/errors';
 import { TwilioCliError } from '@twilio/flex-dev-utils';
 
 import FlexPluginsRelease from '../../../../commands/flex/plugins/release';
@@ -24,10 +25,21 @@ describe('Commands/FlexPluginsRelease', () => {
   it('should throw error if command init not called', async (done) => {
     const cmd = await createTest(FlexPluginsRelease)('--name', name, '--plugin', plugin, '--description', description);
     try {
-      await cmd.doRun();
+      await cmd.run();
     } catch (e) {
       expect(e instanceof TwilioCliError).toEqual(true);
       expect(e.message).toContain('Flags are not parsed yet');
+      done();
+    }
+  });
+
+  it('should throw error if required flags not present', async (done) => {
+    const cmd = await createTest(FlexPluginsRelease)();
+    await cmd.init();
+    try {
+      await cmd.run();
+    } catch (e) {
+      expect(e instanceof RequiredFlagError).toEqual(true);
       done();
     }
   });
