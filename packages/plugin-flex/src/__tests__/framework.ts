@@ -23,7 +23,7 @@ declare global {
   }
 }
 
-const constants = {
+export const constants = {
   FAKE_ACCOUNT_SID: 'AC00000000000000000000000000000',
   FAKE_API_KEY: 'SK00000000000000000000000000000',
   FAKE_API_SECRET: 'fake password',

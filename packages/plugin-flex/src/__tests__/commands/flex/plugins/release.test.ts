@@ -10,6 +10,7 @@ describe('Commands/FlexPluginsRelease', () => {
   const name = 'plugin-one';
   const description = 'Releasing plugin-one';
   const plugin = 'plugin-one@1.0.0';
+  const configurationSid = '1234567890';
 
   it('should have own flags', () => {
     expect(FlexPluginsRelease.flags).not.toBeSameObject(CreateConfiguration.flags);
@@ -42,5 +43,13 @@ describe('Commands/FlexPluginsRelease', () => {
       expect(e instanceof RequiredFlagError).toEqual(true);
       done();
     }
+  });
+
+  it('should return parsed flags if required flags not present but configuration sid is present', async () => {
+    const cmd = await createTest(FlexPluginsRelease)('--configuration-sid', configurationSid);
+    jest.spyOn(cmd, 'doCreateRelease').mockResolvedValue();
+    await cmd.init();
+    await cmd.doRun();
+    expect(cmd._flags).toBeDefined();
   });
 });
