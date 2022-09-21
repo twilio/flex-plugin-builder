@@ -245,6 +245,7 @@ describe('Commands/FlexPluginsStart', () => {
   it('should read and set flex-ui-source', async () => {
     const flexUISrc = 'http://localhost:8080/twilio-flex-ui.dev.browser.js';
     const cmd = await createCommand('--flex-ui-source', flexUISrc);
+    const encodedFlexUISrc = 'http%3A%2F%2Flocalhost%3A8080%2Ftwilio-flex-ui.dev.browser.js';
 
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
@@ -274,8 +275,8 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd.runScript).toHaveBeenCalledWith(preStartCheck, ['--name', pkg.name]);
     expect(cmd.runScript).toHaveBeenCalledWith(preScriptCheck, ['--name', pkg.name]);
     expect(cmd.spawnScript).toHaveBeenCalledWith('start', ['plugin', '--name', pkg.name, '--port', '100']);
-    expect(cmd._flags[flexUiSource]).toEqual(flexUISrc);
-    expect(env.getFlexUISrc()).toEqual(flexUISrc);
+    expect(cmd._flags[flexUiSource]).toEqual(encodedFlexUISrc);
+    expect(env.getFlexUISrc()).toEqual(encodedFlexUISrc);
   });
 
   it('should error due to invalid flex-ui-source', async () => {
