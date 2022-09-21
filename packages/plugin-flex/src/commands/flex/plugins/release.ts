@@ -107,7 +107,7 @@ export default class FlexPluginsRelease extends CreateConfiguration {
    */
   get _flags(): OutputFlags<typeof FlexPluginsRelease.flags> {
     if (!this._parsed) {
-      throw new TwilioCliError('Parser not run yet');
+      throw new TwilioCliError('Flags are not parsed yet');
     }
     if (this._parsed.flags[configurationSidFlex]) {
       return this._parsed.flags;

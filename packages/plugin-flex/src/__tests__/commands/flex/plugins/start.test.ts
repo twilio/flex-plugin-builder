@@ -89,6 +89,22 @@ describe('Commands/FlexPluginsStart', () => {
     expect(FlexPluginsStart.flags).not.toBeSameObject(FlexPlugin.flags);
   });
 
+  it('should set parsed flags', async () => {
+    const cmd = await createCommand();
+    expect(cmd._flags).toBeDefined();
+  });
+
+  it('should throw error if command init not called', async (done) => {
+    const cmd = await createTest(FlexPluginsStart)();
+    try {
+      await cmd.doRun();
+    } catch (e) {
+      expect(e instanceof TwilioCliError).toEqual(true);
+      expect(e.message).toContain('Flags are not parsed yet');
+      done();
+    }
+  });
+
   it('should run start script for the directory plugin', async () => {
     const cmd = await createCommand();
 

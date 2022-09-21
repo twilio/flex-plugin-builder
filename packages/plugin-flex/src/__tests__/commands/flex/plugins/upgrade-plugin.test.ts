@@ -52,6 +52,22 @@ describe('Commands/FlexPluginsStart', () => {
     expect(FlexPluginsUpgradePlugin.flags).not.toBeSameObject(FlexPlugin.flags);
   });
 
+  it('should set parsed flags', async () => {
+    const cmd = await createCommand();
+    expect(cmd._flags).toBeDefined();
+  });
+
+  it('should throw error if command init not called', async (done) => {
+    const cmd = await createTest(FlexPluginsUpgradePlugin)();
+    try {
+      await cmd.run();
+    } catch (e) {
+      expect(e instanceof TwilioCliError).toEqual(true);
+      expect(e.message).toContain('Flags are not parsed yet');
+      done();
+    }
+  });
+
   it('should should return then version of @twilio/flex-plugin-scripts from dependencies', async () => {
     const cmd = await createCommand();
 
