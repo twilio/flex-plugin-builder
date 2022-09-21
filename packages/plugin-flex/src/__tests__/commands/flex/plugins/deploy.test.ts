@@ -208,7 +208,7 @@ describe('Commands/FlexPluginsDeploy', () => {
       Version: deployResult.nextVersion,
       PluginUrl: deployResult.pluginUrl,
       Private: !deployResult.isPublic,
-      Changelog: 'sample%20changlog',
+      Changelog: defaultChangelog,
     });
   });
 
@@ -254,7 +254,7 @@ describe('Commands/FlexPluginsDeploy', () => {
     expect(cmd.pluginsClient.upsert).toHaveBeenCalledWith({
       UniqueName: pkg.name,
       FriendlyName: pkg.name,
-      Description: 'some%20description',
+      Description: 'some description',
     });
   });
 

@@ -7,14 +7,14 @@ type Input<F> = Parser.Input<F>;
 type Output<F, A> = Parser.Output<F, A>;
 
 /**
- * Sanitizes the object
+ * Trims the object
  * @param obj
  * @private
  */
-export const _sanitize = <F>(obj: F): F => {
+export const _trim = <F>(obj: F): F => {
   Object.keys(obj).forEach((key) => {
     if (typeof obj[key] === 'string') {
-      obj[key] = encodeURIComponent(obj[key].trim());
+      obj[key] = obj[key].trim();
     }
   });
 
@@ -126,8 +126,8 @@ const parser =
   async (options?: Input<F>, argv: string[] = []): Promise<Output<F, A>> => {
     const preparedFlags = _prepareFlags(options);
     const parsed: Output<F, A> = _combineFlags(await OclifParser(preparedFlags, argv), options);
-    parsed.flags = _sanitize(parsed.flags);
-    parsed.args = _sanitize(parsed.args);
+    parsed.flags = _trim(parsed.flags);
+    parsed.args = _trim(parsed.args);
 
     if (options && options.flags && parsed.flags) {
       _validate(parsed.flags, options.flags, parsed);
