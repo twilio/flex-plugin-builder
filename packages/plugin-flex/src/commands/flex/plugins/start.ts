@@ -41,14 +41,23 @@ export default class FlexPluginsStart extends FlexPlugin {
     }),
   };
 
-  protected _parsedFlags?: OutputFlags<typeof FlexPluginsStart.flags>;
+  public _flags: OutputFlags<typeof FlexPluginsStart.flags>;
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, { strict: false });
+    this._flags = {
+      'clear-terminal': '',
+      'flex-ui-source': '',
+      'include-remote': '',
+      json: false,
+      name: '',
+      port: '',
+      region: '',
+    };
   }
 
   async init(): Promise<void> {
-    this._parsedFlags = (await this.parseCommand(FlexPluginsStart)).flags;
+    this._flags = (await this.parseCommand(FlexPluginsStart)).flags;
     if (this._flags['include-remote'] || this._flags.name) {
       this.opts.runInDirectory = false;
     }
@@ -207,16 +216,6 @@ export default class FlexPluginsStart extends FlexPlugin {
     }
 
     return port;
-  }
-
-  /**
-   * Parses the flags passed to this command
-   */
-  get _flags(): OutputFlags<typeof FlexPluginsStart.flags> {
-    if (!this._parsedFlags) {
-      throw new TwilioCliError('Flags are not parsed yet');
-    }
-    return this._parsedFlags;
   }
 
   /**

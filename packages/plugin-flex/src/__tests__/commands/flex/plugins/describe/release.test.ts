@@ -22,15 +22,4 @@ describe('Commands/Describe/FlexPluginsDescribeRelease', () => {
     const cmd = await createCommand('--sid', sid);
     expect(cmd._flags).toBeDefined();
   });
-
-  it('should throw error if command init not called', async (done) => {
-    const cmd = await createTest(FlexPluginsDescribeRelease)('--sid', sid);
-    try {
-      await cmd.run();
-    } catch (e) {
-      expect(e instanceof TwilioCliError).toEqual(true);
-      expect(e.message).toContain('Flags are not parsed yet');
-      done();
-    }
-  });
 });

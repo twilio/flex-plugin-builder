@@ -43,7 +43,7 @@ import FlexConfigurationClient, { FlexConfigurationClientOptions } from '../clie
 import ServerlessClient from '../clients/ServerlessClient';
 import { getTopic, OclifConfig, OClifTopic } from '../utils';
 
-interface FlexPluginOption {
+export interface FlexPluginOption {
   strict: boolean;
   runInDirectory: boolean;
 }
@@ -131,6 +131,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     runInDirectory: true,
   };
 
+  public _flags: FlexPluginFlags;
+
   protected readonly opts: FlexPluginOption;
 
   protected readonly cwd: string;
@@ -146,8 +148,6 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   protected readonly version: string;
 
   protected readonly _logger: Logger;
-
-  protected _parsedFlags?: FlexPluginFlags;
 
   // Contains all the raw flags
   protected scriptArgs: string[];
@@ -198,6 +198,12 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     }
     // TODO: get rid of scriptArgs and use argv instead
     this.scriptArgs = process.argv.slice(3);
+
+    this._flags = {
+      json: false,
+      'clear-terminal': false,
+      region: '',
+    };
   }
 
   /**
@@ -399,7 +405,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   }
 
   async init(): Promise<void> {
-    this._parsedFlags = (await this.parseCommand(FlexPlugin)).flags;
+    this._flags = (await this.parseCommand(FlexPlugin)).flags;
   }
 
   /**
@@ -631,18 +637,6 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    */
   get checkCompatibility(): boolean {
     return false;
-  }
-
-  /**
-   * Abstract method for getting the flags
-   * @protected
-   */
-  get _flags(): FlexPluginFlags {
-    if (!this._parsedFlags) {
-      throw new TwilioCliError('Flags are not parsed yet');
-    }
-
-    return this._parsedFlags;
   }
 
   /**

@@ -1,4 +1,4 @@
-import { progress, TwilioCliError } from '@twilio/flex-dev-utils';
+import { progress } from '@twilio/flex-dev-utils';
 import { flags } from '@oclif/command';
 import { RequiredFlagError } from '@oclif/parser/lib/errors';
 import { OutputFlags, ParserOutput } from '@oclif/parser/lib/parse';
@@ -56,20 +56,63 @@ export default class FlexPluginsRelease extends CreateConfiguration {
     }),
   };
 
+  public _flags: OutputFlags<typeof FlexPluginsRelease.flags>;
+
   // @ts-ignore
   private prints;
-
-  private _parsed?: ParserOutput<any, any>;
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, { runInDirectory: false });
 
     this.scriptArgs = [];
     this.prints = this._prints.release;
+    this._flags = {
+      json: false,
+      'clear-terminal': false,
+      region: '',
+      'configuration-sid': '',
+      name: '',
+      plugin: '',
+      'disable-plugin': '',
+      'enable-plugin': '',
+      description: '',
+      new: false,
+    };
   }
 
   async init(): Promise<void> {
-    this._parsed = await this.parseCommand(FlexPluginsRelease);
+    const parsed: ParserOutput<any, any> = await this.parseCommand(FlexPluginsRelease);
+    if (parsed.flags[configurationSidFlex]) {
+      this._flags = parsed.flags;
+      return;
+    }
+
+    [descriptionFlex, nameFlex].forEach((key) => {
+      if (!parsed.flags[key]) {
+        throw new RequiredFlagError({
+          flag: FlexPluginsRelease.flags[key],
+          parse: {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            input: {} as any,
+            output: parsed,
+          },
+        });
+      }
+    });
+
+    const hasChange = [enablePluginFlex, disablePluginFlex].some((x) => parsed.flags[x]);
+    if (!hasChange) {
+      throw new RequiredFlagError({
+        flag: FlexPluginsRelease.flags[enablePluginFlex],
+        parse: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          input: {} as any,
+          output: parsed,
+        },
+      });
+    }
+
+    this._flags = parsed.flags;
   }
 
   /**
@@ -100,44 +143,5 @@ export default class FlexPluginsRelease extends CreateConfiguration {
    */
   async createRelease(configurationSid: string): Promise<Release> {
     return this.pluginsApiToolkit.release({ configurationSid });
-  }
-
-  /**
-   * Parses the flags passed to this command
-   */
-  get _flags(): OutputFlags<typeof FlexPluginsRelease.flags> {
-    if (!this._parsed) {
-      throw new TwilioCliError('Flags are not parsed yet');
-    }
-    if (this._parsed.flags[configurationSidFlex]) {
-      return this._parsed.flags;
-    }
-
-    [descriptionFlex, nameFlex].forEach((key) => {
-      if (!this._parsed?.flags[key]) {
-        throw new RequiredFlagError({
-          flag: FlexPluginsRelease.flags[key],
-          parse: {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            input: {} as any,
-            output: this._parsed,
-          },
-        });
-      }
-    });
-
-    const hasChange = [enablePluginFlex, disablePluginFlex].some((x) => this._parsed?.flags[x]);
-    if (!hasChange) {
-      throw new RequiredFlagError({
-        flag: FlexPluginsRelease.flags[enablePluginFlex],
-        parse: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          input: {} as any,
-          output: this._parsed,
-        },
-      });
-    }
-
-    return this._parsed.flags;
   }
 }

@@ -48,19 +48,6 @@ describe('SubCommands/CreateConfiguration', () => {
     expect(cmd._flags).toBeDefined();
   });
 
-  it('should throw error if command init not called', async (done) => {
-    const cmd = await createTest(Plugin)(nameFlex, name, descriptionFlex, description, newFlex);
-    mockPluginsApiToolkit(cmd);
-    try {
-      // @ts-ignore
-      await cmd.doCreateConfiguration();
-    } catch (e) {
-      expect(e instanceof TwilioCliError).toEqual(true);
-      expect(e.message).toContain('Flags are not parsed yet');
-      done();
-    }
-  });
-
   it('should call createConfiguration from the toolkit with enablePlugins', async () => {
     const cmd = await createCommand(nameFlex, name, descriptionFlex, description, enablePluginFlex, enablePlugin);
     mockPluginsApiToolkit(cmd);

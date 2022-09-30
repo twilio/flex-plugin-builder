@@ -4,6 +4,7 @@ import { progress, TwilioApiError, TwilioCliError } from '@twilio/flex-dev-utils
 
 import * as flags from '../../../../utils/flags';
 import ArchiveResource from '../../../../sub-commands/archive-resource';
+import { ConfigData, SecureStorage } from '../../../../sub-commands/flex-plugin';
 import { createDescription, instanceOf } from '../../../../utils/general';
 
 interface ArchivePluginResponse {
@@ -24,10 +25,20 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
     }),
   };
 
-  protected _parsedFlags?: OutputFlags<typeof FlexPluginsArchivePlugin.flags>;
+  public _flags: OutputFlags<typeof FlexPluginsArchivePlugin.flags>;
+
+  constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
+    super(argv, config, secureStorage);
+    this._flags = {
+      json: false,
+      'clear-terminal': false,
+      region: '',
+      name: '',
+    };
+  }
 
   async init(): Promise<void> {
-    this._parsedFlags = (await this.parseCommand(FlexPluginsArchivePlugin)).flags;
+    this._flags = (await this.parseCommand(FlexPluginsArchivePlugin)).flags;
   }
 
   /**
@@ -110,16 +121,5 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
         'Could not archive your plugin due to failure in deleting the environment hosting your plugin. Please retry by running the archive command.',
       );
     }
-  }
-
-  /**
-   * @override
-   */
-  /* istanbul ignore next */
-  get _flags(): OutputFlags<typeof FlexPluginsArchivePlugin.flags> {
-    if (!this._parsedFlags) {
-      throw new TwilioCliError('Flags are not parsed yet');
-    }
-    return this._parsedFlags;
   }
 }

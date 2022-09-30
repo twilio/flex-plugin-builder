@@ -131,7 +131,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     '@material-ui/core': '^4.11.3',
   };
 
-  protected _parsedFlags?: OutputFlags<typeof FlexPluginsUpgradePlugin.flags>;
+  public _flags: OutputFlags<typeof FlexPluginsUpgradePlugin.flags>;
 
   // @ts-ignore
   private prints;
@@ -140,10 +140,23 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     super(argv, config, secureStorage, {});
 
     this.prints = this._prints.upgradePlugin;
+    this._flags = {
+      'remove-legacy-plugin': false,
+      install: false,
+      beta: false,
+      dev: false,
+      nightly: false,
+      yarn: false,
+      yes: false,
+      'flex-ui-2.0': false,
+      json: false,
+      'clear-terminal': false,
+      region: '',
+    };
   }
 
   async init(): Promise<void> {
-    this._parsedFlags = (await this.parseCommand(FlexPluginsUpgradePlugin)).flags;
+    this._flags = (await this.parseCommand(FlexPluginsUpgradePlugin)).flags;
   }
 
   /**
@@ -595,15 +608,5 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     }
 
     return semver.coerce(pkg)?.major;
-  }
-
-  /**
-   * Parses the flags passed to this command
-   */
-  get _flags(): OutputFlags<typeof FlexPluginsUpgradePlugin.flags> {
-    if (!this._parsedFlags) {
-      throw new TwilioCliError('Flags are not parsed yet');
-    }
-    return this._parsedFlags;
   }
 }

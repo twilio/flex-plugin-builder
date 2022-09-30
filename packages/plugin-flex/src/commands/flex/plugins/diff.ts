@@ -58,17 +58,23 @@ export default class FlexPluginsDiff extends FlexPlugin {
     ...baseFlags,
   };
 
-  protected _parsedFlags?: OutputFlags<typeof FlexPluginsDiff.flags>;
+  public _flags: OutputFlags<typeof FlexPluginsDiff.flags>;
 
-  private _parsedArgs?: Args;
+  public _args: Args;
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, { runInDirectory: false });
+    this._flags = {
+      json: false,
+      'clear-terminal': false,
+      region: '',
+    };
+    this._args = {};
   }
 
   async init(): Promise<void> {
-    this._parsedFlags = (await this.parseCommand(FlexPluginsDiff)).flags;
-    this._parsedArgs = (await this.parseCommand(FlexPluginsDiff)).args;
+    this._flags = (await this.parseCommand(FlexPluginsDiff)).flags;
+    this._args = (await this.parseCommand(FlexPluginsDiff)).args;
   }
 
   /**
@@ -140,27 +146,5 @@ export default class FlexPluginsDiff extends FlexPlugin {
     } else {
       this._logger.info(`${prefix}${header}: ${FlexPlugin.getValue(path, before)}`);
     }
-  }
-
-  /**
-   * Parses the flags passed to this command
-   */
-  /* istanbul ignore next */
-  get _flags(): OutputFlags<typeof FlexPluginsDiff.flags> {
-    if (!this._parsedFlags) {
-      throw new TwilioCliError('Flags are not parsed yet');
-    }
-
-    return this._parsedFlags;
-  }
-
-  /* istanbul ignore next */
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  get _args() {
-    if (!this._parsedArgs) {
-      throw new TwilioCliError('Args are not parsed yet');
-    }
-
-    return this._parsedArgs;
   }
 }

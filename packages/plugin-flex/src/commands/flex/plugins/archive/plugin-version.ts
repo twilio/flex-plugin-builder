@@ -1,10 +1,11 @@
 import { PluginVersion } from '@twilio/flex-plugins-api-client';
-import { progress, TwilioApiError, TwilioCliError } from '@twilio/flex-dev-utils';
+import { progress, TwilioApiError } from '@twilio/flex-dev-utils';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 import { BuildInstance, BuildListInstanceCreateOptions } from 'twilio/lib/rest/serverless/v1/service/build';
 
 import * as flags from '../../../../utils/flags';
 import ArchiveResource from '../../../../sub-commands/archive-resource';
+import { ConfigData, SecureStorage } from '../../../../sub-commands/flex-plugin';
 import { createDescription, instanceOf } from '../../../../utils/general';
 
 export default class FlexPluginsArchivePluginVersion extends ArchiveResource<PluginVersion> {
@@ -24,10 +25,21 @@ export default class FlexPluginsArchivePluginVersion extends ArchiveResource<Plu
     }),
   };
 
-  protected _parsedFlags?: OutputFlags<typeof FlexPluginsArchivePluginVersion.flags>;
+  public _flags: OutputFlags<typeof FlexPluginsArchivePluginVersion.flags>;
+
+  constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
+    super(argv, config, secureStorage);
+    this._flags = {
+      json: false,
+      'clear-terminal': false,
+      region: '',
+      name: '',
+      version: '',
+    };
+  }
 
   async init(): Promise<void> {
-    this._parsedFlags = (await this.parseCommand(FlexPluginsArchivePluginVersion)).flags;
+    this._flags = (await this.parseCommand(FlexPluginsArchivePluginVersion)).flags;
   }
 
   /**
@@ -140,16 +152,5 @@ export default class FlexPluginsArchivePluginVersion extends ArchiveResource<Plu
     }
 
     return build;
-  }
-
-  /**
-   * @override
-   */
-  /* istanbul ignore next */
-  get _flags(): OutputFlags<typeof FlexPluginsArchivePluginVersion.flags> {
-    if (!this._parsedFlags) {
-      throw new TwilioCliError('Flags are not parsed yet');
-    }
-    return this._parsedFlags;
   }
 }

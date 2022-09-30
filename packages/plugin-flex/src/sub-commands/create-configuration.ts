@@ -1,4 +1,4 @@
-import { progress, TwilioCliError } from '@twilio/flex-dev-utils';
+import { progress } from '@twilio/flex-dev-utils';
 import {
   CreateConfigurationOption,
   CreateConfiguration as ICreateConfiguration,
@@ -6,7 +6,7 @@ import {
 
 import * as flags from '../utils/flags';
 import { createDescription } from '../utils/general';
-import FlexPlugin, { FlexPluginFlags } from './flex-plugin';
+import FlexPlugin, { FlexPluginFlags, ConfigData, SecureStorage, FlexPluginOption } from './flex-plugin';
 
 type Multiple = { multiple: true };
 
@@ -75,10 +75,22 @@ export default abstract class CreateConfiguration extends FlexPlugin {
     description: flags.string(CreateConfiguration.descriptionFlag),
   };
 
-  protected _parsedFlags?: CreateConfigurationFlags;
+  public _flags: CreateConfigurationFlags;
+
+  constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage, opts: Partial<FlexPluginOption>) {
+    super(argv, config, secureStorage, opts);
+    this._flags = {
+      json: false,
+      'clear-terminal': false,
+      region: '',
+      new: false,
+      'disable-plugin': [''],
+      'enable-plugin': [''],
+    };
+  }
 
   async init(): Promise<void> {
-    this._parsedFlags = (await this.parseCommand(CreateConfiguration)).flags;
+    this._flags = (await this.parseCommand(CreateConfiguration)).flags;
   }
 
   /**
@@ -110,12 +122,5 @@ export default abstract class CreateConfiguration extends FlexPlugin {
     }
 
     return this.pluginsApiToolkit.createConfiguration(option);
-  }
-
-  get _flags(): CreateConfigurationFlags {
-    if (!this._parsedFlags) {
-      throw new TwilioCliError('Flags are not parsed yet');
-    }
-    return this._parsedFlags;
   }
 }

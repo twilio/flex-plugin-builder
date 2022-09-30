@@ -89,7 +89,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     }),
   };
 
-  protected _parsedFlags?: OutputFlags<typeof FlexPluginsDeploy.flags>;
+  public _flags: OutputFlags<typeof FlexPluginsDeploy.flags>;
 
   // @ts-ignore
   private prints;
@@ -101,10 +101,22 @@ export default class FlexPluginsDeploy extends FlexPlugin {
 
     this.scriptArgs = [];
     this.prints = this._prints.deploy;
+    this._flags = {
+      patch: false,
+      minor: false,
+      major: false,
+      version: '',
+      public: false,
+      changelog: '',
+      description: '',
+      json: false,
+      'clear-terminal': false,
+      region: '',
+    };
   }
 
   async init(): Promise<void> {
-    this._parsedFlags = (await this.parseCommand(FlexPluginsDeploy)).flags;
+    this._flags = (await this.parseCommand(FlexPluginsDeploy)).flags;
   }
 
   /**
@@ -301,19 +313,6 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     }
 
     return 'patch';
-  }
-
-  /**
-   * Parses the flags passed to this command
-   */
-  /* istanbul ignore next */
-
-  get _flags(): OutputFlags<typeof FlexPluginsDeploy.flags> {
-    if (!this._parsedFlags) {
-      throw new TwilioCliError('Flags are not parsed yet');
-    }
-
-    return this._parsedFlags;
   }
 
   /**

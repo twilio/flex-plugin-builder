@@ -1,10 +1,9 @@
 import { flags } from '@oclif/command';
 import { DescribeConfiguration } from '@twilio/flex-plugins-api-client';
 import { OutputFlags } from '@oclif/parser/lib/parse';
-import { TwilioCliError } from '@twilio/flex-dev-utils';
 
 import { createDescription } from '../../../../utils/general';
-import FlexPlugin from '../../../../sub-commands/flex-plugin';
+import FlexPlugin, { ConfigData, SecureStorage } from '../../../../sub-commands/flex-plugin';
 import InformationFlexPlugin from '../../../../sub-commands/information-flex-plugin';
 
 /**
@@ -23,10 +22,20 @@ export default class FlexPluginsDescribeConfiguration extends InformationFlexPlu
     }),
   };
 
-  protected _parsedFlags?: OutputFlags<typeof FlexPluginsDescribeConfiguration.flags>;
+  public _flags: OutputFlags<typeof FlexPluginsDescribeConfiguration.flags>;
+
+  constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
+    super(argv, config, secureStorage);
+    this._flags = {
+      json: false,
+      'clear-terminal': false,
+      region: '',
+      sid: '',
+    };
+  }
 
   async init(): Promise<void> {
-    this._parsedFlags = (await this.parseCommand(FlexPluginsDescribeConfiguration)).flags;
+    this._flags = (await this.parseCommand(FlexPluginsDescribeConfiguration)).flags;
   }
 
   /**
@@ -62,16 +71,5 @@ export default class FlexPluginsDescribeConfiguration extends InformationFlexPlu
       this.printPretty(plugin, 'version', 'name');
       this._logger.newline();
     });
-  }
-
-  /**
-   * Parses the flags passed to this command
-   */
-  /* istanbul ignore next */
-  get _flags(): OutputFlags<typeof FlexPluginsDescribeConfiguration.flags> {
-    if (!this._parsedFlags) {
-      throw new TwilioCliError('Flags are not parsed yet');
-    }
-    return this._parsedFlags;
   }
 }

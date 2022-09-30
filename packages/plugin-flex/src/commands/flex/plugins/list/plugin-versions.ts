@@ -1,11 +1,10 @@
 import { ListPluginVersions } from '@twilio/flex-plugins-api-client';
 import { flags } from '@oclif/command';
 import { OutputFlags } from '@oclif/parser/lib/parse';
-import { TwilioCliError } from '@twilio/flex-dev-utils';
 
 import { createDescription } from '../../../../utils/general';
 import InformationFlexPlugin from '../../../../sub-commands/information-flex-plugin';
-import FlexPlugin from '../../../../sub-commands/flex-plugin';
+import FlexPlugin, { ConfigData, SecureStorage } from '../../../../sub-commands/flex-plugin';
 
 /**
  * Lists the Flex Plugin Versions
@@ -23,10 +22,20 @@ export default class FlexPluginsListPluginVersions extends InformationFlexPlugin
     }),
   };
 
-  protected _parsedFlags?: OutputFlags<typeof FlexPluginsListPluginVersions.flags>;
+  public _flags: OutputFlags<typeof FlexPluginsListPluginVersions.flags>;
+
+  constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
+    super(argv, config, secureStorage);
+    this._flags = {
+      json: false,
+      'clear-terminal': false,
+      region: '',
+      name: '',
+    };
+  }
 
   async init(): Promise<void> {
-    this._parsedFlags = (await this.parseCommand(FlexPluginsListPluginVersions)).flags;
+    this._flags = (await this.parseCommand(FlexPluginsListPluginVersions)).flags;
   }
 
   /**
@@ -65,16 +74,5 @@ export default class FlexPluginsListPluginVersions extends InformationFlexPlugin
       this.printPretty(version, 'isActive', 'pluginSid', 'version');
       this._logger.newline();
     });
-  }
-
-  /**
-   * Parses the flags passed to this command
-   */
-  /* istanbul ignore next */
-  get _flags(): OutputFlags<typeof FlexPluginsListPluginVersions.flags> {
-    if (!this._parsedFlags) {
-      throw new TwilioCliError('Flags are not parsed yet');
-    }
-    return this._parsedFlags;
   }
 }
