@@ -1,5 +1,4 @@
 import { RequiredFlagError } from '@oclif/parser/lib/errors';
-import { TwilioCliError } from '@twilio/flex-dev-utils';
 
 import FlexPluginsRelease from '../../../../commands/flex/plugins/release';
 import CreateConfiguration from '../../../../sub-commands/create-configuration';
@@ -29,5 +28,23 @@ describe('Commands/FlexPluginsRelease', () => {
     await cmd.init();
     await cmd.doRun();
     expect(cmd._flags).toBeDefined();
+  });
+
+  it('should throw error if required flags are not present', async () => {
+    const cmd = await createTest(FlexPluginsRelease)('--plugin', plugin);
+    try {
+      await cmd.init();
+    } catch (e) {
+      expect(e).toBeInstanceOf(RequiredFlagError);
+    }
+  });
+
+  it('should throw required flag error if enable/disable plugin flag is not present', async () => {
+    const cmd = await createTest(FlexPluginsRelease)('--name', name, '--description', description);
+    try {
+      await cmd.init();
+    } catch (e) {
+      expect(e).toBeInstanceOf(RequiredFlagError);
+    }
   });
 });
