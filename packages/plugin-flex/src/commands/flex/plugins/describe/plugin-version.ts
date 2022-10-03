@@ -3,7 +3,7 @@ import { DescribePluginVersion } from '@twilio/flex-plugins-api-client';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import { createDescription } from '../../../../utils/general';
-import FlexPlugin, { ConfigData, SecureStorage } from '../../../../sub-commands/flex-plugin';
+import FlexPlugin from '../../../../sub-commands/flex-plugin';
 import InformationFlexPlugin from '../../../../sub-commands/information-flex-plugin';
 
 /**
@@ -26,18 +26,8 @@ export default class FlexPluginsDescribePluginVersion extends InformationFlexPlu
     }),
   };
 
+  // @ts-ignore
   public _flags: OutputFlags<typeof FlexPluginsDescribePluginVersion.flags>;
-
-  constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
-    super(argv, config, secureStorage);
-    this._flags = {
-      json: false,
-      'clear-terminal': false,
-      region: '',
-      name: '',
-      version: '',
-    };
-  }
 
   async init(): Promise<void> {
     this._flags = (await this.parseCommand(FlexPluginsDescribePluginVersion)).flags;

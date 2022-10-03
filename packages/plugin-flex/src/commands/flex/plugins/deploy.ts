@@ -89,6 +89,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     }),
   };
 
+  // @ts-ignore
   public _flags: OutputFlags<typeof FlexPluginsDeploy.flags>;
 
   // @ts-ignore
@@ -101,18 +102,6 @@ export default class FlexPluginsDeploy extends FlexPlugin {
 
     this.scriptArgs = [];
     this.prints = this._prints.deploy;
-    this._flags = {
-      patch: false,
-      minor: false,
-      major: false,
-      version: '',
-      public: false,
-      changelog: '',
-      description: '',
-      json: false,
-      'clear-terminal': false,
-      region: '',
-    };
   }
 
   async init(): Promise<void> {

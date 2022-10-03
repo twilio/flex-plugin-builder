@@ -5,7 +5,6 @@ import { BuildInstance, BuildListInstanceCreateOptions } from 'twilio/lib/rest/s
 
 import * as flags from '../../../../utils/flags';
 import ArchiveResource from '../../../../sub-commands/archive-resource';
-import { ConfigData, SecureStorage } from '../../../../sub-commands/flex-plugin';
 import { createDescription, instanceOf } from '../../../../utils/general';
 
 export default class FlexPluginsArchivePluginVersion extends ArchiveResource<PluginVersion> {
@@ -25,18 +24,8 @@ export default class FlexPluginsArchivePluginVersion extends ArchiveResource<Plu
     }),
   };
 
+  // @ts-ignore
   public _flags: OutputFlags<typeof FlexPluginsArchivePluginVersion.flags>;
-
-  constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
-    super(argv, config, secureStorage);
-    this._flags = {
-      json: false,
-      'clear-terminal': false,
-      region: '',
-      name: '',
-      version: '',
-    };
-  }
 
   async init(): Promise<void> {
     this._flags = (await this.parseCommand(FlexPluginsArchivePluginVersion)).flags;

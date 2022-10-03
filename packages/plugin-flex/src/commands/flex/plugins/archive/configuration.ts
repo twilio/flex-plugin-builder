@@ -3,7 +3,6 @@ import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import * as flags from '../../../../utils/flags';
 import ArchiveResource from '../../../../sub-commands/archive-resource';
-import { ConfigData, SecureStorage } from '../../../../sub-commands/flex-plugin';
 import { createDescription } from '../../../../utils/general';
 
 export default class FlexPluginsArchiveConfiguration extends ArchiveResource<Configuration> {
@@ -19,17 +18,8 @@ export default class FlexPluginsArchiveConfiguration extends ArchiveResource<Con
     }),
   };
 
+  // @ts-ignore
   public _flags: OutputFlags<typeof FlexPluginsArchiveConfiguration.flags>;
-
-  constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
-    super(argv, config, secureStorage);
-    this._flags = {
-      json: false,
-      'clear-terminal': false,
-      region: '',
-      sid: '',
-    };
-  }
 
   async init(): Promise<void> {
     this._flags = (await this.parseCommand(FlexPluginsArchiveConfiguration)).flags;

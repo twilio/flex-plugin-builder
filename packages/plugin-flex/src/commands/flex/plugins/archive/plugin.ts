@@ -4,7 +4,6 @@ import { progress, TwilioApiError, TwilioCliError } from '@twilio/flex-dev-utils
 
 import * as flags from '../../../../utils/flags';
 import ArchiveResource from '../../../../sub-commands/archive-resource';
-import { ConfigData, SecureStorage } from '../../../../sub-commands/flex-plugin';
 import { createDescription, instanceOf } from '../../../../utils/general';
 
 interface ArchivePluginResponse {
@@ -25,17 +24,8 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
     }),
   };
 
+  // @ts-ignore
   public _flags: OutputFlags<typeof FlexPluginsArchivePlugin.flags>;
-
-  constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
-    super(argv, config, secureStorage);
-    this._flags = {
-      json: false,
-      'clear-terminal': false,
-      region: '',
-      name: '',
-    };
-  }
 
   async init(): Promise<void> {
     this._flags = (await this.parseCommand(FlexPluginsArchivePlugin)).flags;

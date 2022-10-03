@@ -58,18 +58,14 @@ export default class FlexPluginsDiff extends FlexPlugin {
     ...baseFlags,
   };
 
+  // @ts-ignore
   public _flags: OutputFlags<typeof FlexPluginsDiff.flags>;
 
+  // @ts-ignore
   public _args: Args;
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, { runInDirectory: false });
-    this._flags = {
-      json: false,
-      'clear-terminal': false,
-      region: '',
-    };
-    this._args = {};
   }
 
   async init(): Promise<void> {

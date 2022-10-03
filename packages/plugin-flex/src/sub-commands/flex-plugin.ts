@@ -43,7 +43,7 @@ import FlexConfigurationClient, { FlexConfigurationClientOptions } from '../clie
 import ServerlessClient from '../clients/ServerlessClient';
 import { getTopic, OclifConfig, OClifTopic } from '../utils';
 
-export interface FlexPluginOption {
+interface FlexPluginOption {
   strict: boolean;
   runInDirectory: boolean;
 }
@@ -131,6 +131,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     runInDirectory: true,
   };
 
+  // @ts-ignore
   public _flags: FlexPluginFlags;
 
   protected readonly opts: FlexPluginOption;
@@ -198,12 +199,6 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     }
     // TODO: get rid of scriptArgs and use argv instead
     this.scriptArgs = process.argv.slice(3);
-
-    this._flags = {
-      json: false,
-      'clear-terminal': false,
-      region: '',
-    };
   }
 
   /**

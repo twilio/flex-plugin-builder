@@ -6,7 +6,7 @@ import {
 
 import * as flags from '../utils/flags';
 import { createDescription } from '../utils/general';
-import FlexPlugin, { FlexPluginFlags, ConfigData, SecureStorage, FlexPluginOption } from './flex-plugin';
+import FlexPlugin, { FlexPluginFlags } from './flex-plugin';
 
 type Multiple = { multiple: true };
 
@@ -75,19 +75,8 @@ export default abstract class CreateConfiguration extends FlexPlugin {
     description: flags.string(CreateConfiguration.descriptionFlag),
   };
 
+  // @ts-ignore
   public _flags: CreateConfigurationFlags;
-
-  constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage, opts: Partial<FlexPluginOption>) {
-    super(argv, config, secureStorage, opts);
-    this._flags = {
-      json: false,
-      'clear-terminal': false,
-      region: '',
-      new: false,
-      'disable-plugin': [''],
-      'enable-plugin': [''],
-    };
-  }
 
   async init(): Promise<void> {
     this._flags = (await this.parseCommand(CreateConfiguration)).flags;

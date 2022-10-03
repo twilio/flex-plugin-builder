@@ -41,19 +41,11 @@ export default class FlexPluginsStart extends FlexPlugin {
     }),
   };
 
+  // @ts-ignore
   public _flags: OutputFlags<typeof FlexPluginsStart.flags>;
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, { strict: false });
-    this._flags = {
-      'clear-terminal': '',
-      'flex-ui-source': '',
-      'include-remote': '',
-      json: false,
-      name: '',
-      port: '',
-      region: '',
-    };
   }
 
   async init(): Promise<void> {

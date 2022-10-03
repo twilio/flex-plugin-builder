@@ -56,6 +56,7 @@ export default class FlexPluginsRelease extends CreateConfiguration {
     }),
   };
 
+  // @ts-ignore
   public _flags: OutputFlags<typeof FlexPluginsRelease.flags>;
 
   // @ts-ignore
@@ -66,18 +67,6 @@ export default class FlexPluginsRelease extends CreateConfiguration {
 
     this.scriptArgs = [];
     this.prints = this._prints.release;
-    this._flags = {
-      json: false,
-      'clear-terminal': false,
-      region: '',
-      'configuration-sid': '',
-      name: '',
-      plugin: '',
-      'disable-plugin': '',
-      'enable-plugin': '',
-      description: '',
-      new: false,
-    };
   }
 
   async init(): Promise<void> {

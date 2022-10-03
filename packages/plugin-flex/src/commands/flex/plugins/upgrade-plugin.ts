@@ -131,6 +131,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     '@material-ui/core': '^4.11.3',
   };
 
+  // @ts-ignore
   public _flags: OutputFlags<typeof FlexPluginsUpgradePlugin.flags>;
 
   // @ts-ignore
@@ -140,19 +141,6 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     super(argv, config, secureStorage, {});
 
     this.prints = this._prints.upgradePlugin;
-    this._flags = {
-      'remove-legacy-plugin': false,
-      install: false,
-      beta: false,
-      dev: false,
-      nightly: false,
-      yarn: false,
-      yes: false,
-      'flex-ui-2.0': false,
-      json: false,
-      'clear-terminal': false,
-      region: '',
-    };
   }
 
   async init(): Promise<void> {
