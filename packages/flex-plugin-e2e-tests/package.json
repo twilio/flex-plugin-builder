@@ -39,7 +39,7 @@
     "axios": "^0.24.0",
     "lodash": "4.17.21",
     "package-json": "^7.0.0",
-    "puppeteer": "^10.4.0",
+    "puppeteer": "^13.1.2",
     "replace-in-file": "^6.3.2",
     "semver": "^7.3.5"
   },
