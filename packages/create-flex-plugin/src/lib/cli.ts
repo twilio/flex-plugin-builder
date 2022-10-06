@@ -10,6 +10,7 @@ const usage = multilineString(
   'name\tName of your plugin.',
 );
 
+// Declaring the CLI Argument variable
 export interface CLIArguments {
   accountSid?: string;
   a?: string;
@@ -27,6 +28,7 @@ export interface CLIArguments {
   flexui2?: boolean;
 }
 
+// Setting up the description of CLI Arguments
 export default class CLI {
   public static description = usage;
 

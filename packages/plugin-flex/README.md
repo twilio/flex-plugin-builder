@@ -9,6 +9,7 @@ build and deploy [Twilio Flex plugins](https://www.twilio.com/docs/flex/plugin-b
 <!-- toc -->
 * [Requirements](#requirements)
 * [Usage](#usage)
+* [Debug and Testing](#debug-and-testing)
 * [Commands](#commands)
 <!-- tocstop -->
 
@@ -39,6 +40,15 @@ $ twilio --help flex
 USAGE
   $ twilio flex
 ...
+```
+
+# Debug and Testing
+
+```
+$ npm run link
+
+NOTE : Make sure to run npm run build after any changes in the root directory
+    $npm run build
 ```
 
 # Commands
@@ -490,6 +500,7 @@ USAGE
   $ twilio flex:plugins:upgrade-plugin
 
 OPTIONS
+  --flex-ui-2.0                    Update your plugin dependencies to be compatible with Flex UI 2.0
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
   -p, --profile=profile            Shorthand identifier for your profile.
   --beta                           If set, will upgrade to the latest beta version.
