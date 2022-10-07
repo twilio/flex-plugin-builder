@@ -39,13 +39,12 @@ Please visit [Twilio Docs](https://www.twilio.com/docs/flex/developer/plugins) f
 ## Local Setup
 ```
 To install the twilio flex-plugin, follow the following steps:
-1. Clone the github repo
-2. Use node 14 (nvm use 14)
-3. $npm install
-4. $cd packages/plugin-flex
-5. $twilio plugins:link :
 ```
-Refer [Debugging and Testing](/packages/plugin-flex/README.md/) to test the commands on your local
+  $ nvm use 14                       # Use Node 14 or below to ensure there are no compatibility issues while installing dependencies.
+  $ npm install                      # Run this in the root directory to install all the dependencies for all the packages.
+  $ npm run build                    # Cleans, compiles and creates builds for all the packages.
+```
+Refer [Debugging and Testing](/packages/plugin-flex/README.md) to test the commands on your local setup/environment.
 
 ## Changelog
 
