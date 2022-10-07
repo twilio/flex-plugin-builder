@@ -37,7 +37,7 @@ Please visit [Twilio Docs](https://www.twilio.com/docs/flex/developer/plugins) f
 * [Troubleshooting and FAQ](faq.md)
 
 ## Local Setup
-```
+
 To install the twilio flex-plugin, follow the following steps:
 ```
   $ nvm use 14                       # Use Node 14 or below to ensure there are no compatibility issues while installing dependencies.
