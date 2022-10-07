@@ -45,6 +45,7 @@ USAGE
 # Debug and Testing
 
 ```
+$ cd packages/plugin-flex
 $ npm run link
 ```
 > **_NOTE:_**   Run `npm run build` on the root of the project directory to re-build any code changes before testing.
