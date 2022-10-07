@@ -66,25 +66,7 @@ export const _getSpinner = (text: string, disabled: boolean): Progress => {
  * @param disabled force enable the progress
  */
 export const progress = async <R>(title: string, action: Callback<R>, disabled = env.isQuiet()): Promise<R> => {
-  let text: string = '';
-  try {
-    text = logger.markdown(title) || '';
-  } catch (e) {
-    // Ignore error
-  }
-  const spinner = _getSpinner(text, disabled);
-
-  try {
-    spinner.start();
-    const response = await action();
-    spinner.succeed();
-
-    return response;
-  } catch (e) {
-    spinner.fail(e.message);
-
-    throw e;
-  }
+  return action();
 };
 
 export default progress;
