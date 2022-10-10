@@ -74,7 +74,7 @@ commands:
           name: "Run e2e tests"
           command: |
             cd packages/flex-plugin-e2e-tests
-            npm start -- --step 1 --step 2 --step 3 --step 4 --step 5 --step 7 --step 8 --step 9 --step 10 --step 11 --step 12
+            npm start
   cmd_codecov:
     steps:
       - run:
