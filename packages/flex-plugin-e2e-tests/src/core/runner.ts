@@ -8,6 +8,12 @@ import { homeDir, TestParams, TestScenario, TestSuite, testSuites } from '.';
 import { api } from '../utils';
 
 /**
+ * Array of numbers
+ * Steps corresponding to the numbers in the array will not be run
+ */
+const SKIP_TESTS: Array<string> = process.env.SKIP_TESTS?.split(',') || [];
+
+/**
  * Main method for running a test
  * @param step the step to run
  * @param params the test params
@@ -98,10 +104,11 @@ const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenari
 
     for (let i = 0; i < testSuites.length; i++) {
       /*
-       * Skips step006 test to unblock release
-       * todo - Fix step006 test
+       * Skips any step that is present in SKIP_TESTS array
+       * This is done to unblock the release
+       * todo - Fix failing steps
        */
-      if (i === 5) continue;
+      if (SKIP_TESTS.includes(String(i + 1))) continue;
       await runTest(i + 1, params);
     }
   }
