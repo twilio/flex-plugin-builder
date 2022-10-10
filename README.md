@@ -44,7 +44,7 @@ To setup and run plugin-flex CLI locally with Twilio CLI, follow the below steps
   $ npm install                      # Run this in the root directory to install all the dependencies for all the packages.
   $ npm run build                    # Cleans, compiles and creates builds for all the packages.
 ```
-Refer [Debugging and Testing](/packages/plugin-flex/README.md) to test the commands on your local setup/environment.
+Refer [Debugging and Testing](/packages/plugin-flex/README.md) to test the commands on your local environment.
 
 ## Changelog
 
