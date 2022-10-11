@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, @typescript-eslint/prefer-for-of, global-require */
-import { existsSync, mkdirSync, rmdirSync } from 'fs';
+import { existsSync, mkdirSync, rmdir } from 'fs';
 
 import packageJson from 'package-json';
 import { logger } from '@twilio/flex-dev-utils';
@@ -83,11 +83,11 @@ const beforeAll = async (testParams: TestParams) => {
 const beforeEach = async () => {
   if (existsSync(homeDir)) {
     logger.info('Removing existing directory');
-    rmdirSync(homeDir, { recursive: true });
+    await rmdir(homeDir, { recursive: true }, () => {
+      logger.info('Creating a new directory');
+      mkdirSync(homeDir);
+    });
   }
-  logger.info('Making a new directory');
-  mkdirSync(homeDir);
-
   await api.cleanup();
 };
 
