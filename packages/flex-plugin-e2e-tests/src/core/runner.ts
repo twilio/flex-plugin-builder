@@ -106,7 +106,7 @@ const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenari
       /*
        * Skips any step that is present in SKIP_TESTS array
        * This is done to unblock the release
-       * todo - Fix failing steps
+       * todo - Fix failing steps and remove the skipping tests logic
        */
       if (SKIP_TESTS.includes(String(i + 1))) continue;
       await runTest(i + 1, params);
