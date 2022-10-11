@@ -82,8 +82,10 @@ const beforeAll = async (testParams: TestParams) => {
  */
 const beforeEach = async () => {
   if (existsSync(homeDir)) {
+    logger.info('Removing existing directory');
     rmdirSync(homeDir, { recursive: true });
   }
+  logger.info('Making a new directory');
   mkdirSync(homeDir);
 
   await api.cleanup();
@@ -95,7 +97,7 @@ const beforeEach = async () => {
  * @param testScenarios the {@link TestScenario}
  */
 const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenario>[]): Promise<void> => {
-  logger.info(`Running all the E2E tests`);
+  logger.info(`Running all the E2E tests with testScenarios: ${JSON.stringify(testScenarios)}`);
   for (const testScenario of testScenarios) {
     const params = { ...testParams };
     params.scenario = { ...params.scenario, ...testScenario };
