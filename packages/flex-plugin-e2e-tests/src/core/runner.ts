@@ -95,10 +95,12 @@ const beforeEach = async () => {
  * @param testScenarios the {@link TestScenario}
  */
 const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenario>[]): Promise<void> => {
+  logger.info(`Running all the E2E tests`);
   for (const testScenario of testScenarios) {
     const params = { ...testParams };
     params.scenario = { ...params.scenario, ...testScenario };
 
+    logger.info(`Printing parameters from runAll()`);
     printParameters(params);
     await beforeEach();
 
@@ -138,15 +140,22 @@ const runSelected = async (testParams: TestParams): Promise<void> => {
  * @param testScenarios the {@link TestScenario} to test against
  */
 const runner = async (testParams: TestParams, testScenarios: Partial<TestScenario>[]): Promise<void> => {
+  logger.info(`In runner()`);
   const _testParams = { ...testParams };
   const _testScenario = [...testScenarios];
+
+  logger.info(`Invoking beforeAll()`);
   await beforeAll(_testParams);
 
   if (!process.argv.includes('--step')) {
-    return runAll(_testParams, _testScenario);
+    logger.info(`Invoking runAll()`);
+    await runAll(_testParams, _testScenario);
+    logger.info(`runAll() completed`);
+    return;
   }
 
-  return runSelected(_testParams);
+  logger.info(`Running selected`);
+  await runSelected(_testParams);
 };
 
 export default runner;
