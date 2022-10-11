@@ -44,12 +44,18 @@ USAGE
 
 # Debug and Testing
 
-Run the below commands to link `plugin-flex` package to Twilio CLI. This enables running all the commands in your local package as if it were installed through Twilio CLI.
+Steps to link local package:
 
-```
-$ cd packages/plugin-flex            # Move to plugin-flex directory
-$ npm run link                       # This will run "twilio plugins:link ." which will link the plugins through Twilio CLI
-```
+1. Go to the package that you want to link locally for eg. flex-plugin-scripts and run ``` npm link```
+2. Go to the package where you want to use the link for eg. plugin-flex and run ``` npm link <package_name> ```.
+
+> **_NOTE:_**   `npm run link` and `npm link` work differently. `npm link` is used to link a local package in any project whereas `npm run link` will internally run `twilio plugins:link .` thereby linking the local package to Twilio CLI
+
+Steps to link plugin-flex package to Twilio CLI:
+
+1. Go to flex-plugin-builder/packages/plugin-flex and run ``` npm run link```.
+2. Now every time you run ``` twilio flex:plugins:<command> ``` you will be running the local version
+
 > **_NOTE:_**   Run `npm run build` on the root of the project directory to re-build any code changes before testing.
 
 # Commands
