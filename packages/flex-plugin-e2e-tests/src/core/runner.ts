@@ -143,11 +143,10 @@ const runner = async (testParams: TestParams, testScenarios: Partial<TestScenari
   await beforeAll(_testParams);
 
   if (!process.argv.includes('--step')) {
-    await runAll(_testParams, _testScenario);
-    return;
+    return runAll(_testParams, _testScenario);
   }
 
-  await runSelected(_testParams);
+  return runSelected(_testParams);
 };
 
 export default runner;
