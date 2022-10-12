@@ -3,7 +3,6 @@ import { logger } from '@twilio/flex-dev-utils';
 
 import { runner, testParams, testScenarios } from './core';
 
-logger.info(`INIT: Invoking runner()`);
 runner(testParams, testScenarios)
   .then(() => {
     logger.success('All E2E tests passed successfully');

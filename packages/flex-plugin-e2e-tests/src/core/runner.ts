@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, @typescript-eslint/prefer-for-of, global-require */
-import { existsSync, mkdirSync, rmdir } from 'fs';
+import { existsSync, mkdirSync, rmdirSync } from 'fs';
 
 import packageJson from 'package-json';
 import { logger } from '@twilio/flex-dev-utils';
@@ -82,12 +82,10 @@ const beforeAll = async (testParams: TestParams) => {
  */
 const beforeEach = async () => {
   if (existsSync(homeDir)) {
-    logger.info('Removing existing directory');
-    await rmdir(homeDir, { recursive: true }, () => {
-      logger.info('Creating a new directory');
-      mkdirSync(homeDir);
-    });
+    rmdirSync(homeDir, { recursive: true });
   }
+  mkdirSync(homeDir);
+
   await api.cleanup();
 };
 
@@ -97,12 +95,10 @@ const beforeEach = async () => {
  * @param testScenarios the {@link TestScenario}
  */
 const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenario>[]): Promise<void> => {
-  logger.info(`Running all the E2E tests with testScenarios: ${JSON.stringify(testScenarios)}`);
   for (const testScenario of testScenarios) {
     const params = { ...testParams };
     params.scenario = { ...params.scenario, ...testScenario };
 
-    logger.info(`Printing parameters from runAll()`);
     printParameters(params);
     await beforeEach();
 
@@ -110,7 +106,7 @@ const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenari
       /*
        * Skips any step that is present in SKIP_TESTS array
        * This is done to unblock the release
-       * todo - Fix failing steps and remove the skipping tests logic
+       * todo - Fix failing steps
        */
       if (SKIP_TESTS.includes(String(i + 1))) continue;
       await runTest(i + 1, params);
@@ -142,21 +138,15 @@ const runSelected = async (testParams: TestParams): Promise<void> => {
  * @param testScenarios the {@link TestScenario} to test against
  */
 const runner = async (testParams: TestParams, testScenarios: Partial<TestScenario>[]): Promise<void> => {
-  logger.info(`In runner()`);
   const _testParams = { ...testParams };
   const _testScenario = [...testScenarios];
-
-  logger.info(`Invoking beforeAll()`);
   await beforeAll(_testParams);
 
   if (!process.argv.includes('--step')) {
-    logger.info(`Invoking runAll()`);
     await runAll(_testParams, _testScenario);
-    logger.info(`runAll() completed`);
     return;
   }
 
-  logger.info(`Running selected`);
   await runSelected(_testParams);
 };
 
