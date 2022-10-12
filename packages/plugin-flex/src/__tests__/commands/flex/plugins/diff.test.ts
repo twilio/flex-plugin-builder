@@ -3,6 +3,7 @@ import { Diff } from '@twilio/flex-plugins-api-client';
 
 import createTest from '../../../framework';
 import FlexPluginsDiff from '../../../../commands/flex/plugins/diff';
+import FlexPlugin from '../../../../sub-commands/flex-plugin';
 
 describe('Commands/FlexPluginsDeploy', () => {
   const configId1 = 'FJ00000000000000000000000000001';
@@ -65,12 +66,18 @@ describe('Commands/FlexPluginsDeploy', () => {
     jest.resetAllMocks();
   });
 
-  it('should have flag as own property', () => {
-    expect(FlexPluginsDiff.hasOwnProperty('flags')).toEqual(true);
+  const createCommand = async (...args: string[]): Promise<FlexPluginsDiff> => {
+    const cmd = await createTest(FlexPluginsDiff)(...args);
+    await cmd.init();
+    return cmd;
+  };
+
+  it('should have own flags', () => {
+    expect(FlexPluginsDiff.flags).not.toBeSameObject(FlexPlugin.flags);
   });
 
   it('should call toolkit and get the diff', async () => {
-    const cmd = await createTest(FlexPluginsDiff)(configId1, configId2);
+    const cmd = await createCommand(configId1, configId2);
 
     jest.spyOn(cmd, 'getDiffs').mockResolvedValue(diffs);
     jest.spyOn(cmd, 'printDiff').mockReturnThis();

@@ -24,6 +24,13 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
     }),
   };
 
+  // @ts-ignore
+  public _flags: OutputFlags<typeof FlexPluginsArchivePlugin.flags>;
+
+  async init(): Promise<void> {
+    this._flags = (await this.parseCommand(FlexPluginsArchivePlugin)).flags;
+  }
+
   /**
    * @override
    */
@@ -104,13 +111,5 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
         'Could not archive your plugin due to failure in deleting the environment hosting your plugin. Please retry by running the archive command.',
       );
     }
-  }
-
-  /**
-   * @override
-   */
-  /* istanbul ignore next */
-  get _flags(): OutputFlags<typeof FlexPluginsArchivePlugin.flags> {
-    return this.parse(FlexPluginsArchivePlugin).flags;
   }
 }

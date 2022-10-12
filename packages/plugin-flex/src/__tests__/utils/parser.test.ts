@@ -5,23 +5,27 @@ import * as parser from '../../utils/parser';
 const stringToBeTrimmed = 'needs trimming';
 
 describe('Utils/Parser', () => {
-  it('should trim only strings', () => {
-    const obj = {
-      str1: `${stringToBeTrimmed} `,
-      str2: `  ${stringToBeTrimmed}  `,
-      str3: 'is good',
-      num: 123,
-      bool: true,
-      obj: {},
-    };
-    const trimmed = parser._trim(obj);
+  describe('_sanitize', () => {
+    it('should sanitize only strings', () => {
+      const obj = {
+        str1: `needs trimming `,
+        str2: `  needs trimming  `,
+        str3: 'is good',
+        str4: '   aaa&Plugins={"plugin_version":"FV000","phase":3}',
+        num: 123,
+        bool: true,
+        obj: {},
+      };
+      const sanitized = parser._sanitize(obj);
 
-    expect(trimmed.str1).toEqual(stringToBeTrimmed);
-    expect(trimmed.str2).toEqual(stringToBeTrimmed);
-    expect(trimmed.str3).toEqual('is good');
-    expect(trimmed.num).toEqual(123);
-    expect(trimmed.bool).toEqual(true);
-    expect(trimmed.obj).toEqual({});
+      expect(sanitized.str1).toEqual('needs%20trimming');
+      expect(sanitized.str2).toEqual('needs%20trimming');
+      expect(sanitized.str3).toEqual('is%20good');
+      expect(sanitized.str4).toEqual('aaa%26Plugins%3D%7B%22plugin_version%22%3A%22FV000%22%2C%22phase%22%3A3%7D');
+      expect(sanitized.num).toEqual(123);
+      expect(sanitized.bool).toEqual(true);
+      expect(sanitized.obj).toEqual({});
+    });
   });
 
   describe('_validate', () => {

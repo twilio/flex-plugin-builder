@@ -32,7 +32,12 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
     // @ts-ignore
     jest.spyOn(cmd, 'serverlessClient', 'get').mockReturnValue({ deleteEnvironment, getEnvironment });
   };
-  const createCmd = async () => createTest(FlexPluginsArchivePlugin)('--name', plugin.name);
+
+  const createCmd = async () => {
+    const cmd = await createTest(FlexPluginsArchivePlugin)('--name', plugin.name);
+    await cmd.init();
+    return cmd;
+  };
 
   beforeEach(() => {
     jest.resetAllMocks();

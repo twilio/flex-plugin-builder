@@ -27,6 +27,13 @@ export default class FlexPluginsDescribeRelease extends InformationFlexPlugin<De
     }),
   };
 
+  // @ts-ignore
+  public _flags: OutputFlags<typeof FlexPluginsDescribeRelease.flags>;
+
+  async init(): Promise<void> {
+    this._flags = (await this.parseCommand(FlexPluginsDescribeRelease)).flags;
+  }
+
   /**
    * @override
    */
@@ -75,13 +82,5 @@ export default class FlexPluginsDescribeRelease extends InformationFlexPlugin<De
       this.printPretty(plugin);
       this._logger.newline();
     });
-  }
-
-  /**
-   * Parses the flags passed to this command
-   */
-  /* istanbul ignore next */
-  get _flags(): OutputFlags<typeof FlexPluginsDescribeRelease.flags> {
-    return this.parse(FlexPluginsDescribeRelease).flags;
   }
 }

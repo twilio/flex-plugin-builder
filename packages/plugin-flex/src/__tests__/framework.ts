@@ -13,7 +13,17 @@ interface Context {
   tmpDir?: DirResult;
 }
 
-const constants = {
+// Declare custom matcher functions inside jest namespace
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace jest {
+    interface Matchers<R> {
+      toBeSameObject(received: Record<string, any> | undefined): CustomMatcherResult;
+    }
+  }
+}
+
+export const constants = {
   FAKE_ACCOUNT_SID: 'AC00000000000000000000000000000',
   FAKE_API_KEY: 'SK00000000000000000000000000000',
   FAKE_API_SECRET: 'fake password',
@@ -182,5 +192,22 @@ export const implementFileExists = (...output: string[]): void => {
     return input.length === output.length && input.every((item, index) => output[index] === item);
   });
 };
+
+expect.extend({
+  // Custom matcher that checks if two objects have the same reference
+  toBeSameObject(received: Record<string, any>, expected: Record<string, any>): jest.CustomMatcherResult {
+    const pass = received === expected;
+    if (pass) {
+      return {
+        message: () => `expected ${received} to be same as ${expected}`,
+        pass: true,
+      };
+    }
+    return {
+      message: () => `expected ${received} to be same as ${expected}`,
+      pass: false,
+    };
+  },
+});
 
 export default createTest;
