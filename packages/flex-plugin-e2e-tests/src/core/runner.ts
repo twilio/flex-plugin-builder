@@ -12,6 +12,8 @@ import { api } from '../utils';
  * Steps corresponding to the numbers in the array will not be run
  */
 const SKIP_TESTS: Array<string> = process.env.SKIP_TESTS?.split(',') || [];
+// This boolean is used to run all the tests without --typescript flag
+const SKIP_TS: boolean = Boolean(process.env.SKIP_TS);
 
 /**
  * Main method for running a test
@@ -106,7 +108,7 @@ const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenari
       /*
        * Skips any step that is present in SKIP_TESTS array
        * This is done to unblock the release
-       * todo - Fix failing steps
+       * todo - Fix failing steps and remove the skipping tests logic
        */
       if (SKIP_TESTS.includes(String(i + 1))) continue;
       await runTest(i + 1, params);
@@ -139,7 +141,8 @@ const runSelected = async (testParams: TestParams): Promise<void> => {
  */
 const runner = async (testParams: TestParams, testScenarios: Partial<TestScenario>[]): Promise<void> => {
   const _testParams = { ...testParams };
-  const _testScenario = [...testScenarios];
+  // Remove use of SKIP_TS and fix the windows rmdirSync() issue
+  const _testScenario = SKIP_TS ? testScenarios.filter((s) => !s.isTS) : [...testScenarios];
   await beforeAll(_testParams);
 
   if (!process.argv.includes('--step')) {
