@@ -151,6 +151,7 @@ jobs:
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
       NODE_VERSION: "lts"
+      SKIP_TESTS: "6,9,10,11,12"
     executor:
       name: node
       tag: << parameters.node-version >>
@@ -178,6 +179,8 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
+      SKIP_TESTS: "6,9,10,11,12"
+      SKIP_TS: true
     executor:
       name: win/default
       shell: << parameters.shell >>
@@ -207,6 +210,7 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
+      SKIP_TESTS: "6,9,10,11,12"
     executor:
       name: macos
     steps:
@@ -330,11 +334,11 @@ workflows:
           matrix:
             parameters:
               shell: ["bash.exe", "powershell.exe"]
-              node-version: ["12.22", "14.18.1"]
+              node-version: ["14.18.1"]
       - job_pr-validator-node:
           matrix:
             parameters:
-              node-version: ["12.22", "14.18.1"]
+              node-version: ["14.18.1"]
           post-steps:
             - cmd_slack-notification-error:
                 text: "$CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}*."

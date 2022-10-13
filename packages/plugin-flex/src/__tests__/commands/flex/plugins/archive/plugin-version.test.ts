@@ -37,8 +37,16 @@ describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
       // @ts-ignore
       .mockReturnValue({ getBuild, createBuildAndDeploy, getEnvironment, deleteEnvironment });
   };
-  const createCmd = async () =>
-    createTest(FlexPluginsArchivePluginVersion)('--name', pluginName, '--version', pluginVersion.version);
+  const createCmd = async () => {
+    const cmd = await createTest(FlexPluginsArchivePluginVersion)(
+      '--name',
+      pluginName,
+      '--version',
+      pluginVersion.version,
+    );
+    await cmd.init();
+    return cmd;
+  };
 
   beforeEach(() => {
     jest.resetAllMocks();

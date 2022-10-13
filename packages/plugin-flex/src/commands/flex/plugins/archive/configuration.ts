@@ -18,6 +18,13 @@ export default class FlexPluginsArchiveConfiguration extends ArchiveResource<Con
     }),
   };
 
+  // @ts-ignore
+  public _flags: OutputFlags<typeof FlexPluginsArchiveConfiguration.flags>;
+
+  async init(): Promise<void> {
+    this._flags = (await this.parseCommand(FlexPluginsArchiveConfiguration)).flags;
+  }
+
   /**
    * @override
    */
@@ -37,13 +44,5 @@ export default class FlexPluginsArchiveConfiguration extends ArchiveResource<Con
    */
   getResourceType(): string {
     return 'Flex Configuration';
-  }
-
-  /**
-   * @override
-   */
-  /* istanbul ignore next */
-  get _flags(): OutputFlags<typeof FlexPluginsArchiveConfiguration.flags> {
-    return this.parse(FlexPluginsArchiveConfiguration).flags;
   }
 }

@@ -24,6 +24,13 @@ export default class FlexPluginsArchivePluginVersion extends ArchiveResource<Plu
     }),
   };
 
+  // @ts-ignore
+  public _flags: OutputFlags<typeof FlexPluginsArchivePluginVersion.flags>;
+
+  async init(): Promise<void> {
+    this._flags = (await this.parseCommand(FlexPluginsArchivePluginVersion)).flags;
+  }
+
   /**
    * @override
    */
@@ -134,13 +141,5 @@ export default class FlexPluginsArchivePluginVersion extends ArchiveResource<Plu
     }
 
     return build;
-  }
-
-  /**
-   * @override
-   */
-  /* istanbul ignore next */
-  get _flags(): OutputFlags<typeof FlexPluginsArchivePluginVersion.flags> {
-    return this.parse(FlexPluginsArchivePluginVersion).flags;
   }
 }

@@ -1,17 +1,24 @@
 import createTest from '../../../framework';
 import FlexPluginsBuild from '../../../../commands/flex/plugins/build';
+import FlexPlugin from '../../../../sub-commands/flex-plugin';
 
 describe('Build2', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  it('should have flag as own property', () => {
-    expect(FlexPluginsBuild.hasOwnProperty('flags')).toEqual(true);
+  const createCommand = async (...args: string[]): Promise<FlexPluginsBuild> => {
+    const cmd = await createTest(FlexPluginsBuild)(...args);
+    await cmd.init();
+    return cmd;
+  };
+
+  it('should have own flags', () => {
+    expect(FlexPluginsBuild.flags).not.toBeSameObject(FlexPlugin.flags);
   });
 
   it('should run build script', async () => {
-    const cmd = await createTest(FlexPluginsBuild)();
+    const cmd = await createCommand();
 
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
     jest.spyOn(cmd, 'runScript').mockReturnThis();

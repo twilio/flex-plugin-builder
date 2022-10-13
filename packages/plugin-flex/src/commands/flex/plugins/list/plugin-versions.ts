@@ -22,6 +22,13 @@ export default class FlexPluginsListPluginVersions extends InformationFlexPlugin
     }),
   };
 
+  // @ts-ignore
+  public _flags: OutputFlags<typeof FlexPluginsListPluginVersions.flags>;
+
+  async init(): Promise<void> {
+    this._flags = (await this.parseCommand(FlexPluginsListPluginVersions)).flags;
+  }
+
   /**
    * @override
    */
@@ -58,13 +65,5 @@ export default class FlexPluginsListPluginVersions extends InformationFlexPlugin
       this.printPretty(version, 'isActive', 'pluginSid', 'version');
       this._logger.newline();
     });
-  }
-
-  /**
-   * Parses the flags passed to this command
-   */
-  /* istanbul ignore next */
-  get _flags(): OutputFlags<typeof FlexPluginsListPluginVersions.flags> {
-    return this.parse(FlexPluginsListPluginVersions).flags;
   }
 }

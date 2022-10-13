@@ -2,7 +2,7 @@ import { TwilioApiError, TwilioCliError, packages } from '@twilio/flex-dev-utils
 import * as fs from '@twilio/flex-dev-utils/dist/fs';
 import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
 
-import { Pkg } from '../../../../sub-commands/flex-plugin';
+import FlexPlugin, { Pkg } from '../../../../sub-commands/flex-plugin';
 import createTest, { getPrintMethod, implementFileExists, mockGetPkg, mockPrintMethod } from '../../../framework';
 import FlexPluginsUpgradePlugin, { DependencyUpdates } from '../../../../commands/flex/plugins/upgrade-plugin';
 
@@ -18,8 +18,14 @@ describe('Commands/FlexPluginsStart', () => {
     app: { isTSProject: () => false },
   };
 
+  const createCommand = async (...args: string[]): Promise<FlexPluginsUpgradePlugin> => {
+    const cmd = await createTest(FlexPluginsUpgradePlugin)(...args);
+    await cmd.init();
+    return cmd;
+  };
+
   const removeLegacyPlugin = async () => {
-    const cmd = await createTest(FlexPluginsUpgradePlugin)();
+    const cmd = await createCommand();
 
     jest.spyOn(cmd, 'exit').mockReturnThis();
     mockPrintMethod(cmd, 'removeLegacyNotification');
@@ -42,12 +48,17 @@ describe('Commands/FlexPluginsStart', () => {
     jest.spyOn(spawn, 'spawn').mockReturnThis();
   });
 
-  it('should have flag as own property', () => {
-    expect(FlexPluginsUpgradePlugin.hasOwnProperty('flags')).toEqual(true);
+  it('should have own flags', () => {
+    expect(FlexPluginsUpgradePlugin.flags).not.toBeSameObject(FlexPlugin.flags);
+  });
+
+  it('should set parsed flags', async () => {
+    const cmd = await createCommand();
+    expect(cmd._flags).toBeDefined();
   });
 
   it('should should return then version of @twilio/flex-plugin-scripts from dependencies', async () => {
-    const cmd = await createTest(FlexPluginsUpgradePlugin)();
+    const cmd = await createCommand();
 
     mockGetPkg(cmd, {
       dependencies: { '@twilio/flex-plugin-scripts': '3.0.0' },
@@ -57,7 +68,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should should return the version of @twilio/flex-plugin-scripts from devDependencies', async () => {
-    const cmd = await createTest(FlexPluginsUpgradePlugin)();
+    const cmd = await createCommand();
 
     mockGetPkg(cmd, {
       dependencies: {},
@@ -68,7 +79,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should should throw exception if no version is found', async () => {
-    const cmd = await createTest(FlexPluginsUpgradePlugin)();
+    const cmd = await createCommand();
 
     mockGetPkg(cmd, {
       dependencies: {},
@@ -85,7 +96,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should remove packages that have no post/post', async () => {
-    const cmd = await createTest(FlexPluginsUpgradePlugin)();
+    const cmd = await createCommand();
 
     const untouchedScripts = {
       untouchedCommand: 'some command',
@@ -145,7 +156,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should remove craco.config.js', async () => {
-    const cmd = await createTest(FlexPluginsUpgradePlugin)();
+    const cmd = await createCommand();
 
     // @ts-ignore
     const sha = FlexPluginsUpgradePlugin.cracoConfigSha;
@@ -165,7 +176,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should not remove craco.config.js if modified', async () => {
-    const cmd = await createTest(FlexPluginsUpgradePlugin)();
+    const cmd = await createCommand();
 
     // @ts-ignore
     cmd.cwd = cwdPath;
@@ -183,7 +194,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should cleanup appConfig.js', async () => {
-    const cmd = await createTest(FlexPluginsUpgradePlugin)();
+    const cmd = await createCommand();
 
     // @ts-ignore
     cmd.cwd = cwdPath;
@@ -203,7 +214,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should warn about cleaning up appConfig.js', async () => {
-    const cmd = await createTest(FlexPluginsUpgradePlugin)();
+    const cmd = await createCommand();
     const appConfig = 'line1\nurl: something else\nline2';
 
     // @ts-ignore
@@ -312,7 +323,7 @@ describe('Commands/FlexPluginsStart', () => {
     };
 
     it('should call removeLegacyPlugin', async () => {
-      const cmd = await createTest(FlexPluginsUpgradePlugin)('--remove-legacy-plugin');
+      const cmd = await createCommand('--remove-legacy-plugin');
 
       jest.spyOn(cmd, 'pkg', 'get').mockReturnThis();
       jest.spyOn(cmd, 'removeLegacyPlugin').mockReturnThis();
@@ -324,7 +335,7 @@ describe('Commands/FlexPluginsStart', () => {
     });
 
     it('should call upgrade notification', async () => {
-      const cmd = await createTest(FlexPluginsUpgradePlugin)('--yes');
+      const cmd = await createCommand('--yes');
       mockForDoRun(cmd);
       // @ts-ignore
       const upgradeNotification = jest.spyOn(cmd.prints, 'upgradeNotification');
@@ -337,7 +348,7 @@ describe('Commands/FlexPluginsStart', () => {
     });
 
     it('should call upgrade notification without yes flag', async () => {
-      const cmd = await createTest(FlexPluginsUpgradePlugin)();
+      const cmd = await createCommand();
       mockForDoRun(cmd);
       // @ts-ignore
       const upgradeNotification = jest.spyOn(cmd.prints, 'upgradeNotification');
@@ -350,7 +361,7 @@ describe('Commands/FlexPluginsStart', () => {
     });
 
     it('should not call cleanupNodeModules if already latest version', async () => {
-      const cmd = await createTest(FlexPluginsUpgradePlugin)();
+      const cmd = await createCommand();
       mockForDoRun(cmd);
       jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
 
@@ -361,7 +372,7 @@ describe('Commands/FlexPluginsStart', () => {
     });
 
     it('should call cleanupNodeModules if not latest version', async () => {
-      const cmd = await createTest(FlexPluginsUpgradePlugin)();
+      const cmd = await createCommand();
       mockForDoRun(cmd);
       // @ts-ignore
       jest.spyOn(packages, 'getRegistryVersion').mockResolvedValue({ version: '3.0.0' });
@@ -373,7 +384,7 @@ describe('Commands/FlexPluginsStart', () => {
     });
 
     it('should upgrade from v1', async () => {
-      const cmd = await createTest(FlexPluginsUpgradePlugin)();
+      const cmd = await createCommand();
       mockForDoRun(cmd);
       jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(1);
 
@@ -386,7 +397,7 @@ describe('Commands/FlexPluginsStart', () => {
     });
 
     it('should upgrade from v2', async () => {
-      const cmd = await createTest(FlexPluginsUpgradePlugin)();
+      const cmd = await createCommand();
       mockForDoRun(cmd);
       jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(2);
 
@@ -399,7 +410,7 @@ describe('Commands/FlexPluginsStart', () => {
     });
 
     it('should upgrade from v3', async () => {
-      const cmd = await createTest(FlexPluginsUpgradePlugin)();
+      const cmd = await createCommand();
       mockForDoRun(cmd);
       jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(3);
 
@@ -412,7 +423,7 @@ describe('Commands/FlexPluginsStart', () => {
     });
 
     it('should upgrade from v4', async () => {
-      const cmd = await createTest(FlexPluginsUpgradePlugin)();
+      const cmd = await createCommand();
       mockForDoRun(cmd);
       jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
 
@@ -425,7 +436,7 @@ describe('Commands/FlexPluginsStart', () => {
     });
 
     it('should upgrade to flex ui 2.0', async () => {
-      const cmd = await createTest(FlexPluginsUpgradePlugin)('--flex-ui-2.0');
+      const cmd = await createCommand('--flex-ui-2.0');
       mockForDoRun(cmd);
       jest.spyOn(cmd, 'upgradeToFlexUI2').mockReturnThis();
       jest.spyOn(packages, 'getLatestFlexUIVersion').mockResolvedValue('2.0.0-alpha');
@@ -440,7 +451,7 @@ describe('Commands/FlexPluginsStart', () => {
     });
 
     it('should throw error if flex ui is already 2.0 and --flex-ui-2.0 is not passed', async (done) => {
-      const cmd = await createTest(FlexPluginsUpgradePlugin)();
+      const cmd = await createCommand();
       mockForDoRun(cmd);
       jest.spyOn(cmd, 'flexUIVersion', 'get').mockReturnValue(2);
 
@@ -454,7 +465,7 @@ describe('Commands/FlexPluginsStart', () => {
     });
 
     it('should quit if it requires manual changes', async () => {
-      const cmd = await createTest(FlexPluginsUpgradePlugin)();
+      const cmd = await createCommand();
       mockForDoRun(cmd);
       jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
 
@@ -657,7 +668,7 @@ describe('Commands/FlexPluginsStart', () => {
     };
 
     it('should return the correct DependencyUpdates', async () => {
-      const cmd = await createTest(FlexPluginsUpgradePlugin)('--flex-ui-2.0');
+      const cmd = await createCommand('--flex-ui-2.0');
 
       jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
       jest.spyOn(cmd, 'upgradeToLatest').mockReturnThis();
@@ -692,7 +703,7 @@ describe('Commands/FlexPluginsStart', () => {
     };
 
     it('should call all methods', async () => {
-      const cmd = await createTest(FlexPluginsUpgradePlugin)('--flex-ui-2.0');
+      const cmd = await createCommand('--flex-ui-2.0');
 
       jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
       jest.spyOn(cmd, 'upgradeToLatest').mockReturnThis();
@@ -740,7 +751,7 @@ describe('Commands/FlexPluginsStart', () => {
     };
 
     const getDependencyUpdates = async () => {
-      const cmd = await createTest(FlexPluginsUpgradePlugin)();
+      const cmd = await createCommand();
 
       jest.spyOn(cmd, 'pkgVersion', 'get').mockReturnValue(4);
       jest.spyOn(cmd, 'upgradeToLatest').mockReturnThis();

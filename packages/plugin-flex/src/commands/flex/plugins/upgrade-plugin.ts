@@ -132,13 +132,19 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   };
 
   // @ts-ignore
+  public _flags: OutputFlags<typeof FlexPluginsUpgradePlugin.flags>;
+
+  // @ts-ignore
   private prints;
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, {});
 
     this.prints = this._prints.upgradePlugin;
-    this.parse(FlexPluginsUpgradePlugin);
+  }
+
+  async init(): Promise<void> {
+    this._flags = (await this.parseCommand(FlexPluginsUpgradePlugin)).flags;
   }
 
   /**
@@ -590,12 +596,5 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     }
 
     return semver.coerce(pkg)?.major;
-  }
-
-  /**
-   * Parses the flags passed to this command
-   */
-  get _flags(): OutputFlags<typeof FlexPluginsUpgradePlugin.flags> {
-    return this.parse(FlexPluginsUpgradePlugin).flags;
   }
 }

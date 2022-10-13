@@ -90,6 +90,9 @@ export default class FlexPluginsDeploy extends FlexPlugin {
   };
 
   // @ts-ignore
+  public _flags: OutputFlags<typeof FlexPluginsDeploy.flags>;
+
+  // @ts-ignore
   private prints;
 
   private nextVersion?: string = undefined;
@@ -99,6 +102,10 @@ export default class FlexPluginsDeploy extends FlexPlugin {
 
     this.scriptArgs = [];
     this.prints = this._prints.deploy;
+  }
+
+  async init(): Promise<void> {
+    this._flags = (await this.parseCommand(FlexPluginsDeploy)).flags;
   }
 
   /**
@@ -295,14 +302,6 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     }
 
     return 'patch';
-  }
-
-  /**
-   * Parses the flags passed to this command
-   */
-  /* istanbul ignore next */
-  get _flags(): OutputFlags<typeof FlexPluginsDeploy.flags> {
-    return this.parse(FlexPluginsDeploy).flags;
   }
 
   /**

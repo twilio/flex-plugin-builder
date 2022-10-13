@@ -17,7 +17,11 @@ describe('Commands/Archive/FlexPluginsArchiveConfiguration', () => {
     // @ts-ignore
     jest.spyOn(cmd, 'pluginsApiToolkit', 'get').mockReturnValue({ archiveConfiguration });
   };
-  const createCmd = async () => createTest(FlexPluginsArchiveConfiguration)('--sid', configuration.sid);
+  const createCmd = async () => {
+    const cmd = await createTest(FlexPluginsArchiveConfiguration)('--sid', configuration.sid);
+    await cmd.init();
+    return cmd;
+  };
 
   beforeEach(() => {
     jest.resetAllMocks();

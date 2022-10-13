@@ -143,7 +143,7 @@ export const _readIndexPage = (): string => {
  */
 export const _checkPluginCount = (): void => {
   const content = _readIndexPage();
-  const match = content.match(/loadPlugin/g);
+  const match = content.match(/\.loadPlugin\(/g);
   if (!match || match.length === 0) {
     loadPluginCountError(0);
 

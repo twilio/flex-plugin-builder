@@ -75,6 +75,13 @@ export default abstract class CreateConfiguration extends FlexPlugin {
     description: flags.string(CreateConfiguration.descriptionFlag),
   };
 
+  // @ts-ignore
+  public _flags: CreateConfigurationFlags;
+
+  async init(): Promise<void> {
+    this._flags = (await this.parseCommand(CreateConfiguration)).flags;
+  }
+
   /**
    * Performs the actual task of validating and creating configuration. This method is also usd by release script.
    */
@@ -104,9 +111,5 @@ export default abstract class CreateConfiguration extends FlexPlugin {
     }
 
     return this.pluginsApiToolkit.createConfiguration(option);
-  }
-
-  get _flags(): CreateConfigurationFlags {
-    return this.parse(CreateConfiguration).flags;
   }
 }

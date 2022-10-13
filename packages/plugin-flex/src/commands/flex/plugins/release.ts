@@ -1,7 +1,7 @@
 import { progress } from '@twilio/flex-dev-utils';
 import { flags } from '@oclif/command';
 import { RequiredFlagError } from '@oclif/parser/lib/errors';
-import { OutputFlags } from '@oclif/parser/lib/parse';
+import { OutputFlags, ParserOutput } from '@oclif/parser/lib/parse';
 import { Release } from '@twilio/flex-plugins-api-client';
 
 import { createDescription } from '../../../utils/general';
@@ -57,6 +57,9 @@ export default class FlexPluginsRelease extends CreateConfiguration {
   };
 
   // @ts-ignore
+  public _flags: OutputFlags<typeof FlexPluginsRelease.flags>;
+
+  // @ts-ignore
   private prints;
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
@@ -64,6 +67,41 @@ export default class FlexPluginsRelease extends CreateConfiguration {
 
     this.scriptArgs = [];
     this.prints = this._prints.release;
+  }
+
+  async init(): Promise<void> {
+    const parsed: ParserOutput<any, any> = await this.parseCommand(FlexPluginsRelease);
+    if (parsed.flags[configurationSidFlex]) {
+      this._flags = parsed.flags;
+      return;
+    }
+
+    [descriptionFlex, nameFlex].forEach((key) => {
+      if (!parsed.flags[key]) {
+        throw new RequiredFlagError({
+          flag: FlexPluginsRelease.flags[key],
+          parse: {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            input: {} as any,
+            output: parsed,
+          },
+        });
+      }
+    });
+
+    const hasChange = [enablePluginFlex, disablePluginFlex].some((x) => parsed.flags[x]);
+    if (!hasChange) {
+      throw new RequiredFlagError({
+        flag: FlexPluginsRelease.flags[enablePluginFlex],
+        parse: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          input: {} as any,
+          output: parsed,
+        },
+      });
+    }
+
+    this._flags = parsed.flags;
   }
 
   /**
@@ -94,42 +132,5 @@ export default class FlexPluginsRelease extends CreateConfiguration {
    */
   async createRelease(configurationSid: string): Promise<Release> {
     return this.pluginsApiToolkit.release({ configurationSid });
-  }
-
-  /**
-   * Parses the flags passed to this command
-   */
-  get _flags(): OutputFlags<typeof FlexPluginsRelease.flags> {
-    const parse = this.parse(FlexPluginsRelease);
-    if (parse.flags[configurationSidFlex]) {
-      return parse.flags;
-    }
-
-    [descriptionFlex, nameFlex].forEach((key) => {
-      if (!parse.flags[key]) {
-        throw new RequiredFlagError({
-          flag: FlexPluginsRelease.flags[key],
-          parse: {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            input: {} as any,
-            output: parse,
-          },
-        });
-      }
-    });
-
-    const hasChange = [enablePluginFlex, disablePluginFlex].some((x) => parse.flags[x]);
-    if (!hasChange) {
-      throw new RequiredFlagError({
-        flag: FlexPluginsRelease.flags[enablePluginFlex],
-        parse: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          input: {} as any,
-          output: parse,
-        },
-      });
-    }
-
-    return parse.flags;
   }
 }

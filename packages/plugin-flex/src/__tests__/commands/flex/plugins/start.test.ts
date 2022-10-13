@@ -79,12 +79,23 @@ describe('Commands/FlexPluginsStart', () => {
     findPortAvailablePort = jest.spyOn(pluginBuilderStartScript, 'findPortAvailablePort');
   });
 
-  it('should have flag as own property', () => {
-    expect(FlexPluginsStart.hasOwnProperty('flags')).toEqual(true);
+  const createCommand = async (...args: string[]): Promise<FlexPluginsStart> => {
+    const cmd = await createTest(FlexPluginsStart)(...args);
+    await cmd.init();
+    return cmd;
+  };
+
+  it('should have own flags', () => {
+    expect(FlexPluginsStart.flags).not.toBeSameObject(FlexPlugin.flags);
+  });
+
+  it('should set parsed flags', async () => {
+    const cmd = await createCommand();
+    expect(cmd._flags).toBeDefined();
   });
 
   it('should run start script for the directory plugin', async () => {
-    const cmd = await createTest(FlexPluginsStart)();
+    const cmd = await createCommand();
 
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
@@ -118,7 +129,7 @@ describe('Commands/FlexPluginsStart', () => {
   it('should error due to bad versioning', async () => {
     jest.spyOn(updateNotifier, 'checkForUpdate').mockReturnThis();
 
-    const cmd = await createTest(FlexPluginsStart)();
+    const cmd = await createCommand();
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
@@ -149,7 +160,7 @@ describe('Commands/FlexPluginsStart', () => {
   it('should error due to not being in the plugins.json file', async () => {
     jest.spyOn(updateNotifier, 'checkForUpdate').mockReturnThis();
 
-    const cmd = await createTest(FlexPluginsStart)();
+    const cmd = await createCommand();
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
@@ -177,13 +188,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should read the name and include-remote flags', async () => {
-    const cmd = await createTest(FlexPluginsStart)(
-      '--name',
-      pluginNameOne,
-      '--name',
-      pluginNameTwo,
-      '--include-remote',
-    );
+    const cmd = await createCommand('--name', pluginNameOne, '--name', pluginNameTwo, '--include-remote');
 
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
@@ -205,7 +210,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should read the port flag', async () => {
-    const cmd = await createTest(FlexPluginsStart)('--name', pluginNameOne, '--name', pluginNameTwo, '--port', '4000');
+    const cmd = await createCommand('--name', pluginNameOne, '--name', pluginNameTwo, '--port', '4000');
 
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
@@ -228,7 +233,8 @@ describe('Commands/FlexPluginsStart', () => {
 
   it('should read and set flex-ui-source', async () => {
     const flexUISrc = 'http://localhost:8080/twilio-flex-ui.dev.browser.js';
-    const cmd = await createTest(FlexPluginsStart)('--flex-ui-source', flexUISrc);
+    const cmd = await createCommand('--flex-ui-source', flexUISrc);
+    const encodedFlexUISrc = 'http%3A%2F%2Flocalhost%3A8080%2Ftwilio-flex-ui.dev.browser.js';
 
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
@@ -258,13 +264,13 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd.runScript).toHaveBeenCalledWith(preStartCheck, ['--name', pkg.name]);
     expect(cmd.runScript).toHaveBeenCalledWith(preScriptCheck, ['--name', pkg.name]);
     expect(cmd.spawnScript).toHaveBeenCalledWith('start', ['plugin', '--name', pkg.name, '--port', '100']);
-    expect(cmd._flags[flexUiSource]).toEqual(flexUISrc);
-    expect(env.getFlexUISrc()).toEqual(flexUISrc);
+    expect(cmd._flags[flexUiSource]).toEqual(encodedFlexUISrc);
+    expect(env.getFlexUISrc()).toEqual(encodedFlexUISrc);
   });
 
   it('should error due to invalid flex-ui-source', async () => {
     const flexUISrc = 'invalid-flex-ui-source';
-    const cmd = await createTest(FlexPluginsStart)('--flex-ui-source', flexUISrc);
+    const cmd = await createCommand('--flex-ui-source', flexUISrc);
 
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
@@ -289,7 +295,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should process the one plugin', async () => {
-    const cmd = await createTest(FlexPluginsStart)('--name', pluginNameOne);
+    const cmd = await createCommand('--name', pluginNameOne);
 
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
@@ -309,7 +315,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should throw an error due to a user inputted port being unavailable', async (done) => {
-    const cmd = await createTest(FlexPluginsStart)('--name', pluginNameOne, '--port', '3000');
+    const cmd = await createCommand('--name', pluginNameOne, '--port', '3000');
 
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
@@ -334,7 +340,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should throw an error for no local plugins', async () => {
-    const cmd = await createTest(FlexPluginsStart)('--name', 'plugin-testOne@remote');
+    const cmd = await createCommand('--name', 'plugin-testOne@remote');
 
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
@@ -352,7 +358,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should throw an error if not in a plugin directory and no plugins given', async () => {
-    const cmd = await createTest(FlexPluginsStart)('');
+    const cmd = await createCommand();
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
@@ -372,13 +378,13 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should have compatibility set', async () => {
-    const cmd = await createTest(FlexPluginsStart)();
+    const cmd = await createCommand();
 
     expect(cmd.checkCompatibility).toEqual(true);
   });
 
   it('should return true if multiple plugins are provided', async () => {
-    const cmd = await createTest(FlexPluginsStart)('--name', pluginNameOne, '--name', pluginNameTwo);
+    const cmd = await createCommand('--name', pluginNameOne, '--name', pluginNameTwo);
 
     jest.spyOn(cmd, 'isPluginFolder');
 
@@ -388,7 +394,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should return true if include-remote is set', async () => {
-    const cmd = await createTest(FlexPluginsStart)('--include-remote');
+    const cmd = await createCommand('--include-remote');
 
     jest.spyOn(cmd, 'isPluginFolder');
 
@@ -398,7 +404,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should return false if no plugins', async () => {
-    const cmd = await createTest(FlexPluginsStart)();
+    const cmd = await createCommand();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
 
     // @ts-ignore
@@ -407,7 +413,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should return false if plugin directory is set but is the same as the --name', async () => {
-    const cmd = await createTest(FlexPluginsStart)('--name', pluginNameSample);
+    const cmd = await createCommand('--name', pluginNameSample);
 
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
     mockGetPkg(cmd, { name: pluginNameSample });
@@ -418,7 +424,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should return true if plugin directory is and is different', async () => {
-    const cmd = await createTest(FlexPluginsStart)('--name', pluginNameSample);
+    const cmd = await createCommand('--name', pluginNameSample);
 
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     mockGetPkg(cmd, { name: 'plugin-another' });
@@ -429,7 +435,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should error due to incorrectly formatted version input (semver)', async (done) => {
-    const cmd = await createTest(FlexPluginsStart)('--name', 'plugin-testOne', '--name', `${name}@${badVersion}`);
+    const cmd = await createCommand('--name', 'plugin-testOne', '--name', `${name}@${badVersion}`);
 
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
@@ -448,7 +454,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should error due to incorrectly formatted version input (regex)', async (done) => {
-    const cmd = await createTest(FlexPluginsStart)('--name', '!@!');
+    const cmd = await createCommand('--name', '!@!');
 
     jest.spyOn(cmd, 'runScript').mockReturnThis();
     jest.spyOn(cmd, 'spawnScript').mockReturnThis();
@@ -467,7 +473,7 @@ describe('Commands/FlexPluginsStart', () => {
   });
 
   it('should error due to version not found', async (done) => {
-    const cmd = await createTest(FlexPluginsStart)('--name', 'plugin-testOne', '--name', `${name}@${goodVersion}`);
+    const cmd = await createCommand('--name', 'plugin-testOne', '--name', `${name}@${goodVersion}`);
 
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
@@ -506,7 +512,7 @@ describe('Commands/FlexPluginsStart', () => {
       date_created: '2021',
       plugin_sid: 'FP00000000000000000000000000000',
     };
-    const cmd = await createTest(FlexPluginsStart)('--name', 'plugin-testOne', '--name', `${name}@${goodVersion}`);
+    const cmd = await createCommand('--name', 'plugin-testOne', '--name', `${name}@${goodVersion}`);
 
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'runScript').mockReturnThis();

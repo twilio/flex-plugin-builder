@@ -280,7 +280,7 @@ describe('PreScriptCheck', () => {
     });
 
     it('should check with no error', () => {
-      _readIndexPage.mockReturnValue('blahblah\nFlexPlugin.loadPlugin\nblahblah');
+      _readIndexPage.mockReturnValue('blahblah\nFlexPlugin.loadPlugin()\nblahblah');
       preScriptCheck._checkPluginCount();
 
       expect(_readIndexPage).toHaveBeenCalledTimes(1);
@@ -300,7 +300,7 @@ describe('PreScriptCheck', () => {
     });
 
     it('should warn that multiple loadPlugins were called', () => {
-      _readIndexPage.mockReturnValue('blahblah\nloadPlugin\nloadPlugin\nloadPlugin\nblahblah');
+      _readIndexPage.mockReturnValue('blahblah\n.loadPlugin(\n.loadPlugin(\n.loadPlugin(\nblahblah');
       preScriptCheck._checkPluginCount();
 
       expect(_readIndexPage).toHaveBeenCalledTimes(1);

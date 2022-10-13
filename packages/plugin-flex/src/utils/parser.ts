@@ -7,14 +7,14 @@ type Input<F> = Parser.Input<F>;
 type Output<F, A> = Parser.Output<F, A>;
 
 /**
- * Trims the object
+ * Sanitizes the object
  * @param obj
  * @private
  */
-export const _trim = <F>(obj: F): F => {
+export const _sanitize = <F>(obj: F): F => {
   Object.keys(obj).forEach((key) => {
     if (typeof obj[key] === 'string') {
-      obj[key] = obj[key].trim();
+      obj[key] = encodeURIComponent(obj[key].trim());
     }
   });
 
@@ -123,11 +123,11 @@ export const _combineFlags = <F, A extends { [name: string]: any }>(
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parser =
   <F, A extends { [name: string]: any }>(OclifParser: (options?: Input<F>, argv?: string[]) => Output<F, A>) =>
-  (options?: Input<F>, argv: string[] = []): Output<F, A> => {
-    const parsed: Output<F, A> = _combineFlags(OclifParser(_prepareFlags(options), argv), options);
-
-    parsed.flags = _trim(parsed.flags);
-    parsed.args = _trim(parsed.args);
+  async (options?: Input<F>, argv: string[] = []): Promise<Output<F, A>> => {
+    const preparedFlags = _prepareFlags(options);
+    const parsed: Output<F, A> = _combineFlags(await OclifParser(preparedFlags, argv), options);
+    parsed.flags = _sanitize(parsed.flags);
+    parsed.args = _sanitize(parsed.args);
 
     if (options && options.flags && parsed.flags) {
       _validate(parsed.flags, options.flags, parsed);

@@ -1,17 +1,24 @@
 import createTest from '../../../framework';
 import FlexPluginsTest from '../../../../commands/flex/plugins/test';
+import FlexPlugin from '../../../../sub-commands/flex-plugin';
 
 describe('Commands/FlexPluginsTest', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  it('should have flag as own property', () => {
-    expect(FlexPluginsTest.hasOwnProperty('flags')).toEqual(true);
+  const createCommand = async (...args: string[]): Promise<FlexPluginsTest> => {
+    const cmd = await createTest(FlexPluginsTest)(...args);
+    await cmd.init();
+    return cmd;
+  };
+
+  it('should have own flags', () => {
+    expect(FlexPluginsTest.flags).not.toBeSameObject(FlexPlugin.flags);
   });
 
   it('should run test script without extra args', async () => {
-    const cmd = await createTest(FlexPluginsTest)();
+    const cmd = await createCommand();
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
 
@@ -23,7 +30,7 @@ describe('Commands/FlexPluginsTest', () => {
   });
 
   it('should run test script with extra args', async () => {
-    const cmd = await createTest(FlexPluginsTest)('--', '--arg1', '--arg2');
+    const cmd = await createCommand('--', '--arg1', '--arg2');
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(4);
     jest.spyOn(cmd, 'runScript').mockReturnThis();
 
@@ -35,7 +42,7 @@ describe('Commands/FlexPluginsTest', () => {
   });
 
   it('should have compatibility set', async () => {
-    const cmd = await createTest(FlexPluginsTest)();
+    const cmd = await createCommand();
 
     expect(cmd.checkCompatibility).toEqual(true);
   });

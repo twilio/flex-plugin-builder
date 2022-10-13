@@ -6,6 +6,10 @@ import { createDescription } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import { isNullOrUndefined } from '../../../utils/strings';
 
+type Args = {
+  [name: string]: any;
+};
+
 /**
  * Configuration sid parser
  * @param input the input from the CLI
@@ -54,8 +58,19 @@ export default class FlexPluginsDiff extends FlexPlugin {
     ...baseFlags,
   };
 
+  // @ts-ignore
+  public _flags: OutputFlags<typeof FlexPluginsDiff.flags>;
+
+  // @ts-ignore
+  public _args: Args;
+
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, { runInDirectory: false });
+  }
+
+  async init(): Promise<void> {
+    this._flags = (await this.parseCommand(FlexPluginsDiff)).flags;
+    this._args = (await this.parseCommand(FlexPluginsDiff)).args;
   }
 
   /**
@@ -127,19 +142,5 @@ export default class FlexPluginsDiff extends FlexPlugin {
     } else {
       this._logger.info(`${prefix}${header}: ${FlexPlugin.getValue(path, before)}`);
     }
-  }
-
-  /**
-   * Parses the flags passed to this command
-   */
-  /* istanbul ignore next */
-  get _flags(): OutputFlags<typeof FlexPluginsDiff.flags> {
-    return this.parse(FlexPluginsDiff).flags;
-  }
-
-  /* istanbul ignore next */
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  get _args() {
-    return this.parse(FlexPluginsDiff).args;
   }
 }
