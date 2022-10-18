@@ -675,7 +675,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     options?: Parser.Input<F>,
     argv = this.argv,
   ): Promise<Parser.Output<F, A>> {
-    return parser(super.parse)(options, argv);
+    return parser(super.parse.bind(this))(options, argv);
   }
 
   /**
