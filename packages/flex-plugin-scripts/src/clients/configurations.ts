@@ -28,6 +28,7 @@ export default class ConfigurationClient {
     this.http = new HttpClient({
       baseURL: `https://flex-api.twilio.com/${ConfigurationClient.version}`,
       auth: { username, password },
+      supportProxy: true,
     });
   }
 
