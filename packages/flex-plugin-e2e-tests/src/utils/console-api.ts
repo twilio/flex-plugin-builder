@@ -3,7 +3,7 @@ import { stringify } from 'querystring';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { logger } from '@twilio/flex-dev-utils';
 
-const csrfTokenRegex = new RegExp(/name="CSRF"\svalue="(.*?)"/m);
+const csrfTokenRegex = new RegExp(/name="csrfToken"\scontent="(.*?)"/m);
 const twVisitorCookieRegex = new RegExp(/tw-visitor=(.*?);/m);
 const identityCookieRegex = new RegExp(/identity=(.*?);/m);
 const serverIdentityCookieRegex = new RegExp(/server-identity=(.*?);/m);
@@ -91,17 +91,20 @@ export class ConsoleAPI {
 
     const loginPasswordResponse = await ConsoleAPI.getResponse({
       method: 'POST',
-      url: `${this.baseUrl}/login/password`,
+      url: `${this.baseUrl}/userauth/submitLoginPassword`,
       withCredentials: true,
       maxRedirects: 0,
       headers: {
-        cookie: `${Cookie.visitor}=${twVisitorCookie}`,
+        'x-twilio-csrf': csrfToken,
+        cookie: `tw-visitor=${twVisitorCookie}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
-      validateStatus: (status: number): boolean => status === 302,
-      data: stringify({
-        CSRF: csrfToken,
+      validateStatus: (status: number): boolean => status === 200,
+      data: JSON.stringify({
         email: this.consoleAuthOptions.email,
         password: this.consoleAuthOptions.password,
+        userType: 0,
       }),
     });
 
