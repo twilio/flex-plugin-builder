@@ -4,7 +4,7 @@ import { Base } from './base';
 import { Cookie, Cookies } from '../../console-api';
 
 export class TwilioConsole extends Base {
-  private static _loginForm = 'form[method="post"';
+  private static _loginForm = '#email';
 
   assert = {};
 
