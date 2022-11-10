@@ -1,6 +1,7 @@
 import { Logger, singleLineString, boxen, confirm, coloredStrings } from '@twilio/flex-dev-utils';
 import { printList } from '@twilio/flex-dev-utils/dist/prints';
 
+import FlexPlugin from '../sub-commands/flex-plugin';
 import { exit } from '../utils/general';
 
 const cracoUpgradeGuideLink = 'https://twilio.com';
@@ -52,7 +53,9 @@ const upgradeToFlexUI2 = (logger: Logger) => () => {
  */
 const scriptSucceeded = (logger: Logger) => (needsInstall: boolean) => {
   logger.newline();
-  logger.success('🎉 Your plugin was successfully migrated to use the latest (v5) version of Flex Plugins CLI.');
+  logger.success(
+    `🎉 Your plugin was successfully migrated to use the latest (v${FlexPlugin.BUILDER_VERSION}) version of Flex Plugins CLI.`,
+  );
   logger.newline();
 
   logger.info('**Next Steps:**');
