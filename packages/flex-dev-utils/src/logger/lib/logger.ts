@@ -256,24 +256,24 @@ export class Logger {
     if (!msg || msg === '') {
       return msg;
     }
-    /*
-    for (const key in Logger.formatter) {
-      if (Logger.formatter.hasOwnProperty(key)) {
-        const formatter = Logger.formatter[key];
-        const regex = new RegExp(`${formatter.openChars}(.*?)${formatter.closeChars}`);
-        const match = msg.match(regex);
-
-        if (match) {
-          const replace = match[0]
-            .replace(new RegExp(formatter.openChars, 'g'), '')
-            .replace(new RegExp(formatter.closeChars, 'g'), '');
-          return this.markdown(msg.replace(regex, formatter.render(replace)));
-        }
-      }
-    }
-
-    return msg.replace(/\\/g, '');
-    */
+/**
+*    for (const key in Logger.formatter) {
+*      if (Logger.formatter.hasOwnProperty(key)) {
+*        const formatter = Logger.formatter[key];
+*        const regex = new RegExp(`${formatter.openChars}(.*?)${formatter.closeChars}`);
+*        const match = msg.match(regex);
+*
+*        if (match) {
+*          const replace = match[0]
+*            .replace(new RegExp(formatter.openChars, 'g'), '')
+*            .replace(new RegExp(formatter.closeChars, 'g'), '');
+*          return this.markdown(msg.replace(regex, formatter.render(replace)));
+*        }
+*      }
+*    }
+*
+*    return msg.replace(/\\/g, '');
+*/
    return msg;
   };
 
