@@ -256,7 +256,7 @@ export class Logger {
     if (!msg || msg === '') {
       return msg;
     }
-    /** 
+    /*
     for (const key in Logger.formatter) {
       if (Logger.formatter.hasOwnProperty(key)) {
         const formatter = Logger.formatter[key];
