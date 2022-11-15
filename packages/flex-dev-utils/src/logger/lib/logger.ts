@@ -256,8 +256,7 @@ export class Logger {
     if (!msg || msg === '') {
       return msg;
     }
-
-   return msg;
+      return msg;
   };
 
   /**
