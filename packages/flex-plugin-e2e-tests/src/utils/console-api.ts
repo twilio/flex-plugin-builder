@@ -70,7 +70,7 @@ export class ConsoleAPI {
     try {
       return axios(config);
     } catch (e) {
-      // logger.error(`${config.method}: ${config.url} returned code ${status}.`);
+      logger.error(`${config.method}: ${config.url} returned code ${status}.`);
       throw new Error();
     }
   }
