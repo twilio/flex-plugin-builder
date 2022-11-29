@@ -1,10 +1,14 @@
 import { Page } from 'puppeteer';
 
 import { Base } from './base';
+// eslint-disable-next-line import/order
 import { Cookie, Cookies } from '../../console-api';
 
+// eslint-disable-next-line import/order, import/no-unresolved
+import { sleep } from '../../timers';
+
 export class TwilioConsole extends Base {
-  private static _loginForm = 'form[method="post"';
+  private static _loginForm = '#email';
 
   assert = {};
 
@@ -37,7 +41,18 @@ export class TwilioConsole extends Base {
       : this._flexBaseUrl;
     const path = `console/flex/service-login/${accountSid}/?path=/${flexPath}&referer=${redirectUrl}`;
 
+    // eslint-disable-next-line no-console
+    console.log(`______PATH- ${path}`);
+
+    // eslint-disable-next-line no-console
+    console.log('---------Reached-1--------------');
+
     await this.goto({ baseUrl: this._baseUrl, path });
+
+    // eslint-disable-next-line no-console
+    console.log('---------Reached-2--------------');
+    await this.page.screenshot({ path: 'buddy-screenshot-2.png' });
+
     await this.elementVisible(TwilioConsole._loginForm, `Twilio Console's Login form`);
 
     const requiredCookies = [
@@ -54,5 +69,8 @@ export class TwilioConsole extends Base {
 
     // Log in Flex via service login
     await this.goto({ baseUrl: this._baseUrl, path });
+    await sleep(30000);
+    await this.page.screenshot({ path: 'buddy-screenshot-3.png' });
+    await sleep(30000);
   }
 }

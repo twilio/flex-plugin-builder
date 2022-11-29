@@ -3,7 +3,7 @@ import { stringify } from 'querystring';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { logger } from '@twilio/flex-dev-utils';
 
-const csrfTokenRegex = new RegExp(/name="CSRF"\svalue="(.*?)"/m);
+const csrfTokenRegex = new RegExp(/name="csrfToken"\scontent="(.*?)"/m);
 const twVisitorCookieRegex = new RegExp(/tw-visitor=(.*?);/m);
 const identityCookieRegex = new RegExp(/identity=(.*?);/m);
 const serverIdentityCookieRegex = new RegExp(/server-identity=(.*?);/m);
@@ -55,7 +55,7 @@ export class ConsoleAPI {
     const match = response.match(regex);
 
     if (!match || !match[1]) {
-      logger.error(response);
+      // logger.error(response);
       throw new Error(`Response does not contain ${matchName}`);
     }
 
@@ -70,8 +70,8 @@ export class ConsoleAPI {
     try {
       return axios(config);
     } catch (e) {
-      logger.error(`${config.method}: ${config.url} returned code ${e.status}.`);
-      throw new Error(e);
+      // logger.error(`${config.method}: ${config.url} returned code ${status}.`);
+      throw new Error();
     }
   }
 
@@ -89,23 +89,36 @@ export class ConsoleAPI {
       `${Cookie.visitor} cookie`,
     );
 
+    // eslint-disable-next-line no-console
+    console.log('------------YESSSSS------------');
+
     const loginPasswordResponse = await ConsoleAPI.getResponse({
       method: 'POST',
-      url: `${this.baseUrl}/login/password`,
+      url: `${this.baseUrl}/userauth/submitLoginPassword`,
       withCredentials: true,
       maxRedirects: 0,
       headers: {
-        cookie: `${Cookie.visitor}=${twVisitorCookie}`,
+        'x-twilio-csrf': csrfToken,
+        cookie: `tw-visitor=${twVisitorCookie}`,
+        // eslint-disable-next-line prettier/prettier
+        'Content-Type': 'application/json',
+        // eslint-disable-next-line prettier/prettier
+        'Accept': 'application/json',
       },
-      validateStatus: (status: number): boolean => status === 302,
-      data: stringify({
-        CSRF: csrfToken,
+      validateStatus: (status: number): boolean => status === 200,
+      data: JSON.stringify({
         email: this.consoleAuthOptions.email,
         password: this.consoleAuthOptions.password,
+        userType: 0,
       }),
     });
 
     const loginPasswordCookies = loginPasswordResponse.headers?.[SET_COOKIE]?.join() || '';
+
+    // eslint-disable-next-line no-console
+    console.log('------------DATATATATATATATTATA------------');
+    // eslint-disable-next-line no-console
+    console.log(loginPasswordCookies);
 
     const serverIdentityCookie = ConsoleAPI.getValueFromResponse(
       new RegExp(serverIdentityCookieRegex),

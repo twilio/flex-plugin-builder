@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { replaceInFile } from 'replace-in-file';
 import { TestSuite, TestParams, testParams } from '../core';
-import { spawn, Browser, pluginHelper, ConsoleAPI, joinPath, assertion, killChildProcess } from '../utils';
+import { spawn, Browser, pluginHelper, ConsoleAPI, joinPath, assertion, killChildProcess, sleep } from '../utils';
 
 // Plugin start
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
@@ -22,6 +22,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
 
   try {
     // Plugin loads
+    // plugin.componentText="This is a dismissible demo component 1667068658659";
     await Browser.app.twilioConsole.login(cookies, 'agent-desktop', secrets.api.accountSid, config.localhostPort);
     await assertion.app.view.agentDesktop.isVisible();
     await assertion.app.view.plugins.plugin.isVisible(plugin.componentText);
