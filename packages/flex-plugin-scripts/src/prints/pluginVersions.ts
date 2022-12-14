@@ -36,7 +36,7 @@ export default (domainName: string, versions: AssetVersion[], order: Order): voi
   if (isSemver) {
     const _list = list.map((v) => v.version);
     const sortedVersions = order === 'asc' ? semver.sort(_list) : semver.rsort(_list);
-    rows = sortedVersions.map((version) => list.find((v) => v.version === version) as DisplayList);
+    rows = sortedVersions.map((version: string) => list.find((v) => v.version === version) as DisplayList);
   } else {
     logger.warning(warningMsg);
     rows = list;
