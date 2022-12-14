@@ -8,27 +8,6 @@ import { homeDir, TestParams, TestScenario, TestSuite, testSuites } from '.';
 import { api } from '../utils';
 
 /**
- * Array of numbers
- * Steps corresponding to the numbers in the array will not be run
- */
-const SKIP_TESTS: Array<string> = process.env.SKIP_TESTS?.split(',') || [
-  '1',
-  '2',
-  '3',
-  '4',
-  '5',
-  '6',
-  '7',
-  '8',
-  '9',
-  '10',
-  '11',
-  '12',
-];
-// This boolean is used to run all the tests without --typescript flag
-const SKIP_TS: boolean = Boolean(process.env.SKIP_TS);
-
-/**
  * Main method for running a test
  * @param step the step to run
  * @param params the test params
@@ -121,12 +100,6 @@ const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenari
     await beforeEach();
 
     for (let i = 0; i < testSuites.length; i++) {
-      /*
-       * Skips any step that is present in SKIP_TESTS array
-       * This is done to unblock the release
-       * todo - Fix failing steps and remove the skipping tests logic
-       */
-      if (SKIP_TESTS.includes(String(i + 1))) continue;
       await runTest(i + 1, params);
     }
   }
@@ -157,8 +130,7 @@ const runSelected = async (testParams: TestParams): Promise<void> => {
  */
 const runner = async (testParams: TestParams, testScenarios: Partial<TestScenario>[]): Promise<void> => {
   const _testParams = { ...testParams };
-  // Remove use of SKIP_TS and fix the windows rmdirSync() issue
-  const _testScenario = SKIP_TS ? testScenarios.filter((s) => !s.isTS) : [...testScenarios];
+  const _testScenario = [...testScenarios];
   await beforeAll(_testParams);
 
   if (!process.argv.includes('--step')) {

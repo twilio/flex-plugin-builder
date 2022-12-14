@@ -40,11 +40,6 @@ orbs:
   node: circleci/node@4.4.0
 
 commands:
-  cmd_cache-verify:
-    steps:
-      - run:
-          name: "Verify npm cache contents"
-          command: npm cache verify 
   cmd_install-dependencies:
     steps:
       - run:
