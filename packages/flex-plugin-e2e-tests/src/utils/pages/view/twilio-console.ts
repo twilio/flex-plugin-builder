@@ -35,42 +35,39 @@ export class TwilioConsole extends Base {
    * @param flexPath
    * @param accountSid
    */
-  async login(cookies: Cookies, flexPath: string, accountSid: string, localhostPort: number): Promise<void> {
+  async login(
+    cookies: Cookies,
+    flexPath: string,
+    accountSid: string,
+    localhostPort: number,
+    firstLoad: boolean = true,
+  ): Promise<void> {
     const redirectUrl = this._flexBaseUrl.includes('localhost')
       ? TwilioConsole._createLocalhostUrl(localhostPort)
       : this._flexBaseUrl;
     const path = `console/flex/service-login/${accountSid}/?path=/${flexPath}&referer=${redirectUrl}`;
 
-    // eslint-disable-next-line no-console
-    console.log(`______PATH- ${path}`);
-
-    // eslint-disable-next-line no-console
-    console.log('---------Reached-1--------------');
-
     await this.goto({ baseUrl: this._baseUrl, path });
 
-    // eslint-disable-next-line no-console
-    console.log('---------Reached-2--------------');
-    await this.page.screenshot({ path: 'buddy-screenshot-2.png' });
+    if (firstLoad) {
+      await this.elementVisible(TwilioConsole._loginForm, `Twilio Console's Login form`);
 
-    await this.elementVisible(TwilioConsole._loginForm, `Twilio Console's Login form`);
+      const requiredCookies = [
+        { name: Cookie.visitor, value: cookies[Cookie.visitor] },
+        { name: Cookie.sIdentity, value: cookies[Cookie.sIdentity] },
+      ];
 
-    const requiredCookies = [
-      { name: Cookie.visitor, value: cookies[Cookie.visitor] },
-      { name: Cookie.sIdentity, value: cookies[Cookie.sIdentity] },
-    ];
+      if (cookies.identity) {
+        requiredCookies.push({ name: Cookie.identity, value: cookies[Cookie.identity] as string });
+      }
 
-    if (cookies.identity) {
-      requiredCookies.push({ name: Cookie.identity, value: cookies[Cookie.identity] as string });
+      // Set console cookies
+      await this.page.setCookie(...requiredCookies);
+
+      // Log in Flex via service login
+      await this.goto({ baseUrl: this._baseUrl, path });
     }
 
-    // Set console cookies
-    await this.page.setCookie(...requiredCookies);
-
-    // Log in Flex via service login
-    await this.goto({ baseUrl: this._baseUrl, path });
-    await sleep(30000);
-    await this.page.screenshot({ path: 'buddy-screenshot-3.png' });
     await sleep(30000);
   }
 }

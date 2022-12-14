@@ -4,6 +4,7 @@ import semver from 'semver';
 
 import { TestSuite, TestParams, testParams } from '../core';
 import { spawn, Browser, pluginHelper, ConsoleAPI, joinPath, assertion, killChildProcess, api } from '../utils';
+import { setupFlexBeforeLocalhost } from './step010';
 
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
   const ext = scenario.isTS ? 'tsx' : 'jsx';
@@ -56,12 +57,18 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   await Promise.all([startPlugin(plugin2.localhostUrl), startPlugin(plugin3.localhostUrl)]);
   const consoleApi = new ConsoleAPI(config.consoleBaseUrl, secrets.console);
   const cookies = await consoleApi.getCookies();
-  await Browser.create({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
 
   try {
-    // Plugin loads
-    await Browser.app.twilioConsole.login(cookies, 'admin', secrets.api.accountSid, config.localhostPort);
+    // Login to Flex and setup the required flex.twilio.com cookies
+    await setupFlexBeforeLocalhost(config, secrets, cookies);
+
+    // Load local plugin
+    await Browser.loadNewPage({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
+    await Browser.app.twilioConsole.login(cookies, 'admin', secrets.api.accountSid, config.localhostPort, false);
+
+    // Check if local plugin loaded okay
     await assertion.app.view.agentDesktop.isVisible();
+
     // @ts-ignore
     await assertion.app.view.plugins.plugin.isVisible(plugin1.newlineValue);
     await assertion.app.view.plugins.plugin.isVisible(plugin2.componentText);

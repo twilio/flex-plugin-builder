@@ -151,7 +151,6 @@ jobs:
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
       NODE_VERSION: "lts"
-      SKIP_TESTS: "11,12"
     executor:
       name: node
       tag: << parameters.node-version >>
@@ -179,8 +178,6 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
-      SKIP_TESTS: "6,9,10,11,12"
-      SKIP_TS: true
     executor:
       name: win/default
       shell: << parameters.shell >>
@@ -210,7 +207,6 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
-      SKIP_TESTS: "6,9,10,11,12"
     executor:
       name: macos
     steps:

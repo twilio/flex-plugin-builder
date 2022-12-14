@@ -26,6 +26,15 @@ export class Browser {
     assertion.app.init(this.app);
   }
 
+  static async loadNewPage(baseUrls: BaseUrl): Promise<void> {
+    this._page = await this._browser.newPage();
+    await this._page.setRequestInterception(true);
+    this._attachLogListener();
+    this._attachNetworkInterceptor();
+    this.app = new App(this._page, baseUrls);
+    assertion.app.init(this.app);
+  }
+
   static async kill(): Promise<void> {
     try {
       this._page.removeAllListeners();

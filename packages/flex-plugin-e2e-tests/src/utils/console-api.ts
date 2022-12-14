@@ -1,5 +1,3 @@
-import { stringify } from 'querystring';
-
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { logger } from '@twilio/flex-dev-utils';
 
@@ -89,9 +87,6 @@ export class ConsoleAPI {
       `${Cookie.visitor} cookie`,
     );
 
-    // eslint-disable-next-line no-console
-    console.log('------------YESSSSS------------');
-
     const loginPasswordResponse = await ConsoleAPI.getResponse({
       method: 'POST',
       url: `${this.baseUrl}/userauth/submitLoginPassword`,
@@ -114,11 +109,6 @@ export class ConsoleAPI {
     });
 
     const loginPasswordCookies = loginPasswordResponse.headers?.[SET_COOKIE]?.join() || '';
-
-    // eslint-disable-next-line no-console
-    console.log('------------DATATATATATATATTATA------------');
-    // eslint-disable-next-line no-console
-    console.log(loginPasswordCookies);
 
     const serverIdentityCookie = ConsoleAPI.getValueFromResponse(
       new RegExp(serverIdentityCookieRegex),
