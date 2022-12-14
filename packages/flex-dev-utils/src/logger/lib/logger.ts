@@ -253,9 +253,7 @@ export class Logger {
    * @param msg
    */
   public markdown = (msg?: string): string | undefined => {
-    console.log("---- Mardown Begin ----\n", msg);
     if (!msg || msg === '') {
-      console.log("---- Mardown End ----\n", msg);
       return msg;
     }
 
@@ -263,16 +261,12 @@ export class Logger {
       if (Logger.formatter.hasOwnProperty(key)) {
         const formatter = Logger.formatter[key];
         const regex = new RegExp(`${formatter.openChars}(.*?)${formatter.closeChars}`);
-        console.log("---- Message ----\n", msg);
-        console.log("---- RegExp ----\n", regex);
         const match = msg.match(regex);
-        console.log("---- Match ----\n", match);
+
         if (match) {
-          console.log("---- Replacing open and close chars ----",);
           const replace = match[0]
             .replace(new RegExp(formatter.openChars, 'g'), '')
             .replace(new RegExp(formatter.closeChars, 'g'), '');
-          console.log("---- Replaced string ----\n", replace);
           return this.markdown(msg.replace(regex, formatter.render(replace)));
         }
       }
