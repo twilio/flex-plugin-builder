@@ -12,6 +12,7 @@ import { api } from '../utils';
  * Steps corresponding to the numbers in the array will not be run
  */
 const SKIP_TESTS: Array<string> = process.env.SKIP_TESTS?.split(',') || [
+  '1',
   '2',
   '3',
   '4',
