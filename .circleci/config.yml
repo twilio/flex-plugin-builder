@@ -191,7 +191,6 @@ jobs:
       - checkout
       - cmd_windows-nvm-install-node:
           node-version: << parameters.node-version >>
-      - cmd_cache-verify
       - cmd_install-dependencies
       - cmd_run-build
       - cmd_run-e2e-tests
