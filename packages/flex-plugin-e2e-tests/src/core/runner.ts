@@ -75,12 +75,9 @@ const beforeAll = async (testParams: TestParams) => {
  * Runs before the test
  */
 const beforeEach = async () => {
-  logger.info('--- Before Each ----');
   if (fs.existsSync(homeDir)) {
-    logger.info('--- Directory exists. Deleting it ----');
     await fs.promises.rm(homeDir, { recursive: true, force: true });
   }
-  logger.info(`--- Creating directory: ${homeDir} ----`);
   await fs.promises.mkdir(homeDir);
 
   await api.cleanup();

@@ -65,6 +65,6 @@ export class TwilioConsole extends Base {
       await this.goto({ baseUrl: this._baseUrl, path });
     }
 
-    // await sleep(30000);
+    await sleep(30000);
   }
 }
