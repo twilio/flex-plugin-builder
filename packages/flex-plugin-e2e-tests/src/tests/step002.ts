@@ -5,7 +5,6 @@ import { spawn, assertion, joinPath, writeFileSync } from '../utils';
 // Create a plugin
 const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<void> => {
   const flags: string[] = [];
-
   if (scenario.isTS) {
     flags.push('--typescript');
   }
@@ -35,7 +34,6 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
     "dependencies['@twilio/flex-plugin-scripts']",
     scenario.packageVersion,
   );
-
   assertion.jsonFileContains([plugin.dir, 'package.json'], "dependencies['react']", `16.5.2`);
   assertion.jsonFileContains([plugin.dir, 'package.json'], "dependencies['react-dom']", `16.5.2`);
   assertion.jsonFileContains([plugin.dir, 'package.json'], "devDependencies['react-test-renderer']", `16.5.2`);

@@ -1,10 +1,7 @@
 import { Page } from 'puppeteer';
 
 import { Base } from './base';
-// eslint-disable-next-line import/order
 import { Cookie, Cookies } from '../../console-api';
-
-// eslint-disable-next-line import/order, import/no-unresolved
 import { sleep } from '../../timers';
 
 export class TwilioConsole extends Base {
@@ -68,6 +65,6 @@ export class TwilioConsole extends Base {
       await this.goto({ baseUrl: this._baseUrl, path });
     }
 
-    await sleep(30000);
+    // await sleep(30000);
   }
 }

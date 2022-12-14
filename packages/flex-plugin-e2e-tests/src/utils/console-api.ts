@@ -53,7 +53,7 @@ export class ConsoleAPI {
     const match = response.match(regex);
 
     if (!match || !match[1]) {
-      // logger.error(response);
+      logger.error(response);
       throw new Error(`Response does not contain ${matchName}`);
     }
 
@@ -67,9 +67,9 @@ export class ConsoleAPI {
   private static async getResponse(config: AxiosRequestConfig): Promise<AxiosResponse> {
     try {
       return axios(config);
-    } catch (e) {
-      logger.error(`${config.method}: ${config.url} returned code ${status}.`);
-      throw new Error();
+    } catch (e: any) {
+      logger.error(`${config.method}: ${config.url} returned code ${e.status}.`);
+      throw new Error(e.message);
     }
   }
 
@@ -95,10 +95,8 @@ export class ConsoleAPI {
       headers: {
         'x-twilio-csrf': csrfToken,
         cookie: `tw-visitor=${twVisitorCookie}`,
-        // eslint-disable-next-line prettier/prettier
         'Content-Type': 'application/json',
-        // eslint-disable-next-line prettier/prettier
-        'Accept': 'application/json',
+        Accept: 'application/json',
       },
       validateStatus: (status: number): boolean => status === 200,
       data: JSON.stringify({

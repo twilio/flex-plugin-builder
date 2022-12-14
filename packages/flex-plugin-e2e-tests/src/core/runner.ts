@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, @typescript-eslint/prefer-for-of, global-require */
-import { existsSync, mkdirSync, rmdirSync } from 'fs';
+import * as fs from 'fs';
 
 import packageJson from 'package-json';
 import { logger } from '@twilio/flex-dev-utils';
@@ -11,7 +11,19 @@ import { api } from '../utils';
  * Array of numbers
  * Steps corresponding to the numbers in the array will not be run
  */
-const SKIP_TESTS: Array<string> = process.env.SKIP_TESTS?.split(',') || [];
+const SKIP_TESTS: Array<string> = process.env.SKIP_TESTS?.split(',') || [
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '10',
+  '11',
+  '12',
+];
 // This boolean is used to run all the tests without --typescript flag
 const SKIP_TS: boolean = Boolean(process.env.SKIP_TS);
 
@@ -83,10 +95,13 @@ const beforeAll = async (testParams: TestParams) => {
  * Runs before the test
  */
 const beforeEach = async () => {
-  if (existsSync(homeDir)) {
-    rmdirSync(homeDir, { recursive: true });
+  logger.info('--- Before Each ----');
+  if (fs.existsSync(homeDir)) {
+    logger.info('--- Directory exists. Deleting it ----');
+    await fs.promises.rm(homeDir, { recursive: true, force: true });
   }
-  mkdirSync(homeDir);
+  logger.info(`--- Creating directory: ${homeDir} ----`);
+  await fs.promises.mkdir(homeDir);
 
   await api.cleanup();
 };
