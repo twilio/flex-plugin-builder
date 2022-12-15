@@ -41,10 +41,12 @@
     "package-json": "^7.0.0",
     "puppeteer": "^10.4.0",
     "replace-in-file": "^6.3.2",
+    "rimraf": "3.0.2",
     "semver": "^7.3.5"
   },
   "devDependencies": {
     "@types/lodash": "4.14.177",
+    "@types/rimraf": "3.0.2",
     "@types/semver": "^7.3.9"
   },
   "engines": {

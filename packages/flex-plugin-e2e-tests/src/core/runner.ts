@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, @typescript-eslint/prefer-for-of, global-require */
 import * as fs from 'fs';
 
+import rimraf from 'rimraf';
 import packageJson from 'package-json';
 import { logger } from '@twilio/flex-dev-utils';
 
@@ -74,14 +75,21 @@ const beforeAll = async (testParams: TestParams) => {
 /**
  * Runs before the test
  */
-const beforeEach = async () => {
-  if (fs.existsSync(homeDir)) {
-    await fs.promises.rm(homeDir, { recursive: true, force: true });
-  }
-  await fs.promises.mkdir(homeDir);
-
-  await api.cleanup();
-};
+const beforeEach = async (): Promise<void> =>
+  new Promise((resolve, reject) => {
+    logger.info('---- Before each ----');
+    rimraf(homeDir, async (e) => {
+      logger.info('--- Rimraf executed with result ----\n', e);
+      if (e) {
+        reject(e.message);
+      } else {
+        logger.info('---- Creating directory ----');
+        await fs.promises.mkdir(homeDir);
+        await api.cleanup();
+        resolve();
+      }
+    });
+  });
 
 /**
  * Runs all steps
@@ -97,7 +105,8 @@ const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenari
     await beforeEach();
 
     for (let i = 0; i < testSuites.length; i++) {
-      await runTest(i + 1, params);
+      logger.info(`Skipping test: ${i + 1}`);
+      // await runTest(i + 1, params);
     }
   }
 };
