@@ -40,11 +40,11 @@ orbs:
   node: circleci/node@4.4.0
 
 commands:
-  cmd_clean-cache:
+  cmd_verify-cache:
     steps:
       - run:
-          name: "Clean NPM cache"
-          command: npm cache clean -f
+          name: "Verify NPM cache"
+          command: npm cache verify
   cmd_install-dependencies:
     steps:
       - run:
@@ -193,7 +193,7 @@ jobs:
       - checkout
       - cmd_windows-nvm-install-node:
           node-version: << parameters.node-version >>
-      - cmd_clean-cache
+      - cmd_verify-cache
       - cmd_install-dependencies
       - cmd_run-build
       - cmd_run-e2e-tests
