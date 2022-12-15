@@ -81,6 +81,7 @@ const beforeEach = async (): Promise<void> =>
     rimraf(homeDir, async (e) => {
       logger.info('--- Rimraf executed with result ----\n', e);
       if (e) {
+        logger.error(e.message);
         reject(e.message);
       } else {
         logger.info('---- Creating directory ----');
@@ -105,8 +106,7 @@ const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenari
     await beforeEach();
 
     for (let i = 0; i < testSuites.length; i++) {
-      logger.info(`Skipping test: ${i + 1}`);
-      // await runTest(i + 1, params);
+      await runTest(i + 1, params);
     }
   }
 };
