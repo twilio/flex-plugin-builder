@@ -462,6 +462,8 @@ OPTIONS
   --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
 ```
 
+> **_NOTE:_** You need to be logged in to [Flex](https://flex.twilio.com) in your browser before running the command with the options `--include-remote`, `--name=plugin-name@remote` or `--name=plugin-name@1.0.0`.
+
 _See code: [dist/commands/flex/plugins/start.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/start.js)_
 
 ## `twilio flex:plugins:test`

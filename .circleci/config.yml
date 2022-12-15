@@ -40,6 +40,11 @@ orbs:
   node: circleci/node@4.4.0
 
 commands:
+  cmd_clean-cache:
+    steps:
+      - run:
+          name: "Clean NPM cache"
+          command: npm cache clean -f
   cmd_install-dependencies:
     steps:
       - run:
@@ -72,6 +77,8 @@ commands:
     steps:
       - run:
           name: "Run e2e tests"
+          # default timeout is 10m
+          no_output_timeout: 20m
           command: |
             cd packages/flex-plugin-e2e-tests
             npm start
@@ -186,6 +193,7 @@ jobs:
       - checkout
       - cmd_windows-nvm-install-node:
           node-version: << parameters.node-version >>
+      - cmd_clean-cache
       - cmd_install-dependencies
       - cmd_run-build
       - cmd_run-e2e-tests
