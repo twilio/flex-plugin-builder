@@ -6,7 +6,9 @@ import packageJson from 'package-json';
 import { logger } from '@twilio/flex-dev-utils';
 
 import { homeDir, TestParams, TestScenario, TestSuite, testSuites } from '.';
-import { api } from '../utils';
+import { api, sleep } from '../utils';
+
+const RUN_TILL_STEP: number = 6;
 
 /**
  * Main method for running a test
@@ -76,8 +78,9 @@ const beforeAll = async (testParams: TestParams) => {
  * Runs before the test
  */
 const beforeEach = async (): Promise<void> =>
-  new Promise((resolve, reject) => {
+  new Promise(async (resolve, reject) => {
     logger.info('---- Before each ----');
+    await sleep(10000);
     rimraf(homeDir, async (e) => {
       logger.info('--- Rimraf executed with result ----\n', e);
       if (e) {
@@ -106,7 +109,11 @@ const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenari
     await beforeEach();
 
     for (let i = 0; i < testSuites.length; i++) {
-      await runTest(i + 1, params);
+      if (i + 1 <= RUN_TILL_STEP) {
+        await runTest(i + 1, params);
+      } else {
+        logger.info(`Skipping step ${i + 1}`);
+      }
     }
   }
 };
