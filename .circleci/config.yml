@@ -116,11 +116,6 @@ commands:
       - run:
           name: "Set permissions to /usr/local"
           command: sudo chmod -R 777 /usr/local
-  cmd_set-win-permissions:
-    steps:
-      - run:
-          name: "Set permissions to C:Users"
-          command: icacls $HOME /q /c /t /grant Everyone:F
   cmd_windows-nvm-install-node:
     parameters:
       node-version:
@@ -195,7 +190,6 @@ jobs:
           node-version: << parameters.node-version >>
       - cmd_install-dependencies
       - cmd_run-build
-      - cmd_set-win-permissions
       - cmd_run-e2e-tests
       - store_artifacts:
           path: packages/flex-plugin-e2e-tests/screenshots
@@ -312,7 +306,7 @@ workflows:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-              shell: ["bash.exe"]
+              shell: powershell.exe -ExecutionPolicy Bypass
               node-version: ["14.18.1"]
       - job_e2e-test-macos:
           matrix:
