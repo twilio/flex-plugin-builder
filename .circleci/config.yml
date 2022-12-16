@@ -83,8 +83,9 @@ commands:
           name: "Run e2e tests - JS"
           command: |
             cd packages/flex-plugin-e2e-tests
-            set TS=false
             npm start
+          environment:
+            TS: false
   cmd_run-e2e-tests-win-ts:
     steps:
       - run:
@@ -92,8 +93,9 @@ commands:
           command: |
             taskkill /im node.exe
             cd packages/flex-plugin-e2e-tests
-            set TS=true
             npm start
+          environment:
+            TS: true
   cmd_codecov:
     steps:
       - run:

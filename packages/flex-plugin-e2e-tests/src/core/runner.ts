@@ -146,6 +146,8 @@ const runner = async (testParams: TestParams, testScenarios: Partial<TestScenari
   const _testParams = { ...testParams };
   let _testScenario;
 
+  logger.info(`RUN_TS: ${RUN_TS}`);
+
   // Needed for windows
   if (RUN_TS) {
     _testScenario = testScenarios.filter((s) => s.isTS === Boolean(RUN_TS));
