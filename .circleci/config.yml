@@ -91,7 +91,7 @@ commands:
       - run:
           name: "Run e2e tests - TS"
           command: |
-            taskkill /im node.exe
+            taskkill //im node.exe
             cd packages/flex-plugin-e2e-tests
             npm start
           environment:

@@ -150,7 +150,7 @@ const runner = async (testParams: TestParams, testScenarios: Partial<TestScenari
 
   // Needed for windows
   if (RUN_TS) {
-    _testScenario = testScenarios.filter((s) => s.isTS === Boolean(RUN_TS));
+    _testScenario = testScenarios.filter((s) => s.isTS === Boolean(Number(RUN_TS)));
   } else {
     _testScenario = [...testScenarios];
   }
