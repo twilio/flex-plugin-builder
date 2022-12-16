@@ -153,6 +153,9 @@ const runner = async (testParams: TestParams, testScenarios: Partial<TestScenari
     _testScenario = [...testScenarios];
   }
 
+  logger.info('---- Test scenarios ----');
+  logger.info(_testScenario);
+
   await beforeAll(_testParams);
 
   if (!process.argv.includes('--step')) {
