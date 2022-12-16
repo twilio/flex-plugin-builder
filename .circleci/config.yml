@@ -120,7 +120,7 @@ commands:
     steps:
       - run:
           name: "Set permissions to C:Users"
-          command: icacls $HOME /q /c /t /grant $USER:F
+          command: icacls $HOME /q /c /t /grant Everyone:F
   cmd_windows-nvm-install-node:
     parameters:
       node-version:
