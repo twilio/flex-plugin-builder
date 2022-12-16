@@ -1,14 +1,16 @@
 /* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, @typescript-eslint/prefer-for-of, global-require */
 import * as fs from 'fs';
 
-import rimraf from 'rimraf';
 import packageJson from 'package-json';
 import { logger } from '@twilio/flex-dev-utils';
 
 import { homeDir, TestParams, TestScenario, TestSuite, testSuites } from '.';
-import { api, sleep } from '../utils';
+import { api } from '../utils';
 
-const RUN_TILL_STEP: number = 6;
+/**
+ * RUN_TS is used to determine whether the test scenarios need
+ * to be filtered by isTS property value
+ */
 const RUN_TS: string | undefined = process.env.TS;
 
 /**
@@ -78,23 +80,14 @@ const beforeAll = async (testParams: TestParams) => {
 /**
  * Runs before the test
  */
-const beforeEach = async (): Promise<void> =>
-  new Promise(async (resolve, reject) => {
-    logger.info('---- Before each ----');
-    await sleep(10000);
-    rimraf(homeDir, async (e) => {
-      logger.info('--- Rimraf executed with result ----\n', e);
-      if (e) {
-        logger.error(e.message);
-        reject(e.message);
-      } else {
-        logger.info('---- Creating directory ----');
-        await fs.promises.mkdir(homeDir);
-        await api.cleanup();
-        resolve();
-      }
-    });
-  });
+const beforeEach = async () => {
+  if (fs.existsSync(homeDir)) {
+    await fs.promises.rm(homeDir, { recursive: true, force: true });
+  }
+  await fs.promises.mkdir(homeDir);
+
+  await api.cleanup();
+};
 
 /**
  * Runs all steps
@@ -110,11 +103,7 @@ const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenari
     await beforeEach();
 
     for (let i = 0; i < testSuites.length; i++) {
-      if (i + 1 <= RUN_TILL_STEP) {
-        await runTest(i + 1, params);
-      } else {
-        logger.info(`Skipping step ${i + 1}`);
-      }
+      await runTest(i + 1, params);
     }
   }
 };
@@ -146,17 +135,12 @@ const runner = async (testParams: TestParams, testScenarios: Partial<TestScenari
   const _testParams = { ...testParams };
   let _testScenario;
 
-  logger.info(`RUN_TS: ${RUN_TS}`);
-
-  // Needed for windows
   if (RUN_TS) {
+    // Required for running e2e on windows in CircleCi pipeline
     _testScenario = testScenarios.filter((s) => s.isTS === Boolean(Number(RUN_TS)));
   } else {
     _testScenario = [...testScenarios];
   }
-
-  logger.info('---- Test scenarios ----');
-  logger.info(_testScenario);
 
   await beforeAll(_testParams);
 
