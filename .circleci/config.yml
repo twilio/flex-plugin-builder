@@ -77,6 +77,23 @@ commands:
           command: |
             cd packages/flex-plugin-e2e-tests
             npm start
+  cmd_run-e2e-tests-win:
+    steps:
+      - run:
+          name: "Run e2e tests - JS"
+          command: |
+            cd packages/flex-plugin-e2e-tests
+            export TS=false
+            npm start
+  cmd_run-e2e-tests-win-ts:
+    steps:
+      - run:
+          name: "Run e2e tests - TS"
+          command: |
+            taskkill /im node.exe
+            cd packages/flex-plugin-e2e-tests
+            export TS=true
+            npm start
   cmd_codecov:
     steps:
       - run:
@@ -190,7 +207,8 @@ jobs:
           node-version: << parameters.node-version >>
       - cmd_install-dependencies
       - cmd_run-build
-      - cmd_run-e2e-tests
+      - cmd_run-e2e-tests-win
+      - cmd_run-e2e-tests-win-ts
       - store_artifacts:
           path: packages/flex-plugin-e2e-tests/screenshots
 
@@ -306,7 +324,7 @@ workflows:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-              shell: powershell.exe -ExecutionPolicy Bypass
+              shell: ["bash.exe"]
               node-version: ["14.18.1"]
       - job_e2e-test-macos:
           matrix:

@@ -9,6 +9,7 @@ import { homeDir, TestParams, TestScenario, TestSuite, testSuites } from '.';
 import { api, sleep } from '../utils';
 
 const RUN_TILL_STEP: number = 6;
+const RUN_TS: string | undefined = process.env.TS;
 
 /**
  * Main method for running a test
@@ -143,7 +144,15 @@ const runSelected = async (testParams: TestParams): Promise<void> => {
  */
 const runner = async (testParams: TestParams, testScenarios: Partial<TestScenario>[]): Promise<void> => {
   const _testParams = { ...testParams };
-  const _testScenario = [...testScenarios];
+  let _testScenario;
+
+  // Needed for windows
+  if (RUN_TS) {
+    _testScenario = testScenarios.filter((s) => s.isTS === Boolean(RUN_TS));
+  } else {
+    _testScenario = [...testScenarios];
+  }
+
   await beforeAll(_testParams);
 
   if (!process.argv.includes('--step')) {
