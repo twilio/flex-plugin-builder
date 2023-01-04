@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, @typescript-eslint/prefer-for-of, global-require */
-import { existsSync, mkdirSync, rmdirSync } from 'fs';
+import * as fs from 'fs';
 
 import packageJson from 'package-json';
 import { logger } from '@twilio/flex-dev-utils';
@@ -8,12 +8,10 @@ import { homeDir, TestParams, TestScenario, TestSuite, testSuites } from '.';
 import { api } from '../utils';
 
 /**
- * Array of numbers
- * Steps corresponding to the numbers in the array will not be run
+ * RUN_TS is used to determine whether the test scenarios need
+ * to be filtered by isTS property value
  */
-const SKIP_TESTS: Array<string> = process.env.SKIP_TESTS?.split(',') || [];
-// This boolean is used to run all the tests without --typescript flag
-const SKIP_TS: boolean = Boolean(process.env.SKIP_TS);
+const RUN_TS: string | undefined = process.env.TS;
 
 /**
  * Main method for running a test
@@ -83,10 +81,10 @@ const beforeAll = async (testParams: TestParams) => {
  * Runs before the test
  */
 const beforeEach = async () => {
-  if (existsSync(homeDir)) {
-    rmdirSync(homeDir, { recursive: true });
+  if (fs.existsSync(homeDir)) {
+    await fs.promises.rm(homeDir, { recursive: true, force: true });
   }
-  mkdirSync(homeDir);
+  await fs.promises.mkdir(homeDir);
 
   await api.cleanup();
 };
@@ -105,12 +103,6 @@ const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenari
     await beforeEach();
 
     for (let i = 0; i < testSuites.length; i++) {
-      /*
-       * Skips any step that is present in SKIP_TESTS array
-       * This is done to unblock the release
-       * todo - Fix failing steps and remove the skipping tests logic
-       */
-      if (SKIP_TESTS.includes(String(i + 1))) continue;
       await runTest(i + 1, params);
     }
   }
@@ -141,8 +133,15 @@ const runSelected = async (testParams: TestParams): Promise<void> => {
  */
 const runner = async (testParams: TestParams, testScenarios: Partial<TestScenario>[]): Promise<void> => {
   const _testParams = { ...testParams };
-  // Remove use of SKIP_TS and fix the windows rmdirSync() issue
-  const _testScenario = SKIP_TS ? testScenarios.filter((s) => !s.isTS) : [...testScenarios];
+  let _testScenario;
+
+  if (RUN_TS) {
+    // Required for running e2e on windows in CircleCi pipeline
+    _testScenario = testScenarios.filter((s) => s.isTS === Boolean(Number(RUN_TS)));
+  } else {
+    _testScenario = [...testScenarios];
+  }
+
   await beforeAll(_testParams);
 
   if (!process.argv.includes('--step')) {

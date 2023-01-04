@@ -72,9 +72,30 @@ commands:
     steps:
       - run:
           name: "Run e2e tests"
+          # default timeout is 10m
+          no_output_timeout: 20m
           command: |
             cd packages/flex-plugin-e2e-tests
             npm start
+  cmd_run-e2e-tests-win:
+    steps:
+      - run:
+          name: "Run e2e tests - JS"
+          command: |
+            cd packages/flex-plugin-e2e-tests
+            npm start
+          environment:
+            TS: false
+  cmd_run-e2e-tests-win-ts:
+    steps:
+      - run:
+          name: "Run e2e tests - TS"
+          command: |
+            taskkill //im node.exe //f
+            cd packages/flex-plugin-e2e-tests
+            npm start
+          environment:
+            TS: true
   cmd_codecov:
     steps:
       - run:
@@ -151,7 +172,6 @@ jobs:
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
       NODE_VERSION: "lts"
-      SKIP_TESTS: "6,9,10,11,12"
     executor:
       name: node
       tag: << parameters.node-version >>
@@ -179,8 +199,6 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
-      SKIP_TESTS: "6,9,10,11,12"
-      SKIP_TS: true
     executor:
       name: win/default
       shell: << parameters.shell >>
@@ -191,7 +209,8 @@ jobs:
           node-version: << parameters.node-version >>
       - cmd_install-dependencies
       - cmd_run-build
-      - cmd_run-e2e-tests
+      - cmd_run-e2e-tests-win
+      - cmd_run-e2e-tests-win-ts
       - store_artifacts:
           path: packages/flex-plugin-e2e-tests/screenshots
 
@@ -210,7 +229,6 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
-      SKIP_TESTS: "6,9,10,11,12"
     executor:
       name: macos
     steps:

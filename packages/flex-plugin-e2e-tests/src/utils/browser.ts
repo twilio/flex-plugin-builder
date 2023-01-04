@@ -1,5 +1,5 @@
 import { logger } from '@twilio/flex-dev-utils';
-import { launch, Browser as PuppeteerBrowser, Page, ConsoleMessage, ConsoleMessageType } from 'puppeteer';
+import Puppeteer, { Browser as PuppeteerBrowser, Page, ConsoleMessage, ConsoleMessageType } from 'puppeteer';
 
 import assertion from './assertion';
 import { App, BaseUrl } from './pages';
@@ -17,7 +17,16 @@ export class Browser {
    * Initializes browser object
    */
   static async create(baseUrls: BaseUrl): Promise<void> {
-    this._browser = await launch({ headless: true, args: ['--use-fake-ui-for-media-stream'] });
+    this._browser = await Puppeteer.launch({ headless: true, args: ['--use-fake-ui-for-media-stream'] });
+    this._page = await this._browser.newPage();
+    await this._page.setRequestInterception(true);
+    this._attachLogListener();
+    this._attachNetworkInterceptor();
+    this.app = new App(this._page, baseUrls);
+    assertion.app.init(this.app);
+  }
+
+  static async loadNewPage(baseUrls: BaseUrl): Promise<void> {
     this._page = await this._browser.newPage();
     await this._page.setRequestInterception(true);
     this._attachLogListener();

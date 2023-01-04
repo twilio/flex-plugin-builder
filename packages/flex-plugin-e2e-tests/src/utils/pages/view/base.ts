@@ -1,7 +1,7 @@
 import { ElementHandle, Page } from 'puppeteer';
 
 export abstract class Base {
-  protected static readonly DEFAULT_LOCATE_TIMEOUT = 20000;
+  protected static readonly DEFAULT_LOCATE_TIMEOUT = 60000;
 
   protected static readonly DEFAULT_PAGE_LOAD_TIMEOUT = 60000;
 
