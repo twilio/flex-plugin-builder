@@ -74,8 +74,8 @@ export class Logger {
       render: coloredStrings.bold,
     },
     italic: {
-      openChars: '\\?',
-      closeChars: '\\?',
+      openChars: '\\_',
+      closeChars: '\\_',
       render: coloredStrings.italic,
     },
     code: {
