@@ -249,7 +249,7 @@ export class Logger {
   };
 
   /**
-   * Provides basic markdown support. Currently supported bold **bold** and italic *italic*
+   * Provides basic markdown support. Currently supported bold **bold** and italic _italic_
    * @param msg
    */
   public markdown = (msg?: string): string | undefined => {
