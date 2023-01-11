@@ -248,14 +248,14 @@ describe('logger', () => {
       });
 
       it('should do just italic', () => {
-        expect(logger.markdown('text with *italic word* markdown')).toEqual('text with italic word markdown');
+        expect(logger.markdown('text with _italic word_ markdown')).toEqual('text with italic word markdown');
 
         expect(italic).toHaveBeenCalledTimes(1);
         expect(italic).toHaveBeenCalledWith('italic word');
       });
 
       it('should do italic and bold', () => {
-        expect(logger.markdown('text **with** *everything* and *anything* **that** can be')).toEqual(
+        expect(logger.markdown('text **with** _everything_ and _anything_ **that** can be')).toEqual(
           'text with everything and anything that can be',
         );
 

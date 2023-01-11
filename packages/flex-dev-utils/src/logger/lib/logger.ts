@@ -74,8 +74,8 @@ export class Logger {
       render: coloredStrings.bold,
     },
     italic: {
-      openChars: '\\*',
-      closeChars: '\\*',
+      openChars: '\\_',
+      closeChars: '\\_',
       render: coloredStrings.italic,
     },
     code: {
@@ -249,7 +249,7 @@ export class Logger {
   };
 
   /**
-   * Provides basic markdown support. Currently supported bold **bold** and italic *italic*
+   * Provides basic markdown support. Currently supported bold **bold** and italic _italic_
    * @param msg
    */
   public markdown = (msg?: string): string | undefined => {
