@@ -1,6 +1,6 @@
 {
   "name": "@twilio/flex-plugin-utils-jest",
-  "version": "6.0.3",
+  "version": "6.0.4",
   "description": "Flex Plugin E2E Tests framework",
   "keywords": [
     "flex",
