@@ -52,7 +52,7 @@
     "@types/react-redux": "5.0.22",
     "emotion": "9.2.12",
     "esm": "^3.2.25",
-    "jest": "26.6.3",
+    "jest": "29.3.1",
     "prop-types": "^15.7.2",
     "querystring": "^0.2.1",
     "react": "^16",
