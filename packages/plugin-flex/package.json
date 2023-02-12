@@ -55,7 +55,7 @@
     "dayjs": "^1.10.7",
     "lodash.startcase": "^4.4.0",
     "mkdirp": "^1.0.4",
-    "package-json": "^7.0.0",
+    "package-json": "^8.1.0",
     "rimraf": "^3.0.2",
     "yargs": "^16.2.0"
   },
