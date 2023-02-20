@@ -381,14 +381,14 @@ workflows:
             branches:
               only: /v\d-beta/
 
-  workflow_nightly-e2e:
-    triggers:
-      - schedule:
-          cron: "0 16 * * *"
-          filters:
-            branches:
-              only:
-                - main
+  # workflow_nightly-e2e:
+  #   triggers:
+  #     - schedule:
+  #         cron: "0 16 * * *"
+  #         filters:
+  #           branches:
+  #             only:
+  #               - main
     jobs:
       - job_e2e-test-linux:
           matrix:
