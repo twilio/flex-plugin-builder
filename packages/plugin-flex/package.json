@@ -48,10 +48,10 @@
     "@oclif/errors": "^1.3.5",
     "@oclif/parser": "^3.8.5",
     "@twilio/cli-core": "^7.0.0",
-    "@twilio/create-flex-plugin": "6.0.4",
-    "@twilio/flex-dev-utils": "6.0.4",
-    "@twilio/flex-plugin-scripts": "6.0.4",
-    "@twilio/flex-plugins-api-client": "6.0.4",
+    "@twilio/create-flex-plugin": "*",
+    "@twilio/flex-dev-utils": "*",
+    "@twilio/flex-plugin-scripts": "*",
+    "@twilio/flex-plugins-api-client": "*",
     "dayjs": "^1.10.7",
     "lodash.startcase": "^4.4.0",
     "mkdirp": "^1.0.4",
@@ -71,7 +71,7 @@
     "twilio": "^3.71.2"
   },
   "engines": {
-    "node": "^12 || ^14 || ^16"
+    "node": "^14 || ^16 || ^18"
   },
   "publishConfig": {
     "access": "public"

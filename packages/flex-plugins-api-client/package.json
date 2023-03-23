@@ -39,7 +39,7 @@
     "test:watch": "cd ../.. && jest packages/flex-plugins-api-client --watch --color"
   },
   "dependencies": {
-    "@twilio/flex-dev-utils": "6.0.4",
+    "@twilio/flex-dev-utils": "*",
     "url-join": "^4.0.1"
   },
   "devDependencies": {

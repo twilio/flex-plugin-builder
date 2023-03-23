@@ -185,11 +185,13 @@ export const _startServer = (
 
     if (method === 'OPTIONS') {
       res.writeHead(200, responseHeaders);
-      return res.end();
+      res.end();
+      return;
     }
     if (method !== 'GET') {
       res.writeHead(404, responseHeaders);
-      return res.end('Route not found');
+      res.end('Route not found');
+      return;
     }
     logger.debug('GET /plugins');
 
@@ -197,7 +199,8 @@ export const _startServer = (
     const flexVersion = headers['x-flex-version'] as string;
     if (!jweToken) {
       res.writeHead(400, responseHeaders);
-      return res.end('No X-Flex-JWE was provided');
+      res.end('No X-Flex-JWE was provided');
+      return;
     }
 
     const hasRemotePlugin = config.remoteAll || plugins.remote.length !== 0;
