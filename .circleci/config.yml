@@ -62,7 +62,7 @@ commands:
     steps:
       - run:
           name: "Run linter"
-          command: npm run lint
+          command: npm run lint:fix
   cmd_run-build:
     steps:
       - run:

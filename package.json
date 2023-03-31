@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "audit": "lerna-audit",
-    "bootstrap": "sh ./bin/bootstrap.sh",
+    "bootstrap": "bash ./bin/bootstrap.sh",
     "build": "lerna run build",
     "clean": "lerna run clean",
     "coverage": "codecov",
