@@ -133,6 +133,7 @@ export default (
 
     return compiler;
   } catch (err) {
+    // @ts-ignore
     throw new FlexPluginError(`Failed to create a webpack compiler: ${err.message}`);
   }
 };

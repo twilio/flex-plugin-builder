@@ -19,13 +19,15 @@
   ],
   "scripts": {
     "audit": "lerna-audit",
-    "postinstall": "npm run build",
+    "bootstrap": "./bin/bootstrap",
     "build": "lerna run build",
     "clean": "lerna run clean",
     "coverage": "codecov",
     "docs": "./bin/docs-generator.js",
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint:fix",
+    "postbootstrap": "npm run build",
+    "postinstall": "npm run bootstrap",
     "prepare": "husky install",
     "pretesst": "rimraf -rf coverage",
     "publish:alpha": "./bin/publish alpha $1",
@@ -38,7 +40,6 @@
     "test:one": "npm run test -- $@",
     "test:watch": "npm run test -- --watchAll"
   },
-  "dependencies": {},
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
