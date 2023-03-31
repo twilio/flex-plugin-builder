@@ -208,36 +208,34 @@ export const _startServer = (
     const versionedPlugins = _getRemoteVersionedPlugins(plugins.versioned);
     const promise: Promise<Plugin[]> = hasRemotePlugin ? _getRemotePlugins(jweToken, flexVersion) : Promise.resolve([]);
 
-    return (
-      promise
-        .then((remotePlugins) => {
-          if (config.remoteAll) {
-            return remotePlugins;
-          }
+    promise
+      .then((remotePlugins) => {
+        if (config.remoteAll) {
+          return remotePlugins;
+        }
 
-          // Check that all remote plugins inputted are valid
-          const notFoundPlugins = plugins.remote.filter((plgin) => !remotePlugins.find((r) => r.name === plgin));
-          if (notFoundPlugins.length) {
-            remotePluginNotFound(notFoundPlugins, remotePlugins);
-            exit(1);
-          }
+        // Check that all remote plugins inputted are valid
+        const notFoundPlugins = plugins.remote.filter((plgin) => !remotePlugins.find((r) => r.name === plgin));
+        if (notFoundPlugins.length) {
+          remotePluginNotFound(notFoundPlugins, remotePlugins);
+          exit(1);
+        }
 
-          // Filter and only return the ones that are in remoteInputPlugins
-          return remotePlugins.filter((r) => plugins.remote.includes(r.name));
-        })
-        // rebase will eventually get both local and remote plugins
-        .then((remotePlugins) => {
-          logger.trace('Got remote plugins', remotePlugins);
+        // Filter and only return the ones that are in remoteInputPlugins
+        return remotePlugins.filter((r) => plugins.remote.includes(r.name));
+      })
+      // rebase will eventually get both local and remote plugins
+      .then((remotePlugins) => {
+        logger.trace('Got remote plugins', remotePlugins);
 
-          onRemotePlugin([...versionedPlugins, ...remotePlugins]);
-          res.writeHead(200, responseHeaders);
-          res.end(JSON.stringify(_mergePlugins(localPlugins, remotePlugins, versionedPlugins)));
-        })
-        .catch((err) => {
-          res.writeHead(500, responseHeaders);
-          res.end(err);
-        })
-    );
+        onRemotePlugin([...versionedPlugins, ...remotePlugins]);
+        res.writeHead(200, responseHeaders);
+        res.end(JSON.stringify(_mergePlugins(localPlugins, remotePlugins, versionedPlugins)));
+      })
+      .catch((err) => {
+        res.writeHead(500, responseHeaders);
+        res.end(err);
+      });
   };
 };
 
