@@ -334,7 +334,7 @@ workflows:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               node-version: ["18.14.2"]
-              npm-version: ["6.14.14"]
+              npm-version: ["9.5.0"]
 
   workflow_publisher:
     when: << pipeline.parameters.run_npm_publish >>
