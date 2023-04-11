@@ -6,10 +6,10 @@ module.exports = {
   ...base(pkg),
   coverageThreshold: {
     global: {
-      statements: 61,
+      statements: 53,
       branches: 35,
-      lines: 58,
-      functions: 49,
+      lines: 53,
+      functions: 40,
     },
   },
 };

@@ -35,7 +35,7 @@ module.exports = (pkg, options) => {
     },
     transformIgnorePatterns: ['/node_modules/(?!(axios)/)'],
     testPathIgnorePatterns: ['/node_modules/', '<rootDir>/packages/flex-plugin-e2e-tests'],
-    coveragePathIgnorePatterns: ['/node_modules/'],
+    coveragePathIgnorePatterns: ['/node_modules/', 'jestTransforms'],
     globals: {
       'ts-jest': {
         tsconfig: 'tsconfig.test.json',

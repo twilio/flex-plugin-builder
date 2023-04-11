@@ -36,7 +36,7 @@
     "publish:public": "./bin/publish public $1",
     "publish:rc": "./bin/publish rc $1",
     "test": "node bin/test.js",
-    "test:ci": "jest --clearCache && npm run test -- --no-cache",
+    "test:ci": "export NODE_OPTIONS=--no-experimental-fetch && jest --clearCache && npm run test -- --no-cache --coverage --coverage-provider=v8",
     "test:one": "npm run test -- $@",
     "test:watch": "npm run test -- --watchAll"
   },
