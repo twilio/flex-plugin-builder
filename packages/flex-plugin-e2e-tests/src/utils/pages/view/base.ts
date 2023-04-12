@@ -37,9 +37,9 @@ export abstract class Base {
   }
 
   /**
-   * Input value into an element 
+   * Input value into an element
    * @param element
-   * @param value 
+   * @param value
    */
   protected async inputText(selector: string, value: string): Promise<void> {
     const element = await this.elementVisible(selector, selector.substring(1));
