@@ -144,11 +144,11 @@ commands:
           name: "Install node"
           command: nvm install << parameters.node-version >>
       - run:
-          name: "Install NPM latest"
-          command: npm install -g npm
-      - run:
           name: "NVM use"
           command: nvm use << parameters.node-version >>
+      - run:
+          name: "Install NPM latest"
+          command: npm install -g npm
   cmd_slack-notification-error:
     parameters:
       text:
