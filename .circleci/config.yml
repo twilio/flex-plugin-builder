@@ -226,8 +226,6 @@ jobs:
         type: string
       node-version:
         type: string
-      npm-version:
-        type: string
     environment:
       NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
@@ -238,7 +236,6 @@ jobs:
       - checkout
       - node/install:
           node-version: << parameters.node-version >>
-          npm-version: << parameters.npm-version >>
       - cmd_install-dependencies
       - cmd_run-build
       - cmd_set-mac-permissions
@@ -337,7 +334,6 @@ workflows:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               node-version: ["18.15.0"]
-              npm-version: ["9.5.0"]
 
   workflow_publisher:
     when: << pipeline.parameters.run_npm_publish >>
