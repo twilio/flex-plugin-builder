@@ -62,7 +62,7 @@ echo -e "-- Publishing as \033[1m${tag}\033[0m :: \033[1m${bump}\033[0m release 
 echo -e "------------------------------------\n"
 
 # Run unit-tests one more time
-npm run lint
+npm run lint:fix
 npm run test
 npm run build
 
