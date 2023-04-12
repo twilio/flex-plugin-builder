@@ -39,7 +39,7 @@ export default class FlexPluginsDescribePlugin extends InformationFlexPlugin<Des
   /**
    * @override
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   notFound(): void {
     this._logger.info(`!!Plugin **${this._flags.name}** was not found.!!`);
   }
@@ -47,7 +47,7 @@ export default class FlexPluginsDescribePlugin extends InformationFlexPlugin<Des
   /**
    * @override
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   print(plugin: DescribePlugin): void {
     this.printHeader('SID', plugin.sid);
     this.printHeader('Name', plugin.name);

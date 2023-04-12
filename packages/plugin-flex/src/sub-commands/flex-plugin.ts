@@ -218,7 +218,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * Returns the formatted header field
    * @param key
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   public static getHeader(key: string): string {
     return toSentenceCase(key);
   }
@@ -227,7 +227,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * Parses the timestamp
    * @param timestamp
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   public static parseDate(timestamp: string): string {
     return dayjs(timestamp).format('MMM DD, YYYY H:mm:ssA');
   }
@@ -237,7 +237,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @param key
    * @param value
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   public static getValue(key: string, value: string | boolean): string {
     key = key.toLowerCase();
 
@@ -494,7 +494,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * OClif alias for run command
    * @alias for run
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   async runCommand(): Promise<void> {
     return this.run();
   }
@@ -504,7 +504,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @param scriptName  the script name
    * @param argv        arguments to pass to the script
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   async runScript<T>(scriptName: string, argv = this.scriptArgs): Promise<T> {
     const extra = [];
     if (scriptName !== 'test') {
@@ -521,7 +521,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @param scriptName  the script to spawn
    * @param argv arguments to pass to the script
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   // @ts-ignore
   async spawnScript(scriptName: string, argv = this.scriptArgs): SpawnPromise {
     const scriptPath = require.resolve(`${flexPluginScripts}/dist/scripts/${scriptName}`);
@@ -563,7 +563,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @param object    the object to print
    * @param ignoreList  the keys in the object to ignore
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   printPretty<O extends { [key: string]: any }>(object: O, ...ignoreList: (keyof O)[]): void {
     Object.keys(object)
@@ -578,7 +578,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @param key the key
    * @param value the value
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   printHeader(key: string, value?: string | boolean): void {
     if (value === undefined) {
       this._logger.info(`**[[${FlexPlugin.getHeader(key)}:]]**`);
@@ -592,7 +592,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @param key
    * @param otherKeys
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   printVersion(key: string, ...otherKeys: string[]): void {
     if (otherKeys.length) {
       this._logger.info(`**@@${key}@@** ${otherKeys.join('')}`);
@@ -604,7 +604,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   /**
    * Checks for CLI update
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   checkForUpdate(): void {
     const notifier = updateNotifier({ pkg: this.cliPkg, updateCheckInterval: FlexPlugin.checkForUpdateFrequency });
     // template taken from the update-checker
@@ -621,7 +621,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @abstract
    * @returns {Promise<void>}
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async doRun(): Promise<any | void> {
     throw new NotImplementedError();

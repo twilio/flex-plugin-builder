@@ -83,7 +83,7 @@ export const _findCredential = async (accountSid?: string): Promise<Credential |
   if (accounts.length === 0) {
     return null;
   }
-  /* istanbul ignore next */
+  /* c8 ignore next */
   if (accounts.length === 1) {
     return convertCredential(credentials.find((cred) => cred.account === accounts[0]) as KeychainCredential);
   }

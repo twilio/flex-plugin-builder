@@ -39,10 +39,10 @@ export enum Lifecycle {
   Predeploy = 'predeploy',
 }
 
-/* istanbul ignore next */
+/* c8 ignore next */
 export const isNode = (): boolean => typeof process === 'object' && `${process}` === '[object process]';
 
-/* istanbul ignore next */
+/* c8 ignore next */
 export const isWin32 = (): boolean => isNode() && process.platform === 'win32';
 
 /**
@@ -77,7 +77,7 @@ const setValidJSFile = (source: string) => {
   setProcessEnv('FLEX_UI_SRC', source);
 };
 
-/* istanbul ignore next */
+/* c8 ignore next */
 export const hasHttpProxy = (): boolean => isNode() && isDefined(getProcessEnv('HTTP_PROXY'));
 export const getHttpProxy = (): string => getProcessEnv('HTTP_PROXY');
 export const setHttpProxy = (host: string): void => setProcessEnv('HTTP_PROXY', host);
@@ -111,7 +111,7 @@ export const getWSSocket = (): Record<string, string | undefined> => ({
   port: getProcessEnv('WDS_SOCKET_PORT'),
 });
 
-/* istanbul ignore next */
+/* c8 ignore next */
 export const isCI = (): boolean => isNode() && getProcessEnv('CI') === 'true';
 
 /**
@@ -201,7 +201,7 @@ export const setRegion = (region: Region): void => setProcessEnv('TWILIO_REGION'
 /**
  * Returns the region
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export const getRegion = (): Region | string => {
   if (isNode()) {
     return getProcessEnv('TWILIO_REGION') as Region;

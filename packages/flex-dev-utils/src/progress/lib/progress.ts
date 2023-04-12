@@ -17,7 +17,7 @@ interface Progress {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let ora: any = null;
-/* istanbul ignore next */
+/* c8 ignore next */
 const _getOra = () => {
   if (ora) {
     return ora;
@@ -34,7 +34,7 @@ const _getOra = () => {
  * @param title
  * @param disabled
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export const _getSpinner = (text: string, disabled: boolean): Progress => {
   if (disabled) {
     return {

@@ -23,7 +23,7 @@ export const DEFAULT_PORT = 3000;
  * @param port the port to check
  * @private
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 const _findPort = async (port: number) => {
   return new Promise((resolve, reject) => {
     const server = net.createConnection({ port });
@@ -64,7 +64,7 @@ export const getDefaultPort = (port?: string): number => {
  *
  * @param startPort
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export const findPort = async (startPort: number = 3000): Promise<number> => {
   try {
     await Promise.all([_findPort(startPort)]);

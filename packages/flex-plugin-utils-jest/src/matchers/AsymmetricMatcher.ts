@@ -3,7 +3,7 @@ import { matcherHint, printExpected, printReceived } from 'jest-matcher-utils';
 /**
  * Abstract class for writing asymmetric matchers
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export abstract class AsymmetricMatcher<T> implements jest.AsymmetricMatcher {
   $$typeof: symbol;
 

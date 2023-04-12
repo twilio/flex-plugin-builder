@@ -27,7 +27,7 @@ export default class FlexPluginsListConfigurations extends InformationFlexPlugin
   /**
    * @override
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   notFound(): void {
     this._logger.info(`!!No configurations where not found.!!`);
   }
@@ -35,7 +35,7 @@ export default class FlexPluginsListConfigurations extends InformationFlexPlugin
   /**
    * @override
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   print(configurations: ListConfigurations[]): void {
     const list = this.sortByActive(configurations);
 

@@ -90,7 +90,7 @@ export const _getHeaders = (): Record<string, string> => ({
  * @param token     the JWE Token
  * @param version   the Flex version
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 // eslint-disable-next-line import/no-unused-modules
 export const _getRemotePlugins = async (token: string, version: string | null | undefined): Promise<Plugin[]> => {
   return new Promise((resolve, reject) => {
@@ -248,7 +248,7 @@ export const _startServer = (
  * @param webpackConfig
  * @param serverConfig
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export default (
   plugins: StartServerPlugins,
   webpackConfig: Configuration,

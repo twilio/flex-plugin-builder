@@ -69,10 +69,10 @@ export default class BuildClient {
       const { sid } = newBuild;
 
       const timeoutId = setTimeout(() => {
-        /* istanbul ignore next */
+        /* c8 ignore next */
         // eslint-disable-next-line no-use-before-define, @typescript-eslint/no-use-before-define
         clearInterval(intervalId);
-        /* istanbul ignore next */
+        /* c8 ignore next */
         reject('Timeout while waiting for new Twilio Runtime build status to change to complete.');
       }, BuildClient.timeoutMsec);
 
@@ -124,7 +124,7 @@ export default class BuildClient {
       { ...data },
       {
         // Serverless does not follow default Twilio API so we need to overwrite the transform here
-        /* istanbul ignore next */
+        /* c8 ignore next */
         transformRequest: () => stringify(data as any),
       },
     );
