@@ -315,29 +315,29 @@ jobs:
             - cmd_codecov
 
 workflows:
-  # workflow_e2e-tester:
-  #   when: << pipeline.parameters.run_e2e_test >>
-  #   jobs:
-  #     - job_e2e-test-linux:
-  #         matrix:
-  #           parameters:
-  #             package_version: [<< pipeline.parameters.package_version >>]
-  #             flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-  #             node-version: ["18.12.0"]
-  #     - job_e2e-test-win:
-  #         matrix:
-  #           parameters:
-  #             package_version: [<< pipeline.parameters.package_version >>]
-  #             flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-  #             shell: ["bash.exe"]
-  #             node-version: ["18.12.0"]
-  #     - job_e2e-test-macos:
-  #         matrix:
-  #           parameters:
-  #             package_version: [<< pipeline.parameters.package_version >>]
-  #             flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-  #             node-version: ["18.12.0"]
-  #             npm-version: ["9.5.0"]
+  workflow_e2e-tester:
+    when: << pipeline.parameters.run_e2e_test >>
+    jobs:
+      - job_e2e-test-linux:
+          matrix:
+            parameters:
+              package_version: [<< pipeline.parameters.package_version >>]
+              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
+              node-version: ["18.12.0"]
+      - job_e2e-test-win:
+          matrix:
+            parameters:
+              package_version: [<< pipeline.parameters.package_version >>]
+              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
+              shell: ["bash.exe"]
+              node-version: ["18.12.0"]
+      - job_e2e-test-macos:
+          matrix:
+            parameters:
+              package_version: [<< pipeline.parameters.package_version >>]
+              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
+              node-version: ["18.12.0"]
+              npm-version: ["9.5.0"]
 
   workflow_publisher:
     when: << pipeline.parameters.run_npm_publish >>
@@ -376,8 +376,8 @@ workflows:
       - job_npm-publish:
           matrix:
             parameters:
-              dist_tag: [ "beta" ]
-              version_bump: [ "patch" ]
+              dist_tag: ["beta"]
+              version_bump: ["patch"]
           requires:
             - job_pr-validator-node
           filters:
