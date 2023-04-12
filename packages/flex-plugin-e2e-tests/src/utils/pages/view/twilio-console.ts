@@ -10,7 +10,7 @@ export class TwilioConsole extends Base {
 
   private static _password = '#password';
 
-  private static _nextBtn = 'nextBtn';
+  private static _nextBtn = '#email-next';
 
   private static _loginBtn = '#login';
 
