@@ -310,7 +310,7 @@ jobs:
       - cmd_run-build
       - when:
           condition:
-            equal: [<< parameters.node-version >>, "18.12.0"]
+            equal: [<< parameters.node-version >>, "18.15.0"]
           steps:
             - cmd_codecov
 
@@ -323,20 +323,20 @@ workflows:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-              node-version: ["18.12.0"]
+              node-version: ["18.15.0"]
       - job_e2e-test-win:
           matrix:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               shell: ["bash.exe"]
-              node-version: ["18.12.0"]
+              node-version: ["18.15.0"]
       - job_e2e-test-macos:
           matrix:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-              node-version: ["18.12.0"]
+              node-version: ["18.15.0"]
               npm-version: ["9.5.0"]
 
   workflow_publisher:
@@ -355,11 +355,11 @@ workflows:
           matrix:
             parameters:
               shell: ["bash.exe", "powershell.exe"]
-              node-version: ["18.12.0"]
+              node-version: ["18.15.0"]
       - job_pr-validator-node:
           matrix:
             parameters:
-              node-version: ["18.12.0"]
+              node-version: ["18.15.0"]
           post-steps:
             - cmd_slack-notification-error:
                 text: "$CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}*."
