@@ -37,6 +37,33 @@ export abstract class Base {
   }
 
   /**
+   * Input a value into input field
+   * @param element
+   * @param value
+   */
+  protected async inputText(selector: string, value: string): Promise<void> {
+    const element = await this.elementVisible(selector, 'elementName');
+    if (element) {
+      await this.page.type(selector, value);
+    } else {
+      throw new Error('Something went wrong while entering value');
+    }
+  }
+
+  /**
+   * Clicks a button
+   * @param element
+   */
+  protected async click(selector: string): Promise<void> {
+    const element = await this.elementVisible(selector, 'elementName');
+    if (element) {
+      await this.page.click(selector);
+    } else {
+      throw new Error('Something went wrong while clicking a button');
+    }
+  }
+
+  /**
    * Check that element exists and is visible
    * @param selector element which should be visible
    * @param elementName name of the searchable element
