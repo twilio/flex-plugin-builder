@@ -271,7 +271,7 @@ jobs:
 
   job_pr-validator-win32:
     environment:
-      NODE_OPTIONS: --max-old-space-size=14336
+      NODE_OPTIONS: --max-old-space-size=14336 --no-experimental-fetch
       CI: ""
     parameters:
       shell:
@@ -293,7 +293,7 @@ jobs:
   job_pr-validator-node:
     resource_class: xlarge
     environment:
-      NODE_OPTIONS: --max-old-space-size=14336
+      NODE_OPTIONS: --max-old-space-size=14336 --no-experimental-fetch
       CI: ""
     parameters:
       node-version:
