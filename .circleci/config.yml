@@ -401,41 +401,41 @@ workflows:
             branches:
               only: /v\d-beta/
 
-  # workflow_nightly-e2e:
-  #   triggers:
-  #     - schedule:
-  #         cron: "0 16 * * *"
-  #         filters:
-  #           branches:
-  #             only:
-  #               - main
-  #   jobs:
-  #     - job_e2e-test-linux:
-  #         matrix:
-  #           parameters:
-  #             package_version: ["latest"]
-  #             flex_ui_version: ["latest"]
-  #             node-version: ["14.18.1"]
-  #         post-steps:
-  #           - cmd_slack-notification-error:
-  #               text: "nightly E2E tests failed on Linux."
-  #     - job_e2e-test-macos:
-  #         matrix:
-  #           parameters:
-  #             package_version: ["latest"]
-  #             flex_ui_version: ["latest"]
-  #             node-version: ["14.18.1"]
-  #             npm-version: ["6.14.14"]
-  #         post-steps:
-  #           - cmd_slack-notification-error:
-  #               text: "nightly E2E tests failed on MacOS."
-  #     - job_e2e-test-win:
-  #         matrix:
-  #           parameters:
-  #             package_version: ["latest"]
-  #             flex_ui_version: ["latest"]
-  #             shell: ["bash.exe"]
-  #             node-version: ["14.18.1"]
-  #         post-steps:
-  #           - cmd_slack-notification-error:
-  #               text: "nightly E2E tests failed on Windows."
+  workflow_nightly-e2e:
+    triggers:
+      - schedule:
+          cron: "0 16 * * *"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - job_e2e-test-linux:
+          matrix:
+            parameters:
+              package_version: ["latest"]
+              flex_ui_version: ["latest"]
+              node-version: ["14.18.1"]
+          post-steps:
+            - cmd_slack-notification-error:
+                text: "nightly E2E tests failed on Linux."
+      - job_e2e-test-macos:
+          matrix:
+            parameters:
+              package_version: ["latest"]
+              flex_ui_version: ["latest"]
+              node-version: ["14.18.1"]
+              npm-version: ["6.14.14"]
+          post-steps:
+            - cmd_slack-notification-error:
+                text: "nightly E2E tests failed on MacOS."
+      - job_e2e-test-win:
+          matrix:
+            parameters:
+              package_version: ["latest"]
+              flex_ui_version: ["latest"]
+              shell: ["bash.exe"]
+              node-version: ["14.18.1"]
+          post-steps:
+            - cmd_slack-notification-error:
+                text: "nightly E2E tests failed on Windows."
