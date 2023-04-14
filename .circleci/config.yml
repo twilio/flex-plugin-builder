@@ -190,7 +190,7 @@ jobs:
       node-version:
         type: string
     environment:
-      NODE_OPTIONS: --max-old-space-size=14336
+      NODE_OPTIONS: --max-old-space-size=14336 --openssl-legacy-provider
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
       NODE_VERSION: "lts"
@@ -218,7 +218,7 @@ jobs:
       node-version:
         type: string
     environment:
-      NODE_OPTIONS: --max-old-space-size=14336
+      NODE_OPTIONS: --max-old-space-size=14336 --openssl-legacy-provider
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
     executor:
@@ -246,7 +246,7 @@ jobs:
       node-version:
         type: string
     environment:
-      NODE_OPTIONS: --max-old-space-size=14336
+      NODE_OPTIONS: --max-old-space-size=14336 --openssl-legacy-provider
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
     executor:
@@ -414,7 +414,7 @@ workflows:
             parameters:
               package_version: ["latest"]
               flex_ui_version: ["latest"]
-              node-version: ["14.18.1"]
+              node-version: ["18.15.0"]
           post-steps:
             - cmd_slack-notification-error:
                 text: "nightly E2E tests failed on Linux."
@@ -423,8 +423,7 @@ workflows:
             parameters:
               package_version: ["latest"]
               flex_ui_version: ["latest"]
-              node-version: ["14.18.1"]
-              npm-version: ["6.14.14"]
+              node-version: ["18.15.0"]
           post-steps:
             - cmd_slack-notification-error:
                 text: "nightly E2E tests failed on MacOS."
@@ -434,7 +433,7 @@ workflows:
               package_version: ["latest"]
               flex_ui_version: ["latest"]
               shell: ["bash.exe"]
-              node-version: ["14.18.1"]
+              node-version: ["18.15.0"]
           post-steps:
             - cmd_slack-notification-error:
                 text: "nightly E2E tests failed on Windows."
