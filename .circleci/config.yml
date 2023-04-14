@@ -77,6 +77,8 @@ commands:
           command: |
             cd packages/flex-plugin-e2e-tests
             npm start
+          environment:
+            NODE_OPTIONS: --openssl-legacy-provider
   cmd_run-e2e-tests-win:
     steps:
       - run:
@@ -86,6 +88,7 @@ commands:
             npm start
           environment:
             TS: false
+            NODE_OPTIONS: --openssl-legacy-provider
   cmd_run-e2e-tests-win-ts:
     steps:
       - run:
@@ -96,6 +99,7 @@ commands:
             npm start
           environment:
             TS: true
+            NODE_OPTIONS: --openssl-legacy-provider 
   cmd_run-e2e-tests-mac-js:
     steps:
       - run:
@@ -105,6 +109,7 @@ commands:
             npm start
           environment:
             TS: false
+            NODE_OPTIONS: --openssl-legacy-provider
   cmd_run-e2e-tests-mac-ts:
     steps:
       - run:
@@ -115,6 +120,7 @@ commands:
             npm start
           environment:
             TS: true
+            NODE_OPTIONS: --openssl-legacy-provider
   cmd_codecov:
     steps:
       - run:
@@ -190,7 +196,7 @@ jobs:
       node-version:
         type: string
     environment:
-      NODE_OPTIONS: --max-old-space-size=14336 --openssl-legacy-provider
+      NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
       NODE_VERSION: "lts"
@@ -218,7 +224,7 @@ jobs:
       node-version:
         type: string
     environment:
-      NODE_OPTIONS: --max-old-space-size=14336 --openssl-legacy-provider
+      NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
     executor:
@@ -246,7 +252,7 @@ jobs:
       node-version:
         type: string
     environment:
-      NODE_OPTIONS: --max-old-space-size=14336 --openssl-legacy-provider
+      NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
     executor:
