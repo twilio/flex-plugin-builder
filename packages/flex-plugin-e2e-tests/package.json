@@ -30,7 +30,7 @@
     "create": "bin/e2e create $1",
     "lint": "eslint --ext ts src/",
     "lint:fix": "npm run lint -- --fix",
-    "start": "node dist",
+    "start": "cross-env NODE_OPTIONS=--openssl-legacy-provider node dist",
     "test": "exit 0"
   },
   "dependencies": {
@@ -45,7 +45,8 @@
   },
   "devDependencies": {
     "@types/lodash": "4.14.177",
-    "@types/semver": "^7.3.9"
+    "@types/semver": "^7.3.9",
+    "cross-env": "7.0.3"
   },
   "engines": {
     "node": "^14 || ^16 || ^18"

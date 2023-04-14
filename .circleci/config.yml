@@ -77,8 +77,6 @@ commands:
           command: |
             cd packages/flex-plugin-e2e-tests
             npm start
-          environment:
-            NODE_OPTIONS: --openssl-legacy-provider
   cmd_run-e2e-tests-win:
     steps:
       - run:
@@ -88,7 +86,6 @@ commands:
             npm start
           environment:
             TS: false
-            NODE_OPTIONS: --openssl-legacy-provider
   cmd_run-e2e-tests-win-ts:
     steps:
       - run:
@@ -99,7 +96,6 @@ commands:
             npm start
           environment:
             TS: true
-            NODE_OPTIONS: --openssl-legacy-provider 
   cmd_run-e2e-tests-mac-js:
     steps:
       - run:
@@ -109,7 +105,6 @@ commands:
             npm start
           environment:
             TS: false
-            NODE_OPTIONS: --openssl-legacy-provider
   cmd_run-e2e-tests-mac-ts:
     steps:
       - run:
@@ -120,7 +115,6 @@ commands:
             npm start
           environment:
             TS: true
-            NODE_OPTIONS: --openssl-legacy-provider
   cmd_codecov:
     steps:
       - run:
