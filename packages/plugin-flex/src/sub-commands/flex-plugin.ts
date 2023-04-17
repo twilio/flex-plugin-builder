@@ -437,6 +437,10 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
         this._prints.flexPlugin.incompatibleVersion(this.pkg.name, this.builderVersion);
         this.exit(1);
       }
+
+      if (process.versions.node.startsWith('18')) {
+        this._prints.flexPlugin.openSSLWarning();
+      }
     }
 
     const pluginServiceOptions = this.getPluginServiceOptions();
