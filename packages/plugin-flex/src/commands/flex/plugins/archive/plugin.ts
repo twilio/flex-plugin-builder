@@ -9,6 +9,7 @@ import { createDescription, instanceOf } from '../../../../utils/general';
 interface ArchivePluginResponse {
   alreadyArchived: boolean;
   plugin: Plugin;
+  message?: string;
 }
 
 export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
@@ -35,10 +36,13 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
    * @override
    */
   async doArchive(): Promise<Plugin> {
+    const alreadyArchived = 'Plugin is already archived.';
     const response = await progress('Archiving Flex Plugin', async () => this.archiveOnPluginsAPI());
-    await progress('Cleaning up Twilio Environment', async () =>
-      this.removeServerlessEnvironment(response.alreadyArchived),
-    );
+    if (!response.alreadyArchived || response.message === alreadyArchived) {
+      await progress('Cleaning up Twilio Environment', async () =>
+        this.removeServerlessEnvironment(response.alreadyArchived),
+      );
+    }
 
     return response.plugin;
   }
@@ -63,7 +67,9 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
    */
   private async archiveOnPluginsAPI(): Promise<ArchivePluginResponse> {
     try {
-      const plugin = await this.pluginsApiToolkit.archivePlugin({ name: this._flags.name });
+      const plugin = await this.pluginsApiToolkit.archivePlugin({
+        name: this._flags.name,
+      });
       return {
         plugin,
         alreadyArchived: false,
@@ -76,6 +82,7 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
         return {
           plugin,
           alreadyArchived: true,
+          message: e.message,
         };
       }
 

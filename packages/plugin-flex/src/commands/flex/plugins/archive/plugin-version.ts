@@ -35,14 +35,19 @@ export default class FlexPluginsArchivePluginVersion extends ArchiveResource<Plu
    * @override
    */
   async doArchive(): Promise<PluginVersion> {
-    const pluginVersion = await progress('Archiving Flex Plugin Version', async () => this.archiveOnPluginsAPI());
-    await progress('Cleaning up Twilio Assets', async () => {
-      const build = await this.getBuildIfActive();
-      if (!build) {
-        throw new TwilioApiError(20400, 'Plugin version is already archived', 400);
-      }
-      await this.removeServerlessFiles(build);
-    });
+    const alreadyArchived = 'Plugin version is already archived.';
+    const { pluginVersion, message } = await progress('Archiving Flex Plugin Version', async () =>
+      this.archiveOnPluginsAPI(),
+    );
+    if (pluginVersion.isArchived || message === alreadyArchived) {
+      await progress('Cleaning up Twilio Assets', async () => {
+        const build = await this.getBuildIfActive();
+        if (!build) {
+          throw new TwilioApiError(20400, 'Plugin version is already archived', 400);
+        }
+        await this.removeServerlessFiles(build);
+      });
+    }
 
     return pluginVersion;
   }
@@ -68,16 +73,18 @@ export default class FlexPluginsArchivePluginVersion extends ArchiveResource<Plu
    */
   private async archiveOnPluginsAPI() {
     try {
-      return await this.pluginsApiToolkit.archivePluginVersion({
+      const archivedPluginVersion = await this.pluginsApiToolkit.archivePluginVersion({
         name: this._flags.name,
         version: this._flags.version,
       });
+      return { pluginVersion: archivedPluginVersion };
     } catch (e) {
       if (instanceOf(e, TwilioApiError) && e.status === 400) {
-        return this.pluginsApiToolkit.describePluginVersion({
+        const archivedPluginVersion = await this.pluginsApiToolkit.describePluginVersion({
           name: this._flags.name,
           version: this._flags.version,
         });
+        return { pluginVersion: archivedPluginVersion, message: e.message };
       }
 
       throw e;
