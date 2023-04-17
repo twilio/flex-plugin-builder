@@ -15,7 +15,7 @@ const incompatibleVersion = (logger: Logger) => (name: string, version: number |
 const openSSLWarning = (logger: Logger) => () => {
   logger.newline();
   logger.warning(
-    `WARNING: There might be a problem running this command in Node v18 due to a newer version of OpenSSL. To use the legacy OpenSSL provider, run the following command`,
+    'WARNING: There might be a problem running this command in Node v18 due to a newer version of OpenSSL. If you see the error {{ERR-OSSL-EVP-UNSUPPORTED}}, run the following command',
   );
   logger.newline();
   logger.info('For MacOS & Linux: Run {{$ export NODE_OPTIONS=\\-\\-openssl-legacy-provider}}');

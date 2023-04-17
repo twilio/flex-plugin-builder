@@ -438,7 +438,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
         this.exit(1);
       }
 
-      if (process.versions.node.startsWith('18')) {
+      // Display OpenSSL warning if user is on Node v18 and has not set the required env variable
+      if (process.versions.node.startsWith('18') && !process.env.NODE_OPTIONS?.includes('--openssl-legacy-provider')) {
         this._prints.flexPlugin.openSSLWarning();
       }
     }
