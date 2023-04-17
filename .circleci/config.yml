@@ -340,20 +340,20 @@ workflows:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-              node-version: ["18.15.0"]
+              node-version: ["16.20.0"]
       - job_e2e-test-win:
           matrix:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               shell: ["bash.exe"]
-              node-version: ["18.15.0"]
+              node-version: ["16.20.0"]
       - job_e2e-test-macos:
           matrix:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-              node-version: ["18.15.0"]
+              node-version: ["16.20.0"]
 
   workflow_publisher:
     when: << pipeline.parameters.run_npm_publish >>
@@ -414,7 +414,7 @@ workflows:
             parameters:
               package_version: ["latest"]
               flex_ui_version: ["latest"]
-              node-version: ["18.15.0"]
+              node-version: ["16.20.0"]
           post-steps:
             - cmd_slack-notification-error:
                 text: "nightly E2E tests failed on Linux."
@@ -423,7 +423,7 @@ workflows:
             parameters:
               package_version: ["latest"]
               flex_ui_version: ["latest"]
-              node-version: ["18.15.0"]
+              node-version: ["16.20.0"]
           post-steps:
             - cmd_slack-notification-error:
                 text: "nightly E2E tests failed on MacOS."
@@ -433,7 +433,7 @@ workflows:
               package_version: ["latest"]
               flex_ui_version: ["latest"]
               shell: ["bash.exe"]
-              node-version: ["18.15.0"]
+              node-version: ["16.20.0"]
           post-steps:
             - cmd_slack-notification-error:
                 text: "nightly E2E tests failed on Windows."
