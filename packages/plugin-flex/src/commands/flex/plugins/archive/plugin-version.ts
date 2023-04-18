@@ -96,7 +96,8 @@ export default class FlexPluginsArchivePluginVersion extends ArchiveResource<Plu
    * @param build  the active {@link BuildInstance} to remove the files from
    * @private
    */
-  private async removeServerlessFiles(build: BuildInstance) {
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  public async removeServerlessFiles(build: BuildInstance) {
     const request: BuildListInstanceCreateOptions = {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       functionVersions: build.functionVersions?.map((f) => (f as any).sid),
@@ -136,6 +137,7 @@ export default class FlexPluginsArchivePluginVersion extends ArchiveResource<Plu
    * Returns the {@link BuildInstance} if found. It will also return undefined if the pluginVersion is not part of this build
    * @private
    */
+
   private async getBuildIfActive(): Promise<BuildInstance | undefined> {
     const serviceSid = await this.flexConfigurationClient.getServerlessSid();
     if (!serviceSid) {

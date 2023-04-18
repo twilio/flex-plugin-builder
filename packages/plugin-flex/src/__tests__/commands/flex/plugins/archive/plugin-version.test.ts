@@ -13,7 +13,7 @@ describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
     version: '1.2.3',
     url: 'https://twilio.com/plugin',
     changelog: 'the-description',
-    isArchived: false,
+    isArchived: true,
     isPrivate: false,
     dateCreated: '',
   };
@@ -107,7 +107,7 @@ describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
     });
 
     it('should quit if already archived and no serviceSid is found', async (done) => {
-      const err = new TwilioApiError(20400, 'message', 400);
+      const err = new TwilioApiError(20400, 'Plugin version is already archived.', 400);
 
       const cmd = await createCmd();
       mockPluginsApiToolkit(cmd);
@@ -131,7 +131,7 @@ describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
     });
 
     it('should quit if already archived and no build is found', async (done) => {
-      const err = new TwilioApiError(20400, 'message', 400);
+      const err = new TwilioApiError(20400, 'Plugin version is already archived.', 400);
 
       const cmd = await createCmd();
       mockPluginsApiToolkit(cmd);
@@ -157,8 +157,23 @@ describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
       }
     });
 
+    it('should not delete serverless files if archiving on plugins api fails with 400', async () => {
+      const err = new TwilioApiError(20400, 'Plugin version is part of an active release', 400);
+
+      const cmd = await createCmd();
+      mockPluginsApiToolkit(cmd);
+
+      const pluginversion = { ...pluginVersion, isArchived: false };
+      archivePluginVersion.mockRejectedValue(err);
+      describePluginVersion.mockResolvedValue(pluginversion);
+
+      const removeServerlessFilesSpy = jest.spyOn(cmd, 'removeServerlessFiles');
+      await cmd.doArchive();
+      expect(removeServerlessFilesSpy).not.toHaveBeenCalled();
+    });
+
     it('should quit if already archived and files already removed', async (done) => {
-      const err = new TwilioApiError(20400, 'message', 400);
+      const err = new TwilioApiError(20400, 'Plugin version is already archived.', 400);
 
       const cmd = await createCmd();
       mockPluginsApiToolkit(cmd);

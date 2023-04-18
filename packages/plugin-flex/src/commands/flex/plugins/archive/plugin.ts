@@ -95,7 +95,8 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
    * @param alreadyArchived whether the resource on plugins-api is already archived or not
    * @private
    */
-  private async removeServerlessEnvironment(alreadyArchived: boolean): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  public async removeServerlessEnvironment(alreadyArchived: boolean): Promise<void> {
     const serviceSid = await this.flexConfigurationClient.getServerlessSid();
     if (!serviceSid) {
       if (alreadyArchived) {
