@@ -38,7 +38,7 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
   async doArchive(): Promise<Plugin> {
     const alreadyArchived = 'Plugin is already archived.';
     const response = await progress('Archiving Flex Plugin', async () => this.archiveOnPluginsAPI());
-    if (!response.alreadyArchived || response.message === alreadyArchived) {
+    if (!response.alreadyArchived || (response.message && response.message.includes(alreadyArchived))) {
       await progress('Cleaning up Twilio Environment', async () =>
         this.removeServerlessEnvironment(response.alreadyArchived),
       );

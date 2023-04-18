@@ -35,11 +35,8 @@ export default class FlexPluginsArchivePluginVersion extends ArchiveResource<Plu
    * @override
    */
   async doArchive(): Promise<PluginVersion> {
-    const alreadyArchived = 'Plugin version is already archived.';
-    const { pluginVersion, message } = await progress('Archiving Flex Plugin Version', async () =>
-      this.archiveOnPluginsAPI(),
-    );
-    if (pluginVersion.isArchived || message === alreadyArchived) {
+    const { pluginVersion } = await progress('Archiving Flex Plugin Version', async () => this.archiveOnPluginsAPI());
+    if (pluginVersion.isArchived) {
       await progress('Cleaning up Twilio Assets', async () => {
         const build = await this.getBuildIfActive();
         if (!build) {
@@ -84,7 +81,7 @@ export default class FlexPluginsArchivePluginVersion extends ArchiveResource<Plu
           name: this._flags.name,
           version: this._flags.version,
         });
-        return { pluginVersion: archivedPluginVersion, message: e.message };
+        return { pluginVersion: archivedPluginVersion };
       }
 
       throw e;
