@@ -56,7 +56,7 @@ const packageJsonStr = 'package.json';
  * @param filePath  the file to require
  * @private
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/explicit-module-boundary-types
 export const _require = (filePath: string) => require(filePath);
 
@@ -228,7 +228,7 @@ export const checkFilesExist = (...files: string[]): boolean => {
  * Calculates the sha of a file
  * @param paths
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export const calculateSha256 = async (...paths: string[]): Promise<string> => {
   return new Promise((resolve, reject) => {
     const shasum = crypto.createHash('sha256');
@@ -318,7 +318,7 @@ export const mkdirpSync = mkdirp.sync;
  * @param target    the target
  * @param variables the variables
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 // eslint-disable-next-line @typescript-eslint/ban-types
 export const copyTemplateDir = async (source: string, target: string, variables: object): Promise<unknown> => {
   return promiseCopyTempDir(source, target, variables);
@@ -450,7 +450,7 @@ export const addCWDNodeModule = (...args: string[]): void => {
  * Returns the absolute path to the pkg if found
  * @param pkg the package to lookup
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export const resolveModulePath = (pkg: string, ...paths: string[]): string | false => {
   try {
     return require.resolve(pkg);
@@ -605,7 +605,7 @@ export const getPaths = () => {
  * @param pkgName  the package name
  * @return the version of the package installed
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 // eslint-disable-next-line import/no-unused-modules
 export const getDependencyVersion = (pkgName: string): string => {
   try {
@@ -623,7 +623,7 @@ export const getDependencyVersion = (pkgName: string): string => {
  * Returns the package.json version field of the package
  * @param name  the package
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export const getPackageVersion = (name: string): string => {
   const installedPath = resolveRelative(getPaths().app.nodeModulesDir, name, packageJsonStr);
 

@@ -35,9 +35,9 @@ executors:
       xcode: 12.5.1
 
 orbs:
-  win: circleci/windows@2.2.0
+  win: circleci/windows@5.0.0
   browser-tools: circleci/browser-tools@1.1.3
-  node: circleci/node@4.4.0
+  node: circleci/node@5.1.0
 
 commands:
   cmd_install-dependencies:
@@ -62,7 +62,7 @@ commands:
     steps:
       - run:
           name: "Run linter"
-          command: npm run lint
+          command: npm run lint:fix
   cmd_run-build:
     steps:
       - run:
@@ -165,6 +165,9 @@ commands:
       - run:
           name: "NVM use"
           command: nvm use << parameters.node-version >>
+      - run:
+          name: "Install NPM latest"
+          command: npm install -g npm
   cmd_slack-notification-error:
     parameters:
       text:
@@ -242,8 +245,6 @@ jobs:
         type: string
       node-version:
         type: string
-      npm-version:
-        type: string
     environment:
       NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
@@ -254,7 +255,6 @@ jobs:
       - checkout
       - node/install:
           node-version: << parameters.node-version >>
-          npm-version: << parameters.npm-version >>
       - cmd_install-dependencies
       - cmd_run-build
       - cmd_set-mac-permissions
@@ -288,7 +288,7 @@ jobs:
 
   job_pr-validator-win32:
     environment:
-      NODE_OPTIONS: --max-old-space-size=14336
+      NODE_OPTIONS: --max-old-space-size=14336 --no-experimental-fetch
       CI: ""
     parameters:
       shell:
@@ -310,7 +310,7 @@ jobs:
   job_pr-validator-node:
     resource_class: xlarge
     environment:
-      NODE_OPTIONS: --max-old-space-size=14336
+      NODE_OPTIONS: --max-old-space-size=14336 --no-experimental-fetch
       CI: ""
     parameters:
       node-version:
@@ -327,7 +327,7 @@ jobs:
       - cmd_run-build
       - when:
           condition:
-            equal: [<< parameters.node-version >>, "14.18.1"]
+            equal: [<< parameters.node-version >>, "18.15.0"]
           steps:
             - cmd_codecov
 
@@ -340,21 +340,20 @@ workflows:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-              node-version: ["14.18.1"]
+              node-version: ["16.20.0"]
       - job_e2e-test-win:
           matrix:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               shell: ["bash.exe"]
-              node-version: ["14.18.1"]
+              node-version: ["16.20.0"]
       - job_e2e-test-macos:
           matrix:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-              node-version: ["14.18.1"]
-              npm-version: ["6.14.14"]
+              node-version: ["16.20.0"]
 
   workflow_publisher:
     when: << pipeline.parameters.run_npm_publish >>
@@ -372,11 +371,11 @@ workflows:
           matrix:
             parameters:
               shell: ["bash.exe", "powershell.exe"]
-              node-version: ["14.18.1"]
+              node-version: ["18.15.0"]
       - job_pr-validator-node:
           matrix:
             parameters:
-              node-version: ["14.18.1"]
+              node-version: ["18.15.0"]
           post-steps:
             - cmd_slack-notification-error:
                 text: "$CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}*."
@@ -393,8 +392,8 @@ workflows:
       - job_npm-publish:
           matrix:
             parameters:
-              dist_tag: [ "beta" ]
-              version_bump: [ "patch" ]
+              dist_tag: ["beta"]
+              version_bump: ["patch"]
           requires:
             - job_pr-validator-node
           filters:
@@ -415,7 +414,7 @@ workflows:
             parameters:
               package_version: ["latest"]
               flex_ui_version: ["latest"]
-              node-version: ["14.18.1"]
+              node-version: ["16.20.0"]
           post-steps:
             - cmd_slack-notification-error:
                 text: "nightly E2E tests failed on Linux."
@@ -424,8 +423,7 @@ workflows:
             parameters:
               package_version: ["latest"]
               flex_ui_version: ["latest"]
-              node-version: ["14.18.1"]
-              npm-version: ["6.14.14"]
+              node-version: ["16.20.0"]
           post-steps:
             - cmd_slack-notification-error:
                 text: "nightly E2E tests failed on MacOS."
@@ -435,7 +433,7 @@ workflows:
               package_version: ["latest"]
               flex_ui_version: ["latest"]
               shell: ["bash.exe"]
-              node-version: ["14.18.1"]
+              node-version: ["16.20.0"]
           post-steps:
             - cmd_slack-notification-error:
                 text: "nightly E2E tests failed on Windows."

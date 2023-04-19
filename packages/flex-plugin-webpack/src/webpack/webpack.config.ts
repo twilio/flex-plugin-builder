@@ -72,7 +72,7 @@ export const _getJSScripts = (flexUIVersion: string, reactVersion: string, react
  * Returns the Babel Loader configuration
  * @param isProd  whether this is a production build
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 const _getBabelLoader = (isProd: boolean) => ({
   test: new RegExp(`\.(${getPaths().extensions.join('|')})$`),
   include: getPaths().app.srcDir,
@@ -100,7 +100,7 @@ const _getBabelLoader = (isProd: boolean) => ({
  * Gets the image loader
  * @private
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export const _getImageLoader = (): RuleSetRule => ({
   test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
   loader: require.resolve('url-loader'),
@@ -366,7 +366,7 @@ export const _getJavaScriptEntries = (): string[] => {
  * @param environment the environment
  * @private
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export const _getOptimization = (environment: Environment): Optimization => {
   const isProd = environment === Environment.Production;
   return {

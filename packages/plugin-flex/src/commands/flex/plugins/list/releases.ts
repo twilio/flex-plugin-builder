@@ -27,7 +27,7 @@ export default class FlexPluginsListPlugins extends InformationFlexPlugin<ListRe
   /**
    * @override
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   notFound(): void {
     this._logger.info(`!!No releases where not found.!!`);
   }
@@ -35,7 +35,7 @@ export default class FlexPluginsListPlugins extends InformationFlexPlugin<ListRe
   /**
    * @override
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   print(releases: ListReleases[]): void {
     releases.forEach((release) => {
       this.printVersion(release.sid);

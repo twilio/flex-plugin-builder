@@ -43,7 +43,7 @@ export const flags = [FLAG_MULTI_PLUGINS];
 /**
  * Returns true if there are any .d.ts/.ts/.tsx files
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export const _hasTypescriptFiles = (): boolean =>
   findGlobs('**/*.(ts|tsx)', '!**/node_modules', '!**/*.d.ts').length !== 0;
 
@@ -114,7 +114,7 @@ export const _verifyPackageVersion = (flexUIPkg: PackageJson, allowSkip: boolean
  * allowSkip  whether to allow skip
  * @private
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export const _checkExternalDepsVersions = (allowSkip: boolean): void => {
   const flexUIPkg = _require(getPaths().app.flexUIPkgPath);
 
@@ -125,7 +125,7 @@ export const _checkExternalDepsVersions = (allowSkip: boolean): void => {
  * Returns the content of src/index
  * @private
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export const _readIndexPage = (): string => {
   const srcIndexPath = join(getCwd(), 'src', 'index');
   const match = extensions.map((ext) => `${srcIndexPath}.${ext}`).find((file) => checkFilesExist(file));

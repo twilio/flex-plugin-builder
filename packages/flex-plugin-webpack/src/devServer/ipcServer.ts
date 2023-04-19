@@ -43,9 +43,9 @@ ipc.config.silent = !env.isDebug();
 
 let _isServerRunning: boolean = false;
 let _isClientConnected: boolean = false;
-/* istanbul ignore next */
+/* c8 ignore next */
 export const isServerRunning = (): boolean => _isServerRunning;
-/* istanbul ignore next */
+/* c8 ignore next */
 export const isClientConnected = (): boolean => _isClientConnected;
 
 let clientNode: Client | null = null;
@@ -62,7 +62,7 @@ const emitQueue = [getEmitItem()].slice(1);
  * Processes the emit queue
  * @private
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export const _processEmitQueue = async (): Promise<void> => {
   if (!isClientConnected()) {
     return;
@@ -147,7 +147,7 @@ export const startIPCClient = (): void => {
  * @param type
  * @param callback
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export const onIPCServerMessage = <T extends IPCType>(type: T, callback: MessageCallback<T>): void => {
   if (!(type in messageCallbacks)) {
     messageCallbacks[type as IPCType] = [];

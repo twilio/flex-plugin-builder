@@ -53,7 +53,7 @@ export const _handler =
  * Promisify the webpack runner
  * @private
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 // eslint-disable-next-line import/no-unused-modules
 export const _runWebpack = async (): Promise<BuildBundle> => {
   return new Promise(async (resolve, reject) => {

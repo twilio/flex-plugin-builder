@@ -1,4 +1,4 @@
 import open from 'open';
 
-/* istanbul ignore next */
+/* c8 ignore next */
 export default open;

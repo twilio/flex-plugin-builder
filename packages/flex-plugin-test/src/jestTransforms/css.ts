@@ -1,4 +1,4 @@
-/* istanbul ignore file */
+/* c8 ignore start */
 
 module.exports = {
   process() {
@@ -9,3 +9,4 @@ module.exports = {
     return 'cssTransform';
   },
 };
+/* c8 ignore stop */

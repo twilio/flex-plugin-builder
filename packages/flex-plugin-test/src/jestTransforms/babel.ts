@@ -1,4 +1,4 @@
-/* istanbul ignore file */
+/* c8 ignore start */
 import babelJest from 'babel-jest';
 
 module.exports = babelJest.createTransformer({
@@ -6,3 +6,4 @@ module.exports = babelJest.createTransformer({
   babelrc: false,
   configFile: false,
 });
+/* c8 ignore stop */

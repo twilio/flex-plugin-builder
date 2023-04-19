@@ -1,4 +1,4 @@
-/* istanbul ignore file */
+/* c8 ignore start */
 
 import { Compiler } from '../compiler';
 import { onIPCServerMessage, IPCType } from '../devServer/ipcServer';
@@ -18,3 +18,5 @@ export default class DelayRenderStaticPlugin {
     });
   }
 }
+
+/* c8 ignore stop */

@@ -59,7 +59,7 @@
     "react-emotion": "9.2.12"
   },
   "engines": {
-    "node": "^12 || ^14 || ^16"
+    "node": "^14 || ^16 || ^18"
   },
   "publishConfig": {
     "access": "public"

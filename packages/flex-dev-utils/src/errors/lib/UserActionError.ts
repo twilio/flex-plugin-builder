@@ -4,7 +4,7 @@ export default class UserActionError extends FlexPluginError {
   public readonly reason: string;
 
   constructor(reason: string, message?: string) {
-    /* istanbul ignore next */
+    /* c8 ignore next */
     super(message || reason);
 
     this.reason = reason;
