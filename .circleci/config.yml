@@ -275,7 +275,7 @@ jobs:
       CI: ""
     executor:
       name: node
-      tag: "14.18.1"
+      tag: "16.20.0"
     steps:
       - checkout
       - cmd_install-prerequisites
