@@ -90,7 +90,7 @@ export const _getHeaders = (): Record<string, string> => ({
  * @param token     the JWE Token
  * @param version   the Flex version
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 // eslint-disable-next-line import/no-unused-modules
 export const _getRemotePlugins = async (token: string, version: string | null | undefined): Promise<Plugin[]> => {
   return new Promise((resolve, reject) => {
@@ -185,11 +185,13 @@ export const _startServer = (
 
     if (method === 'OPTIONS') {
       res.writeHead(200, responseHeaders);
-      return res.end();
+      res.end();
+      return;
     }
     if (method !== 'GET') {
       res.writeHead(404, responseHeaders);
-      return res.end('Route not found');
+      res.end('Route not found');
+      return;
     }
     logger.debug('GET /plugins');
 
@@ -197,7 +199,8 @@ export const _startServer = (
     const flexVersion = headers['x-flex-version'] as string;
     if (!jweToken) {
       res.writeHead(400, responseHeaders);
-      return res.end('No X-Flex-JWE was provided');
+      res.end('No X-Flex-JWE was provided');
+      return;
     }
 
     const hasRemotePlugin = config.remoteAll || plugins.remote.length !== 0;
@@ -205,6 +208,7 @@ export const _startServer = (
     const versionedPlugins = _getRemoteVersionedPlugins(plugins.versioned);
     const promise: Promise<Plugin[]> = hasRemotePlugin ? _getRemotePlugins(jweToken, flexVersion) : Promise.resolve([]);
 
+    // eslint-disable-next-line consistent-return
     return (
       promise
         .then((remotePlugins) => {
@@ -244,7 +248,7 @@ export const _startServer = (
  * @param webpackConfig
  * @param serverConfig
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export default (
   plugins: StartServerPlugins,
   webpackConfig: Configuration,

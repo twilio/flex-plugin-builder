@@ -44,7 +44,7 @@ export default class FlexPluginsDescribePluginVersion extends InformationFlexPlu
   /**
    * @override
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   notFound(): void {
     const { name, version } = this._flags;
     this._logger.info(`!!Plugin **${name}@${version}** was not found.!!`);
@@ -53,7 +53,7 @@ export default class FlexPluginsDescribePluginVersion extends InformationFlexPlu
   /**
    * @override
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   print(version: DescribePluginVersion): void {
     this.printHeader('SID', version.sid);
     this.printHeader('Plugin SID', version.plugin.sid);

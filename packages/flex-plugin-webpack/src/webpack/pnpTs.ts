@@ -1,4 +1,4 @@
-/* istanbul ignore file */
+/* c8 ignore start */
 /* eslint-disable import/no-unused-modules, @typescript-eslint/explicit-module-boundary-types */
 import { CompilerOptions, ModuleResolutionHost, ResolvedModuleWithFailedLookupLocations } from 'typescript';
 import { resolveModuleName as resolver } from 'ts-pnp';
@@ -36,3 +36,5 @@ export const resolveTypeReferenceDirective = (
 ) => {
   return resolver(moduleName, containingFile, compilerOptions, resolutionHost, typescript.resolveModuleName);
 };
+
+/* c8 ignore stop */

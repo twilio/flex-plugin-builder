@@ -50,9 +50,11 @@ const upgradeToFlexUI2 = (logger: Logger) => () => {
 /**
  * Script succeeded
  */
-const scriptSucceeded = (logger: Logger) => (needsInstall: boolean) => {
+const scriptSucceeded = (logger: Logger) => (needsInstall: boolean, version: number) => {
   logger.newline();
-  logger.success('🎉 Your plugin was successfully migrated to use the latest (v5) version of Flex Plugins CLI.');
+  logger.success(
+    `🎉 Your plugin was successfully migrated to use the latest (v${version}) version of Flex Plugins CLI.`,
+  );
   logger.newline();
 
   logger.info('**Next Steps:**');

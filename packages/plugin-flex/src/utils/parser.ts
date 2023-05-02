@@ -119,7 +119,7 @@ export const _combineFlags = <F, A extends { [name: string]: any }>(
  * Extends the parsing of OClif by adding support for empty/min/max
  * @param OclifParser the original parser from the command
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parser =
   <F, A extends { [name: string]: any }>(OclifParser: (options?: Input<F>, argv?: string[]) => Output<F, A>) =>

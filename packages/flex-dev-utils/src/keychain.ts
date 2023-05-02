@@ -25,13 +25,13 @@ interface Keytar {
  * Keytar is required optionally and so may not exist.
  * It will throw an error if a local installation is not found.
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export const _getKeytar = (): Keytar => {
   try {
     // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
     return require('keytar');
   } catch (e) {
-    /* istanbul ignore next */
+    /* c8 ignore next */
     if (!process.env.CI) {
       logger.debug('Failed to require keytar', e);
     }

@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unused-modules */
-/* istanbul ignore file */
+/* c8 ignore start */
 
 import webpack from 'webpack';
 
@@ -29,3 +29,5 @@ export {
   startIPCServer,
 } from './devServer/ipcServer';
 export { default as DelayRenderStaticPlugin } from './plugins/DelayRenderStaticPlugin';
+
+/* c8 ignore stop */

@@ -203,7 +203,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
 
     await this.npmInstall();
 
-    this.prints.scriptSucceeded(!this._flags.install);
+    this.prints.scriptSucceeded(!this._flags.install, FlexPlugin.BUILDER_VERSION);
   }
 
   /**

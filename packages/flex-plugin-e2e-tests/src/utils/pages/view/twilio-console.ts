@@ -2,10 +2,17 @@ import { Page } from 'puppeteer';
 
 import { Base } from './base';
 import { Cookie, Cookies } from '../../console-api';
+import { testParams } from '../../../core';
 import { sleep } from '../../timers';
 
 export class TwilioConsole extends Base {
   private static _loginForm = '#email';
+
+  private static _password = '#password';
+
+  private static _nextBtn = '#email-next';
+
+  private static _loginBtn = '#login';
 
   assert = {};
 
@@ -48,20 +55,11 @@ export class TwilioConsole extends Base {
 
     if (firstLoad) {
       await this.elementVisible(TwilioConsole._loginForm, `Twilio Console's Login form`);
-
-      const requiredCookies = [
-        { name: Cookie.visitor, value: cookies[Cookie.visitor] },
-        { name: Cookie.sIdentity, value: cookies[Cookie.sIdentity] },
-      ];
-
-      if (cookies.identity) {
-        requiredCookies.push({ name: Cookie.identity, value: cookies[Cookie.identity] as string });
-      }
-
-      // Set console cookies
-      await this.page.setCookie(...requiredCookies);
-
-      // Log in Flex via service login
+      await this.inputText(TwilioConsole._loginForm, testParams.secrets.console.email);
+      await this.click(TwilioConsole._nextBtn);
+      await this.inputText(TwilioConsole._password, testParams.secrets.console.password);
+      await this.click(TwilioConsole._loginBtn);
+      await this.page.waitForTimeout(4000);
       await this.goto({ baseUrl: this._baseUrl, path });
     }
 

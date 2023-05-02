@@ -128,7 +128,7 @@ export default class Http {
       };
     }
     if (config.setUserAgent) {
-      /* istanbul ignore next */
+      /* c8 ignore next */
       if (!this.axiosConfig.headers) {
         this.axiosConfig.headers = {};
       }
@@ -158,7 +158,7 @@ export default class Http {
   /**
    * Creates an instance of the http client and calls the {@link #get} method.
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   public static async get<R>(uri: string, option?: RequestOption): Promise<R> {
     return new Http({ baseURL: '' }).get(uri, option);
   }
@@ -166,7 +166,7 @@ export default class Http {
   /**
    * Creates an instance of the http client and calls the {@link #post} method.
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   // eslint-disable-next-line @typescript-eslint/ban-types
   public static async post<R>(uri: string, data: object, options?: AxiosRequestConfig): Promise<R> {
     return new Http({ baseURL: '' }).post(uri, data, options);
@@ -175,7 +175,7 @@ export default class Http {
   /**
    * Creates an instance of the http client and calls the {@link #delete} method.
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   public static async delete(uri: string): Promise<void> {
     return new Http({ baseURL: '' }).delete(uri);
   }
@@ -183,7 +183,7 @@ export default class Http {
   /**
    * Creates an instance of the http client and calls the {@link #upload} method.
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   public static async upload<T>(uri: string, formData: FormData, options?: AxiosRequestConfig): Promise<T> {
     return new Http({ baseURL: '' }).upload(uri, formData, options);
   }
@@ -191,7 +191,7 @@ export default class Http {
   /**
    * Creates an instance of the http client and calls the {@link #download} method.
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   public static async download(url: string, directory: string, config?: AxiosRequestConfig): Promise<void> {
     return new Http({ baseURL: '' }).download(url, directory, config);
   }
@@ -417,7 +417,7 @@ export default class Http {
    * Create the upload configuration
    * @param formData
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   private getUploadOptions = async (formData: FormData): Promise<UploadRequestConfig> => {
     if (!this.axiosConfig.auth) {
       throw new TwilioCliError(`Authorization is required to upload a file`);

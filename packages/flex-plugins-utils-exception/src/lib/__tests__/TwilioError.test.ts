@@ -27,8 +27,13 @@ describe('TwilioError', () => {
 
     const apiError = new TwilioApiError(123, 'test', 123);
     const error = new TwilioError();
+    const noConstuctorError = new TwilioError();
+
+    // @ts-expect-error
+    noConstuctorError.constructor = null;
 
     expect(apiError.instanceOf(Foo)).toEqual(false);
     expect(error.instanceOf(TwilioApiError)).toEqual(false);
+    expect(noConstuctorError.instanceOf(Foo)).toEqual(false);
   });
 });

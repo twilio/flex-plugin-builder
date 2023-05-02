@@ -1,4 +1,4 @@
-/* istanbul ignore file */
+/* c8 ignore start */
 
 import { logger, FunctionalCallback } from '@twilio/flex-dev-utils';
 import { FlexPluginError } from '@twilio/flex-dev-utils/dist/errors';
@@ -47,7 +47,7 @@ const results: OnCompileResult = {};
  * @param type        the webpack compile type
  * @param localPlugins  the names of plugins to run locally
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export default (
   config: Configuration,
   devServer: boolean,
@@ -133,6 +133,7 @@ export default (
 
     return compiler;
   } catch (err) {
+    // @ts-ignore
     throw new FlexPluginError(`Failed to create a webpack compiler: ${err.message}`);
   }
 };
@@ -206,3 +207,4 @@ export const compilerRenderer = (
     },
   };
 };
+/* c8 ignore stop */

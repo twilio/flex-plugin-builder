@@ -74,7 +74,7 @@ export default abstract class FilesClient {
    * @param localFilePath the local path to the file
    * @param isProtected   whether to upload this file as Public or Protected
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   public upload = async (
     friendlyName: string,
     uri: string,

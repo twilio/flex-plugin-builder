@@ -47,7 +47,7 @@ interface Packages {
  * @param pkgPath       the package path
  * @private
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export const _requirePackages = (pluginsPath: string, pkgPath: string): Packages => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require, @typescript-eslint/no-require-imports
   const plugins = require(pluginsPath) as Plugin[];
@@ -86,7 +86,7 @@ export const _getPluginsConfiguration = (...args: string[]): PluginsConfig => {
  * @param remoteAll whether to request all plugins
  * @private
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export const _startDevServer = async (
   plugins: UserInputPlugin[],
   options: StartServerOptions,

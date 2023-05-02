@@ -34,6 +34,7 @@ if (expect) {
     }, {});
   expect.extend(extensions);
 
+  // @ts-ignore
   global.utils = scripts;
 } else {
   // eslint-disable-next-line no-console

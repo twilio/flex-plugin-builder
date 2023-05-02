@@ -27,7 +27,7 @@ export default class FlexPluginsListPlugins extends InformationFlexPlugin<ListPl
   /**
    * @override
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   notFound(): void {
     this._logger.info(`!!No plugins where not found.!!`);
   }
@@ -35,7 +35,7 @@ export default class FlexPluginsListPlugins extends InformationFlexPlugin<ListPl
   /**
    * @override
    */
-  /* istanbul ignore next */
+  /* c8 ignore next */
   print(plugins: ListPlugins[]): void {
     const activePlugins = plugins.filter((p) => p.isActive);
     const inactivePlugins = plugins.filter((p) => !p.isActive);
@@ -47,7 +47,7 @@ export default class FlexPluginsListPlugins extends InformationFlexPlugin<ListPl
     inactivePlugins.forEach(this._print.bind(this));
   }
 
-  /* istanbul ignore next */
+  /* c8 ignore next */
   private _print(plugin: ListPlugins) {
     this.printVersion(plugin.name);
     this.printPretty(plugin, 'isActive', 'name');

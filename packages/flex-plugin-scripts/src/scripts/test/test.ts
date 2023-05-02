@@ -10,7 +10,7 @@ import getConfiguration, { ConfigurationType } from '../../config';
  * @param env
  * @param args
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export default async (env: string, ...args: string[]): Promise<void> => {
   const config = await getConfiguration(ConfigurationType.Jest, Environment.Test, false);
   const runArgs: string[] = [...args];

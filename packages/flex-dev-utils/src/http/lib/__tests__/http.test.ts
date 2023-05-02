@@ -579,7 +579,7 @@ describe('HttpClient', () => {
 
       // @ts-ignore
       const mockAxios = new MockAdapter(httpClient.client);
-      mockAxios.onGet().reply(async (config) => Promise.resolve([200, config.url]));
+      mockAxios.onGet().reply(async (config: any) => Promise.resolve([200, config.url]));
       // @ts-ignore
       const incrementConcurrentRequests = jest.spyOn(httpClient, 'incrementConcurrentRequests');
       // @ts-ignore
@@ -615,7 +615,7 @@ describe('HttpClient', () => {
 
       // @ts-ignore
       const mockAxios = new MockAdapter(httpClient.client);
-      mockAxios.onGet().reply(async (config) => {
+      mockAxios.onGet().reply(async (config: any) => {
         callbacks[config.url as string]();
         return new Promise((resolve) => {
           const id = setInterval(() => {
@@ -680,7 +680,7 @@ describe('HttpClient', () => {
 
       // @ts-ignore
       const mockAxios = new MockAdapter(httpClient.client);
-      mockAxios.onGet().reply(async (config) => Promise.resolve([200, config.url]));
+      mockAxios.onGet().reply(async (config: any) => Promise.resolve([200, config.url]));
       // @ts-ignore
       const incrementConcurrentRequests = jest.spyOn(httpClient, 'incrementConcurrentRequests');
       // @ts-ignore

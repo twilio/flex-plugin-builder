@@ -66,7 +66,7 @@ export const _getJavaScriptConfiguration = (config: Configuration): Configuratio
 /**
  * Generates a webpack-dev configuration
  */
-/* istanbul ignore next */
+/* c8 ignore next */
 export default (type: WebpackType): Configuration => {
   const config = _getBase();
 
