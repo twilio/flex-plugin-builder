@@ -95,21 +95,23 @@ describe('commands', () => {
       expect(result.pluginClassName).toEqual('Plugin');
     });
 
-    it('should update the sdk version if flexui2 is true', async () => {
-      const getLatestFlexUIVersion = jest.spyOn(packages, 'getLatestFlexUIVersion').mockResolvedValue('2.0.0');
-      const config = { flexui2: true } as FlexPluginArguments;
+    it('should update the sdk version if flexui1 is true', async () => {
+      // const getLatestFlexUIVersion = jest.spyOn(packages, 'getLatestFlexUIVersion').mockResolvedValue('2.1.1');
+      const config = { flexui1: true } as FlexPluginArguments;
+
+      const result = await commands.setupConfiguration(config);
+      // expect(getLatestFlexUIVersion).toHaveBeenCalledTimes(1);
+      expect(result.flexSdkVersion).toEqual('^1');
+    });
+
+    it('should not update sdk version if flexui1 is false', async () => {
+      // const getLatestFlexUIVersion = jest.spyOn(packages, 'getLatestFlexUIVersion');
+      const getLatestFlexUIVersion = jest.spyOn(packages, 'getLatestFlexUIVersion').mockResolvedValue('2.1.1');
+      const config = { flexui1: false } as FlexPluginArguments;
 
       const result = await commands.setupConfiguration(config);
       expect(getLatestFlexUIVersion).toHaveBeenCalledTimes(1);
-      expect(result.flexSdkVersion).toEqual('2.0.0');
-    });
-
-    it('should not update sdk version if flexui2 is false', async () => {
-      const getLatestFlexUIVersion = jest.spyOn(packages, 'getLatestFlexUIVersion');
-      const config = { flexui2: false } as FlexPluginArguments;
-
-      await commands.setupConfiguration(config);
-      expect(getLatestFlexUIVersion).not.toHaveBeenCalled();
+      expect(result.flexSdkVersion).toEqual('2.1.1');
     });
   });
 

@@ -182,20 +182,20 @@ describe('create-flex-plugin', () => {
       expect(copyTemplateDir).toHaveBeenCalledTimes(2);
       expect(downloadFromGitHub).toHaveBeenCalledTimes(1);
       expect(copyTemplateDir).not.toHaveBeenCalledWith(
-        expect.stringContaining('templates/ts'),
+        expect.stringContaining('templates/ts2'),
         expect.anything(),
         expect.anything(),
       );
     });
 
-    it('should use typescript 2.0 template', async () => {
+    it('should use typescript 1.0 template', async () => {
       const config = {
         name: pluginName,
         accountSid,
         install: true,
         typescript: true,
         targetDirectory: '',
-        flexui2: true,
+        flexui1: true,
       } as createFlexPluginScripts.FlexPluginArguments;
 
       const copyTemplateDir = jest.spyOn(fsScripts, 'copyTemplateDir').mockReturnThis();
@@ -206,20 +206,20 @@ describe('create-flex-plugin', () => {
       expect(downloadFromGitHub).not.toHaveBeenCalled();
       expect(copyTemplateDir).toHaveBeenCalledTimes(2);
       expect(copyTemplateDir).toHaveBeenCalledWith(
-        expect.toMatchPathContaining('templates/ts2'),
+        expect.toMatchPathContaining('templates/ts'),
         expect.anything(),
         expect.anything(),
       );
     });
 
-    it('should use javascript 2.0 template', async () => {
+    it('should use javascript 1.0 template', async () => {
       const config = {
         name: pluginName,
         accountSid,
         install: true,
         typescript: false,
         targetDirectory: '',
-        flexui2: true,
+        flexui1: true,
       } as createFlexPluginScripts.FlexPluginArguments;
 
       const copyTemplateDir = jest.spyOn(fsScripts, 'copyTemplateDir').mockReturnThis();
@@ -230,7 +230,7 @@ describe('create-flex-plugin', () => {
       expect(downloadFromGitHub).not.toHaveBeenCalled();
       expect(copyTemplateDir).toHaveBeenCalledTimes(2);
       expect(copyTemplateDir).toHaveBeenCalledWith(
-        expect.toMatchPathContaining('templates/js2'),
+        expect.toMatchPathContaining('templates/js'),
         expect.anything(),
         expect.anything(),
       );

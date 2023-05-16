@@ -45,15 +45,15 @@ export const setupConfiguration = async (config: FlexPluginArguments): Promise<F
   config.pluginNamespace = name.toLowerCase().replace('plugin-', '');
   config.runtimeUrl = config.runtimeUrl || 'http://localhost:3000';
   config.targetDirectory = resolveCwd(name);
-  config.flexSdkVersion = pkg.devDependencies['@twilio/flex-ui'];
+  config.flexSdkVersion = await packages.getLatestFlexUIVersion(2);
   config.pluginScriptsVersion = pkg.devDependencies['@twilio/flex-plugin-scripts'];
-  config.flexui2 = config.flexui2 || false;
+  config.flexui2 = config.flexui2 || true;
+  config.flexui1 = config.flexui1 || false;
 
-  // Upgrade to latest Flex UI Version for 2.0 if selected
-  if (config.flexui2) {
-    config.flexSdkVersion = await packages.getLatestFlexUIVersion(2);
+  // Upgrade to latest Flex UI Version for 1.0 if selected
+  if (config.flexui1) {
+    config.flexSdkVersion = pkg.devDependencies['@twilio/flex-ui'];
   }
-
   return config;
 };
 
