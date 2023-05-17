@@ -3,7 +3,7 @@ import { ElementHandle, Page } from 'puppeteer';
 import { Base } from './base';
 
 export class AdminDashboard extends Base {
-  private static readonly _welcomeBanner = '.welcome-banner';
+  private static readonly _adminDashboardSubHeader = '[data-testid="admin-subheader"]';
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   assert = {
@@ -11,7 +11,7 @@ export class AdminDashboard extends Base {
      * Checks whether Welcome Banner is visible on Admin Dashboard
      */
     isVisible: async (): Promise<ElementHandle<Element>> =>
-      this.elementVisible(AdminDashboard._welcomeBanner, 'Welcome banner'),
+      this.elementVisible(AdminDashboard._adminDashboardSubHeader, 'Admin Dashbaord Sub-Header'),
   };
 
   private readonly _baseUrl: string;
