@@ -15,7 +15,7 @@ const CustomTaskList = (): JSX.Element | null => {
   return (
     <Theme.Provider theme="default">
       <Alert onDismiss={dismiss} variant="neutral">
-        <Text>
+        <Text as="div">
           This is a dismissible demo component.
         </Text>
       </Alert>
