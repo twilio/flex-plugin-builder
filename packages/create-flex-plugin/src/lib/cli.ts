@@ -25,6 +25,7 @@ export interface CLIArguments {
   typescript?: boolean;
   s?: boolean;
   flexui2?: boolean;
+  flexui1?: boolean;
 }
 
 export default class CLI {

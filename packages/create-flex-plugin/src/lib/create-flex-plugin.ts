@@ -25,6 +25,7 @@ export interface FlexPluginArguments extends CLIArguments {
   pluginClassName: string;
   pluginNamespace: string;
   flexui2: boolean;
+  flexui1: boolean;
 }
 
 /**
@@ -54,10 +55,10 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
     await copyTemplateDir(templateCorePath, config.targetDirectory, config);
 
     // Get src directory from template URL if provided
-    let srcPath = config.flexui2 ? templateJs2Path : templateJsPath;
+    let srcPath = config.flexui1 ? templateJsPath : templateJs2Path;
 
     if (config.typescript) {
-      srcPath = config.flexui2 ? templateTs2Path : templateTsPath;
+      srcPath = config.flexui1 ? templateTsPath : templateTs2Path;
     }
     if (config.template) {
       dirObject = tmpDirSync();
