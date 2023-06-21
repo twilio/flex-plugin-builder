@@ -179,6 +179,7 @@ commands:
             curl -XPOST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - << parameters.text >>. View <$CIRCLE_BUILD_URL|build>.', 'mrkdwn':true}" $SLACK_WEBHOOK
           when: on_fail
 
+
 jobs:
   job_e2e-test-linux:
     resource_class: xlarge
@@ -190,7 +191,6 @@ jobs:
       node-version:
         type: string
     environment:
-      NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
       NODE_VERSION: "lts"
@@ -203,6 +203,14 @@ jobs:
       - cmd_install-dependencies
       - cmd_run-build
       - cmd_set-linux-permissions
+      - run:
+          name: Set NODE_OPTIONS with OpenSSL provider
+          command: |
+            if [[ "${parameters.node-version}" == "18.15.0" ]]; then
+              export NODE_OPTIONS="--max-old-space-size=14336 --openssl-legacy-provider"
+            else
+              export NODE_OPTIONS="--max-old-space-size=14336"
+            fi
       - cmd_run-e2e-tests
       - store_artifacts:
           path: packages/flex-plugin-e2e-tests/screenshots
@@ -218,7 +226,6 @@ jobs:
       node-version:
         type: string
     environment:
-      NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
     executor:
@@ -231,6 +238,14 @@ jobs:
           node-version: << parameters.node-version >>
       - cmd_install-dependencies
       - cmd_run-build
+      - run:
+          name: Set NODE_OPTIONS with OpenSSL provider
+          command: |
+            if [[ "${parameters.node-version}" == "18.15.0" ]]; then
+              export NODE_OPTIONS="--max-old-space-size=14336 --openssl-legacy-provider"
+            else
+              export NODE_OPTIONS="--max-old-space-size=14336"
+            fi
       - cmd_run-e2e-tests-win
       - cmd_run-e2e-tests-win-ts
       - store_artifacts:
@@ -246,7 +261,6 @@ jobs:
       node-version:
         type: string
     environment:
-      NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
     executor:
@@ -258,6 +272,14 @@ jobs:
       - cmd_install-dependencies
       - cmd_run-build
       - cmd_set-mac-permissions
+      - run:
+          name: Set NODE_OPTIONS with OpenSSL provider
+          command: |
+            if [[ "${parameters.node-version}" == "18.15.0" ]]; then
+              export NODE_OPTIONS="--max-old-space-size=14336 --openssl-legacy-provider"
+            else
+              export NODE_OPTIONS="--max-old-space-size=14336"
+            fi
       - cmd_run-e2e-tests-mac-js
       - cmd_run-e2e-tests-mac-ts
       - store_artifacts:
@@ -354,6 +376,25 @@ workflows:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               node-version: ["16.20.0"]
+      - job_e2e-test-linux:
+          matrix:
+            parameters:
+              package_version: [<< pipeline.parameters.package_version >>]
+              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
+              node-version: ["18.15.0"]
+      - job_e2e-test-win:
+          matrix:
+            parameters:
+              package_version: [<< pipeline.parameters.package_version >>]
+              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
+              shell: ["bash.exe"]
+              node-version: ["18.15.0"]
+      - job_e2e-test-macos:
+          matrix:
+            parameters:
+              package_version: [<< pipeline.parameters.package_version >>]
+              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
+              node-version: ["18.15.0"]
 
   workflow_publisher:
     when: << pipeline.parameters.run_npm_publish >>
