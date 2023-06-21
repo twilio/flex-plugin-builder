@@ -194,12 +194,7 @@ jobs:
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
       NODE_VERSION: "lts"
-      NODE_OPTIONS: |
-        if [ << parameters.node-version >> == 18.15.0 ]; then
-          echo "--max-old-space-size=14336 --openssl-legacy-provider"
-        else
-          echo "--max-old-space-size=14336"
-        fi
+      NODE_OPTIONS: --max-old-space-size=14336 --openssl-legacy-provider
     executor:
       name: node
       tag: << parameters.node-version >>
@@ -226,12 +221,8 @@ jobs:
     environment:
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
-      NODE_OPTIONS: |
-        if [ << parameters.node-version >> == 18.15.0 ]; then
-          echo "--max-old-space-size=14336 --openssl-legacy-provider"
-        else
-          echo "--max-old-space-size=14336"
-        fi
+      NODE_OPTIONS: --max-old-space-size=14336 --openssl-legacy-provider
+
     executor:
       name: win/default
       shell: << parameters.shell >>
@@ -242,9 +233,6 @@ jobs:
           node-version: << parameters.node-version >>
       - cmd_install-dependencies
       - cmd_run-build
-      - run:
-          name: Print NODE_OPTIONS
-          command: echo ${{ env.NODE_OPTIONS }}
       - cmd_run-e2e-tests-win
       - cmd_run-e2e-tests-win-ts
       - store_artifacts:
@@ -262,12 +250,7 @@ jobs:
     environment:
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
-      NODE_OPTIONS: |
-        if [ << parameters.node-version >> == 18.15.0 ]; then
-          echo "--max-old-space-size=14336 --openssl-legacy-provider"
-        else
-          echo "--max-old-space-size=14336"
-        fi
+      NODE_OPTIONS: --max-old-space-size=14336 --openssl-legacy-provider
     executor:
       name: macos
     steps:
