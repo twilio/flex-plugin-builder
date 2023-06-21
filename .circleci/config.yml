@@ -206,7 +206,7 @@ jobs:
       - run:
           name: Set NODE_OPTIONS with OpenSSL provider
           command: |
-            if [ << parameters.node-version >> == "18.15.0" ]; then
+            if [ << parameters.node-version >> == 18.15.0 ]; then
               export NODE_OPTIONS="--max-old-space-size=14336 --openssl-legacy-provider"
             else
               export NODE_OPTIONS="--max-old-space-size=14336"
@@ -241,7 +241,7 @@ jobs:
       - run:
           name: Set NODE_OPTIONS with OpenSSL provider
           command: |
-            if [ << parameters.node-version >> == "18.15.0" ]; then
+            if [ << parameters.node-version >> == 18.15.0 ]; then
               export NODE_OPTIONS="--max-old-space-size=14336 --openssl-legacy-provider"
             else
               export NODE_OPTIONS="--max-old-space-size=14336"
@@ -275,7 +275,7 @@ jobs:
       - run:
           name: Set NODE_OPTIONS with OpenSSL provider
           command: |
-            if [ << parameters.node-version >> == "18.15.0" ]; then
+            if [ << parameters.node-version >> == 18.15.0 ]; then
               export NODE_OPTIONS="--max-old-space-size=14336 --openssl-legacy-provider"
             else
               export NODE_OPTIONS="--max-old-space-size=14336"
