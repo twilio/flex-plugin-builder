@@ -37,6 +37,7 @@ export interface TestParams {
     operatingSystem: string;
     cwd: string;
     ignorePrefix: boolean;
+    NODE_OPTIONS: string | undefined;
   } & Hidden;
   secrets: {
     console: ConsoleAuthOptions;
@@ -91,6 +92,7 @@ export const testParams: TestParams = {
     operatingSystem,
     cwd: process.cwd(),
     ignorePrefix: process.env.NPM_IGNORE_PREFIX === 'true' || false,
+    NODE_OPTIONS: process.env.NODE_OPTIONS,
   },
   secrets: {
     __hidden: true,
