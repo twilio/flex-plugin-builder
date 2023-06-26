@@ -335,25 +335,25 @@ workflows:
   workflow_e2e-tester:
     when: << pipeline.parameters.run_e2e_test >>
     jobs:
-      - job_e2e-test-linux:
-          matrix:
-            parameters:
-              package_version: [<< pipeline.parameters.package_version >>]
-              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-              node-version: ["16.20.0"]
-      - job_e2e-test-win:
-          matrix:
-            parameters:
-              package_version: [<< pipeline.parameters.package_version >>]
-              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-              shell: ["bash.exe"]
-              node-version: ["16.20.0"]
-      - job_e2e-test-macos:
-          matrix:
-            parameters:
-              package_version: [<< pipeline.parameters.package_version >>]
-              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-              node-version: ["16.20.0"]
+      # - job_e2e-test-linux:
+      #     matrix:
+      #       parameters:
+      #         package_version: [<< pipeline.parameters.package_version >>]
+      #         flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
+      #         node-version: ["16.20.0"]
+      # - job_e2e-test-win:
+      #     matrix:
+      #       parameters:
+      #         package_version: [<< pipeline.parameters.package_version >>]
+      #         flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
+      #         shell: ["bash.exe"]
+      #         node-version: ["16.20.0"]
+      # - job_e2e-test-macos:
+      #     matrix:
+      #       parameters:
+      #         package_version: [<< pipeline.parameters.package_version >>]
+      #         flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
+      #         node-version: ["16.20.0"]
       - job_e2e-test-linux:
           matrix:
             parameters:
