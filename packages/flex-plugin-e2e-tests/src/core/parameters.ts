@@ -37,7 +37,7 @@ export interface TestParams {
     operatingSystem: string;
     cwd: string;
     ignorePrefix: boolean;
-    NODE_OPTIONS: string | undefined;
+    nodeOptions: string | undefined;
   } & Hidden;
   secrets: {
     console: ConsoleAuthOptions;
@@ -92,7 +92,7 @@ export const testParams: TestParams = {
     operatingSystem,
     cwd: process.cwd(),
     ignorePrefix: process.env.NPM_IGNORE_PREFIX === 'true' || false,
-    NODE_OPTIONS: process.env.NODE_VERSION === '18.15.0' ? '--openssl-legacy-provider' : undefined,
+    nodeOptions: semver.gte(process.env.NODE_VERSION as string, '17.0.0') ? '--openssl-legacy-provider' : undefined,
   },
   secrets: {
     __hidden: true,
