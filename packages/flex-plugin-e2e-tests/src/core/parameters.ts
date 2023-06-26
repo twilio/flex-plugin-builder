@@ -92,7 +92,7 @@ export const testParams: TestParams = {
     operatingSystem,
     cwd: process.cwd(),
     ignorePrefix: process.env.NPM_IGNORE_PREFIX === 'true' || false,
-    NODE_OPTIONS: process.env.NODE_OPTIONS,
+    NODE_OPTIONS: process.env.NODE_VERSION === '18.15.0' ? '--openssl-legacy-provider' : undefined,
   },
   secrets: {
     __hidden: true,
