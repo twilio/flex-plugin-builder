@@ -193,7 +193,7 @@ jobs:
     environment:
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
-      NODE_VERSION: "lts"
+      NODE_VERSION: << parameters.node-version >>
     executor:
       name: node
       tag: << parameters.node-version >>
@@ -220,6 +220,7 @@ jobs:
     environment:
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
+      NODE_VERSION: << parameters.node-version >>
     executor:
       name: win/default
       shell: << parameters.shell >>
@@ -247,6 +248,7 @@ jobs:
     environment:
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
+      NODE_VERSION: << parameters.node-version >>
     executor:
       name: macos
     steps:
