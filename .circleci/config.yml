@@ -190,10 +190,14 @@ jobs:
         type: string
       node-version:
         type: string
+      port:
+        type: integer
+        default: 3000
     environment:
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
       NODE_VERSION: << parameters.node-version >>
+      LOCALHOST_PORT: <<parameters.port >>
     executor:
       name: node
       tag: << parameters.node-version >>
@@ -217,10 +221,14 @@ jobs:
         type: string
       node-version:
         type: string
+      port:
+        type: integer
+        default: 3000
     environment:
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
       NODE_VERSION: << parameters.node-version >>
+      LOCALHOST_PORT: << parameters.port >>
     executor:
       name: win/default
       shell: << parameters.shell >>
@@ -245,10 +253,14 @@ jobs:
         type: string
       node-version:
         type: string
+      port:
+         type: integer
+         default: 3000
     environment:
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
       NODE_VERSION: << parameters.node-version >>
+      LOCALHOST_PORT: << parameters.port >>
     executor:
       name: macos
     steps:
@@ -341,6 +353,7 @@ workflows:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               node-version: ["16.20.0"]
+              port: [3000]
       - job_e2e-test-win:
           matrix:
             parameters:
@@ -348,18 +361,21 @@ workflows:
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               shell: ["bash.exe"]
               node-version: ["16.20.0"]
+              port: [3001]
       - job_e2e-test-macos:
           matrix:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               node-version: ["16.20.0"]
+              port: [3002]
       - job_e2e-test-linux:
           matrix:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               node-version: ["18.15.0"]
+              port: [3003]
       - job_e2e-test-win:
           matrix:
             parameters:
@@ -367,12 +383,14 @@ workflows:
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               shell: ["bash.exe"]
               node-version: ["18.15.0"]
+              port: [3004]
       - job_e2e-test-macos:
           matrix:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               node-version: ["18.15.0"]
+              port: [3005]
 
   workflow_publisher:
     when: << pipeline.parameters.run_npm_publish >>
