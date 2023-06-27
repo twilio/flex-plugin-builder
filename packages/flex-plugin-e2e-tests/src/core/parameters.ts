@@ -108,7 +108,7 @@ export const testParams: TestParams = {
   config: {
     start: {
       timeout: 30000,
-      pollInterval: 3000,
+      pollInterval: 1000,
     },
     __hidden: false,
     consoleBaseUrl: process.env.CONSOLE_BASE_URL || consoleBaseUrl,
