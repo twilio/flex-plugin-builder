@@ -5,7 +5,7 @@ import { spawn, Browser, pluginHelper, ConsoleAPI, joinPath, assertion, killChil
 
 // Plugin start
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
-  const plugin = scenario.plugins[1];
+  const plugin = scenario.plugins[0];
   assertion.not.isNull(plugin);
 
   const ext = scenario.isTS ? 'tsx' : 'jsx';

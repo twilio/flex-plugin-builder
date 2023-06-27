@@ -5,7 +5,7 @@ import { spawn, assertion, pluginHelper } from '../utils';
 
 // Install dependencies
 const testSuite: TestSuite = async ({ scenario }: TestParams): Promise<void> => {
-  const plugin = scenario.plugins[1];
+  const plugin = scenario.plugins[0];
   assertion.not.isNull(plugin);
 
   pluginHelper.changeFlexUIVersionIfRequired(scenario, plugin);
