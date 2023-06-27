@@ -7,7 +7,7 @@ const PLUGIN_RELEASED_POLL_INTERVAL = 5000;
 
 // Plugin visible on the Hosted Flex
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
-  const plugin = scenario.plugins[0];
+  const plugin = scenario.plugins[1];
   assertion.not.isNull(plugin);
 
   if (!plugin.newlineValue) {

@@ -8,7 +8,7 @@ import { spawn, assertion, joinPath } from '../utils';
 
 // Build plugin
 const testSuite: TestSuite = async ({ scenario }: TestParams): Promise<void> => {
-  const plugin = scenario.plugins[0];
+  const plugin = scenario.plugins[1];
   assertion.not.isNull(plugin);
 
   const ext = scenario.isTS ? 'tsx' : 'jsx';

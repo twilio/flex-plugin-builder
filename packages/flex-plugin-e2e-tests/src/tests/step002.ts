@@ -8,7 +8,7 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
   if (scenario.isTS) {
     flags.push('--typescript');
   }
-  const plugin = scenario.plugins[0];
+  const plugin = scenario.plugins[1];
   assertion.not.isNull(plugin);
 
   await spawn('twilio', ['flex:plugins:create', plugin.name, ...flags]);
