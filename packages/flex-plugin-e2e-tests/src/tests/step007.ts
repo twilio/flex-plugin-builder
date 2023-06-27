@@ -7,7 +7,7 @@ import { TestSuite, TestParams } from '../core';
 
 // Deploy plugin
 const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<void> => {
-  const plugin = scenario.plugins[0];
+  const plugin = scenario.plugins[1];
   assertion.not.isNull(plugin);
 
   const ext = scenario.isTS ? 'tsx' : 'jsx';
