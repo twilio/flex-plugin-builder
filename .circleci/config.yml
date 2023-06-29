@@ -24,15 +24,23 @@ parameters:
     type: string
 
 executors:
-  node:
+  linux:
     parameters:
       tag:
         type: string
+        default: 16.20.0
     docker:
       - image: cimg/node:<< parameters.tag >>-browsers
+    size: xlarge
   macos:
     macos:
-      xcode: 12.5.1
+      xcode: 14.2.0
+    size: medium
+  windows:
+    docker:
+      - image: circleci/windows@5.0.0
+      shell: "bash.exe"
+      size: xlarge
 
 orbs:
   win: circleci/windows@5.0.0
@@ -178,11 +186,51 @@ commands:
           command: |
             curl -XPOST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - << parameters.text >>. View <$CIRCLE_BUILD_URL|build>.', 'mrkdwn':true}" $SLACK_WEBHOOK
           when: on_fail
+  cmd_run_on_linux:
+    steps:
+      - checkout
+      - cmd_install-prerequisites
+      - cmd_install-dependencies
+      - cmd_run-build
+      - cmd_set-linux-permissions
+      - cmd_run-e2e-tests
+      - store_artifacts:
+          path: packages/flex-plugin-e2e-tests/screenshots
 
+  cmd_run_on_macos:
+    parameters:
+       node-version:
+          type: string
+    steps:
+      - checkout
+      - node/install:
+          node-version: << parameters.node-version >>
+      - cmd_install-dependencies
+      - cmd_run-build
+      - cmd_set-mac-permissions
+      - cmd_run-e2e-tests-mac-js
+      - cmd_run-e2e-tests-mac-ts
+      - store_artifacts:
+          path: packages/flex-plugin-e2e-tests/screenshots
+
+  cmd_run_on_win:
+    environment: ----no-experimental-fetch
+    parameters:
+       node-version:
+          type: string
+    steps:
+      - checkout
+      - cmd_windows-nvm-install-node:
+          node-version: << parameters.node-version >>
+      - cmd_install-dependencies
+      - cmd_run-build
+      - cmd_run-e2e-tests-win
+      - cmd_run-e2e-tests-win-ts
+      - store_artifacts:
+          path: packages/flex-plugin-e2e-tests/screenshots
 
 jobs:
-  job_e2e-test-linux-node18:
-    resource_class: xlarge
+  job_e2e-test-node-16:
     parameters:
       package_version:
         type: string
@@ -190,159 +238,33 @@ jobs:
         type: string
       node-version:
         type: string
+      os:
+        type: executor
     environment:
+      NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
       NODE_VERSION: << parameters.node-version >>
-    executor:
-      name: node
-      tag: << parameters.node-version >>
+    executor: 
+      name: << parameters.os >>
     steps:
-      - checkout
-      - cmd_install-prerequisites
-      - cmd_install-dependencies
-      - cmd_run-build
-      - cmd_set-linux-permissions
-      - cmd_run-e2e-tests
-      - store_artifacts:
-          path: packages/flex-plugin-e2e-tests/screenshots
-
-  job_e2e-test-win-node18:
-    parameters:
-      package_version:
-        type: string
-      flex_ui_version:
-        type: string
-      shell:
-        type: string
-      node-version:
-        type: string
-    environment:
-      PACKAGE_VERSION: << parameters.package_version >>
-      FLEX_UI_VERSION: << parameters.flex_ui_version >>
-      NODE_VERSION: << parameters.node-version >>
-    executor:
-      name: win/default
-      shell: << parameters.shell >>
-      size: xlarge
-    steps:
-      - checkout
-      - cmd_windows-nvm-install-node:
-          node-version: << parameters.node-version >>
-      - cmd_install-dependencies
-      - cmd_run-build
-      - cmd_run-e2e-tests-win
-      - cmd_run-e2e-tests-win-ts
-      - store_artifacts:
-          path: packages/flex-plugin-e2e-tests/screenshots
-
-  job_e2e-test-macos-node18:
-    resource_class: medium
-    parameters:
-      flex_ui_version:
-        type: string
-      package_version:
-        type: string
-      node-version:
-        type: string
-    environment:
-      PACKAGE_VERSION: << parameters.package_version >>
-      FLEX_UI_VERSION: << parameters.flex_ui_version >>
-      NODE_VERSION: << parameters.node-version >>
-    executor:
-      name: macos
-    steps:
-      - checkout
-      - node/install:
-          node-version: << parameters.node-version >>
-      - cmd_install-dependencies
-      - cmd_run-build
-      - cmd_set-mac-permissions
-      - cmd_run-e2e-tests-mac-js
-      - cmd_run-e2e-tests-mac-ts
-      - store_artifacts:
-          path: packages/flex-plugin-e2e-tests/screenshots
-  job_e2e-test-linux-node16:
-    resource_class: xlarge
-    parameters:
-      package_version:
-        type: string
-      flex_ui_version:
-        type: string
-      node-version:
-        type: string
-    environment:
-      PACKAGE_VERSION: << parameters.package_version >>
-      FLEX_UI_VERSION: << parameters.flex_ui_version >>
-      NODE_VERSION: << parameters.node-version >>
-    executor:
-      name: node
-      tag: << parameters.node-version >>
-    steps:
-      - checkout
-      - cmd_install-prerequisites
-      - cmd_install-dependencies
-      - cmd_run-build
-      - cmd_set-linux-permissions
-      - cmd_run-e2e-tests
-      - store_artifacts:
-          path: packages/flex-plugin-e2e-tests/screenshots
-
-  job_e2e-test-win-node16:
-    parameters:
-      package_version:
-        type: string
-      flex_ui_version:
-        type: string
-      shell:
-        type: string
-      node-version:
-        type: string
-    environment:
-      PACKAGE_VERSION: << parameters.package_version >>
-      FLEX_UI_VERSION: << parameters.flex_ui_version >>
-      NODE_VERSION: << parameters.node-version >>
-    executor:
-      name: win/default
-      shell: << parameters.shell >>
-      size: xlarge
-    steps:
-      - checkout
-      - cmd_windows-nvm-install-node:
-          node-version: << parameters.node-version >>
-      - cmd_install-dependencies
-      - cmd_run-build
-      - cmd_run-e2e-tests-win
-      - cmd_run-e2e-tests-win-ts
-      - store_artifacts:
-          path: packages/flex-plugin-e2e-tests/screenshots
-
-  job_e2e-test-macos-node16:
-    resource_class: medium
-    parameters:
-      flex_ui_version:
-        type: string
-      package_version:
-        type: string
-      node-version:
-        type: string
-    environment:
-      PACKAGE_VERSION: << parameters.package_version >>
-      FLEX_UI_VERSION: << parameters.flex_ui_version >>
-      NODE_VERSION: << parameters.node-version >>
-    executor:
-      name: macos
-    steps:
-      - checkout
-      - node/install:
-          node-version: << parameters.node-version >>
-      - cmd_install-dependencies
-      - cmd_run-build
-      - cmd_set-mac-permissions
-      - cmd_run-e2e-tests-mac-js
-      - cmd_run-e2e-tests-mac-ts
-      - store_artifacts:
-          path: packages/flex-plugin-e2e-tests/screenshots
+      - when:
+          condition:
+            equal: [<< parameters.os >>, "linux"]
+          steps:
+            - cmd_run_on_linux
+      - when:
+          condition:
+            equal: [<< parameters.os >>, "windows"]
+          steps:
+            - cmd_run_on_win:
+                node-version: << parameters.node-version >> 
+      - when:
+          condition:
+            equal: [<< parameters.os >>, "macos"]
+          steps:
+            - cmd_run_on_macos:
+                node-version: << parameters.node-version >>
 
   job_npm-publish:
     resource_class: xlarge
@@ -416,50 +338,13 @@ workflows:
   workflow_e2e-tester:
     when: << pipeline.parameters.run_e2e_test >>
     jobs:
-      - job_e2e-test-linux-node16:
+      - job_e2e-test-node-16:
           matrix:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               node-version: ["16.20.0"]
-      - job_e2e-test-win-node16:
-          matrix:
-            parameters:
-              package_version: [<< pipeline.parameters.package_version >>]
-              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-              shell: ["bash.exe"]
-              node-version: ["16.20.0"]
-      - job_e2e-test-macos-node16:
-          matrix:
-            parameters:
-              package_version: [<< pipeline.parameters.package_version >>]
-              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-              node-version: ["16.20.0"]
-      - job_e2e-test-linux-node18:
-          matrix:
-            parameters:
-              package_version: [<< pipeline.parameters.package_version >>]
-              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-              node-version: ["18.15.0"]
-          requires:
-            - job_e2e-test-linux-node16
-      - job_e2e-test-win-node18:
-          matrix:
-            parameters:
-              package_version: [<< pipeline.parameters.package_version >>]
-              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-              shell: ["bash.exe"]
-              node-version: ["18.15.0"]
-          requires:
-            - job_e2e-test-win-node16
-      - job_e2e-test-macos-node18:
-          matrix:
-            parameters:
-              package_version: [<< pipeline.parameters.package_version >>]
-              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-              node-version: ["18.15.0"]
-          requires:
-            - job_e2e-test-macos-node16
+              os: [linux, macos, windows]
 
   workflow_publisher:
     when: << pipeline.parameters.run_npm_publish >>
@@ -515,7 +400,7 @@ workflows:
               only:
                 - main
     jobs:
-      - job_e2e-test-linux-node16:
+      - job_e2e-test-linux:
           matrix:
             parameters:
               package_version: ["latest"]
@@ -524,7 +409,7 @@ workflows:
           post-steps:
             - cmd_slack-notification-error:
                 text: "nightly E2E tests failed on Linux."
-      - job_e2e-test-macos-node16:
+      - job_e2e-test-macos:
           matrix:
             parameters:
               package_version: ["latest"]
@@ -533,7 +418,7 @@ workflows:
           post-steps:
             - cmd_slack-notification-error:
                 text: "nightly E2E tests failed on MacOS."
-      - job_e2e-test-win-node16:
+      - job_e2e-test-win:
           matrix:
             parameters:
               package_version: ["latest"]

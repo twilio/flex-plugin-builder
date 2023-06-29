@@ -107,7 +107,7 @@ export const testParams: TestParams = {
   },
   config: {
     start: {
-      timeout: 300000,
+      timeout: 30000,
       pollInterval: 3000,
     },
     __hidden: false,
