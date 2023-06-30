@@ -243,7 +243,8 @@ jobs:
     steps:
       - checkout
       - run: 
-         command: echo " Parameter is << parameters.os >> "
+         name: "Print parameters"
+         command: echo " Parameter is << parameters.os >> and value is ${*linux-executor}"
       - when:
           condition:
             equal: [ <<: *linux-executor, << parameters.os >>]
