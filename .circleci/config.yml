@@ -246,27 +246,13 @@ jobs:
       - checkout
       - run:
           name: "Print os paramter"
-          command: echo *linux-executor
+          command: echo $(echo (<< parameters.os >>))
                            
-                  
-        
       - when:
           condition:
-            matches: { pattern: "docker", value: << parameters.os >> }
+            matches: { pattern: "docker", value: $(echo (<< parameters.os >> ))}
           steps:
             - cmd_run_on_linux
-      - when:
-          condition:
-            equal: [ *windows-executor, << parameters.os >>]
-          steps:
-            - cmd_run_on_win:
-                node-version: << parameters.node-version >> 
-      - when:
-          condition:
-            matches: { pattern: "macos", value: << parameters.os >> }
-          steps:
-            - cmd_run_on_macos:
-                node-version: << parameters.node-version >>
 
   job_npm-publish:
     resource_class: xlarge
