@@ -245,6 +245,10 @@ jobs:
     executor:  << parameters.os >>
     steps:
       - checkout
+      - run:
+          name: "Print os paramter"
+          command: echo << parameters.os >>
+        
       - when:
           condition:
             equal: [<< parameters.os >>, linux]
