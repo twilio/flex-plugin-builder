@@ -249,18 +249,18 @@ jobs:
     steps:
       - when:
           condition:
-            equal: [<< parameters.os >>, "linux"]
+            equal: [<< parameters.os >>, linux]
           steps:
             - cmd_run_on_linux
       - when:
           condition:
-            equal: [<< parameters.os >>, "windows"]
+            equal: [<< parameters.os >>, windows]
           steps:
             - cmd_run_on_win:
                 node-version: << parameters.node-version >> 
       - when:
           condition:
-            equal: [<< parameters.os >>, "macos"]
+            equal: [<< parameters.os >>, macos]
           steps:
             - cmd_run_on_macos:
                 node-version: << parameters.node-version >>
