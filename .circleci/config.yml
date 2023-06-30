@@ -31,16 +31,15 @@ executors:
         default: 16.20.0
     docker:
       - image: cimg/node:<< parameters.tag >>-browsers
-    size: xlarge
+    resource_class: xlarge
   macos:
     macos:
       xcode: 14.2.0
-    size: medium
+    resource_class: medium
   windows:
-    docker:
-      - image: circleci/windows@5.0.0
-      shell: "bash.exe"
-      size: xlarge
+    machine:
+      image: circleci/windows@5.0.0
+      shell: bash.exe
 
 orbs:
   win: circleci/windows@5.0.0
@@ -214,7 +213,6 @@ commands:
           path: packages/flex-plugin-e2e-tests/screenshots
 
   cmd_run_on_win:
-    environment: ----no-experimental-fetch
     parameters:
        node-version:
           type: string
@@ -245,8 +243,7 @@ jobs:
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
       NODE_VERSION: << parameters.node-version >>
-    executor: 
-      name: << parameters.os >>
+    executor: << parameters.os >>
     steps:
       - when:
           condition:
@@ -277,7 +274,7 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=14336
       CI: ""
     executor:
-      name: node
+      name: linux
       tag: "16.20.0"
     steps:
       - checkout
@@ -319,7 +316,7 @@ jobs:
       node-version:
         type: string
     executor:
-      name: node
+      name: linux
       tag: << parameters.node-version >>
     steps:
       - checkout
@@ -400,31 +397,23 @@ workflows:
               only:
                 - main
     jobs:
-      - job_e2e-test-linux:
+      - job_e2e-test-node-16:
           matrix:
             parameters:
-              package_version: ["latest"]
-              flex_ui_version: ["latest"]
+              package_version: [<< pipeline.parameters.package_version >>]
+              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               node-version: ["16.20.0"]
+              os: [linux, macos, windows]
           post-steps:
             - cmd_slack-notification-error:
                 text: "nightly E2E tests failed on Linux."
-      - job_e2e-test-macos:
-          matrix:
-            parameters:
-              package_version: ["latest"]
-              flex_ui_version: ["latest"]
-              node-version: ["16.20.0"]
-          post-steps:
-            - cmd_slack-notification-error:
-                text: "nightly E2E tests failed on MacOS."
-      - job_e2e-test-win:
-          matrix:
-            parameters:
-              package_version: ["latest"]
-              flex_ui_version: ["latest"]
-              shell: ["bash.exe"]
-              node-version: ["16.20.0"]
-          post-steps:
-            - cmd_slack-notification-error:
-                text: "nightly E2E tests failed on Windows."
+      # - job_e2e-test-win:
+      #     matrix:
+      #       parameters:
+      #         package_version: ["latest"]
+      #         flex_ui_version: ["latest"]
+      #         shell: ["bash.exe"]
+      #         node-version: ["16.20.0"]
+      #     post-steps:
+      #       - cmd_slack-notification-error:
+      #           text: "nightly E2E tests failed on Windows."
