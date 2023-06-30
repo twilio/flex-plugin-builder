@@ -252,7 +252,7 @@ jobs:
         
       - when:
           condition:
-            equal: [ *linux-executor, << parameters.os >>]
+            matches: { pattern: "docker", value: << parameters.os >> }
           steps:
             - cmd_run_on_linux
       - when:
@@ -263,7 +263,7 @@ jobs:
                 node-version: << parameters.node-version >> 
       - when:
           condition:
-            equal: [*macos-executor, << parameters.os >>]
+            matches: { pattern: "macos", value: << parameters.os >> }
           steps:
             - cmd_run_on_macos:
                 node-version: << parameters.node-version >>
