@@ -23,12 +23,17 @@ parameters:
     default: ""
     type: string
 
+orbs:
+  win: circleci/windows@5.0.0
+  browser-tools: circleci/browser-tools@1.1.3
+  node: circleci/node@5.1.0
+
 executors:
   linux: &linux-executor
     parameters:
       tag:
         type: string
-        default: "16.20.0"
+        default: 16.20.0
     docker:
       - image: cimg/node:16.20.0-browsers
     resource_class: xlarge
@@ -38,13 +43,8 @@ executors:
     resource_class: medium
   windows: &windows-executor
     machine:
-      image: windows-server-2022-gui:current
-      shell: bash.exe
-
-orbs:
-  win: circleci/windows@5.0.0
-  browser-tools: circleci/browser-tools@1.1.3
-  node: circleci/node@5.1.0
+      image: 'windows-server-2022-gui:current'
+      shell: 'bash.exe'
 
 commands:
   cmd_install-dependencies:
@@ -194,7 +194,6 @@ commands:
       - cmd_run-e2e-tests
       - store_artifacts:
           path: packages/flex-plugin-e2e-tests/screenshots
-
   cmd_run_on_macos:
     parameters:
        node-version:
@@ -209,7 +208,6 @@ commands:
       - cmd_run-e2e-tests-mac-ts
       - store_artifacts:
           path: packages/flex-plugin-e2e-tests/screenshots
-
   cmd_run_on_win:
     parameters:
        node-version:
@@ -233,7 +231,7 @@ jobs:
         type: string
       node-version:
         type: string
-      os:
+      os: 
         type: executor
         default: linux
     environment:
@@ -241,19 +239,28 @@ jobs:
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
       NODE_VERSION: << parameters.node-version >>
-    executor:  << parameters.os >>
+    executor: << parameters.os >> 
     steps:
       - checkout
-      - run:
-          name: "Print os paramter"
-          command: echo $(echo (<< parameters.os >>))
-                           
+      - run: 
+         command: echo " Parameter is << parameters.os >> "
       - when:
           condition:
-            matches: { pattern: "docker", value: $(echo (<< parameters.os >> ))}
+            equal: [ <<: *linux-executor, << parameters.os >>]
           steps:
             - cmd_run_on_linux
-
+      - when:
+          condition:
+            equal: [ <<: *macos-executor, << parameters.os >>]
+          steps:
+            - cmd_run_on_macos:
+                node-version: << parameters.node-version >>
+      - when:
+          condition:
+            equal: [ <<: *windows-executor, << parameters.os >>]
+          steps:
+            - cmd_run_on_win:
+                 node-version: << parameters.node-version >>
   job_npm-publish:
     resource_class: xlarge
     parameters:
@@ -332,7 +339,7 @@ workflows:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               node-version: ["16.20.0"]
-              os: [linux, macos, windows]
+              os: [ linux, windows, macos]
 
   workflow_publisher:
     when: << pipeline.parameters.run_npm_publish >>
@@ -394,17 +401,6 @@ workflows:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               node-version: ["16.20.0"]
-              os: [linux, macos, windows]
           post-steps:
             - cmd_slack-notification-error:
                 text: "nightly E2E tests failed on Linux."
-      # - job_e2e-test-win:
-      #     matrix:
-      #       parameters:
-      #         package_version: ["latest"]
-      #         flex_ui_version: ["latest"]
-      #         shell: ["bash.exe"]
-      #         node-version: ["16.20.0"]
-      #     post-steps:
-      #       - cmd_slack-notification-error:
-      #           text: "nightly E2E tests failed on Windows."
