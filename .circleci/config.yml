@@ -24,7 +24,7 @@ parameters:
     type: string
 
 executors:
-  linux:
+  linux: &linux-executor
     parameters:
       tag:
         type: string
@@ -32,11 +32,11 @@ executors:
     docker:
       - image: cimg/node:<< parameters.tag >>-browsers
     resource_class: xlarge
-  macos:
+  macos: &macos-executor
     macos:
       xcode: 14.2.0
     resource_class: medium
-  windows:
+  windows: &windows-executor
     machine:
       image: windows-server-2022-gui:current
       shell: bash.exe
@@ -246,22 +246,22 @@ jobs:
       - checkout
       - run:
           name: "Print os paramter"
-          command: echo << parameters.os.executor.name >>
+          command: echo << parameters.os >>
         
       - when:
           condition:
-            equal: [<< parameters.os >>, linux]
+            equal: [*linux-executor, << parameters.os >>]
           steps:
             - cmd_run_on_linux
       - when:
           condition:
-            equal: [<< parameters.os >>, windows]
+            equal: [*windows-executor, << parameters.os >>]
           steps:
             - cmd_run_on_win:
                 node-version: << parameters.node-version >> 
       - when:
           condition:
-            equal: [<< parameters.os >>, macos]
+            equal: [*macos-executor, << parameters.os >>]
           steps:
             - cmd_run_on_macos:
                 node-version: << parameters.node-version >>
