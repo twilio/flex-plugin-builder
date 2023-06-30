@@ -246,7 +246,9 @@ jobs:
       - checkout
       - run:
           name: "Print os paramter"
-          command: echo << parameters.os >>
+          command: echo *linux-executor
+                           
+                  
         
       - when:
           condition:
