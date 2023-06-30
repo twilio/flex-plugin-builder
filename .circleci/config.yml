@@ -244,24 +244,22 @@ jobs:
       NODE_VERSION: << parameters.node-version >>
     executor:  << parameters.os >>
     steps:
+      - checkout
       - when:
           condition:
             equal: [<< parameters.os >>, linux]
           steps:
-            - checkout
             - cmd_run_on_linux
       - when:
           condition:
             equal: [<< parameters.os >>, windows]
           steps:
-            - checkout 
             - cmd_run_on_win:
                 node-version: << parameters.node-version >> 
       - when:
           condition:
             equal: [<< parameters.os >>, macos]
           steps:
-            - checkout
             - cmd_run_on_macos:
                 node-version: << parameters.node-version >>
 
