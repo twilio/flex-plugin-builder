@@ -40,7 +40,6 @@ executors:
     machine:
       image: windows-server-2022-gui:current
       shell: bash.exe
-      resource_class: xlarge
 
 orbs:
   win: circleci/windows@5.0.0
@@ -247,7 +246,7 @@ jobs:
       - checkout
       - run:
           name: "Print os paramter"
-          command: echo << parameters.os >>
+          command: echo << parameters.os.executor.name >>
         
       - when:
           condition:
