@@ -38,8 +38,9 @@ executors:
     resource_class: medium
   windows:
     machine:
-      image: circleci/windows@5.0.0
+      image: windows-server-2022-gui:current
       shell: bash.exe
+      resource_class: xlarge
 
 orbs:
   win: circleci/windows@5.0.0
@@ -238,12 +239,13 @@ jobs:
         type: string
       os:
         type: executor
+        default: linux
     environment:
       NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
       NODE_VERSION: << parameters.node-version >>
-    executor: << parameters.os >>
+    executor:  << parameters.os >>
     steps:
       - when:
           condition:
