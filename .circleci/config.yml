@@ -28,9 +28,9 @@ executors:
     parameters:
       tag:
         type: string
-        default: 16.20.0
+        default: "16.20.0"
     docker:
-      - image: cimg/node:<< parameters.tag >>-browsers
+      - image: cimg/node:16.20.0-browsers
     resource_class: xlarge
   macos: &macos-executor
     macos:
@@ -250,12 +250,12 @@ jobs:
         
       - when:
           condition:
-            equal: [*linux-executor, << parameters.os >>]
+            equal: [ *linux-executor, << parameters.os >>]
           steps:
             - cmd_run_on_linux
       - when:
           condition:
-            equal: [*windows-executor, << parameters.os >>]
+            equal: [ *windows-executor, << parameters.os >>]
           steps:
             - cmd_run_on_win:
                 node-version: << parameters.node-version >> 
