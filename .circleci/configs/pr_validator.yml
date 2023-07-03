@@ -14,7 +14,7 @@ executors:
       - image: cimg/node:<< parameters.tag >>-browsers
   macos:
     macos:
-      xcode: 12.5.1
+      xcode: 14.2.0
 
 orbs:
   win: circleci/windows@5.0.0
