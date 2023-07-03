@@ -116,6 +116,16 @@ commands:
       - run:
           name: "Install NPM latest"
           command: npm install -g npm
+  cmd_slack-notification-error:
+    parameters:
+      text:
+        type: string
+    steps:
+      - run:
+          name: Send Slack notification
+          command: |
+            curl -XPOST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - << parameters.text >>. View <$CIRCLE_BUILD_URL|build>.', 'mrkdwn':true}" $SLACK_WEBHOOK
+          when: on_fail
 
 
 jobs:
