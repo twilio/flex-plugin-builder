@@ -87,12 +87,12 @@ export const testParams: TestParams = {
   environment: {
     __hidden: false,
     path: process.env.PATH as string,
-    nodeVersion: process.env.NODE_VERSION as string,
+    nodeVersion: process.version as string,
     homeDir,
     operatingSystem,
     cwd: process.cwd(),
     ignorePrefix: process.env.NPM_IGNORE_PREFIX === 'true' || false,
-    nodeOptions: semver.gte(process.env.NODE_VERSION as string, '17.0.0') ? '--openssl-legacy-provider' : undefined,
+    nodeOptions: semver.gte(process.version as string, '17.0.0') ? '--openssl-legacy-provider' : undefined,
   },
   secrets: {
     __hidden: true,

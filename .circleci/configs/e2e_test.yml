@@ -143,7 +143,6 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
-      NODE_VERSION: << parameters.node-version >>
     executor:
       name: node
       tag: << parameters.node-version >>
@@ -171,7 +170,6 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
-      NODE_VERSION: << parameters.node-version >>
     executor:
       name: win/default
       shell: << parameters.shell >>
@@ -200,7 +198,6 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
-      NODE_VERSION: << parameters.node-version >>
     executor:
       name: macos
     steps:
@@ -215,6 +212,8 @@ jobs:
       - store_artifacts:
           path: packages/flex-plugin-e2e-tests/screenshots
 
+  # In order to run our e2e tests per operating system, we must have a separate job for each node version. 
+  # Since we use a one account per os, running the tests for each version in parallel is not possible.
   job_e2e-test-linux-node18:
     resource_class: xlarge
     parameters:
@@ -228,7 +227,6 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
-      NODE_VERSION: << parameters.node-version >>
     executor:
       name: node
       tag: << parameters.node-version >>
@@ -242,8 +240,6 @@ jobs:
       - store_artifacts:
           path: packages/flex-plugin-e2e-tests/screenshots
 
-  # In order to run our e2e tests per operating system, we must have a separate job for each node version. 
-  # Since we use a one account per os, running the tests for each version in parallel is not possible.
   job_e2e-test-win-node18:
     parameters:
       package_version:
@@ -258,7 +254,6 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
-      NODE_VERSION: << parameters.node-version >>
     executor:
       name: win/default
       shell: << parameters.shell >>
@@ -287,7 +282,6 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=14336
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
-      NODE_VERSION: << parameters.node-version >>
     executor:
       name: macos
     steps:
