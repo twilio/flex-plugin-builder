@@ -328,7 +328,8 @@ workflows:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               node-version: ["18.15.0"]
-            requires: job_e2e-test-linux-node16
+          requires: 
+            - job_e2e-test-linux-node16
       - job_e2e-test-win-node18:
           matrix:
             parameters:
@@ -336,14 +337,16 @@ workflows:
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               shell: ["bash.exe"]
               node-version: ["18.15.0"]
-            requires: job_e2e-test-win-node16
+          requires: 
+            - job_e2e-test-win-node16
       - job_e2e-test-macos-node18:
           matrix:
             parameters:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               node-version: ["18.15.0"]
-            requires: job_e2e-test-macos-node16
+          requires: 
+            - job_e2e-test-macos-node16
   workflow_nightly-e2e:
     triggers:
       - schedule:
