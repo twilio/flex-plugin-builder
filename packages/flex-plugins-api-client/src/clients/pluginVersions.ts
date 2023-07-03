@@ -94,7 +94,10 @@ export default class PluginVersionsClient {
    * @param pluginId the plugin identifier
    * @param id the plugin version identifier to archive
    */
+  // eslint-disable-next-line consistent-return
   public async archive(pluginId: string, id: string): Promise<PluginVersionResource> {
-    return this.client.post<PluginVersionResource>(urlJoin(PluginVersionsClient.getUrl(pluginId, id), 'Archive'), {});
+    try {
+      return this.client.post<PluginVersionResource>(urlJoin(PluginVersionsClient.getUrl(pluginId, id), 'Archive'), {});
+    } catch (e) {}
   }
 }
