@@ -1,5 +1,8 @@
 version: 2.1
 
+
+setup: true
+
 parameters:
   run_e2e_test:
     default: false
@@ -23,385 +26,33 @@ parameters:
     default: ""
     type: string
 
+executors:
+  node:
+    parameters:
+      tag:
+        type: string
+    docker:
+      - image: cimg/node:<< parameters.tag >>-browsers
+  macos:
+    macos:
+      xcode: 14.2.0
+
 orbs:
   win: circleci/windows@5.0.0
   browser-tools: circleci/browser-tools@1.1.3
   node: circleci/node@5.1.0
-
-executors:
-  linux: &linux-executor
-    parameters:
-      tag:
-        type: string
-        default: 16.20.0
-    docker:
-      - image: cimg/node:16.20.0-browsers
-    resource_class: xlarge
-  macos: &macos-executor
-    macos:
-      xcode: 14.2.0
-    resource_class: medium
-  windows: &windows-executor
-    machine:
-      image: 'windows-server-2022-gui:current'
-      shell: 'bash.exe'
-
-commands:
-  cmd_install-dependencies:
-    steps:
-      - run:
-          name: "Install project dependencies"
-          command: npm i
-  cmd_install-prerequisites:
-    steps:
-      - run:
-          name: "Apt-get update"
-          command: sudo apt-get update
-      - run:
-          name: "Install libraries"
-          command: sudo apt-get install -y libsecret-1-dev
-  cmd_run-unit-tests:
-    steps:
-      - run:
-          name: "Run unit tests"
-          command: npm run test:ci
-  cmd_run-linter:
-    steps:
-      - run:
-          name: "Run linter"
-          command: npm run lint:fix
-  cmd_run-build:
-    steps:
-      - run:
-          name: "Build packages"
-          command: npm run build
-  cmd_run-e2e-tests:
-    steps:
-      - run:
-          name: "Run e2e tests"
-          # default timeout is 10m
-          no_output_timeout: 20m
-          command: |
-            cd packages/flex-plugin-e2e-tests
-            npm start
-  cmd_run-e2e-tests-win:
-    steps:
-      - run:
-          name: "Run e2e tests - JS"
-          command: |
-            cd packages/flex-plugin-e2e-tests
-            npm start
-          environment:
-            TS: false
-  cmd_run-e2e-tests-win-ts:
-    steps:
-      - run:
-          name: "Run e2e tests - TS"
-          command: |
-            taskkill //im node.exe //f
-            cd packages/flex-plugin-e2e-tests
-            npm start
-          environment:
-            TS: true
-  cmd_run-e2e-tests-mac-js:
-    steps:
-      - run:
-          name: "Run e2e tests - JS"
-          command: |
-            cd packages/flex-plugin-e2e-tests
-            npm start
-          environment:
-            TS: false
-  cmd_run-e2e-tests-mac-ts:
-    steps:
-      - run:
-          name: "Run e2e tests - TS"
-          command: |
-            killall -9 node
-            cd packages/flex-plugin-e2e-tests
-            npm start
-          environment:
-            TS: true
-  cmd_codecov:
-    steps:
-      - run:
-          name: "Codecov report"
-          command: npm run coverage -- --token=$CODECOV_TOKEN
-  cmd_setup-npm:
-    steps:
-      - run:
-          name: "Setting up npm"
-          command: |
-            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-            git config --global user.email $GITHUB_EMAIL
-            git config --global user.name $GITHUB_USER
-  cmd_setup-github:
-    steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "f3:09:6f:86:86:0a:6e:98:9b:fa:cb:49:2e:90:bc:75"
-  cmd_run-publish:
-    parameters:
-      dist_tag:
-        type: string
-      version_bump:
-        type: string
-    steps:
-      - run:
-          name: "Publishing package"
-          command: |
-            npm run publish:<< parameters.dist_tag >> << parameters.version_bump >>
-  cmd_set-mac-permissions:
-    steps:
-      - run:
-          name: "Set permissions to user directory"
-          command: sudo chmod -R 777 /Users/distiller
-  cmd_set-linux-permissions:
-    steps:
-      - run:
-          name: "Set permissions to /usr/local"
-          command: sudo chmod -R 777 /usr/local
-  cmd_windows-nvm-install-node:
-    parameters:
-      node-version:
-        type: string
-    steps:
-      - run:
-          name: "Install node"
-          command: nvm install << parameters.node-version >>
-      - run:
-          name: "NVM use"
-          command: nvm use << parameters.node-version >>
-      - run:
-          name: "Install NPM latest"
-          command: npm install -g npm
-  cmd_slack-notification-error:
-    parameters:
-      text:
-        type: string
-    steps:
-      - run:
-          name: Send Slack notification
-          command: |
-            curl -XPOST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - << parameters.text >>. View <$CIRCLE_BUILD_URL|build>.', 'mrkdwn':true}" $SLACK_WEBHOOK
-          when: on_fail
-  cmd_run_on_linux:
-    steps:
-      - cmd_install-prerequisites
-      - cmd_install-dependencies
-      - cmd_run-build
-      - cmd_set-linux-permissions
-      - cmd_run-e2e-tests
-      - store_artifacts:
-          path: packages/flex-plugin-e2e-tests/screenshots
-  cmd_run_on_macos:
-    parameters:
-       node-version:
-          type: string
-    steps:
-      - node/install:
-          node-version: << parameters.node-version >>
-      - cmd_install-dependencies
-      - cmd_run-build
-      - cmd_set-mac-permissions
-      - cmd_run-e2e-tests-mac-js
-      - cmd_run-e2e-tests-mac-ts
-      - store_artifacts:
-          path: packages/flex-plugin-e2e-tests/screenshots
-  cmd_run_on_win:
-    parameters:
-       node-version:
-          type: string
-    steps:
-      - cmd_windows-nvm-install-node:
-          node-version: << parameters.node-version >>
-      - cmd_install-dependencies
-      - cmd_run-build
-      - cmd_run-e2e-tests-win
-      - cmd_run-e2e-tests-win-ts
-      - store_artifacts:
-          path: packages/flex-plugin-e2e-tests/screenshots
-
-jobs:
-  job_e2e-test-node-16:
-    parameters:
-      package_version:
-        type: string
-      flex_ui_version:
-        type: string
-      node-version:
-        type: string
-      os: 
-        type: executor
-        default: linux
-    environment:
-      NODE_OPTIONS: --max-old-space-size=14336
-      PACKAGE_VERSION: << parameters.package_version >>
-      FLEX_UI_VERSION: << parameters.flex_ui_version >>
-      NODE_VERSION: << parameters.node-version >>
-    executor: << parameters.os >> 
-    steps:
-      - checkout
-      - run: 
-         name: "Print parameters"
-         command: echo " Parameter is << parameters.os >> and value is ${*linux-executor}"
-      - when:
-          condition:
-            equal: [ <<: *linux-executor, << parameters.os >>]
-          steps:
-            - cmd_run_on_linux
-      - when:
-          condition:
-            equal: [ <<: *macos-executor, << parameters.os >>]
-          steps:
-            - cmd_run_on_macos:
-                node-version: << parameters.node-version >>
-      - when:
-          condition:
-            equal: [ <<: *windows-executor, << parameters.os >>]
-          steps:
-            - cmd_run_on_win:
-                 node-version: << parameters.node-version >>
-  job_npm-publish:
-    resource_class: xlarge
-    parameters:
-      dist_tag:
-        type: string
-      version_bump:
-        type: string
-    environment:
-      NODE_OPTIONS: --max-old-space-size=14336
-      CI: ""
-    executor:
-      name: linux
-      tag: "16.20.0"
-    steps:
-      - checkout
-      - cmd_install-prerequisites
-      - cmd_install-dependencies
-      - cmd_setup-npm
-      - cmd_setup-github
-      - cmd_run-publish:
-          dist_tag: << parameters.dist_tag >>
-          version_bump: << parameters.version_bump >>
-
-  job_pr-validator-win32:
-    environment:
-      NODE_OPTIONS: --max-old-space-size=14336 --no-experimental-fetch
-      CI: ""
-    parameters:
-      shell:
-        type: string
-      node-version:
-        type: string
-    executor:
-      name: win/default
-      shell: << parameters.shell >>
-      size: xlarge
-    steps:
-      - checkout
-      - cmd_windows-nvm-install-node:
-          node-version: << parameters.node-version >>
-      - cmd_install-dependencies
-      - cmd_run-build
-      - cmd_run-unit-tests
-
-  job_pr-validator-node:
-    resource_class: xlarge
-    environment:
-      NODE_OPTIONS: --max-old-space-size=14336 --no-experimental-fetch
-      CI: ""
-    parameters:
-      node-version:
-        type: string
-    executor:
-      name: linux
-      tag: << parameters.node-version >>
-    steps:
-      - checkout
-      - cmd_install-prerequisites
-      - cmd_install-dependencies
-      - cmd_run-linter
-      - cmd_run-unit-tests
-      - cmd_run-build
-      - when:
-          condition:
-            equal: [<< parameters.node-version >>, "18.15.0"]
-          steps:
-            - cmd_codecov
+  split-config: bufferings/split-config@0.1.0
 
 workflows:
-  workflow_e2e-tester:
-    when: << pipeline.parameters.run_e2e_test >>
+  generate-config:
     jobs:
-      - job_e2e-test-node-16:
-          matrix:
-            parameters:
-              package_version: [<< pipeline.parameters.package_version >>]
-              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-              node-version: ["16.20.0"]
-              os: [ linux, windows, macos]
-
-  workflow_publisher:
-    when: << pipeline.parameters.run_npm_publish >>
-    jobs:
-      - job_npm-publish:
-          matrix:
-            parameters:
-              dist_tag: [<< pipeline.parameters.dist_tag >>]
-              version_bump: [<< pipeline.parameters.version_bump >>]
-
-  workflow_pr-validator:
-    when: << pipeline.parameters.run_pr_validator >>
-    jobs:
-      - job_pr-validator-win32:
-          matrix:
-            parameters:
-              shell: ["bash.exe", "powershell.exe"]
-              node-version: ["18.15.0"]
-      - job_pr-validator-node:
-          matrix:
-            parameters:
-              node-version: ["18.15.0"]
-          post-steps:
-            - cmd_slack-notification-error:
-                text: "$CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}*."
-      - job_npm-publish:
-          matrix:
-            parameters:
-              dist_tag: ["dev"]
-              version_bump: ["patch"]
-          requires:
-            - job_pr-validator-node
-          filters:
-            branches:
-              only: dev
-      - job_npm-publish:
-          matrix:
-            parameters:
-              dist_tag: ["beta"]
-              version_bump: ["patch"]
-          requires:
-            - job_pr-validator-node
-          filters:
-            branches:
-              only: /v\d-beta/
-
-  workflow_nightly-e2e:
-    triggers:
-      - schedule:
-          cron: "0 16 * * *"
-          filters:
-            branches:
-              only:
-                - main
-    jobs:
-      - job_e2e-test-node-16:
-          matrix:
-            parameters:
-              package_version: [<< pipeline.parameters.package_version >>]
-              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
-              node-version: ["16.20.0"]
-          post-steps:
-            - cmd_slack-notification-error:
-                text: "nightly E2E tests failed on Linux."
+      - split-config/generate-config:
+          find-config-regex: \./\.circleci/configs/.*\.yml
+          continuation_parameters: |
+          {
+            "run_e2e_test": << pipeline.parameters.run_e2e_test >>
+            "package_version": << pipeline.parameters.package_version >>
+            "flex_ui_version": << pipeline.parameters.flex_ui_version >>
+            "ist_tag": << pipeline.parameters.dist_tag >>
+            "version_bump": << pipeline.parameters.version_bump >>
+          }

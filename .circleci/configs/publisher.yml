@@ -1,0 +1,113 @@
+version: 2.1
+
+parameters:
+  run_e2e_test:
+    default: false
+    type: boolean
+  run_pr_validator:
+    default: true
+    type: boolean
+  run_npm_publish:
+    default: false
+    type: boolean
+  dist_tag:
+    default: "alpha"
+    type: string
+  version_bump:
+    default: "patch"
+    type: string
+  package_version:
+    default: ""
+    type: string
+  flex_ui_version:
+    default: ""
+    type: string
+
+executors:
+  node:
+    parameters:
+      tag:
+        type: string
+    docker:
+      - image: cimg/node:<< parameters.tag >>-browsers
+  macos:
+    macos:
+      xcode: 12.5.1
+
+orbs:
+  win: circleci/windows@5.0.0
+  browser-tools: circleci/browser-tools@1.1.3
+  node: circleci/node@5.1.0
+
+commands:
+  cmd_install-dependencies:
+    steps:
+      - run:
+          name: "Install project dependencies"
+          command: npm i
+  cmd_install-prerequisites:
+    steps:
+      - run:
+          name: "Apt-get update"
+          command: sudo apt-get update
+      - run:
+          name: "Install libraries"
+          command: sudo apt-get install -y libsecret-1-dev
+  cmd_setup-npm:
+    steps:
+      - run:
+          name: "Setting up npm"
+          command: |
+            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+            git config --global user.email $GITHUB_EMAIL
+            git config --global user.name $GITHUB_USER
+  cmd_setup-github:
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "f3:09:6f:86:86:0a:6e:98:9b:fa:cb:49:2e:90:bc:75"
+  cmd_run-publish:
+    parameters:
+      dist_tag:
+        type: string
+      version_bump:
+        type: string
+    steps:
+      - run:
+          name: "Publishing package"
+          command: |
+            npm run publish:<< parameters.dist_tag >> << parameters.version_bump >>
+jobs:
+  job_npm-publish:
+    resource_class: xlarge
+    parameters:
+      dist_tag:
+        type: string
+      version_bump:
+        type: string
+    environment:
+      NODE_OPTIONS: --max-old-space-size=14336
+      CI: ""
+    executor:
+      name: node
+      tag: "16.20.0"
+    steps:
+      - checkout
+      - cmd_install-prerequisites
+      - cmd_install-dependencies
+      - cmd_setup-npm
+      - cmd_setup-github
+      - cmd_run-publish:
+          dist_tag: << parameters.dist_tag >>
+          version_bump: << parameters.version_bump >>
+
+
+workflows:
+  workflow_publisher:
+    when: << pipeline.parameters.run_npm_publish >>
+    jobs:
+      - job_npm-publish:
+          matrix:
+            parameters:
+              dist_tag: [<< pipeline.parameters.dist_tag >>]
+              version_bump: [<< pipeline.parameters.version_bump >>]
