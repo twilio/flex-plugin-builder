@@ -48,11 +48,11 @@ workflows:
     jobs:
       - split-config/generate-config:
           find-config-regex: \./\.circleci/configs/.*\.yml
-          continuation_parameters: |
-          {
-            "run_e2e_test": << pipeline.parameters.run_e2e_test >>
-            "package_version": << pipeline.parameters.package_version >>
-            "flex_ui_version": << pipeline.parameters.flex_ui_version >>
-            "ist_tag": << pipeline.parameters.dist_tag >>
-            "version_bump": << pipeline.parameters.version_bump >>
-          }
+          continuation-parameters: |
+            {
+              "run_e2e_test": << pipeline.parameters.run_e2e_test >>
+              "package_version": << pipeline.parameters.package_version >>
+              "flex_ui_version": << pipeline.parameters.flex_ui_version >>
+              "ist_tag": << pipeline.parameters.dist_tag >>
+              "version_bump": << pipeline.parameters.version_bump >>
+            }
