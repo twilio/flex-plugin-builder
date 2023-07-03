@@ -365,6 +365,8 @@ workflows:
               package_version: ["latest"]
               flex_ui_version: ["latest"]
               node-version: ["16.20.0"]
+          requires: 
+            - job_e2e-test-linux-node16
           post-steps:
             - cmd_slack-notification-error:
                 text: "nightly E2E tests failed on Linux in node18"
@@ -374,6 +376,8 @@ workflows:
               package_version: ["latest"]
               flex_ui_version: ["latest"]
               node-version: ["16.20.0"]
+          requires: 
+            - job_e2e-test-macos-node16
           post-steps:
             - cmd_slack-notification-error:
                 text: "nightly E2E tests failed on MacOS in node18"
@@ -384,6 +388,8 @@ workflows:
               flex_ui_version: ["latest"]
               shell: ["bash.exe"]
               node-version: ["16.20.0"]
+          requires: 
+            - job_e2e-test-win-node16
           post-steps:
             - cmd_slack-notification-error:
                 text: "nightly E2E tests failed on Windows in node18."
