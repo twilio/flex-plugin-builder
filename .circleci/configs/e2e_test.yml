@@ -214,6 +214,7 @@ jobs:
       - cmd_run-e2e-tests-mac-ts
       - store_artifacts:
           path: packages/flex-plugin-e2e-tests/screenshots
+
   job_e2e-test-linux-node18:
     resource_class: xlarge
     parameters:
@@ -241,6 +242,8 @@ jobs:
       - store_artifacts:
           path: packages/flex-plugin-e2e-tests/screenshots
 
+  # In order to run our e2e tests per operating system, we must have a separate job for each node version. 
+  # Since we use a one account per os, running the tests for each version in parallel is not possible.
   job_e2e-test-win-node18:
     parameters:
       package_version:
@@ -322,6 +325,7 @@ workflows:
               package_version: [<< pipeline.parameters.package_version >>]
               flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
               node-version: ["16.20.0"]
+
   workflow_nightly-e2e:
     triggers:
       - schedule:
@@ -364,7 +368,7 @@ workflows:
             parameters:
               package_version: ["latest"]
               flex_ui_version: ["latest"]
-              node-version: ["16.20.0"]
+              node-version: ["18.15.0"]
           requires: 
             - job_e2e-test-linux-node16
           post-steps:
@@ -375,7 +379,7 @@ workflows:
             parameters:
               package_version: ["latest"]
               flex_ui_version: ["latest"]
-              node-version: ["16.20.0"]
+              node-version: ["18.15.0"]
           requires: 
             - job_e2e-test-macos-node16
           post-steps:
@@ -387,7 +391,7 @@ workflows:
               package_version: ["latest"]
               flex_ui_version: ["latest"]
               shell: ["bash.exe"]
-              node-version: ["16.20.0"]
+              node-version: ["18.15.0"]
           requires: 
             - job_e2e-test-win-node16
           post-steps:

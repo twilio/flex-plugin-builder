@@ -28,7 +28,7 @@ npm run build
 
 # This is the sandbox environment created to test CLI installation and to create plugin. Remove before re-running a test
 rm -rf ~/.local
-TWILIO_ACCOUNT_SID_drawin=ACxxx TWILIO_AUTH_TOKEN_darwin=123 CONSOLE_EMAIL="username@twilio.com" CONSOLE_PASSWORD="abc123" PACKAGE_VERSION="4.7.5-beta.0" npm start
+TWILIO_ACCOUNT_SID_drawin=ACxxx TWILIO_AUTH_TOKEN_darwin=123 CONSOLE_EMAIL="username@twilio.com" CONSOLE_PASSWORD="abc123" PACKAGE_VERSION="4.7.5-beta.0" NODE_VERSION=local_node_version npm start
 ```
 
 You can also override certain defaults by setting these additional environment variables:

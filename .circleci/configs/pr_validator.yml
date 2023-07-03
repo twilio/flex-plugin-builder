@@ -125,6 +125,9 @@ workflows:
             parameters:
               shell: ["bash.exe", "powershell.exe"]
               node-version: ["18.15.0"]
+          post-steps:
+            - cmd_slack-notification-error:
+                text: "$CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}* in windows."
       - job_pr-validator-node:
           matrix:
             parameters:
