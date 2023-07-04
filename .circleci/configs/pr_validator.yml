@@ -1,0 +1,137 @@
+version: 2.1
+
+parameters:
+  run_pr_validator:
+    default: true
+    type: boolean
+
+executors:
+  node:
+    parameters:
+      tag:
+        type: string
+    docker:
+      - image: cimg/node:<< parameters.tag >>-browsers
+  macos:
+    macos:
+      xcode: 14.2.0
+
+orbs:
+  win: circleci/windows@5.0.0
+  node: circleci/node@5.1.0
+
+commands:
+  cmd_install-dependencies:
+    steps:
+      - run:
+          name: "Install project dependencies"
+          command: npm i
+  cmd_install-prerequisites:
+    steps:
+      - run:
+          name: "Apt-get update"
+          command: sudo apt-get update
+      - run:
+          name: "Install libraries"
+          command: sudo apt-get install -y libsecret-1-dev
+  cmd_run-unit-tests:
+    steps:
+      - run:
+          name: "Run unit tests"
+          command: npm run test:ci
+  cmd_run-linter:
+    steps:
+      - run:
+          name: "Run linter"
+          command: npm run lint:fix
+  cmd_run-build:
+    steps:
+      - run:
+          name: "Build packages"
+          command: npm run build
+  cmd_codecov:
+    steps:
+      - run:
+          name: "Codecov report"
+          command: npm run coverage -- --token=$CODECOV_TOKEN
+  cmd_windows-nvm-install-node:
+    parameters:
+      node-version:
+        type: string
+    steps:
+      - run:
+          name: "Install node"
+          command: nvm install << parameters.node-version >>
+      - run:
+          name: "NVM use"
+          command: nvm use << parameters.node-version >>
+      - run:
+          name: "Install NPM latest"
+          command: npm install -g npm
+
+
+jobs:
+  job_pr-validator-win32:
+    environment:
+      NODE_OPTIONS: --max-old-space-size=14336 --no-experimental-fetch
+      CI: ""
+    parameters:
+      shell:
+        type: string
+      node-version:
+        type: string
+    executor:
+      name: win/default
+      shell: << parameters.shell >>
+      size: xlarge
+    steps:
+      - checkout
+      - cmd_windows-nvm-install-node:
+          node-version: << parameters.node-version >>
+      - cmd_install-dependencies
+      - cmd_run-build
+      - cmd_run-unit-tests
+
+  job_pr-validator-node:
+    resource_class: xlarge
+    environment:
+      NODE_OPTIONS: --max-old-space-size=14336 --no-experimental-fetch
+      CI: ""
+    parameters:
+      node-version:
+        type: string
+    executor:
+      name: node
+      tag: << parameters.node-version >>
+    steps:
+      - checkout
+      - cmd_install-prerequisites
+      - cmd_install-dependencies
+      - cmd_run-linter
+      - cmd_run-unit-tests
+      - cmd_run-build
+      - when:
+          condition:
+            equal: [<< parameters.node-version >>, "18.15.0"]
+          steps:
+            - cmd_codecov
+
+workflows:
+  workflow_pr-validator:
+    when: << pipeline.parameters.run_pr_validator >>
+    jobs:
+      - job_pr-validator-win32:
+          matrix:
+            parameters:
+              shell: ["bash.exe", "powershell.exe"]
+              node-version: ["18.15.0"]
+          post-steps:
+            - cmd_slack-notification-error:
+                text: "$CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}* in windows."
+      - job_pr-validator-node:
+          matrix:
+            parameters:
+              node-version: ["18.15.0"]
+          post-steps:
+            - cmd_slack-notification-error:
+                text: "$CIRCLE_PULL_REQUEST validation failed on *Node:${CIRCLE_JOB/job_pr-validator-node-/''}*."
