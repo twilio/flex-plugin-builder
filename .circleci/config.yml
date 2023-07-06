@@ -44,3 +44,19 @@ workflows:
     jobs:
       - split-config/generate-config:
           find-config-regex: \./\.circleci/configs/.*\.yml
+  generate-config-nightly:
+    triggers:
+      - schedule:
+          cron: "0 16 * * *"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+     - split-config/generate-config:
+          find-config-regex: \./\.circleci/configs/.*\.yml
+          continuation-parameters: |
+           {
+              "run_e2e_test_nightly": true,
+              "run_pr_validator": false
+           }
