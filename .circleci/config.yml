@@ -1,7 +1,5 @@
 version: 2.1
 
-setup: true
-
 parameters:
   run_e2e_test:
     default: false
