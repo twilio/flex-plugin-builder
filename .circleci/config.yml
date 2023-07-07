@@ -6,6 +6,9 @@ parameters:
   run_e2e_test:
     default: false
     type: boolean
+  run_e2e_test_nightly:
+    default: false
+    type: boolean
   run_pr_validator:
     default: true
     type: boolean
@@ -44,3 +47,4 @@ workflows:
     jobs:
       - split-config/generate-config:
           find-config-regex: \./\.circleci/configs/.*\.yml
+

@@ -4,6 +4,9 @@ parameters:
   run_e2e_test:
     default: false
     type: boolean
+  run_e2e_test_nightly:
+    default: false
+    type: boolean
   package_version:
     default: ""
     type: string
@@ -321,13 +324,7 @@ workflows:
               node-version: ["16.20.0"]
 
   workflow_nightly-e2e:
-    triggers:
-      - schedule:
-          cron: "0 16 * * *"
-          filters:
-            branches:
-              only:
-                - main
+    when: << pipeline.parameters.run_e2e_test_nightly >>
     jobs:
       - job_e2e-test-linux-node16:
           matrix:
