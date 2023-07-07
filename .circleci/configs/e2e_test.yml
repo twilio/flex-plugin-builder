@@ -324,7 +324,7 @@ workflows:
               node-version: ["16.20.0"]
 
   workflow_nightly-e2e:
-    when: << pipeline.parameters.run_e2e_test >>
+    when: << pipeline.parameters.run_e2e_test_nightly >>
     jobs:
       - job_e2e-test-linux-node16:
           matrix:
