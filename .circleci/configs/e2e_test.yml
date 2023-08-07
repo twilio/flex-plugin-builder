@@ -52,7 +52,7 @@ commands:
     steps:
       - run:
           name: "Run e2e tests"
-          # default timeout is 10m
+          # default timeout is 10minutes
           no_output_timeout: 20m
           command: |
             cd packages/flex-plugin-e2e-tests
