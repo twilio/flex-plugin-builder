@@ -14,13 +14,16 @@ import { OnCompileCompletePayload } from './devServer/ipcServer';
 import { OnRemotePlugins, Plugin } from './devServer/pluginServer';
 import { devServerSuccessful } from './prints';
 import ToJsonOutput = webpack.StatsCompilation;
+
 interface ErrorsAndWarnings {
   errors: string[];
   warnings: string[];
 }
-// export interface Compiler extends WebpackCompiler  {
-//     tsCompiled: SyncHook<string[], string[]>;
-// }
+/*
+ * export interface Compiler extends WebpackCompiler  {
+ *     tsCompiled: SyncHook<string[], string[]>;
+ * }
+ */
 
 type OnCompile = (payload: OnCompileCompletePayload) => void;
 interface OnCompileResult {
@@ -53,7 +56,7 @@ export default (
 
   try {
     const compiler = webpack(config) as unknown as Compiler;
-    //compiler.tsCompiled = new SyncHook(['warnings', 'errors']);
+    // compiler.tsCompiled = new SyncHook(['warnings', 'errors']);
 
     // For build, we don't need to tap into any hooks
     if (!devServer) {
@@ -102,12 +105,12 @@ export default (
         clearTimeout(delayedMsg);
 
         // Push ts-compile errors into compiler
-        result.errors && result.errors.push(...messages.errors as unknown as StatsError[]);
-        stats.compilation.errors.push(...messages.errors as unknown as WebpackError[]);
-        result.warnings && result.warnings.push(...messages.warnings as unknown as StatsError[]);
-        stats.compilation.warnings.push(...messages.warnings as unknown as WebpackError[]);
+        result.errors && result.errors.push(...(messages.errors as unknown as StatsError[]));
+        stats.compilation.errors.push(...(messages.errors as unknown as WebpackError[]));
+        result.warnings && result.warnings.push(...(messages.warnings as unknown as StatsError[]));
+        stats.compilation.warnings.push(...(messages.warnings as unknown as WebpackError[]));
 
-        //compiler.tsCompiled.call(messages.warnings, messages.errors);
+        // compiler.tsCompiled.call(messages.warnings, messages.errors);
       }
 
       const config = readRunPluginsJson();
@@ -165,7 +168,9 @@ export const compilerRenderer = (
       logger.clearTerminal();
       results[appName] = result;
 
-      const isSuccessful = Object.values(results).every((r) => r.errors && r.errors.length === 0 && r.warnings && r.warnings.length === 0);
+      const isSuccessful = Object.values(results).every(
+        (r) => r.errors && r.errors.length === 0 && r.warnings && r.warnings.length === 0,
+      );
       if (isSuccessful) {
         if (showSuccessMsg) {
           serverSuccessful([]);

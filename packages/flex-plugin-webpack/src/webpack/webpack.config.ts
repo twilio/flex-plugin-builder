@@ -10,8 +10,6 @@ import { getDependencyVersion, getPaths, resolveModulePath } from '@twilio/flex-
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import PnpWebpackPlugin from 'pnp-webpack-plugin';
-//import TerserPlugin from 'terser-webpack-plugin';
-const TerserPlugin = require("terser-webpack-plugin");
 import webpack, {
   Configuration,
   DefinePlugin,
@@ -22,9 +20,11 @@ import webpack, {
   ResolveOptions,
 } from 'webpack';
 
-
 import { getSanitizedProcessEnv } from './clientVariables';
 import { WebpackType } from '..';
+
+// import TerserPlugin from 'terser-webpack-plugin';
+const TerserPlugin = require('terser-webpack-plugin');
 
 interface LoaderOption {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -234,7 +234,7 @@ export const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
  * @private
  */
 export const _getBasePlugins = (environment: Environment) => {
-  const plugins: WebpackPluginInstance[] = []
+  const plugins: WebpackPluginInstance[] = [];
 
   const flexUIVersion = getDependencyVersion('@twilio/flex-ui');
   const reactVersion = getDependencyVersion('react');
@@ -275,7 +275,7 @@ export const _getBasePlugins = (environment: Environment) => {
  * @param environment
  */
 export const _getStaticPlugins = (environment: Environment) => {
-  const plugins: WebpackPluginInstance[] = []
+  const plugins: WebpackPluginInstance[] = [];
   const { dependencies } = getPaths().app;
 
   // index.html entry point
@@ -370,12 +370,12 @@ export const _getJavaScriptEntries = (): string[] => {
 export const _getOptimization = (environment: Environment) => {
   const isProd = environment === Environment.Production;
   return {
-    splitChunks:{},
+    splitChunks: {},
     runtimeChunk: false,
     minimize: isProd,
     minimizer: [
       new TerserPlugin({
-        parallel:true,
+        parallel: true,
         terserOptions: {
           parse: {
             ecma: 5,
@@ -400,7 +400,6 @@ export const _getOptimization = (environment: Environment) => {
           },
           sourceMap: true,
         },
-        
       }),
     ],
   };

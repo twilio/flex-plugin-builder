@@ -1,6 +1,7 @@
 /* c8 ignore start */
 
 import { WebpackPluginInstance, Compiler } from 'webpack';
+
 import { onIPCServerMessage, IPCType } from '../devServer/ipcServer';
 
 let isCalled = false;
