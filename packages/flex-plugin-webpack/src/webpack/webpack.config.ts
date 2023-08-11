@@ -10,7 +10,7 @@ import { getDependencyVersion, getPaths, resolveModulePath } from '@twilio/flex-
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import PnpWebpackPlugin from 'pnp-webpack-plugin';
-import webpack, {
+import {
   Configuration,
   DefinePlugin,
   HotModuleReplacementPlugin,
@@ -46,7 +46,7 @@ const EXTERNALS = {
  * @param reactVersion    the react version
  * @param reactDOMVersion the react-dom version
  */
-export const _getJSScripts = (flexUIVersion: string, reactVersion: string, reactDOMVersion: string): string[] => {
+const _getJSScripts = (flexUIVersion: string, reactVersion: string, reactDOMVersion: string): string[] => {
   const envSrc = env.getFlexUISrc();
   if (!semver.satisfies(flexUIVersion, '>=1.19.0')) {
     if (envSrc) {
@@ -101,7 +101,7 @@ const _getBabelLoader = (isProd: boolean) => ({
  * @private
  */
 /* c8 ignore next */
-export const _getImageLoader = (): RuleSetRule => ({
+const _getImageLoader = (): RuleSetRule => ({
   test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
   loader: require.resolve('url-loader'),
   options: {
@@ -114,7 +114,7 @@ export const _getImageLoader = (): RuleSetRule => ({
  * @param isProd  whether this is a production build
  * @private
  */
-export const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
+const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
   /**
    * Gets the loader for the given style
    * @param options the options
@@ -233,7 +233,7 @@ export const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
  * @param environment the environment
  * @private
  */
-export const _getBasePlugins = (environment: Environment) => {
+const _getBasePlugins = (environment: Environment) => {
   const plugins: WebpackPluginInstance[] = [];
 
   const flexUIVersion = getDependencyVersion('@twilio/flex-ui');
@@ -274,7 +274,7 @@ export const _getBasePlugins = (environment: Environment) => {
  * Returns an array of {@link Plugin} for Webpack Static
  * @param environment
  */
-export const _getStaticPlugins = (environment: Environment) => {
+const _getStaticPlugins = (environment: Environment) => {
   const plugins: WebpackPluginInstance[] = [];
   const { dependencies } = getPaths().app;
 
@@ -306,7 +306,7 @@ export const _getStaticPlugins = (environment: Environment) => {
  * Returns an array of {@link Plugin} for Webpack Javascript
  * @param environment
  */
-export const _getJSPlugins = (environment: Environment) => {
+const _getJSPlugins = (environment: Environment) => {
   const plugins = [];
   const isDev = environment === Environment.Development;
   const isProd = environment === Environment.Production;
@@ -354,7 +354,7 @@ export const _getJSPlugins = (environment: Environment) => {
  * Returns the `entry` key of the webpack
  * @private
  */
-export const _getJavaScriptEntries = (): string[] => {
+const _getJavaScriptEntries = (): string[] => {
   const entry: string[] = [];
   entry.push(getPaths().app.entryPath);
 
@@ -367,7 +367,7 @@ export const _getJavaScriptEntries = (): string[] => {
  * @private
  */
 /* c8 ignore next */
-export const _getOptimization = (environment: Environment) => {
+const _getOptimization = (environment: Environment) => {
   const isProd = environment === Environment.Production;
   return {
     splitChunks: {},
@@ -410,7 +410,7 @@ export const _getOptimization = (environment: Environment) => {
  * @param environment the environment
  * @private
  */
-export const _getResolve = (environment: Environment) => {
+const _getResolve = (environment: Environment) => {
   const isProd = environment === Environment.Production;
   const extensions = getPaths().app.isTSProject()
     ? getPaths().extensions
@@ -444,7 +444,7 @@ export const _getResolve = (environment: Environment) => {
  * Returns the base {@link Configuration}
  * @private
  */
-export const _getBase = (environment: Environment): Configuration => {
+const _getBase = (environment: Environment): Configuration => {
   const isProd = environment === Environment.Production;
   const config: Configuration = {
     resolve: _getResolve(environment),
@@ -477,7 +477,7 @@ export const _getBase = (environment: Environment): Configuration => {
  * Returns the {@link Configuration} for static type
  * @private
  */
-export const _getStaticConfiguration = (config: Configuration, environment: Environment): Configuration => {
+const _getStaticConfiguration = (config: Configuration, environment: Environment): Configuration => {
   config.plugins = config.plugins ? config.plugins : [];
   config.plugins.push(..._getStaticPlugins(environment));
 
@@ -488,7 +488,7 @@ export const _getStaticConfiguration = (config: Configuration, environment: Envi
  * Returns the {@link Configuration} for JS type
  * @private
  */
-export const _getJavaScriptConfiguration = (config: Configuration, environment: Environment): Configuration => {
+const _getJavaScriptConfiguration = (config: Configuration, environment: Environment): Configuration => {
   const isProd = environment === Environment.Production;
   const filename = `${getPaths().app.name}.js`;
   const outputName = environment === Environment.Production ? filename : `plugins/${filename}`;

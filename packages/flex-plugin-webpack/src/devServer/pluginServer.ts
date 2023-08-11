@@ -127,7 +127,7 @@ export const _getRemotePlugins = async (token: string, version: string | null | 
  * @param names
  * @returns
  */
-export const _getRemoteVersionedPlugins = (names: string[]): Plugin[] => {
+const _getRemoteVersionedPlugins = (names: string[]): Plugin[] => {
   return names.map((plugin) => {
     const groups = plugin.match(PLUGIN_INPUT_PARSER_REGEX);
 

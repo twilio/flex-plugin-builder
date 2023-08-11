@@ -105,9 +105,9 @@ export default (
         clearTimeout(delayedMsg);
 
         // Push ts-compile errors into compiler
-        result.errors && result.errors.push(...(messages.errors as unknown as StatsError[]));
+        result?.errors?.push(...(messages.errors as unknown as StatsError[]));
         stats.compilation.errors.push(...(messages.errors as unknown as WebpackError[]));
-        result.warnings && result.warnings.push(...(messages.warnings as unknown as StatsError[]));
+        result?.warnings?.push(...(messages.warnings as unknown as StatsError[]));
         stats.compilation.warnings.push(...(messages.warnings as unknown as WebpackError[]));
 
         // compiler.tsCompiled.call(messages.warnings, messages.errors);

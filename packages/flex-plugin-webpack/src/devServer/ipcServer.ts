@@ -28,7 +28,7 @@ export interface OnDevServerCrashedPayload {
   };
 }
 
-export interface IPCPayload {
+interface IPCPayload {
   onCompileComplete: OnCompileCompletePayload;
   onDevServerCrashed: OnDevServerCrashedPayload;
   onEmitAllCompilesComplete: unknown;
@@ -44,9 +44,9 @@ ipc.config.silent = !env.isDebug();
 let _isServerRunning: boolean = false;
 let _isClientConnected: boolean = false;
 /* c8 ignore next */
-export const isServerRunning = (): boolean => _isServerRunning;
+const isServerRunning = (): boolean => _isServerRunning;
 /* c8 ignore next */
-export const isClientConnected = (): boolean => _isClientConnected;
+const isClientConnected = (): boolean => _isClientConnected;
 
 let clientNode: Client | null = null;
 const messageCallbacks: MessageCallbacks = {};
@@ -63,7 +63,7 @@ const emitQueue = [getEmitItem()].slice(1);
  * @private
  */
 /* c8 ignore next */
-export const _processEmitQueue = async (): Promise<void> => {
+const _processEmitQueue = async (): Promise<void> => {
   if (!isClientConnected()) {
     return;
   }
@@ -78,7 +78,7 @@ export const _processEmitQueue = async (): Promise<void> => {
  * @param data
  * @private
  */
-export const _onServerMessage = (data: { payload: unknown; type: string }): void => {
+const _onServerMessage = (data: { payload: unknown; type: string }): void => {
   if (!data.type) {
     logger.error('IPC got an unexpected message: ', data);
     return;
@@ -98,7 +98,7 @@ export const _onServerMessage = (data: { payload: unknown; type: string }): void
  * Processes on client connected
  * @private
  */
-export const _onClientConnected = async (): Promise<void> => {
+const _onClientConnected = async (): Promise<void> => {
   _isClientConnected = true;
   await _processEmitQueue();
 };
@@ -109,7 +109,7 @@ export const _onClientConnected = async (): Promise<void> => {
  * @param payload   the event payload
  * @private
  */
-export const _emitToServer = async <T extends IPCType>(type: T, payload: IPCPayload[T]): Promise<void> => {
+const _emitToServer = async <T extends IPCType>(type: T, payload: IPCPayload[T]): Promise<void> => {
   emitQueue.push({ type, payload });
   await _processEmitQueue();
 };

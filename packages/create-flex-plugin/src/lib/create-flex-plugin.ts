@@ -33,7 +33,7 @@ export interface FlexPluginArguments extends CLIArguments {
  * @param config {FlexPluginArguments}  the configuration
  * @private
  */
-export const _install = async (config: FlexPluginArguments): Promise<boolean> => {
+const _install = async (config: FlexPluginArguments): Promise<boolean> => {
   return progress('Installing dependencies', async () => {
     await installDependencies(config);
 
@@ -47,7 +47,7 @@ export const _install = async (config: FlexPluginArguments): Promise<boolean> =>
  * @param config {FlexPluginArguments}  the configuration
  * @private
  */
-export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> => {
+const _scaffold = async (config: FlexPluginArguments): Promise<boolean> => {
   let dirObject: TmpDirResult;
 
   const promise = progress('Creating project directory', async () => {
