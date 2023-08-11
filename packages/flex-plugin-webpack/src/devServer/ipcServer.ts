@@ -2,7 +2,7 @@ import ipc from 'node-ipc';
 import { env, logger } from '@twilio/flex-dev-utils';
 import webpack from 'webpack';
 
-import ToJsonOutput = webpack.Stats.ToJsonOutput;
+import ToJsonOutput = webpack.StatsCompilation;
 
 interface Client {
   on(event: string, callback: (...args: unknown[]) => void): Client;

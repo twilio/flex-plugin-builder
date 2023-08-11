@@ -3,7 +3,7 @@ import https from 'https';
 import { logger, FlexPluginError, exit, env } from '@twilio/flex-dev-utils';
 import { Request, Response } from 'express-serve-static-core';
 import { FlexConfigurationPlugin, readPluginsJson } from '@twilio/flex-dev-utils/dist/fs';
-import { Configuration } from 'webpack-dev-server';
+import { Configuration, Port } from 'webpack-dev-server';
 
 import { remotePluginNotFound } from '../prints';
 
@@ -23,7 +23,7 @@ interface StartServerPlugins {
 }
 
 interface StartServerConfig {
-  port: number;
+  port: Port | number;
   remoteAll: boolean;
 }
 
@@ -204,7 +204,7 @@ export const _startServer = (
     }
 
     const hasRemotePlugin = config.remoteAll || plugins.remote.length !== 0;
-    const localPlugins = _getLocalPlugins(config.port, plugins.local);
+    const localPlugins = _getLocalPlugins(config.port as number, plugins.local);
     const versionedPlugins = _getRemoteVersionedPlugins(plugins.versioned);
     const promise: Promise<Plugin[]> = hasRemotePlugin ? _getRemotePlugins(jweToken, flexVersion) : Promise.resolve([]);
 
@@ -274,9 +274,9 @@ export default (
     return proxy;
   }, {});
 
-  webpackConfig.before = (app, server) => {
+  webpackConfig.onBeforeSetupMiddleware = (server) => {
     // @ts-ignore
     serverConfig.port = server.options.port || serverConfig.port;
-    app.use('^/plugins$', _startServer(plugins, serverConfig, onRemotePlugin));
+    server?.app?.use('^/plugins$', _startServer(plugins, serverConfig, onRemotePlugin));
   };
 };

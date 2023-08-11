@@ -1,11 +1,11 @@
 /* c8 ignore start */
 
-import { Compiler } from '../compiler';
+import { WebpackPluginInstance, Compiler } from 'webpack';
 import { onIPCServerMessage, IPCType } from '../devServer/ipcServer';
 
 let isCalled = false;
 
-export default class DelayRenderStaticPlugin {
+export default class DelayRenderStaticPlugin implements WebpackPluginInstance {
   apply(compiler: Compiler): void {
     compiler.hooks.beforeCompile.tapAsync('DelayPlugin', async (_, done) => {
       if (isCalled) {

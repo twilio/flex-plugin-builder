@@ -10,21 +10,21 @@ import { getDependencyVersion, getPaths, resolveModulePath } from '@twilio/flex-
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import PnpWebpackPlugin from 'pnp-webpack-plugin';
-import TerserPlugin from 'terser-webpack-plugin';
+//import TerserPlugin from 'terser-webpack-plugin';
+const TerserPlugin = require("terser-webpack-plugin");
 import webpack, {
   Configuration,
   DefinePlugin,
   HotModuleReplacementPlugin,
-  Loader,
-  Plugin,
-  Resolve,
   RuleSetRule,
+  WebpackPluginInstance,
   SourceMapDevToolPlugin,
+  ResolveOptions,
 } from 'webpack';
+
 
 import { getSanitizedProcessEnv } from './clientVariables';
 import { WebpackType } from '..';
-import Optimization = webpack.Options.Optimization;
 
 interface LoaderOption {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -122,7 +122,7 @@ export const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
    * @param implementation  the implementation for thr scss-loader
    */
   const getStyleLoader = (options: LoaderOption, preProcessor?: string, implementation?: string) => {
-    const loaders: Loader[] = [];
+    const loaders = [];
 
     // Main style loader to work when compiled
     loaders.push(require.resolve('style-loader'));
@@ -233,8 +233,8 @@ export const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
  * @param environment the environment
  * @private
  */
-export const _getBasePlugins = (environment: Environment): Plugin[] => {
-  const plugins: Plugin[] = [];
+export const _getBasePlugins = (environment: Environment) => {
+  const plugins: WebpackPluginInstance[] = []
 
   const flexUIVersion = getDependencyVersion('@twilio/flex-ui');
   const reactVersion = getDependencyVersion('react');
@@ -274,8 +274,8 @@ export const _getBasePlugins = (environment: Environment): Plugin[] => {
  * Returns an array of {@link Plugin} for Webpack Static
  * @param environment
  */
-export const _getStaticPlugins = (environment: Environment): Plugin[] => {
-  const plugins: Plugin[] = [];
+export const _getStaticPlugins = (environment: Environment) => {
+  const plugins: WebpackPluginInstance[] = []
   const { dependencies } = getPaths().app;
 
   // index.html entry point
@@ -306,8 +306,8 @@ export const _getStaticPlugins = (environment: Environment): Plugin[] => {
  * Returns an array of {@link Plugin} for Webpack Javascript
  * @param environment
  */
-export const _getJSPlugins = (environment: Environment): Plugin[] => {
-  const plugins: Plugin[] = [];
+export const _getJSPlugins = (environment: Environment) => {
+  const plugins = [];
   const isDev = environment === Environment.Development;
   const isProd = environment === Environment.Production;
 
@@ -367,21 +367,21 @@ export const _getJavaScriptEntries = (): string[] => {
  * @private
  */
 /* c8 ignore next */
-export const _getOptimization = (environment: Environment): Optimization => {
+export const _getOptimization = (environment: Environment) => {
   const isProd = environment === Environment.Production;
   return {
-    splitChunks: false,
+    splitChunks:{},
     runtimeChunk: false,
     minimize: isProd,
     minimizer: [
       new TerserPlugin({
+        parallel:true,
         terserOptions: {
           parse: {
-            ecma: 8,
+            ecma: 5,
           },
           compress: {
             ecma: 5,
-            warnings: false,
             comparisons: false,
             inline: 2,
           },
@@ -398,8 +398,9 @@ export const _getOptimization = (environment: Environment): Optimization => {
             // eslint-disable-next-line camelcase
             ascii_only: true,
           },
+          sourceMap: true,
         },
-        sourceMap: true,
+        
       }),
     ],
   };
@@ -410,7 +411,7 @@ export const _getOptimization = (environment: Environment): Optimization => {
  * @param environment the environment
  * @private
  */
-export const _getResolve = (environment: Environment): Resolve => {
+export const _getResolve = (environment: Environment) => {
   const isProd = environment === Environment.Production;
   const extensions = getPaths().app.isTSProject()
     ? getPaths().extensions
@@ -418,7 +419,7 @@ export const _getResolve = (environment: Environment): Resolve => {
 
   const paths = getPaths();
 
-  const resolve: Resolve = {
+  const resolve: ResolveOptions = {
     modules: [
       'node_modules',
       paths.app.nodeModulesDir,
@@ -501,7 +502,6 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
   config.output = {
     path: getPaths().app.buildDir,
     pathinfo: !isProd,
-    futureEmitAssets: true,
     filename: outputName,
     publicPath: getPaths().app.publicDir,
     globalObject: 'this',
@@ -509,17 +509,7 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
   config.bail = isProd;
   config.devtool = isProd ? 'hidden-source-map' : 'source-map';
   config.optimization = _getOptimization(environment);
-  config.node = {
-    module: 'empty',
-    dgram: 'empty',
-    dns: 'mock',
-    fs: 'empty',
-    http2: 'empty',
-    net: 'empty',
-    tls: 'empty',
-    // eslint-disable-next-line camelcase
-    child_process: 'empty',
-  };
+  config.node = false;
   config.plugins.push(..._getJSPlugins(environment));
 
   return config;

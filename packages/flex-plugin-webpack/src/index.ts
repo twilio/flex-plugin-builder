@@ -9,10 +9,9 @@ export enum WebpackType {
   Complete = 'complete',
 }
 
-export { webpack };
-export { Configuration as WebpackConfigurations, Compiler as WebpackCompiler } from 'webpack';
+export { webpack};
+export { Configuration as WebpackConfigurations, Stats} from 'webpack';
 export { Configuration as WebpackDevConfigurations } from 'webpack-dev-server';
-
 export { default as webpackFactory } from './webpack/webpack.config';
 export { default as webpackDevFactory } from './webpack/webpack.dev';
 export { default as compiler, compilerRenderer } from './compiler';

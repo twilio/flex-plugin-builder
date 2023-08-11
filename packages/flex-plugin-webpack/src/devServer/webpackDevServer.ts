@@ -1,9 +1,9 @@
-import WebpackDevServer, { Configuration } from 'webpack-dev-server';
+import WebpackDevServer, { ClientConnection, Configuration } from 'webpack-dev-server';
 import { env, logger, open, exit } from '@twilio/flex-dev-utils';
 import { getLocalAndNetworkUrls } from '@twilio/flex-dev-utils/dist/urls';
 
 import { WebpackType } from '..';
-import { Compiler } from '../compiler';
+import {Compiler} from 'webpack';
 
 const termSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
 
@@ -23,14 +23,14 @@ export default (devCompiler: Compiler, devConfig: Configuration, type: WebpackTy
 
   if (!isStaticServer) {
     // Show TS errors on browser
-    devCompiler.hooks.tsCompiled.tap('afterTSCompile', (warnings, errors) => {
-      if (warnings.length) {
-        devServer.sockWrite(devServer.sockets, 'warnings', warnings);
-      }
-      if (errors.length) {
-        devServer.sockWrite(devServer.sockets, 'errors', errors);
-      }
-    });
+    // devCompiler.tsCompiled.tap('afterTSCompile', (warnings, errors) => {
+    //   if (warnings.length) {
+    //     devServer.sendMessage(devServer.webSocketServer?.clients as ClientConnection[], 'warnings', warnings);
+    //   }
+    //   if (errors.length) {
+    //     devServer.sendMessage(devServer.webSocketServer?.clients as ClientConnection[], 'errors', errors);
+    //   }
+    // });
   }
 
   // Start the dev-server
