@@ -46,7 +46,7 @@ const EXTERNALS = {
  * @param reactVersion    the react version
  * @param reactDOMVersion the react-dom version
  */
-const _getJSScripts = (flexUIVersion: string, reactVersion: string, reactDOMVersion: string): string[] => {
+export const _getJSScripts = (flexUIVersion: string, reactVersion: string, reactDOMVersion: string): string[] => {
   const envSrc = env.getFlexUISrc();
   if (!semver.satisfies(flexUIVersion, '>=1.19.0')) {
     if (envSrc) {
