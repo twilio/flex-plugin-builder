@@ -10,10 +10,10 @@ parameters:
     default: false
     type: boolean
   run_pr_validator:
-    default: true
+    default: false
     type: boolean
   run_npm_publish:
-    default: false
+    default: true
     type: boolean
   dist_tag:
     default: "alpha"
