@@ -227,7 +227,7 @@ jobs:
       node-version:
         type: string
     environment:
-      NODE_OPTIONS: --max-old-space-size=14336
+      NODE_OPTIONS: --max-old-space-size=14336 --dns-result-order=ipv4first
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
     executor:
@@ -254,7 +254,7 @@ jobs:
       node-version:
         type: string
     environment:
-      NODE_OPTIONS: --max-old-space-size=14336
+      NODE_OPTIONS: --max-old-space-size=14336 --dns-result-order=ipv4first
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
     executor:
@@ -282,7 +282,7 @@ jobs:
       node-version:
         type: string
     environment:
-      NODE_OPTIONS: --max-old-space-size=14336
+      NODE_OPTIONS: --max-old-space-size=14336 --dns-result-order=ipv4first
       PACKAGE_VERSION: << parameters.package_version >>
       FLEX_UI_VERSION: << parameters.flex_ui_version >>
     executor:
@@ -332,18 +332,12 @@ workflows:
               package_version: ["latest"]
               flex_ui_version: ["latest"]
               node-version: ["16.20.0"]
-          post-steps:
-            - cmd_slack-notification-error:
-                text: "nightly E2E tests failed on Linux in node16"
       - job_e2e-test-macos-node16:
           matrix:
             parameters:
               package_version: ["latest"]
               flex_ui_version: ["latest"]
               node-version: ["16.20.0"]
-          post-steps:
-            - cmd_slack-notification-error:
-                text: "nightly E2E tests failed on MacOS in node16"
       - job_e2e-test-win-node16:
           matrix:
             parameters:
@@ -351,9 +345,6 @@ workflows:
               flex_ui_version: ["latest"]
               shell: ["bash.exe"]
               node-version: ["16.20.0"]
-          post-steps:
-            - cmd_slack-notification-error:
-                text: "nightly E2E tests failed on Windows in node16"
       - job_e2e-test-linux-node18:
           matrix:
             parameters:
@@ -362,9 +353,6 @@ workflows:
               node-version: ["18.15.0"]
           requires: 
             - job_e2e-test-linux-node16
-          post-steps:
-            - cmd_slack-notification-error:
-                text: "nightly E2E tests failed on Linux in node18"
       - job_e2e-test-macos-node18:
           matrix:
             parameters:
@@ -373,9 +361,6 @@ workflows:
               node-version: ["18.15.0"]
           requires: 
             - job_e2e-test-macos-node16
-          post-steps:
-            - cmd_slack-notification-error:
-                text: "nightly E2E tests failed on MacOS in node18"
       - job_e2e-test-win-node18:
           matrix:
             parameters:
@@ -385,6 +370,3 @@ workflows:
               node-version: ["18.15.0"]
           requires: 
             - job_e2e-test-win-node16
-          post-steps:
-            - cmd_slack-notification-error:
-                text: "nightly E2E tests failed on Windows in node18."
