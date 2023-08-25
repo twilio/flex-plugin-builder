@@ -326,41 +326,18 @@ workflows:
   workflow_nightly-e2e:
     when: << pipeline.parameters.run_e2e_test_nightly >>
     jobs:
-      - job_e2e-test-linux-node16:
-          matrix:
-            parameters:
-              package_version: ["latest"]
-              flex_ui_version: ["latest"]
-              node-version: ["16.20.0"]
-      - job_e2e-test-macos-node16:
-          matrix:
-            parameters:
-              package_version: ["latest"]
-              flex_ui_version: ["latest"]
-              node-version: ["16.20.0"]
-      - job_e2e-test-win-node16:
-          matrix:
-            parameters:
-              package_version: ["latest"]
-              flex_ui_version: ["latest"]
-              shell: ["bash.exe"]
-              node-version: ["16.20.0"]
       - job_e2e-test-linux-node18:
           matrix:
             parameters:
               package_version: ["latest"]
               flex_ui_version: ["latest"]
               node-version: ["18.15.0"]
-          requires: 
-            - job_e2e-test-linux-node16
       - job_e2e-test-macos-node18:
           matrix:
             parameters:
               package_version: ["latest"]
               flex_ui_version: ["latest"]
               node-version: ["18.15.0"]
-          requires: 
-            - job_e2e-test-macos-node16
       - job_e2e-test-win-node18:
           matrix:
             parameters:
@@ -368,5 +345,3 @@ workflows:
               flex_ui_version: ["latest"]
               shell: ["bash.exe"]
               node-version: ["18.15.0"]
-          requires: 
-            - job_e2e-test-win-node16
