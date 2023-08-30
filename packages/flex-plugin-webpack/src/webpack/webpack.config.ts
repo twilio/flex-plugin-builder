@@ -81,7 +81,11 @@ const _getBabelLoader = (isProd: boolean) => ({
     customize: require.resolve('babel-preset-react-app/webpack-overrides'),
     babelrc: false,
     configFile: false,
-    presets: [require.resolve('babel-preset-react-app')],
+    presets: [
+      require.resolve('@babel/preset-react'),
+      require.resolve('@babel/preset-env'),
+      require.resolve('@babel/preset-typescript'),
+    ],
     plugins: [
       [
         require.resolve('babel-plugin-named-asset-import'),
@@ -455,7 +459,6 @@ const _getBase = (environment: Environment): Configuration => {
     module: {
       strictExportPresence: true,
       rules: [
-        { parser: { requireEnsure: false } },
         {
           oneOf: [_getImageLoader(), _getBabelLoader(isProd), ..._getStyleLoaders(isProd)],
         },

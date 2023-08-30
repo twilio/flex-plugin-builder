@@ -36,7 +36,9 @@
   "dependencies": {
     "@babel/core": "^7.22.10",
     "@babel/preset-env": "^7.22.10",
+    "@babel/preset-modules": "^0.1.6",
     "@babel/preset-react": "^7.22.5",
+    "@babel/preset-typescript": "^7.22.11",
     "@k88/cra-webpack-hot-dev-client": "^1.1.0",
     "@k88/format-webpack-messages": "^1.1.0",
     "@k88/interpolate-html-plugin": "^1.0.5",
