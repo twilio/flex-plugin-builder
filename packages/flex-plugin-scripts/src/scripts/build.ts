@@ -40,9 +40,7 @@ export const _handler =
     }
 
     const result = stats.toJson({ all: false, warnings: true, errors: true });
-    logger.info(`result-${result}`);
     if (stats.hasErrors()) {
-      logger.info(`error stats-${stats}`);
       reject(result.errors as unknown as string[]);
       return;
     }
@@ -62,7 +60,6 @@ export const _handler =
 export const _runWebpack = async (): Promise<BuildBundle> => {
   return new Promise(async (resolve, reject) => {
     const config = await getConfiguration(ConfigurationType.Webpack, Environment.Production, false);
-    logger.info(`config- ${config}`);
     webpack(config).run(_handler(resolve, reject));
   });
 };
@@ -91,7 +88,6 @@ const build = async (...argv: string[]): Promise<void> => {
   try {
     const { warnings, bundles } = await _runWebpack();
     logger.info(warnings);
-    logger.info(`bundles- ${bundles}`);
     const bundleSize = getFileSizeInMB(getPaths().app.bundlePath);
     const sourceMapSize = getFileSizeInMB(getPaths().app.sourceMapPath);
 

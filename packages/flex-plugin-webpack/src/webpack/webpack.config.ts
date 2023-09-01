@@ -10,6 +10,7 @@ import { getDependencyVersion, getPaths, resolveModulePath } from '@twilio/flex-
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import PnpWebpackPlugin from 'pnp-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
 import {
   Configuration,
   DefinePlugin,
@@ -22,9 +23,6 @@ import {
 
 import { getSanitizedProcessEnv } from './clientVariables';
 import { WebpackType } from '..';
-
-// import TerserPlugin from 'terser-webpack-plugin';
-const TerserPlugin = require('terser-webpack-plugin');
 
 interface LoaderOption {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -318,6 +316,7 @@ const _getJSPlugins = (environment: Environment) => {
   if (isProd) {
     plugins.push(
       new SourceMapDevToolPlugin({
+        filename: `${getPaths().app.name}.js.map`,
         append: '\n//# sourceMappingURL=bundle.js.map',
       }),
     );
@@ -374,12 +373,11 @@ const _getJavaScriptEntries = (): string[] => {
 const _getOptimization = (environment: Environment) => {
   const isProd = environment === Environment.Production;
   return {
-    splitChunks: {},
+    splitChunks: false as unknown as false,
     runtimeChunk: false,
     minimize: isProd,
     minimizer: [
       new TerserPlugin({
-        parallel: true,
         terserOptions: {
           parse: {
             ecma: 5,
