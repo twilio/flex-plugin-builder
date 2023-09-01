@@ -317,6 +317,7 @@ const _getJSPlugins = (environment: Environment) => {
     plugins.push(
       new SourceMapDevToolPlugin({
         filename: `${getPaths().app.name}.js.map`,
+        module: false,
         append: '\n//# sourceMappingURL=bundle.js.map',
       }),
     );
@@ -503,11 +504,12 @@ const _getJavaScriptConfiguration = (config: Configuration, environment: Environ
     path: getPaths().app.buildDir,
     pathinfo: !isProd,
     filename: outputName,
+    sourceMapFilename: `${outputName}.map`,
     publicPath: getPaths().app.publicDir,
     globalObject: 'this',
   };
   config.bail = isProd;
-  config.devtool = isProd ? 'hidden-source-map' : 'source-map';
+  config.devtool = isProd ? 'cheap-source-map' : 'source-map';
   config.optimization = _getOptimization(environment);
   config.node = false;
   config.plugins.push(..._getJSPlugins(environment));
