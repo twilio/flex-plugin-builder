@@ -205,6 +205,7 @@ export const _startServer = (
 
     const hasRemotePlugin = config.remoteAll || plugins.remote.length !== 0;
     const localPlugins = _getLocalPlugins(config.port as number, plugins.local);
+    console.log("localPlugins", localPlugins);
     const versionedPlugins = _getRemoteVersionedPlugins(plugins.versioned);
     const promise: Promise<Plugin[]> = hasRemotePlugin ? _getRemotePlugins(jweToken, flexVersion) : Promise.resolve([]);
 
@@ -258,6 +259,7 @@ export default (
 ): void => {
   serverConfig.port = webpackConfig.port || 3000;
 
+  console.log(pluginsConfig);
   webpackConfig.proxy = plugins.local.reduce((proxy, name) => {
     proxy[`/plugins/${name}.js`] = {
       target: `http://localhost:${serverConfig.port}`, // placeholder
@@ -275,6 +277,7 @@ export default (
   }, {});
 
   webpackConfig.onBeforeSetupMiddleware = (server) => {
+    console.log('shwet');
     // @ts-ignore
     serverConfig.port = server.options.port || serverConfig.port;
     server?.app?.use('^/plugins$', _startServer(plugins, serverConfig, onRemotePlugin));

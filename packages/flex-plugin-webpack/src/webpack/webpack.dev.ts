@@ -15,6 +15,7 @@ export const _getBase = (): Configuration => {
 
   return {
     compress: true,
+    static: {},
     client: {
       logging: 'info',
       webSocketURL: {
@@ -54,7 +55,7 @@ export const _getStaticConfiguration = (config: Configuration): Configuration =>
 // eslint-disable-next-line import/no-unused-modules
 export const _getJavaScriptConfiguration = (config: Configuration): Configuration => {
   const socket = env.getWSSocket();
-  config.client = false;
+  // config.client = false;
   (config.static as Static).serveIndex = false;
 
   // We're using native sockjs-node
@@ -78,6 +79,7 @@ export const _getJavaScriptConfiguration = (config: Configuration): Configuratio
 export default (type: WebpackType): Configuration => {
   const config = _getBase();
 
+  console.log(type);
   if (type === WebpackType.Static) {
     return _getStaticConfiguration(config);
   }

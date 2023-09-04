@@ -286,19 +286,27 @@ const _getStaticPlugins = (environment: Environment) => {
     plugins.push(
       new HtmlWebpackPlugin({
         inject: false,
-        hash: false,
         template: getPaths().scripts.indexHTMLPath,
+        templateParameters: {
+          __FPB_JS_SCRIPTS: _getJSScripts(
+            dependencies.flexUI.version,
+            dependencies.react.version,
+            dependencies.reactDom.version,
+          ).join('\n'),
+        },
       }),
     );
-    plugins.push(
-      new InterpolateHtmlPlugin({
-        __FPB_JS_SCRIPTS: _getJSScripts(
-          dependencies.flexUI.version,
-          dependencies.react.version,
-          dependencies.reactDom.version,
-        ).join('\n'),
-      }),
-    );
+    /*
+     * plugins.push(
+     *   new InterpolateHtmlPlugin({
+     *     __FPB_JS_SCRIPTS: _getJSScripts(
+     *       dependencies.flexUI.version,
+     *       dependencies.react.version,
+     *       dependencies.reactDom.version,
+     *     ).join('\n'),
+     *   }),
+     * );
+     */
   }
 
   return plugins;
@@ -401,7 +409,7 @@ const _getOptimization = (environment: Environment) => {
             // eslint-disable-next-line camelcase
             ascii_only: true,
           },
-          sourceMap: true,
+          sourceMap: isProd,
         },
       }),
     ],
@@ -525,6 +533,7 @@ const _getJavaScriptConfiguration = (config: Configuration, environment: Environ
 export default (environment: Environment, type: WebpackType): Configuration => {
   const config = _getBase(environment);
 
+  console.log('webpack.config', type)
   if (type === WebpackType.Static) {
     return _getStaticConfiguration(config, environment);
   }

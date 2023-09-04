@@ -19,7 +19,7 @@ export default (devCompiler: Compiler, devConfig: Configuration, type: WebpackTy
   const isJavaScriptServer = type === WebpackType.JavaScript;
   const isStaticServer = type === WebpackType.Static;
 
-  const devServer = new WebpackDevServer(devCompiler, devConfig);
+  const devServer = new WebpackDevServer(devConfig, devCompiler);
 
   if (!isStaticServer) {
     /*

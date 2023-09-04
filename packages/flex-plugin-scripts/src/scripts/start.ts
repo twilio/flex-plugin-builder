@@ -133,6 +133,7 @@ export const _startDevServer = async (
 
   try {
     // Pass either the default onCompile (for start-flex) or the event-emitter (for start-plugin)
+    console.log(config);
     const devCompiler = compiler(
       config,
       true,
