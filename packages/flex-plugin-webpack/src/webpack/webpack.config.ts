@@ -500,7 +500,7 @@ const _getStaticConfiguration = (config: Configuration, environment: Environment
  */
 const _getJavaScriptConfiguration = (config: Configuration, environment: Environment): Configuration => {
   const isProd = environment === Environment.Production;
-  const filename = `${getPaths().app.name}.js`;
+  const filename = `${getPaths().app.name}`;
   const outputName = environment === Environment.Production ? filename : `plugins/${filename}`;
 
   config.entry = config.entry ? config.entry : [];
@@ -511,8 +511,8 @@ const _getJavaScriptConfiguration = (config: Configuration, environment: Environ
   config.output = {
     path: getPaths().app.buildDir,
     pathinfo: !isProd,
-    filename: outputName,
-    sourceMapFilename: `${outputName}.map`,
+    filename: `${outputName}.js`,
+    sourceMapFilename: `${outputName}.[contenthash].js.map`,
     publicPath: '/',
     globalObject: 'this',
   };
