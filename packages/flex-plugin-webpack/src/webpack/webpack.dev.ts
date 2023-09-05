@@ -79,7 +79,6 @@ export const _getJavaScriptConfiguration = (config: Configuration): Configuratio
 export default (type: WebpackType): Configuration => {
   const config = _getBase();
 
-  console.log(type);
   if (type === WebpackType.Static) {
     return _getStaticConfiguration(config);
   }

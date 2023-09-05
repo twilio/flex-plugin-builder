@@ -70,7 +70,6 @@ export const _runWebpack = async (): Promise<BuildBundle> => {
 const build = async (...argv: string[]): Promise<void> => {
   setEnvironment(...argv);
   logger.debug('Building Flex plugin bundle');
-  console.log('build test');
 
   const index = argv.indexOf('--version');
   if (index !== -1) {

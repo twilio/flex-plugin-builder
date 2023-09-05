@@ -1,7 +1,6 @@
 /* eslint-disable global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires */
 /// <reference path="../module.d.ts" />
 
-import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
 import ModuleScopePlugin from '@k88/module-scope-plugin';
 import typescriptFormatter from '@k88/typescript-compile-error-formatter';
 import { semver, env } from '@twilio/flex-dev-utils';
@@ -296,17 +295,6 @@ const _getStaticPlugins = (environment: Environment) => {
         },
       }),
     );
-    /*
-     * plugins.push(
-     *   new InterpolateHtmlPlugin({
-     *     __FPB_JS_SCRIPTS: _getJSScripts(
-     *       dependencies.flexUI.version,
-     *       dependencies.react.version,
-     *       dependencies.reactDom.version,
-     *     ).join('\n'),
-     *   }),
-     * );
-     */
   }
 
   return plugins;
@@ -409,7 +397,7 @@ const _getOptimization = (environment: Environment) => {
             // eslint-disable-next-line camelcase
             ascii_only: true,
           },
-          sourceMap: true,
+          sourceMap: isProd,
         },
       }),
     ],
@@ -533,7 +521,6 @@ const _getJavaScriptConfiguration = (config: Configuration, environment: Environ
 export default (environment: Environment, type: WebpackType): Configuration => {
   const config = _getBase(environment);
 
-  console.log('webpack.config', type)
   if (type === WebpackType.Static) {
     return _getStaticConfiguration(config, environment);
   }
