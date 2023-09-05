@@ -409,7 +409,7 @@ const _getOptimization = (environment: Environment) => {
             // eslint-disable-next-line camelcase
             ascii_only: true,
           },
-          sourceMap: isProd,
+          sourceMap: true,
         },
       }),
     ],
@@ -513,7 +513,7 @@ const _getJavaScriptConfiguration = (config: Configuration, environment: Environ
     pathinfo: !isProd,
     filename: outputName,
     sourceMapFilename: `${outputName}.map`,
-    publicPath: getPaths().app.publicDir,
+    publicPath: '/',
     globalObject: 'this',
   };
   config.bail = isProd;
