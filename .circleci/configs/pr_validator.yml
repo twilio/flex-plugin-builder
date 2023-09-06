@@ -65,9 +65,9 @@ commands:
       - run:
           name: "NVM use"
           command: nvm use << parameters.node-version >>
-      - run:
-          name: "Install NPM latest"
-          command: npm install -g npm
+      # - run:
+      #     name: "Install NPM latest"
+      #     command: npm install -g npm
 
 
 jobs:
