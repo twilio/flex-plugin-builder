@@ -505,7 +505,7 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
     pathinfo: !isProd,
     filename: outputName,
     sourceMapFilename: `${outputName}.map`,
-    publicPath: getPaths().app.publicDir,
+    publicPath: '/',
     globalObject: 'this',
   };
   config.bail = isProd;
