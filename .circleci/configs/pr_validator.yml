@@ -65,10 +65,6 @@ commands:
       - run:
           name: "NVM use"
           command: nvm use << parameters.node-version >>
-      # - run:
-      #     name: "Install NPM latest"
-      #     command: npm install -g npm
-
 
 jobs:
   job_pr-validator-win32:
