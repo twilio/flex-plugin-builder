@@ -66,7 +66,7 @@ export const _getJavaScriptConfiguration = (config: Configuration): Configuratio
   };
 
   // Hot reload
-  config.hot = true;
+  config.hot = false;
 
   return config;
 };

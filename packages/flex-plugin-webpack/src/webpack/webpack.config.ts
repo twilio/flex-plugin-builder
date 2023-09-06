@@ -235,7 +235,7 @@ const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
  * @param environment the environment
  * @private
  */
-const _getBasePlugins = (environment: Environment) => {
+export const _getBasePlugins = (environment: Environment) => {
   const plugins: WebpackPluginInstance[] = [];
 
   const flexUIVersion = getDependencyVersion('@twilio/flex-ui');
@@ -276,13 +276,13 @@ const _getBasePlugins = (environment: Environment) => {
  * Returns an array of {@link Plugin} for Webpack Static
  * @param environment
  */
-const _getStaticPlugins = (environment: Environment) => {
+export const _getStaticPlugins = (environment: Environment) => {
   const plugins: WebpackPluginInstance[] = [];
   const { dependencies } = getPaths().app;
 
   // index.html entry point
   if (environment === Environment.Development) {
-    plugins.push(new HotModuleReplacementPlugin());
+    //plugins.push(new HotModuleReplacementPlugin());
     plugins.push(
       new HtmlWebpackPlugin({
         inject: false,
@@ -308,7 +308,7 @@ const _getStaticPlugins = (environment: Environment) => {
  * Returns an array of {@link Plugin} for Webpack Javascript
  * @param environment
  */
-const _getJSPlugins = (environment: Environment) => {
+export const _getJSPlugins = (environment: Environment) => {
   const plugins = [];
   const isDev = environment === Environment.Development;
   const isProd = environment === Environment.Production;
@@ -358,7 +358,7 @@ const _getJSPlugins = (environment: Environment) => {
  * Returns the `entry` key of the webpack
  * @private
  */
-const _getJavaScriptEntries = (): string[] => {
+export const _getJavaScriptEntries = (): string[] => {
   const entry: string[] = [];
   entry.push(getPaths().app.entryPath);
 
@@ -371,7 +371,7 @@ const _getJavaScriptEntries = (): string[] => {
  * @private
  */
 /* c8 ignore next */
-const _getOptimization = (environment: Environment) => {
+ export const _getOptimization = (environment: Environment) => {
   const isProd = environment === Environment.Production;
   return {
     splitChunks: false as unknown as false,
@@ -405,7 +405,7 @@ const _getOptimization = (environment: Environment) => {
         },
       }),
     ],
-  };
+  } as any;
 };
 
 /**
@@ -447,7 +447,7 @@ const _getResolve = (environment: Environment) => {
  * Returns the base {@link Configuration}
  * @private
  */
-const _getBase = (environment: Environment): Configuration => {
+export const _getBase = (environment: Environment): Configuration => {
   const isProd = environment === Environment.Production;
   const config: Configuration = {
     resolve: _getResolve(environment),
@@ -479,7 +479,7 @@ const _getBase = (environment: Environment): Configuration => {
  * Returns the {@link Configuration} for static type
  * @private
  */
-const _getStaticConfiguration = (config: Configuration, environment: Environment): Configuration => {
+export const _getStaticConfiguration = (config: Configuration, environment: Environment): Configuration => {
   config.plugins = config.plugins ? config.plugins : [];
   config.plugins.push(..._getStaticPlugins(environment));
 
@@ -490,7 +490,7 @@ const _getStaticConfiguration = (config: Configuration, environment: Environment
  * Returns the {@link Configuration} for JS type
  * @private
  */
-const _getJavaScriptConfiguration = (config: Configuration, environment: Environment): Configuration => {
+export const _getJavaScriptConfiguration = (config: Configuration, environment: Environment): Configuration => {
   const isProd = environment === Environment.Production;
   const filename = `${getPaths().app.name}.js`;
   const outputName = environment === Environment.Production ? filename : `plugins/${filename}`;
