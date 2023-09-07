@@ -29,7 +29,7 @@ const isValid = (key: string): boolean => FLEX_APP_REGEX.test(key) || REACT_APP_
  * @param filename  the filename to read
  * @param path      the path to the file
  */
-const _readEnvFile = (filename: string, path: string): ProcessEnv => {
+export const _readEnvFile = (filename: string, path: string): ProcessEnv => {
   const newVars = dotenv.parse(readFileSync(path));
   Object.keys(newVars)
     .filter((key: string) => !isValid(key))
@@ -42,7 +42,7 @@ const _readEnvFile = (filename: string, path: string): ProcessEnv => {
  * Filters and sanitizes the variables
  * @param variables the variables to read
  */
-const _filterVariables = (variables: CodeValueObject): CodeValueObject => {
+export const _filterVariables = (variables: CodeValueObject): CodeValueObject => {
   return Object.keys(variables)
     .filter(isValid)
     .reduce((newEnvs: CodeValueObject, key: string) => {
