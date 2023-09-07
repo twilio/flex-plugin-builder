@@ -186,7 +186,7 @@ jobs:
           path: packages/flex-plugin-e2e-tests/screenshots
 
   job_e2e-test-macos-node16:
-    resource_class: macos.m1.medium.gen1
+    resource_class: macos.x86.medium.gen2
     parameters:
       flex_ui_version:
         type: string
@@ -270,7 +270,7 @@ jobs:
           path: packages/flex-plugin-e2e-tests/screenshots
 
   job_e2e-test-macos-node18:
-    resource_class: macos.m1.medium.gen1
+    resource_class: macos.x86.medium.gen2
     parameters:
       flex_ui_version:
         type: string
