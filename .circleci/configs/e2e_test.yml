@@ -116,9 +116,6 @@ commands:
       - run:
           name: "NVM use"
           command: nvm use << parameters.node-version >>
-      - run:
-          name: "Install NPM latest"
-          command: npm install -g npm
   cmd_slack-notification-error:
     parameters:
       text:
@@ -189,7 +186,7 @@ jobs:
           path: packages/flex-plugin-e2e-tests/screenshots
 
   job_e2e-test-macos-node16:
-    resource_class: medium
+    resource_class: macos.x86.medium.gen2
     parameters:
       flex_ui_version:
         type: string
@@ -273,7 +270,7 @@ jobs:
           path: packages/flex-plugin-e2e-tests/screenshots
 
   job_e2e-test-macos-node18:
-    resource_class: medium
+    resource_class: macos.x86.medium.gen2
     parameters:
       flex_ui_version:
         type: string
