@@ -281,7 +281,6 @@ const _getStaticPlugins = (environment: Environment) => {
 
   // index.html entry point
   if (environment === Environment.Development) {
-    plugins.push(new HotModuleReplacementPlugin());
     plugins.push(
       new HtmlWebpackPlugin({
         inject: false,
