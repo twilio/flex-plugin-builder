@@ -63,7 +63,7 @@ const emitQueue = [getEmitItem()].slice(1);
  * @private
  */
 /* c8 ignore next */
-const _processEmitQueue = async (): Promise<void> => {
+export const _processEmitQueue = async (): Promise<void> => {
   if (!isClientConnected()) {
     return;
   }
@@ -98,7 +98,7 @@ const _onServerMessage = (data: { payload: unknown; type: string }): void => {
  * Processes on client connected
  * @private
  */
-const _onClientConnected = async (): Promise<void> => {
+export const _onClientConnected = async (): Promise<void> => {
   _isClientConnected = true;
   await _processEmitQueue();
 };
@@ -109,7 +109,7 @@ const _onClientConnected = async (): Promise<void> => {
  * @param payload   the event payload
  * @private
  */
-const _emitToServer = async <T extends IPCType>(type: T, payload: IPCPayload[T]): Promise<void> => {
+export const _emitToServer = async <T extends IPCType>(type: T, payload: IPCPayload[T]): Promise<void> => {
   emitQueue.push({ type, payload });
   await _processEmitQueue();
 };

@@ -1,7 +1,6 @@
 /* eslint-disable global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires */
 /// <reference path="../module.d.ts" />
 
-import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
 import ModuleScopePlugin from '@k88/module-scope-plugin';
 import typescriptFormatter from '@k88/typescript-compile-error-formatter';
 import { semver, env } from '@twilio/flex-dev-utils';
@@ -282,21 +281,17 @@ export const _getStaticPlugins = (environment: Environment) => {
 
   // index.html entry point
   if (environment === Environment.Development) {
-    //plugins.push(new HotModuleReplacementPlugin());
     plugins.push(
       new HtmlWebpackPlugin({
         inject: false,
-        hash: false,
         template: getPaths().scripts.indexHTMLPath,
-      }),
-    );
-    plugins.push(
-      new InterpolateHtmlPlugin({
-        __FPB_JS_SCRIPTS: _getJSScripts(
-          dependencies.flexUI.version,
-          dependencies.react.version,
-          dependencies.reactDom.version,
-        ).join('\n'),
+        templateParameters: {
+          __FPB_JS_SCRIPTS: _getJSScripts(
+            dependencies.flexUI.version,
+            dependencies.react.version,
+            dependencies.reactDom.version,
+          ).join('\n'),
+        },
       }),
     );
   }
@@ -401,7 +396,7 @@ export const _getJavaScriptEntries = (): string[] => {
             // eslint-disable-next-line camelcase
             ascii_only: true,
           },
-          sourceMap: true,
+          sourceMap: isProd,
         },
       }),
     ],
@@ -492,7 +487,7 @@ export const _getStaticConfiguration = (config: Configuration, environment: Envi
  */
 export const _getJavaScriptConfiguration = (config: Configuration, environment: Environment): Configuration => {
   const isProd = environment === Environment.Production;
-  const filename = `${getPaths().app.name}.js`;
+  const filename = `${getPaths().app.name}`;
   const outputName = environment === Environment.Production ? filename : `plugins/${filename}`;
 
   config.entry = config.entry ? config.entry : [];
@@ -503,8 +498,9 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
   config.output = {
     path: getPaths().app.buildDir,
     pathinfo: !isProd,
-    filename: outputName,
-    sourceMapFilename: `${outputName}.map`,
+    filename: `${outputName}.js`,
+    sourceMapFilename: `${outputName}.[contenthash].js.map`,
+
     publicPath: '/',
     globalObject: 'this',
   };
