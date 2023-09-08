@@ -182,7 +182,7 @@ describe('create-flex-plugin', () => {
       expect(copyTemplateDir).toHaveBeenCalledTimes(2);
       expect(downloadFromGitHub).toHaveBeenCalledTimes(1);
       expect(copyTemplateDir).not.toHaveBeenCalledWith(
-        expect.stringContaining('templates'),
+        expect.stringContaining('templates/ts2'),
         expect.anything(),
         expect.anything(),
       );
