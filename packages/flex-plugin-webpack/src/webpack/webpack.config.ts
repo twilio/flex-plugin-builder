@@ -366,7 +366,7 @@ export const _getJavaScriptEntries = (): string[] => {
  * @private
  */
 /* c8 ignore next */
- export const _getOptimization = (environment: Environment) => {
+export const _getOptimization = (environment: Environment) => {
   const isProd = environment === Environment.Production;
   return {
     splitChunks: false as unknown as false,

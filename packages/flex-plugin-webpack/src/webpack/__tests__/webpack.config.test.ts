@@ -104,7 +104,7 @@ describe('WebpackConfiguration', () => {
       const _getJSPlugins = jest.spyOn(webpackConfig, '_getJSPlugins').mockReturnValue([]);
 
       const config = webpackConfig._getJavaScriptConfiguration({}, Environment.Production);
-      const output = config.output;
+      const { output } = config;
 
       expect(output?.path).toEqual(paths.app.buildDir);
       expect(output?.filename).toEqual(`${paths.app.name}.js`);
@@ -123,7 +123,7 @@ describe('WebpackConfiguration', () => {
       const _getJSPlugins = jest.spyOn(webpackConfig, '_getJSPlugins').mockReturnValue([]);
 
       const config = webpackConfig._getJavaScriptConfiguration({}, Environment.Development);
-      const output = config.output;
+      const { output } = config;
 
       expect(output?.path).toEqual(paths.app.buildDir);
       expect(output?.filename).toEqual(`plugins/${paths.app.name}.js`);
