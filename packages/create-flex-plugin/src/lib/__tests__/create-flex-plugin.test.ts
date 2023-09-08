@@ -159,7 +159,7 @@ describe('create-flex-plugin', () => {
       expect(downloadFromGitHub).not.toHaveBeenCalled();
       expect(copyTemplateDir).toHaveBeenCalledTimes(2);
       expect(copyTemplateDir).toHaveBeenCalledWith(
-        expect.stringContaining('templates/ts'),
+        expect.toMatchPathContaining('templates/ts'),
         expect.anything(),
         expect.anything(),
       );
@@ -206,7 +206,7 @@ describe('create-flex-plugin', () => {
       expect(downloadFromGitHub).not.toHaveBeenCalled();
       expect(copyTemplateDir).toHaveBeenCalledTimes(2);
       expect(copyTemplateDir).toHaveBeenCalledWith(
-        expect.stringContaining('templates/ts'),
+        expect.toMatchPathContaining('templates/ts'),
         expect.anything(),
         expect.anything(),
       );
@@ -230,7 +230,7 @@ describe('create-flex-plugin', () => {
       expect(downloadFromGitHub).not.toHaveBeenCalled();
       expect(copyTemplateDir).toHaveBeenCalledTimes(2);
       expect(copyTemplateDir).toHaveBeenCalledWith(
-        expect.stringContaining('templates/js'),
+        expect.toMatchPathContaining('templates/js'),
         expect.anything(),
         expect.anything(),
       );
