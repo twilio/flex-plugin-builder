@@ -60,10 +60,7 @@ export const _getJavaScriptConfiguration = (config: Configuration): Configuratio
     pathname: socket.path,
     port: socket.port,
   };
-
-  // Hot reload
   config.hot = false;
-
   return config;
 };
 

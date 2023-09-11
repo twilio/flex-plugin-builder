@@ -2,10 +2,10 @@
 
 import { logger, FunctionalCallback } from '@twilio/flex-dev-utils';
 import { FlexPluginError } from '@twilio/flex-dev-utils/dist/errors';
-import { SyncHook } from 'tapable';
+import { AsyncSeriesHook, SyncHook } from 'tapable';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import typescriptFormatter, { Issue } from '@k88/typescript-compile-error-formatter';
-import webpack, { Compiler, Configuration, StatsError, WebpackError } from 'webpack';
+import webpack, { Compiler as WebpackCompiler, Configuration, StatsError, WebpackError, Stats } from 'webpack';
 import { getCliPaths, getPaths, readRunPluginsJson, writeJSONFile } from '@twilio/flex-dev-utils/dist/fs';
 import webpackFormatMessages from '@k88/format-webpack-messages';
 import { getLocalAndNetworkUrls } from '@twilio/flex-dev-utils/dist/urls';
@@ -19,15 +19,22 @@ interface ErrorsAndWarnings {
   errors: StatsError[] | WebpackError[] | string[];
   warnings: StatsError[] | WebpackError[] | string[];
 }
-/*
- * export interface Compiler extends WebpackCompiler  {
- *     tsCompiled: SyncHook<string[], string[]>;
- * }
- */
 
 type OnCompile = (payload: OnCompileCompletePayload) => void;
 interface OnCompileResult {
   [key: string]: ToJsonOutput;
+}
+interface CompilerHooks {
+  beforeCompile: AsyncSeriesHook<[any]>;
+  done: AsyncSeriesHook<[Stats]>;
+  invalid: SyncHook<[null | string, number]>;
+}
+interface Hook extends CompilerHooks {
+  tsCompiled: SyncHook<string[], string[]>;
+}
+// @ts-ignore
+export interface Compiler extends WebpackCompiler {
+  hooks: Hook;
 }
 interface CompilerRenderer {
   onCompile: OnCompile;
@@ -55,8 +62,8 @@ export default (
   logger.debug('Creating webpack compiler');
 
   try {
-    const compiler: Compiler = webpack(config);
-    // compiler.tsCompiled = new SyncHook(['warnings', 'errors']);
+    const compiler: Compiler = webpack(config) as unknown as Compiler;
+    compiler.hooks.tsCompiled = new SyncHook(['warnings', 'errors']);
 
     // For build, we don't need to tap into any hooks
     if (!devServer) {
@@ -95,9 +102,9 @@ export default (
     });
 
     compiler.hooks.done.tap('done', async (stats) => {
-      const result = stats?.toJson({ all: false, errors: true, warnings: true });
+      const result = stats[0]?.toJson({ all: false, errors: true, warnings: true });
 
-      if (getPaths().app.isTSProject() && !stats.hasErrors()) {
+      if (getPaths().app.isTSProject() && !stats[0].hasErrors()) {
         const delayedMsg = setTimeout(() => {
           logger.notice('Waiting for Typescript check results...');
         }, 100);
@@ -106,11 +113,11 @@ export default (
 
         // Push ts-compile errors into compiler
         result?.errors?.push(...(messages.errors as StatsError[]));
-        stats.compilation.errors.push(...(messages.errors as WebpackError[]));
+        stats[0].compilation.errors.push(...(messages.errors as WebpackError[]));
         result?.warnings?.push(...(messages.warnings as StatsError[]));
-        stats.compilation.warnings.push(...(messages.warnings as WebpackError[]));
+        stats[0].compilation.warnings.push(...(messages.warnings as WebpackError[]));
 
-        // compiler.tsCompiled.call(messages.warnings, messages.errors);
+        compiler.hooks.tsCompiled.call(messages.warnings as string[], messages.errors as string[]);
       }
 
       const config = readRunPluginsJson();
