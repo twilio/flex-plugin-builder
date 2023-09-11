@@ -88,7 +88,12 @@ describe('WebpackConfiguration', () => {
   describe('_getJavaScriptConfiguration', () => {
     it('should test devtool field', () => {
       jest.spyOn(webpackConfig, '_getJavaScriptEntries').mockReturnValue([]);
-      jest.spyOn(webpackConfig, '_getOptimization').mockReturnValue({});
+      jest.spyOn(webpackConfig, '_getOptimization').mockReturnValue({
+        splitChunks: false,
+        runtimeChunk: false,
+        minimize: false,
+        minimizer: [],
+      });
       jest.spyOn(webpackConfig, '_getJSPlugins').mockReturnValue([]);
 
       const configProd = webpackConfig._getJavaScriptConfiguration({}, Environment.Production);
@@ -100,7 +105,12 @@ describe('WebpackConfiguration', () => {
 
     it('should get production config', () => {
       const _getJavaScriptEntries = jest.spyOn(webpackConfig, '_getJavaScriptEntries').mockReturnValue([]);
-      const _getOptimization = jest.spyOn(webpackConfig, '_getOptimization').mockReturnValue({});
+      const _getOptimization = jest.spyOn(webpackConfig, '_getOptimization').mockReturnValue({
+        splitChunks: false,
+        runtimeChunk: false,
+        minimize: false,
+        minimizer: [],
+      });
       const _getJSPlugins = jest.spyOn(webpackConfig, '_getJSPlugins').mockReturnValue([]);
 
       const config = webpackConfig._getJavaScriptConfiguration({}, Environment.Production);
@@ -119,7 +129,12 @@ describe('WebpackConfiguration', () => {
 
     it('should get development config', () => {
       const _getJavaScriptEntries = jest.spyOn(webpackConfig, '_getJavaScriptEntries').mockReturnValue([]);
-      const _getOptimization = jest.spyOn(webpackConfig, '_getOptimization').mockReturnValue({});
+      const _getOptimization = jest.spyOn(webpackConfig, '_getOptimization').mockReturnValue({
+        splitChunks: false,
+        runtimeChunk: false,
+        minimize: false,
+        minimizer: [],
+      });
       const _getJSPlugins = jest.spyOn(webpackConfig, '_getJSPlugins').mockReturnValue([]);
 
       const config = webpackConfig._getJavaScriptConfiguration({}, Environment.Development);

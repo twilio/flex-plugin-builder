@@ -28,6 +28,13 @@ interface LoaderOption {
   [name: string]: any;
 }
 
+interface Optimization {
+  splitChunks?: false;
+  runtimeChunk: boolean;
+  minimize: boolean;
+  minimizer: TerserPlugin[];
+}
+
 const IMAGE_SIZE_BYTE = 10 * 1024;
 const FLEX_SHIM = '@twilio/flex-plugin-scripts/dev_assets/flex-shim.js';
 const EXTERNALS = {
@@ -281,6 +288,7 @@ export const _getStaticPlugins = (environment: Environment) => {
 
   // index.html entry point
   if (environment === Environment.Development) {
+    plugins.push(new HotModuleReplacementPlugin());
     plugins.push(
       new HtmlWebpackPlugin({
         inject: false,
@@ -366,10 +374,10 @@ export const _getJavaScriptEntries = (): string[] => {
  * @private
  */
 /* c8 ignore next */
-export const _getOptimization = (environment: Environment) => {
+export const _getOptimization = (environment: Environment): Optimization => {
   const isProd = environment === Environment.Production;
   return {
-    splitChunks: false as unknown as false,
+    splitChunks: false,
     runtimeChunk: false,
     minimize: isProd,
     minimizer: [
@@ -400,7 +408,7 @@ export const _getOptimization = (environment: Environment) => {
         },
       }),
     ],
-  } as any;
+  };
 };
 
 /**
@@ -500,7 +508,6 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
     pathinfo: !isProd,
     filename: `${outputName}.js`,
     sourceMapFilename: `${outputName}.[contenthash].js.map`,
-
     publicPath: '/',
     globalObject: 'this',
   };

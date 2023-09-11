@@ -21,7 +21,6 @@ interface BuildBundle {
   warnings?: string[];
   bundles: Bundle[];
 }
-type CallbackFunction<T> = (error: Error, result: T) => void;
 
 const MAX_BUILD_SIZE_MB = 10;
 
@@ -41,13 +40,13 @@ export const _handler =
 
     const result = stats.toJson({ all: false, warnings: true, errors: true });
     if (stats.hasErrors()) {
-      reject(result.errors as unknown as string[]);
+      reject(result.errors as string[]);
       return;
     }
 
     resolve({
       bundles: stats.toJson({ assets: true }).assets as Bundle[],
-      warnings: result.warnings as unknown as string[],
+      warnings: result.warnings as string[],
     });
   };
 

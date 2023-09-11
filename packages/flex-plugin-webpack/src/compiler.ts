@@ -16,8 +16,8 @@ import { devServerSuccessful } from './prints';
 import ToJsonOutput = webpack.StatsCompilation;
 
 interface ErrorsAndWarnings {
-  errors: string[];
-  warnings: string[];
+  errors: StatsError[] | WebpackError[] | string[];
+  warnings: StatsError[] | WebpackError[] | string[];
 }
 /*
  * export interface Compiler extends WebpackCompiler  {
@@ -55,7 +55,7 @@ export default (
   logger.debug('Creating webpack compiler');
 
   try {
-    const compiler = webpack(config) as unknown as Compiler;
+    const compiler: Compiler = webpack(config);
     // compiler.tsCompiled = new SyncHook(['warnings', 'errors']);
 
     // For build, we don't need to tap into any hooks
@@ -105,10 +105,10 @@ export default (
         clearTimeout(delayedMsg);
 
         // Push ts-compile errors into compiler
-        result?.errors?.push(...(messages.errors as unknown as StatsError[]));
-        stats.compilation.errors.push(...(messages.errors as unknown as WebpackError[]));
-        result?.warnings?.push(...(messages.warnings as unknown as StatsError[]));
-        stats.compilation.warnings.push(...(messages.warnings as unknown as WebpackError[]));
+        result?.errors?.push(...(messages.errors as StatsError[]));
+        stats.compilation.errors.push(...(messages.errors as WebpackError[]));
+        result?.warnings?.push(...(messages.warnings as StatsError[]));
+        stats.compilation.warnings.push(...(messages.warnings as WebpackError[]));
 
         // compiler.tsCompiled.call(messages.warnings, messages.errors);
       }
