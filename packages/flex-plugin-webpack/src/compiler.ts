@@ -26,7 +26,7 @@ interface OnCompileResult {
 }
 interface CompilerHooks {
   beforeCompile: AsyncSeriesHook<[any]>;
-  done: AsyncSeriesHook<[Stats]>;
+  done: AsyncSeriesHook<Stats>;
   invalid: SyncHook<[null | string, number]>;
 }
 interface Hook extends CompilerHooks {
@@ -63,6 +63,9 @@ export default (
 
   try {
     const compiler: Compiler = webpack(config) as unknown as Compiler;
+    if (!Object.isExtensible(compiler.hooks)) {
+      compiler.hooks = { ...compiler.hooks };
+    }
     compiler.hooks.tsCompiled = new SyncHook(['warnings', 'errors']);
 
     // For build, we don't need to tap into any hooks
@@ -102,9 +105,8 @@ export default (
     });
 
     compiler.hooks.done.tap('done', async (stats) => {
-      const result = stats[0]?.toJson({ all: false, errors: true, warnings: true });
-
-      if (getPaths().app.isTSProject() && !stats[0].hasErrors()) {
+      const result = stats?.toJson({ all: false, errors: true, warnings: true });
+      if (getPaths().app.isTSProject() && !stats.hasErrors()) {
         const delayedMsg = setTimeout(() => {
           logger.notice('Waiting for Typescript check results...');
         }, 100);
@@ -113,9 +115,9 @@ export default (
 
         // Push ts-compile errors into compiler
         result?.errors?.push(...(messages.errors as StatsError[]));
-        stats[0].compilation.errors.push(...(messages.errors as WebpackError[]));
+        stats.compilation.errors.push(...(messages.errors as WebpackError[]));
         result?.warnings?.push(...(messages.warnings as StatsError[]));
-        stats[0].compilation.warnings.push(...(messages.warnings as WebpackError[]));
+        stats.compilation.warnings.push(...(messages.warnings as WebpackError[]));
 
         compiler.hooks.tsCompiled.call(messages.warnings as string[], messages.errors as string[]);
       }
