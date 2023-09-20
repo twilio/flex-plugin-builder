@@ -261,7 +261,6 @@ export default (
   webpackConfig.proxy = plugins.local.reduce((proxy, name) => {
     proxy[`/plugins/${name}.js`] = {
       target: `http://127.0.0.1:${serverConfig.port}`, // placeholder
-      changeOrigin: true,
       router: () => {
         const match = pluginsConfig[name];
         if (!match) {
