@@ -1,5 +1,3 @@
-// import * as webpack from 'webpack';
-
 import * as ipcServerScripts from '../ipcServer';
 
 describe('ipcServer', () => {

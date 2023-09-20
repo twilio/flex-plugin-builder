@@ -86,7 +86,6 @@ const build = async (...argv: string[]): Promise<void> => {
 
   try {
     const { warnings, bundles } = await _runWebpack();
-    logger.info(warnings);
     const bundleSize = getFileSizeInMB(getPaths().app.bundlePath);
     const sourceMapSize = getFileSizeInMB(getPaths().app.sourceMapPath);
 

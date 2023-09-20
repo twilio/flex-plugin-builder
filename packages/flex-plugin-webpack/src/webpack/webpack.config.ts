@@ -384,7 +384,7 @@ export const _getOptimization = (environment: Environment): Optimization => {
       new TerserPlugin({
         terserOptions: {
           parse: {
-            ecma: 5,
+            ecma: 2017,
           },
           compress: {
             ecma: 5,
