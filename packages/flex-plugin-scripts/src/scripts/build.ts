@@ -40,13 +40,13 @@ export const _handler =
 
     const result = stats.toJson({ all: false, warnings: true, errors: true });
     if (stats.hasErrors()) {
-      reject(result.errors as string[]);
+      reject(result.errors?.map((e) => e.message) as string[]);
       return;
     }
 
     resolve({
       bundles: stats.toJson({ assets: true }).assets as Bundle[],
-      warnings: result.warnings as string[],
+      warnings: result.warnings?.map((w) => w.message),
     });
   };
 
