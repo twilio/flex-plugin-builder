@@ -89,6 +89,9 @@
   "optionalDependencies": {
     "keytar": "^7.7.0"
   },
+    "overrides": {
+    "latest-version": "7.0.0"
+  },
   "publishConfig": {
     "access": "public"
   }
