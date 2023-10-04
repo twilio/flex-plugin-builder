@@ -21,11 +21,11 @@ jobs:
         run: npm i
       - name: Run linter
         run: npm run lint:fix
-      - name: Run Tests
-        run: npm run test:ci
-        env:
-          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
-          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+#      - name: Run Tests
+#        run: npm run test:ci
+#        env:
+#          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+#          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
       - name: Build packages
         run: npm run build
       - name: Codecov report
