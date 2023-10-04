@@ -26,6 +26,8 @@ jobs:
         env:
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+          NODE_OPTIONS: --no-experimental-fetch
+          CI: ""
       - name: Build packages
         run: npm run build
       - name: Codecov report
