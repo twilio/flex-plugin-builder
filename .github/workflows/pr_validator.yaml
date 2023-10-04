@@ -10,7 +10,7 @@ on:
       - main
 
 jobs:
-  test:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,16 +19,14 @@ jobs:
           node-version: '16'
       - name: Install project dependencies
         run: npm i
-      - name: Apt-get update
-        run: sudo apt-get update
-      - name: Install libraries
-        run: sudo apt-get install -y libsecret-1-dev
       - name: Run linter
         run: npm run lint:fix
+      - name: Run Tests
+        run: npm run test:ci
       - name: Build packages
         run: npm run build
       - name: Codecov report
-        run: npm run coverage -- --token=$CODECOV_TOKEN
+        run: npm run coverage -- --token=${{ secrets.CODECOV_TOKEN }}
         
       
 
