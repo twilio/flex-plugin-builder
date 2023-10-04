@@ -31,7 +31,9 @@ jobs:
       - name: Build packages
         run: npm run build
       - name: Codecov report
-        run:  npm run coverage -- --token=${{ secrets.CODECOV_TOKEN }}
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
       
 
 
