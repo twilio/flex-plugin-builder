@@ -29,10 +29,7 @@ jobs:
       - name: Build packages
         run: npm run build
       - name: Codecov report
-        uses: codecov/codecov-action@v3
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        
+        run:  npm run coverage -- --token=${{ secrets.CODECOV_TOKEN }}
       
 
 
