@@ -48,7 +48,7 @@ jobs:
         run: npm run build
       - run: cd packages/flex-plugin-e2e-tests
       - name: Run e2e tests
-        run: npm start
+        run: npm run start
         env:
           CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
           CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
@@ -71,7 +71,7 @@ jobs:
         run: npm run build
       - run: cd packages/flex-plugin-e2e-tests
       - name: Run e2e tests - JS
-        run: npm start
+        run: npm run start
         env:
           CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
           CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
@@ -82,7 +82,7 @@ jobs:
           FLEX_UI_VERSION: latest
           TS: false
       - name: Run e2e tests - TS
-        run: npm start
+        run: npm run start
         env:
           CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
           CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
@@ -106,7 +106,7 @@ jobs:
         run: npm run build
       - run: cd packages/flex-plugin-e2e-tests
       - name: Run e2e tests - JS
-        run: npm start
+        run: npm run start
         env:
           CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
           CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
@@ -117,7 +117,7 @@ jobs:
           FLEX_UI_VERSION: latest
           TS: false
       - name: Run e2e tests - TS
-        run: npm start
+        run: npm run start
         env:
           CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
           CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
