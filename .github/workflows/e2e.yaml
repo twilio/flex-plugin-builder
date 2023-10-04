@@ -1,4 +1,4 @@
-name: PR validator
+name: E2E
 
 on:
   push:
