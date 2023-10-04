@@ -1,0 +1,133 @@
+name: PR validator
+
+on:
+  pull_request:
+    branches:
+      - main
+
+  push:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install project dependencies
+        run: npm i
+      - name: Run linter
+        run: npm run lint:fix
+      - name: Run Tests
+        run: npm run test:ci
+        env:
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+          NODE_OPTIONS: --no-experimental-fetch
+          CI: ""
+      - name: Build packages
+        run: npm run build
+      - name: Codecov report
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  e2e-test-linux-node16:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - name: Install project dependencies
+        run: npm i
+      - name: Build packages
+        run: npm run build
+      - run: cd packages/flex-plugin-e2e-tests
+      - name: Run e2e tests
+        run: npm start
+        env:
+          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+          CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+          TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+          TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+          PACKAGE_VERSION: latest
+          FLEX_UI_VERSION: latest
+
+  e2e-test-windows-node16:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - name: Install project dependencies
+        run: npm i
+      - name: Build packages
+        run: npm run build
+      - run: cd packages/flex-plugin-e2e-tests
+      - name: Run e2e tests - JS
+        run: npm start
+        env:
+          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+          CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+          TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+          TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+          PACKAGE_VERSION: latest
+          FLEX_UI_VERSION: latest
+          TS: false
+      - name: Run e2e tests - TS
+        run: npm start
+        env:
+          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+          CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+          TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+          TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+          PACKAGE_VERSION: latest
+          FLEX_UI_VERSION: latest
+          TS: true
+
+  e2e-test-mac-node16:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - name: Install project dependencies
+        run: npm i
+      - name: Build packages
+        run: npm run build
+      - run: cd packages/flex-plugin-e2e-tests
+      - name: Run e2e tests - JS
+        run: npm start
+        env:
+          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+          CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+          TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+          TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+          PACKAGE_VERSION: latest
+          FLEX_UI_VERSION: latest
+          TS: false
+      - name: Run e2e tests - TS
+        run: npm start
+        env:
+          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+          CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+          TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+          TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+          PACKAGE_VERSION: latest
+          FLEX_UI_VERSION: latest
+          TS: true
+
+
+
+  
