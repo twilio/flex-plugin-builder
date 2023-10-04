@@ -21,15 +21,17 @@ jobs:
         run: npm i
       - name: Run linter
         run: npm run lint:fix
-#      - name: Run Tests
-#        run: npm run test:ci
-#        env:
-#          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
-#          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+      - name: Run Tests
+        run: npm run test:ci
+        env:
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
       - name: Build packages
         run: npm run build
       - name: Codecov report
-        run: npm run coverage -- --token=${{ secrets.CODECOV_TOKEN }}
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         
       
 
