@@ -76,10 +76,10 @@ jobs:
           npm run start
         env:
           CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-          CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+          CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
           CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-          TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-          TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+          TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
+          TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
           PACKAGE_VERSION: latest
           FLEX_UI_VERSION: latest
           TS: false
@@ -89,10 +89,10 @@ jobs:
           npm run start
         env:
           CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-          CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+          CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
           CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-          TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-          TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+          TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
+          TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
           PACKAGE_VERSION: latest
           FLEX_UI_VERSION: latest
           TS: true
@@ -114,10 +114,10 @@ jobs:
           npm run start
         env:
           CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-          CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+          CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
           CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-          TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-          TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+          TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+          TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
           PACKAGE_VERSION: latest
           FLEX_UI_VERSION: latest
           TS: false
@@ -127,10 +127,10 @@ jobs:
           npm run start
         env:
           CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-          CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+          CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
           CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-          TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-          TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+          TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+          TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
           PACKAGE_VERSION: latest
           FLEX_UI_VERSION: latest
           TS: true
