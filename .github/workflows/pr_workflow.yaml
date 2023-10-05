@@ -56,8 +56,8 @@ jobs:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
       - run: echo "$VERSION"
-#      - name: Install dependencies
-#        run: npm i
+      - name: Install dependencies
+        run: npm i
       - name: Publish Alpha Version
         run: |
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
