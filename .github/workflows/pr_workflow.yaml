@@ -17,6 +17,8 @@ jobs:
         with:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
+      - name: Install project dependencies
+        run: npm i
       - id: step1
         name: Get Version
         run: |
