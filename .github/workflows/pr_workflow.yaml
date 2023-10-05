@@ -40,8 +40,8 @@ jobs:
           patch=$((semver[2] + 1))
           id=$(date '+%Y%m%d%H%M')
           bump="${major}.${minor}.${patch}-alpha.${id}"
-          echo "TAG_NAME=$bump)"
-          echo "TAG_NAME=$bump)" >> $GITHUB_OUTPUT
+          echo "ALPHA_VERSION=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')"
+          echo "ALPHA_VERSION=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> $GITHUB_OUTPUT
 #      - name: Publish Alpha Patch
 #        run: npm run publish:alpha patch
 #        env:
