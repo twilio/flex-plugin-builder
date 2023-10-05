@@ -39,7 +39,7 @@ jobs:
           currentVersion=$(grep '^ *"version":' ./lerna.json | awk '{ print $2 }' | sed -e 's/,$//' -e 's/^"//' -e 's/"$//')
           semver=( ${currentVersion//./ } )
           echo "VERSION=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')"
-          echo "VERSION=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> $GITHUB_OUTPUT
+          echo "VERSION=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
 #      - name: Publish Alpha Patch
 #        run: npm run publish:alpha patch
 #        env:
