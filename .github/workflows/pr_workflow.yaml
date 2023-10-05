@@ -59,7 +59,9 @@ jobs:
 #      - name: Install dependencies
 #        run: npm i
       - name: Publish Alpha Version
-        run: cat ~/.npmrc
+        run: |
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+          cat ~/.npmrc
 #        run: npm run publish:alpha $VERSION
         env:
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
