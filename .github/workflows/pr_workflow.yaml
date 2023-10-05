@@ -60,6 +60,11 @@ jobs:
       - env:
           OUTPUT1: ${{needs.build.outputs.version}}
         run: echo "$OUTPUT1"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
       - name: Run e2e tests
         run: |
           cd packages/flex-plugin-e2e-tests
