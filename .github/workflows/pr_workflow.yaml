@@ -3,6 +3,8 @@ name: PR validator
 on:
   pull_request:
     branches: [ $default-branch ]
+  push:
+    branches: [ $default-branch ]
 
 jobs:
   validate:
