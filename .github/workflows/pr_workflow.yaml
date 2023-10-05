@@ -62,8 +62,6 @@ jobs:
         run: |
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
           cat ~/.npmrc
-          echo "nya wla"
-          cat /home/runner/work/_temp/.npmrc
           npm run publish:alpha $VERSION
         env:
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
