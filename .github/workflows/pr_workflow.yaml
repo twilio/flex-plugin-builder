@@ -16,8 +16,8 @@ jobs:
         with:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
-      - name: Install project dependencies
-        run: npm i
+#      - name: Install project dependencies
+#        run: npm i
       #      - name: Run linter
       #        run: npm run lint:fix
       #      - name: Run Tests
@@ -57,7 +57,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: echo "$VERSION"
       - name: Publish Alpha Version
-        run: npm run publish:alpha patch
+        run: npm run publish:alpha $VERSION
         env:
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
