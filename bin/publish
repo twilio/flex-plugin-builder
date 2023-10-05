@@ -17,7 +17,12 @@ major="${semver[0]}"
 minor="${semver[1]}"
 patch=$((semver[2] + 1))
 id=$(date '+%Y%m%d%H%M')
+alphaVersion="${ALPHA_VERSION}"
 
+echo tag=${tag}
+echo bump=${bump}
+echo branch=${branch}
+echo alphaVersion=${alphaVersion}
 # Verify arguments
 if [ -z "${tag}" ] ; then
   echo "tag cannot be empty"
@@ -30,8 +35,13 @@ fi
 if [ -z "${bump}" ] ; then
   bump="patch";
 fi
-if [ "${bump}" != "patch" ] && [ "${bump}" != "minor" ] && [ "${bump}" != "major" ] ; then
-  echo "bump must be one of patch, minor, major"
+if [[  "${bump}" =~ ^${alphaVersion}* ]] ; then
+  echo YESYES
+else
+  echo Oh NO
+fi
+if [ "${bump}" != "patch" ] && [ "${bump}" != "minor" ] && [ "${bump}" != "major" ] && [[ ! "${bump}" =~ ^${alphaVersion}* ]] ; then
+  echo "bump must be one of patch, minor, major, or exact version of format[major.minor.patch-tag] "
   exit 1
 fi
 
