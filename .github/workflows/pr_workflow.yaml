@@ -8,44 +8,50 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${ { steps.alphaVersion.outputs.VERSION } }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
-#      - name: Install project dependencies
-#        run: npm i
-#      - name: Run linter
-#        run: npm run lint:fix
-#      - name: Run Tests
-#        run: npm run test:ci
-#        env:
-#          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-#          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-#          NODE_OPTIONS: --no-experimental-fetch
-#          CI: ""
-#      - name: Build packages
-#        run: npm run build
-#      - name: Codecov report
-#        uses: codecov/codecov-action@v3
-#        with:
-#          token: ${{ secrets.CODECOV_TOKEN }}
-      - name: Retrieve Patch Version
+      - name: Install project dependencies
+        run: npm i
+      - name: Run linter
+        run: npm run lint:fix
+      - name: Run Tests
+        run: npm run test:ci
+        env:
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+          NODE_OPTIONS: --no-experimental-fetch
+          CI: ""
+      - name: Build packages
+        run: npm run build
+      - name: Codecov report
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Retrieve Alpha Patch Version
+        id: alphaVersion
         run: |
           currentVersion=$(grep '^ *"version":' ./lerna.json | awk '{ print $2 }' | sed -e 's/,$//' -e 's/^"//' -e 's/"$//')
           semver=( ${currentVersion//./ } )
-          major="${semver[0]}"
-          minor="${semver[1]}"
-          patch=$((semver[2] + 1))
-          id=$(date '+%Y%m%d%H%M')
-          bump="${major}.${minor}.${patch}-alpha.${id}"
-          echo "ALPHA_VERSION=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')"
-          echo "ALPHA_VERSION=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> $GITHUB_OUTPUT
+          echo "VERSION=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')"
+          echo "VERSION=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> $GITHUB_OUTPUT
 #      - name: Publish Alpha Patch
 #        run: npm run publish:alpha patch
 #        env:
 #          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  printVersion:
+    runs-on: ubuntu-latest
+    needs:  validate
+    steps:
+      env:
+        VERSION: ${{ needs.validate.outputs.version }}
+      run: echo "$VERSION"
 
 
 #  e2e-test-linux-node16:
