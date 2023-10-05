@@ -18,34 +18,6 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Install project dependencies
         run: npm i
-      - name: Run linter
-        run: npm run lint:fix
-      - name: Run Tests
-        run: npm run test:ci
-        env:
-          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-          NODE_OPTIONS: --no-experimental-fetch
-          CI: ""
-      - name: Build packages
-        run: npm run build
-      - name: Codecov report
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-      - name: Publish Alpha Version
-        run: npm run publish:alpha patch
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - id: alphaVersion
-        name: Retrieve Alpha Patch Version
-        run: |
-          currentVersion=$(grep '^ *"version":' ./lerna.json | awk '{ print $2 }' | sed -e 's/,$//' -e 's/^"//' -e 's/"$//')
-          semver=( ${currentVersion//./ } )
-          echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
-
-#      - name: Install project dependencies
-#        run: npm i
 #      - name: Run linter
 #        run: npm run lint:fix
 #      - name: Run Tests
@@ -61,17 +33,17 @@ jobs:
 #        uses: codecov/codecov-action@v3
 #        with:
 #          token: ${{ secrets.CODECOV_TOKEN }}
-#      - id: alphaVersion
-#        name: Retrieve Alpha Patch Version
-#        run: |
-#          currentVersion=$(grep '^ *"version":' ./lerna.json | awk '{ print $2 }' | sed -e 's/,$//' -e 's/^"//' -e 's/"$//')
-#          semver=( ${currentVersion//./ } )
-#          echo "VERSION=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')"
-#          echo "VERSION=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
-#      - name: Publish Alpha Patch
+#      - name: Publish Alpha Version
 #        run: npm run publish:alpha patch
 #        env:
 #          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - id: alphaVersion
+        name: Retrieve Alpha Patch Version
+        run: |
+#          currentVersion=$(grep '^ *"version":' ./lerna.json | awk '{ print $2 }' | sed -e 's/,$//' -e 's/^"//' -e 's/"$//')
+          currentVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
+          semver=( ${currentVersion//./ } )
+          echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
 
   printVersion:
     runs-on: ubuntu-latest
