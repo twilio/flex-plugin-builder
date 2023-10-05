@@ -17,7 +17,7 @@ major="${semver[0]}"
 minor="${semver[1]}"
 patch=$((semver[2] + 1))
 id=$(date '+%Y%m%d%H%M')
-alphaVersion="${ALPHA_VERSION}"
+alphaVersion="${major}.${minor}.${patch}-${tag}."
 
 echo tag=${tag}
 echo bump=${bump}
