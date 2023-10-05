@@ -62,7 +62,7 @@ jobs:
         run: |
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
           cat ~/.npmrc
-#        run: npm run publish:alpha $VERSION
+          npm run publish:alpha $VERSION
         env:
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
@@ -70,6 +70,7 @@ jobs:
           ALPHA_VERSION: $VERSION
           CI: ""
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   printVersion:
     runs-on: ubuntu-latest
