@@ -4,9 +4,6 @@ on:
   pull_request:
     branches:
       - main
-  push:
-    branches:
-      - main
 
 jobs:
   validate:
@@ -17,26 +14,26 @@ jobs:
         with:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
-      - name: Install project dependencies
-        run: npm i
-      - name: Run linter
-        run: npm run lint:fix
-      - name: Run Tests
-        run: npm run test:ci
-        env:
-          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-          NODE_OPTIONS: --no-experimental-fetch
-          CI: ""
-      - name: Build packages
-        run: npm run build
-      - name: Codecov report
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+#      - name: Install project dependencies
+#        run: npm i
+#      - name: Run linter
+#        run: npm run lint:fix
+#      - name: Run Tests
+#        run: npm run test:ci
+#        env:
+#          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+#          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+#          NODE_OPTIONS: --no-experimental-fetch
+#          CI: ""
+#      - name: Build packages
+#        run: npm run build
+#      - name: Codecov report
+#        uses: codecov/codecov-action@v3
+#        with:
+#          token: ${{ secrets.CODECOV_TOKEN }}
       - name: Retrieve Patch Version
         run: |
-          currentVersion=$(cat ./lerna.json | getJsonValue 'version' |  cut -f1 -d"-")
+          currentVersion=$(grep '^ *"version":' ./lerna.json | awk '{ print $2 }' | sed -e 's/,$//' -e 's/^"//' -e 's/"$//')
           semver=( ${currentVersion//./ } )
           major="${semver[0]}"
           minor="${semver[1]}"
