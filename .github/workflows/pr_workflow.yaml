@@ -56,6 +56,8 @@ jobs:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
       - run: echo "$VERSION"
+      - name: Install dependencies
+        run: npm i
       - name: Publish Alpha Version
         run: npm run publish:alpha $VERSION
         env:
