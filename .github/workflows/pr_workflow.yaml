@@ -39,7 +39,7 @@ jobs:
           minor="${semver[1]}"
           patch=$((semver[2] + 1))
           id=$(date '+%Y%m%d%H%M')
-          bump="${major}.${minor}.${patch}-${tag}.${id}"
+          bump="${major}.${minor}.${patch}-alpha.${id}"
           echo "TAG_NAME=$bump)"
           echo "TAG_NAME=$bump)" >> $GITHUB_OUTPUT
 #      - name: Publish Alpha Patch
