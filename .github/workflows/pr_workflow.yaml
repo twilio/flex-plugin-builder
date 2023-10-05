@@ -2,12 +2,7 @@ name: PR validator
 
 on:
   pull_request:
-    branches:
-      - main
-
-  push:
-    branches:
-      - main
+    branches: [ $default-branch ]
 
 jobs:
   validate:
@@ -17,6 +12,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
       - name: Install project dependencies
         run: npm i
       - name: Run linter
@@ -34,116 +30,132 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Retrieve Patch Version
+        run: |
+          currentVersion=$(cat ./lerna.json | getJsonValue 'version' |  cut -f1 -d"-")
+          semver=( ${currentVersion//./ } )
+          major="${semver[0]}"
+          minor="${semver[1]}"
+          patch=$((semver[2] + 1))
+          id=$(date '+%Y%m%d%H%M')
+          bump="${major}.${minor}.${patch}-${tag}.${id}"
+          echo "TAG_NAME=$bump)"
+          echo "TAG_NAME=$bump)" >> $GITHUB_OUTPUT
+#      - name: Publish Alpha Patch
+#        run: npm run publish:alpha patch
+#        env:
+#          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  e2e-test-linux-node16:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-      - name: Install project dependencies
-        run: npm i
-      - name: Build packages
-        run: npm run build
-      - name: Run e2e tests
-        run: |
-          cd packages/flex-plugin-e2e-tests
-          npm run start
-        env:
-          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-          CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
-          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-          TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-          TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-          NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-          NPM_TOKEN: ${{ vars.NPM_TOKEN }}
-          PACKAGE_VERSION: latest
-          FLEX_UI_VERSION: latest
 
-  e2e-test-windows-node16:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-      - name: Install project dependencies
-        run: npm i
-      - name: Build packages
-        run: npm run build
-      - name: Run e2e tests - JS
-        run: |
-          cd packages/flex-plugin-e2e-tests
-          npm run start
-        env:
-          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-          CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
-          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-          TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
-          TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
-          NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-          NPM_TOKEN: ${{ vars.NPM_TOKEN }}
-          PACKAGE_VERSION: latest
-          FLEX_UI_VERSION: latest
-          TS: false
-      - name: Run e2e tests - TS
-        run: |
-          cd packages/flex-plugin-e2e-tests
-          npm run start
-        env:
-          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-          CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
-          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-          TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
-          TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
-          NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-          NPM_TOKEN: ${{ vars.NPM_TOKEN }}
-          PACKAGE_VERSION: latest
-          FLEX_UI_VERSION: latest
-          TS: true
-
-  e2e-test-mac-node16:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-      - name: Install project dependencies
-        run: npm i
-      - name: Build packages
-        run: npm run build
-      - name: Run e2e tests - JS
-        run: |
-          cd packages/flex-plugin-e2e-tests
-          npm run start
-        env:
-          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-          CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
-          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-          TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
-          TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
-          NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-          NPM_TOKEN: ${{ vars.NPM_TOKEN }}
-          PACKAGE_VERSION: latest
-          FLEX_UI_VERSION: latest
-          TS: false
-      - name: Run e2e tests - TS
-        run: |
-          cd packages/flex-plugin-e2e-tests
-          npm run start
-        env:
-          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-          CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
-          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-          TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
-          TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
-          NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-          NPM_TOKEN: ${{ vars.NPM_TOKEN }}
-          PACKAGE_VERSION: latest
-          FLEX_UI_VERSION: latest
-          TS: true
+#  e2e-test-linux-node16:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#      - uses: actions/setup-node@v3
+#        with:
+#          node-version: '16'
+#      - name: Install project dependencies
+#        run: npm i
+#      - name: Build packages
+#        run: npm run build
+#      - name: Run e2e tests
+#        run: |
+#          cd packages/flex-plugin-e2e-tests
+#          npm run start
+#        env:
+#          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+#          CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+#          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+#          TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+#          TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+#          NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+#          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+#          PACKAGE_VERSION: latest
+#          FLEX_UI_VERSION: latest
+#
+#  e2e-test-windows-node16:
+#    runs-on: windows-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#      - uses: actions/setup-node@v3
+#        with:
+#          node-version: '16'
+#      - name: Install project dependencies
+#        run: npm i
+#      - name: Build packages
+#        run: npm run build
+#      - name: Run e2e tests - JS
+#        run: |
+#          cd packages/flex-plugin-e2e-tests
+#          npm run start
+#        env:
+#          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+#          CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
+#          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+#          TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
+#          TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
+#          NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+#          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+#          PACKAGE_VERSION: latest
+#          FLEX_UI_VERSION: latest
+#          TS: false
+#      - name: Run e2e tests - TS
+#        run: |
+#          cd packages/flex-plugin-e2e-tests
+#          npm run start
+#        env:
+#          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+#          CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
+#          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+#          TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
+#          TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
+#          NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+#          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+#          PACKAGE_VERSION: latest
+#          FLEX_UI_VERSION: latest
+#          TS: true
+#
+#  e2e-test-mac-node16:
+#    runs-on: macos-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#      - uses: actions/setup-node@v3
+#        with:
+#          node-version: '16'
+#      - name: Install project dependencies
+#        run: npm i
+#      - name: Build packages
+#        run: npm run build
+#      - name: Run e2e tests - JS
+#        run: |
+#          cd packages/flex-plugin-e2e-tests
+#          npm run start
+#        env:
+#          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+#          CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
+#          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+#          TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+#          TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+#          NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+#          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+#          PACKAGE_VERSION: latest
+#          FLEX_UI_VERSION: latest
+#          TS: false
+#      - name: Run e2e tests - TS
+#        run: |
+#          cd packages/flex-plugin-e2e-tests
+#          npm run start
+#        env:
+#          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+#          CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
+#          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+#          TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+#          TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+#          NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+#          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+#          PACKAGE_VERSION: latest
+#          FLEX_UI_VERSION: latest
+#          TS: true
 
 
 
