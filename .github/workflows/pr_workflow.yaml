@@ -16,8 +16,8 @@ jobs:
         with:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
-      - name: Install project dependencies
-        run: npm i
+#      - name: Install project dependencies
+#        run: npm i
       - id: alphaVersion
         name: Retrieve Alpha Patch Version
         run: |
@@ -60,6 +60,10 @@ jobs:
       - env:
           OUTPUT1: ${{needs.build.outputs.version}}
         run: echo "$OUTPUT1"
+      - name: Run e2e tests
+        run: |
+          cd packages/flex-plugin-e2e-tests
+          echo "${{needs.build.outputs.version}}"
 #    steps:
 #      - uses: actions/checkout@v4
 #      - uses: actions/setup-node@v3
