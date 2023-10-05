@@ -61,6 +61,8 @@ jobs:
       - name: Publish Alpha Version
         run: |
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+          git config --global user.email $PUBLISH_EMAIL
+          git config --global user.name $PUBLISH_USER
           cat ~/.npmrc
           npm run publish:alpha $VERSION
         env:
@@ -71,6 +73,8 @@ jobs:
           CI: ""
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PUBLISH_EMAIL: ${{ secrets.PUBLISH_EMAIL }}
+          PUBLISH_USER: ${{ secrets.PUBLISH_USER }}
 
   printVersion:
     runs-on: ubuntu-latest
