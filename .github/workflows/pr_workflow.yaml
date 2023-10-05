@@ -33,8 +33,8 @@ jobs:
 #        uses: codecov/codecov-action@v3
 #        with:
 #          token: ${{ secrets.CODECOV_TOKEN }}
-      - name: Retrieve Alpha Patch Version
-        id: alphaVersion
+      - id: alphaVersion
+        name: Retrieve Alpha Patch Version
         run: |
           currentVersion=$(grep '^ *"version":' ./lerna.json | awk '{ print $2 }' | sed -e 's/,$//' -e 's/^"//' -e 's/"$//')
           semver=( ${currentVersion//./ } )
