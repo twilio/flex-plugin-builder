@@ -18,7 +18,10 @@ jobs:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
       - id: step1
-        run: echo "test=hello" >> "$GITHUB_OUTPUT"
+        run: |
+          currentVersion=$(grep '^ *"version":' ./lerna.json | awk '{ print $2 }' | sed -e 's/,$//' -e 's/^"//' -e 's/"$//')
+          semver=( ${currentVersion//./ } )
+          echo "test=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
       - id: step2
         run: echo "test=world" >> "$GITHUB_OUTPUT"
 #      - name: Install project dependencies
