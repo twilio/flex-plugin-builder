@@ -56,12 +56,12 @@ if [ "${tag}" == "beta" ] && [[ ! "${branch}" =~ ^v.-beta$ ]] ; then
 fi
 
 # Update bump level
-if [ "${tag}" != "public" ] ; then
+if [ "${tag}" != "public" ] && [[ ! "${bump}" =~ ^${alphaVersion}* ]] ; then
   bump="pre${bump}"
 fi
 
 # alpha/dev get a timestamp in their version
-if [ "${tag}" == "dev" ] || [ "${tag}" == "alpha" ] ; then
+if [[ "${tag}" == "dev"  ||  "${tag}" == "alpha" ]] && [[ ! "${bump}" =~ ^${alphaVersion}* ]] ; then
   bump="${major}.${minor}.${patch}-${tag}.${id}"
 fi
 
