@@ -9,7 +9,7 @@ jobs:
   job1:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.step1.outputs.version }}
+      version: ${{ steps.alphaVersion.outputs.version }}
       output2: ${{ steps.step2.outputs.test }}
     steps:
       - uses: actions/checkout@v4
@@ -19,7 +19,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Install project dependencies
         run: npm i
-      - id: step1
+      - id: alphaVersion
         name: Get Version
         run: |
           currentVersion=$(grep '^ *"version":' ./lerna.json | awk '{ print $2 }' | sed -e 's/,$//' -e 's/^"//' -e 's/"$//')
