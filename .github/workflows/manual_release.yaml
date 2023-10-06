@@ -1,0 +1,33 @@
+name: Mixed inputs
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        type: choice
+        description: Who to greet
+        options:
+          - major
+          - minor
+          - patch
+      message:
+        required: true
+      use-emoji:
+        type: boolean
+        description: Include 🎉🤣 emojis
+      environment:
+        type: environment
+
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send greeting
+        run: echo "${{ github.event.inputs.message }}"
+      - name: Print name
+        run: echo "$INPUT_NAME"
+      - name: Print message
+        run: echo "$INPUT_MESSAGE"
+      - name: Print emoji
+        run: echo "$INPUT_USE-EMOJI"
