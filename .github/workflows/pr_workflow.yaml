@@ -63,8 +63,8 @@ jobs:
           echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
           echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
         id: extract_branch
-      #      - name: Install dependencies
-#        run: npm i
+      - name: Install dependencies
+        run: npm i
       - name: Set NPM Token
         run: |
           npm set '//registry.npmjs.org/:_authToken' ${{ secrets.NPM_PUBLISH_TOKEN }}
