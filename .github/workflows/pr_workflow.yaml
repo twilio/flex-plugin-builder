@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.alphaVersion.outputs.version }}
+      branch: ${{ steps.extract_branch.outputs.branch }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
@@ -37,6 +38,11 @@ jobs:
       #        run: npm run publish:alpha patch
       #        env:
       #          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Extract branch name
+        run: |
+          echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
+          echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
       - id: alphaVersion
         name: Retrieve Alpha Patch Version
         run: |
@@ -49,6 +55,7 @@ jobs:
     needs: build
     env:
       VERSION: ${{needs.build.outputs.version}}
+      BRANCH: ${{needs.build.outputs.branch}}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
@@ -56,6 +63,7 @@ jobs:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
       - run: echo "$VERSION"
+      - run: echo "$BRANCH"
       - name: Use Github Personal Access Token
         run: git config --global url."https://${{ secrets.GH_PAT }}@github.com/".insteadOf ssh://git@github.com/
       - name: Extract branch name
@@ -63,8 +71,8 @@ jobs:
           echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
           echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
         id: extract_branch
-      - name: Install dependencies
-        run: npm i
+#      - name: Install dependencies
+#        run: npm i
       - name: Set NPM Token
         run: |
           npm set '//registry.npmjs.org/:_authToken' ${{ secrets.NPM_PUBLISH_TOKEN }}
@@ -80,7 +88,7 @@ jobs:
           npm whoami
           echo "config"
           cat ~/.gitconfig
-          npm run publish:alpha $VERSION
+#          npm run publish:alpha $VERSION
         env:
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
@@ -91,6 +99,7 @@ jobs:
           NPM_TOKEN: ${{ vars.TT }}
           PUBLISH_EMAIL: ${{ secrets.PUBLISH_EMAIL }}
           PUBLISH_USER: ${{ secrets.PUBLISH_USER }}
+          CIRCLE_BRANCH: $BRANCH
 
   printVersion:
     runs-on: ubuntu-latest
