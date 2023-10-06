@@ -80,7 +80,7 @@ jobs:
           npm whoami
           echo "config"
           cat ~/.gitconfig
-#          npm run publish:alpha $VERSION
+          npm run publish:alpha $VERSION
         env:
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
