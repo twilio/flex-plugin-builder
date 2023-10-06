@@ -2,8 +2,7 @@ name: PR validator
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [ $default-branch ]
 
 jobs:
   build-and-test:
@@ -16,28 +15,23 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-          registry-url: 'https://registry.npmjs.org'
-      #      - name: Install project dependencies
-      #        run: npm i
-      #      - name: Run linter
-      #        run: npm run lint:fix
-      #      - name: Run Tests
-      #        run: npm run test:ci
-      #        env:
-      #          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-      #          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-      #          NODE_OPTIONS: --no-experimental-fetch
-      #          CI: ""
-      #      - name: Build packages
-      #        run: npm run build
-      #      - name: Codecov report
-      #        uses: codecov/codecov-action@v3
-      #        with:
-      #          token: ${{ secrets.CODECOV_TOKEN }}
-      #      - name: Publish Alpha Version
-      #        run: npm run publish:alpha patch
-      #        env:
-      #          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Install project dependencies
+        run: npm i
+      - name: Run linter
+        run: npm run lint:fix
+      - name: Run Tests
+        run: npm run test:ci
+        env:
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+          NODE_OPTIONS: --no-experimental-fetch
+          CI: ""
+      - name: Build packages
+        run: npm run build
+      - name: Codecov report
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
       - name: Extract branch name
         run: |
           echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
@@ -47,8 +41,7 @@ jobs:
         run: |
           currentVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
           semver=( ${currentVersion//./ } )
-          echo "version=6.2.1-alpha.202310060640" >> "$GITHUB_OUTPUT"
-        #          echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
+          echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
         id: alphaVersion
 
   publish-alpha-version:
@@ -58,93 +51,23 @@ jobs:
       VERSION: ${{needs.build-and-test.outputs.version}}
       BRANCH: ${{needs.build-and-test.outputs.branch}}
       CIRCLE_BRANCH: ${{needs.build-and-test.outputs.branch}}
+      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+      NODE_OPTIONS: --no-experimental-fetch
+      CI: ""
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
-  #      - name: Install dependencies
-  #        run: npm i
-  #      - name: Publish Alpha Version
-  #        run: npm run publish:alpha $VERSION
-  #        env:
-  #          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-  #          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-  #          NODE_OPTIONS: --no-experimental-fetch
-  #          CI: ""
-  #          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+      - name: Install dependencies
+        run: npm i
+      - name: Publish Alpha Version
+        run: npm run publish:alpha $VERSION
 
-  #  e2e-test-linux-node16:
-  #    runs-on: ubuntu-latest
-  #    steps:
-  #      - uses: actions/checkout@v4
-  #      - uses: actions/setup-node@v3
-  #        with:
-  #          node-version: '16'
-  #      - name: Install project dependencies
-  #        run: npm i
-  #      - name: Build packages
-  #        run: npm run build
-  #      - name: Run e2e tests
-  #        run: |
-  #          cd packages/flex-plugin-e2e-tests
-  #          npm run start
-  #        env:
-  #          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-  #          CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
-  #          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-  #          TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-  #          TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-  #          NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-  #          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-  #          PACKAGE_VERSION: latest
-  #          FLEX_UI_VERSION: latest
-  #
-  #  e2e-test-windows-node16:
-  #    runs-on: windows-latest
-  #    steps:
-  #      - uses: actions/checkout@v4
-  #      - uses: actions/setup-node@v3
-  #        with:
-  #          node-version: '16'
-  #      - name: Install project dependencies
-  #        run: npm i
-  #      - name: Build packages
-  #        run: npm run build
-  #      - name: Run e2e tests - JS
-  #        run: |
-  #          cd packages/flex-plugin-e2e-tests
-  #          npm run start
-  #        env:
-  #          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-  #          CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
-  #          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-  #          TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
-  #          TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
-  #          NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-  #          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-  #          PACKAGE_VERSION: latest
-  #          FLEX_UI_VERSION: latest
-  #          TS: false
-  #      - name: Run e2e tests - TS
-  #        run: |
-  #          cd packages/flex-plugin-e2e-tests
-  #          npm run start
-  #        env:
-  #          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-  #          CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
-  #          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-  #          TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
-  #          TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
-  #          NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-  #          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-  #          PACKAGE_VERSION: latest
-  #          FLEX_UI_VERSION: latest
-  #          TS: true
-  #
-  e2e-test-mac-node16:
-#    runs-on: macos-latest
+  e2e-node16:
     needs: [ build-and-test,  publish-alpha-version ]
     strategy:
       matrix:
