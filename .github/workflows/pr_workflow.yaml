@@ -53,11 +53,11 @@ jobs:
 
   publish-alpha-version:
     runs-on: ubuntu-latest
-    needs: build-and-tes
+    needs: build-and-test
     env:
-      VERSION: ${{needs.build-and-tes.outputs.version}}
-      BRANCH: ${{needs.build-and-tes.outputs.branch}}
-      CIRCLE_BRANCH: ${{needs.build-and-tes.outputs.branch}}
+      VERSION: ${{needs.build-and-test.outputs.version}}
+      BRANCH: ${{needs.build-and-test.outputs.branch}}
+      CIRCLE_BRANCH: ${{needs.build-and-test.outputs.branch}}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
@@ -145,9 +145,9 @@ jobs:
   #
   e2e-test-mac-node16:
     runs-on: macos-latest
-    needs: build-and-tes
+    needs: build-and-test
     env:
-      PACKAGE_VERSION: ${{needs.build-and-tes.outputs.version}}
+      PACKAGE_VERSION: ${{needs.build-and-test.outputs.version}}
       BRANCH: ${{needs.build-and-tes.outputs.branch}}
     steps:
       - uses: actions/checkout@v4
