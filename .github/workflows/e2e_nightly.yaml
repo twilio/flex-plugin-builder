@@ -6,14 +6,13 @@ on:
 
 jobs:
   e2e-node16:
-    needs: [ build-and-test,  publish-alpha-version ]
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
         node: ['16', '18']
     runs-on: ${{ matrix.os }}
     env:
-      BRANCH: ${{needs.build-and-tes.outputs.branch}}
+      BRANCH: FLEXY-4848-use-github-actions
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
       CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
       CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
