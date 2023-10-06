@@ -7,8 +7,9 @@ on:
         type: choice
         description: Who to greet
         options:
-          - monalisa
-          - cschleiden
+          - major
+          - minor
+          - patch
       message:
         required: true
       use-emoji:
@@ -24,3 +25,9 @@ jobs:
     steps:
       - name: Send greeting
         run: echo "${{ github.event.inputs.message }}"
+      - name: Print name
+        run: echo "$INPUT_NAME"
+      - name: Print message
+        run: echo "$INPUT_MESSAGE"
+      - name: Print emoji
+        run: echo "$INPUT_USE-EMOJI"
