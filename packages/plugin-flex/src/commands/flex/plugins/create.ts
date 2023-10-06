@@ -10,6 +10,7 @@ interface YArgs {
   [key: string]: Options;
 }
 
+
 /**
  * Creates a new Flex plugin
  */
