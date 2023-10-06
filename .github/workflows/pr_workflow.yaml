@@ -48,15 +48,6 @@ jobs:
   publish-alpha-version:
     runs-on: ubuntu-latest
     needs: build-and-test
-    env:
-      VERSION: ${{needs.build-and-test.outputs.version}}
-      BRANCH: ${{needs.build-and-test.outputs.branch}}
-      CIRCLE_BRANCH: ${{needs.build-and-test.outputs.branch}}
-      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-      NODE_OPTIONS: --no-experimental-fetch
-      CI: ""
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
@@ -67,6 +58,15 @@ jobs:
         run: npm i
       - name: Publish Alpha Version
         run: npm run publish:alpha $VERSION
+        env:
+          VERSION: ${{needs.build-and-test.outputs.version}}
+          BRANCH: ${{needs.build-and-test.outputs.branch}}
+          CIRCLE_BRANCH: ${{needs.build-and-test.outputs.branch}}
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+          NODE_OPTIONS: --no-experimental-fetch
+          CI: ""
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
   e2e-node16:
     needs: [ build-and-test,  publish-alpha-version ]
