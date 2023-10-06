@@ -48,7 +48,7 @@ jobs:
           currentVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
           semver=( ${currentVersion//./ } )
           echo "version=6.2.1-alpha.202310060640" >> "$GITHUB_OUTPUT"
-#          echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
+        #          echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
         id: alphaVersion
 
   publish-alpha-version:
@@ -64,16 +64,16 @@ jobs:
         with:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
-#      - name: Install dependencies
-#        run: npm i
-#      - name: Publish Alpha Version
-#        run: npm run publish:alpha $VERSION
-#        env:
-#          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-#          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-#          NODE_OPTIONS: --no-experimental-fetch
-#          CI: ""
-#          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+  #      - name: Install dependencies
+  #        run: npm i
+  #      - name: Publish Alpha Version
+  #        run: npm run publish:alpha $VERSION
+  #        env:
+  #          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+  #          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+  #          NODE_OPTIONS: --no-experimental-fetch
+  #          CI: ""
+  #          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
   #  e2e-test-linux-node16:
   #    runs-on: ubuntu-latest
@@ -144,11 +144,28 @@ jobs:
   #          TS: true
   #
   e2e-test-mac-node16:
-    runs-on: macos-latest
-    needs: build-and-test
+#    runs-on: macos-latest
+    needs: [ build-and-test,  publish-alpha-version ]
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    runs-on: ${{ matrix.os }}
     env:
       PACKAGE_VERSION: ${{needs.build-and-test.outputs.version}}
       BRANCH: ${{needs.build-and-tes.outputs.branch}}
+      CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+      CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
+      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
+      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
+      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
+      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+      FLEX_UI_VERSION: latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
@@ -163,30 +180,12 @@ jobs:
           cd packages/flex-plugin-e2e-tests
           npm run start
         env:
-          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-          CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
-          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-          TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
-          TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
-          NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-          #          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-#          PACKAGE_VERSION: latest
-          FLEX_UI_VERSION: latest
           TS: false
       - name: Run e2e tests - TS
         run: |
           cd packages/flex-plugin-e2e-tests
           npm run start
         env:
-          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-          CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
-          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-          TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
-          TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
-          NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-          #          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-#          PACKAGE_VERSION: latest
-          FLEX_UI_VERSION: latest
           TS: true
 
 
