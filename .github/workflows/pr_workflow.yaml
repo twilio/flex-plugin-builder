@@ -50,7 +50,7 @@ jobs:
 
   publish-alpha-version:
     needs: build-and-test
-    uses: ./publish.yaml
+    uses: ./.github/workflows/publish.yaml
     with:
       secrets:
         TAG: alpha
@@ -59,7 +59,7 @@ jobs:
 
   e2e-node16:
     needs: [ build-and-test,  publish-alpha-version ]
-    uses: ./e2e.yaml
+    uses: ./.github/workflows/e2e.yaml
     with:
       secrets:
         BRANCH: ${{needs.build-and-tes.outputs.branch}}
