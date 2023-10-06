@@ -17,8 +17,8 @@ jobs:
         with:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
-#      - name: Install project dependencies
-#        run: npm i
+      #      - name: Install project dependencies
+      #        run: npm i
       #      - name: Run linter
       #        run: npm run lint:fix
       #      - name: Run Tests
@@ -65,8 +65,8 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: echo "$VERSION"
       - run: echo "$BRANCH"
-#      - name: Use Github Personal Access Token
-#        run: git config --global url."https://${{ secrets.GH_PAT }}@github.com/".insteadOf ssh://git@github.com/
+      #      - name: Use Github Personal Access Token
+      #        run: git config --global url."https://${{ secrets.GH_PAT }}@github.com/".insteadOf ssh://git@github.com/
       - name: Extract branch name
         run: |
           echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
@@ -74,21 +74,20 @@ jobs:
         id: extract_branch
       - name: Install dependencies
         run: npm i
-#      - name: Set NPM Token
-#        run: |
-#          npm set '//registry.npmjs.org/:_authToken' ${{ secrets.NPM_PUBLISH_TOKEN }}
-#          npm whoami
+      #      - name: Set NPM Token
+      #        run: |
+      #          npm set '//registry.npmjs.org/:_authToken' ${{ secrets.NPM_PUBLISH_TOKEN }}
+      #          npm whoami
       - name: Publish Alpha Version
         run: |
-#          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-          git config --list
-          echo "nya wla"
-          cat /home/runner/work/_temp/.npmrc
-          echo "whoami"
-          npm whoami
-          echo "config"
-          cat ~/.gitconfig
-          npm run publish:alpha $VERSION
+         git config --list
+         echo "nya wla"
+         cat /home/runner/work/_temp/.npmrc
+         echo "whoami"
+         npm whoami
+         echo "config"
+         cat ~/.gitconfig
+         npm run publish:alpha $VERSION
         env:
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
