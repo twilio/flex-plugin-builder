@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.alphaVersion.outputs.version }}
@@ -43,85 +43,37 @@ jobs:
           echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
           echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
         id: extract_branch
-      - id: alphaVersion
-        name: Retrieve Alpha Patch Version
+      - name: Retrieve Alpha Patch Version
         run: |
           currentVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
           semver=( ${currentVersion//./ } )
-          echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
+          echo "version=6.2.1-alpha.202310060640" >> "$GITHUB_OUTPUT"
+#          echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
+        id: alphaVersion
 
-  publish:
+  publish-alpha-version:
     runs-on: ubuntu-latest
-    needs: build
+    needs: build-and-tes
     env:
-      VERSION: ${{needs.build.outputs.version}}
-      BRANCH: ${{needs.build.outputs.branch}}
-      CIRCLE_BRANCH: ${{needs.build.outputs.branch}}
+      VERSION: ${{needs.build-and-tes.outputs.version}}
+      BRANCH: ${{needs.build-and-tes.outputs.branch}}
+      CIRCLE_BRANCH: ${{needs.build-and-tes.outputs.branch}}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
-      - run: echo "$VERSION"
-      - run: echo "$BRANCH"
-      #      - name: Use Github Personal Access Token
-      #        run: git config --global url."https://${{ secrets.GH_PAT }}@github.com/".insteadOf ssh://git@github.com/
-      - name: Extract branch name
-        run: |
-          echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
-          echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
-        id: extract_branch
-      - name: Install dependencies
-        run: npm i
-      #      - name: Set NPM Token
-      #        run: |
-      #          npm set '//registry.npmjs.org/:_authToken' ${{ secrets.NPM_PUBLISH_TOKEN }}
-      #          npm whoami
-      - name: Publish Alpha Version
-        run: |
-         git config --list
-         echo "nya wla"
-         cat /home/runner/work/_temp/.npmrc
-         echo "whoami"
-         npm whoami
-         npm run publish:alpha $VERSION
-        env:
-          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-          NODE_OPTIONS: --no-experimental-fetch
-          CI: ""
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-          PUBLISH_EMAIL: ${{ secrets.PUBLISH_EMAIL }}
-          PUBLISH_USER: ${{ secrets.PUBLISH_USER }}
-
-  printVersion:
-    runs-on: ubuntu-latest
-    needs: build
-    env:
-      VERSION: ${{needs.build.outputs.version}}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          registry-url: 'https://registry.npmjs.org'
-      - name: Run e2e tests
-        run: |
-          cd packages/flex-plugin-e2e-tests
-          echo "${{needs.build.outputs.version}}"
-          echo "$VERSION"
-  #    steps:
-  #      - uses: actions/checkout@v4
-  #      - uses: actions/setup-node@v3
-  #        with:
-  #          node-version: '18'
-  #      - name: Print version
-  #        run: echo "$VERSION"
-  #        env:
-  #          VERSION: ${{ needs.validate.outputs.version }}
-
+#      - name: Install dependencies
+#        run: npm i
+#      - name: Publish Alpha Version
+#        run: npm run publish:alpha $VERSION
+#        env:
+#          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+#          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+#          NODE_OPTIONS: --no-experimental-fetch
+#          CI: ""
+#          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
   #  e2e-test-linux-node16:
   #    runs-on: ubuntu-latest
@@ -191,47 +143,51 @@ jobs:
   #          FLEX_UI_VERSION: latest
   #          TS: true
   #
-  #  e2e-test-mac-node16:
-  #    runs-on: macos-latest
-  #    steps:
-  #      - uses: actions/checkout@v4
-  #      - uses: actions/setup-node@v3
-  #        with:
-  #          node-version: '16'
-  #      - name: Install project dependencies
-  #        run: npm i
-  #      - name: Build packages
-  #        run: npm run build
-  #      - name: Run e2e tests - JS
-  #        run: |
-  #          cd packages/flex-plugin-e2e-tests
-  #          npm run start
-  #        env:
-  #          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-  #          CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
-  #          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-  #          TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
-  #          TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
-  #          NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-  #          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-  #          PACKAGE_VERSION: latest
-  #          FLEX_UI_VERSION: latest
-  #          TS: false
-  #      - name: Run e2e tests - TS
-  #        run: |
-  #          cd packages/flex-plugin-e2e-tests
-  #          npm run start
-  #        env:
-  #          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-  #          CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
-  #          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-  #          TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
-  #          TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
-  #          NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-  #          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-  #          PACKAGE_VERSION: latest
-  #          FLEX_UI_VERSION: latest
-  #          TS: true
+  e2e-test-mac-node16:
+    runs-on: macos-latest
+    needs: build-and-tes
+    env:
+      PACKAGE_VERSION: ${{needs.build-and-tes.outputs.version}}
+      BRANCH: ${{needs.build-and-tes.outputs.branch}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - name: Install project dependencies
+        run: npm i
+      - name: Build packages
+        run: npm run build
+      - name: Run e2e tests - JS
+        run: |
+          cd packages/flex-plugin-e2e-tests
+          npm run start
+        env:
+          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+          CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
+          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+          TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+          TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+          NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+          #          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+#          PACKAGE_VERSION: latest
+          FLEX_UI_VERSION: latest
+          TS: false
+      - name: Run e2e tests - TS
+        run: |
+          cd packages/flex-plugin-e2e-tests
+          npm run start
+        env:
+          CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+          CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
+          CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+          TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+          TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+          NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+          #          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+#          PACKAGE_VERSION: latest
+          FLEX_UI_VERSION: latest
+          TS: true
 
 
 

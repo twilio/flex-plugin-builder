@@ -19,13 +19,6 @@ patch=$((semver[2] + 1))
 id=$(date '+%Y%m%d%H%M')
 alphaVersion="${major}.${minor}.${patch}-${tag}."
 
-echo tag=${tag}
-echo bump=${bump}
-echo branch=${branch}
-echo VERSION=${VERSION}
-echo BRANCH=${BRANCH}
-echo CIRCLE_BRANCH=${CIRCLE_BRANCH}
-echo alphaVersion=${alphaVersion}
 # Verify arguments
 if [ -z "${tag}" ] ; then
   echo "tag cannot be empty"
@@ -75,7 +68,7 @@ echo -e "-- Publishing as \033[1m${tag}\033[0m :: \033[1m${bump}\033[0m release 
 echo -e "------------------------------------\n"
 
 # Run unit-tests one more time
-#npm run lint:fix
+npm run lint:fix
 #npm run test
 #npm run build
 
