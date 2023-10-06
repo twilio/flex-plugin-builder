@@ -1,0 +1,53 @@
+on:
+  workflow_call:
+    secrets:
+      BRANCH:
+        required: true
+      PACKAGE_VERSION:
+        required: true
+      FLEX_UI_VERSION:
+        required: true
+
+jobs:
+  reusable_e2e_job:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    runs-on: ${{ matrix.os }}
+    env:
+      BRANCH: ${{ secrets.BRANCH }}
+      CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+      CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
+      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
+      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
+      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
+      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+      PACKAGE_VERSION: ${{ secrets.PACKAGE_VERSION }}
+      FLEX_UI_VERSION: ${{ secrets.FLEX_UI_VERSION }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - name: Install project dependencies
+        run: npm i
+      - name: Build packages
+        run: npm run build
+      - name: Run e2e tests - JS
+        run: |
+          cd packages/flex-plugin-e2e-tests
+          npm run start
+        env:
+          TS: false
+      - name: Run e2e tests - TS
+        run: |
+          cd packages/flex-plugin-e2e-tests
+          npm run start
+        env:
+          TS: true

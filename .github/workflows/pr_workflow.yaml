@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.alphaVersion.outputs.version }}
+      branch: ${{ steps.extract_branch.outputs.branch }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install project dependencies
+        run: npm i
+      - name: Run linter
+        run: npm run lint:fix
+      - name: Run Tests
+        run: npm run test:ci
+        env:
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+          NODE_OPTIONS: --no-experimental-fetch
+          CI: ""
+      - name: Build packages
+        run: npm run build
+      - name: Codecov report
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Extract branch name
+        run: |
+          echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
+          echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
+      - name: Retrieve Alpha Patch Version
+        run: |
+          currentVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
+          semver=( ${currentVersion//./ } )
+          echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
+        id: alphaVersion
+
+  publish-alpha-version:
+    needs: build-and-test
+    uses: ./publish.yaml
+    with:
+      secrets:
+        TAG: alpha
+        VERSION: ${{needs.build-and-test.outputs.version}}
+        BRANCH: ${{needs.build-and-test.outputs.branch}}
+
+  e2e-node16:
+    needs: [ build-and-test,  publish-alpha-version ]
+    uses: ./e2e.yaml
+    with:
+      secrets:
+        BRANCH: ${{needs.build-and-tes.outputs.branch}}
+        PACKAGE_VERSION: ${{needs.build-and-test.outputs.version}}
+        FLEX_UI_VERSION: latest
+
+
+
+  
