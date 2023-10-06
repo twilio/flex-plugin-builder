@@ -93,7 +93,6 @@ jobs:
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
           NODE_OPTIONS: --no-experimental-fetch
-          ALPHA_VERSION: $VERSION
           CI: ""
           NODE_AUTH_TOKEN: ${{ vars.TT }}
           NPM_TOKEN: ${{ vars.TT }}

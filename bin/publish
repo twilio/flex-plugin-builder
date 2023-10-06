@@ -22,6 +22,9 @@ alphaVersion="${major}.${minor}.${patch}-${tag}."
 echo tag=${tag}
 echo bump=${bump}
 echo branch=${branch}
+echo VERSION=${VERSION}
+echo BRANCH=${BRANCH}
+echo CIRCLE_BRANCH=${CIRCLE_BRANCH}
 echo alphaVersion=${alphaVersion}
 # Verify arguments
 if [ -z "${tag}" ] ; then
@@ -82,24 +85,24 @@ if [ "${tag}" == "public" ] ; then
     --exact \
     --yes \
     "${bump}"
-else
-  ./node_modules/.bin/lerna publish \
-    --force-publish="*" \
-    --preid "${tag}" \
-    --pre-dist-tag "${tag}" \
-    --dist-tag "${tag}" \
-    --skip-git \
-    --no-git-tag-version \
-    --no-push \
-    --exact \
-    --yes \
-    "${bump}"
-
-    version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
-
-    if [ "${tag}" == "beta" ] ; then
-      git add .
-      git commit -am "v${version}" --no-verify
-      git push --set-upstream origin $(git branch --show-current) --no-verify
-    fi
+#else
+#  ./node_modules/.bin/lerna publish \
+#    --force-publish="*" \
+#    --preid "${tag}" \
+#    --pre-dist-tag "${tag}" \
+#    --dist-tag "${tag}" \
+#    --skip-git \
+#    --no-git-tag-version \
+#    --no-push \
+#    --exact \
+#    --yes \
+#    "${bump}"
+#
+#    version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
+#
+#    if [ "${tag}" == "beta" ] ; then
+#      git add .
+#      git commit -am "v${version}" --no-verify
+#      git push --set-upstream origin $(git branch --show-current) --no-verify
+#    fi
 fi
