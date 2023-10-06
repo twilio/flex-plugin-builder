@@ -1,4 +1,4 @@
-name: PR validator
+name: RELEASE
 
 on:
   push:
