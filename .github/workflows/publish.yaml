@@ -10,20 +10,22 @@ on:
 
 jobs:
   reusable_publish:
-#    - uses: actions/checkout@v4
-#    - uses: actions/setup-node@v3
-#      with:
-#        node-version: '18'
-#        registry-url: 'https://registry.npmjs.org'
-    - name: Install dependencies
-      run: npm i
-    - name: Publish Version
-      run: npm run publish:${{ secrets.TAG }} ${{ secrets.VERSION }}
-      env:
-        VERSION: ${{ secrets.VERSION }}
-        BRANCH: ${{ secrets.BRANCH }}
-        TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-        TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-        NODE_OPTIONS: --no-experimental-fetch
-        CI: ""
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install dependencies
+        run: npm i
+      - name: Publish Version
+        run: npm run publish:${{ secrets.TAG }} ${{ secrets.VERSION }}
+        env:
+          VERSION: ${{ secrets.VERSION }}
+          BRANCH: ${{ secrets.BRANCH }}
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+          NODE_OPTIONS: --no-experimental-fetch
+          CI: ""
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
