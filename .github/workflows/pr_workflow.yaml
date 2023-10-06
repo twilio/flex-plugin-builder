@@ -65,8 +65,8 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: echo "$VERSION"
       - run: echo "$BRANCH"
-      - name: Use Github Personal Access Token
-        run: git config --global url."https://${{ secrets.GH_PAT }}@github.com/".insteadOf ssh://git@github.com/
+#      - name: Use Github Personal Access Token
+#        run: git config --global url."https://${{ secrets.GH_PAT }}@github.com/".insteadOf ssh://git@github.com/
       - name: Extract branch name
         run: |
           echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
@@ -74,15 +74,14 @@ jobs:
         id: extract_branch
       - name: Install dependencies
         run: npm i
-      - name: Set NPM Token
-        run: |
-          npm set '//registry.npmjs.org/:_authToken' ${{ secrets.NPM_PUBLISH_TOKEN }}
-          npm whoami
+#      - name: Set NPM Token
+#        run: |
+#          npm set '//registry.npmjs.org/:_authToken' ${{ secrets.NPM_PUBLISH_TOKEN }}
+#          npm whoami
       - name: Publish Alpha Version
         run: |
 #          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
           git config --list
-          cat ~/.npmrc
           echo "nya wla"
           cat /home/runner/work/_temp/.npmrc
           echo "whoami"
@@ -95,7 +94,7 @@ jobs:
           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
           NODE_OPTIONS: --no-experimental-fetch
           CI: ""
-          NODE_AUTH_TOKEN: ${{ vars.TT }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
           PUBLISH_EMAIL: ${{ secrets.PUBLISH_EMAIL }}
           PUBLISH_USER: ${{ secrets.PUBLISH_USER }}
