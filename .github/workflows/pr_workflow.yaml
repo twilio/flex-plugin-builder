@@ -80,7 +80,7 @@ jobs:
           npm whoami
       - name: Publish Alpha Version
         run: |
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+#          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
           git config --list
           cat ~/.npmrc
           echo "nya wla"
@@ -96,7 +96,7 @@ jobs:
           NODE_OPTIONS: --no-experimental-fetch
           CI: ""
           NODE_AUTH_TOKEN: ${{ vars.TT }}
-          NPM_TOKEN: ${{ vars.TT }}
+          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
           PUBLISH_EMAIL: ${{ secrets.PUBLISH_EMAIL }}
           PUBLISH_USER: ${{ secrets.PUBLISH_USER }}
 
