@@ -49,8 +49,8 @@ jobs:
         id: alphaVersion
 
   publish-alpha-version:
-    uses: ./.github/workflows/publish.yaml
     needs: build-and-test
+    uses: ./.github/workflows/publish.yaml
     with:
       secrets:
         TAG: alpha
