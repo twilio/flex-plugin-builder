@@ -67,6 +67,8 @@ jobs:
           cat /home/runner/work/_temp/.npmrc
           echo "whoami"
           npm whoami
+          echo "config"
+          cat ~/.gitconfig
 #          npm run publish:alpha $VERSION
         env:
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
