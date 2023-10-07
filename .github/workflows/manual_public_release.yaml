@@ -1,0 +1,25 @@
+name: Manual Public Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: choice
+        description: The Version type for PUBLIC Release
+        options:
+          - patch
+          - minor
+          - major
+        required: true
+
+jobs:
+  release-public-version:
+    uses: ./.github/workflows/reusable_publish.yaml
+    with:
+      TAG: public
+      VERSION: ${{ github.event.inputs.version }}
+      BRANCH: main
+      ENVIRONMENT: public_release
+
+
+

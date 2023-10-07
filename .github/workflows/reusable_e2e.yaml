@@ -1,21 +1,24 @@
 on:
   workflow_call:
-    secrets:
+    inputs:
       BRANCH:
         required: true
+        type: string
       PACKAGE_VERSION:
         required: true
+        type: string
       FLEX_UI_VERSION:
         required: true
+        type: string
 
 jobs:
-  reusable_e2e_job:
+  e2e:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
     env:
-      BRANCH: ${{ secrets.BRANCH }}
+      BRANCH: ${{ inputs.BRANCH }}
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
       CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
       CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
@@ -28,8 +31,8 @@ jobs:
       TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
       TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-      PACKAGE_VERSION: ${{ secrets.PACKAGE_VERSION }}
-      FLEX_UI_VERSION: ${{ secrets.FLEX_UI_VERSION }}
+      PACKAGE_VERSION: ${{ inputs.PACKAGE_VERSION }}
+      FLEX_UI_VERSION: ${{ inputs.FLEX_UI_VERSION }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3

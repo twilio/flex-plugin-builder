@@ -48,18 +48,19 @@ jobs:
           echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
         id: alphaVersion
 
-  publish-alpha-version:
+  release-alpha-version:
     needs: build-and-test
-    uses: ./.github/workflows/publish.yaml
-    secrets:
+    uses: ./.github/workflows/reusable_publish.yaml
+    with:
       TAG: alpha
       VERSION: ${{needs.build-and-test.outputs.version}}
       BRANCH: ${{needs.build-and-test.outputs.branch}}
+      ENVIRONMENT: alpha_release
 
   e2e-node16:
     needs: [ build-and-test,  publish-alpha-version ]
-    uses: ./.github/workflows/e2e.yaml
-    secrets:
+    uses: ./.github/workflows/reusable_e2e.yaml
+    with:
       BRANCH: ${{needs.build-and-tes.outputs.branch}}
       PACKAGE_VERSION: ${{needs.build-and-test.outputs.version}}
       FLEX_UI_VERSION: latest

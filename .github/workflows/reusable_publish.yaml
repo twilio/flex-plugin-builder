@@ -1,16 +1,24 @@
 on:
   workflow_call:
-    secrets:
+    inputs:
       TAG:
         required: true
+        type: string
       VERSION:
         required: true
+        type: string
       BRANCH:
         required: true
+        type: string
+      ENVIRONMENT:
+        required: true
+        type: string
+        default: alpha_release
 
 jobs:
-  reusable_publish:
+  publish:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.ENVIRONMENT }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
@@ -20,10 +28,10 @@ jobs:
       - name: Install dependencies
         run: npm i
       - name: Publish Version
-        run: npm run publish:${{ secrets.TAG }} ${{ secrets.VERSION }}
+        run: npm run publish:${{ inputs.TAG }} ${{ inputs.VERSION }}
         env:
-          VERSION: ${{ secrets.VERSION }}
-          BRANCH: ${{ secrets.BRANCH }}
+          VERSION: ${{ inputs.VERSION }}
+          BRANCH: ${{ inputs.BRANCH }}
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
           NODE_OPTIONS: --no-experimental-fetch

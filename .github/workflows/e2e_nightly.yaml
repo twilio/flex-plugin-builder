@@ -5,9 +5,8 @@ on:
 
 jobs:
   scheduled-e2e-node16:
-    uses: ./.github/workflows/e2e.yaml
+    uses: ./.github/workflows/reusable_e2e.yaml
     with:
-      secrets:
-        BRANCH: main
-        PACKAGE_VERSION: latest
-        FLEX_UI_VERSION: latest
+      BRANCH: main
+      PACKAGE_VERSION: latest
+      FLEX_UI_VERSION: latest
