@@ -59,11 +59,10 @@ jobs:
   e2e-node16:
     needs: [ build-and-test,  publish-alpha-version ]
     uses: ./.github/workflows/e2e.yaml
-    with:
-      secrets:
-        BRANCH: ${{needs.build-and-tes.outputs.branch}}
-        PACKAGE_VERSION: ${{needs.build-and-test.outputs.version}}
-        FLEX_UI_VERSION: latest
+    secrets:
+      BRANCH: ${{needs.build-and-tes.outputs.branch}}
+      PACKAGE_VERSION: ${{needs.build-and-test.outputs.version}}
+      FLEX_UI_VERSION: latest
 
 
 
