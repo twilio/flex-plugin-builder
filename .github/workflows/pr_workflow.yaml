@@ -51,11 +51,10 @@ jobs:
   publish-alpha-version:
     needs: build-and-test
     uses: ./.github/workflows/publish.yaml
-    with:
-      secrets:
-#        TAG: alpha
-        VERSION: ${{needs.build-and-test.outputs.version}}
-        BRANCH: ${{needs.build-and-test.outputs.branch}}
+    secrets:
+      TAG: alpha
+      VERSION: ${{needs.build-and-test.outputs.version}}
+      BRANCH: ${{needs.build-and-test.outputs.branch}}
 
   e2e-node16:
     needs: [ build-and-test,  publish-alpha-version ]
