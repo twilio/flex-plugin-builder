@@ -58,7 +58,7 @@ jobs:
       ENVIRONMENT: alpha_release
 
   e2e-node16:
-    needs: [ build-and-test,  publish-alpha-version ]
+    needs: [ build-and-test, release-alpha-version ]
     uses: ./.github/workflows/reusable_e2e.yaml
     with:
       BRANCH: ${{needs.build-and-tes.outputs.branch}}
