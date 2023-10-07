@@ -53,7 +53,7 @@ jobs:
     uses: ./.github/workflows/publish.yaml
     with:
       secrets:
-        TAG: alpha
+#        TAG: alpha
         VERSION: ${{needs.build-and-test.outputs.version}}
         BRANCH: ${{needs.build-and-test.outputs.branch}}
 
