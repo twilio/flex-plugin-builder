@@ -2,15 +2,19 @@ on:
   workflow_call:
     inputs:
       TAG:
+        description: 'A tag passed from the caller workflow, it decides the type of release. Allowed values are [rc | beta | alpha | public | dev]'
         required: true
         type: string
       VERSION:
+        description: 'A specific version passed from the caller workflow which will be release as it is.'
         required: true
         type: string
       BRANCH:
+        description: 'A branch passed from the caller workflow, it decides which branch will be pushed to npm.'
         required: true
         type: string
       ENVIRONMENT:
+        description: 'A environment passed from the caller workflow, it controls the reviewing process of a release.'
         required: true
         type: string
         default: alpha_release

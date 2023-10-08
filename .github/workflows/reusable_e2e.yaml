@@ -2,17 +2,21 @@ on:
   workflow_call:
     inputs:
       BRANCH:
+        description: 'A branch passed from the caller workflow to run the test on.'
         required: true
         type: string
       PACKAGE_VERSION:
+        description: 'A package-version of cli passed from the caller workflow. Which will be used to create and release plugins.'
         required: true
         type: string
       FLEX_UI_VERSION:
+        description: 'A flex-ui version passed from the caller workflow. It decides the version of FLEX UI on tests will run on.'
         required: true
         type: string
       NPM_IGNORE_PREFIX:
+        description: 'A npm-ignore-prefix passed from the caller workflow.'
         required: true
-        type: boolean
+        type: string
 
     secrets:
       CONSOLE_EMAIL:
@@ -20,22 +24,31 @@ on:
       CONSOLE_PASSWORD:
         required: true
       CONSOLE_EMAIL_linux:
+        description: 'An email passed from the caller workflow, it will be used for login in linux environment.'
         required: true
       TWILIO_ACCOUNT_SID_linux:
+        description: 'An account-sid passed from the caller workflow, it will be used for authentication of APIs in linux environment.'
         required: true
       TWILIO_AUTH_TOKEN_linux:
+        description: 'An account-token passed from the caller workflow, it will be used for authentication of APIs in linux environment.'
         required: true
       CONSOLE_EMAIL_win32:
+        description: 'An email passed from the caller workflow, it will be used for login in windows environment.'
         required: true
       TWILIO_ACCOUNT_SID_win32:
+        description: 'An account-sid passed from the caller workflow, it will be used for authentication of APIs in windows environment.'
         required: true
       TWILIO_AUTH_TOKEN_win32:
+        description: 'An account-token passed from the caller workflow, it will be used for authentication of APIs in windows environment.'
         required: true
       CONSOLE_EMAIL_darwin:
+        description: 'An email passed from the caller workflow, it will be used for login in mac environment.'
         required: true
       TWILIO_ACCOUNT_SID_darwin:
+        description: 'An account-sid passed from the caller workflow, it will be used for authentication of APIs in mac environment.'
         required: true
       TWILIO_AUTH_TOKEN_darwin:
+        description: 'An account-token passed from the caller workflow, it will be used for authentication of APIs in mac environment.'
         required: true
 
 jobs:
@@ -75,9 +88,19 @@ jobs:
           npm run start
         env:
           TS: false
+      - name: Upload JS screenshots
+        uses: actions/upload-artifact@v3
+        with:
+          name: JS-screenshots
+          path: packages/flex-plugin-e2e-tests/screenshots
       - name: Run e2e tests - TS
         run: |
           cd packages/flex-plugin-e2e-tests
           npm run start
         env:
           TS: true
+      - name: Upload TS screenshots
+        uses: actions/upload-artifact@v3
+        with:
+          name: TS-screenshots
+          path: packages/flex-plugin-e2e-tests/screenshots
