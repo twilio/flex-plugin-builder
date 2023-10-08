@@ -20,6 +20,8 @@ jobs:
       VERSION: ${{ github.event.inputs.version }}
       BRANCH: main
       ENVIRONMENT: public_release
+    secrets:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
 
 

@@ -10,6 +10,33 @@ on:
       FLEX_UI_VERSION:
         required: true
         type: string
+      NPM_IGNORE_PREFIX:
+        required: true
+        type: boolean
+
+    secrets:
+      CONSOLE_EMAIL:
+        required: true
+      CONSOLE_PASSWORD:
+        required: true
+      CONSOLE_EMAIL_linux:
+        required: true
+      TWILIO_ACCOUNT_SID_linux:
+        required: true
+      TWILIO_AUTH_TOKEN_linux:
+        required: true
+      CONSOLE_EMAIL_win32:
+        required: true
+      TWILIO_ACCOUNT_SID_win32:
+        required: true
+      TWILIO_AUTH_TOKEN_win32:
+        required: true
+      CONSOLE_EMAIL_darwin:
+        required: true
+      TWILIO_ACCOUNT_SID_darwin:
+        required: true
+      TWILIO_AUTH_TOKEN_darwin:
+        required: true
 
 jobs:
   e2e:
@@ -19,6 +46,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       BRANCH: ${{ inputs.BRANCH }}
+      NPM_IGNORE_PREFIX: ${{ inputs.NPM_IGNORE_PREFIX }}
+      PACKAGE_VERSION: ${{ inputs.PACKAGE_VERSION }}
+      FLEX_UI_VERSION: ${{ inputs.FLEX_UI_VERSION }}
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
       CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
       CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
@@ -30,9 +60,6 @@ jobs:
       CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
       TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
       TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
-      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-      PACKAGE_VERSION: ${{ inputs.PACKAGE_VERSION }}
-      FLEX_UI_VERSION: ${{ inputs.FLEX_UI_VERSION }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3

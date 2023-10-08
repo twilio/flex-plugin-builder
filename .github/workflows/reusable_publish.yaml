@@ -14,6 +14,9 @@ on:
         required: true
         type: string
         default: alpha_release
+    secrets:
+      NODE_AUTH_TOKEN:
+        required: true
 
 jobs:
   publish:
@@ -32,8 +35,6 @@ jobs:
         env:
           VERSION: ${{ inputs.VERSION }}
           BRANCH: ${{ inputs.BRANCH }}
-          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
           NODE_OPTIONS: --no-experimental-fetch
           CI: ""
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
