@@ -211,27 +211,37 @@ const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
     {
       test: /\.(scss|sass)$/,
       exclude: /\.module\.(scss|sass)$/,
-      use: getStyleLoader(
-        {
+      use: [
+        ...getStyleLoader({
           importLoaders: 3,
           sourceMap: isProd,
+        }),
+        {
+          loader: 'resolve-url-loader',
+          options: {
+            sourceMap: isProd,
+          },
         },
         'sass-loader',
-        'node-sass',
-      ),
+      ],
       sideEffects: true,
     },
     {
       test: /\.module\.(scss|sass)$/,
-      use: getStyleLoader(
-        {
+      use: [
+        ...getStyleLoader({
           importLoaders: 3,
           sourceMap: isProd,
           modules: true,
+        }),
+        {
+          loader: 'resolve-url-loader',
+          options: {
+            sourceMap: isProd,
+          },
         },
         'sass-loader',
-        'node-sass',
-      ),
+      ],
     },
   ];
 };
