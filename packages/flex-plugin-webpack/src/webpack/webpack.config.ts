@@ -173,18 +173,10 @@ const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
         }
       }
 
-      loaders.push(
-        {
-          loader: require.resolve('resolve-url-loader'),
-          options: {
-            sourceMap: isProd,
-          },
-        },
-        {
-          loader: require.resolve(preProcessor),
-          options: preProcessorOptions,
-        },
-      );
+      loaders.push({
+        loader: require.resolve(preProcessor),
+        options: preProcessorOptions,
+      });
     }
 
     return loaders;
