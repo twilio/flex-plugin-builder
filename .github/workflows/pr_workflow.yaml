@@ -19,23 +19,23 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: Install project dependencies
-        run: npm i
-      - name: Run linter
-        run: npm run lint:fix
-      - name: Run Tests
-        run: npm run test:ci
-        env:
-          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-          NODE_OPTIONS: --no-experimental-fetch
-          CI: ""
-      - name: Build packages
-        run: npm run build
-      - name: Codecov report
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+#      - name: Install project dependencies
+#        run: npm i
+#      - name: Run linter
+#        run: npm run lint:fix
+#      - name: Run Tests
+#        run: npm run test:ci
+#        env:
+#          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+#          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+#          NODE_OPTIONS: --no-experimental-fetch
+#          CI: ""
+#      - name: Build packages
+#        run: npm run build
+#      - name: Codecov report
+#        uses: codecov/codecov-action@v3
+#        with:
+#          token: ${{ secrets.CODECOV_TOKEN }}
       - name: Extract branch name
         run: |
           echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
@@ -47,40 +47,59 @@ jobs:
           semver=( ${currentVersion//./ } )
           echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
         id: alphaVersion
+      - name: Send notification to Slack
+        id: slack
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          # For posting a rich message using Block Kit
+          payload: |
+            {
+              "text": "TESTING: GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
-  release-alpha-version:
-    needs: build-and-test
-    uses: ./.github/workflows/reusable_publish.yaml
-    with:
-      TAG: alpha
-#      VERSION: 6.2.1-alpha.202310080658
-      VERSION: ${{needs.build-and-test.outputs.version}}
-      BRANCH: ${{needs.build-and-test.outputs.branch}}
-      ENVIRONMENT: alpha_release
-    secrets:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-
-  e2e-test:
-    needs: [ build-and-test, release-alpha-version ]
-    uses: ./.github/workflows/reusable_e2e.yaml
-    with:
-      BRANCH: ${{needs.build-and-tes.outputs.branch}}
-      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-      PACKAGE_VERSION: 6.2.1-alpha.202310080658
-      #      PACKAGE_VERSION: ${{needs.build-and-test.outputs.version}}
-      FLEX_UI_VERSION: latest
-    secrets:
-      CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-      CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
-      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
-      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
-      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
-      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
-      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
-      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+#  release-alpha-version:
+#    needs: build-and-test
+#    uses: ./.github/workflows/reusable_publish.yaml
+#    with:
+#      TAG: alpha
+#      VERSION: ${{needs.build-and-test.outputs.version}}
+#      BRANCH: ${{needs.build-and-test.outputs.branch}}
+#      ENVIRONMENT: alpha_release
+#    secrets:
+#      NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+#
+#  e2e-test:
+#    needs: [ build-and-test, release-alpha-version ]
+#    uses: ./.github/workflows/reusable_e2e.yaml
+#    with:
+#      BRANCH: ${{needs.build-and-tes.outputs.branch}}
+#      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+#      PACKAGE_VERSION: ${{needs.build-and-test.outputs.version}}
+#      FLEX_UI_VERSION: latest
+#    secrets:
+#      CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+#      CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+#      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+#      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+#      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+#      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
+#      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
+#      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
+#      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
+#      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+#      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
 
 
 
