@@ -47,27 +47,16 @@ jobs:
           semver=( ${currentVersion//./ } )
           echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
         id: alphaVersion
-      - name: Send notification to Slack
-        id: slack
-        uses: slackapi/slack-github-action@v1.24.0
-        with:
-          # For posting a rich message using Block Kit
-          payload: |
-            {
-              "text": "TESTING: GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-                  }
-                }
-              ]
-            }
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEB_HOOK }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEB_HOOK }}
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_USERNAME: Github Actions
+          SLACK_ICON_EMOJI: ":ship:"
+          SLACK_TITLE: "Plugin-flex Cli"
+          SLACK_MESSAGE: 'Testing Ignore,  Release Started :rocket:'
+          MSG_MINIMAL: actions url
 
 #  release-alpha-version:
 #    needs: build-and-test
