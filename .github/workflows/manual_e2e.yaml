@@ -10,12 +10,21 @@ on:
 
 jobs:
   get-version:
-    - name: Retrieve Alpha Patch Version
-      run: |
-        currentVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
-        semver=( ${currentVersion//./ } )
-        echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
-      id: alphaVersion
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.alphaVersion.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Retrieve Alpha Patch Version
+        run: |
+          currentVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
+          semver=( ${currentVersion//./ } )
+          echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
+        id: alphaVersion
+
   release-alpha-version:
     needs: get-version
     uses: ./.github/workflows/reusable_publish.yaml
