@@ -15,6 +15,7 @@ jobs:
         currentVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
         semver=( ${currentVersion//./ } )
         echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
+      id: alphaVersion
   release-alpha-version:
     needs: get-version
     uses: ./.github/workflows/reusable_publish.yaml
@@ -25,7 +26,7 @@ jobs:
       ENVIRONMENT: alpha_release
     secrets:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-      SLACK_WEBHOOK: ${{ secrets.SLACK_WEB_HOOK }}
+      SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
   e2e-test:
     needs: [ get-version, release-alpha-version ]
