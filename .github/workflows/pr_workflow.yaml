@@ -58,37 +58,37 @@ jobs:
           SLACK_MESSAGE: 'Testing Ignore,  Release Started :rocket:'
           MSG_MINIMAL: actions url
 
-#  release-alpha-version:
-#    needs: build-and-test
-#    uses: ./.github/workflows/reusable_publish.yaml
-#    with:
-#      TAG: alpha
-#      VERSION: ${{needs.build-and-test.outputs.version}}
-#      BRANCH: ${{needs.build-and-test.outputs.branch}}
-#      ENVIRONMENT: alpha_release
-#    secrets:
-#      NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-#
-#  e2e-test:
-#    needs: [ build-and-test, release-alpha-version ]
-#    uses: ./.github/workflows/reusable_e2e.yaml
-#    with:
-#      BRANCH: ${{needs.build-and-tes.outputs.branch}}
-#      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-#      PACKAGE_VERSION: ${{needs.build-and-test.outputs.version}}
-#      FLEX_UI_VERSION: latest
-#    secrets:
-#      CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-#      CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-#      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
-#      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-#      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-#      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
-#      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
-#      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
-#      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
-#      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
-#      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+  release-alpha-version:
+    needs: build-and-test
+    uses: ./.github/workflows/reusable_publish.yaml
+    with:
+      TAG: alpha
+      VERSION: 6.2.1-alpha.202310091024
+      BRANCH: ${{needs.build-and-test.outputs.branch}}
+      ENVIRONMENT: alpha_release
+    secrets:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+
+  e2e-test:
+    needs: [ build-and-test, release-alpha-version ]
+    uses: ./.github/workflows/reusable_e2e.yaml
+    with:
+      BRANCH: ${{needs.build-and-tes.outputs.branch}}
+      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+      PACKAGE_VERSION: 6.2.1-alpha.202310091024
+      FLEX_UI_VERSION: latest
+    secrets:
+      CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+      CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
+      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
+      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
+      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
+      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
 
 
 

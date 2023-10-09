@@ -55,8 +55,7 @@ jobs:
   node16:
     strategy:
       matrix:
-        os: [ macos-latest ]
-#        os: [ ubuntu-latest, windows-latest, macos-latest ]
+      os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
     env:
       BRANCH: ${{ inputs.BRANCH }}
