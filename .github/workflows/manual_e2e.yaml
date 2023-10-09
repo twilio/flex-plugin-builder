@@ -25,6 +25,7 @@ jobs:
       ENVIRONMENT: alpha_release
     secrets:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
   e2e-test:
     needs: [ get-version, release-alpha-version ]
