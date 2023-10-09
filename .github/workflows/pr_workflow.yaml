@@ -53,19 +53,21 @@ jobs:
     uses: ./.github/workflows/reusable_publish.yaml
     with:
       TAG: alpha
+#      VERSION: 6.2.1-alpha.202310080658
       VERSION: ${{needs.build-and-test.outputs.version}}
       BRANCH: ${{needs.build-and-test.outputs.branch}}
       ENVIRONMENT: alpha_release
     secrets:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
-  e2e-node16:
+  e2e-test:
     needs: [ build-and-test, release-alpha-version ]
     uses: ./.github/workflows/reusable_e2e.yaml
     with:
       BRANCH: ${{needs.build-and-tes.outputs.branch}}
-      NPM_IGNORE_PREFIX : ${{ vars.NPM_IGNORE_PREFIX }}
-      PACKAGE_VERSION: ${{needs.build-and-test.outputs.version}}
+      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+      PACKAGE_VERSION: 6.2.1-alpha.202310080658
+      #      PACKAGE_VERSION: ${{needs.build-and-test.outputs.version}}
       FLEX_UI_VERSION: latest
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}

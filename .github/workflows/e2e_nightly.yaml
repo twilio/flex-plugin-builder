@@ -4,7 +4,7 @@ on:
     - cron:  '0 4 * * *'    # At 4:00 UTC (09:30 IST) every day
 
 jobs:
-  scheduled-e2e-node16:
+  scheduled-e2e-test:
     uses: ./.github/workflows/reusable_e2e.yaml
     with:
       BRANCH: main

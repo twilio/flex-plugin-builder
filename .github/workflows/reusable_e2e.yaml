@@ -52,10 +52,11 @@ on:
         required: true
 
 jobs:
-  e2e:
+  node16:
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ macos-latest ]
+#        os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
     env:
       BRANCH: ${{ inputs.BRANCH }}
@@ -90,6 +91,7 @@ jobs:
           TS: false
       - name: Upload JS screenshots
         uses: actions/upload-artifact@v3
+        if: always()
         with:
           name: JS-screenshots
           path: packages/flex-plugin-e2e-tests/screenshots
@@ -101,6 +103,7 @@ jobs:
           TS: true
       - name: Upload TS screenshots
         uses: actions/upload-artifact@v3
+        if: always()
         with:
           name: TS-screenshots
           path: packages/flex-plugin-e2e-tests/screenshots
