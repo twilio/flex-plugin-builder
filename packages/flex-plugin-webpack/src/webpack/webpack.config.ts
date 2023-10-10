@@ -129,7 +129,7 @@ const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
    * @param preProcessor  the pre-processor, for example scss-loader
    * @param implementation  the implementation for thr scss-loader
    */
-  const getStyleLoader = (options: LoaderOption, preProcessor?: string, implementation?: string) => {
+  const getStyleLoader = (options: LoaderOption) => {
     const loaders = [];
 
     // Main style loader to work when compiled
@@ -160,33 +160,6 @@ const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
       },
     );
 
-    // Add a pre-processor loader (converting SCSS to CSS)
-    if (preProcessor) {
-      const preProcessorOptions: Record<string, unknown> = {
-        sourceMap: isProd,
-      };
-
-      if (implementation) {
-        const nodePath = resolveModulePath(implementation);
-        if (nodePath) {
-          preProcessorOptions.implementation = require(nodePath);
-        }
-      }
-
-      loaders.push(
-        {
-          loader: require.resolve('resolve-url-loader'),
-          options: {
-            sourceMap: isProd,
-          },
-        },
-        {
-          loader: require.resolve(preProcessor),
-          options: preProcessorOptions,
-        },
-      );
-    }
-
     return loaders;
   };
 
@@ -211,27 +184,37 @@ const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
     {
       test: /\.(scss|sass)$/,
       exclude: /\.module\.(scss|sass)$/,
-      use: getStyleLoader(
-        {
+      use: [
+        ...getStyleLoader({
           importLoaders: 3,
           sourceMap: isProd,
+        }),
+        {
+          loader: 'resolve-url-loader',
+          options: {
+            sourceMap: isProd,
+          },
         },
         'sass-loader',
-        'node-sass',
-      ),
+      ],
       sideEffects: true,
     },
     {
       test: /\.module\.(scss|sass)$/,
-      use: getStyleLoader(
-        {
+      use: [
+        ...getStyleLoader({
           importLoaders: 3,
           sourceMap: isProd,
           modules: true,
+        }),
+        {
+          loader: 'resolve-url-loader',
+          options: {
+            sourceMap: isProd,
+          },
         },
         'sass-loader',
-        'node-sass',
-      ),
+      ],
     },
   ];
 };
