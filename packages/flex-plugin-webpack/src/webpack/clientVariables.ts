@@ -6,7 +6,7 @@ import { DefinePlugin } from 'webpack';
 import { dotEnvIncorrectVariable } from '../prints';
 
 type CodeValueObject = {
-  [key: string]: DefinePlugin.CodeValueObject;
+  [key: string]: any;
 };
 type ProcessEnv = {
   [key: string]: string | undefined;
