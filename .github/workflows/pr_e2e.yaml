@@ -6,7 +6,7 @@ on:
 
 jobs:
   get-version:
-    if: ${{ github.event.label.name == 'e2e' }}
+    if: ${{ github.event.label.name == 'run-e2e-test' }}
     runs-on: ubuntu-latest
     outputs:
       branch: ${{ steps.extract_branch.outputs.branch }}
@@ -31,7 +31,7 @@ jobs:
   release-alpha-version:
     needs: get-version
     uses: ./.github/workflows/reusable_publish.yaml
-    if: ${{ github.event.label.name == 'e2e' }}
+    if: ${{ github.event.label.name == 'run-e2e-test' }}
     with:
       TAG: alpha
       VERSION: ${{ needs.get-version.outputs.version }}
@@ -44,7 +44,7 @@ jobs:
   e2e-test:
     needs: [ get-version, release-alpha-version ]
     uses: ./.github/workflows/reusable_e2e.yaml
-    if: ${{ github.event.label.name == 'e2e' }}
+    if: ${{ github.event.label.name == 'run-e2e-test' }}
     with:
       BRANCH: ${{ needs.get-version.outputs.branch }}
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
