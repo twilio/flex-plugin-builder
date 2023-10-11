@@ -1,0 +1,56 @@
+on:
+  workflow_call:
+    inputs:
+      TAG:
+        description: 'A tag passed from the caller workflow, it decides the type of release. Allowed values are [rc | beta | alpha | public | dev]'
+        required: true
+        type: string
+      VERSION:
+        description: 'A specific version passed from the caller workflow which will be release as it is.'
+        required: true
+        type: string
+      BRANCH:
+        description: 'A branch passed from the caller workflow, it decides which branch will be pushed to npm.'
+        required: true
+        type: string
+      ENVIRONMENT:
+        description: 'A environment passed from the caller workflow, it controls the reviewing process of a release.'
+        required: true
+        type: string
+        default: alpha_release
+    secrets:
+      NODE_AUTH_TOKEN:
+        required: true
+      SLACK_WEB_HOOK:
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.ENVIRONMENT }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install dependencies
+        run: npm i
+      - name: Publish Version
+        run: npm run publish:${{ inputs.TAG }} ${{ inputs.VERSION }}
+        env:
+          VERSION: ${{ inputs.VERSION }}
+          BRANCH: ${{ inputs.BRANCH }}
+          NODE_OPTIONS: --no-experimental-fetch
+          CI: ""
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEB_HOOK }}
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_USERNAME: Github Actions
+          SLACK_ICON_EMOJI: ":ship:"
+          SLACK_TITLE: "Plugin-flex Cli"
+          SLACK_MESSAGE: '🎉 Released a new version with *tag* `${{ inputs.TAG }}` and *version* `${{ inputs.VERSION }}`'
+          MSG_MINIMAL: actions url
