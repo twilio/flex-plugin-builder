@@ -1,4 +1,4 @@
-name: Manual Alpha Release with E2E
+name: PR Labeled E2E
 
 on:
   pull_request:
