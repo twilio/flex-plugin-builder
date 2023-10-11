@@ -1,4 +1,4 @@
-name: PR Labeled E2E
+name: PR E2E
 
 on:
   pull_request:
