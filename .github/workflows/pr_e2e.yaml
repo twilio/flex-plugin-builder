@@ -1,23 +1,27 @@
 name: Manual Alpha Release with E2E
 
 on:
-  workflow_dispatch:
-    inputs:
-      branch:
-        type: string
-        description: The Branch to build
-        required: true
+  on:
+    pull_request:
+      types: [ labeled ]
 
 jobs:
   get-version:
+    if: ${{ github.event.label.name == 'e2e' }}
     runs-on: ubuntu-latest
     outputs:
+      branch: ${{ steps.extract_branch.outputs.branch }}
       version: ${{ steps.alphaVersion.outputs.version }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
+      - name: Extract branch name
+        run: |
+          echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
+          echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
       - name: Retrieve Alpha Patch Version
         run: |
           currentVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
@@ -28,10 +32,11 @@ jobs:
   release-alpha-version:
     needs: get-version
     uses: ./.github/workflows/reusable_publish.yaml
+    if: ${{ github.event.label.name == 'e2e' }}
     with:
       TAG: alpha
-      VERSION: ${{needs.get-version.outputs.version}}
-      BRANCH: ${{ github.event.inputs.branch }}
+      VERSION: ${{ needs.get-version.outputs.version }}
+      BRANCH: ${{ needs.get-version.outputs.branch }}
       ENVIRONMENT: alpha_release
     secrets:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
@@ -40,10 +45,11 @@ jobs:
   e2e-test:
     needs: [ get-version, release-alpha-version ]
     uses: ./.github/workflows/reusable_e2e.yaml
+    if: ${{ github.event.label.name == 'e2e' }}
     with:
-      BRANCH: ${{ github.event.inputs.branch }}
+      BRANCH: ${{ needs.get-version.outputs.branch }}
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-      PACKAGE_VERSION: ${{needs.get-version.outputs.version}}
+      PACKAGE_VERSION: ${{ needs.get-version.outputs.version }}
       FLEX_UI_VERSION: latest
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
