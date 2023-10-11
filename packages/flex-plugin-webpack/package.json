@@ -1,6 +1,6 @@
 {
   "name": "@twilio/flex-plugin-webpack",
-  "version": "6.2.0",
+  "version": "6.2.1",
   "description": "Flex Plugin Webpack and Webpack dev-server configurations",
   "keywords": [
     "flex",
@@ -44,7 +44,7 @@
     "@k88/interpolate-html-plugin": "^1.0.5",
     "@k88/module-scope-plugin": "^1.1.0",
     "@k88/typescript-compile-error-formatter": "^1.0.3",
-    "@twilio/flex-dev-utils": "6.2.0",
+    "@twilio/flex-dev-utils": "6.2.1",
     "@types/express-serve-static-core": "^4.17.35",
     "babel-loader": "^9.1.3",
     "babel-plugin-named-asset-import": "^0.3.8",
@@ -60,8 +60,8 @@
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-loader": "^7.3.3",
     "postcss-preset-env": "^6.7.0",
-    "resolve-url-loader": "^4.0.0",
-    "sass": "^1.32.8",
+    "resolve-url-loader": "^5.0.0",
+    "sass": "^1.69.0",
     "sass-loader": "^13.3.2",
     "style-loader": "^3.3.3",
     "tapable": "^1.1.3",
