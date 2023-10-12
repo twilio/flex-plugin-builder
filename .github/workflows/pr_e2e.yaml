@@ -43,7 +43,8 @@ jobs:
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
   e2e-test:
-    needs: [ get-version, release-alpha-version ]
+    needs: [ get-version ]
+#    needs: [ get-version, release-alpha-version ]
     uses: ./.github/workflows/reusable_e2e.yaml
     if: ${{ github.event.label.name == 'run-e2e-test' }}
     with:
