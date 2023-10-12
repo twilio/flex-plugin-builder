@@ -86,7 +86,7 @@ const beforeEach = async () => {
   }
   await fs.promises.mkdir(homeDir);
 
-  await api.cleanup();
+#  await api.cleanup();
 };
 
 /**
