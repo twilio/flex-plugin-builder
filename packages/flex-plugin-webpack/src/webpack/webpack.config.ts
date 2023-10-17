@@ -497,7 +497,7 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
   config.bail = isProd;
   config.devtool = isProd ? 'cheap-source-map' : 'source-map';
   config.optimization = _getOptimization(environment);
-  config.node = false;
+  config.node = { global: true };
   config.plugins.push(..._getJSPlugins(environment));
 
   return config;
