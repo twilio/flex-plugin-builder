@@ -9,7 +9,7 @@ jobs:
     if: ${{ github.event.label.name == 'run-e2e-test' }}
     runs-on: ubuntu-latest
     outputs:
-      branch: ${{ steps.extract_branch.outputs.branch }}
+      branch: ${{ steps.extractBranch.outputs.branch }}
       version: ${{ steps.alphaVersion.outputs.version }}
     steps:
       - uses: actions/checkout@v4
@@ -20,12 +20,11 @@ jobs:
         run: |
           echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
           echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
-        id: extract_branch
+        id: extractBranch
       - name: Retrieve Alpha Patch Version
         run: |
           currentVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
           semver=( ${currentVersion//./ } )
-#          echo "version=6.2.2-alpha.202310111933" >> "$GITHUB_OUTPUT"
           echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
         id: alphaVersion
 
