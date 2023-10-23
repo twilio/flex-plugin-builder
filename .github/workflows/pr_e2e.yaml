@@ -25,14 +25,14 @@ jobs:
         run: |
           currentVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
           semver=( ${currentVersion//./ } )
-          echo "version=6.2.2-alpha.202310111933" >> "$GITHUB_OUTPUT"
-#          echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
+#          echo "version=6.2.2-alpha.202310111933" >> "$GITHUB_OUTPUT"
+          echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
         id: alphaVersion
 
   release-alpha-version:
     needs: get-version
     uses: ./.github/workflows/reusable_publish.yaml
-    if: ${{ github.event.label.name == 'run-e2e' }}
+    if: ${{ github.event.label.name == 'run-e2e-test' }}
     with:
       TAG: alpha
       VERSION: ${{ needs.get-version.outputs.version }}
@@ -43,8 +43,8 @@ jobs:
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
   e2e-test:
-    needs: [ get-version ]
-#    needs: [ get-version, release-alpha-version ]
+#    needs: [ get-version ]
+    needs: [ get-version, release-alpha-version ]
     uses: ./.github/workflows/reusable_e2e.yaml
     if: ${{ github.event.label.name == 'run-e2e-test' }}
     with:
