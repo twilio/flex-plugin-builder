@@ -88,7 +88,8 @@ jobs:
           cd packages/flex-plugin-e2e-tests
           npm run start
         env:
-          isTS: false
+          TS: false
+          NAVIGATION_TIMEOUT: 1200000
       - name: Upload JS screenshots
         uses: actions/upload-artifact@v3
         if: always()
@@ -97,8 +98,8 @@ jobs:
           path: packages/flex-plugin-e2e-tests/screenshots
       - name: Run e2e tests - TS
         env:
-          isTS: true
           TS: true
+          NAVIGATION_TIMEOUT: 1200000
         run: |
           cd packages/flex-plugin-e2e-tests
           npm run start
