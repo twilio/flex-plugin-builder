@@ -100,7 +100,6 @@ jobs:
           TS: true
         run: |
           cd packages/flex-plugin-e2e-tests
-          env
           npm run start
       - name: Upload TS screenshots
         uses: actions/upload-artifact@v3
