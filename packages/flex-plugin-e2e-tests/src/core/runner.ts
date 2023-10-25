@@ -95,7 +95,6 @@ const beforeEach = async () => {
  * @param testScenarios the {@link TestScenario}
  */
 const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenario>[]): Promise<void> => {
-  logger.info(`testScenarios length ${testScenarios.length}`)
   for (const testScenario of testScenarios) {
     const params = { ...testParams };
     params.scenario = { ...params.scenario, ...testScenario };
@@ -139,11 +138,7 @@ const runner = async (testParams: TestParams, testScenarios: Partial<TestScenari
   logger.info(`RUN_TS ${RUN_TS}`);
   if (RUN_TS) {
     // Required for running e2e on windows in CircleCi pipeline
-    _testScenario = testScenarios.filter((s) => {
-      logger.info(`testScenarios s ${JSON.stringify(s)} isTs : ${s.isTS} cast: ${Boolean(RUN_TS)}`);
-      return s.isTS === Boolean(RUN_TS);
-    });
-    logger.info(`testScenarios in runner is: ${JSON.stringify(_testScenario)}`);
+    _testScenario = testScenarios.filter((s) => s.isTS === Boolean(RUN_TS));
   } else {
     _testScenario = [...testScenarios];
   }

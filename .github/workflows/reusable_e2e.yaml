@@ -55,8 +55,7 @@ jobs:
   node16:
     strategy:
       matrix:
-        os: [ ubuntu-latest ]
-#        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
     env:
       BRANCH: ${{ inputs.BRANCH }}
@@ -83,18 +82,18 @@ jobs:
         run: npm i
       - name: Build packages
         run: npm run build
-      # - name: Run e2e tests - JS
-      #   run: |
-      #     cd packages/flex-plugin-e2e-tests
-      #     npm run start
-      #   env:
-      #     isTS: false
-      # - name: Upload JS screenshots
-      #   uses: actions/upload-artifact@v3
-      #   if: always()
-      #   with:
-      #     name: JS-screenshots
-      #     path: packages/flex-plugin-e2e-tests/screenshots
+      - name: Run e2e tests - JS
+        run: |
+          cd packages/flex-plugin-e2e-tests
+          npm run start
+        env:
+          isTS: false
+      - name: Upload JS screenshots
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: JS-screenshots
+          path: packages/flex-plugin-e2e-tests/screenshots
       - name: Run e2e tests - TS
         env:
           isTS: true
