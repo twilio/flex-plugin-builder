@@ -1,6 +1,6 @@
 {
   "name": "@twilio-labs/plugin-flex",
-  "version": "6.2.1",
+  "version": "6.2.3",
   "description": "Create, develop and deploy Flex plugins using the Twilio CLI",
   "keywords": [
     "twilio",
@@ -48,10 +48,10 @@
     "@oclif/errors": "^1.3.5",
     "@oclif/parser": "^3.8.5",
     "@twilio/cli-core": "^7.6.1",
-    "@twilio/create-flex-plugin": "6.2.1",
-    "@twilio/flex-dev-utils": "6.2.1",
-    "@twilio/flex-plugin-scripts": "6.2.1",
-    "@twilio/flex-plugins-api-client": "6.2.1",
+    "@twilio/create-flex-plugin": "6.2.3",
+    "@twilio/flex-dev-utils": "6.2.3",
+    "@twilio/flex-plugin-scripts": "6.2.3",
+    "@twilio/flex-plugins-api-client": "6.2.3",
     "dayjs": "^1.10.7",
     "lodash.startcase": "^4.4.0",
     "mkdirp": "^1.0.4",
