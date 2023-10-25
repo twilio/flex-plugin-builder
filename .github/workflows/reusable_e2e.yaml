@@ -88,7 +88,7 @@ jobs:
           cd packages/flex-plugin-e2e-tests
           npm run start
         env:
-          TS: false
+          isTS: false
       - name: Upload JS screenshots
         uses: actions/upload-artifact@v3
         if: always()
@@ -100,7 +100,7 @@ jobs:
           cd packages/flex-plugin-e2e-tests
           npm run start
         env:
-          TS: true
+          isTS: true
       - name: Upload TS screenshots
         uses: actions/upload-artifact@v3
         if: always()
