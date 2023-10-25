@@ -1,6 +1,7 @@
 /* eslint-disable import/no-unused-modules */
 import { TestSuite, TestParams } from '../core';
 import { api, assertion, Browser, ConsoleAPI, pluginHelper } from '../utils';
+import { logger } from '@twilio/flex-dev-utils';
 
 const PLUGIN_RELEASED_TIMEOUT = 30000;
 const PLUGIN_RELEASED_POLL_INTERVAL = 5000;
@@ -42,8 +43,11 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     assertion.equal(accountSid, secrets.api.accountSid);
 
     // Make sure that /plugins contain the plugin
+    logger.info("Waiting for plugins to release.")
     await pluginHelper.waitForPluginToRelease(releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
+    logger.info("Release completes, verifying plugin on UI.")
     await Browser.app.agentDesktop.open();
+  
 
     await assertion.app.view.plugins.plugin.isVisible(plugin.newlineValue);
   } catch (e) {
