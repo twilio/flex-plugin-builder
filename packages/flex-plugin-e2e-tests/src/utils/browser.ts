@@ -8,7 +8,7 @@ import { App, BaseUrl } from './pages';
  * NAVIGATION_TIMEOUT will change the default maximum navigation time of puppeteer
  * https://pptr.dev/api/puppeteer.page.setdefaultnavigationtimeout
  */
-const NAVIGATION_TIMEOUT: string | undefined = process.env.NAVIGATION_TIMEOUT;
+// const NAVIGATION_TIMEOUT: string | undefined = process.env.NAVIGATION_TIMEOUT;
 
 export class Browser {
   static app: App;
@@ -26,11 +26,11 @@ export class Browser {
     this._browser = await Puppeteer.launch({ headless: true, args: ['--use-fake-ui-for-media-stream'] });
     this._page = await this._browser.newPage();
 
-    if (NAVIGATION_TIMEOUT) {
-      logger.error(`Setting navigation timeout to ${NAVIGATION_TIMEOUT}`);
-      this._page.setDefaultNavigationTimeout(Number(NAVIGATION_TIMEOUT));
-    } 
-    
+    // if (NAVIGATION_TIMEOUT) {
+    //   logger.error(`Setting navigation timeout to ${NAVIGATION_TIMEOUT}`);
+    //   this._page.setDefaultNavigationTimeout(Number(NAVIGATION_TIMEOUT));
+    // } 
+
     await this._page.setRequestInterception(true);
     this._attachLogListener();
     this._attachNetworkInterceptor();
