@@ -34,9 +34,10 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   await Browser.create({ flex: config.hostedFlexBaseUrl, twilioConsole: config.consoleBaseUrl });
   try {
     // Log into Flex
-    await Browser.app.twilioConsole.login(cookies, 'admin', secrets.api.accountSid, config.localhostPort);
+    await Browser.app.twilioConsole.login(cookies, 'agent-desktop', secrets.api.accountSid, config.localhostPort);
+    // await Browser.app.twilioConsole.login(cookies, 'admin', secrets.api.accountSid, config.localhostPort);
 
-    await assertion.app.view.adminDashboard.isVisible();
+    //await assertion.app.view.adminDashboard.isVisible();
 
     // Verify that user is on the right account
     const accountSid = await Browser.app.getFlexAccountSid();
@@ -46,14 +47,12 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     logger.info("Waiting for plugins to release.");
     await pluginHelper.waitForPluginToRelease(releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
     logger.info("Release completes, verifying plugin on UI.");
-    Browser.app.agentDesktop.open();
+    //Browser.app.agentDesktop.open();
+    // await Browser.app.twilioConsole.login(cookies, 'agent-desktop', secrets.api.accountSid, config.localhostPort);
     logger.info(`Desktop UI has Open, verifying asertions for newline having value: ${plugin.newlineValue}`);
     logger.info(` plugin value is : ${JSON.stringify(plugin)}`);
 
-    setTimeout(async () => {
-      await assertion.app.view.plugins.plugin.isVisible(plugin.newlineValue || "");
-    }, 300000);
-    //await assertion.app.view.plugins.plugin.isVisible(plugin.newlineValue);
+    await assertion.app.view.plugins.plugin.isVisible(plugin.newlineValue);
   } catch (e) {
     await Browser.app.takeScreenshot(environment.cwd);
     throw e;
