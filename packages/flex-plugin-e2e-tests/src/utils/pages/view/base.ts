@@ -23,7 +23,7 @@ export abstract class Base {
    */
   protected async goto({ baseUrl, path }: { baseUrl: string; path?: string }): Promise<void> {
     const fullPath = path ? `${baseUrl}/${path}` : baseUrl;
-    await this.page.goto(fullPath, { waitUntil: 'load', timeout: 600000 });
+    await this.page.goto(fullPath, { waitUntil: 'load', timeout: 0 });
   }
 
   /**

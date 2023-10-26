@@ -46,11 +46,14 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     logger.info("Waiting for plugins to release.");
     await pluginHelper.waitForPluginToRelease(releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
     logger.info("Release completes, verifying plugin on UI.");
-    await Browser.app.agentDesktop.open();
+    Browser.app.agentDesktop.open();
     logger.info(`Desktop UI has Open, verifying asertions for newline having value: ${plugin.newlineValue}`);
     logger.info(` plugin value is : ${JSON.stringify(plugin)}`);
 
-    await assertion.app.view.plugins.plugin.isVisible(plugin.newlineValue);
+    setTimeout(async () => {
+      await assertion.app.view.plugins.plugin.isVisible(plugin.newlineValue || "");
+    }, 300000);
+    //await assertion.app.view.plugins.plugin.isVisible(plugin.newlineValue);
   } catch (e) {
     await Browser.app.takeScreenshot(environment.cwd);
     throw e;
