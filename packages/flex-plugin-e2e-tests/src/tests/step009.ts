@@ -57,6 +57,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     await Browser.app.takeScreenshot(environment.cwd);
     throw e;
   } finally {
+    logger.info(`killing browser`);
     await Browser.kill();
   }
 };
