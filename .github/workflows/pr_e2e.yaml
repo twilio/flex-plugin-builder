@@ -64,3 +64,11 @@ jobs:
       CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
       TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
       TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+
+  remove-label-on-failure:
+    needs: e2e-test
+    if: needs.e2e-test.result != 'success'
+    steps:
+      - uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: ${{ github.event.label.name }}
