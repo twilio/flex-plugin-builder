@@ -103,10 +103,6 @@ const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenari
     await beforeEach();
 
     for (let i = 0; i < testSuites.length; i++) {
-      if (i === 8) {
-        // Skipping Step 009
-        continue;
-      }
       await runTest(i + 1, params);
     }
   }
