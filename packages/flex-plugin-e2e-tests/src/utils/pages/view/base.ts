@@ -1,5 +1,6 @@
 import { ElementHandle, Page } from 'puppeteer';
 import { logger } from '@twilio/flex-dev-utils';
+import { log } from 'console';
 
 const LOCATE_TIMEOUT: string | undefined = process.env.LOCATE_TIMEOUT;
 const PAGE_LOAD_TIMEOUT: string | undefined = process.env.PAGE_LOAD_TIMEOUT;
@@ -23,7 +24,9 @@ export abstract class Base {
    */
   protected async goto({ baseUrl, path }: { baseUrl: string; path?: string }): Promise<void> {
     const fullPath = path ? `${baseUrl}/${path}` : baseUrl;
-    await this.page.goto(fullPath, { waitUntil: 'load', timeout: 0 });
+    logger.info(`Going to path: ${fullPath}`)
+    let res = await this.page.goto(fullPath, { waitUntil: 'load', timeout: 0 });
+    logger.info(`Goto response is ${res.status} and whole response is ${res}`);
   }
 
   /**
@@ -81,6 +84,7 @@ export abstract class Base {
   ): Promise<ElementHandle<Element>> {
     const waitOptions = { timeout };
 
+    logger.info(`seletor:${seletor} elementName:${elementName} timeout:${timeout}`);
     // Extremely naive check
     const element = seletor.startsWith('//')
       ? await this.page.waitForXPath(seletor, waitOptions)
