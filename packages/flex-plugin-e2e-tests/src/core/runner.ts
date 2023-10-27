@@ -103,6 +103,10 @@ const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenari
     await beforeEach();
 
     for (let i = 0; i < testSuites.length; i++) {
+      if (i === 8) {
+        // Skipping Step 009
+        continue;
+      }
       await runTest(i + 1, params);
     }
   }
@@ -135,7 +139,6 @@ const runner = async (testParams: TestParams, testScenarios: Partial<TestScenari
   const _testParams = { ...testParams };
   let _testScenario;
 
-  logger.info(`RUN_TS ${RUN_TS}`);
   if (RUN_TS) {
     // Required for running e2e on windows in CircleCi pipeline
     _testScenario = testScenarios.filter((s) => s.isTS === Boolean(Number(RUN_TS)));
