@@ -98,6 +98,10 @@ jobs:
         with:
           name: JS-screenshots
           path: packages/flex-plugin-e2e-tests/screenshots
+      - name: Kill node for Windows os
+        if: ${{ matrix.os }} = 'windows-latest'
+        run: |
+          taskkill //im node.exe //f
       - name: Run e2e tests - TS
         env:
           TS: 1
