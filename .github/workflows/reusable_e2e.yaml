@@ -83,10 +83,6 @@ jobs:
         run: npm i
       - name: Build packages
         run: npm run build
-      - name: Print OS
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: |
-          echo "os is: ${{ matrix.os }} ${{ runner.os }}"
       - name: Run e2e tests - JS
         run: |
           cd packages/flex-plugin-e2e-tests
@@ -106,7 +102,7 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
           echo "os is: ${{ matrix.os }} ${{ runner.os }}"
-          taskkill //im node.exe //f
+          taskkill /f /im node.exe
       - name: Run e2e tests - TS
         env:
           TS: 1
