@@ -126,7 +126,15 @@ export const killChildProcess = async (
   }
 
   if (os === 'win32') {
-    await promisifiedSpawn('taskkill', ['/pid', `${child.pid}`, '/f', '/t']);
+    promisifiedSpawn('taskkill', ['/pid', `${child.pid}`, '/f', '/t'])
+    .then((message) => {
+      logger.info(message);
+    })
+    .catch(async (error) => {
+      logger.error(`error killing the process, error message is: ${error}`);
+      logger.info("Trying second time to kill the process");
+      await promisifiedSpawn('taskkill', ['/pid', `${child.pid}`, '/f', '/t']);
+    });
   } else {
     child.kill();
   }
