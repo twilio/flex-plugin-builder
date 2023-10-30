@@ -1,9 +1,8 @@
 import { ElementHandle, Page } from 'puppeteer';
 import { logger } from '@twilio/flex-dev-utils';
-import { log } from 'console';
 
-const LOCATE_TIMEOUT: string | undefined = process.env.LOCATE_TIMEOUT;
-const PAGE_LOAD_TIMEOUT: string | undefined = process.env.PAGE_LOAD_TIMEOUT;
+const { LOCATE_TIMEOUT } = process.env;
+const { PAGE_LOAD_TIMEOUT } = process.env;
 
 export abstract class Base {
   protected static readonly DEFAULT_LOCATE_TIMEOUT = LOCATE_TIMEOUT ? Number(LOCATE_TIMEOUT) : 60000;
@@ -14,7 +13,9 @@ export abstract class Base {
 
   constructor(page: Page) {
     this.page = page;
-    logger.info(`DEFAULT_LOCATE_TIMEOUT: ${Base.DEFAULT_LOCATE_TIMEOUT}ms DEFAULT_PAGE_LOAD_TIMEOUT: ${Base.DEFAULT_PAGE_LOAD_TIMEOUT}`)
+    logger.info(
+      `DEFAULT_LOCATE_TIMEOUT: ${Base.DEFAULT_LOCATE_TIMEOUT}ms DEFAULT_PAGE_LOAD_TIMEOUT: ${Base.DEFAULT_PAGE_LOAD_TIMEOUT}`,
+    );
   }
 
   /**
@@ -25,8 +26,8 @@ export abstract class Base {
   protected async goto({ baseUrl, path }: { baseUrl: string; path?: string }): Promise<void> {
     const fullPath = path ? `${baseUrl}/${path}` : baseUrl;
     logger.info(`Going to path: ${fullPath}`);
-    let res = await this.page.goto(fullPath, { waitUntil: 'load', timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT });
-    logger.info(`Goto response is ${res.status} and whole response is `, res);
+    const res = await this.page.goto(fullPath, { waitUntil: 'load', timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT });
+    logger.info(`Goto response is ${res?.status} and whole response is `, res);
   }
 
   /**
@@ -34,7 +35,7 @@ export abstract class Base {
    * @param element
    * @param elementName
    */
-  protected async getText(element: ElementHandle<Element>, elementName: string): Promise<string> {
+  protected async getText(element: ElementHandle<Node>, elementName: string): Promise<string> {
     const text = await element.evaluate((el) => el.textContent);
 
     if (!text) {
@@ -81,13 +82,14 @@ export abstract class Base {
     seletor: string,
     elementName: string,
     timeout = Base.DEFAULT_LOCATE_TIMEOUT,
-  ): Promise<ElementHandle<Element>> {
+  ): Promise<ElementHandle<Node> | ElementHandle<Element>> {
     const waitOptions = { timeout };
 
     logger.info(`seletor:${seletor} elementName:${elementName} timeout:${timeout}`);
     // Extremely naive check
     const element = seletor.startsWith('//')
       ? await this.page.waitForXPath(seletor, waitOptions)
+      // @ts-ignore
       : await this.page.waitForSelector(seletor, waitOptions);
 
     if (!element) {

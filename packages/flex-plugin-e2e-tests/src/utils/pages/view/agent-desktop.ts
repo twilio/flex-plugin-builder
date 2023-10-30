@@ -10,8 +10,7 @@ export class AgentDesktop extends Base {
     /**
      * Checks whether task canvas are visible on the Agent Desktop
      */
-    isVisible: async (): Promise<ElementHandle<Element>> =>
-      this.elementVisible(AgentDesktop._noTaskCanvas, 'Task canvas'),
+    isVisible: async (): Promise<ElementHandle<Node>> => this.elementVisible(AgentDesktop._noTaskCanvas, 'Task canvas'),
   };
 
   private readonly _baseUrl: string;
