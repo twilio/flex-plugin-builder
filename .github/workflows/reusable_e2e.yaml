@@ -83,7 +83,6 @@ jobs:
       - name: Build packages
         run: npm run build
       - name: Run e2e tests - JS
-        continue-on-error: true
         run: |
           cd packages/flex-plugin-e2e-tests
           npm run start
