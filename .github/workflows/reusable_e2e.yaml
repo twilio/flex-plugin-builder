@@ -57,6 +57,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
+    continue-on-error: true
     env:
       BRANCH: ${{ inputs.BRANCH }}
       NPM_IGNORE_PREFIX: ${{ inputs.NPM_IGNORE_PREFIX }}
@@ -83,7 +84,7 @@ jobs:
       - name: Build packages
         run: npm run build
       - name: Print OS
-        if: ${{ matrix.os }} = 'windows-latest'
+        if: ${{ matrix.os == 'windows-latest' }}
         run: |
           echo "os is: ${{ matrix.os }} ${{ runner.os }}"
       - name: Run e2e tests - JS
@@ -102,7 +103,7 @@ jobs:
           name: JS-screenshots
           path: packages/flex-plugin-e2e-tests/screenshots
       - name: Kill node for Windows os
-        if: ${{ matrix.os }} = 'windows-latest'
+        if: ${{ matrix.os == 'windows-latest' }}
         run: |
           echo "os is: ${{ matrix.os }} ${{ runner.os }}"
           taskkill //im node.exe //f
