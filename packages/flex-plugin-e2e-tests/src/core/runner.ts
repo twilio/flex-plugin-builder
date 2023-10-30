@@ -98,7 +98,7 @@ const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenari
   for (const testScenario of testScenarios) {
     const params = { ...testParams };
     params.scenario = { ...params.scenario, ...testScenario };
-    logger.info(`testScenario ${JSON.stringify(testScenario)}`)
+
     printParameters(params);
     await beforeEach();
 
@@ -135,7 +135,6 @@ const runner = async (testParams: TestParams, testScenarios: Partial<TestScenari
   const _testParams = { ...testParams };
   let _testScenario;
 
-  logger.info(`RUN_TS ${RUN_TS}`);
   if (RUN_TS) {
     // Required for running e2e on windows in CircleCi pipeline
     _testScenario = testScenarios.filter((s) => s.isTS === Boolean(Number(RUN_TS)));
