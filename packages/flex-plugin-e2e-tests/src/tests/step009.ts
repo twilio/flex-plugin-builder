@@ -46,9 +46,16 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     await pluginHelper.waitForPluginToRelease(releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
     logger.info('Release check completed, going to Agent Desktop');
 
+    await Browser.app.agentDesktop.clear();
+
+    logger.info('Going to sleep for 5 sec');
+    await sleep(5000);
+
+    await Browser.app.takeScreenshot(environment.cwd, 'about:blank');
+
     await Browser.app.agentDesktop.open();
 
-    logger.info('Going to sleep');
+    logger.info('Going to sleep for 5 sec');
     await sleep(5000);
 
     await Browser.app.takeScreenshot(environment.cwd, 'agent-desktop-1');

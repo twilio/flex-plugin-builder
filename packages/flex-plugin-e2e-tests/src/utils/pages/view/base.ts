@@ -24,7 +24,7 @@ export abstract class Base {
    */
   protected async goto({ baseUrl, path }: { baseUrl: string; path?: string }): Promise<void> {
     const fullPath = path ? `${baseUrl}/${path}` : baseUrl;
-    logger.info(`Going to path: ${fullPath}`)
+    logger.info(`Going to path: ${fullPath}`);
     let res = await this.page.goto(fullPath, { waitUntil: 'load', timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT });
     logger.info(`Goto response is ${res.status} and whole response is `, res);
   }

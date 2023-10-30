@@ -22,6 +22,13 @@ export class AgentDesktop extends Base {
   }
 
   /**
+   * Clears the page
+   */
+  async clear(): Promise<void> {
+    await this.goto({ baseUrl: 'about:blank' });
+  }
+
+  /**
    * Navigates to Agent Desktop
    */
   async open(): Promise<void> {
