@@ -67,9 +67,10 @@ jobs:
 
   remove-label-on-failure:
     needs: e2e-test
-    if: needs.e2e-test.result != 'success'
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - uses: actions-ecosystem/action-remove-labels@v1
+        if: needs.e2e-test.result != 'success'
         with:
           labels: ${{ github.event.label.name }}
