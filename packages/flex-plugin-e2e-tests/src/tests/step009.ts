@@ -1,7 +1,6 @@
 /* eslint-disable import/no-unused-modules */
-import { logger } from '@twilio/flex-dev-utils';
 import { TestSuite, TestParams } from '../core';
-import { api, assertion, Browser, ConsoleAPI, pluginHelper, sleep } from '../utils';
+import { api, assertion, Browser, ConsoleAPI, pluginHelper } from '../utils';
 
 const PLUGIN_RELEASED_TIMEOUT = 30000;
 const PLUGIN_RELEASED_POLL_INTERVAL = 5000;
@@ -44,20 +43,9 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
 
     // Make sure that /plugins contain the plugin
     await pluginHelper.waitForPluginToRelease(releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
-    logger.info('Release check completed, going to Agent Desktop');
-
     await Browser.app.agentDesktop.open();
 
-    await Browser.app.takeScreenshot(environment.cwd, 'agent-desktop-1');
-
-    logger.info('Checking if Agent desktop is open');
-    await assertion.app.view.agentDesktop.isVisible();
-    logger.info(`Agent Desktop is open, verifying asertions for newline having value: ${plugin.newlineValue}`);
-
-    await Browser.app.takeScreenshot(environment.cwd, 'agent-desktop-2');
-
     await assertion.app.view.plugins.plugin.isVisible(plugin.newlineValue);
-    logger.info('All assertions complete!');
   } catch (e) {
     await Browser.app.takeScreenshot(environment.cwd);
     throw e;

@@ -98,7 +98,7 @@ const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenari
   for (const testScenario of testScenarios) {
     const params = { ...testParams };
     params.scenario = { ...params.scenario, ...testScenario };
-    logger.info(`testScenario ${JSON.stringify(testScenario)}`)
+
     printParameters(params);
     await beforeEach();
 

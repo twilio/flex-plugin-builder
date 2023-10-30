@@ -19,7 +19,7 @@ export class Plugins extends Base {
        * Checks whether plugin with the given text is visible in the UI
        * @param pluginText
        */
-      isVisible: async (pluginText: string): Promise<ElementHandle<Node>> =>
+      isVisible: async (pluginText: string): Promise<ElementHandle<Element | Node>> =>
         this.elementVisible(this._plugin(pluginText), `Plugin with text: ${pluginText}`),
     },
   };

@@ -10,7 +10,8 @@ export class AgentDesktop extends Base {
     /**
      * Checks whether task canvas are visible on the Agent Desktop
      */
-    isVisible: async (): Promise<ElementHandle<Node>> => this.elementVisible(AgentDesktop._noTaskCanvas, 'Task canvas'),
+    isVisible: async (): Promise<ElementHandle<Element | Node>> =>
+      this.elementVisible(AgentDesktop._noTaskCanvas, 'Task canvas'),
   };
 
   private readonly _baseUrl: string;
@@ -18,13 +19,6 @@ export class AgentDesktop extends Base {
   constructor(page: Page, baseUrl: string) {
     super(page);
     this._baseUrl = baseUrl;
-  }
-
-  /**
-   * Clears the page
-   */
-  async clear(): Promise<void> {
-    await this.goto({ baseUrl: 'about:blank' });
   }
 
   /**

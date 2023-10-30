@@ -1,13 +1,10 @@
 import { ElementHandle, Page } from 'puppeteer';
 import { logger } from '@twilio/flex-dev-utils';
 
-const { LOCATE_TIMEOUT } = process.env;
-const { PAGE_LOAD_TIMEOUT } = process.env;
-
 export abstract class Base {
-  protected static readonly DEFAULT_LOCATE_TIMEOUT = LOCATE_TIMEOUT ? Number(LOCATE_TIMEOUT) : 60000;
+  protected static readonly DEFAULT_LOCATE_TIMEOUT = 60000;
 
-  protected static readonly DEFAULT_PAGE_LOAD_TIMEOUT = PAGE_LOAD_TIMEOUT ? Number(PAGE_LOAD_TIMEOUT) : 60000;
+  protected static readonly DEFAULT_PAGE_LOAD_TIMEOUT = 60000;
 
   protected readonly page: Page;
 
@@ -25,9 +22,7 @@ export abstract class Base {
    */
   protected async goto({ baseUrl, path }: { baseUrl: string; path?: string }): Promise<void> {
     const fullPath = path ? `${baseUrl}/${path}` : baseUrl;
-    logger.info(`Going to path: ${fullPath}`);
-    const res = await this.page.goto(fullPath, { waitUntil: 'load', timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT });
-    logger.info(`Goto response is ${res?.status} and whole response is `, res);
+    await this.page.goto(fullPath, { waitUntil: 'load', timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT });
   }
 
   /**
@@ -82,15 +77,17 @@ export abstract class Base {
     seletor: string,
     elementName: string,
     timeout = Base.DEFAULT_LOCATE_TIMEOUT,
-  ): Promise<ElementHandle<Node> | ElementHandle<Element>> {
+  ): Promise<ElementHandle<Node | Element>> {
     const waitOptions = { timeout };
 
-    logger.info(`seletor:${seletor} elementName:${elementName} timeout:${timeout}`);
-    // Extremely naive check
-    const element = seletor.startsWith('//')
-      ? await this.page.waitForXPath(seletor, waitOptions)
+    let element: ElementHandle<Element | Node> | null;
+
+    if (seletor.startsWith('//')) {
+      element = await this.page.waitForXPath(seletor, waitOptions);
+    } else {
       // @ts-ignore
-      : await this.page.waitForSelector(seletor, waitOptions);
+      element = await this.page.waitForSelector(seletor, waitOptions);
+    }
 
     if (!element) {
       throw new Error(`Element: ${elementName} is not visible in the UI`);
