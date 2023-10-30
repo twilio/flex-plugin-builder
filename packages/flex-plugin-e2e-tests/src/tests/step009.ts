@@ -51,9 +51,14 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     logger.info('Going to sleep');
     await sleep(5000);
 
+    await Browser.app.takeScreenshot(environment.cwd, 'agent-desktop-1');
+
     logger.info('Checking if Agent desktop is open');
     await assertion.app.view.agentDesktop.isVisible();
     logger.info(`Agent Desktop is open, verifying asertions for newline having value: ${plugin.newlineValue}`);
+
+    await Browser.app.takeScreenshot(environment.cwd, 'agent-desktop-2');
+
     await assertion.app.view.plugins.plugin.isVisible(plugin.newlineValue);
     logger.info('All assertions complete!');
   } catch (e) {
