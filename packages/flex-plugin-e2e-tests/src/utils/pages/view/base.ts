@@ -26,7 +26,7 @@ export abstract class Base {
     const fullPath = path ? `${baseUrl}/${path}` : baseUrl;
     logger.info(`Going to path: ${fullPath}`)
     let res = await this.page.goto(fullPath, { waitUntil: 'load', timeout: 0 });
-    logger.info(`Goto response is ${res.status} and whole response is ${res}`);
+    logger.info(`Goto response is ${res.status} and whole response is `, res);
   }
 
   /**

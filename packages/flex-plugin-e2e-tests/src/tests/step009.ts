@@ -1,7 +1,7 @@
 /* eslint-disable import/no-unused-modules */
 import { logger } from '@twilio/flex-dev-utils';
 import { TestSuite, TestParams } from '../core';
-import { api, assertion, Browser, ConsoleAPI, pluginHelper } from '../utils';
+import { api, assertion, Browser, ConsoleAPI, pluginHelper, sleep } from '../utils';
 
 const PLUGIN_RELEASED_TIMEOUT = 30000;
 const PLUGIN_RELEASED_POLL_INTERVAL = 5000;
@@ -38,27 +38,28 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
 
     await assertion.app.view.agentDesktop.isVisible();
 
-    await Browser.app.takeScreenshot(environment.cwd);
-
     // Verify that user is on the right account
     const accountSid = await Browser.app.getFlexAccountSid();
     assertion.equal(accountSid, secrets.api.accountSid);
 
     // Make sure that /plugins contain the plugin
-    logger.info('Waiting for plugins to release.');
     await pluginHelper.waitForPluginToRelease(releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
-    logger.info('Release completes, verifying plugin on UI.');
-    // await Browser.app.agentDesktop.open();
-    logger.info(`Desktop UI has Open, verifying asertions for newline having value: ${plugin.newlineValue}`);
-    logger.info(` plugin value is : ${JSON.stringify(plugin)}`);
+    logger.info('Release check completed, going to Agent Desktop');
 
+    await Browser.app.agentDesktop.open();
+
+    logger.info('Going to sleep');
+    await sleep(5000);
+
+    logger.info('Checking if Agent desktop is open');
+    await assertion.app.view.agentDesktop.isVisible();
+    logger.info(`Agent Desktop is open, verifying asertions for newline having value: ${plugin.newlineValue}`);
     await assertion.app.view.plugins.plugin.isVisible(plugin.newlineValue);
-    logger.info(`newlineValue assetion completes`);
+    logger.info('All assertions complete!');
   } catch (e) {
     await Browser.app.takeScreenshot(environment.cwd);
     throw e;
   } finally {
-    logger.info(`killing browser`);
     await Browser.kill();
   }
 };
