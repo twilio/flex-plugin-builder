@@ -1,0 +1,75 @@
+name: PR Validator - E2E
+
+on:
+  pull_request:
+    types: [ labeled ]
+
+jobs:
+  get-version:
+    if: ${{ (github.event.label.name == vars.E2E_LABEL) || (github.event.label.name == vars.PUBLISH_AND_E2E_LABEL) }}
+    runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.extractBranch.outputs.branch }}
+      version: ${{ steps.alphaVersion.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Extract branch name
+        run: |
+          echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
+          echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extractBranch
+      - name: Retrieve Alpha Patch Version
+        if: ${{ github.event.label.name == vars.PUBLISH_AND_E2E_LABEL }}
+        run: |
+          currentVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
+          semver=( ${currentVersion//./ } )
+          echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
+        id: alphaVersion
+
+  release-alpha-version:
+    needs: get-version
+    uses: ./.github/workflows/reusable_publish.yaml
+    if: ${{ github.event.label.name == vars.PUBLISH_AND_E2E_LABEL }}
+    with:
+      TAG: alpha
+      VERSION: ${{ needs.get-version.outputs.version }}
+      BRANCH: ${{ needs.get-version.outputs.branch }}
+      ENVIRONMENT: alpha_release
+    secrets:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+      SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
+
+  e2e-test:
+    needs: [ get-version, release-alpha-version ]
+    uses: ./.github/workflows/reusable_e2e.yaml
+    if: ${{ always() && ((github.event.label.name == vars.E2E_LABEL) || (github.event.label.name == vars.PUBLISH_AND_E2E_LABEL)) }}
+    with:
+      BRANCH: ${{ needs.get-version.outputs.branch }}
+      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+      PACKAGE_VERSION: ${{ github.event.label.name == vars.E2E_LABEL && 'latest' || needs.get-version.outputs.version }}
+      FLEX_UI_VERSION: latest
+    secrets:
+      CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+      CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
+      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
+      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
+      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
+      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+
+  remove-label-on-failure:
+    needs: e2e-test
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions-ecosystem/action-remove-labels@v1
+        if: needs.e2e-test.result != 'success'
+        with:
+          labels: ${{ github.event.label.name }}

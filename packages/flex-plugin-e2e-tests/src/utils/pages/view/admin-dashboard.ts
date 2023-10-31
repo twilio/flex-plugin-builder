@@ -10,7 +10,7 @@ export class AdminDashboard extends Base {
     /**
      * Checks whether Welcome Banner is visible on Admin Dashboard
      */
-    isVisible: async (): Promise<ElementHandle<Element>> =>
+    isVisible: async (): Promise<ElementHandle<Element | Node>> =>
       this.elementVisible(AdminDashboard._adminDashboardSubHeader, 'Admin Dashbaord Sub-Header'),
   };
 

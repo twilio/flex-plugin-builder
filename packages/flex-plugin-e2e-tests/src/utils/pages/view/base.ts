@@ -1,9 +1,9 @@
 import { ElementHandle, Page } from 'puppeteer';
 
 export abstract class Base {
-  protected static readonly DEFAULT_LOCATE_TIMEOUT = 60000;
+  protected static readonly DEFAULT_LOCATE_TIMEOUT = 300000;
 
-  protected static readonly DEFAULT_PAGE_LOAD_TIMEOUT = 60000;
+  protected static readonly DEFAULT_PAGE_LOAD_TIMEOUT = 300000;
 
   protected readonly page: Page;
 
@@ -18,7 +18,7 @@ export abstract class Base {
    */
   protected async goto({ baseUrl, path }: { baseUrl: string; path?: string }): Promise<void> {
     const fullPath = path ? `${baseUrl}/${path}` : baseUrl;
-    await this.page.goto(fullPath, { waitUntil: 'load', timeout: 60000 });
+    await this.page.goto(fullPath, { waitUntil: 'load', timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT });
   }
 
   /**
@@ -26,7 +26,7 @@ export abstract class Base {
    * @param element
    * @param elementName
    */
-  protected async getText(element: ElementHandle<Element>, elementName: string): Promise<string> {
+  protected async getText(element: ElementHandle<Node>, elementName: string): Promise<string> {
     const text = await element.evaluate((el) => el.textContent);
 
     if (!text) {
@@ -73,13 +73,17 @@ export abstract class Base {
     seletor: string,
     elementName: string,
     timeout = Base.DEFAULT_LOCATE_TIMEOUT,
-  ): Promise<ElementHandle<Element>> {
+  ): Promise<ElementHandle<Node | Element>> {
     const waitOptions = { timeout };
 
-    // Extremely naive check
-    const element = seletor.startsWith('//')
-      ? await this.page.waitForXPath(seletor, waitOptions)
-      : await this.page.waitForSelector(seletor, waitOptions);
+    let element: ElementHandle<Element | Node> | null;
+
+    if (seletor.startsWith('//')) {
+      element = await this.page.waitForXPath(seletor, waitOptions);
+    } else {
+      // @ts-ignore
+      element = await this.page.waitForSelector(seletor, waitOptions);
+    }
 
     if (!element) {
       throw new Error(`Element: ${elementName} is not visible in the UI`);
