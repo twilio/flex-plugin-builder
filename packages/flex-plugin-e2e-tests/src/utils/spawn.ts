@@ -127,18 +127,15 @@ export const killChildProcess = async (
 
   if (os === 'win32') {
     promisifiedSpawn('taskkill', ['/pid', `${child.pid}`, '/f', '/t'])
-    .then((message) => {
-      logger.info(message);
-    })
     .catch(async (error) => {
       logger.error(`Error killing the process, error message is: ${error}`);
-      logger.error(`Check is Process status: ${error}`);
+      logger.error(`Checking current status of Process ${child.pid}`);
       await promisifiedSpawn('tasklist', ['/v', '/fi', `"PID eq ${child.pid}"`]);
-      logger.info("Trying second time to kill the process");
       
+      logger.info("Trying one more time to kill the process");
       promisifiedSpawn('taskkill', ['/pid', `${child.pid}`, '/f', '/t'])
       .catch((error2) => {
-        logger.error(`Taskkill failed on 2nd attempt as well with error: ${error2}`);
+        logger.error(`Taskkill failed on 2nd attempt with error: ${error2}`);
       })
     });
   } else {
