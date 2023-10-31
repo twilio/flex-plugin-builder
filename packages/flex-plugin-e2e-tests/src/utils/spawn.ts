@@ -120,7 +120,7 @@ export const logResult = (result: SpawnResult): void => {
 export const killChildProcess = async (
   child: ChildProcessWithoutNullStreams | undefined,
   os: string,
-  retry = 2
+  retry = 2,
 ): Promise<void> => {
   if (!child) {
     throw new Error('Could not kill child process, process does not exist');
@@ -128,16 +128,16 @@ export const killChildProcess = async (
 
   if (os === 'win32') {
     try {
-      if(retry !== 2){
+      if (retry !== 2) {
         logger.error(`Checking current status of process ${child.pid}`);
         await promisifiedSpawn('tasklist', ['/v', '/fi', `"PID eq ${child.pid}"`]);
       }
       await promisifiedSpawn('taskkill', ['/pid', `${child.pid}`, '/f', '/t']);
-    } catch(e) {
+    } catch (e) {
       logger.error(`Error killing the process: ${e}}`);
       if (retry > 0) {
-        logger.info("Retrying to kill the process");
-        killChildProcess(child, os, retry - 1);
+        logger.info('Retrying to kill the process');
+        await killChildProcess(child, os, retry - 1);
       }
     }
   } else {
