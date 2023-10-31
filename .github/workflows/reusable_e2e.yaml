@@ -88,14 +88,6 @@ jobs:
           npm run start
         env:
           TS: 0
-          LOCATE_TIMEOUT: 600000
-          PAGE_LOAD_TIMEOUT: 600000
-      - name: Upload JS screenshots
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: JS-screenshots
-          path: packages/flex-plugin-e2e-tests/screenshots
       - name: Kill node for Windows os
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
@@ -107,7 +99,7 @@ jobs:
         run: |
           cd packages/flex-plugin-e2e-tests
           npm run start
-      - name: Upload TS screenshots
+      - name: Upload Screenshots
         uses: actions/upload-artifact@v3
         if: always()
         with:

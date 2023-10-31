@@ -1,21 +1,13 @@
 import { ElementHandle, Page } from 'puppeteer';
-import { logger } from '@twilio/flex-dev-utils';
-
-const LOCATE_TIMEOUT: string | undefined = process.env.LOCATE_TIMEOUT;
-const PAGE_LOAD_TIMEOUT: string | undefined = process.env.PAGE_LOAD_TIMEOUT;
 
 export abstract class Base {
-  protected static readonly DEFAULT_LOCATE_TIMEOUT = LOCATE_TIMEOUT ? Number(LOCATE_TIMEOUT) : 60000;
-
-  protected static readonly DEFAULT_PAGE_LOAD_TIMEOUT = PAGE_LOAD_TIMEOUT ? Number(PAGE_LOAD_TIMEOUT) : 60000;
+  protected static readonly DEFAULT_LOCATE_TIMEOUT = 300000;
+  protected static readonly DEFAULT_PAGE_LOAD_TIMEOUT = 300000;
 
   protected readonly page: Page;
 
   constructor(page: Page) {
     this.page = page;
-    logger.info(
-      `DEFAULT_LOCATE_TIMEOUT: ${Base.DEFAULT_LOCATE_TIMEOUT}ms DEFAULT_PAGE_LOAD_TIMEOUT: ${Base.DEFAULT_PAGE_LOAD_TIMEOUT}`,
-    );
   }
 
   /**
