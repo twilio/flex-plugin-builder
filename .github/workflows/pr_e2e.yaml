@@ -6,7 +6,7 @@ on:
 
 jobs:
   get-version:
-    if: ${{ github.event.label.name == vars.E2E_LABEL }}
+    if: ${{ (github.event.label.name == vars.E2E_LABEL) || (github.event.label.name == vars.PUBLISH_AND_E2E_LABEL) }}
     runs-on: ubuntu-latest
     outputs:
       branch: ${{ steps.extractBranch.outputs.branch }}
@@ -22,16 +22,22 @@ jobs:
           echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
         id: extractBranch
       - name: Retrieve Alpha Patch Version
+        if: ${{ github.event.label.name == vars.PUBLISH_AND_E2E_LABEL }}
         run: |
           currentVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
           semver=( ${currentVersion//./ } )
           echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
         id: alphaVersion
+      - name: Use Latest Version
+        if: ${{ github.event.label.name == vars.E2E_LABEL }}
+        run: |
+          echo "version=latest" >> "$GITHUB_OUTPUT"
+        id: alphaVersion
 
   release-alpha-version:
     needs: get-version
     uses: ./.github/workflows/reusable_publish.yaml
-    if: ${{ github.event.label.name == vars.E2E_LABEL }}
+    if: ${{ github.event.label.name == vars.PUBLISH_AND_E2E_LABEL }}
     with:
       TAG: alpha
       VERSION: ${{ needs.get-version.outputs.version }}
@@ -44,7 +50,7 @@ jobs:
   e2e-test:
     needs: [ get-version, release-alpha-version ]
     uses: ./.github/workflows/reusable_e2e.yaml
-    if: ${{ github.event.label.name == vars.E2E_LABEL }}
+    if: ${{ (github.event.label.name == vars.E2E_LABEL) || (github.event.label.name == vars.PUBLISH_AND_E2E_LABEL) }}
     with:
       BRANCH: ${{ needs.get-version.outputs.branch }}
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
