@@ -45,7 +45,7 @@ jobs:
   e2e-test:
     needs: [ get-version, release-alpha-version ]
     uses: ./.github/workflows/reusable_e2e.yaml
-    if: ${{ (github.event.label.name == vars.E2E_LABEL) || (github.event.label.name == vars.PUBLISH_AND_E2E_LABEL) }}
+    if: ${{ always() && ((github.event.label.name == vars.E2E_LABEL) || (github.event.label.name == vars.PUBLISH_AND_E2E_LABEL)) }}
     with:
       BRANCH: ${{ needs.get-version.outputs.branch }}
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
