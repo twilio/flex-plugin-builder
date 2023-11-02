@@ -5,7 +5,7 @@ on:
 
 jobs:
   scheduled-e2e-test:
-    uses: ./.github/workflows/reusable_e2e.yaml
+    uses: ./.github/workflows/~reusable_e2e.yaml
     with:
       BRANCH: main
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
