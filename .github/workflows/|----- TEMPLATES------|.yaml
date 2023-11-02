@@ -1,0 +1,15 @@
+on:
+  workflow_call:
+    inputs:
+      MSG:
+        description: 'Custom message to print'
+        required: true
+        type: string
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Test
+        run: |
+          echo "This is dummy flow, just to separate the workflow on Github-Actions UI. Custom Message is: ${{ inputs.MSG }} "
