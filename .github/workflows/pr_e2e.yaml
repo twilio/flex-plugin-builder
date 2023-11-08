@@ -31,7 +31,7 @@ jobs:
 
   release-alpha-version:
     needs: get-version
-    uses: ./.github/workflows/reusable_publish.yaml
+    uses: ./.github/workflows/~reusable_publish.yaml
     if: ${{ github.event.label.name == vars.PUBLISH_AND_E2E_LABEL }}
     with:
       TAG: alpha
@@ -44,7 +44,7 @@ jobs:
 
   e2e-test:
     needs: [ get-version, release-alpha-version ]
-    uses: ./.github/workflows/reusable_e2e.yaml
+    uses: ./.github/workflows/~reusable_e2e.yaml
     if: ${{ always() && ((github.event.label.name == vars.E2E_LABEL) || (github.event.label.name == vars.PUBLISH_AND_E2E_LABEL)) }}
     with:
       BRANCH: ${{ needs.get-version.outputs.branch }}
