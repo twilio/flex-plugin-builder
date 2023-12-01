@@ -59,7 +59,7 @@
     "ora": "^5.4.1",
     "package-json": "^6.5.0",
     "qs": "^6.10.3",
-    "rimraf": "^3.0.2",
+    "rimraf": "^4.0.0",
     "semver": "^7.3.5",
     "string-width": "^4.2.3",
     "table": "^6.7.3",
