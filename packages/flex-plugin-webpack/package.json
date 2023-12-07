@@ -34,6 +34,7 @@
     "test:watch": "cd ../.. && jest packages/flex-plugin-webpack --watch --color"
   },
   "dependencies": {
+    "@babel/plugin-proposal-decorators": "7.23.3",
     "@babel/core": "^7.22.10",
     "@babel/preset-env": "^7.22.10",
     "@babel/preset-modules": "^0.1.6",

@@ -91,6 +91,7 @@ const _getBabelLoader = (isProd: boolean) => ({
       require.resolve('@babel/preset-typescript'),
     ],
     plugins: [
+      [require.resolve('@babel/plugin-proposal-decorators'), { decoratorsBeforeExport: true }],
       [
         require.resolve('babel-plugin-named-asset-import'),
         {
@@ -115,6 +116,16 @@ const _getImageLoader = (): RuleSetRule => ({
   options: {
     limit: IMAGE_SIZE_BYTE,
   },
+});
+
+/**
+ * Gets the image loader
+ * @private
+ */
+/* c8 ignore next */
+const _getNodeLoader = (): RuleSetRule => ({
+  test: /\.node$/,
+  loader: require.resolve('node-loader'),
 });
 
 /**
@@ -428,7 +439,6 @@ const _getResolve = (environment: Environment) => {
 
   return resolve;
 };
-
 /**
  * Returns the base {@link Configuration}
  * @private
@@ -445,7 +455,7 @@ export const _getBase = (environment: Environment): Configuration => {
       strictExportPresence: true,
       rules: [
         {
-          oneOf: [_getImageLoader(), _getBabelLoader(isProd), ..._getStyleLoaders(isProd)],
+          oneOf: [_getNodeLoader(), _getImageLoader(), _getBabelLoader(isProd), ..._getStyleLoaders(isProd)],
         },
       ],
     },
