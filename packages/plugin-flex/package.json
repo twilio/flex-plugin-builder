@@ -47,7 +47,7 @@
     "@oclif/config": "^1.18.1",
     "@oclif/errors": "^1.3.5",
     "@oclif/parser": "^3.8.5",
-    "@twilio/cli-core": "^7.6.1",
+    "@twilio/cli-core": "^7.19.1",
     "@twilio/create-flex-plugin": "6.2.3",
     "@twilio/flex-dev-utils": "6.2.3",
     "@twilio/flex-plugin-scripts": "6.2.3",
