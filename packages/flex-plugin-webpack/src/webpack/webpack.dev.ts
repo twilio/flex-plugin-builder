@@ -1,6 +1,6 @@
 import { env } from '@twilio/flex-dev-utils';
 import { getLocalAndNetworkUrls } from '@twilio/flex-dev-utils/dist/urls';
-import { ClientConfiguration, Configuration, Static } from 'webpack-dev-server';
+import { Configuration } from 'webpack-dev-server';
 import { getPaths } from '@twilio/flex-dev-utils/dist/fs';
 
 import { WebpackType } from '..';
@@ -15,17 +15,11 @@ export const _getBase = (): Configuration => {
 
   return {
     compress: true,
-    static: {},
-    client: {
-      logging: 'info',
-      webSocketURL: {
-        hostname: local.host,
-        pathname: local.url,
-        port: local.port,
-      },
-    },
+    clientLogLevel: 'none',
+    quiet: true,
     host: env.getHost(),
     port: env.getPort(),
+    public: local.url,
   };
 };
 
@@ -35,13 +29,15 @@ export const _getBase = (): Configuration => {
  */
 // eslint-disable-next-line import/no-unused-modules
 export const _getStaticConfiguration = (config: Configuration): Configuration => {
-  config.static = [getPaths().app.publicDir, getPaths().scripts.devAssetsDir];
+  config.contentBase = [getPaths().app.publicDir, getPaths().scripts.devAssetsDir];
+  config.contentBasePublicPath = '/';
   config.historyApiFallback = {
     disableDotRule: true,
     index: '/',
   };
-  (config.static as Static).publicPath = '/';
-  (config.static as Static).watch = true;
+  config.publicPath = '/';
+  config.watchContentBase = true;
+
   return config;
 };
 
@@ -52,15 +48,18 @@ export const _getStaticConfiguration = (config: Configuration): Configuration =>
 // eslint-disable-next-line import/no-unused-modules
 export const _getJavaScriptConfiguration = (config: Configuration): Configuration => {
   const socket = env.getWSSocket();
-  (config.static as Static).serveIndex = false;
+  config.injectClient = false;
+  config.serveIndex = false;
+
   // We're using native sockjs-node
-  config.webSocketServer = 'ws';
-  (config.client as ClientConfiguration).webSocketURL = {
-    hostname: socket.host,
-    pathname: socket.path,
-    port: socket.port,
-  };
-  config.hot = false;
+  config.transportMode = 'ws';
+  config.sockHost = socket.host;
+  config.sockPath = socket.path;
+  config.sockPort = socket.port;
+
+  // Hot reload
+  config.hot = true;
+
   return config;
 };
 

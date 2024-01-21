@@ -1,7 +1,7 @@
 import { env, logger, exit, Callback } from '@twilio/flex-dev-utils';
 import { Environment } from '@twilio/flex-dev-utils/dist/env';
 import { addCWDNodeModule, getFileSizeInMB, getPaths, updateAppVersion } from '@twilio/flex-dev-utils/dist/fs';
-import { webpack, Stats } from '@twilio/flex-plugin-webpack';
+import { webpack, WebpackCompiler } from '@twilio/flex-plugin-webpack';
 
 import getConfiguration, { ConfigurationType } from '../config';
 import { setEnvironment } from '..';
@@ -30,23 +30,22 @@ const MAX_BUILD_SIZE_MB = 10;
  */
 // eslint-disable-next-line import/no-unused-modules
 export const _handler =
-  (resolve: Callback<BuildBundle>, reject: Callback<Error | string | string[]>): any =>
-  (err: Error, stats: Stats) => {
+  (resolve: Callback<BuildBundle>, reject: Callback<Error | string | string[]>): WebpackCompiler.Handler =>
+  (err: Error, stats) => {
     if (err) {
-      logger.info(`error`);
       reject(err);
       return;
     }
 
     const result = stats.toJson({ all: false, warnings: true, errors: true });
     if (stats.hasErrors()) {
-      reject(result.errors?.map((e) => e.message) as string[]);
+      reject(result.errors);
       return;
     }
 
     resolve({
       bundles: stats.toJson({ assets: true }).assets as Bundle[],
-      warnings: result.warnings?.map((w) => w.message),
+      warnings: result.warnings,
     });
   };
 

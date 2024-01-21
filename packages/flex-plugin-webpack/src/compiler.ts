@@ -2,10 +2,10 @@
 
 import { logger, FunctionalCallback } from '@twilio/flex-dev-utils';
 import { FlexPluginError } from '@twilio/flex-dev-utils/dist/errors';
-import { AsyncSeriesHook, SyncHook } from 'tapable';
+import { SyncHook } from 'tapable';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import typescriptFormatter, { Issue } from '@k88/typescript-compile-error-formatter';
-import webpack, { Compiler as WebpackCompiler, Configuration, StatsError, WebpackError, Stats } from 'webpack';
+import webpack, { Compiler as WebpackCompiler, Configuration } from 'webpack';
 import { getCliPaths, getPaths, readRunPluginsJson, writeJSONFile } from '@twilio/flex-dev-utils/dist/fs';
 import webpackFormatMessages from '@k88/format-webpack-messages';
 import { getLocalAndNetworkUrls } from '@twilio/flex-dev-utils/dist/urls';
@@ -13,28 +13,23 @@ import { getLocalAndNetworkUrls } from '@twilio/flex-dev-utils/dist/urls';
 import { OnCompileCompletePayload } from './devServer/ipcServer';
 import { OnRemotePlugins, Plugin } from './devServer/pluginServer';
 import { devServerSuccessful } from './prints';
-import ToJsonOutput = webpack.StatsCompilation;
+import CompilerHooks = webpack.compilation.CompilerHooks;
+import ToJsonOutput = webpack.Stats.ToJsonOutput;
 
 interface ErrorsAndWarnings {
-  errors: StatsError[] | WebpackError[] | string[];
-  warnings: StatsError[] | WebpackError[] | string[];
+  errors: string[];
+  warnings: string[];
 }
 
-type OnCompile = (payload: OnCompileCompletePayload) => void;
-interface OnCompileResult {
-  [key: string]: ToJsonOutput;
-}
-interface CompilerHooks {
-  beforeCompile: AsyncSeriesHook<[any]>;
-  done: AsyncSeriesHook<Stats>;
-  invalid: SyncHook<[null | string, number]>;
-}
 interface Hook extends CompilerHooks {
   tsCompiled: SyncHook<string[], string[]>;
 }
-// @ts-ignore
 export interface Compiler extends WebpackCompiler {
   hooks: Hook;
+}
+type OnCompile = (payload: OnCompileCompletePayload) => void;
+interface OnCompileResult {
+  [key: string]: ToJsonOutput;
 }
 interface CompilerRenderer {
   onCompile: OnCompile;
@@ -62,10 +57,7 @@ export default (
   logger.debug('Creating webpack compiler');
 
   try {
-    const compiler: Compiler = webpack(config) as unknown as Compiler;
-    if (!Object.isExtensible(compiler.hooks)) {
-      compiler.hooks = { ...compiler.hooks };
-    }
+    const compiler = webpack(config) as Compiler;
     compiler.hooks.tsCompiled = new SyncHook(['warnings', 'errors']);
 
     // For build, we don't need to tap into any hooks
@@ -105,7 +97,8 @@ export default (
     });
 
     compiler.hooks.done.tap('done', async (stats) => {
-      const result = stats?.toJson({ all: false, errors: true, warnings: true });
+      const result = stats.toJson({ all: false, errors: true, warnings: true });
+
       if (getPaths().app.isTSProject() && !stats.hasErrors()) {
         const delayedMsg = setTimeout(() => {
           logger.notice('Waiting for Typescript check results...');
@@ -114,12 +107,12 @@ export default (
         clearTimeout(delayedMsg);
 
         // Push ts-compile errors into compiler
-        result?.errors?.push(...(messages.errors as StatsError[]));
-        stats.compilation.errors.push(...(messages.errors as WebpackError[]));
-        result?.warnings?.push(...(messages.warnings as StatsError[]));
-        stats.compilation.warnings.push(...(messages.warnings as WebpackError[]));
+        result.errors.push(...messages.errors);
+        stats.compilation.errors.push(...messages.errors);
+        result.warnings.push(...messages.warnings);
+        stats.compilation.warnings.push(...messages.warnings);
 
-        compiler.hooks.tsCompiled.call(messages.warnings as string[], messages.errors as string[]);
+        compiler.hooks.tsCompiled.call(messages.warnings, messages.errors);
       }
 
       const config = readRunPluginsJson();
@@ -177,9 +170,7 @@ export const compilerRenderer = (
       logger.clearTerminal();
       results[appName] = result;
 
-      const isSuccessful = Object.values(results).every(
-        (r) => r.errors && r.errors.length === 0 && r.warnings && r.warnings.length === 0,
-      );
+      const isSuccessful = Object.values(results).every((r) => r.errors.length === 0 && r.warnings.length === 0);
       if (isSuccessful) {
         if (showSuccessMsg) {
           serverSuccessful([]);
@@ -189,12 +180,12 @@ export const compilerRenderer = (
 
       Object.keys(results).forEach((name) => {
         const formatted = webpackFormatMessages({
-          errors: results[name].errors as unknown as string[],
-          warnings: results[name].warnings as unknown as string[],
+          errors: results[name].errors,
+          warnings: results[name].warnings,
         });
 
         // Only show errors if both exist
-        if ((results[name].errors as unknown as string[]).length) {
+        if (results[name].errors.length) {
           /*
            * Most errors are duplicate of the same error
            * So only show the first error
@@ -207,7 +198,7 @@ export const compilerRenderer = (
           return;
         }
 
-        if ((results[name].warnings as unknown as string[]).length) {
+        if (results[name].warnings.length) {
           logger.warning(`Compiled plugin ${logger.colors.yellow.bold(name)} with warning(s).`);
           logger.info(formatted.warnings.join('\n'));
           logger.newline();

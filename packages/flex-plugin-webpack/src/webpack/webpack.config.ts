@@ -1,6 +1,7 @@
 /* eslint-disable global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires */
 /// <reference path="../module.d.ts" />
 
+import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
 import ModuleScopePlugin from '@k88/module-scope-plugin';
 import typescriptFormatter from '@k88/typescript-compile-error-formatter';
 import { semver, env } from '@twilio/flex-dev-utils';
@@ -10,29 +11,24 @@ import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import PnpWebpackPlugin from 'pnp-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
-import {
+import webpack, {
   Configuration,
   DefinePlugin,
   HotModuleReplacementPlugin,
+  Loader,
+  Plugin,
+  Resolve,
   RuleSetRule,
-  WebpackPluginInstance,
   SourceMapDevToolPlugin,
-  ResolveOptions,
 } from 'webpack';
 
 import { getSanitizedProcessEnv } from './clientVariables';
 import { WebpackType } from '..';
+import Optimization = webpack.Options.Optimization;
 
 interface LoaderOption {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [name: string]: any;
-}
-
-interface Optimization {
-  splitChunks?: false;
-  runtimeChunk: boolean;
-  minimize: boolean;
-  minimizer: TerserPlugin[];
 }
 
 const IMAGE_SIZE_BYTE = 10 * 1024;
@@ -85,11 +81,7 @@ const _getBabelLoader = (isProd: boolean) => ({
     customize: require.resolve('babel-preset-react-app/webpack-overrides'),
     babelrc: false,
     configFile: false,
-    presets: [
-      require.resolve('@babel/preset-react'),
-      require.resolve('@babel/preset-env'),
-      require.resolve('@babel/preset-typescript'),
-    ],
+    presets: [require.resolve('babel-preset-react-app')],
     plugins: [
       [
         require.resolve('babel-plugin-named-asset-import'),
@@ -109,7 +101,7 @@ const _getBabelLoader = (isProd: boolean) => ({
  * @private
  */
 /* c8 ignore next */
-const _getImageLoader = (): RuleSetRule => ({
+export const _getImageLoader = (): RuleSetRule => ({
   test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
   loader: require.resolve('url-loader'),
   options: {
@@ -122,15 +114,15 @@ const _getImageLoader = (): RuleSetRule => ({
  * @param isProd  whether this is a production build
  * @private
  */
-const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
+export const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
   /**
    * Gets the loader for the given style
    * @param options the options
    * @param preProcessor  the pre-processor, for example scss-loader
    * @param implementation  the implementation for thr scss-loader
    */
-  const getStyleLoader = (options: LoaderOption) => {
-    const loaders = [];
+  const getStyleLoader = (options: LoaderOption, preProcessor?: string, implementation?: string) => {
+    const loaders: Loader[] = [];
 
     // Main style loader to work when compiled
     loaders.push(require.resolve('style-loader'));
@@ -160,6 +152,33 @@ const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
       },
     );
 
+    // Add a pre-processor loader (converting SCSS to CSS)
+    if (preProcessor) {
+      const preProcessorOptions: Record<string, unknown> = {
+        sourceMap: isProd,
+      };
+
+      if (implementation) {
+        const nodePath = resolveModulePath(implementation);
+        if (nodePath) {
+          preProcessorOptions.implementation = require(nodePath);
+        }
+      }
+
+      loaders.push(
+        {
+          loader: require.resolve('resolve-url-loader'),
+          options: {
+            sourceMap: isProd,
+          },
+        },
+        {
+          loader: require.resolve(preProcessor),
+          options: preProcessorOptions,
+        },
+      );
+    }
+
     return loaders;
   };
 
@@ -184,37 +203,27 @@ const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
     {
       test: /\.(scss|sass)$/,
       exclude: /\.module\.(scss|sass)$/,
-      use: [
-        ...getStyleLoader({
+      use: getStyleLoader(
+        {
           importLoaders: 3,
           sourceMap: isProd,
-        }),
-        {
-          loader: 'resolve-url-loader',
-          options: {
-            sourceMap: isProd,
-          },
         },
         'sass-loader',
-      ],
+        'node-sass',
+      ),
       sideEffects: true,
     },
     {
       test: /\.module\.(scss|sass)$/,
-      use: [
-        ...getStyleLoader({
+      use: getStyleLoader(
+        {
           importLoaders: 3,
           sourceMap: isProd,
           modules: true,
-        }),
-        {
-          loader: 'resolve-url-loader',
-          options: {
-            sourceMap: isProd,
-          },
         },
         'sass-loader',
-      ],
+        'node-sass',
+      ),
     },
   ];
 };
@@ -224,8 +233,8 @@ const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
  * @param environment the environment
  * @private
  */
-export const _getBasePlugins = (environment: Environment) => {
-  const plugins: WebpackPluginInstance[] = [];
+export const _getBasePlugins = (environment: Environment): Plugin[] => {
+  const plugins: Plugin[] = [];
 
   const flexUIVersion = getDependencyVersion('@twilio/flex-ui');
   const reactVersion = getDependencyVersion('react');
@@ -265,8 +274,8 @@ export const _getBasePlugins = (environment: Environment) => {
  * Returns an array of {@link Plugin} for Webpack Static
  * @param environment
  */
-export const _getStaticPlugins = (environment: Environment) => {
-  const plugins: WebpackPluginInstance[] = [];
+export const _getStaticPlugins = (environment: Environment): Plugin[] => {
+  const plugins: Plugin[] = [];
   const { dependencies } = getPaths().app;
 
   // index.html entry point
@@ -275,14 +284,17 @@ export const _getStaticPlugins = (environment: Environment) => {
     plugins.push(
       new HtmlWebpackPlugin({
         inject: false,
+        hash: false,
         template: getPaths().scripts.indexHTMLPath,
-        templateParameters: {
-          __FPB_JS_SCRIPTS: _getJSScripts(
-            dependencies.flexUI.version,
-            dependencies.react.version,
-            dependencies.reactDom.version,
-          ).join('\n'),
-        },
+      }),
+    );
+    plugins.push(
+      new InterpolateHtmlPlugin({
+        __FPB_JS_SCRIPTS: _getJSScripts(
+          dependencies.flexUI.version,
+          dependencies.react.version,
+          dependencies.reactDom.version,
+        ).join('\n'),
       }),
     );
   }
@@ -294,16 +306,14 @@ export const _getStaticPlugins = (environment: Environment) => {
  * Returns an array of {@link Plugin} for Webpack Javascript
  * @param environment
  */
-export const _getJSPlugins = (environment: Environment) => {
-  const plugins = [];
+export const _getJSPlugins = (environment: Environment): Plugin[] => {
+  const plugins: Plugin[] = [];
   const isDev = environment === Environment.Development;
   const isProd = environment === Environment.Production;
 
   if (isProd) {
     plugins.push(
       new SourceMapDevToolPlugin({
-        filename: `${getPaths().app.name}.js.map`,
-        module: false,
         append: '\n//# sourceMappingURL=bundle.js.map',
       }),
     );
@@ -367,10 +377,11 @@ export const _getOptimization = (environment: Environment): Optimization => {
       new TerserPlugin({
         terserOptions: {
           parse: {
-            ecma: 2017,
+            ecma: 8,
           },
           compress: {
             ecma: 5,
+            warnings: false,
             comparisons: false,
             inline: 2,
           },
@@ -387,8 +398,8 @@ export const _getOptimization = (environment: Environment): Optimization => {
             // eslint-disable-next-line camelcase
             ascii_only: true,
           },
-          sourceMap: isProd,
         },
+        sourceMap: true,
       }),
     ],
   };
@@ -399,7 +410,7 @@ export const _getOptimization = (environment: Environment): Optimization => {
  * @param environment the environment
  * @private
  */
-const _getResolve = (environment: Environment) => {
+export const _getResolve = (environment: Environment): Resolve => {
   const isProd = environment === Environment.Production;
   const extensions = getPaths().app.isTSProject()
     ? getPaths().extensions
@@ -407,7 +418,7 @@ const _getResolve = (environment: Environment) => {
 
   const paths = getPaths();
 
-  const resolve: ResolveOptions = {
+  const resolve: Resolve = {
     modules: [
       'node_modules',
       paths.app.nodeModulesDir,
@@ -444,6 +455,7 @@ export const _getBase = (environment: Environment): Configuration => {
     module: {
       strictExportPresence: true,
       rules: [
+        { parser: { requireEnsure: false } },
         {
           oneOf: [_getImageLoader(), _getBabelLoader(isProd), ..._getStyleLoaders(isProd)],
         },
@@ -478,7 +490,7 @@ export const _getStaticConfiguration = (config: Configuration, environment: Envi
  */
 export const _getJavaScriptConfiguration = (config: Configuration, environment: Environment): Configuration => {
   const isProd = environment === Environment.Production;
-  const filename = `${getPaths().app.name}`;
+  const filename = `${getPaths().app.name}.js`;
   const outputName = environment === Environment.Production ? filename : `plugins/${filename}`;
 
   config.entry = config.entry ? config.entry : [];
@@ -489,15 +501,25 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
   config.output = {
     path: getPaths().app.buildDir,
     pathinfo: !isProd,
-    filename: `${outputName}.js`,
-    sourceMapFilename: `${outputName}.[contenthash].js.map`,
-    publicPath: '/',
+    futureEmitAssets: true,
+    filename: outputName,
+    publicPath: getPaths().app.publicDir,
     globalObject: 'this',
   };
   config.bail = isProd;
-  config.devtool = isProd ? 'cheap-source-map' : 'source-map';
+  config.devtool = isProd ? 'hidden-source-map' : 'source-map';
   config.optimization = _getOptimization(environment);
-  config.node = { global: true };
+  config.node = {
+    module: 'empty',
+    dgram: 'empty',
+    dns: 'mock',
+    fs: 'empty',
+    http2: 'empty',
+    net: 'empty',
+    tls: 'empty',
+    // eslint-disable-next-line camelcase
+    child_process: 'empty',
+  };
   config.plugins.push(..._getJSPlugins(environment));
 
   return config;
