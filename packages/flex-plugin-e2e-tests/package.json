@@ -1,6 +1,6 @@
 {
   "name": "@twilio/flex-plugin-e2e-tests",
-  "version": "6.1.1",
+  "version": "6.1.2",
   "description": "Flex Plugin E2E Tests framework",
   "keywords": [
     "flex",
@@ -34,12 +34,12 @@
     "test": "exit 0"
   },
   "dependencies": {
-    "@twilio/flex-dev-utils": "6.1.1",
-    "@twilio/flex-plugins-api-client": "6.1.1",
+    "@twilio/flex-dev-utils": "6.1.2",
+    "@twilio/flex-plugins-api-client": "6.1.2",
     "axios": "^0.24.0",
     "lodash": "4.17.21",
     "package-json": "^7.0.0",
-    "puppeteer": "^10.4.0",
+    "puppeteer": "^19.2.2",
     "replace-in-file": "^6.3.2",
     "semver": "^7.3.5"
   },

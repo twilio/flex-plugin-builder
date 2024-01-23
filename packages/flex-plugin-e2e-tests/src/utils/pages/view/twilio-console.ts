@@ -12,7 +12,7 @@ export class TwilioConsole extends Base {
 
   private static _nextBtn = '#email-next';
 
-  private static _loginBtn = '#login';
+  private static _loginBtn = 'button._button-login-password';
 
   assert = {};
 
@@ -60,7 +60,6 @@ export class TwilioConsole extends Base {
       await this.inputText(TwilioConsole._password, testParams.secrets.console.password);
       await this.click(TwilioConsole._loginBtn);
       await this.page.waitForTimeout(4000);
-      await this.goto({ baseUrl: this._baseUrl, path });
     }
 
     await sleep(30000);

@@ -40,6 +40,7 @@ export const promisifiedSpawn = async (
         TWILIO_ACCOUNT_SID: testParams.secrets.api.accountSid,
         TWILIO_AUTH_TOKEN: testParams.secrets.api.authToken,
         TWILIO_REGION: testParams.config.region,
+        NODE_OPTIONS: testParams.environment.nodeOptions,
       },
       shell: true,
     };
@@ -119,13 +120,26 @@ export const logResult = (result: SpawnResult): void => {
 export const killChildProcess = async (
   child: ChildProcessWithoutNullStreams | undefined,
   os: string,
+  retry = 2,
 ): Promise<void> => {
   if (!child) {
     throw new Error('Could not kill child process, process does not exist');
   }
 
   if (os === 'win32') {
-    await promisifiedSpawn('taskkill', ['/pid', `${child.pid}`, '/f', '/t']);
+    try {
+      if (retry !== 2) {
+        logger.error(`Checking current status of process ${child.pid}`);
+        await promisifiedSpawn('tasklist', ['/v', '/fi', `"PID eq ${child.pid}"`]);
+      }
+      await promisifiedSpawn('taskkill', ['/pid', `${child.pid}`, '/f', '/t']);
+    } catch (e) {
+      logger.error(`Error killing the process: ${e}}`);
+      if (retry > 0) {
+        logger.info('Retrying to kill the process');
+        await killChildProcess(child, os, retry - 1);
+      }
+    }
   } else {
     child.kill();
   }

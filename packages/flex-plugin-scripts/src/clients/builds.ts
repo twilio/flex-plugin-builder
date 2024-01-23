@@ -37,7 +37,7 @@ export interface BuildData {
 }
 
 export default class BuildClient {
-  private static NodeEngine = 'node16';
+  private static NodeEngine = 'node18';
 
   private static timeoutMsec: number = 60_000;
 
