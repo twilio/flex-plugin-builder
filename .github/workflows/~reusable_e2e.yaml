@@ -52,7 +52,7 @@ on:
         required: true
 
 jobs:
-  node16:
+  node18:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]

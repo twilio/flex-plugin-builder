@@ -82,12 +82,17 @@ export abstract class Base {
       element = await this.page.waitForXPath(seletor, waitOptions);
     } else {
       // @ts-ignore
+      // eslint-disable-next-line no-console
+      console.log('Waiting for selector: ', seletor);
       element = await this.page.waitForSelector(seletor, waitOptions);
     }
 
     if (!element) {
       throw new Error(`Element: ${elementName} is not visible in the UI`);
     }
+
+    // eslint-disable-next-line no-console
+    console.log('Element found');
     return element;
   }
 }
