@@ -9,7 +9,7 @@ on:
         type: string
         description: Version to use
         default: ''
-        required: false
+        required: true
 
 jobs:
   get-version:
