@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
-import nodePath from 'path';
+import { resolve } from 'path';
+import { existsSync, mkdirSync } from 'fs';
 
 import { Page } from 'puppeteer';
 
@@ -49,6 +50,12 @@ export class TwilioConsole extends Base {
     localhostPort: number,
     firstLoad: boolean = true,
   ): Promise<void> {
+    const screenshotDir = resolve('./screenshots');
+
+    if (!existsSync(screenshotDir)) {
+      mkdirSync(screenshotDir);
+    }
+
     const redirectUrl = this._flexBaseUrl.includes('localhost')
       ? TwilioConsole._createLocalhostUrl(localhostPort)
       : this._flexBaseUrl;
@@ -63,10 +70,10 @@ export class TwilioConsole extends Base {
       await this.inputText(TwilioConsole._password, testParams.secrets.console.password);
       await this.click(TwilioConsole._loginBtn);
       console.log('Clicked the login button');
-      await this.page.screenshot({ path: nodePath.resolve('./screenshots', `${Date.now()}.png`) });
+      await this.page.screenshot({ path: resolve(screenshotDir, `${Date.now()}.png`) });
       console.log('Waiting for navigation');
       await this.page.waitForNavigation();
-      await this.page.screenshot({ path: nodePath.resolve('./screenshots', `${Date.now()}.png`) });
+      await this.page.screenshot({ path: resolve(screenshotDir, `${Date.now()}.png`) });
     }
 
     console.log('Navigation complete. Sleeping for 30s');
