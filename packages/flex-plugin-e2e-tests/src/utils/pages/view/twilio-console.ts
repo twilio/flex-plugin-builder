@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+import nodePath from 'path';
+
 import { Page } from 'puppeteer';
 
 import { Base } from './base';
@@ -61,10 +63,10 @@ export class TwilioConsole extends Base {
       await this.inputText(TwilioConsole._password, testParams.secrets.console.password);
       await this.click(TwilioConsole._loginBtn);
       console.log('Clicked the login button');
-      await this.page.screenshot({ path: `./screenshots/${Date.now()}.png` });
+      await this.page.screenshot({ path: nodePath.resolve('./screenshots', `${Date.now()}.png`) });
       console.log('Waiting for navigation');
       await this.page.waitForNavigation();
-      await this.page.screenshot({ path: `./screenshots/${Date.now()}.png` });
+      await this.page.screenshot({ path: nodePath.resolve('./screenshots', `${Date.now()}.png`) });
     }
 
     console.log('Navigation complete. Sleeping for 30s');
