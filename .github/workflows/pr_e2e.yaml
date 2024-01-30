@@ -3,6 +3,13 @@ name: PR Validator - E2E
 on:
   pull_request:
     types: [ labeled ]
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        description: Version to use
+        default: ''
+        required: false
 
 jobs:
   get-version:
@@ -49,7 +56,7 @@ jobs:
     with:
       BRANCH: ${{ needs.get-version.outputs.branch }}
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-      PACKAGE_VERSION: ${{ github.event.label.name == vars.E2E_LABEL && 'latest' || needs.get-version.outputs.version }}
+      PACKAGE_VERSION: ${{ (inputs.version != '' && inputs.version) || (github.event.label.name == vars.E2E_LABEL && 'latest') || needs.get-version.outputs.version }}
       FLEX_UI_VERSION: latest
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
