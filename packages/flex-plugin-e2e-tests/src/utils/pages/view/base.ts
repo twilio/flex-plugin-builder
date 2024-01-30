@@ -81,8 +81,6 @@ export abstract class Base {
     if (seletor.startsWith('//')) {
       element = await this.page.waitForXPath(seletor, waitOptions);
     } else {
-      // eslint-disable-next-line no-console
-      console.log('Waiting for selector: ', seletor);
       // @ts-ignore
       element = await this.page.waitForSelector(seletor, waitOptions);
     }
@@ -91,8 +89,6 @@ export abstract class Base {
       throw new Error(`Element: ${elementName} is not visible in the UI`);
     }
 
-    // eslint-disable-next-line no-console
-    console.log('Element found');
     return element;
   }
 }
