@@ -7,7 +7,7 @@ import * as github from '../../utils/github';
 jest.mock('@twilio/flex-dev-utils/dist/spawn');
 
 /* eslint-disable */
-const { spawn } = require('@twilio/flex-dev-utils/dist/spawn');
+const { spawn } = require("@twilio/flex-dev-utils/dist/spawn");
 /* eslint-enable */
 
 describe('commands', () => {

@@ -60,7 +60,6 @@ export class TwilioConsole extends Base {
       await this.inputText(TwilioConsole._password, testParams.secrets.console.password);
       await this.click(TwilioConsole._loginBtn);
       await this.page.waitForTimeout(4000);
-      await this.goto({ baseUrl: this._baseUrl, path });
     }
 
     await sleep(30000);
