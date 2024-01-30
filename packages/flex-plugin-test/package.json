@@ -41,7 +41,7 @@
     "babel-jest": "^26.6.3",
     "babel-polyfill": "^6.26.0",
     "babel-preset-react-app": "^9.1.2",
-    "cheerio": "0.22.0",
+    "cheerio": "1.0.0-rc.12",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1",
     "jest": "^26.6.3",

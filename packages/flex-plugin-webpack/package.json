@@ -34,7 +34,7 @@
     "test:watch": "cd ../.. && jest packages/flex-plugin-webpack --watch --color"
   },
   "dependencies": {
-    "@babel/core": "^7.16.0",
+    "@babel/core": "^7.23.7",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-react": "^7.16.0",
     "@k88/cra-webpack-hot-dev-client": "^1.1.0",
@@ -65,7 +65,7 @@
     "terser-webpack-plugin": "^2.3.8",
     "ts-pnp": "^1.2.0",
     "url-loader": "^4.1.1",
-    "webpack": "^4.46.0",
+    "webpack": "^4.47.0",
     "webpack-dev-server": "^3.11.3"
   },
   "devDependencies": {
