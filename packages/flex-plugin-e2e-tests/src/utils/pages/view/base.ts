@@ -81,9 +81,9 @@ export abstract class Base {
     if (seletor.startsWith('//')) {
       element = await this.page.waitForXPath(seletor, waitOptions);
     } else {
-      // @ts-ignore
       // eslint-disable-next-line no-console
       console.log('Waiting for selector: ', seletor);
+      // @ts-ignore
       element = await this.page.waitForSelector(seletor, waitOptions);
     }
 
