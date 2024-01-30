@@ -3,7 +3,6 @@ name: PR Validator - E2E
 on:
   pull_request:
     types: [ labeled ]
-  workflow_dispatch:
     inputs:
       version:
         type: string
