@@ -156,6 +156,11 @@ export const isCLI = (): boolean => getProcessEnv('FLEX_PLUGINS_CLI') === 'true'
 export const setCLI = (): void => setProcessEnv('FLEX_PLUGINS_CLI', 'true');
 
 /**
+ * Sets NODE_OPTIONS
+ */
+export const setNodeOptions = (): void => setProcessEnv('NODE_OPTIONS', '--dns-result-order ipv4first');
+
+/**
  * Determines if log level should be trace level
  */
 export const isTrace = (): boolean => {
@@ -246,6 +251,7 @@ export default {
   setQuiet,
   isCLI,
   setCLI,
+  setNodeOptions,
   isCI,
   setDebug,
   isDebug,

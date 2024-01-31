@@ -510,6 +510,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     if (scriptName !== 'test') {
       extra.push('--core-cwd', this.pluginRootDir);
       env.setCLI();
+      env.setNodeOptions();
     }
 
     // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
