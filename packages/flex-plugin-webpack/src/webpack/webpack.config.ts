@@ -250,6 +250,7 @@ export const _getBasePlugins = (environment: Environment): Plugin[] => {
     __FPB_REACT_DOM_VERSION: `'${reactDOMVersion}'`,
     // backward compatibility with v3
     __FPB_CRACO_CONFIG_FLEX_PLUGIN_VERSION: `'N/A'`,
+    NODE_OPTIONS: '--dns-result-order ipv4first',
   };
 
   // The @k88/cra-webpack-hot-dev-client package requires these environment variables to be replaced

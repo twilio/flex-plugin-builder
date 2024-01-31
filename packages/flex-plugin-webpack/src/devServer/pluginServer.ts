@@ -1,5 +1,4 @@
 import https from 'https';
-// import dns from 'dns';
 
 import { logger, FlexPluginError, exit, env } from '@twilio/flex-dev-utils';
 import { Request, Response } from 'express-serve-static-core';
@@ -257,11 +256,6 @@ export default (
   onRemotePlugin: OnRemotePlugins,
   pluginsConfig: PluginsConfig,
 ): void => {
-  /*
-   * Fix for ECONNREFUSED
-   * dns.setDefaultResultOrder('ipv4first');
-   */
-
   serverConfig.port = webpackConfig.port || 3000;
 
   webpackConfig.proxy = plugins.local.reduce((proxy, name) => {

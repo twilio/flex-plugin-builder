@@ -52,7 +52,7 @@ on:
         required: true
 
 jobs:
-  node16:
+  node18:
     strategy:
       fail-fast: false
       matrix:
@@ -78,7 +78,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18"
       - name: Install project dependencies
         run: npm i
       - name: Build packages
