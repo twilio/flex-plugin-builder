@@ -1,5 +1,3 @@
-import dns from 'dns';
-
 import { env, exit, logger } from '@twilio/flex-dev-utils';
 import { Environment } from '@twilio/flex-dev-utils/dist/env';
 import { FlexPluginError } from '@twilio/flex-dev-utils/dist/errors';
@@ -167,9 +165,6 @@ export const findPortAvailablePort = async (...args: string[]): Promise<number> 
  */
 export const start = async (...args: string[]): Promise<StartScript> => {
   logger.debug('Starting local development environment');
-
-  logger.debug('Setting DNS order to ipv4first');
-  dns.setDefaultResultOrder('ipv4first');
 
   addCWDNodeModule(...args);
 
