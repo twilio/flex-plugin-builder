@@ -167,7 +167,7 @@ export const start = async (...args: string[]): Promise<StartScript> => {
   logger.debug('Starting local development environment');
 
   addCWDNodeModule(...args);
-  args = [...args, '--dns-result-order ipv4first'];
+
   // Finds the first available free port where two consecutive ports are free
   const port = await findPortAvailablePort(...args);
 
