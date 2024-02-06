@@ -26,6 +26,7 @@ jobs:
 
   e2e-node16:
     uses: ./.github/workflows/~reusable_e2e.yaml
+    needs: release-public-version
     with:
       BRANCH: main
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
@@ -43,6 +44,3 @@ jobs:
       CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
       TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
       TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
-
-
-
