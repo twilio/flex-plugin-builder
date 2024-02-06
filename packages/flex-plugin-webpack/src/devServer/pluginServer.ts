@@ -3,7 +3,7 @@ import https from 'https';
 import { logger, FlexPluginError, exit, env } from '@twilio/flex-dev-utils';
 import { Request, Response } from 'express-serve-static-core';
 import { FlexConfigurationPlugin, readPluginsJson } from '@twilio/flex-dev-utils/dist/fs';
-import { Configuration, Port } from 'webpack-dev-server';
+import { Configuration } from 'webpack-dev-server';
 
 import { remotePluginNotFound } from '../prints';
 
@@ -23,7 +23,7 @@ interface StartServerPlugins {
 }
 
 interface StartServerConfig {
-  port: Port | number;
+  port: number;
   remoteAll: boolean;
 }
 
@@ -204,7 +204,7 @@ export const _startServer = (
     }
 
     const hasRemotePlugin = config.remoteAll || plugins.remote.length !== 0;
-    const localPlugins = _getLocalPlugins(config.port as number, plugins.local);
+    const localPlugins = _getLocalPlugins(config.port, plugins.local);
     const versionedPlugins = _getRemoteVersionedPlugins(plugins.versioned);
     const promise: Promise<Plugin[]> = hasRemotePlugin ? _getRemotePlugins(jweToken, flexVersion) : Promise.resolve([]);
 
@@ -260,23 +260,23 @@ export default (
 
   webpackConfig.proxy = plugins.local.reduce((proxy, name) => {
     proxy[`/plugins/${name}.js`] = {
-      target: `http://127.0.0.1:${serverConfig.port}`, // placeholder
+      target: `http://localhost:${serverConfig.port}`, // placeholder
       router: () => {
         const match = pluginsConfig[name];
         if (!match) {
           throw new Error();
         }
 
-        return `http://127.0.0.1:${match.port}`;
+        return `http://localhost:${match.port}`;
       },
     };
 
     return proxy;
   }, {});
 
-  webpackConfig.onBeforeSetupMiddleware = (server) => {
+  webpackConfig.before = (app, server) => {
     // @ts-ignore
     serverConfig.port = server.options.port || serverConfig.port;
-    server?.app?.use('^/plugins$', _startServer(plugins, serverConfig, onRemotePlugin));
+    app.use('^/plugins$', _startServer(plugins, serverConfig, onRemotePlugin));
   };
 };

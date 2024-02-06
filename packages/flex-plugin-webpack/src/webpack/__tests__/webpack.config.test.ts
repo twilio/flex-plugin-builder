@@ -88,38 +88,28 @@ describe('WebpackConfiguration', () => {
   describe('_getJavaScriptConfiguration', () => {
     it('should test devtool field', () => {
       jest.spyOn(webpackConfig, '_getJavaScriptEntries').mockReturnValue([]);
-      jest.spyOn(webpackConfig, '_getOptimization').mockReturnValue({
-        splitChunks: false,
-        runtimeChunk: false,
-        minimize: false,
-        minimizer: [],
-      });
+      jest.spyOn(webpackConfig, '_getOptimization').mockReturnValue({});
       jest.spyOn(webpackConfig, '_getJSPlugins').mockReturnValue([]);
 
       const configProd = webpackConfig._getJavaScriptConfiguration({}, Environment.Production);
       const configDev = webpackConfig._getJavaScriptConfiguration({}, Environment.Development);
 
-      expect(configProd.devtool).toEqual('cheap-source-map');
+      expect(configProd.devtool).toEqual('hidden-source-map');
       expect(configDev.devtool).toEqual('source-map');
     });
 
     it('should get production config', () => {
       const _getJavaScriptEntries = jest.spyOn(webpackConfig, '_getJavaScriptEntries').mockReturnValue([]);
-      const _getOptimization = jest.spyOn(webpackConfig, '_getOptimization').mockReturnValue({
-        splitChunks: false,
-        runtimeChunk: false,
-        minimize: false,
-        minimizer: [],
-      });
+      const _getOptimization = jest.spyOn(webpackConfig, '_getOptimization').mockReturnValue({});
       const _getJSPlugins = jest.spyOn(webpackConfig, '_getJSPlugins').mockReturnValue([]);
 
       const config = webpackConfig._getJavaScriptConfiguration({}, Environment.Production);
-      const { output } = config;
+      const output = config.output as webpack.Output;
 
-      expect(output?.path).toEqual(paths.app.buildDir);
-      expect(output?.filename).toEqual(`${paths.app.name}.js`);
-      expect(output?.publicPath).toEqual('/');
-      expect(output?.pathinfo).toEqual(false);
+      expect(output.path).toEqual(paths.app.buildDir);
+      expect(output.filename).toEqual(`${paths.app.name}.js`);
+      expect(output.publicPath).toEqual(paths.app.publicDir);
+      expect(output.pathinfo).toEqual(false);
       expect(config.bail).toEqual(true);
 
       expect(_getJavaScriptEntries).toHaveBeenCalledTimes(1);
@@ -129,21 +119,16 @@ describe('WebpackConfiguration', () => {
 
     it('should get development config', () => {
       const _getJavaScriptEntries = jest.spyOn(webpackConfig, '_getJavaScriptEntries').mockReturnValue([]);
-      const _getOptimization = jest.spyOn(webpackConfig, '_getOptimization').mockReturnValue({
-        splitChunks: false,
-        runtimeChunk: false,
-        minimize: false,
-        minimizer: [],
-      });
+      const _getOptimization = jest.spyOn(webpackConfig, '_getOptimization').mockReturnValue({});
       const _getJSPlugins = jest.spyOn(webpackConfig, '_getJSPlugins').mockReturnValue([]);
 
       const config = webpackConfig._getJavaScriptConfiguration({}, Environment.Development);
-      const { output } = config;
+      const output = config.output as webpack.Output;
 
-      expect(output?.path).toEqual(paths.app.buildDir);
-      expect(output?.filename).toEqual(`plugins/${paths.app.name}.js`);
-      expect(output?.publicPath).toEqual('/');
-      expect(output?.pathinfo).toEqual(true);
+      expect(output.path).toEqual(paths.app.buildDir);
+      expect(output.filename).toEqual(`plugins/${paths.app.name}.js`);
+      expect(output.publicPath).toEqual(paths.app.publicDir);
+      expect(output.pathinfo).toEqual(true);
       expect(config.bail).toEqual(false);
 
       expect(_getJavaScriptEntries).toHaveBeenCalledTimes(1);

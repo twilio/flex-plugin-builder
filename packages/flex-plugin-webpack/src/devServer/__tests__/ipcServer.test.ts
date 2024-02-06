@@ -1,4 +1,7 @@
+import * as webpack from 'webpack';
+
 import * as ipcServerScripts from '../ipcServer';
+import ToJsonOutput = webpack.Stats.ToJsonOutput;
 
 describe('ipcServer', () => {
   beforeEach(() => {
@@ -18,11 +21,7 @@ describe('ipcServer', () => {
     const _emitAllCompilesComplete = jest.spyOn(ipcServerScripts, 'emitAllCompilesComplete').mockReturnThis();
     const _emitToServer = jest.spyOn(ipcServerScripts, '_emitToServer').mockReturnThis();
 
-    const payload = {
-      result: {} as any,
-      appName: 'test',
-      lastPluginBundle: false,
-    };
+    const payload = { result: {} as ToJsonOutput, appName: 'test', lastPluginBundle: false };
     await ipcServerScripts.emitCompileComplete(payload);
 
     expect(_emitToServer).toHaveBeenCalledTimes(1);
@@ -34,11 +33,7 @@ describe('ipcServer', () => {
     const _emitAllCompilesComplete = jest.spyOn(ipcServerScripts, 'emitAllCompilesComplete').mockReturnThis();
     const _emitToServer = jest.spyOn(ipcServerScripts, '_emitToServer').mockReturnThis();
 
-    const payload = {
-      result: {} as any,
-      appName: 'test',
-      lastPluginBundle: true,
-    };
+    const payload = { result: {} as ToJsonOutput, appName: 'test', lastPluginBundle: true };
     await ipcServerScripts.emitCompileComplete(payload);
 
     expect(_emitToServer).toHaveBeenCalledTimes(1);

@@ -2,7 +2,7 @@ import ipc from 'node-ipc';
 import { env, logger } from '@twilio/flex-dev-utils';
 import webpack from 'webpack';
 
-import ToJsonOutput = webpack.StatsCompilation;
+import ToJsonOutput = webpack.Stats.ToJsonOutput;
 
 interface Client {
   on(event: string, callback: (...args: unknown[]) => void): Client;
@@ -28,7 +28,7 @@ export interface OnDevServerCrashedPayload {
   };
 }
 
-interface IPCPayload {
+export interface IPCPayload {
   onCompileComplete: OnCompileCompletePayload;
   onDevServerCrashed: OnDevServerCrashedPayload;
   onEmitAllCompilesComplete: unknown;
@@ -44,9 +44,9 @@ ipc.config.silent = !env.isDebug();
 let _isServerRunning: boolean = false;
 let _isClientConnected: boolean = false;
 /* c8 ignore next */
-const isServerRunning = (): boolean => _isServerRunning;
+export const isServerRunning = (): boolean => _isServerRunning;
 /* c8 ignore next */
-const isClientConnected = (): boolean => _isClientConnected;
+export const isClientConnected = (): boolean => _isClientConnected;
 
 let clientNode: Client | null = null;
 const messageCallbacks: MessageCallbacks = {};
@@ -78,7 +78,7 @@ export const _processEmitQueue = async (): Promise<void> => {
  * @param data
  * @private
  */
-const _onServerMessage = (data: { payload: unknown; type: string }): void => {
+export const _onServerMessage = (data: { payload: unknown; type: string }): void => {
   if (!data.type) {
     logger.error('IPC got an unexpected message: ', data);
     return;

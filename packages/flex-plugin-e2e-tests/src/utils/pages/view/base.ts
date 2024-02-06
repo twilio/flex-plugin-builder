@@ -88,6 +88,7 @@ export abstract class Base {
     if (!element) {
       throw new Error(`Element: ${elementName} is not visible in the UI`);
     }
+
     return element;
   }
 }

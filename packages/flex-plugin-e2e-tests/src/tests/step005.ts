@@ -1,5 +1,4 @@
 /* eslint-disable import/no-unused-modules */
-import { writeFileSync } from 'fs';
 
 import { replaceInFile } from 'replace-in-file';
 

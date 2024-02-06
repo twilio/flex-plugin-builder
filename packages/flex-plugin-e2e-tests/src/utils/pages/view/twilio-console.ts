@@ -1,7 +1,7 @@
 import { Page } from 'puppeteer';
 
 import { Base } from './base';
-import { Cookie, Cookies } from '../../console-api';
+import { Cookies } from '../../console-api';
 import { testParams } from '../../../core';
 import { sleep } from '../../timers';
 
@@ -12,7 +12,7 @@ export class TwilioConsole extends Base {
 
   private static _nextBtn = '#email-next';
 
-  private static _loginBtn = 'button._button-login-password';
+  private static _loginBtn = 'button[type=submit]';
 
   assert = {};
 
@@ -59,7 +59,7 @@ export class TwilioConsole extends Base {
       await this.click(TwilioConsole._nextBtn);
       await this.inputText(TwilioConsole._password, testParams.secrets.console.password);
       await this.click(TwilioConsole._loginBtn);
-      await this.page.waitForTimeout(4000);
+      await this.page.waitForNavigation();
     }
 
     await sleep(30000);

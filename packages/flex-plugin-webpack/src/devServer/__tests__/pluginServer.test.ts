@@ -101,18 +101,9 @@ describe('pluginServer', () => {
 
   describe('_mergePlugins', () => {
     it('should return both remote and local plugins', () => {
-      const localPlugin = {
-        name: defaultPluginName,
-        phase: 3,
-      } as pluginServerScript.Plugin;
-      const remotePluginOne = {
-        name: 'plugin-remote-1',
-        phase: 3,
-      } as pluginServerScript.Plugin;
-      const remotePluginTwo = {
-        name: 'plugin-remote-2',
-        phase: 3,
-      } as pluginServerScript.Plugin;
+      const localPlugin = { name: defaultPluginName, phase: 3 } as pluginServerScript.Plugin;
+      const remotePluginOne = { name: 'plugin-remote-1', phase: 3 } as pluginServerScript.Plugin;
+      const remotePluginTwo = { name: 'plugin-remote-2', phase: 3 } as pluginServerScript.Plugin;
 
       jest.spyOn(pluginServerScript, '_getLocalPlugins').mockReturnValue([localPlugin]);
       jest.spyOn(fsScript, 'readPackageJson').mockReturnValue(pkg);
@@ -124,18 +115,9 @@ describe('pluginServer', () => {
     });
 
     it('should return remote plugins that are not being run locally', () => {
-      const localPlugin = {
-        name: 'plugin-1',
-        phase: 3,
-      } as pluginServerScript.Plugin;
-      const remotePluginOne = {
-        name: 'plugin-1',
-        phase: 3,
-      } as pluginServerScript.Plugin;
-      const remotePluginTwo = {
-        name: 'plugin-2',
-        phase: 3,
-      } as pluginServerScript.Plugin;
+      const localPlugin = { name: 'plugin-1', phase: 3 } as pluginServerScript.Plugin;
+      const remotePluginOne = { name: 'plugin-1', phase: 3 } as pluginServerScript.Plugin;
+      const remotePluginTwo = { name: 'plugin-2', phase: 3 } as pluginServerScript.Plugin;
 
       jest.spyOn(pluginServerScript, '_getLocalPlugins').mockReturnValue([localPlugin]);
       jest.spyOn(fsScript, 'readPackageJson').mockReturnValue(pkg);
@@ -147,19 +129,9 @@ describe('pluginServer', () => {
     });
 
     it('should return remote, version, and local plugins', () => {
-      const localPlugin = {
-        name: defaultPluginName,
-        phase: 3,
-      } as pluginServerScript.Plugin;
-      const remotePlugin = {
-        name: 'plugin-remote',
-        phase: 3,
-      } as pluginServerScript.Plugin;
-      const versionPlugin = {
-        name: 'plugin-version',
-        phase: 3,
-        version: '1.0.0',
-      } as pluginServerScript.Plugin;
+      const localPlugin = { name: defaultPluginName, phase: 3 } as pluginServerScript.Plugin;
+      const remotePlugin = { name: 'plugin-remote', phase: 3 } as pluginServerScript.Plugin;
+      const versionPlugin = { name: 'plugin-version', phase: 3, version: '1.0.0' } as pluginServerScript.Plugin;
 
       jest.spyOn(pluginServerScript, '_getLocalPlugins').mockReturnValue([localPlugin]);
       jest.spyOn(fsScript, 'readPackageJson').mockReturnValue(pkg);
@@ -171,23 +143,10 @@ describe('pluginServer', () => {
     });
 
     it('should return remote plugins that are not local', () => {
-      const localPlugin = {
-        name: defaultPluginName,
-        phase: 3,
-      } as pluginServerScript.Plugin;
-      const remotePlugin = {
-        name: 'plugin-remote',
-        phase: 3,
-      } as pluginServerScript.Plugin;
-      const remotePlugin2 = {
-        name: defaultPluginName,
-        phase: 3,
-      } as pluginServerScript.Plugin;
-      const versionPlugin = {
-        name: 'plugin-version',
-        phase: 3,
-        version: '1.0.0',
-      } as pluginServerScript.Plugin;
+      const localPlugin = { name: defaultPluginName, phase: 3 } as pluginServerScript.Plugin;
+      const remotePlugin = { name: 'plugin-remote', phase: 3 } as pluginServerScript.Plugin;
+      const remotePlugin2 = { name: defaultPluginName, phase: 3 } as pluginServerScript.Plugin;
+      const versionPlugin = { name: 'plugin-version', phase: 3, version: '1.0.0' } as pluginServerScript.Plugin;
 
       jest.spyOn(pluginServerScript, '_getLocalPlugins').mockReturnValue([localPlugin]);
       jest.spyOn(pluginServerScript, '_getRemotePlugins').mockResolvedValue([remotePlugin, remotePlugin2]);

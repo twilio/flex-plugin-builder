@@ -26,7 +26,7 @@ describe('BuildScript', () => {
     name: 'test-bundle',
     size: 12345,
   };
-  const errorMsg = [{ message: 'some-error' }];
+  const errorMsg = 'some-error';
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -149,7 +149,7 @@ describe('BuildScript', () => {
 
       expect(toJson).toHaveBeenCalledTimes(1);
       expect(reject).toHaveBeenCalledTimes(1);
-      expect(reject).toHaveBeenCalledWith([errorMsg[0].message]);
+      expect(reject).toHaveBeenCalledWith(errorMsg);
       expect(resolve).not.toHaveBeenCalled();
     });
 

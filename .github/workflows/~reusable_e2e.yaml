@@ -2,19 +2,19 @@ on:
   workflow_call:
     inputs:
       BRANCH:
-        description: 'A branch passed from the caller workflow to run the test on.'
+        description: "A branch passed from the caller workflow to run the test on."
         required: true
         type: string
       PACKAGE_VERSION:
-        description: 'A package-version of cli passed from the caller workflow. Which will be used to create and release plugins.'
+        description: "A package-version of cli passed from the caller workflow. Which will be used to create and release plugins."
         required: true
         type: string
       FLEX_UI_VERSION:
-        description: 'A flex-ui version passed from the caller workflow. It decides the version of FLEX UI on tests will run on.'
+        description: "A flex-ui version passed from the caller workflow. It decides the version of FLEX UI on tests will run on."
         required: true
         type: string
       NPM_IGNORE_PREFIX:
-        description: 'A npm-ignore-prefix passed from the caller workflow.'
+        description: "A npm-ignore-prefix passed from the caller workflow."
         required: true
         type: string
 
@@ -24,38 +24,38 @@ on:
       CONSOLE_PASSWORD:
         required: true
       CONSOLE_EMAIL_linux:
-        description: 'An email passed from the caller workflow, it will be used for login in linux environment.'
+        description: "An email passed from the caller workflow, it will be used for login in linux environment."
         required: true
       TWILIO_ACCOUNT_SID_linux:
-        description: 'An account-sid passed from the caller workflow, it will be used for authentication of APIs in linux environment.'
+        description: "An account-sid passed from the caller workflow, it will be used for authentication of APIs in linux environment."
         required: true
       TWILIO_AUTH_TOKEN_linux:
-        description: 'An account-token passed from the caller workflow, it will be used for authentication of APIs in linux environment.'
+        description: "An account-token passed from the caller workflow, it will be used for authentication of APIs in linux environment."
         required: true
       CONSOLE_EMAIL_win32:
-        description: 'An email passed from the caller workflow, it will be used for login in windows environment.'
+        description: "An email passed from the caller workflow, it will be used for login in windows environment."
         required: true
       TWILIO_ACCOUNT_SID_win32:
-        description: 'An account-sid passed from the caller workflow, it will be used for authentication of APIs in windows environment.'
+        description: "An account-sid passed from the caller workflow, it will be used for authentication of APIs in windows environment."
         required: true
       TWILIO_AUTH_TOKEN_win32:
-        description: 'An account-token passed from the caller workflow, it will be used for authentication of APIs in windows environment.'
+        description: "An account-token passed from the caller workflow, it will be used for authentication of APIs in windows environment."
         required: true
       CONSOLE_EMAIL_darwin:
-        description: 'An email passed from the caller workflow, it will be used for login in mac environment.'
+        description: "An email passed from the caller workflow, it will be used for login in mac environment."
         required: true
       TWILIO_ACCOUNT_SID_darwin:
-        description: 'An account-sid passed from the caller workflow, it will be used for authentication of APIs in mac environment.'
+        description: "An account-sid passed from the caller workflow, it will be used for authentication of APIs in mac environment."
         required: true
       TWILIO_AUTH_TOKEN_darwin:
-        description: 'An account-token passed from the caller workflow, it will be used for authentication of APIs in mac environment.'
+        description: "An account-token passed from the caller workflow, it will be used for authentication of APIs in mac environment."
         required: true
 
 jobs:
-  node16:
+  node20:
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     env:
       BRANCH: ${{ inputs.BRANCH }}
@@ -77,7 +77,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: "20"
       - name: Install project dependencies
         run: npm i
       - name: Build packages
