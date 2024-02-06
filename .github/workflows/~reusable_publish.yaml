@@ -31,7 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: false
       - uses: actions/setup-node@v3
         with:
           node-version: "16"
@@ -40,10 +40,9 @@ jobs:
         run: npm i
       - name: Publish Version
         run: |
-          git config --global user.email ${{ vars.PUBLISH_EMAIL }}
-          git config --global user.name ${{ vars.PUBLISH_USER }}
-          git config user.email
-          git config user.name
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git remote set-url origin https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY
           npm run publish:${{ inputs.TAG }} ${{ inputs.VERSION }}
         env:
           VERSION: ${{ inputs.VERSION }}
@@ -51,6 +50,7 @@ jobs:
           NODE_OPTIONS: --no-experimental-fetch
           CI: ""
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
         env:
