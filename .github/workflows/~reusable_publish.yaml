@@ -38,8 +38,10 @@ jobs:
         run: npm i
       - name: Publish Version
         run: |
-          git config --global user.email "${{ secrets.PUBLISH_EMAIL }}"
-          git config --global user.name "${{ secrets.PUBLISH_USER }}"
+          git config --global user.email ${{ vars.PUBLISH_EMAIL }}
+          git config --global user.name ${{ vars.PUBLISH_USER }}
+          git config user.email
+          git config user.name
           npm run publish:${{ inputs.TAG }} ${{ inputs.VERSION }}
         env:
           VERSION: ${{ inputs.VERSION }}
