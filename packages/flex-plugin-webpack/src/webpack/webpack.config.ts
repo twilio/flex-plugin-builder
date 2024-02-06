@@ -123,10 +123,8 @@ export const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
    */
   const getStyleLoader = (options: LoaderOption, preProcessor?: string, implementation?: string) => {
     const loaders: Loader[] = [];
-
     // Main style loader to work when compiled
     loaders.push(require.resolve('style-loader'));
-
     // All css loader
     loaders.push(
       {
@@ -151,20 +149,17 @@ export const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
         },
       },
     );
-
     // Add a pre-processor loader (converting SCSS to CSS)
     if (preProcessor) {
       const preProcessorOptions: Record<string, unknown> = {
         sourceMap: isProd,
       };
-
       if (implementation) {
         const nodePath = resolveModulePath(implementation);
         if (nodePath) {
           preProcessorOptions.implementation = require(nodePath);
         }
       }
-
       loaders.push(
         {
           loader: require.resolve('resolve-url-loader'),
@@ -178,10 +173,8 @@ export const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
         },
       );
     }
-
     return loaders;
   };
-
   return [
     {
       test: /\.css$/,
