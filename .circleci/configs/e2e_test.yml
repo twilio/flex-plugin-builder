@@ -1,0 +1,385 @@
+version: 2.1
+
+parameters:
+  run_e2e_test:
+    default: false
+    type: boolean
+  run_e2e_test_nightly:
+    default: false
+    type: boolean
+  package_version:
+    default: ""
+    type: string
+  flex_ui_version:
+    default: ""
+    type: string
+
+executors:
+  node:
+    parameters:
+      tag:
+        type: string
+    docker:
+      - image: cimg/node:<< parameters.tag >>-browsers
+  macos:
+    macos:
+      xcode: 14.2.0
+
+orbs:
+  win: circleci/windows@5.0.0
+  node: circleci/node@5.1.0
+
+commands:
+  cmd_install-dependencies:
+    steps:
+      - run:
+          name: "Install project dependencies"
+          command: npm i
+  cmd_install-prerequisites:
+    steps:
+      - run:
+          name: "Apt-get update"
+          command: sudo apt-get update
+      - run:
+          name: "Install libraries"
+          command: sudo apt-get install -y libsecret-1-dev
+  cmd_run-build:
+    steps:
+      - run:
+          name: "Build packages"
+          command: npm run build
+  cmd_run-e2e-tests:
+    steps:
+      - run:
+          name: "Run e2e tests"
+          # default timeout is 10m
+          no_output_timeout: 20m
+          command: |
+            cd packages/flex-plugin-e2e-tests
+            npm start
+  cmd_run-e2e-tests-win:
+    steps:
+      - run:
+          name: "Run e2e tests - JS"
+          command: |
+            cd packages/flex-plugin-e2e-tests
+            npm start
+          environment:
+            TS: false
+  cmd_run-e2e-tests-win-ts:
+    steps:
+      - run:
+          name: "Run e2e tests - TS"
+          command: |
+            taskkill //im node.exe //f
+            cd packages/flex-plugin-e2e-tests
+            npm start
+          environment:
+            TS: true
+  cmd_run-e2e-tests-mac-js:
+    steps:
+      - run:
+          name: "Run e2e tests - JS"
+          command: |
+            cd packages/flex-plugin-e2e-tests
+            npm start
+          environment:
+            TS: false
+  cmd_run-e2e-tests-mac-ts:
+    steps:
+      - run:
+          name: "Run e2e tests - TS"
+          command: |
+            killall -9 node
+            cd packages/flex-plugin-e2e-tests
+            npm start
+          environment:
+            TS: true
+  cmd_set-mac-permissions:
+    steps:
+      - run:
+          name: "Set permissions to user directory"
+          command: sudo chmod -R 777 /Users/distiller
+  cmd_set-linux-permissions:
+    steps:
+      - run:
+          name: "Set permissions to /usr/local"
+          command: sudo chmod -R 777 /usr/local
+  cmd_windows-nvm-install-node:
+    parameters:
+      node-version:
+        type: string
+    steps:
+      - run:
+          name: "Install node"
+          command: nvm install << parameters.node-version >>
+      - run:
+          name: "NVM use"
+          command: nvm use << parameters.node-version >>
+  cmd_slack-notification-error:
+    parameters:
+      text:
+        type: string
+    steps:
+      - run:
+          name: Send Slack notification
+          command: |
+            curl -XPOST -H "Content-type:application/json" --data "{'text':':error: $CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH - << parameters.text >>. View <$CIRCLE_BUILD_URL|build>.', 'mrkdwn':true}" $SLACK_WEBHOOK
+          when: on_fail
+
+jobs:
+  job_e2e-test-linux-node16:
+    resource_class: xlarge
+    parameters:
+      package_version:
+        type: string
+      flex_ui_version:
+        type: string
+      node-version:
+        type: string
+    environment:
+      NODE_OPTIONS: --max-old-space-size=14336
+      PACKAGE_VERSION: << parameters.package_version >>
+      FLEX_UI_VERSION: << parameters.flex_ui_version >>
+    executor:
+      name: node
+      tag: << parameters.node-version >>
+    steps:
+      - checkout
+      - cmd_install-prerequisites
+      - cmd_install-dependencies
+      - cmd_run-build
+      - cmd_set-linux-permissions
+      - cmd_run-e2e-tests
+      - store_artifacts:
+          path: packages/flex-plugin-e2e-tests/screenshots
+
+  job_e2e-test-win-node16:
+    parameters:
+      package_version:
+        type: string
+      flex_ui_version:
+        type: string
+      shell:
+        type: string
+      node-version:
+        type: string
+    environment:
+      NODE_OPTIONS: --max-old-space-size=14336
+      PACKAGE_VERSION: << parameters.package_version >>
+      FLEX_UI_VERSION: << parameters.flex_ui_version >>
+    executor:
+      name: win/default
+      shell: << parameters.shell >>
+      size: xlarge
+    steps:
+      - checkout
+      - cmd_windows-nvm-install-node:
+          node-version: << parameters.node-version >>
+      - cmd_install-dependencies
+      - cmd_run-build
+      - cmd_run-e2e-tests-win
+      - cmd_run-e2e-tests-win-ts
+      - store_artifacts:
+          path: packages/flex-plugin-e2e-tests/screenshots
+
+  job_e2e-test-macos-node16:
+    resource_class: macos.x86.medium.gen2
+    parameters:
+      flex_ui_version:
+        type: string
+      package_version:
+        type: string
+      node-version:
+        type: string
+    environment:
+      NODE_OPTIONS: --max-old-space-size=14336
+      PACKAGE_VERSION: << parameters.package_version >>
+      FLEX_UI_VERSION: << parameters.flex_ui_version >>
+    executor:
+      name: macos
+    steps:
+      - checkout
+      - node/install:
+          node-version: << parameters.node-version >>
+      - cmd_install-dependencies
+      - cmd_run-build
+      - cmd_set-mac-permissions
+      - cmd_run-e2e-tests-mac-js
+      - cmd_run-e2e-tests-mac-ts
+      - store_artifacts:
+          path: packages/flex-plugin-e2e-tests/screenshots
+
+  # In order to run our e2e tests per operating system, we must have a separate job for each node version.
+  # Since we use a one account per os, running the tests for each version in parallel is not possible.
+  job_e2e-test-linux-node18:
+    resource_class: xlarge
+    parameters:
+      package_version:
+        type: string
+      flex_ui_version:
+        type: string
+      node-version:
+        type: string
+    environment:
+      NODE_OPTIONS: --max-old-space-size=14336
+      PACKAGE_VERSION: << parameters.package_version >>
+      FLEX_UI_VERSION: << parameters.flex_ui_version >>
+    executor:
+      name: node
+      tag: << parameters.node-version >>
+    steps:
+      - checkout
+      - cmd_install-prerequisites
+      - cmd_install-dependencies
+      - cmd_run-build
+      - cmd_set-linux-permissions
+      - cmd_run-e2e-tests
+      - store_artifacts:
+          path: packages/flex-plugin-e2e-tests/screenshots
+
+  job_e2e-test-win-node18:
+    parameters:
+      package_version:
+        type: string
+      flex_ui_version:
+        type: string
+      shell:
+        type: string
+      node-version:
+        type: string
+    environment:
+      NODE_OPTIONS: --max-old-space-size=14336
+      PACKAGE_VERSION: << parameters.package_version >>
+      FLEX_UI_VERSION: << parameters.flex_ui_version >>
+    executor:
+      name: win/default
+      shell: << parameters.shell >>
+      size: xlarge
+    steps:
+      - checkout
+      - cmd_windows-nvm-install-node:
+          node-version: << parameters.node-version >>
+      - cmd_install-dependencies
+      - cmd_run-build
+      - cmd_run-e2e-tests-win
+      - cmd_run-e2e-tests-win-ts
+      - store_artifacts:
+          path: packages/flex-plugin-e2e-tests/screenshots
+
+  job_e2e-test-macos-node18:
+    resource_class: macos.x86.medium.gen2
+    parameters:
+      flex_ui_version:
+        type: string
+      package_version:
+        type: string
+      node-version:
+        type: string
+    environment:
+      NODE_OPTIONS: --max-old-space-size=14336
+      PACKAGE_VERSION: << parameters.package_version >>
+      FLEX_UI_VERSION: << parameters.flex_ui_version >>
+    executor:
+      name: macos
+    steps:
+      - checkout
+      - node/install:
+          node-version: << parameters.node-version >>
+      - cmd_install-dependencies
+      - cmd_run-build
+      - cmd_set-mac-permissions
+      - cmd_run-e2e-tests-mac-js
+      - cmd_run-e2e-tests-mac-ts
+      - store_artifacts:
+          path: packages/flex-plugin-e2e-tests/screenshots
+
+workflows:
+  workflow_e2e-tester:
+    when: << pipeline.parameters.run_e2e_test >>
+    jobs:
+      - job_e2e-test-linux-node16:
+          matrix:
+            parameters:
+              package_version: [<< pipeline.parameters.package_version >>]
+              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
+              node-version: ["16.20.0"]
+      - job_e2e-test-win-node16:
+          matrix:
+            parameters:
+              package_version: [<< pipeline.parameters.package_version >>]
+              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
+              shell: ["bash.exe"]
+              node-version: ["16.20.0"]
+      - job_e2e-test-macos-node16:
+          matrix:
+            parameters:
+              package_version: [<< pipeline.parameters.package_version >>]
+              flex_ui_version: [<< pipeline.parameters.flex_ui_version >>]
+              node-version: ["16.20.0"]
+
+  workflow_nightly-e2e:
+    when: << pipeline.parameters.run_e2e_test_nightly >>
+    jobs:
+      - job_e2e-test-linux-node16:
+          matrix:
+            parameters:
+              package_version: ["latest"]
+              flex_ui_version: ["latest"]
+              node-version: ["16.20.0"]
+          post-steps:
+            - cmd_slack-notification-error:
+                text: "nightly E2E tests failed on Linux in node16"
+      - job_e2e-test-macos-node16:
+          matrix:
+            parameters:
+              package_version: ["latest"]
+              flex_ui_version: ["latest"]
+              node-version: ["16.20.0"]
+          post-steps:
+            - cmd_slack-notification-error:
+                text: "nightly E2E tests failed on MacOS in node16"
+      - job_e2e-test-win-node16:
+          matrix:
+            parameters:
+              package_version: ["latest"]
+              flex_ui_version: ["latest"]
+              shell: ["bash.exe"]
+              node-version: ["16.20.0"]
+          post-steps:
+            - cmd_slack-notification-error:
+                text: "nightly E2E tests failed on Windows in node16"
+      - job_e2e-test-linux-node18:
+          matrix:
+            parameters:
+              package_version: ["latest"]
+              flex_ui_version: ["latest"]
+              node-version: ["18.15.0"]
+          requires:
+            - job_e2e-test-linux-node16
+          post-steps:
+            - cmd_slack-notification-error:
+                text: "nightly E2E tests failed on Linux in node18"
+      - job_e2e-test-macos-node18:
+          matrix:
+            parameters:
+              package_version: ["latest"]
+              flex_ui_version: ["latest"]
+              node-version: ["18.15.0"]
+          requires:
+            - job_e2e-test-macos-node16
+          post-steps:
+            - cmd_slack-notification-error:
+                text: "nightly E2E tests failed on MacOS in node18"
+      - job_e2e-test-win-node18:
+          matrix:
+            parameters:
+              package_version: ["latest"]
+              flex_ui_version: ["latest"]
+              shell: ["bash.exe"]
+              node-version: ["18.15.0"]
+          requires:
+            - job_e2e-test-win-node16
+          post-steps:
+            - cmd_slack-notification-error:
+                text: "nightly E2E tests failed on Windows in node18."
