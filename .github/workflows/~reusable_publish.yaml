@@ -36,16 +36,16 @@ jobs:
         with:
           node-version: "16"
           registry-url: "https://registry.npmjs.org"
-      - name: Install dependencies
-        run: npm i
       - uses: shimataro/ssh-key-action@v2
         with:
           key: f3:09:6f:86:86:0a:6e:98:9b:fa:cb:49:2e:90:bc:75
           known_hosts: "just-a-placeholder-so-we-dont-get-errors"
+      - name: Install dependencies
+        run: npm i
       - name: Publish Version
         run: |
-          git config --global user.name ${{ vars.PUBLISH_USER }}
-          git config --global user.email ${{ vars.PUBLISH_EMAIL }}
+          git config --global user.name flex-runtime
+          git config --global user.email flex-runtime@twilio.com
           ls ~/.ssh
           ssh -T git@github.com
           npm run publish:${{ inputs.TAG }} ${{ inputs.VERSION }}
