@@ -38,9 +38,9 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - name: Install dependencies
         run: npm i
-      - uses: webfactory/ssh-agent@v0.9.0
+      - uses: shimataro/ssh-key-action@v2
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Publish Version
         run: |
           git config --global user.name ${{ secrets.PUBLISH_USER }}
