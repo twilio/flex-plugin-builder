@@ -10,13 +10,14 @@ function getJsonValue() {
 
 tag="${1}"
 bump="${2}"
-branch="${CIRCLE_BRANCH}"
+branch="${BRANCH}"
 currentVersion=$(cat ./lerna.json | getJsonValue 'version' |  cut -f1 -d"-")
 semver=( ${currentVersion//./ } )
 major="${semver[0]}"
 minor="${semver[1]}"
 patch=$((semver[2] + 1))
 id=$(date '+%Y%m%d%H%M')
+alphaVersion="${major}.${minor}.${patch}-${tag}.$(date '+%Y%m%d')"
 
 # Verify arguments
 if [ -z "${tag}" ] ; then

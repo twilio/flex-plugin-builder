@@ -1,4 +1,4 @@
-name: PR Validator - Build and Test
+name: Check Release
 
 on:
   pull_request:
@@ -30,7 +30,7 @@ jobs:
       TAG: public
       VERSION: patch
       BRANCH: ${{ needs.get-branch.outputs.branch }}
-      ENVIRONMENT: public_release
+      ENVIRONMENT: alpha_release
     secrets:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
