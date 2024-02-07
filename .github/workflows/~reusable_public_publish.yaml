@@ -53,7 +53,7 @@ jobs:
           gh pr create --base main --title "Update version" --body "Update version"
         env:
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
-      - name: Approve and merge PR
+      - name: Approve PR
         if: steps.bump_version.outputs.pushVersion == 'true'
         run: |
           gh pr review --approve
