@@ -38,7 +38,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - uses: shimataro/ssh-key-action@v2
         with:
-          key: f3:09:6f:86:86:0a:6e:98:9b:fa:cb:49:2e:90:bc:75
+          key: SHA256:a1QRzhN7GgZEqI8CByHYQrmm8DybpPyoVe8la9qECtc
           known_hosts: "just-a-placeholder-so-we-dont-get-errors"
       - name: Install dependencies
         run: npm i
