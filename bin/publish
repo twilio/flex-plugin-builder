@@ -67,7 +67,7 @@ npm run test
 npm run build
 
 if [ "${tag}" == "public" ] ; then
-  ./node_modules/.bin/lerna version \
+  ./node_modules/.bin/lerna publish \
     --force-publish="*" \
     --exact \
     --yes \
