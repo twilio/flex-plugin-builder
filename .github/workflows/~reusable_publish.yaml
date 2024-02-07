@@ -27,6 +27,8 @@ on:
         required: true
       APP_KEY:
         required: true
+      GITHUB_TOKEN:
+        required: true
 
 jobs:
   publish:
@@ -62,7 +64,7 @@ jobs:
         run: |
           gh pr create --base main --title "Update version" --body "Update version"
         env:
-          GITHUB_TOKEN: ${{ steps.get_app_token.outputs.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Approve and merge PR
         if: steps.bump_version.outputs.pushVersion == 'true'
         run: |
