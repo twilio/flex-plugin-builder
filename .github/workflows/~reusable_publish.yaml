@@ -23,6 +23,10 @@ on:
         required: true
       SLACK_WEB_HOOK:
         required: true
+      APP_ID:
+        required: true
+      APP_KEY:
+        required: true
 
 jobs:
   publish:
