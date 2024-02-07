@@ -44,8 +44,8 @@ jobs:
           known_hosts: "just-a-placeholder-so-we-dont-get-errors"
       - name: Publish Version
         run: |
-          git config --global user.name ${{ secrets.PUBLISH_USER }}
-          git config --global user.email ${{ secrets.PUBLISH_EMAIL }}
+          git config --global user.name ${{ vars.PUBLISH_USER }}
+          git config --global user.email ${{ vars.PUBLISH_EMAIL }}
           ls ~/.ssh
           ssh -T git@github.com
           npm run publish:${{ inputs.TAG }} ${{ inputs.VERSION }}
