@@ -38,14 +38,12 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - uses: shimataro/ssh-key-action@v2
         with:
-          key: SHA256:a1QRzhN7GgZEqI8CByHYQrmm8DybpPyoVe8la9qECtc
+          key: SHA256:U6bmHwOQudjvjOkEcTrTeRmce+do5GbjnaP8p8wYlUc
           known_hosts: "just-a-placeholder-so-we-dont-get-errors"
       - name: Install dependencies
         run: npm i
       - name: Publish Version
         run: |
-          git config --global user.name flex-runtime
-          git config --global user.email flex-runtime@twilio.com
           ls ~/.ssh
           ssh -T git@github.com
           npm run publish:${{ inputs.TAG }} ${{ inputs.VERSION }}
