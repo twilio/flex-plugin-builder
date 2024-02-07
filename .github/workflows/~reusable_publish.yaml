@@ -41,6 +41,7 @@ jobs:
       - uses: shimataro/ssh-key-action@v2
         with:
           key: f3:09:6f:86:86:0a:6e:98:9b:fa:cb:49:2e:90:bc:75
+          known_hosts: "just-a-placeholder-so-we-dont-get-errors"
       - name: Publish Version
         run: |
           git config --global user.name ${{ secrets.PUBLISH_USER }}
