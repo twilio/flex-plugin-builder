@@ -40,7 +40,7 @@ jobs:
         run: npm i
       - uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: f3:09:6f:86:86:0a:6e:98:9b:fa:cb:49:2e:90:bc:75
       - name: Publish Version
         run: |
           git config --global user.name ${{ secrets.PUBLISH_USER }}
