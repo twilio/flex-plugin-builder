@@ -23,7 +23,7 @@ jobs:
     secrets:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      G_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   e2e-node16:
     uses: ./.github/workflows/~reusable_e2e.yaml
