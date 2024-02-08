@@ -1,0 +1,38 @@
+name: Check Release
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  get-branch:
+    runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.extractBranch.outputs.branch }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+      - name: Extract branch name
+        run: |
+          echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
+          echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extractBranch
+  check-release-public-version:
+    needs: get-branch
+    uses: ./.github/workflows/~reusable_public_publish.yaml
+    with:
+      TAG: public
+      VERSION: patch
+      BRANCH: ${{ needs.get-branch.outputs.branch }}
+      ENVIRONMENT: alpha_release
+    secrets:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+      SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
+      G_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
