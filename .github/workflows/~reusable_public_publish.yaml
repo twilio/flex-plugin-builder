@@ -25,6 +25,8 @@ on:
         required: true
       G_TOKEN:
         required: true
+      SSH_PRIVATE_KEY:
+        required: true
 
 jobs:
   publish:
