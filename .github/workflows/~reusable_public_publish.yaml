@@ -56,6 +56,8 @@ jobs:
       - name: Approve PR
         if: steps.bump_version.outputs.pushVersion == 'true'
         run: |
+          git config user.name flex-runtime
+          git config user.email flex-runtime@twilio.com
           gh pr review --approve
         env:
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
