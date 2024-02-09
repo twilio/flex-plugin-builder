@@ -37,6 +37,7 @@
     "@twilio/flex-plugins-utils-env": "6.3.1",
     "@twilio/flex-plugins-utils-exception": "6.3.1",
     "address": "^1.1.2",
+    "adm-zip": "0.5.10",
     "app-module-path": "^2.2.0",
     "axios": "^0.24.0",
     "axios-cache-adapter": "^2.7.3",
@@ -70,6 +71,7 @@
     "wrap-ansi": "^4.0.0"
   },
   "devDependencies": {
+    "@types/adm-zip": "0.5.5",
     "@types/app-module-path": "^2.2.0",
     "@types/columnify": "^1.5.1",
     "@types/find-in-files": "^0.5.1",

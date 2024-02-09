@@ -228,6 +228,9 @@
       },
       "flex:plugins:list:releases": {
         "description": "Lists the Flex Releases on the account."
+      },
+      "flex:plugins:validate": {
+        "description": "Validates the Flex plugin by looking for any issues that could potentially break the plugin when in use. Generates a report with the identified issues, if any."
       }
     }
   }

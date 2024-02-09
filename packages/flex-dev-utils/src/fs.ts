@@ -9,6 +9,7 @@ import { sync as globbySync } from 'globby';
 import mkdirp from 'mkdirp';
 import rimRaf from 'rimraf';
 import appModule from 'app-module-path';
+import AdmZip from 'adm-zip';
 
 import { confirm } from './questions';
 
@@ -663,6 +664,28 @@ export const packageDependencyVersion = (pkg: PackageJson, name: string): string
  */
 export const flexUIPackageDependencyVersion = (name: string): string | null => {
   return packageDependencyVersion(_require(getPaths().app.flexUIPkgPath) as PackageJson, name);
+};
+
+/**
+ * Zips plugin files and writes it into the location specified
+ * @param location Path where the zip file should be written to
+ * @param zipPath Path inside the zip into which the files should be compressed
+ * @param files Files to be zipped
+ */
+export const zipPluginFiles = (location: string, zipPath: string = '', ...files: string[]): void => {
+  const zip = new AdmZip();
+
+  files.forEach((file) => {
+    const isDir = statSync(file).isDirectory();
+    if (isDir) {
+      const folderName = path.parse(file).name;
+      zip.addLocalFolder(file, path.join(zipPath, folderName));
+    } else {
+      zip.addLocalFile(file, zipPath);
+    }
+  });
+
+  zip.writeZip(location);
 };
 
 export const findInFiles = FindInFiles.find;
