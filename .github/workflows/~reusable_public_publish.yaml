@@ -27,6 +27,8 @@ on:
         required: true
       SSH_PRIVATE_KEY:
         required: true
+      DEPLOY_KEY:
+        required: true
 
 jobs:
   publish:

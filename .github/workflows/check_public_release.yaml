@@ -36,3 +36,4 @@ jobs:
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
       G_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
