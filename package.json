@@ -34,6 +34,7 @@
     "publish:beta": "./bin/publish beta $1",
     "publish:dev": "./bin/publish dev patch",
     "publish:public": "./bin/publish public $1",
+    "version:public": "./bin/version public $1",
     "publish:rc": "./bin/publish rc $1",
     "test": "node bin/test.js",
     "test:ci": "jest --clearCache && npm run test -- --no-cache --coverage --coverage-provider=v8",

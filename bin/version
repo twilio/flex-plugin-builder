@@ -1,0 +1,60 @@
+#!/bin/bash
+
+set -e
+
+function getJsonValue() {
+  KEY=$1
+  num=$2
+  awk -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/'"${KEY}"'\042/){print $(i+1)}}}' | tr -d '"' | sed -n "${num}"p
+}
+
+tag="${1}"
+bump="${2}"
+branch="${BRANCH}"
+currentVersion=$(cat ./lerna.json | getJsonValue 'version' |  cut -f1 -d"-")
+semver=( ${currentVersion//./ } )
+major="${semver[0]}"
+minor="${semver[1]}"
+patch=$((semver[2] + 1))
+id=$(date '+%Y%m%d%H%M')
+alphaVersion="${major}.${minor}.${patch}-${tag}.$(date '+%Y%m%d')"
+
+# Verify arguments
+if [ -z "${tag}" ] ; then
+  echo "tag cannot be empty"
+  exit 1
+fi
+if [ "${tag}" != "rc" ] && [ "${tag}" != "beta" ] && [ "${tag}" != "alpha" ] && [ "${tag}" != "public" ] && [ "${tag}" != "dev" ] ; then
+  echo "tag must be one of rc, beta, alpha, public, dev"
+  exit 1
+fi
+if [ -z "${bump}" ] ; then
+  bump="patch";
+fi
+if [ "${bump}" != "patch" ] && [ "${bump}" != "minor" ] && [ "${bump}" != "major" ] ; then
+  echo "bump must be one of patch, minor, major"
+  exit 1
+fi
+
+# Verify tag and branch
+if [ "${tag}" == "beta" ] && [[ ! "${branch}" =~ ^v.-beta$ ]] ; then
+  echo "Beta release must be done on the v*-beta branch"
+  exit 1
+fi
+
+# Update bump level
+if [ "${tag}" != "public" ] ; then
+  bump="pre${bump}"
+fi
+
+# alpha/dev get a timestamp in their version
+if [ "${tag}" == "dev" ] || [ "${tag}" == "alpha" ] ; then
+  bump="${major}.${minor}.${patch}-${tag}.${id}"
+fi
+
+./node_modules/.bin/lerna version \
+    --no-push \
+    --no-git-tag-version \
+    --exact \
+    --yes \
+    "${bump}"
