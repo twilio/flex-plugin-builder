@@ -25,8 +25,6 @@ on:
         required: true
       G_TOKEN:
         required: true
-      DEPLOY_KEY:
-        required: true
       APP_ID:
         required: true
       APP_KEY:
