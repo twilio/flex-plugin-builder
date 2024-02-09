@@ -25,9 +25,11 @@ on:
         required: true
       G_TOKEN:
         required: true
-      SSH_PRIVATE_KEY:
-        required: true
       DEPLOY_KEY:
+        required: true
+      APP_ID:
+        required: true
+      APP_KEY:
         required: true
 
 jobs:
@@ -35,14 +37,16 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.ENVIRONMENT }}
     steps:
+       - uses: tibdex/github-app-token@v1
+        id: get_app_token
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_KEY }}
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: "16"
           registry-url: "https://registry.npmjs.org"
-      - uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
       - name: Install dependencies
         run: npm i
       - name: Bump Version
@@ -59,7 +63,7 @@ jobs:
         run: |
           gh pr create --base main --title "Update version" --body "Update version"
         env:
-          GITHUB_TOKEN: ${{ env.SSH_AUTH_SOCK }}
+          GITHUB_TOKEN: ${{ steps.get_app_token.outputs.token }}
       - name: Approve PR
         if: steps.bump_version.outputs.pushVersion == 'true'
         run: |
