@@ -31,24 +31,28 @@ fi
 if [ -z "${bump}" ] ; then
   bump="patch";
 fi
-if [ "${bump}" != "patch" ] && [ "${bump}" != "minor" ] && [ "${bump}" != "major" ] ; then
-  echo "bump must be one of patch, minor, major"
+if [ "${bump}" != "patch" ] && [ "${bump}" != "minor" ] && [ "${bump}" != "major" ] && [[ ! "${bump}" =~ ^${alphaVersion}* ]] ; then
+  echo "bump must be one of patch, minor, major, or exact version of format[major.minor.patch-tag]"
   exit 1
 fi
 
 # Verify tag and branch
+if [ "${tag}" == "public" ] && [ "${branch}" != "main" ] ; then
+  echo "Public release must be done on the main branch"
+  exit 1
+fi
 if [ "${tag}" == "beta" ] && [[ ! "${branch}" =~ ^v.-beta$ ]] ; then
   echo "Beta release must be done on the v*-beta branch"
   exit 1
 fi
 
 # Update bump level
-if [ "${tag}" != "public" ] ; then
+if [ "${tag}" != "public" ] && [[ ! "${bump}" =~ ^${alphaVersion}* ]] ; then
   bump="pre${bump}"
 fi
 
 # alpha/dev get a timestamp in their version
-if [ "${tag}" == "dev" ] || [ "${tag}" == "alpha" ] ; then
+if [[ "${tag}" == "dev"  ||  "${tag}" == "alpha" ]] && [[ ! "${bump}" =~ ^${alphaVersion}* ]] ; then
   bump="${major}.${minor}.${patch}-${tag}.${id}"
 fi
 
