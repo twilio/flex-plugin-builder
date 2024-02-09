@@ -14,7 +14,7 @@ on:
 
 jobs:
   release-public-version:
-    uses: ./.github/workflows/~reusable_publish.yaml
+    uses: ./.github/workflows/~reusable_public_publish.yaml
     with:
       TAG: public
       VERSION: ${{ github.event.inputs.version }}

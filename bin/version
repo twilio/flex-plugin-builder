@@ -53,6 +53,8 @@ if [ "${tag}" == "dev" ] || [ "${tag}" == "alpha" ] ; then
 fi
 
 ./node_modules/.bin/lerna version \
+    --no-push \
     --no-git-tag-version \
-     --yes \
+    --exact \
+    --yes \
     "${bump}"
