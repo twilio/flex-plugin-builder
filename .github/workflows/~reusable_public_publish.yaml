@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.ENVIRONMENT }}
     steps:
-       - uses: tibdex/github-app-token@v1
+      - uses: tibdex/github-app-token@v1
         id: get_app_token
         with:
           app_id: ${{ secrets.APP_ID }}
