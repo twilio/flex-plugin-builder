@@ -48,7 +48,7 @@ jobs:
       - name: Install dependencies
         run: npm i
       - name: Publish Version
-        run: npm run publish:${{ inputs.TAG }} ${{ inputs.VERSION }}
+        run: npm run version:${{ inputs.TAG }} ${{ inputs.VERSION }}
         env:
           VERSION: ${{ inputs.VERSION }}
           BRANCH: ${{ inputs.BRANCH }}
@@ -68,7 +68,7 @@ jobs:
       - name: Create PR for version
         if: steps.commit_version.outputs.pushVersion == 'true'
         run: |
-          gh pr create --base check3 --title "Update version" --body "Update version"
+          gh pr create --base check4 --title "Update version" --body "Update version"
         env:
           GITHUB_TOKEN: ${{ steps.get_app_token.outputs.token }}
       - name: Approve and Merge PR
