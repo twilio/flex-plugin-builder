@@ -74,6 +74,7 @@ jobs:
         run: |
           gh pr review --approve
           gh pr merge --auto --merge
+          git branch
         env:
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
       - name: Tag version
