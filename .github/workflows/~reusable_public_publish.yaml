@@ -1,0 +1,86 @@
+on:
+  workflow_call:
+    inputs:
+      TAG:
+        description: "A tag passed from the caller workflow, it decides the type of release. Allowed values are [rc | beta | alpha | public | dev]"
+        required: true
+        type: string
+      VERSION:
+        description: "A specific version passed from the caller workflow which will be release as it is."
+        required: true
+        type: string
+      BRANCH:
+        description: "A branch passed from the caller workflow, it decides which branch will be pushed to npm."
+        required: true
+        type: string
+      ENVIRONMENT:
+        description: "A environment passed from the caller workflow, it controls the reviewing process of a release."
+        required: true
+        type: string
+        default: alpha_release
+    secrets:
+      NODE_AUTH_TOKEN:
+        required: true
+      SLACK_WEB_HOOK:
+        required: true
+      G_TOKEN:
+        required: true
+      APP_ID:
+        required: true
+      APP_KEY:
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.ENVIRONMENT }}
+    steps:
+      - uses: tibdex/github-app-token@v1
+        id: get_app_token
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_KEY }}
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+      - name: Install dependencies
+        run: npm i
+      - name: Publish Version
+        run: npm run publish:${{ inputs.TAG }} ${{ inputs.VERSION }}
+        env:
+          VERSION: ${{ inputs.VERSION }}
+          BRANCH: ${{ inputs.BRANCH }}
+          NODE_OPTIONS: --no-experimental-fetch
+          CI: ""
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+      - name: Commit Version
+        id: commit_version
+        run: |
+          git checkout -b bump-version-$VERSION_NUMBER
+          git config user.name github-actions
+          git config user.email noreply@github.com
+          git add .
+          git diff --staged --quiet && (echo "pushVersion=false" >> $GITHUB_OUTPUT) || (git commit -m "Updating version" --no-verify && git push origin bump-version-$VERSION_NUMBER --no-verify && echo "pushVersion=true" >> $GITHUB_OUTPUT)
+        env:
+          VERSION_NUMBER: ${{ inputs.VERSION }}
+      - name: Create PR for version
+        if: steps.commit_version.outputs.pushVersion == 'true'
+        run: |
+          gh pr create --base check3 --title "Update version" --body "Update version"
+        env:
+          GITHUB_TOKEN: ${{ steps.get_app_token.outputs.token }}
+      - name: Approve and Merge PR
+        if: steps.commit_version.outputs.pushVersion == 'true'
+        run: |
+          gh pr review --approve
+          gh pr merge --auto --merge
+        env:
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
+      - name: Tag version
+        run: |
+          git tag -a v$VERSION_NUMBER -m  "$VERSION_NUMBER"
+          git push origin v$VERSION_NUMBER
+        env:
+          VERSION_NUMBER: ${{ inputs.VERSION }}
