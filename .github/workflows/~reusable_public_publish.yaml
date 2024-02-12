@@ -73,7 +73,7 @@ jobs:
         if: steps.commit_version.outputs.pushVersion == 'true'
         run: |
           gh pr review --approve
-          gh pr merge --auto --merge -d
+          gh pr merge --auto --merge
         env:
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
       - name: Tag version
