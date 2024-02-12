@@ -58,22 +58,22 @@ jobs:
       - name: Commit Version
         id: commit_version
         run: |
-          git checkout -b bump_version
+          git checkout -b bump_version_${{ inputs.VERSION }}
           git config user.name github-actions
           git config user.email noreply@github.com
           git add .
-          git diff --staged --quiet && (echo "pushVersion=false" >> $GITHUB_OUTPUT) || (git commit -m "Updating version" --no-verify && git push origin bump_version --no-verify && echo "pushVersion=true" >> $GITHUB_OUTPUT)
+          git diff --staged --quiet && (echo "pushVersion=false" >> $GITHUB_OUTPUT) || (git commit -m "Updating version" --no-verify && git push origin bump_version_${{ inputs.VERSION }} --no-verify && echo "pushVersion=true" >> $GITHUB_OUTPUT)
       - name: Create PR for version
         if: steps.commit_version.outputs.pushVersion == 'true'
         run: |
-          gh pr create --base check-release --title "Update version" --body "Update version"
+          gh pr create --base main --title "Update version" --body "Update version"
         env:
           GITHUB_TOKEN: ${{ steps.get_app_token.outputs.token }}
       - name: Approve and Merge PR
         if: steps.commit_version.outputs.pushVersion == 'true'
         run: |
           gh pr review --approve
-          gh pr merge --auto --merge -d
+          gh pr merge --auto --merge -d --admin
         env:
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
       - name: Tag version
