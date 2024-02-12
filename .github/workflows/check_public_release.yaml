@@ -25,7 +25,6 @@ jobs:
           echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
         id: extractBranch
       - name: Retrieve Alpha Patch Version
-        if: ${{ github.event.label.name == vars.PUBLISH_AND_E2E_LABEL }}
         run: |
           currentVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
           semver=( ${currentVersion//./ } )
