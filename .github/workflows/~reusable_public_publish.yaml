@@ -47,15 +47,6 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - name: Install dependencies
         run: npm i
-      - name: Bump Version
-        id: bump_version
-        run: |
-          git checkout -b bump_version
-          git config user.name github-actions
-          git config user.email noreply@github.com
-          npm run version:${{ inputs.TAG }} ${{ inputs.VERSION }}
-          git add .
-          git diff --staged --quiet && (echo "pushVersion=false" >> $GITHUB_OUTPUT) || (git commit -m "Updating version" --no-verify && git push origin bump_version --no-verify && echo "pushVersion=true" >> $GITHUB_OUTPUT)
       - name: Publish Version
         run: npm run publish:${{ inputs.TAG }} ${{ inputs.VERSION }}
         env:
@@ -64,14 +55,22 @@ jobs:
           NODE_OPTIONS: --no-experimental-fetch
           CI: ""
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+      - name: Commit Version
+        id: commit_version
+        run: |
+          git checkout -b bump_version
+          git config user.name github-actions
+          git config user.email noreply@github.com
+          git add .
+          git diff --staged --quiet && (echo "pushVersion=false" >> $GITHUB_OUTPUT) || (git commit -m "Updating version" --no-verify && git push origin bump_version --no-verify && echo "pushVersion=true" >> $GITHUB_OUTPUT)
       - name: Create PR for version
-        if: steps.bump_version.outputs.pushVersion == 'true'
+        if: steps.commit_version.outputs.pushVersion == 'true'
         run: |
           gh pr create --base check-release --title "Update version" --body "Update version"
         env:
           GITHUB_TOKEN: ${{ steps.get_app_token.outputs.token }}
       - name: Approve and Merge PR
-        if: steps.bump_version.outputs.pushVersion == 'true'
+        if: steps.commit_version.outputs.pushVersion == 'true'
         run: |
           gh pr review --approve
           gh pr merge --auto --merge -d

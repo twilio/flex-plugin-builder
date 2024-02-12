@@ -64,11 +64,10 @@ echo -e "------------------------------------\n"
 
 # Run unit-tests one more time
 npm run lint:fix
-npm run test
 npm run build
 
 if [ "${tag}" == "alpha" ] ; then
-  ./node_modules/.bin/lerna publish from-package \
+  ./node_modules/.bin/lerna publish \
     --force-publish="*" \
     --preid "${tag}" \
     --pre-dist-tag "${tag}" \
