@@ -29,6 +29,7 @@ jobs:
         run: |
           currentVersion=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
           semver=( ${currentVersion//./ } )
+          echo "${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')"
           echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
         id: alphaVersion
   check-release-public-version:
@@ -36,7 +37,7 @@ jobs:
     uses: ./.github/workflows/~reusable_public_publish.yaml
     with:
       TAG: alpha
-      VERSION: 6.3.2-alpha.202402121334
+      VERSION: ${{ needs.get-version.outputs.version }}
       BRANCH: ${{ needs.get-version.outputs.branch }}
       ENVIRONMENT: alpha_release
     secrets:
