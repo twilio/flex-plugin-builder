@@ -51,6 +51,7 @@ jobs:
           echo "hey = v$VERSION_NUMBER"
           git config user.name github-actions
           git config user.email noreply@github.com
+          git checkout -b main origin/main
           git tag -a v$VERSION_NUMBER -m "v$VERSION_NUMBER"
           git push origin v$VERSION_NUMBER --no-verify
         env:
