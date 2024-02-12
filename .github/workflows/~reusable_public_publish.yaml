@@ -58,15 +58,17 @@ jobs:
       - name: Commit Version
         id: commit_version
         run: |
-          git checkout -b bump_version_${{ inputs.VERSION }}
+          git checkout -b bump-version-$VERSION_NUMBER
           git config user.name github-actions
           git config user.email noreply@github.com
           git add .
-          git diff --staged --quiet && (echo "pushVersion=false" >> $GITHUB_OUTPUT) || (git commit -m "Updating version" --no-verify && git push origin bump_version_${{ inputs.VERSION }} --no-verify && echo "pushVersion=true" >> $GITHUB_OUTPUT)
+          git diff --staged --quiet && (echo "pushVersion=false" >> $GITHUB_OUTPUT) || (git commit -m "Updating version" --no-verify && git push origin bump-version-$VERSION_NUMBER --no-verify && echo "pushVersion=true" >> $GITHUB_OUTPUT)
+        env:
+          VERSION_NUMBER: ${{ inputs.VERSION }}
       - name: Create PR for version
         if: steps.commit_version.outputs.pushVersion == 'true'
         run: |
-          gh pr create --base check2 --title "Update version" --body "Update version"
+          gh pr create --base check3 --title "Update version" --body "Update version"
         env:
           GITHUB_TOKEN: ${{ steps.get_app_token.outputs.token }}
       - name: Approve and Merge PR
@@ -74,9 +76,11 @@ jobs:
         run: |
           gh pr review --approve
           gh pr merge --auto --merge
-          git branch
         env:
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
       - name: Tag version
         run: |
-          git tag v${{ inputs.VERSION }}
+          git tag -a v$VERSION_NUMBER -m  "$VERSION_NUMBER"
+          git push origin v$VERSION_NUMBER
+        env:
+          VERSION_NUMBER: ${{ inputs.VERSION }}
