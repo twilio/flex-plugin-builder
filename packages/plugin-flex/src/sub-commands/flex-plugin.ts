@@ -428,9 +428,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       this.logger.debug(`Using ${flexPluginScripts} version ${pluginScriptVersion}`);
 
       if (!this.isPluginFolder()) {
-        throw new TwilioCliError(
-          `${this.cwd} directory is not a flex plugin directory. You must either run a plugin inside a directory or use the --name flag`,
-        );
+        throw new TwilioCliError(this.pluginFolderErrorMessage);
       }
 
       if (this.checkCompatibility && this.builderVersion !== FlexPlugin.BUILDER_VERSION) {
@@ -625,6 +623,13 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async doRun(): Promise<any | void> {
     throw new NotImplementedError();
+  }
+
+  /**
+   * Returns the error message text to display when the command is run outside of the plugin folder
+   */
+  get pluginFolderErrorMessage(): string {
+    return `${this.cwd} directory is not a flex plugin directory. You must run the command inside a flex plugin directory`;
   }
 
   /**

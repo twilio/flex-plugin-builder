@@ -218,6 +218,13 @@ export default class FlexPluginsStart extends FlexPlugin {
   }
 
   /**
+   * @override
+   */
+  get pluginFolderErrorMessage(): string {
+    return `${this.cwd} directory is not a flex plugin directory. You must either run a plugin inside a directory or use the --name flag`;
+  }
+
+  /**
    * Returns true if we are running multiple plugins
    * @private
    */
