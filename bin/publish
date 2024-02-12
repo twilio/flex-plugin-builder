@@ -66,13 +66,9 @@ echo -e "------------------------------------\n"
 npm run lint:fix
 npm run build
 
-if [ "${tag}" == "alpha" ] ; then
+if [ "${tag}" == "public" ] ; then
   ./node_modules/.bin/lerna publish \
     --force-publish="*" \
-    --preid "${tag}" \
-    --pre-dist-tag "${tag}" \
-    --dist-tag "${tag}" \
-    --skip-git \
     --no-git-tag-version \
     --no-push \
     --exact \
