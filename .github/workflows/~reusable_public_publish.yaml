@@ -80,7 +80,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
       - name: Tag version
         run: |
-          git tag -a v$VERSION_NUMBER -m  "$VERSION_NUMBER"
+          git tag v$VERSION_NUMBER
           git push origin v$VERSION_NUMBER
         env:
           VERSION_NUMBER: ${{ inputs.VERSION }}
