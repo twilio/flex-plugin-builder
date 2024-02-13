@@ -1,0 +1,25 @@
+name: PR Validator - Build and Test
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'lerna.json'
+  push:
+    branches:
+      - main
+    paths:
+      - 'lerna.json'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Test execution not required. Passing status check"
+  release-alpha-version:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Alpha release not required. Passing status check"
+  e2e-test:
+    uses: ./.github/workflows/e2e_skip.yaml
