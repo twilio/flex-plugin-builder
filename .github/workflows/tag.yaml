@@ -5,19 +5,17 @@ jobs:
   tag:
     runs-on: ubuntu-latest
     steps:
+      - name: wait-job
+        run: sleep 10s
+        shell: bash
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
         with:
-          node-version: "20"
-          registry-url: "https://registry.npmjs.org"
+          ref: main
       - name: Retrieve Version
         id: tagVersion
         run: |
           echo "version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)"
           echo "version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)" >> "$GITHUB_OUTPUT"
-      - name: wait-job
-        run: sleep 10s
-        shell: bash
       - name: Tag version
         run: |
           git config user.name github-actions

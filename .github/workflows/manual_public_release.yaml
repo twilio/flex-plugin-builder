@@ -13,21 +13,6 @@ on:
         required: true
 
 jobs:
-  release-public-version:
-    if: github.ref == 'refs/heads/main'
-    uses: ./.github/workflows/~reusable_public_publish.yaml
-    with:
-      TAG: public
-      VERSION: ${{ github.event.inputs.version }}
-      BRANCH: main
-      ENVIRONMENT: public_release
-    secrets:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-      SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
-      G_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      APP_ID: ${{ secrets.APP_ID }}
-      APP_KEY: ${{ secrets.APP_KEY }}
-
   release-tag:
     if: github.ref == 'refs/heads/main'
     needs: release-public-version
