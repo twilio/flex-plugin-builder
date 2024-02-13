@@ -4,9 +4,13 @@ on:
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - 'lerna.json'
   push:
     branches:
       - main
+    paths-ignore:
+      - 'lerna.json'
 
 jobs:
   build-and-test:
