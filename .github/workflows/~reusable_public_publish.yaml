@@ -51,6 +51,12 @@ jobs:
         id: inc_version
         run: |
           npm run publish:${{ inputs.TAG }} ${{ inputs.VERSION }}
+        env:
+          VERSION: ${{ inputs.VERSION }}
+          BRANCH: ${{ inputs.BRANCH }}
+          NODE_OPTIONS: --no-experimental-fetch
+          CI: ""
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
       - name: Retrieve Version
         run: |
           echo "version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)"
