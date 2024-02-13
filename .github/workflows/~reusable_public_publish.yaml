@@ -58,10 +58,10 @@ jobs:
           CI: ""
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
       - name: Retrieve Version
+        id: publicVersion
         run: |
           echo "version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)"
           echo "version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)" >> "$GITHUB_OUTPUT"
-        id: publicVersion
       - name: Commit Version
         id: commit_version
         run: |
@@ -85,11 +85,3 @@ jobs:
           gh pr merge --auto --merge
         env:
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
-      - name: Tag version
-        run: |
-          git config user.name github-actions
-          git config user.email noreply@github.com
-          git tag -a v$VERSION_NUMBER -m "v$VERSION_NUMBER"
-          git push origin v$VERSION_NUMBER --no-verify
-        env:
-          VERSION_NUMBER: ${{ steps.publicVersion.outputs.version }}

@@ -1,0 +1,25 @@
+on:
+  workflow_call:
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+      - name: Retrieve Version
+        id: tagVersion
+        run: |
+          echo "version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)"
+          echo "version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)" >> "$GITHUB_OUTPUT"
+      - name: Tag version
+        run: |
+          git config user.name github-actions
+          git config user.email noreply@github.com
+          git tag -a v$VERSION_NUMBER -m "v$VERSION_NUMBER"
+          git push origin v$VERSION_NUMBER --no-verify
+        env:
+          VERSION_NUMBER: ${{ steps.tagVersion.outputs.version }}
