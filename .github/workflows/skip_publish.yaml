@@ -1,0 +1,8 @@
+on:
+  workflow_call:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Skip Publish, Passing status check"
