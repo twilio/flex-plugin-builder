@@ -1,0 +1,11 @@
+on:
+  workflow_call:
+
+jobs:
+  node20:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - run: echo "e2e not required. Passing status check"
