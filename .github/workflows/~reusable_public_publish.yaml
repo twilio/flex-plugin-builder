@@ -75,14 +75,14 @@ jobs:
       - name: Create PR for version
         if: steps.commit_version.outputs.pushVersion == 'true'
         run: |
-          gh pr create --base main --title "Update version" --body "Update version"
+          gh pr create --base dev-test --title "Update version" --body "Update version"
         env:
           GITHUB_TOKEN: ${{ steps.get_app_token.outputs.token }}
       - name: Approve and Merge PR
         if: steps.commit_version.outputs.pushVersion == 'true'
         run: |
           gh pr review --approve
-          gh pr merge --auto --merge
+          gh pr merge --admin --merge
         env:
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
       - name: Tag version
