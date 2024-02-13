@@ -68,7 +68,6 @@ npm run build
 
 if [ "${tag}" == "public" ] ; then
   ./node_modules/.bin/lerna version \
-    --force-publish="*" \
     --exact \
     --yes \
     "${bump}"
