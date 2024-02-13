@@ -49,8 +49,8 @@ jobs:
         run: npm i
       - name: Commit Version
         run: |
-          git config user.name github-actions
-          git config user.email noreply@github.com
+          git config user.name flex-plugin-library
+          git config user.email flex-plugin-library@twilio.com
           npm run publish:${{ inputs.TAG }} ${{ inputs.VERSION }}
         env:
           VERSION: ${{ inputs.VERSION }}
