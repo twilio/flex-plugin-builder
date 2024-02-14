@@ -67,8 +67,8 @@ npm run lint:fix
 npm run build
 
 if [ "${tag}" == "public" ] ; then
-  ./node_modules/.bin/lerna version \
-    --no-git-tag-version \
+  ./node_modules/.bin/lerna publish \
+    --force-publish="*" \
     --no-push \
     --exact \
     --yes \
