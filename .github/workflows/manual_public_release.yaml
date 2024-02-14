@@ -15,7 +15,6 @@ on:
 jobs:
   release-tag:
     if: github.ref == 'refs/heads/main'
-    needs: release-public-version
     uses: ./.github/workflows/tag.yaml
 
   e2e-node16:
