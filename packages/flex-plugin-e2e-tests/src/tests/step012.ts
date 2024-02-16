@@ -3,7 +3,7 @@ import { replaceInFile } from 'replace-in-file';
 import semver from 'semver';
 
 import { TestSuite, TestParams, testParams } from '../core';
-import { spawn, Browser, pluginHelper, ConsoleAPI, joinPath, assertion, killChildProcess, api } from '../utils';
+import { spawn, Browser, pluginHelper, joinPath, assertion, killChildProcess, api } from '../utils';
 import { setupFlexBeforeLocalhost } from './step010';
 
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
@@ -55,12 +55,10 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     cwd: plugin3.dir,
   });
   await Promise.all([startPlugin(plugin2.localhostUrl), startPlugin(plugin3.localhostUrl)]);
-  const consoleApi = new ConsoleAPI(config.consoleBaseUrl, secrets.console);
-  const cookies = await consoleApi.getCookies();
 
   try {
     // Login to Flex and setup the required flex.twilio.com cookies
-    await setupFlexBeforeLocalhost(config, secrets, cookies);
+    await setupFlexBeforeLocalhost(config, secrets);
 
     // Load local plugin
     await Browser.loadNewPage({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });

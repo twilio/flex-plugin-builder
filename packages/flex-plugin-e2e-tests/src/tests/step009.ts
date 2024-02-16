@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unused-modules */
 import { TestSuite, TestParams } from '../core';
-import { api, assertion, Browser, ConsoleAPI, pluginHelper } from '../utils';
+import { api, assertion, Browser, pluginHelper } from '../utils';
 
 const PLUGIN_RELEASED_TIMEOUT = 30000;
 const PLUGIN_RELEASED_POLL_INTERVAL = 5000;
@@ -26,9 +26,6 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   if (!releasedPlugin) {
     throw new Error(`Did not find plugin with name: ${plugin.name} in released plugins`);
   }
-
-  const consoleApi = new ConsoleAPI(config.consoleBaseUrl, secrets.console);
-  const cookies = await consoleApi.getCookies();
 
   await Browser.create({ flex: config.hostedFlexBaseUrl, twilioConsole: config.consoleBaseUrl });
   try {

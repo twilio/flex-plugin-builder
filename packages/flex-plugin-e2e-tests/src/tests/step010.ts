@@ -2,18 +2,16 @@
 import { replaceInFile } from 'replace-in-file';
 
 import { TestSuite, TestParams, testParams, PluginType } from '../core';
-import { spawn, Browser, pluginHelper, ConsoleAPI, joinPath, assertion, killChildProcess, Cookies } from '../utils';
+import { spawn, Browser, pluginHelper, joinPath, assertion, killChildProcess } from '../utils';
 
 /**
  * Log into Flex to set the required flex.twilio.com cookies
  * @param config Contains the urls requires to load in the browser
  * @param secrets Contains account info
- * @param cookies Contains cookies required for console service login
  */
 export const setupFlexBeforeLocalhost = async (
   config: TestParams['config'],
   secrets: TestParams['secrets'],
-  cookies: Cookies,
 ): Promise<void> => {
   await Browser.create({ flex: config.hostedFlexBaseUrl, twilioConsole: config.consoleBaseUrl });
   await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort);
@@ -67,12 +65,9 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   );
   await Promise.all([startPlugin(plugin2.localhostUrl), startPlugin(plugin3.localhostUrl)]);
 
-  const consoleApi = new ConsoleAPI(config.consoleBaseUrl, secrets.console);
-  const cookies = await consoleApi.getCookies();
-
   try {
     // Login to Flex and setup the required flex.twilio.com cookies
-    await setupFlexBeforeLocalhost(config, secrets, cookies);
+    await setupFlexBeforeLocalhost(config, secrets);
 
     // Load local plugin
     await Browser.loadNewPage({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
