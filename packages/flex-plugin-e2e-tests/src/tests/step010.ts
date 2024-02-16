@@ -16,7 +16,7 @@ export const setupFlexBeforeLocalhost = async (
   cookies: Cookies,
 ): Promise<void> => {
   await Browser.create({ flex: config.hostedFlexBaseUrl, twilioConsole: config.consoleBaseUrl });
-  await Browser.app.twilioConsole.login(cookies, 'admin', secrets.api.accountSid, config.localhostPort);
+  await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort);
 
   // Check if Flex loaded okay
   await assertion.app.view.adminDashboard.isVisible();
@@ -76,7 +76,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
 
     // Load local plugin
     await Browser.loadNewPage({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
-    await Browser.app.twilioConsole.login(cookies, 'admin', secrets.api.accountSid, config.localhostPort, false);
+    await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort, false);
 
     // Check if local plugin loaded okay
     await assertion.app.view.agentDesktop.isVisible();

@@ -33,7 +33,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   await Browser.create({ flex: config.hostedFlexBaseUrl, twilioConsole: config.consoleBaseUrl });
   try {
     // Log into Flex
-    await Browser.app.twilioConsole.login(cookies, 'admin', secrets.api.accountSid, config.localhostPort);
+    await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort);
 
     await assertion.app.view.adminDashboard.isVisible();
 
