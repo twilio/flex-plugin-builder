@@ -1,7 +1,6 @@
 import { Page } from 'puppeteer';
 
 import { Base } from './base';
-import { Cookies } from '../../console-api';
 import { testParams } from '../../../core';
 import { sleep } from '../../timers';
 
@@ -34,18 +33,11 @@ export class TwilioConsole extends Base {
 
   /**
    * Logs user in through service-login
-   * @param cookies
    * @param flexBaseUrl
    * @param flexPath
    * @param accountSid
    */
-  async login(
-    cookies: Cookies,
-    flexPath: string,
-    accountSid: string,
-    localhostPort: number,
-    firstLoad: boolean = true,
-  ): Promise<void> {
+  async login(flexPath: string, accountSid: string, localhostPort: number, firstLoad: boolean = true): Promise<void> {
     const redirectUrl = this._flexBaseUrl.includes('localhost')
       ? TwilioConsole._createLocalhostUrl(localhostPort)
       : this._flexBaseUrl;
