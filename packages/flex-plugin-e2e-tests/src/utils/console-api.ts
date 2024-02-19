@@ -102,7 +102,6 @@ export class ConsoleAPI {
       data: JSON.stringify({
         email: this.consoleAuthOptions.email,
         password: this.consoleAuthOptions.password,
-        userType: 0,
       }),
     });
 
