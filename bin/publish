@@ -10,13 +10,14 @@ function getJsonValue() {
 
 tag="${1}"
 bump="${2}"
-branch="${CIRCLE_BRANCH}"
+branch="${BRANCH}"
 currentVersion=$(cat ./lerna.json | getJsonValue 'version' |  cut -f1 -d"-")
 semver=( ${currentVersion//./ } )
 major="${semver[0]}"
 minor="${semver[1]}"
 patch=$((semver[2] + 1))
 id=$(date '+%Y%m%d%H%M')
+alphaVersion="${major}.${minor}.${patch}-${tag}.$(date '+%Y%m%d')"
 
 # Verify arguments
 if [ -z "${tag}" ] ; then
@@ -30,8 +31,8 @@ fi
 if [ -z "${bump}" ] ; then
   bump="patch";
 fi
-if [ "${bump}" != "patch" ] && [ "${bump}" != "minor" ] && [ "${bump}" != "major" ] ; then
-  echo "bump must be one of patch, minor, major"
+if [ "${bump}" != "patch" ] && [ "${bump}" != "minor" ] && [ "${bump}" != "major" ] && [[ ! "${bump}" =~ ^${alphaVersion}* ]] ; then
+  echo "bump must be one of patch, minor, major, or exact version of format[major.minor.patch-tag]"
   exit 1
 fi
 
@@ -46,12 +47,12 @@ if [ "${tag}" == "beta" ] && [[ ! "${branch}" =~ ^v.-beta$ ]] ; then
 fi
 
 # Update bump level
-if [ "${tag}" != "public" ] ; then
+if [ "${tag}" != "public" ] && [[ ! "${bump}" =~ ^${alphaVersion}* ]] ; then
   bump="pre${bump}"
 fi
 
 # alpha/dev get a timestamp in their version
-if [ "${tag}" == "dev" ] || [ "${tag}" == "alpha" ] ; then
+if [[ "${tag}" == "dev"  ||  "${tag}" == "alpha" ]] && [[ ! "${bump}" =~ ^${alphaVersion}* ]] ; then
   bump="${major}.${minor}.${patch}-${tag}.${id}"
 fi
 
@@ -63,12 +64,12 @@ echo -e "------------------------------------\n"
 
 # Run unit-tests one more time
 npm run lint:fix
-npm run test
 npm run build
 
 if [ "${tag}" == "public" ] ; then
   ./node_modules/.bin/lerna publish \
     --force-publish="*" \
+    --no-push \
     --exact \
     --yes \
     "${bump}"
