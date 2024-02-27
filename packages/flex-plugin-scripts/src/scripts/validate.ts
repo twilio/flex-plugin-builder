@@ -1,13 +1,23 @@
-import { resolve, join } from 'path';
+import { resolve, join, basename } from 'path';
 import os from 'os';
 
-import { env, logger, getCredential, progress } from '@twilio/flex-dev-utils';
-import { Environment } from '@twilio/flex-dev-utils/dist/env';
-import { addCWDNodeModule, getPaths, zipPluginFiles, writeJSONFile, removeFile } from '@twilio/flex-dev-utils/dist/fs';
+import { logger, getCredential, progress } from '@twilio/flex-dev-utils';
+import {
+  addCWDNodeModule,
+  getPaths,
+  zipPluginFiles,
+  writeJSONFile,
+  removeFile,
+  getPackageVersion,
+  mkdirpSync,
+  checkAFileExists,
+} from '@twilio/flex-dev-utils/dist/fs';
 
 import { setEnvironment } from '..';
 import run from '../utils/run';
 import { GovernorClient } from '../clients';
+import { ValidateReport } from '../clients/governor';
+import { validateSuccessful } from '../prints';
 
 /**
  * Builds the bundle
@@ -17,9 +27,6 @@ const validate = async (...argv: string[]): Promise<void> => {
   logger.debug('Running validation on Flex plugin bundle');
 
   addCWDNodeModule(...argv);
-
-  env.setBabelEnv(Environment.Development);
-  env.setNodeEnv(Environment.Development);
 
   logger.clearTerminal();
   logger.notice('Validating Plugin...');
@@ -33,51 +40,34 @@ const validate = async (...argv: string[]): Promise<void> => {
   const governorClient = new GovernorClient(credentials.username, credentials.password);
 
   const pkgName = logger.coloredStrings.bold.yellow(paths.app.name);
+  const flexUIVersion = getPackageVersion('@twilio/flex-ui');
 
   try {
     await progress('Preparing the plugin', async () => {
-      zipPluginFiles(zipFile, 'plugin', paths.app.srcDir, paths.app.pkgPath);
+      const dirName = basename(paths.cwd);
+      zipPluginFiles(zipFile, dirName, paths.app.srcDir, paths.app.pkgPath);
     });
 
-    const report = await progress('Generating validation report', async () => {
-      return governorClient.validate(zipFile);
+    const report = await progress('Generating validation report', async (): Promise<ValidateReport> => {
+      return governorClient.validate(zipFile, paths.app.name, flexUIVersion);
     });
 
-    const validateFile = join(paths.cwd, 'validate.json');
-
-    writeJSONFile(report, validateFile);
-
-    const noDeprecatedWarnings = report.deprecated_api_usage.reduce((acc: number, warning: any) => {
-      acc += warning.messages.length;
-      return acc;
-    }, 0);
-
-    const noDomWarnings = report.dom_manipulation.reduce((acc: number, warning: any) => {
-      acc += warning.messages.length;
-      return acc;
-    }, 0);
-
-    const noDependencyWarnings = report.version_incompatibility[0]?.messages.length || 0;
-
-    logger.newline();
-
-    if (noDeprecatedWarnings > 0 || noDomWarnings > 0 || noDependencyWarnings > 0) {
-      logger.warning(
-        `Validation complete. Found:\n${logger.coloredStrings.error(
-          noDeprecatedWarnings,
-        )} deprecation warnings\n${logger.coloredStrings.error(
-          noDomWarnings,
-        )} dom manipulation statements\n${logger.coloredStrings.error(
-          noDependencyWarnings,
-        )} version incompatibility issues`,
-      );
-      logger.newline();
-      logger.info(`To see more, go to ${logger.coloredStrings.link(validateFile)}`);
-    } else {
-      logger.success(`Validation complete. Found ${logger.coloredStrings.digit(0)} errors 🎉`);
+    if (
+      report.api_compatibility.length > 0 ||
+      report.version_compatibility[0].warnings.length > 0 ||
+      report.dom_manipulation.length > 0 ||
+      report.errors.length > 0
+    ) {
+      if (!checkAFileExists(paths.cwd, 'logs')) {
+        mkdirpSync('logs');
+      }
+      const validateFile = join(paths.cwd, 'logs', `validate-${Date.now()}.json`);
+      writeJSONFile(report, validateFile);
     }
-  } catch (e) {
-    logger.error(`Validation of plugin ${pkgName} failed!`);
+
+    validateSuccessful(report);
+  } catch (e: any) {
+    logger.error(`Validation of plugin ${pkgName} failed with error: ${(e as Error).message}`);
   }
 
   removeFile(zipFile);

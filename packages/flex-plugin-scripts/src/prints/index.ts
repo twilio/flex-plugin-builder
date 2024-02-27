@@ -13,3 +13,4 @@ export { default as loadPluginCountError } from './loadPluginCountError';
 export { default as serverCrashed } from './serverCrashed';
 export { default as fileTooLarge } from './fileTooLarge';
 export { default as localReactIncompatibleWithRemote } from './localReactIncompatibleWithRemote';
+export { default as validateSuccessful } from './validateSuccessful';

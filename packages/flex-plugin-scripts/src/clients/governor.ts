@@ -3,7 +3,23 @@ import { createReadStream } from 'fs';
 
 import { HttpClient, FormData } from '@twilio/flex-dev-utils';
 
-interface Warning {
+export interface Warning {
+  file: string;
+  warnings: {
+    warningMessage: string;
+    location?: {
+      line: number;
+      column: number;
+    };
+    recommendation: {
+      code?: string;
+      message: string;
+      link?: string;
+    };
+  }[];
+}
+
+interface GenericWarning {
   file: string;
   messages: string[];
 }
@@ -13,10 +29,10 @@ interface Error {
   message: string;
 }
 
-interface ValidateReport {
-  dom_manipulation: Warning[];
-  deprecated_api_usage: Warning[];
-  version_incompatibility: Warning[];
+export interface ValidateReport {
+  dom_manipulation: GenericWarning[];
+  api_compatibility: Warning[];
+  version_compatibility: Warning[];
   errors: Error[];
 }
 
@@ -36,8 +52,10 @@ export default class GovernorClient {
   /**
    * Returns the {@link ValidateReport}
    */
-  public validate = async (pluginZip: string): Promise<ValidateReport> => {
+  public validate = async (pluginZip: string, pluginName: string, flexUIVersion: string): Promise<ValidateReport> => {
     const form = new FormData();
+    form.append('flex_ui_version', flexUIVersion);
+    form.append('plugin_name', pluginName);
     form.append('plugin_zip', createReadStream(pluginZip));
     return this.http.upload('Validate', form);
   };

@@ -512,4 +512,10 @@ describe('logger', () => {
       });
     });
   });
+  describe('linkText', () => {
+    it('should link text', () => {
+      const linkedText = logger.linkText('Hello', 'https://example.com');
+      expect(linkedText).toContain('Hello');
+    });
+  });
 });

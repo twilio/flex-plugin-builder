@@ -39,7 +39,7 @@ describe('GovernorClient', () => {
       const upload = jest.spyOn(client.http, 'upload').mockResolvedValue(validateResponse);
       const readStream = jest.spyOn(fs, 'createReadStream').mockReturnValue('blah' as any);
 
-      const result = await client.validate(zipFile);
+      const result = await client.validate(zipFile, 'plugin-sample', '2.5.0');
 
       expect(readStream).toHaveBeenCalledTimes(1);
       expect(readStream).toHaveBeenCalledWith(zipFile);

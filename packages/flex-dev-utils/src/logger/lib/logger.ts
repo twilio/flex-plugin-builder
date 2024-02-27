@@ -56,6 +56,21 @@ export const coloredStrings = {
   headline: chalk.bold.green,
   name: chalk.bold.magenta,
   digit: chalk.magenta,
+  underline: chalk.underline,
+};
+
+/**
+ * Links the url to the specific text displayed in the logs
+ * @param text Text to underlink and link
+ * @param url URL to link the text to
+ * @returns linked text string
+ */
+const linkText = (text: string, url: string): string => {
+  const OSC = '\u001B]';
+  const BEL = '\u0007';
+  const SEP = ';';
+
+  return [OSC, '8', SEP, SEP, url, BEL, text, OSC, '8', SEP, SEP, BEL].join('');
 };
 
 /**
@@ -357,4 +372,5 @@ export default {
   columns,
   colors: chalk,
   coloredStrings,
+  linkText,
 };
