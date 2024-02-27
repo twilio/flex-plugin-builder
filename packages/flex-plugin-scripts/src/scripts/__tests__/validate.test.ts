@@ -107,4 +107,46 @@ describe('ValidateScript', () => {
     expect(removeFileSpy).toHaveBeenCalledWith(zipFile);
     expect(exit).not.toHaveBeenCalled();
   });
+
+  it('should create logs directory and pass correct flex ui version', async () => {
+    flexUiVersionSpy.mockReturnValueOnce('2.5.1');
+    checkFileExistsSpy.mockReturnValueOnce(false);
+    await validateScript.default();
+
+    expect(validate).toHaveBeenCalledWith(zipFile, paths.app.name, '2.5.1');
+    expect(mkdirSpy).toHaveBeenCalledTimes(1);
+    expect(mkdirSpy).toHaveBeenCalledWith('logs');
+  });
+
+  it('should not write log file', async () => {
+    writeJsonSpy.mockClear();
+    /* eslint-disable */
+    const noWarningReport:ValidateReport = {
+      api_compatibility: [],
+      
+      version_compatibility: [
+        {
+          file: '/path/to/package.json',
+          warnings: []
+        }
+      ],
+      dom_manipulation: [],
+      errors: []
+    }
+    /* eslint-disable */
+
+    validate.mockResolvedValueOnce(noWarningReport);
+
+    await validateScript.default();
+
+    expect(writeJsonSpy).not.toHaveBeenCalled();
+  });
+
+  it('should display error log when validation fails', async () => {
+    const errorString = '401 Unauthorized';
+    validate.mockRejectedValueOnce(new Error(errorString));
+    await validateScript.default();
+    expect(errorLogSpy).toHaveBeenCalledTimes(1);
+    expect(errorLogSpy).toHaveBeenCalledWith(expect.stringContaining(errorString));
+  });
 });

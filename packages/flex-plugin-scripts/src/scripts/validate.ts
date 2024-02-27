@@ -54,7 +54,7 @@ const validate = async (...argv: string[]): Promise<void> => {
 
     if (
       report.api_compatibility.length > 0 ||
-      report.version_compatibility[0].warnings.length > 0 ||
+      report.version_compatibility[0]?.warnings.length > 0 ||
       report.dom_manipulation.length > 0 ||
       report.errors.length > 0
     ) {

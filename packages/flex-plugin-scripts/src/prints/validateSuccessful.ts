@@ -51,11 +51,11 @@ export default (report: ValidateReport): void => {
   const noDependencyWarnings = report.version_compatibility[0]?.warnings.length || 0;
 
   if (noDeprecatedWarnings > 0 || noDependencyWarnings > 0) {
-    if (report.api_compatibility.length > 0) {
+    if (noDeprecatedWarnings > 0) {
       printWarnings(report.api_compatibility);
     }
 
-    if (report.version_compatibility[0].warnings.length > 0) {
+    if (noDependencyWarnings > 0) {
       logger.newline();
       logger.info(logger.coloredStrings.link(logger.coloredStrings.underline(getPaths().app.pkgPath)));
       printWarnings(report.version_compatibility);
@@ -70,6 +70,11 @@ export default (report: ValidateReport): void => {
       ),
     );
 
+    logger.info(
+      logger.coloredStrings.dim(
+        `${logger.coloredStrings.bold('Note:')} Validation does not check for compilation or syntax errors`,
+      ),
+    );
     logger.newline();
   } else {
     logger.success(`Validation complete. Found ${logger.coloredStrings.digit(0)} problems 🎉`);
