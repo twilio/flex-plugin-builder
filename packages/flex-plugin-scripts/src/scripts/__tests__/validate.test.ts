@@ -32,7 +32,8 @@ describe('ValidateScript', () => {
   };
 
   const validateReport: ValidateReport = {
-    // eslint-disable-next-line camelcase
+    /* eslint-disable */
+    request_id: 'RQ12345',
     api_compatibility: [
       {
         file: '/path/to/file1.ts',
@@ -66,8 +67,8 @@ describe('ValidateScript', () => {
       },
     ],
     errors: [],
-    // eslint-disable-next-line camelcase
     dom_manipulation: [],
+    /* eslint-disable */
   };
 
   const validate = jest.fn().mockResolvedValue(validateReport);
@@ -100,7 +101,7 @@ describe('ValidateScript', () => {
     expect(zipSpy).toHaveBeenCalledWith(zipFile, 'dir', paths.app.srcDir, paths.app.pkgPath);
     expect(validate).toHaveBeenCalledWith(zipFile, paths.app.name, '1.34.2');
     expect(mkdirSpy).not.toHaveBeenCalled();
-    expect(writeJsonSpy).toHaveBeenCalledWith(validateReport, `${paths.cwd}/logs/validate-12345.json`);
+    expect(writeJsonSpy).toHaveBeenCalledWith(validateReport, `${paths.cwd}/logs/validate-${validateReport.request_id}.json`);
 
     expect(prints.validateSuccessful).toHaveBeenCalledWith(validateReport);
     expect(errorLogSpy).not.toHaveBeenCalled();
@@ -122,6 +123,7 @@ describe('ValidateScript', () => {
     writeJsonSpy.mockClear();
     /* eslint-disable */
     const noWarningReport:ValidateReport = {
+      request_id: 'RQ12345',
       api_compatibility: [],
       
       version_compatibility: [
@@ -148,5 +150,6 @@ describe('ValidateScript', () => {
     await validateScript.default();
     expect(errorLogSpy).toHaveBeenCalledTimes(1);
     expect(errorLogSpy).toHaveBeenCalledWith(expect.stringContaining(errorString));
+    expect(exit).toHaveBeenCalled();
   });
 });
