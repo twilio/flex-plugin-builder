@@ -1,5 +1,6 @@
 import { createDescription } from '../../../utils/general';
 import FlexPlugin from '../../../sub-commands/flex-plugin';
+import { ValidateReport } from '@twilio/flex-plugin-scripts/dist/clients/governor';
 
 const baseFlags = { ...FlexPlugin.flags };
 // @ts-ignore
@@ -21,8 +22,15 @@ export default class FlexPluginValidate extends FlexPlugin {
   /**
    * @override
    */
-  async doRun(): Promise<void> {
+  async doRun(): Promise<ValidateReport> {
     process.env.PERSIST_TERMINAL = 'true';
-    await this.runScript('validate');
+    return this.runScript('validate');
+  }
+
+  /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginValidate.topicName;
   }
 }

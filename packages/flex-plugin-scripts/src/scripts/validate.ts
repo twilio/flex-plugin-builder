@@ -22,7 +22,7 @@ import { validateSuccessful } from '../prints';
 /**
  * Builds the bundle
  */
-const validate = async (...argv: string[]): Promise<void> => {
+const validate = async (...argv: string[]): Promise<ValidateReport> => {
   setEnvironment(...argv);
   logger.debug('Running validation on Flex plugin bundle');
 
@@ -66,11 +66,19 @@ const validate = async (...argv: string[]): Promise<void> => {
     }
 
     validateSuccessful(report);
+    removeFile(zipFile);
+    return report;
   } catch (e: any) {
     logger.error(`Validation of plugin ${pkgName} failed with error: ${(e as Error).message}`);
+    removeFile(zipFile);
   }
 
-  removeFile(zipFile);
+  return {
+    dom_manipulation: [],
+    api_compatibility: [],
+    version_compatibility: [],
+    errors: []
+  }
 };
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises

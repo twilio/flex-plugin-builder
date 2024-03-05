@@ -32,4 +32,11 @@ export default class FlexPluginsBuild extends FlexPlugin {
   get checkCompatibility(): boolean {
     return true;
   }
+
+  /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginsBuild.topicName;
+  }
 }

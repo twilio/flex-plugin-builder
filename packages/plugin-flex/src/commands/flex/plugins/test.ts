@@ -36,4 +36,11 @@ export default class FlexPluginsTest extends FlexPlugin {
   get checkCompatibility(): boolean {
     return true;
   }
+
+  /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginsTest.topicName;
+  }
 }

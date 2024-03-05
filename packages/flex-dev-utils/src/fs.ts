@@ -640,6 +640,18 @@ export const isPluginDir = (packageJson: PackageJson): boolean => {
 };
 
 /**
+ * Determines whether the directory is plugin based on the package.json
+ * @param packageJson  the package json
+ */
+export const isPluginFolder = (): boolean => {
+  if(!checkAFileExists(getPackageJsonPath())){
+    return false;
+  }
+  const packageJson: PackageJson = readAppPackageJson();
+  return Boolean(packageJson.dependencies[flexUI] || packageJson.devDependencies[flexUI]);
+};
+
+/**
  * Fetches the version corresponding to the dependency inside the given package
  * @param pkg the package.json to check
  * @param name the package to look for

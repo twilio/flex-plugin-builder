@@ -7,6 +7,7 @@ import {
   readJsonFile,
   writeJSONFile,
   addCWDNodeModule,
+  getPackageVersion,
 } from '@twilio/flex-dev-utils/dist/fs';
 import { baseCommands, services } from '@twilio/cli-core';
 import {
@@ -22,6 +23,7 @@ import {
   Logger,
   NotImplementedError,
   TwilioCliError,
+  Telemetry,
   env,
   semver,
   updateNotifier,
@@ -84,6 +86,8 @@ const baseFlag = { ...baseCommands.TwilioClientCommand.flags };
 delete baseFlag['cli-output-format'];
 
 const packageJsonStr = 'package.json';
+const trackEventName = 'PCLI Run';
+const validaTopicName = 'flex:plugins:validate';
 
 /**
  * Base class for all flex-plugin * scripts.
@@ -169,6 +173,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   private _flexConfigurationClient?: FlexConfigurationClient;
 
   private _serverlessClient?: ServerlessClient;
+
+  private _telemetry!: Telemetry;
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage, opts: Partial<FlexPluginOption>) {
     super(argv, config, secureStorage);
@@ -387,6 +393,18 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   }
 
   /**
+   * Gets an instantiated {@link Telemetry}
+   * @returns {Telemetry}
+   */
+  get telemetry(): Telemetry {
+    if (!this._telemetry) {
+      throw new TwilioCliError('telementry is not initialized yet');
+    }
+
+    return this._telemetry;
+  }
+
+  /**
    * Returns the flex-ui version from the plugin
    */
   get flexUIVersion(): number {
@@ -463,14 +481,27 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       flexConfigOptions,
     );
     this._serverlessClient = new ServerlessClient(this.twilioClient.serverless.v1.services, this._logger);
+    this._telemetry = new Telemetry();
 
     if (!this.isJson) {
       this._logger.notice(`Using profile **${this.currentProfile.id}** (${this.currentProfile.accountSid})`);
       this._logger.newline();
     }
+    const start = performance.now();
     const result = await this.doRun();
+    const end = performance.now();
+
     if (result && this.isJson && typeof result === 'object') {
       this._logger.info(JSON.stringify(result));
+    }
+    
+    if(this.getTopicName() === validaTopicName) {
+      this.trackTopic(end - start, {
+        violations: result, 
+        deployed: 0
+      });
+    }else{
+      this.trackTopic(end - start);
     }
   }
 
@@ -626,6 +657,14 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   }
 
   /**
+   * Returns actual topicName
+   * @returns {string}
+   */
+  getTopicName(): string {
+    return FlexPlugin.topicName;
+  }
+
+  /**
    * Returns the error message text to display when the command is run outside of the plugin folder
    */
   get pluginFolderErrorMessage(): string {
@@ -681,6 +720,16 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     argv = this.argv,
   ): Promise<Parser.Output<F, A>> {
     return parser(super.parse.bind(this))(options, argv);
+  }
+
+  trackTopic(timeTaken: number, properties?: Record<string, any>): void {
+    const combinedProperty = {
+      cliVersion: this.cliPkg.version,
+      command: this.getTopicName(),
+      xtime: timeTaken,
+      ...properties,
+    };
+    this._telemetry.track(trackEventName, this.currentProfile.accountSid, combinedProperty);
   }
 
   /**

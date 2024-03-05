@@ -42,3 +42,4 @@ export * as packages from './packages';
 export { default as FormData } from 'form-data';
 export { default as axios } from './axios';
 export { urlJoin };
+export { Telemetry } from './telemetry';

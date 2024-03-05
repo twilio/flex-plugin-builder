@@ -310,4 +310,11 @@ export default class FlexPluginsDeploy extends FlexPlugin {
   get checkCompatibility(): boolean {
     return true;
   }
+
+  /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginsDeploy.topicName;
+  }
 }
