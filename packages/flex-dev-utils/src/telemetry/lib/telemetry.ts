@@ -1,5 +1,4 @@
 import * as os from 'os';
-import { join } from 'path';
 
 import Analytics from '@segment/analytics-node';
 
@@ -32,7 +31,8 @@ interface CommonProperties {
 
 const PRODUCT = 'Flex';
 const SOURCE = 'flexpluginscli';
-const packageJsonStr = 'package.json';
+
+export const trackEventName = 'PCLI Run';
 
 export default class Telemetry {
   protected readonly analytics: Analytics;
@@ -78,12 +78,10 @@ export default class Telemetry {
 
   /**
    * Records any event or actions that users perform.
-   * Documentation - https://segment.com/docs/connections/sources/catalog/libraries/website/javascript/#track
    * @param event Event name
    * @param properties Event properties
-   * @param callback A function executed after a timeout of 300 ms
    */
-  public async track(event: string, accountSid: string, properties?: Record<string, any>): Promise<any> {
+  public track(event: string, accountSid: string, properties?: Record<string, any>): void {
     const traceData = {
       userId: accountSid,
       event,
@@ -94,15 +92,7 @@ export default class Telemetry {
       },
     };
     logger.warning(`trace data is ${JSON.stringify(traceData)}`);
-    this.analytics.track(traceData, (err, data) => {
-      /*
-       * This callback function will be executed when the track operation is complete.
-       * However, we won't wait for it to complete before moving on.
-       */
-      if (err) {
-        logger.debug('Found issue with track', err);
-      }
-    });
+    this.analytics.track(traceData);
   }
 
   private getOsDetails(): OsDetail {

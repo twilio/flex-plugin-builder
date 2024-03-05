@@ -1,6 +1,7 @@
+import { ValidateReport } from '@twilio/flex-plugin-scripts/dist/clients/governor';
+
 import { createDescription } from '../../../utils/general';
 import FlexPlugin from '../../../sub-commands/flex-plugin';
-import { ValidateReport } from '@twilio/flex-plugin-scripts/dist/clients/governor';
 
 const baseFlags = { ...FlexPlugin.flags };
 // @ts-ignore

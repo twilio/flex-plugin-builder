@@ -7,7 +7,6 @@ import {
   readJsonFile,
   writeJSONFile,
   addCWDNodeModule,
-  getPackageVersion,
 } from '@twilio/flex-dev-utils/dist/fs';
 import { baseCommands, services } from '@twilio/cli-core';
 import {
@@ -28,6 +27,7 @@ import {
   semver,
   updateNotifier,
   chalk,
+  trackEventName,
 } from '@twilio/flex-dev-utils';
 import { spawn, SpawnPromise } from '@twilio/flex-dev-utils/dist/spawn';
 import dayjs from 'dayjs';
@@ -86,7 +86,6 @@ const baseFlag = { ...baseCommands.TwilioClientCommand.flags };
 delete baseFlag['cli-output-format'];
 
 const packageJsonStr = 'package.json';
-const trackEventName = 'PCLI Run';
 const validaTopicName = 'flex:plugins:validate';
 
 /**
@@ -494,13 +493,13 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     if (result && this.isJson && typeof result === 'object') {
       this._logger.info(JSON.stringify(result));
     }
-    
-    if(this.getTopicName() === validaTopicName) {
+
+    if (this.getTopicName() === validaTopicName) {
       this.trackTopic(end - start, {
-        violations: result, 
-        deployed: 0
+        violations: result,
+        deployed: 0,
       });
-    }else{
+    } else {
       this.trackTopic(end - start);
     }
   }
@@ -722,7 +721,12 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     return parser(super.parse.bind(this))(options, argv);
   }
 
-  trackTopic(timeTaken: number, properties?: Record<string, any>): void {
+  /**
+   * Keep tracks of the command
+   * @param timeTaken xtime for the command
+   * @param properties additional properties for track events
+   */
+  private trackTopic(timeTaken: number, properties?: Record<string, any>): void {
     const combinedProperty = {
       cliVersion: this.cliPkg.version,
       command: this.getTopicName(),
@@ -730,6 +734,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       ...properties,
     };
     this._telemetry.track(trackEventName, this.currentProfile.accountSid, combinedProperty);
+    exit(0);
   }
 
   /**

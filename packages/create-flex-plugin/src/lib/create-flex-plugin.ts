@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { resolve, join } from 'path';
 
-import { logger, progress, FlexPluginError, singleLineString } from '@twilio/flex-dev-utils';
+import { logger, progress, FlexPluginError, singleLineString, Telemetry, trackEventName } from '@twilio/flex-dev-utils';
 import { copyTemplateDir, checkPluginConfigurationExists } from '@twilio/flex-dev-utils/dist/fs';
 import { dirSync as tmpDirSync, DirResult as TmpDirResult } from 'tmp';
 
@@ -94,10 +94,31 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
 };
 
 /**
+ * Keep track for the command using the {@link FlexPluginArguments}
+ * @param timeTaken xtime for the command
+ * @param config {FlexPluginArguments} the configuration
+ */
+const track = (timeTaken: number, config: FlexPluginArguments): void => {
+  const telemetry = new Telemetry();
+  const accountSid: string = String(config.accountSid);
+  const properties = {
+    cliVersion: config.pluginScriptsVersion,
+    command: 'flex:plugins:create',
+    xtime: timeTaken,
+    pluginName: config.name,
+    pluginVersion: '0.0.0',
+    flexUiVersion: config.flexSdkVersion,
+    typescript: config.typescript,
+  };
+  telemetry.track(trackEventName, accountSid, properties);
+};
+
+/**
  * Creates a Flex Plugin from the {@link FlexPluginArguments}
  * @param config {FlexPluginArguments} the configuration
  */
 export const createFlexPlugin = async (config: FlexPluginArguments): Promise<void> => {
+  const start = performance.now();
   config = await validate(config);
   config = await setupConfiguration(config);
 
@@ -126,6 +147,8 @@ export const createFlexPlugin = async (config: FlexPluginArguments): Promise<voi
   }
 
   finalMessage(config);
+  const end = performance.now();
+  track(end - start, config);
 };
 
 export default createFlexPlugin;

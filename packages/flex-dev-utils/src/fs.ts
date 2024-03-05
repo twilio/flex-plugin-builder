@@ -644,7 +644,7 @@ export const isPluginDir = (packageJson: PackageJson): boolean => {
  * @param packageJson  the package json
  */
 export const isPluginFolder = (): boolean => {
-  if(!checkAFileExists(getPackageJsonPath())){
+  if (!checkAFileExists(getPackageJsonPath())) {
     return false;
   }
   const packageJson: PackageJson = readAppPackageJson();

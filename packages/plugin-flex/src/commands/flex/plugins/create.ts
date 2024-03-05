@@ -78,8 +78,13 @@ export default class FlexPluginsCreate extends baseCommands.TwilioClientCommand 
    * @returns {Promise<void>}
    */
   async run(): Promise<void> {
+    await super.run();
     // @ts-ignore
     const { flags: instanceFlags, args } = await this.parse(FlexPluginsCreate);
+
+    if (!instanceFlags.accountSid) {
+      instanceFlags.accountSid = this.currentProfile.accountSid;
+    }
 
     const createFlexPlugin = new CreateFlexPlugin();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
