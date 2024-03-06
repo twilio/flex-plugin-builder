@@ -20,6 +20,8 @@ import { GovernorClient } from '../clients';
 import { ValidateReport } from '../clients/governor';
 import { validateSuccessful } from '../prints';
 
+export const LEGAL_NOTICE = '<LEGAL DISCLAIMER PLACEHOLDER>';
+
 /**
  * Builds the bundle
  */

@@ -10,12 +10,15 @@ import { ValidateReport } from '../../clients/governor';
 
 jest.mock('../../clients/governor');
 jest.mock('../../prints/validateSuccessful');
-const exit = jest.spyOn(process, 'exit').mockReturnThis();
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const GovernorClient = require('../../clients/governor').default;
 
 describe('ValidateScript', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   const paths = {
     cwd: '/path/to/current/working/dir',
     app: {
@@ -39,6 +42,7 @@ describe('ValidateScript', () => {
         file: '/path/to/file1.ts',
         warnings: [
           {
+            name: 'Wrong method call',
             location: {
               line: 23,
               column: 50,
@@ -58,6 +62,7 @@ describe('ValidateScript', () => {
         file: '/path/to/package.json',
         warnings: [
           {
+            name: 'Wrong version',
             warningMessage: 'Do not use version 1.2.0',
             recommendation: {
               message: 'Use 2.0.5 instead',
@@ -88,16 +93,19 @@ describe('ValidateScript', () => {
   const removeFileSpy = jest.spyOn(fs, 'removeFile').mockReturnThis();
   const clearTerminalSpy = jest.spyOn(flexDevUtils.logger, 'clearTerminal');
   const errorLogSpy = jest.spyOn(flexDevUtils.logger, 'error');
+  const noticeLogSpy = jest.spyOn(flexDevUtils.logger, 'notice');
+  const progressSpy = jest.spyOn(flexDevUtils, 'progress');
 
   it('should validate plugin', async () => {
     const args = ['-l', 'debug'];
-    await validateScript.default(...args);
+    const response = await validateScript.default(...args);
 
     expect(setEnvSpy).toHaveBeenCalledTimes(1);
     expect(setEnvSpy).toHaveBeenCalledWith(...args);
 
     expect(clearTerminalSpy).toHaveBeenCalledTimes(1);
     expect(flexUiVersionSpy).toHaveBeenCalledWith('@twilio/flex-ui');
+    expect(progressSpy).toHaveBeenCalledTimes(2);
     expect(zipSpy).toHaveBeenCalledWith(zipFile, 'dir', paths.app.srcDir, paths.app.pkgPath);
     expect(validate).toHaveBeenCalledWith(zipFile, paths.app.name, '1.34.2');
     expect(mkdirSpy).not.toHaveBeenCalled();
@@ -105,8 +113,12 @@ describe('ValidateScript', () => {
 
     expect(prints.validateSuccessful).toHaveBeenCalledWith(validateReport);
     expect(errorLogSpy).not.toHaveBeenCalled();
+    expect(noticeLogSpy).toBeCalledWith(expect.stringContaining(validateScript.LEGAL_NOTICE));
     expect(removeFileSpy).toHaveBeenCalledWith(zipFile);
-    expect(exit).not.toHaveBeenCalled();
+
+    expect(response.error).toBeUndefined();
+    expect(response.violations.length).toBe(2);
+    expect(response.vtime).toBeGreaterThan(0);
   });
 
   it('should create logs directory and pass correct flex ui version', async () => {
@@ -147,9 +159,39 @@ describe('ValidateScript', () => {
   it('should display error log when validation fails', async () => {
     const errorString = '401 Unauthorized';
     validate.mockRejectedValueOnce(new Error(errorString));
-    await validateScript.default();
-    expect(errorLogSpy).toHaveBeenCalledTimes(1);
-    expect(errorLogSpy).toHaveBeenCalledWith(expect.stringContaining(errorString));
-    expect(exit).toHaveBeenCalled();
+    try {
+      await validateScript.default();
+    } catch (e) {
+      expect(e).toBeInstanceOf(flexDevUtils.TwilioCliError);
+      expect(e.message).toContain(errorString);
+      expect(errorLogSpy).toHaveBeenCalledTimes(1);
+    }
   });
+
+  it('should not call progress if deploy flag is present', async () => {
+    const args = ['--deploy'];
+    await validateScript.default(...args);
+
+    expect(progressSpy).not.toHaveBeenCalled();
+    expect(clearTerminalSpy).not.toHaveBeenCalled();
+    expect(zipSpy).toHaveBeenCalledWith(zipFile, 'dir', paths.app.srcDir, paths.app.pkgPath);
+    expect(validate).toHaveBeenCalledWith(zipFile, paths.app.name, '1.34.2');
+    expect(mkdirSpy).not.toHaveBeenCalled();
+    expect(writeJsonSpy).toHaveBeenCalledWith(validateReport, `${paths.cwd}/logs/validate-${validateReport.request_id}.json`);
+    expect(prints.validateSuccessful).toHaveBeenCalledWith(validateReport);
+  });
+
+  it('should not throw error if deploy flag is present', async () => {
+    const args = ['--deploy'];
+    const errorString = '401 Unauthorized';
+
+    validate.mockRejectedValueOnce(new Error(errorString));
+    
+    const response = await validateScript.default(...args);
+    expect(errorLogSpy).not.toHaveBeenCalled();
+    expect(response.error).toContain(errorString);
+    expect(response.violations.length).toBe(0);
+    expect(response.vtime).toBe(0);
+  });
+
 });
