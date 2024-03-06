@@ -65,7 +65,7 @@ export default (report: ValidateReport): void => {
     logger.warning(
       logger.coloredStrings.bold(
         logger.coloredStrings.error(
-          `✖ Validation complete. Found ${noDeprecatedWarnings + noDependencyWarnings} problems`,
+          `✖ Validation complete. Found ${noDeprecatedWarnings + noDependencyWarnings} issues`,
         ),
       ),
     );

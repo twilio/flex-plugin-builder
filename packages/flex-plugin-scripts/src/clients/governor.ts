@@ -6,6 +6,7 @@ import { HttpClient, FormData } from '@twilio/flex-dev-utils';
 export interface Warning {
   file: string;
   warnings: {
+    name: string;
     warningMessage: string;
     location?: {
       line: number;
@@ -30,6 +31,7 @@ interface Error {
 }
 
 export interface ValidateReport {
+  request_id: string;
   dom_manipulation: GenericWarning[];
   api_compatibility: Warning[];
   version_compatibility: Warning[];
