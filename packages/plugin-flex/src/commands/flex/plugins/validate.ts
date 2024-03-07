@@ -25,4 +25,11 @@ export default class FlexPluginValidate extends FlexPlugin {
     process.env.PERSIST_TERMINAL = 'true';
     await this.runScript('validate');
   }
+
+  /**
+   * @override
+   */
+  get checkCompatibility(): boolean {
+    return true;
+  }
 }

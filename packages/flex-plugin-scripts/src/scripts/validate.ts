@@ -61,6 +61,7 @@ const validate = async (
   const zipPlugin = () => {
     const dirName = basename(paths.cwd);
     zipPluginFiles(zipFile, dirName, paths.app.srcDir, paths.app.pkgPath);
+    logger.debug(`zipped plugin files into folder ${dirName} inside zip file ${zipFile}`);
   };
 
   // Make the req to plugin governor to validate the zipped plugin

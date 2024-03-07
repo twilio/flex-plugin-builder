@@ -10,7 +10,7 @@ import stringWidth from 'string-width';
 import columnify from './columnify';
 
 type Level = 'info' | 'error' | 'warn';
-type Color = 'red' | 'yellow' | 'green' | 'cyan' | 'magenta';
+type Color = 'red' | 'yellow' | 'green' | 'cyan' | 'magenta' | 'dim';
 
 interface ColumnsOptions {
   indent?: boolean;
@@ -137,7 +137,8 @@ export class Logger {
    */
   public debug = (...args: any[]): void => {
     if (this.isDebug()) {
-      this._log({ level: 'info', args });
+      args.unshift('[DEBUG]');
+      this._log({ level: 'info', color: 'dim', args });
     }
   };
 
