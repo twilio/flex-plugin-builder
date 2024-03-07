@@ -94,15 +94,15 @@ export default class FlexPluginsDeploy extends FlexPlugin {
   // @ts-ignore
   public _flags: OutputFlags<typeof FlexPluginsDeploy.flags>;
 
+  public options = {
+    fix: '1. Go back and fix these issues now (recommended)',
+    deploy: '2. Continue with the deployment, understanding the risks.',
+  };
+
   // @ts-ignore
   private prints;
 
   private nextVersion?: string = undefined;
-
-  private options = {
-    fix: '1. Go back and fix these issues now (recommended)',
-    deploy: '2. Continue with the deployment, understanding the risks.',
-  };
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, {});

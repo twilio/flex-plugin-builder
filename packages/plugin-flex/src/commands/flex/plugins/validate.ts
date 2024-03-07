@@ -38,4 +38,11 @@ export default class FlexPluginValidate extends FlexPlugin {
   getTopicName(): string {
     return FlexPluginValidate.topicName;
   }
+
+  /**
+   * @override
+   */
+  get checkCompatibility(): boolean {
+    return true;
+  }
 }

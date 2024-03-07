@@ -306,8 +306,8 @@ export default class Http {
       });
 
       req.data = qs.stringify(Object.assign({}, ...data), { encode: false, arrayFormat: 'repeat' });
-      logger.debug(`Request data ${req.data} and content-type ${req.headers?.['Content-Type']}`);
     }
+    logger.debug(`Request data ${JSON.stringify(req.data)} and content-type ${req.headers?.['Content-Type']}`);
 
     return Promise.resolve(req);
   }
@@ -545,6 +545,9 @@ export default class Http {
     }
 
     logger.debug(`Request errored with message ${err.message}`);
+    if (err.response?.data) {
+      logger.debug(`Error: `, err.response.data);
+    }
     return Promise.reject(err);
   };
 
