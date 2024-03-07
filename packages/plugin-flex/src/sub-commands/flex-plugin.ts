@@ -87,6 +87,7 @@ delete baseFlag['cli-output-format'];
 
 const packageJsonStr = 'package.json';
 const validaTopicName = 'flex:plugins:validate';
+const deployTopicName = 'flex:plugins:deploy';
 
 /**
  * Base class for all flex-plugin * scripts.
@@ -494,11 +495,15 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       this._logger.info(JSON.stringify(result));
     }
 
-    if (this.getTopicName() === validaTopicName) {
-      this.trackTopic(end - start, {
-        violations: result,
-        deployed: 0,
-      });
+    if (this.getTopicName() === validaTopicName || this.getTopicName() === deployTopicName) {
+      const { violations, vtime, error } = result;
+      if(result && !error) {
+        this.trackTopic(end - start, {
+          deployed: 0,
+          violations,
+          vtime
+        });
+      }
     } else {
       this.trackTopic(end - start);
     }
@@ -734,7 +739,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       ...properties,
     };
     this._telemetry.track(trackEventName, this.currentProfile.accountSid, combinedProperty);
-    exit(0);
+    //exit(0);
   }
 
   /**

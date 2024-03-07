@@ -118,7 +118,12 @@ export default class FlexPluginsDeploy extends FlexPlugin {
   /**
    * @override
    */
-  async doRun(): Promise<void> {
+  async doRun(): Promise<{
+    violations: string[];
+    vtime: number;
+    error: string;
+    deployed: number;
+  }> {
     await this.checkServerlessInstance();
     await this.checkForLegacy();
 
@@ -146,7 +151,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     );
 
     if (error) {
-      logger.error('Unable to validate the plugin at the moment. Continuing to deploy');
+      logger.error(`Unable to validate the plugin at the moment. Continuing to deploy, Error is: ${JSON.stringify(error)}  violations is : ${JSON.stringify(error)} and  vtime is : ${JSON.stringify(vtime)}`);
     }
 
     let shouldContinue = violations.length === 0;
@@ -202,7 +207,9 @@ export default class FlexPluginsDeploy extends FlexPlugin {
         deployedData,
         this.argv.includes('--profile') ? this.currentProfile.id : null,
       );
+      return { violations, vtime, error, deployed: 1 };
     }
+    return { violations, vtime, error, deployed: 0 };
   }
 
   /**

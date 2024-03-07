@@ -23,7 +23,11 @@ export default class FlexPluginValidate extends FlexPlugin {
   /**
    * @override
    */
-  async doRun(): Promise<ValidateReport> {
+  async doRun(): Promise<{
+    violations: string[];
+    vtime: number;
+    error?: string;
+  }> {
     process.env.PERSIST_TERMINAL = 'true';
     return this.runScript('validate');
   }

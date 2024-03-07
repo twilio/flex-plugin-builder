@@ -2,6 +2,7 @@ import { baseCommands } from '@twilio/cli-core';
 import CreateFlexPlugin from '@twilio/create-flex-plugin';
 import { flags } from '@oclif/command';
 import { Options } from 'yargs';
+import { Logger, env } from '@twilio/flex-dev-utils';
 
 import { createDescription } from '../../../utils/general';
 import { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
@@ -84,6 +85,10 @@ export default class FlexPluginsCreate extends baseCommands.TwilioClientCommand 
 
     if (!instanceFlags.accountSid) {
       instanceFlags.accountSid = this.currentProfile.accountSid;
+    }
+
+    if (!env.getRegion() && this.currentProfile.region) {
+      env.setRegion(this.currentProfile.region);
     }
 
     const createFlexPlugin = new CreateFlexPlugin();
