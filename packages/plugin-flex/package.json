@@ -117,7 +117,8 @@
           "version": "Publishes the version (SemVer).",
           "public": "Publishes the plugin as a public Twilio Asset; default is private.",
           "changelog": "The changes (added/removed) made in this plugin version.",
-          "description": "The description of this Flex plugin."
+          "description": "The description of this Flex plugin.",
+          "option": "Option to automatically pick post validation of the plugin"
         }
       },
       "flex:plugins:create-configuration": {
