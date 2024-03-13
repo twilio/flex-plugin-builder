@@ -497,11 +497,11 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
     if (this.getTopicName() === validaTopicName || this.getTopicName() === deployTopicName) {
       const { violations, vtime, error } = result;
-      if(result && !error) {
+      if (result && !error) {
         this.trackTopic(end - start, {
           deployed: 0,
           violations,
-          vtime
+          vtime,
         });
       }
     } else {
@@ -739,7 +739,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       ...properties,
     };
     this._telemetry.track(trackEventName, this.currentProfile.accountSid, combinedProperty);
-    //exit(0);
+    // exit(0);
   }
 
   /**

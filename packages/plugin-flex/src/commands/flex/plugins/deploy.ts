@@ -151,7 +151,11 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     );
 
     if (error) {
-      logger.error(`Unable to validate the plugin at the moment. Continuing to deploy, Error is: ${JSON.stringify(error)}  violations is : ${JSON.stringify(error)} and  vtime is : ${JSON.stringify(vtime)}`);
+      logger.error(
+        `Unable to validate the plugin at the moment. Continuing to deploy, Error is: ${JSON.stringify(
+          error,
+        )}  violations is : ${JSON.stringify(error)} and  vtime is : ${JSON.stringify(vtime)}`,
+      );
     }
 
     let shouldContinue = violations.length === 0;
