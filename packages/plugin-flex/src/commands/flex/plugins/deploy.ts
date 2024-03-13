@@ -22,6 +22,7 @@ import * as flags from '../../../utils/flags';
 import { createDescription, instanceOf } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import ServerlessClient from '../../../clients/ServerlessClient';
+import { ValidateResult } from './validate';
 
 interface ValidatePlugin {
   currentVersion: string;
@@ -118,12 +119,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
   /**
    * @override
    */
-  async doRun(): Promise<{
-    violations: string[];
-    vtime: number;
-    error: string;
-    deployed: number;
-  }> {
+  async doRun(): Promise<void> {
     await this.checkServerlessInstance();
     await this.checkForLegacy();
 
@@ -139,7 +135,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       false,
     );
 
-    const { violations, vtime, error } = await progress(
+    const { violations, vtime, error }: ValidateResult = await progress(
       `Validating plugin ${name}`,
       async (): Promise<{
         violations: string[];
@@ -211,9 +207,9 @@ export default class FlexPluginsDeploy extends FlexPlugin {
         deployedData,
         this.argv.includes('--profile') ? this.currentProfile.id : null,
       );
-      return { violations, vtime, error, deployed: 1 };
+      this.telemetryProperties = { violations, vtime, error, deployed: 1 };
     }
-    return { violations, vtime, error, deployed: 0 };
+    this.telemetryProperties = { violations, vtime, error, deployed: 0 };
   }
 
   /**

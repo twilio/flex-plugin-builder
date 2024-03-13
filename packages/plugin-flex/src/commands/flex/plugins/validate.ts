@@ -1,11 +1,15 @@
-import { ValidateReport } from '@twilio/flex-plugin-scripts/dist/clients/governor';
-
 import { createDescription } from '../../../utils/general';
 import FlexPlugin from '../../../sub-commands/flex-plugin';
 
 const baseFlags = { ...FlexPlugin.flags };
 // @ts-ignore
 delete baseFlags.json;
+
+export type ValidateResult = {
+  violations: string[];
+  vtime: number;
+  error?: string;
+};
 
 /**
  * Validates the plugin
@@ -23,13 +27,10 @@ export default class FlexPluginValidate extends FlexPlugin {
   /**
    * @override
    */
-  async doRun(): Promise<{
-    violations: string[];
-    vtime: number;
-    error?: string;
-  }> {
+  async doRun(): Promise<void> {
     process.env.PERSIST_TERMINAL = 'true';
-    return this.runScript('validate');
+    const result = (await this.runScript('validate')) as ValidateResult;
+    this.telemetryProperties = { ...result };
   }
 
   /**

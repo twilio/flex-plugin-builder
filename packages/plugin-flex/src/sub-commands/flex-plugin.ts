@@ -86,8 +86,6 @@ const baseFlag = { ...baseCommands.TwilioClientCommand.flags };
 delete baseFlag['cli-output-format'];
 
 const packageJsonStr = 'package.json';
-const validaTopicName = 'flex:plugins:validate';
-const deployTopicName = 'flex:plugins:deploy';
 
 /**
  * Base class for all flex-plugin * scripts.
@@ -160,6 +158,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   // Contains all the flags that are passed after --, i.e. `twilio flex:plugins:foo -- --arg1 --arg2
   protected internalScriptArgs: string[];
 
+  protected _telemetryProperties: Record<string, any>;
+
   private _pluginsApiToolkit?: FlexPluginsAPIToolkit;
 
   private _pluginsClient?: PluginsClient;
@@ -205,6 +205,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     }
     // TODO: get rid of scriptArgs and use argv instead
     this.scriptArgs = process.argv.slice(3);
+    this._telemetryProperties = {};
   }
 
   /**
@@ -417,6 +418,10 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     return semver.coerce(dep)?.major || FlexPlugin.DEFAULT_FLEX_UI_VERSION;
   }
 
+  set telemetryProperties(properties: Record<string, any>) {
+    this._telemetryProperties = { ...properties };
+  }
+
   async init(): Promise<void> {
     this._flags = (await this.parseCommand(FlexPlugin)).flags;
   }
@@ -495,18 +500,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       this._logger.info(JSON.stringify(result));
     }
 
-    if (this.getTopicName() === validaTopicName || this.getTopicName() === deployTopicName) {
-      const { violations, vtime, error } = result;
-      if (result && !error) {
-        this.trackTopic(end - start, {
-          deployed: 0,
-          violations,
-          vtime,
-        });
-      }
-    } else {
-      this.trackTopic(end - start);
-    }
+    this.trackTopic(end - start, this._telemetryProperties);
   }
 
   /**
