@@ -8,9 +8,13 @@ import { env } from '../../../env';
 import { logger } from '../../../logger';
 
 jest.mock('@segment/analytics-node', () => {
-  return jest.fn().mockImplementation(() => ({
-    track: jest.fn(),
-  }));
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
 });
 
 describe('Telemetry', () => {
@@ -42,8 +46,6 @@ describe('Telemetry', () => {
 
   it('tracks an event with the correct data', () => {
     const telemetry = new Telemetry();
-    // @ts-ignore
-    jest.spyOn(Analytics, 'track');
     const testEvent = 'testEvent';
     const testAccountSid = 'ACxxxxxxxxxxxxxx';
     const testProperties = { key: 'value' };
