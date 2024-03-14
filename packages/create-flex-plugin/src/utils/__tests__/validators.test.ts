@@ -5,6 +5,15 @@ import * as validators from '../validators';
 
 jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
 jest.mock('@twilio/flex-dev-utils/dist/questions');
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
 
 describe('validators', () => {
   const pluginName = 'plugin-test';

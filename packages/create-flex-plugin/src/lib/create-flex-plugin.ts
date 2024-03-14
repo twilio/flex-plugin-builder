@@ -98,7 +98,7 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
  * @param timeTaken xtime for the command
  * @param config {FlexPluginArguments} the configuration
  */
-const track = (timeTaken: number, config: FlexPluginArguments): void => {
+export const track = (timeTaken: number, config: FlexPluginArguments): void => {
   const telemetry = new Telemetry();
   const accountSid: string = String(config.accountSid);
   const properties = {

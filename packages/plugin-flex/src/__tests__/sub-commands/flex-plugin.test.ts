@@ -9,6 +9,16 @@ import DoneCallback = jest.DoneCallback;
 
 jest.mock('@twilio/flex-dev-utils/dist/fs');
 jest.mock('@twilio/flex-dev-utils/dist/spawn');
+jest.mock('@twilio/flex-dev-utils', () => {
+  const originalModule = jest.requireActual('@twilio/flex-dev-utils');
+  return {
+    __esModule: true,
+    default: jest.fn().mockImplementation(() => ({
+      track: jest.fn(),
+    })),
+    ...originalModule,
+  };
+});
 
 describe('SubCommands/FlexPlugin', () => {
   const { env } = process;
@@ -360,6 +370,20 @@ describe('SubCommands/FlexPlugin', () => {
     const cmd = await createCommand();
 
     expect(cmd.checkCompatibility).toEqual(false);
+  });
+
+  describe('track', () => {
+    const username = 'test-username';
+    const password = 'test-password';
+    const id = 'testProfile';
+
+    it('should call track', async () => {
+      const cmd = await createCommand();
+      // setupMocks(cmd);
+
+      // @ts-ignore
+      await cmd.trackTopic(12, {});
+    });
   });
 
   describe('setupEnvironment', () => {

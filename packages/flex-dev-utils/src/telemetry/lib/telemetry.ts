@@ -91,7 +91,6 @@ export default class Telemetry {
         ...properties,
       },
     };
-    logger.warning(`trace data is ${JSON.stringify(traceData)}`);
     this.analytics.track(traceData);
   }
 

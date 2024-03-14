@@ -4,6 +4,16 @@ import * as fsScripts from '@twilio/flex-dev-utils/dist/fs';
 
 import * as github from '../github';
 
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
+
 describe('github', () => {
   const org = 'twilio';
   const branch = 'master';
