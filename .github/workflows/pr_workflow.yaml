@@ -6,15 +6,11 @@ on:
       - main
     paths-ignore:
       - 'lerna.json'
-      - '**/package-lock.json'
-      - '**/package.json'
   push:
     branches:
       - main
     paths-ignore:
       - 'lerna.json'
-      - '**/package-lock.json'
-      - '**/package.json'
 
 jobs:
   build-and-test:

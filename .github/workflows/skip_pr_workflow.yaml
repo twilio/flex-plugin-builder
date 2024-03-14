@@ -6,15 +6,12 @@ on:
       - main
     paths:
       - 'lerna.json'
-      - '**/package-lock.json'
-      - '**/package.json'
+     
   push:
     branches:
       - main
     paths:
       - 'lerna.json'
-      - '**/package-lock.json'
-      - '**/package.json'
 
 jobs:
   build-and-test:
