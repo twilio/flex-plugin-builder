@@ -725,7 +725,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @param timeTaken xtime for the command
    * @param properties additional properties for track events
    */
-  private trackTopic(timeTaken: number, properties?: Record<string, any>): void {
+  private trackTopic(timeTaken: number, properties: Record<string, any>): void {
     const combinedProperty = {
       cliVersion: this.cliPkg.version,
       command: this.getTopicName(),
@@ -733,7 +733,6 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       ...properties,
     };
     this._telemetry.track(trackEventName, this.currentProfile.accountSid, combinedProperty);
-    // exit(0);
   }
 
   /**

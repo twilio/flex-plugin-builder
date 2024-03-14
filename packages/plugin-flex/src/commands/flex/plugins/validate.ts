@@ -30,7 +30,7 @@ export default class FlexPluginValidate extends FlexPlugin {
   async doRun(): Promise<void> {
     process.env.PERSIST_TERMINAL = 'true';
     const result = (await this.runScript('validate')) as ValidateResult;
-    this.telemetryProperties = { ...result };
+    this.telemetryProperties = { ...result, deployed: 0 };
   }
 
   /**

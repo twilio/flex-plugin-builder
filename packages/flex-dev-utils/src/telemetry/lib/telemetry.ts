@@ -2,7 +2,7 @@ import * as os from 'os';
 
 import Analytics from '@segment/analytics-node';
 
-import { getPackageVersion, getPaths, isPluginFolder } from '../../fs';
+import * as fs from '../../fs';
 import { logger } from '../../logger';
 import { env } from '../../env';
 import { DEV_VALUE, PROD_VALUE, STAGE_VALUE } from './constants';
@@ -53,11 +53,11 @@ export default class Telemetry {
     let typescript = false;
     let flexUiVersion = 'n/a';
 
-    if (isPluginFolder()) {
-      pluginName = getPaths().app.name;
-      pluginVersion = getPaths().app.version;
-      typescript = getPaths().app.isTSProject();
-      flexUiVersion = getPackageVersion(`@twilio/flex-ui`);
+    if (fs.isPluginFolder()) {
+      pluginName = fs.getPaths().app.name;
+      pluginVersion = fs.getPaths().app.version;
+      typescript = fs.getPaths().app.isTSProject();
+      flexUiVersion = fs.getPackageVersion(`@twilio/flex-ui`);
     }
 
     this.commonProperties = {
