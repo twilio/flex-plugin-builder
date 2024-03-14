@@ -1,55 +1,32 @@
-/* eslint-disable import/no-unused-modules */
+/* eslint-disable import/no-unused-modules, @typescript-eslint/no-non-null-assertion */
+import { assertion, spawn, api, sleep } from '../utils';
 import { TestSuite, TestParams } from '../core';
-import { api, assertion, Browser, pluginHelper } from '../utils';
 
-const PLUGIN_RELEASED_TIMEOUT = 30000;
-const PLUGIN_RELEASED_POLL_INTERVAL = 5000;
-
-// Plugin visible on the Hosted Flex
-const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
+// Release plugin
+const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<void> => {
   const plugin = scenario.plugins[0];
   assertion.not.isNull(plugin);
 
-  if (!plugin.newlineValue) {
-    throw new Error(`scenario.plugin.newlineValue does not have a valid value`);
-  }
+  const result = await spawn('twilio', [
+    'flex:plugins:release',
+    '--plugin',
+    `${plugin.name}@${plugin.version}`,
+    '-l',
+    'debug',
+    ...config.regionFlag,
+  ]);
+  await sleep(1000);
 
-  // Fetch and find latest released plugin
   const release = await api.getActiveRelease();
+  const plugins = await api.getActivePlugins(release!.configuration_sid);
 
-  if (!release) {
-    throw new Error('Account does not have an active release');
-  }
-
-  const plugins = await api.getActivePlugins(release.configuration_sid);
-  const releasedPlugin = plugins.plugins.find((plgin) => plgin.unique_name === plugin.name);
-  if (!releasedPlugin) {
-    throw new Error(`Did not find plugin with name: ${plugin.name} in released plugins`);
-  }
-
-  await Browser.create({ flex: config.hostedFlexBaseUrl, twilioConsole: config.consoleBaseUrl });
-  try {
-    // Log into Flex
-    await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort);
-
-    await assertion.app.view.adminDashboard.isVisible();
-
-    // Verify that user is on the right account
-    const accountSid = await Browser.app.getFlexAccountSid();
-    assertion.equal(accountSid, secrets.api.accountSid);
-
-    // Make sure that /plugins contain the plugin
-    await pluginHelper.waitForPluginToRelease(releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
-    await Browser.app.agentDesktop.open();
-
-    await assertion.app.view.plugins.plugin.isVisible(plugin.newlineValue);
-  } catch (e) {
-    await Browser.app.takeScreenshot(environment.cwd);
-    throw e;
-  } finally {
-    await Browser.kill();
-  }
+  assertion.stringContains(result.stdout, 'successful');
+  assertion.stringContains(result.stdout, 'Configuration FJ');
+  assertion.stringContains(result.stdout, 'enabled');
+  assertion.equal(1, plugins.plugins.length);
+  assertion.equal(plugins.plugins[0].unique_name, plugin.name);
+  assertion.equal(plugins.plugins[0].version, plugin.version);
 };
-testSuite.description = 'Released Plugin visible on the Hosted Flex';
+testSuite.description = 'Running {{twilio flex:plugins:release}}';
 
 export default testSuite;

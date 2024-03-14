@@ -1,92 +1,55 @@
 /* eslint-disable import/no-unused-modules */
-import { replaceInFile } from 'replace-in-file';
+import { TestSuite, TestParams } from '../core';
+import { api, assertion, Browser, pluginHelper } from '../utils';
 
-import { TestSuite, TestParams, testParams, PluginType } from '../core';
-import { spawn, Browser, pluginHelper, joinPath, assertion, killChildProcess } from '../utils';
+const PLUGIN_RELEASED_TIMEOUT = 30000;
+const PLUGIN_RELEASED_POLL_INTERVAL = 5000;
 
-/**
- * Log into Flex to set the required flex.twilio.com cookies
- * @param config Contains the urls requires to load in the browser
- * @param secrets Contains account info
- */
-export const setupFlexBeforeLocalhost = async (
-  config: TestParams['config'],
-  secrets: TestParams['secrets'],
-): Promise<void> => {
-  await Browser.create({ flex: config.hostedFlexBaseUrl, twilioConsole: config.consoleBaseUrl });
-  await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort);
-
-  // Check if Flex loaded okay
-  await assertion.app.view.adminDashboard.isVisible();
-};
-
-// Starting multiple plugins using 2 local and one remote works
+// Plugin visible on the Hosted Flex
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
-  const plugin1 = scenario.plugins[0];
-  const plugin2 = scenario.plugins[1];
-  const plugin3 = scenario.plugins[2];
-  assertion.not.isNull(plugin1);
-  assertion.not.isNull(plugin2);
-  assertion.not.isNull(plugin3);
+  const plugin = scenario.plugins[0];
+  assertion.not.isNull(plugin);
 
-  if (!plugin1.newlineValue) {
-    throw new Error('scenario.plugin.newlineValue does not have a valid value');
-  }
-  const flags: string[] = [];
-  const ext = scenario.isTS ? 'tsx' : 'jsx';
-  const startPlugin = async (url: string) =>
-    pluginHelper.waitForPluginToStart(url, testParams.config.start.timeout, testParams.config.start.pollInterval);
-
-  if (scenario.isTS) {
-    flags.push('--typescript');
+  if (!plugin.newlineValue) {
+    throw new Error(`scenario.plugin.newlineValue does not have a valid value`);
   }
 
-  // Create and setup a new plugin
-  const setup = async (plugin: PluginType) => {
-    await spawn('twilio', ['flex:plugins:create', plugin.name, ...flags]);
-    pluginHelper.changeFlexUIVersionIfRequired(scenario, plugin);
-    await spawn('npm', ['i'], { cwd: plugin.dir });
+  // Fetch and find latest released plugin
+  const release = await api.getActiveRelease();
 
-    await replaceInFile({
-      files: joinPath(plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
-      from: /This is a dismissible demo component.*/,
-      to: plugin.componentText,
-    });
-  };
+  if (!release) {
+    throw new Error('Account does not have an active release');
+  }
 
-  // Set up two new plugins
-  await Promise.all([setup(plugin2), setup(plugin3)]);
+  const plugins = await api.getActivePlugins(release.configuration_sid);
+  const releasedPlugin = plugins.plugins.find((plgin) => plgin.unique_name === plugin.name);
+  if (!releasedPlugin) {
+    throw new Error(`Did not find plugin with name: ${plugin.name} in released plugins`);
+  }
 
-  // Start all 3 plugins (Note: cwd is plugin3 in this scenario since plugin is the remote one)
-  const twilioCliResult = await spawn(
-    'twilio',
-    ['flex:plugins:start', '--name', `${plugin1.name}@${plugin1.version}`, '--name', plugin2.name],
-    { detached: true, cwd: plugin3.dir },
-  );
-  await Promise.all([startPlugin(plugin2.localhostUrl), startPlugin(plugin3.localhostUrl)]);
-
+  await Browser.create({ flex: config.hostedFlexBaseUrl, twilioConsole: config.consoleBaseUrl });
   try {
-    // Login to Flex and setup the required flex.twilio.com cookies
-    await setupFlexBeforeLocalhost(config, secrets);
+    // Log into Flex
+    await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort);
 
-    // Load local plugin
-    await Browser.loadNewPage({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
-    await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort, false);
+    await assertion.app.view.adminDashboard.isVisible();
 
-    // Check if local plugin loaded okay
-    await assertion.app.view.agentDesktop.isVisible();
+    // Verify that user is on the right account
+    const accountSid = await Browser.app.getFlexAccountSid();
+    assertion.equal(accountSid, secrets.api.accountSid);
 
-    await assertion.app.view.plugins.plugin.isVisible(plugin1.newlineValue);
-    await assertion.app.view.plugins.plugin.isVisible(plugin2.componentText);
-    await assertion.app.view.plugins.plugin.isVisible(plugin3.componentText);
+    // Make sure that /plugins contain the plugin
+    await pluginHelper.waitForPluginToRelease(releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
+    await Browser.app.agentDesktop.open();
+
+    await assertion.app.view.plugins.plugin.isVisible(plugin.newlineValue);
   } catch (e) {
     await Browser.app.takeScreenshot(environment.cwd);
     throw e;
   } finally {
     await Browser.kill();
-    await killChildProcess(twilioCliResult.child, environment.operatingSystem);
   }
 };
-testSuite.description = 'Running {{twilio flex:plugins:start}} with multiple plugins: 2 local and 1 remote';
+testSuite.description = 'Released Plugin visible on the Hosted Flex';
 
 export default testSuite;
