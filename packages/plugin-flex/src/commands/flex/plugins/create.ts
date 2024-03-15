@@ -83,11 +83,11 @@ export default class FlexPluginsCreate extends baseCommands.TwilioClientCommand 
     // @ts-ignore
     const { flags: instanceFlags, args } = await this.parse(FlexPluginsCreate);
 
-    if (!instanceFlags.accountSid) {
+    if (!instanceFlags.accountSid && this.currentProfile && this.currentProfile.accountSid) {
       instanceFlags.accountSid = this.currentProfile.accountSid;
     }
 
-    if (!env.getRegion() && this.currentProfile.region) {
+    if (!env.getRegion() && this.currentProfile && this.currentProfile.region) {
       env.setRegion(this.currentProfile.region);
     }
 

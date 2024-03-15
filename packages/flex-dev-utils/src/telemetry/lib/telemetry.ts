@@ -3,7 +3,6 @@ import * as os from 'os';
 import Analytics from '@segment/analytics-node';
 
 import * as fs from '../../fs';
-import { logger } from '../../logger';
 import { env } from '../../env';
 import { DEV_VALUE, PROD_VALUE, STAGE_VALUE } from './constants';
 
@@ -91,7 +90,10 @@ export default class Telemetry {
         ...properties,
       },
     };
-    this.analytics.track(traceData);
+
+    if (!env.isCI) {
+      this.analytics.track(traceData);
+    }
   }
 
   private getOsDetails(): OsDetail {

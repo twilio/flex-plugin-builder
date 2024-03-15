@@ -65,4 +65,17 @@ describe('Telemetry', () => {
       }),
     });
   });
+
+  it('should not track for ci', () => {
+    const telemetry = new Telemetry();
+    const testEvent = 'testEvent';
+    const testAccountSid = 'ACxxxxxxxxxxxxxx';
+    const testProperties = { testKey: 'testValue' };
+    process.env.CI = 'true';
+
+    telemetry.track(testEvent, testAccountSid, testProperties);
+
+    // @ts-ignore
+    expect(telemetry.analytics.track).not.toHaveBeenCalled();
+  });
 });
