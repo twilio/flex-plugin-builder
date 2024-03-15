@@ -3,16 +3,6 @@ import { createFlexPlugin } from '../create-flex-plugin';
 
 jest.mock('../create-flex-plugin');
 jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
-jest.mock('@twilio/flex-dev-utils/dist/telemetry/lib/telemetry');
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
 
 describe('CLI', () => {
   const exit = jest.spyOn(process, 'exit').mockReturnThis();

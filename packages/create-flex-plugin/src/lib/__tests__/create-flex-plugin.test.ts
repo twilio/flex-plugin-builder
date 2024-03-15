@@ -9,15 +9,6 @@ import * as commands from '../commands';
 jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
 jest.mock('@twilio/flex-dev-utils/dist/telemetry/lib/telemetry');
 jest.mock('../../prints/finalMessage');
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
 
 describe('create-flex-plugin', () => {
   const accountSid = 'AC00000000000000000000000000000000';

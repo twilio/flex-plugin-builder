@@ -4,15 +4,6 @@ import finalMessage from '../finalMessage';
 import { FlexPluginArguments } from '../../lib/create-flex-plugin';
 
 jest.mock('@twilio/flex-dev-utils/dist/logger/lib/boxen');
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
 
 describe('finalMessage', () => {
   const config: FlexPluginArguments = {

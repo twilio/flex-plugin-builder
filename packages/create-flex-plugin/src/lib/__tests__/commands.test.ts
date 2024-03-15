@@ -5,15 +5,6 @@ import { FlexPluginArguments } from '../create-flex-plugin';
 import * as github from '../../utils/github';
 
 jest.mock('@twilio/flex-dev-utils/dist/spawn');
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
 
 /* eslint-disable */
 const { spawn } = require("@twilio/flex-dev-utils/dist/spawn");
