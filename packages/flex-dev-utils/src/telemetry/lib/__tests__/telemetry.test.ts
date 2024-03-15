@@ -30,7 +30,7 @@ describe('Telemetry', () => {
     jest.spyOn(fsScripts, 'isPluginFolder').mockReturnValue(true);
   });
 
-  afterAll(() => {
+  afterEach(() => {
     jest.restoreAllMocks();
   });
 
@@ -49,6 +49,7 @@ describe('Telemetry', () => {
     const testAccountSid = 'ACxxxxxxxxxxxxxx';
     const testProperties = { testKey: 'testValue' };
 
+    process.env.CI = '';
     telemetry.track(testEvent, testAccountSid, testProperties);
 
     // @ts-ignore
