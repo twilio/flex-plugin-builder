@@ -5,6 +5,16 @@ import FlexPlugin from '../../../../../sub-commands/flex-plugin';
 import InformationFlexPlugin from '../../../../../sub-commands/information-flex-plugin';
 import createTest from '../../../../framework';
 
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
+
 describe('Commands/List/FlexPluginsListPluginVersions', () => {
   it('should have own flags', () => {
     expect(FlexPluginsListPluginVersions.flags).not.toBeSameObject(InformationFlexPlugin.flags);

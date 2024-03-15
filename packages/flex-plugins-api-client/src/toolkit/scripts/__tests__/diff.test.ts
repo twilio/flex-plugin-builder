@@ -11,6 +11,16 @@ import diffScript from '../diff';
 import * as mockStore from './mockStore';
 import * as diffTool from '../../tools/diff';
 
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
+
 describe('Diff', () => {
   const oldSid = mockStore.describeConfiguration.sid;
   const newSid = 'FJ0000000000000000000000000000001';

@@ -10,6 +10,15 @@ import { ValidateReport } from '../../clients/governor';
 
 jest.mock('../../clients/governor');
 jest.mock('../../prints/validateSuccessful');
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const GovernorClient = require('../../clients/governor').default;

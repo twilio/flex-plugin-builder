@@ -3,6 +3,7 @@ import { createFlexPlugin } from '../create-flex-plugin';
 
 jest.mock('../create-flex-plugin');
 jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
+jest.mock('@twilio/flex-dev-utils/dist/telemetry/lib/telemetry');
 jest.mock('@segment/analytics-node', () => {
   const track = jest.fn();
   return {
@@ -21,6 +22,11 @@ describe('CLI', () => {
     jest.resetModules();
   });
 
+  it('should call createFlexPlugin', async () => {
+    await new CLI().parse();
+
+    expect(createFlexPlugin).toHaveBeenCalledTimes(1);
+  });
   it('should have static description', () => {
     expect(CLI).toHaveProperty('description');
     expect(CLI.description).toContain('new Twilio Flex Plugin');

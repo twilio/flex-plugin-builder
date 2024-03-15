@@ -5,6 +5,15 @@ import ArchiveResource from '../../sub-commands/archive-resource';
 import createTest from '../framework';
 
 jest.mock('@twilio/flex-dev-utils/dist/questions');
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
 
 describe('SubCommands/ArchiveResource', () => {
   interface Resource {

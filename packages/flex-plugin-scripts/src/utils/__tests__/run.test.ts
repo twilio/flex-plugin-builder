@@ -4,6 +4,15 @@ import * as fsScripts from '@twilio/flex-dev-utils/dist/fs';
 import * as run from '../run';
 
 jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
 
 describe('run', () => {
   const runFlag = '--run-script';

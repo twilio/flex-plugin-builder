@@ -9,6 +9,15 @@ jest.mock('../../prints/pluginVersions');
 jest.mock('../../utils/runtime');
 jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
 jest.mock('@twilio/flex-dev-utils/dist/credentials');
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
 
 /* eslint-disable */
 const getRuntime = require('../../utils/runtime').default;

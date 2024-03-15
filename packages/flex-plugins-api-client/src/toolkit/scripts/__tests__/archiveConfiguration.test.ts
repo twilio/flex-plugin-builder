@@ -1,6 +1,16 @@
 import { ConfigurationResource, ConfigurationsClient, PluginServiceHTTPClient } from '../../../clients';
 import archiveConfigurationScript from '../archiveConfiguration';
 
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
+
 describe('ArchiveConfigurationScript', () => {
   const httpClient = new PluginServiceHTTPClient('username', 'password');
   const configurationsClient = new ConfigurationsClient(httpClient);

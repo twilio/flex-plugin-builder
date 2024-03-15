@@ -710,6 +710,21 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   }
 
   /**
+   * Keep tracks of the command
+   * @param timeTaken xtime for the command
+   * @param properties additional properties for track events
+   */
+  trackTopic(timeTaken: number, properties: Record<string, any>): void {
+    const combinedProperty = {
+      cliVersion: this.cliPkg.version,
+      command: this.getTopicName(),
+      xtime: timeTaken,
+      ...properties,
+    };
+    this._telemetry.track(trackEventName, this.currentProfile.accountSid, combinedProperty);
+  }
+
+  /**
    * The command parse override
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -718,21 +733,6 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     argv = this.argv,
   ): Promise<Parser.Output<F, A>> {
     return parser(super.parse.bind(this))(options, argv);
-  }
-
-  /**
-   * Keep tracks of the command
-   * @param timeTaken xtime for the command
-   * @param properties additional properties for track events
-   */
-  private trackTopic(timeTaken: number, properties: Record<string, any>): void {
-    const combinedProperty = {
-      cliVersion: this.cliPkg.version,
-      command: this.getTopicName(),
-      xtime: timeTaken,
-      ...properties,
-    };
-    this._telemetry.track(trackEventName, this.currentProfile.accountSid, combinedProperty);
   }
 
   /**

@@ -6,6 +6,15 @@ import index from '..';
 
 jest.mock('@twilio/flex-dev-utils/dist/spawn');
 jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
 
 /* eslint-disable */
 const { spawn } = require('@twilio/flex-dev-utils/dist/spawn');

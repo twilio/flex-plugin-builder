@@ -6,6 +6,16 @@ import FlexPluginsCreate from '../../../../commands/flex/plugins/create';
 import { SecureStorage } from '../../../../sub-commands/flex-plugin';
 import { constants } from '../../../framework';
 
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
+
 const secureStorage: SecureStorage = {
   getCredentials: jest.fn().mockImplementation((id: string) => ({
     apiKey: constants.FAKE_API_KEY,
@@ -25,6 +35,8 @@ describe('Commands/FlexPluginsCreate', () => {
     const spy = jest.spyOn(createFlexPlugin, 'default').mockReturnValue({
       parse: jest.fn().mockResolvedValue(true),
     });
+    // @ts-ignore
+    await cmd.init();
     await cmd.run();
     expect(spy).toHaveBeenCalled();
   });

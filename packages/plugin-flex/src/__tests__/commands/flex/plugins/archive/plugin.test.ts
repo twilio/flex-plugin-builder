@@ -4,6 +4,16 @@ import { TwilioApiError, TwilioCliError } from '@twilio/flex-dev-utils';
 import createTest from '../../../../framework';
 import FlexPluginsArchivePlugin from '../../../../../commands/flex/plugins/archive/plugin';
 
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
+
 describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
   const serviceSid = 'ZS00000000000000000000000000000000';
   const environment = { sid: 'ZE00000000000000000000000000000000' };

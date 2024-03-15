@@ -2,6 +2,16 @@ import { PluginServiceHTTPClient, ReleasesClient } from '../../../clients';
 import listReleasesScript from '../listReleases';
 import { meta, release } from './mockStore';
 
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
+
 describe('ListReleasesScript', () => {
   const httpClient = new PluginServiceHTTPClient('username', 'password');
   const releaseClient = new ReleasesClient(httpClient);

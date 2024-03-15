@@ -5,6 +5,16 @@ import FlexPluginsDescribeConfiguration from '../../../../../commands/flex/plugi
 import InformationFlexPlugin from '../../../../../sub-commands/information-flex-plugin';
 import FlexPlugin from '../../../../../sub-commands/flex-plugin';
 
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
+
 describe('Commands/Describe/FlexPluginsDescribeConfiguration', () => {
   const configuration: DescribeConfiguration = {
     sid: 'FJ00000000000000000000000000000',

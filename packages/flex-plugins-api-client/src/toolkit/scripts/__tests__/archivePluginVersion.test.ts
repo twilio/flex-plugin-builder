@@ -1,6 +1,16 @@
 import { PluginVersionResource, PluginVersionsClient, PluginServiceHTTPClient } from '../../../clients';
 import archivePluginVersionScript from '../archivePluginVersion';
 
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
+
 describe('ArchivePluginScript', () => {
   const httpClient = new PluginServiceHTTPClient('username', 'password');
   const pluginVersionsClient = new PluginVersionsClient(httpClient);

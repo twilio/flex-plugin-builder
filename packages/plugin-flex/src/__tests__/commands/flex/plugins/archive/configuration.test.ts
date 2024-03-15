@@ -3,6 +3,16 @@ import { Configuration } from '@twilio/flex-plugins-api-client';
 import createTest from '../../../../framework';
 import FlexPluginsArchiveConfiguration from '../../../../../commands/flex/plugins/archive/configuration';
 
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
+
 describe('Commands/Archive/FlexPluginsArchiveConfiguration', () => {
   const configuration: Configuration = {
     sid: 'FJ00000000000000000000000000000',

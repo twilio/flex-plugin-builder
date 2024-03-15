@@ -4,8 +4,6 @@ import Analytics from '@segment/analytics-node';
 
 import Telemetry from '../telemetry';
 import * as fsScripts from '../../../fs';
-import { env } from '../../../env';
-import { logger } from '../../../logger';
 
 jest.mock('@segment/analytics-node', () => {
   const track = jest.fn();
@@ -39,10 +37,7 @@ describe('Telemetry', () => {
   it('should instantiate with correct common properties', () => {
     const telemetry = new Telemetry();
     expect(telemetry).toBeDefined();
-    /*
-     * expect(Analytics).toHaveBeenCalled();
-     *  @ts-ignore
-     */
+    // @ts-ignore
     expect(telemetry.commonProperties.pluginName).toEqual('test-plugin');
     // @ts-ignore
     expect(telemetry.commonProperties.typescript).toBeTruthy();
@@ -52,7 +47,7 @@ describe('Telemetry', () => {
     const telemetry = new Telemetry();
     const testEvent = 'testEvent';
     const testAccountSid = 'ACxxxxxxxxxxxxxx';
-    const testProperties = { key: 'value' };
+    const testProperties = { testKey: 'testValue' };
 
     telemetry.track(testEvent, testAccountSid, testProperties);
 
@@ -61,8 +56,12 @@ describe('Telemetry', () => {
       userId: testAccountSid,
       event: testEvent,
       properties: expect.objectContaining({
+        product: 'Flex',
+        source: 'flexpluginscli',
+        flexUserRole: 'admin',
+        typescript: true,
         accountSid: testAccountSid,
-        // Add other properties checks as necessary
+        testKey: 'testValue',
       }),
     });
   });

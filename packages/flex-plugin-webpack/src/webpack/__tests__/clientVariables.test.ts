@@ -5,6 +5,16 @@ import dotenv from 'dotenv';
 import * as prints from '../../prints';
 import * as clientVariables from '../clientVariables';
 
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
+
 describe('clientVariables', () => {
   const processEnvName = 'process.env';
   const OLD_ENV = process.env;

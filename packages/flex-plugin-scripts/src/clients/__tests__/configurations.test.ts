@@ -3,6 +3,16 @@ import { Credential } from '@twilio/flex-dev-utils';
 
 import ConfigurationClient from '../configurations';
 
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
+
 describe('ConfigurationClient', () => {
   const serviceSid = 'ZS00000000000000000000000000000000';
   const anotherSid = 'ZS00000000000000000000000000000001';

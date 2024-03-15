@@ -3,6 +3,16 @@ import { Credential } from '@twilio/flex-dev-utils';
 import BuildClient, { BuildData, BuildStatus } from '../builds';
 import ServerlessClient from '../serverless-client';
 
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
+
 describe('BuildClient', () => {
   const serviceSid = 'ZS00000000000000000000000000000000';
   const auth: Credential = {

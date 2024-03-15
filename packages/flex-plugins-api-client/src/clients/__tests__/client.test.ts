@@ -4,6 +4,15 @@ import PluginServiceHttp from '../client';
 
 jest.mock('@twilio/flex-dev-utils/dist/http');
 jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
+jest.mock('@segment/analytics-node', () => {
+  const track = jest.fn();
+  return {
+    __esModule: true,
+    default: () => ({
+      track,
+    }),
+  };
+});
 
 describe('PluginServiceHttp', () => {
   beforeEach(() => {
