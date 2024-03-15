@@ -50,6 +50,11 @@ const baseFlags = { ...FlexPlugin.flags };
 // @ts-ignore
 delete baseFlags.json;
 
+enum Options {
+  Deploy = 'deploy',
+  Fix = 'fix',
+}
+
 /**
  * Builds and then deploys the Flex Plugin
  */
@@ -90,14 +95,19 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       description: FlexPluginsDeploy.topic.flags.description,
       max: 500,
     }),
+    option: flags.string({
+      description: FlexPluginsDeploy.topic.flags.option,
+      options: [Options.Deploy, Options.Fix],
+      hidden: true,
+    }),
   };
 
   // @ts-ignore
   public _flags: OutputFlags<typeof FlexPluginsDeploy.flags>;
 
   public options = {
-    fix: '1. Go back and fix these issues now (recommended)',
-    deploy: '2. Continue with the deployment, understanding the risks.',
+    [Options.Fix]: '1. Go back and fix these issues now (recommended)',
+    [Options.Deploy]: '2. Continue with the deployment, understanding the risks.',
   };
 
   // @ts-ignore
@@ -150,9 +160,9 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       logger.error('Unable to validate the plugin at the moment. Continuing to deploy');
     }
 
-    let shouldContinue = violations.length === 0;
+    let shouldContinue = this._flags.option === Options.Deploy || violations.length === 0;
 
-    if (!shouldContinue) {
+    if (!shouldContinue && this._flags.option !== Options.Fix) {
       const choice = await choose(
         {
           name: 'deployment',
@@ -161,7 +171,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
         },
         Object.values(this.options),
       );
-      shouldContinue = choice === this.options.deploy;
+      shouldContinue = choice === this.options[Options.Deploy];
     }
 
     if (shouldContinue) {

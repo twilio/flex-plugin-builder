@@ -77,6 +77,6 @@ export default (report: ValidateReport): void => {
     );
     logger.newline();
   } else {
-    logger.success(`Validation complete. Found ${logger.coloredStrings.digit(0)} problems 🎉`);
+    logger.success(`Validation complete. Found ${logger.coloredStrings.digit(0)} issues 🎉`);
   }
 };

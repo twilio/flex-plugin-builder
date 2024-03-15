@@ -20,7 +20,8 @@ import { GovernorClient } from '../clients';
 import { ValidateReport } from '../clients/governor';
 import { validateSuccessful } from '../prints';
 
-export const LEGAL_NOTICE = '<LEGAL DISCLAIMER PLACEHOLDER>';
+const LEGAL_DISCLAIMER =
+  'By running the Flex plugins validate command, you acknowledge that the recommendations offered by this tool are suggestions to help with your Flex plugin deployment, but may not represent the only solution available to you. It is ultimately your responsibility to validate these recommendations and determine if they are appropriate for your use case.';
 
 /**
  * Builds the bundle
@@ -45,7 +46,8 @@ const validate = async (
     logger.notice('Validating Plugin...');
   }
 
-  logger.notice(`\n<LEGAL DISCLAIMER PLACEHOLDER>${isDeploy ? '' : '\n'}`);
+  logger.notice(logger.coloredStrings.bold(logger.coloredStrings.underline('\nDISCLAIMER')));
+  logger.notice(`${logger.wrap(LEGAL_DISCLAIMER, process.stdout.columns || 100)}${isDeploy ? '' : '\n'}`);
 
   const paths = getPaths();
   const zipFile = resolve(os.tmpdir(), `tmp-${Date.now()}.zip`);

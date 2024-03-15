@@ -109,11 +109,14 @@ describe('ValidateScript', () => {
     expect(zipSpy).toHaveBeenCalledWith(zipFile, 'dir', paths.app.srcDir, paths.app.pkgPath);
     expect(validate).toHaveBeenCalledWith(zipFile, paths.app.name, '1.34.2');
     expect(mkdirSpy).not.toHaveBeenCalled();
-    expect(writeJsonSpy).toHaveBeenCalledWith(validateReport, `${paths.cwd}/logs/validate-${validateReport.request_id}.json`);
+    expect(writeJsonSpy).toHaveBeenCalledWith(
+      validateReport,
+      `${paths.cwd}/logs/validate-${validateReport.request_id}.json`,
+    );
 
     expect(prints.validateSuccessful).toHaveBeenCalledWith(validateReport);
     expect(errorLogSpy).not.toHaveBeenCalled();
-    expect(noticeLogSpy).toBeCalledWith(expect.stringContaining(validateScript.LEGAL_NOTICE));
+    expect(noticeLogSpy).toHaveBeenCalledTimes(3);
     expect(removeFileSpy).toHaveBeenCalledWith(zipFile);
 
     expect(response.error).toBeUndefined();
@@ -134,19 +137,19 @@ describe('ValidateScript', () => {
   it('should not write log file', async () => {
     writeJsonSpy.mockClear();
     /* eslint-disable */
-    const noWarningReport:ValidateReport = {
+    const noWarningReport: ValidateReport = {
       request_id: 'RQ12345',
       api_compatibility: [],
-      
+
       version_compatibility: [
         {
           file: '/path/to/package.json',
-          warnings: []
-        }
+          warnings: [],
+        },
       ],
       dom_manipulation: [],
-      errors: []
-    }
+      errors: [],
+    };
     /* eslint-disable */
 
     validate.mockResolvedValueOnce(noWarningReport);
@@ -177,7 +180,10 @@ describe('ValidateScript', () => {
     expect(zipSpy).toHaveBeenCalledWith(zipFile, 'dir', paths.app.srcDir, paths.app.pkgPath);
     expect(validate).toHaveBeenCalledWith(zipFile, paths.app.name, '1.34.2');
     expect(mkdirSpy).not.toHaveBeenCalled();
-    expect(writeJsonSpy).toHaveBeenCalledWith(validateReport, `${paths.cwd}/logs/validate-${validateReport.request_id}.json`);
+    expect(writeJsonSpy).toHaveBeenCalledWith(
+      validateReport,
+      `${paths.cwd}/logs/validate-${validateReport.request_id}.json`,
+    );
     expect(prints.validateSuccessful).toHaveBeenCalledWith(validateReport);
   });
 
@@ -186,12 +192,11 @@ describe('ValidateScript', () => {
     const errorString = '401 Unauthorized';
 
     validate.mockRejectedValueOnce(new Error(errorString));
-    
+
     const response = await validateScript.default(...args);
     expect(errorLogSpy).not.toHaveBeenCalled();
     expect(response.error).toContain(errorString);
     expect(response.violations.length).toBe(0);
     expect(response.vtime).toBe(0);
   });
-
 });

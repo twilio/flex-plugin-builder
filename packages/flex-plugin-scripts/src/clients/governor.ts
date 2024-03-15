@@ -45,7 +45,7 @@ export default class GovernorClient {
 
   constructor(username: string, password: string) {
     this.http = new HttpClient({
-      baseURL: `https://flex-plugin-upload.dev.twilio.com/${GovernorClient.version}/Plugin`,
+      baseURL: `https://flex-plugin-upload.twilio.com/${GovernorClient.version}/Plugin`,
       auth: { username, password },
       supportProxy: true,
     });
