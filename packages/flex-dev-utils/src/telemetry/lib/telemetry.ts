@@ -91,7 +91,7 @@ export default class Telemetry {
       },
     };
 
-    if (!env.isCI) {
+    if (!env.isCI()) {
       this.analytics.track(traceData);
     }
   }
