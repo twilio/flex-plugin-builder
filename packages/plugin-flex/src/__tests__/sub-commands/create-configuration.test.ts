@@ -11,16 +11,6 @@ const disablePluginFlex = '--disable-plugin';
 const newFlex = '--new';
 const pluginFlex = '--plugin';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('SubCommands/CreateConfiguration', () => {
   class Plugin extends CreateConfiguration {}
 

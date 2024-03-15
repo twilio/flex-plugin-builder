@@ -5,15 +5,6 @@ import { FlexPluginError } from '@twilio/flex-dev-utils';
 import * as pluginServerScript from '../pluginServer';
 
 jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
 
 describe('pluginServer', () => {
   const pluginName = 'plugin-test';

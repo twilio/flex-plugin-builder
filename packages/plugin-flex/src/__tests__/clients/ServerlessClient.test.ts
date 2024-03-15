@@ -4,16 +4,6 @@ import { BuildListInstanceCreateOptions } from 'twilio/lib/rest/serverless/v1/se
 
 import ServerlessClient from '../../clients/ServerlessClient';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('ServerlessClient', () => {
   const serviceSid = 'ZS00000000000000000000000000000000';
   const buildSid = 'ZB00000000000000000000000000000000';

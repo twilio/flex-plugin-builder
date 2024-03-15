@@ -9,15 +9,6 @@ jest.mock('@twilio/flex-dev-utils/dist/env');
 jest.mock('../../prints/buildSuccessful');
 jest.mock('../../prints/buildFailure');
 jest.mock('../../prints/fileTooLarge');
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
 
 describe('BuildScript', () => {
   const paths = {

@@ -8,15 +8,6 @@ import { WebpackType } from '../..';
 
 jest.mock('@twilio/flex-dev-utils/dist/fs');
 jest.mock('webpack/lib/DefinePlugin');
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
 
 describe('WebpackConfiguration', () => {
   const isTSProject = jest.fn();

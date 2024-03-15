@@ -2,16 +2,6 @@ import createTest from '../../../framework';
 import FlexPluginsTest from '../../../../commands/flex/plugins/test';
 import FlexPlugin from '../../../../sub-commands/flex-plugin';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('Commands/FlexPluginsTest', () => {
   beforeEach(() => {
     jest.resetAllMocks();

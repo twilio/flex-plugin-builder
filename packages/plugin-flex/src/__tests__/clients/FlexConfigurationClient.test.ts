@@ -3,16 +3,6 @@ import { HttpClient, TwilioCliError } from '@twilio/flex-dev-utils';
 
 import FlexConfigurationClient from '../../clients/FlexConfigurationClient';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('FlexConfigurationClient', () => {
   const accountSid = 'AC00000000000000000000000000000000';
   const fetch = jest.fn();

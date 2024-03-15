@@ -18,15 +18,6 @@ jest.mock('@twilio/flex-dev-utils/dist/fs');
 jest.mock('@twilio/flex-dev-utils/dist/urls');
 jest.mock('@twilio/flex-dev-utils/dist/env');
 jest.mock('../../prints');
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
 
 describe('StartScript', () => {
   const cliPath = '/cli/plugins/path';

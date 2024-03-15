@@ -6,15 +6,6 @@ jest.mock('../../prints/packagesVersions');
 
 jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
 jest.mock('../../prints/packagesVersions');
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
 
 describe('info', () => {
   beforeEach(() => {

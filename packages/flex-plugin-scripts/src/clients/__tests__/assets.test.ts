@@ -5,15 +5,6 @@ import ServerlessClient from '../serverless-client';
 import FileClient from '../files';
 
 jest.mock('../files');
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
 
 describe('AssetClient', () => {
   const serviceSid = 'ZS00000000000000000000000000000000';

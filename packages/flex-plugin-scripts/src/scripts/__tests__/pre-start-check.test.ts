@@ -8,15 +8,6 @@ import * as prints from '../../prints';
 
 jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
 jest.mock('../../prints/appConfigMissing');
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
 
 describe('PreStartCheck', () => {
   const appConfigPath = 'appConfig.js';

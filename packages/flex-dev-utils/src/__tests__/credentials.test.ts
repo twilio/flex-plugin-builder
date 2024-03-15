@@ -7,16 +7,6 @@ jest.mock('../questions');
 jest.mock('../validators');
 jest.mock('../keychain');
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 /* eslint-disable */
 const questions = require('../questions');
 const validators = require('../validators');

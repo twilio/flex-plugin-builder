@@ -14,15 +14,6 @@ jest.mock('@twilio/flex-dev-utils/dist/credentials', () => ({
     password: 'password',
   }),
 }));
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
 
 /* eslint-disable */
 const EnvironmentClient = require('../../clients/environments').default;

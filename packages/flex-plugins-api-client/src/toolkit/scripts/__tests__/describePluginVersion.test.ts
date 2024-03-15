@@ -8,16 +8,6 @@ import {
 import describePluginVersionScript, { DescribePluginVersion } from '../describePluginVersion';
 import { plugin, version, release, installedPlugin, meta } from './mockStore';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('DescribePluginVersion', () => {
   const httpClient = new PluginServiceHTTPClient('username', 'password');
   const pluginsClient = new PluginsClient(httpClient);

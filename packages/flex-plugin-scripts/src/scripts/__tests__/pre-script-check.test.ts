@@ -12,15 +12,6 @@ jest.mock('../../prints/unbundledReactMismatch');
 jest.mock('../../prints/expectedDependencyNotFound');
 jest.mock('../../prints/typescriptNotInstalled');
 jest.mock('../../prints/loadPluginCountError');
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
 
 describe('PreScriptCheck', () => {
   const pluginDir = '/path/to/plugin-dir';

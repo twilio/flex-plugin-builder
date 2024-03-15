@@ -3,16 +3,6 @@ import { Credential } from '@twilio/flex-dev-utils';
 import FileClient from '../files';
 import ServerlessClient from '../serverless-client';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('FileClient', () => {
   const serviceSid = 'ZS00000000000000000000000000000000';
   const auth = {

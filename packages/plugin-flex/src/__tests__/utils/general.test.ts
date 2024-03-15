@@ -2,16 +2,6 @@ import { TwilioApiError, TwilioError } from '@twilio/flex-dev-utils';
 
 import * as generalUtils from '../../utils/general';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('Utils/General', () => {
   it('should create description that is not in directory', () => {
     const description = generalUtils.createDescription('   the description   ', false);

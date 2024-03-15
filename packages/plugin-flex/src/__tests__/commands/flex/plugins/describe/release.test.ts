@@ -5,16 +5,6 @@ import FlexPlugin from '../../../../../sub-commands/flex-plugin';
 import InformationFlexPlugin from '../../../../../sub-commands/information-flex-plugin';
 import createTest from '../../../../framework';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('Commands/Describe/FlexPluginsDescribeRelease', () => {
   const sid = '1234567890';
   const createCommand = async (...args: string[]): Promise<FlexPluginsDescribeRelease> => {

@@ -15,16 +15,6 @@ import {
 } from '../../../clients';
 import createConfigurationScript from '../createConfiguration';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('CreateConfigurationScript', () => {
   const httpClient = new PluginServiceHTTPClient('username', 'password');
   const pluginsClient = new PluginsClient(httpClient);

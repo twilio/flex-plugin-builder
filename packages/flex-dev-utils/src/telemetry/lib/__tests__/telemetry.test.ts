@@ -1,19 +1,5 @@
-import * as os from 'os';
-
-import Analytics from '@segment/analytics-node';
-
 import Telemetry from '../telemetry';
 import * as fsScripts from '../../../fs';
-
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
 
 describe('Telemetry', () => {
   const paths = {

@@ -4,16 +4,6 @@ import { Credential } from '@twilio/flex-dev-utils';
 import ServiceClient from '../services';
 import ServerlessClient from '../serverless-client';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('ServiceClient', () => {
   const auth: Credential = {
     username: 'AC00000000000000000000000000000000',

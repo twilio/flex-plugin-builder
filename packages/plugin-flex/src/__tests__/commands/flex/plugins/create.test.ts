@@ -5,16 +5,6 @@ import * as createFlexPlugin from '@twilio/create-flex-plugin/dist/lib/cli';
 import FlexPluginsCreate from '../../../../commands/flex/plugins/create';
 import { constants, getTmpDirectory } from '../../../framework';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 const mockUserConfig = async <C extends FlexPluginsCreate>(command: C): Promise<C> => {
   // @ts-ignore
   command.userConfig = new ConfigData();

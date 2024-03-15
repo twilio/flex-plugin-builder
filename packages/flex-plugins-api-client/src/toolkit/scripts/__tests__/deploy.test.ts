@@ -1,16 +1,6 @@
 import { PluginServiceHTTPClient, PluginsClient, PluginVersionsClient } from '../../../clients';
 import deployScript, { DeployOption } from '../deploy';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('DeployScript', () => {
   const httpClient = new PluginServiceHTTPClient('username', 'password');
   const pluginsClient = new PluginsClient(httpClient);

@@ -5,16 +5,6 @@ import { Credential } from '@twilio/flex-dev-utils';
 
 import GovernorClient from '../governor';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('GovernorClient', () => {
   const accountSid = 'AC00000000000000000000000000000000';
   const auth: Credential = {

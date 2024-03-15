@@ -7,15 +7,6 @@ import * as prints from '../../prints';
 jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
 jest.mock('@twilio/flex-dev-utils/dist/env');
 jest.mock('../../prints/jestNotInstalled');
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
 
 describe('TestScript', () => {
   beforeEach(() => {

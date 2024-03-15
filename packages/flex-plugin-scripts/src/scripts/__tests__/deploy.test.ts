@@ -24,15 +24,6 @@ jest.mock('@twilio/flex-dev-utils/dist/credentials', () => ({
   }),
 }));
 jest.mock('../../utils/runtime');
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
 
 /* eslint-disable */
 const fs = require('@twilio/flex-dev-utils/dist/fs');

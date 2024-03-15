@@ -3,16 +3,6 @@ import * as webpack from 'webpack';
 import * as ipcServerScripts from '../ipcServer';
 import ToJsonOutput = webpack.Stats.ToJsonOutput;
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('ipcServer', () => {
   beforeEach(() => {
     jest.resetAllMocks();

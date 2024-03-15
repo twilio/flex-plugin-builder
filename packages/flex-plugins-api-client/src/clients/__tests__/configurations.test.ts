@@ -1,16 +1,6 @@
 import ConfigurationsClient from '../configurations';
 import PluginServiceHttpClient from '../client';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('ConfigurationsClient', () => {
   const httpClient = new PluginServiceHttpClient('username', 'password');
   const list = jest.spyOn(httpClient, 'list');

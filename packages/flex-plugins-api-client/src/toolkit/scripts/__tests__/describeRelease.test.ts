@@ -8,16 +8,6 @@ import describeReleaseScript, { DescribeRelease } from '../describeRelease';
 import { describeConfiguration as configuration, release } from './mockStore';
 import * as describeConfigurationScript from '../describeConfiguration';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('describeRelease', () => {
   const httpClient = new PluginServiceHTTPClient('username', 'password');
   const configurationsClient = new ConfigurationsClient(httpClient);

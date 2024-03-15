@@ -6,16 +6,6 @@ import * as random from '@twilio/flex-dev-utils/dist/random';
 import EnvironmentClient from '../environments';
 import ServerlessClient from '../serverless-client';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('EnvironmentClient', () => {
   const pluginName = 'plugin-test';
   const serviceSid = 'ZS00000000000000000000000000000000';

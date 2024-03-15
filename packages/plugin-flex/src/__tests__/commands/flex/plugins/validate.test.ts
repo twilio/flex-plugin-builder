@@ -2,16 +2,6 @@ import createTest from '../../../framework';
 import FlexPluginsValidate from '../../../../commands/flex/plugins/validate';
 import FlexPlugin from '../../../../sub-commands/flex-plugin';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('Validate', () => {
   beforeEach(() => {
     jest.resetAllMocks();

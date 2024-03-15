@@ -1,16 +1,6 @@
 import { PluginServiceHTTPClient, ReleaseResource, ReleasesClient } from '../../../clients';
 import releaseScript from '../release';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('ReleaseScript', () => {
   const httpClient = new PluginServiceHTTPClient('username', 'password');
   const releaseClient = new ReleasesClient(httpClient);

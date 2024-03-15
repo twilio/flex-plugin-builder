@@ -7,16 +7,6 @@ import {
 import listPluginVersionsScript, { ListPluginVersionsResource } from '../listPluginVerions';
 import { installedPlugin, meta, version, release } from './mockStore';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('ListPluginsScript', () => {
   const httpClient = new PluginServiceHTTPClient('username', 'password');
   const pluginVersionsClient = new PluginVersionsClient(httpClient);

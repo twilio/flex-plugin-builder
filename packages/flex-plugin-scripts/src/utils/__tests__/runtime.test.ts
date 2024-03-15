@@ -10,15 +10,6 @@ jest.mock('../../clients/serverless-client');
 jest.mock('../../clients/environments');
 jest.mock('../../clients/services');
 jest.mock('@twilio/flex-dev-utils/dist/credentials');
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
 
 /* eslint-disable */
 const ServiceClient: jest.Mock = require('../../clients/services').default;

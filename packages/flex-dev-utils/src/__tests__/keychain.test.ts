@@ -1,15 +1,5 @@
 import * as keychain from '../keychain';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('keychain', () => {
   const serviceName = 'the-service-name';
   const account = 'the-account';

@@ -5,16 +5,6 @@ import createTest from '../../../framework';
 import FlexPluginsDiff from '../../../../commands/flex/plugins/diff';
 import FlexPlugin from '../../../../sub-commands/flex-plugin';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('Commands/FlexPluginsDeploy', () => {
   const configId1 = 'FJ00000000000000000000000000001';
   const configId2 = 'FJ00000000000000000000000000002';

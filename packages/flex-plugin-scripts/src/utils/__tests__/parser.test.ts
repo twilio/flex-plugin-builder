@@ -3,16 +3,6 @@ import { FlexPluginError } from '@twilio/flex-dev-utils';
 
 import * as parserScripts from '../parser';
 
-jest.mock('@segment/analytics-node', () => {
-  const track = jest.fn();
-  return {
-    __esModule: true,
-    default: () => ({
-      track,
-    }),
-  };
-});
-
 describe('parser', () => {
   const pluginName = 'plugin-test';
 
