@@ -194,7 +194,10 @@ describe('Commands/FlexPluginsDeploy', () => {
         return Promise.resolve({
           violations: [],
           vtime: 0,
-          error: 'Request failed with error: 401 Unauthorised',
+          error: {
+            message: 'Request failed with error: 401 Unauthorised',
+            timedOut: false,
+          },
         });
       }
       return Promise.resolve(this);
@@ -205,14 +208,56 @@ describe('Commands/FlexPluginsDeploy', () => {
     jest.spyOn(cmd, 'registerPluginVersion').mockReturnThis();
     jest.spyOn(devUtils, 'choose').mockResolvedValue(cmd.options.deploy);
     jest.spyOn(devUtils.logger, 'error').mockReturnThis();
+    jest.spyOn(devUtils.logger, 'warning').mockReturnThis();
+    mockGetPkg(cmd, pkg);
+
+    await cmd.doRun();
+
+    expect(devUtils.choose).not.toHaveBeenCalled();
+    expect(devUtils.logger.error).toHaveBeenCalledWith('Unable to validate the plugin at the moment.');
+    expect(devUtils.logger.warning).toHaveBeenCalledWith('Continuing to deploy');
+    expect(cmd.runScript).toHaveBeenCalledTimes(4);
+    expect(cmd.hasCollisionAndOverwrite).toHaveBeenCalledTimes(1);
+    expect(deployScript._verifyFlexUIConfiguration).toHaveBeenCalledTimes(1);
+    expect(cmd.registerPlugin).toHaveBeenCalledTimes(1);
+    expect(cmd.registerPluginVersion).toHaveBeenCalledTimes(1);
+  });
+
+  it('should display timeout error if valdiation fails with ETIMEDOUT and continue deployment', async () => {
+    const cmd = await createCommand('--changelog', defaultChangelog);
+
+    jest.spyOn(cmd, 'checkServerlessInstance').mockReturnThis();
+    jest.spyOn(cmd, 'checkForLegacy').mockReturnThis();
+    jest.spyOn(cmd, 'validatePlugin').mockReturnThis();
+    jest.spyOn(cmd, 'runScript').mockImplementation(async (scriptName) => {
+      if (scriptName === 'validate') {
+        return Promise.resolve({
+          violations: [],
+          vtime: 0,
+          error: {
+            message: 'Request timed out',
+            timedOut: true,
+          },
+        });
+      }
+      return Promise.resolve(this);
+    });
+    jest.spyOn(cmd, 'hasCollisionAndOverwrite').mockReturnThis();
+    jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
+    jest.spyOn(cmd, 'registerPlugin').mockReturnThis();
+    jest.spyOn(cmd, 'registerPluginVersion').mockReturnThis();
+    jest.spyOn(devUtils, 'choose').mockResolvedValue(cmd.options.deploy);
+    jest.spyOn(devUtils.logger, 'error').mockReturnThis();
+    jest.spyOn(devUtils.logger, 'warning').mockReturnThis();
     mockGetPkg(cmd, pkg);
 
     await cmd.doRun();
 
     expect(devUtils.choose).not.toHaveBeenCalled();
     expect(devUtils.logger.error).toHaveBeenCalledWith(
-      expect.stringContaining('Unable to validate the plugin at the moment'),
+      'Plugin validation timed out. Note: This may be an enterprise firewall issue.',
     );
+    expect(devUtils.logger.warning).toHaveBeenCalledWith('Continuing to deploy');
     expect(cmd.runScript).toHaveBeenCalledTimes(4);
     expect(cmd.hasCollisionAndOverwrite).toHaveBeenCalledTimes(1);
     expect(deployScript._verifyFlexUIConfiguration).toHaveBeenCalledTimes(1);

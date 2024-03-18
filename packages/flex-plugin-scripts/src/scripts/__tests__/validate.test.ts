@@ -166,8 +166,22 @@ describe('ValidateScript', () => {
       await validateScript.default();
     } catch (e) {
       expect(e).toBeInstanceOf(flexDevUtils.TwilioCliError);
-      expect(e.message).toContain(errorString);
-      expect(errorLogSpy).toHaveBeenCalledTimes(1);
+      expect(errorLogSpy).toHaveBeenCalledWith(expect.stringMatching(/^Validation of plugin (.*)+ failed$/));
+    }
+  });
+
+  it('should display timed out error log when validation fails with ETIMEDOUT', async () => {
+    validate.mockRejectedValueOnce({
+      code: 'ETIMEDOUT',
+      message: 'Request timed out',
+    });
+    try {
+      await validateScript.default();
+    } catch (e) {
+      expect(e).toBeInstanceOf(flexDevUtils.TwilioCliError);
+      expect(errorLogSpy).toHaveBeenCalledWith(
+        expect.stringMatching(/^Plugin validation timed out. Note: This may be an enterprise firewall issue$/),
+      );
     }
   });
 
@@ -194,8 +208,24 @@ describe('ValidateScript', () => {
     validate.mockRejectedValueOnce(new Error(errorString));
 
     const response = await validateScript.default(...args);
+
     expect(errorLogSpy).not.toHaveBeenCalled();
-    expect(response.error).toContain(errorString);
+    expect(response.error?.message).toBe(errorString);
+    expect(response.error?.timedOut).toBe(false);
+    expect(response.violations.length).toBe(0);
+    expect(response.vtime).toBe(0);
+  });
+
+  it('should set timed out flag in error if valdiation fails with ETIMEDOUT and deploy flag is present', async () => {
+    const args = ['--deploy'];
+
+    validate.mockRejectedValueOnce({
+      code: 'ETIMEDOUT',
+    });
+
+    const response = await validateScript.default(...args);
+    expect(errorLogSpy).not.toHaveBeenCalled();
+    expect(response.error?.timedOut).toBe(true);
     expect(response.violations.length).toBe(0);
     expect(response.vtime).toBe(0);
   });

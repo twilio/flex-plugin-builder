@@ -150,14 +150,21 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       async (): Promise<{
         violations: string[];
         vtime: number;
-        error: string;
+        error: {
+          message: string;
+          timedOut: boolean;
+        };
       }> => {
         return this.runScript('validate', ['--deploy']);
       },
     );
 
     if (error) {
-      logger.error('Unable to validate the plugin at the moment. Continuing to deploy');
+      const err = error.timedOut
+        ? 'Plugin validation timed out. Note: This may be an enterprise firewall issue.'
+        : 'Unable to validate the plugin at the moment.';
+      logger.error(err);
+      logger.warning('Continuing to deploy');
     }
 
     let shouldContinue = this._flags.option === Options.Deploy || violations.length === 0;
