@@ -23,6 +23,8 @@ import { validateSuccessful } from '../prints';
 const LEGAL_DISCLAIMER =
   'By running the Flex plugins validate command, you acknowledge that the recommendations offered by this tool are suggestions to help with your Flex plugin deployment, but may not represent the only solution available to you. It is ultimately your responsibility to validate these recommendations and determine if they are appropriate for your use case.';
 
+const ETIMEDOUT = 'ETIMEDOUT';
+
 /**
  * Builds the bundle
  */
@@ -31,7 +33,10 @@ const validate = async (
 ): Promise<{
   violations: string[];
   vtime: number;
-  error?: string;
+  error?: {
+    message: string;
+    timedOut: boolean;
+  };
 }> => {
   const isDeploy = argv.includes('--deploy');
 
@@ -102,16 +107,25 @@ const validate = async (
     // Print validation report
     validateSuccessful(report);
   } catch (e: any) {
+    removeFile(zipFile);
+
     if (isDeploy) {
       return {
         violations: [],
         vtime: 0,
-        error: (e as Error).message,
+        error: {
+          message: e?.message,
+          timedOut: e?.code === ETIMEDOUT,
+        },
       };
     }
 
-    logger.error(`Validation of plugin ${pkgName} failed`);
-    throw new TwilioCliError(e);
+    if (e?.code === ETIMEDOUT) {
+      logger.error('Plugin validation timed out. Note: This may be an enterprise firewall issue');
+    } else {
+      logger.error(`Validation of plugin ${pkgName} failed`);
+    }
+    throw new TwilioCliError();
   }
 
   removeFile(zipFile);

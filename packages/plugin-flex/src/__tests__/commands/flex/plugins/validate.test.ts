@@ -27,4 +27,9 @@ describe('Validate', () => {
     expect(cmd.runScript).toHaveBeenCalledTimes(1);
     expect(cmd.runScript).toHaveBeenCalledWith('validate');
   });
+
+  it('should have compatibility set', async () => {
+    const cmd = await createCommand();
+    expect(cmd.checkCompatibility).toEqual(true);
+  });
 });
