@@ -718,7 +718,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     const combinedProperty = {
       cliVersion: this.cliPkg.version,
       command: this.getTopicName(),
-      xtime: timeTaken,
+      xtime: Math.round(timeTaken),
       ...properties,
     };
     this._telemetry.track(trackEventName, this.currentProfile.accountSid, combinedProperty);

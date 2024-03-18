@@ -8,7 +8,10 @@ delete baseFlags.json;
 export type ValidateResult = {
   violations: string[];
   vtime: number;
-  error?: string;
+  error?: {
+    message: string;
+    timedOut: boolean;
+  };
 };
 
 /**
@@ -29,8 +32,8 @@ export default class FlexPluginValidate extends FlexPlugin {
    */
   async doRun(): Promise<void> {
     process.env.PERSIST_TERMINAL = 'true';
-    const result = (await this.runScript('validate')) as ValidateResult;
-    this.telemetryProperties = { ...result, deployed: 0 };
+    const { violations, vtime, error }: ValidateResult = (await this.runScript('validate')) as ValidateResult;
+    this.telemetryProperties = { violations, vtime: Math.round(vtime), error, deployed: 0 };
   }
 
   /**

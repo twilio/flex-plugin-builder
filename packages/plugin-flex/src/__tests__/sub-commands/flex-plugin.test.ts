@@ -9,12 +9,6 @@ import DoneCallback = jest.DoneCallback;
 
 jest.mock('@twilio/flex-dev-utils/dist/fs');
 jest.mock('@twilio/flex-dev-utils/dist/spawn');
-jest.mock('@segment/analytics-node', () => {
-  return jest.fn().mockImplementation(() => ({
-    // eslint-disable-next-line  @typescript-eslint/no-empty-function
-    track: () => {},
-  }));
-});
 
 describe('SubCommands/FlexPlugin', () => {
   const { env } = process;

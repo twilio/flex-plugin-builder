@@ -104,7 +104,7 @@ export const track = (timeTaken: number, config: FlexPluginArguments): void => {
   const properties = {
     cliVersion: config.pluginScriptsVersion,
     command: 'flex:plugins:create',
-    xtime: timeTaken,
+    xtime: Math.round(timeTaken),
     pluginName: config.name,
     pluginVersion: '0.0.0',
     flexUiVersion: config.flexSdkVersion,

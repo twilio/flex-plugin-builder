@@ -16,6 +16,8 @@ describe('CLI', () => {
     await new CLI().parse();
 
     expect(createFlexPlugin).toHaveBeenCalledTimes(1);
+    expect(exit).toHaveBeenCalledTimes(1);
+    expect(exit).toHaveBeenCalledWith(0);
   });
   it('should have static description', () => {
     expect(CLI).toHaveProperty('description');
