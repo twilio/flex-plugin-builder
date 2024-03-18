@@ -152,24 +152,9 @@ describe('create-flex-plugin', () => {
         flexSdkVersion: '1.24.0',
         typescript: true,
       };
-      const expectedProperties = {
-        cliVersion: mockConfig.pluginScriptsVersion,
-        command: 'flex:plugins:create',
-        xtime: mockTimeTaken,
-        pluginName: mockConfig.name,
-        pluginVersion: '0.0.0',
-        flexUiVersion: mockConfig.flexSdkVersion,
-        typescript: mockConfig.typescript,
-      };
-
-      /*
-       * Track is the function under test
-       * @ts-ignore
-       */
-      createFlexPluginScripts.track(mockTimeTaken, mockConfig as any); // Cast to any if necessary to match type
-
-      // Verify that Telemetry's track method was called correctly
-      expect(Telemetry).toHaveBeenCalledTimes(1); // Telemetry constructor called once
+      
+      createFlexPluginScripts.track(mockTimeTaken, mockConfig as any);
+      expect(Telemetry).toHaveBeenCalledTimes(1);
     });
   });
 

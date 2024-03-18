@@ -214,8 +214,9 @@ export default class FlexPluginsDeploy extends FlexPlugin {
         this.argv.includes('--profile') ? this.currentProfile.id : null,
       );
       this.telemetryProperties = { violations, vtime, error, deployed: 1 };
+    } else {
+      this.telemetryProperties = { violations, vtime, error, deployed: 0 };
     }
-    this.telemetryProperties = { violations, vtime, error, deployed: 0 };
   }
 
   /**

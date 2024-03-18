@@ -1,5 +1,11 @@
 import Telemetry from '../telemetry';
 import * as fsScripts from '../../../fs';
+import daemonizeProcess from 'daemonize-process';
+import { join } from 'path';
+
+jest.mock('daemonize-process', () => {
+  return jest.fn();
+});
 
 describe('Telemetry', () => {
   const paths = {
@@ -29,7 +35,7 @@ describe('Telemetry', () => {
     expect(telemetry.commonProperties.typescript).toBeTruthy();
   });
 
-  it('tracks an event with the correct data', () => {
+  it('call track daemon', () => {
     const telemetry = new Telemetry();
     const testEvent = 'testEvent';
     const testAccountSid = 'ACxxxxxxxxxxxxxx';
@@ -37,19 +43,36 @@ describe('Telemetry', () => {
 
     process.env.CI = '';
     telemetry.track(testEvent, testAccountSid, testProperties);
+    expect(daemonizeProcess).toHaveBeenCalled();
+  });
 
-    // @ts-ignore
-    expect(telemetry.analytics.track).toHaveBeenCalledWith({
+  it('call track daemon with correct values', () => {
+    const telemetry = new Telemetry();
+    const testEvent = 'testEvent';
+    const testAccountSid = 'ACxxxxxxxxxxxxxx';
+    const testProperties = { testKey: 'testValue' };
+
+    process.env.CI = '';
+
+    telemetry.track(testEvent, testAccountSid, testProperties);
+
+    expect(daemonizeProcess).toHaveBeenCalled();
+    const expectedTraceData = {
       userId: testAccountSid,
-      event: testEvent,
-      properties: expect.objectContaining({
-        product: 'Flex',
-        source: 'flexpluginscli',
-        flexUserRole: 'admin',
-        typescript: true,
+      event: 'testEvent',
+      properties: {
+        //@ts-ignore
+        ...telemetry.commonProperties,
         accountSid: testAccountSid,
-        testKey: 'testValue',
-      }),
+        ...testProperties,
+      },
+    };
+
+    const scriptPath = join(__dirname, '../track.js');
+    // @ts-ignore
+    expect(daemonizeProcess).toHaveBeenCalledWith({
+      arguments: [JSON.stringify(expectedTraceData)],
+      script: scriptPath,
     });
   });
 
@@ -63,6 +86,6 @@ describe('Telemetry', () => {
     telemetry.track(testEvent, testAccountSid, testProperties);
 
     // @ts-ignore
-    expect(telemetry.analytics.track).not.toHaveBeenCalled();
+    expect(daemonizeProcess).not.toHaveBeenCalled();
   });
 });

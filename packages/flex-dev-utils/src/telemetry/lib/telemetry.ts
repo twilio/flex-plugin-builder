@@ -1,10 +1,8 @@
 import * as os from 'os';
-
-import Analytics from '@segment/analytics-node';
-
 import * as fs from '../../fs';
 import { env } from '../../env';
-import { DEV_VALUE, PROD_VALUE, STAGE_VALUE } from './constants';
+import daemonizeProcess from 'daemonize-process';
+import { join } from 'path';
 
 interface OsDetail {
   osType: string;
@@ -34,8 +32,6 @@ const SOURCE = 'flexpluginscli';
 export const trackEventName = 'PCLI Run';
 
 export default class Telemetry {
-  protected readonly analytics: Analytics;
-
   private commonProperties: CommonProperties;
 
   /**
@@ -45,8 +41,6 @@ export default class Telemetry {
   constructor() {
     const { env } = process;
     const language = env.LANG || env.LANGUAGE || env.LC_ALL || env.LC_MESSAGES;
-    this.analytics = new Analytics({ writeKey: this.getKey() });
-
     let pluginName = 'n/a';
     let pluginVersion = 'n/a';
     let typescript = false;
@@ -92,7 +86,11 @@ export default class Telemetry {
     };
 
     if (!env.isCI()) {
-      this.analytics.track(traceData);
+      // Fork a new process for the daemon
+      daemonizeProcess({
+        script: join(__dirname, 'track.js'),
+        arguments: [JSON.stringify(traceData)],
+      });
     }
   }
 
@@ -102,16 +100,6 @@ export default class Telemetry {
       osName: os.platform(),
       osVersion: os.release(),
     };
-  }
-
-  private getKey(): string {
-    const region = env.getRegion();
-    if (region === 'stage') {
-      return STAGE_VALUE;
-    } else if (region === 'dev') {
-      return DEV_VALUE;
-    }
-    return PROD_VALUE;
   }
 
   private getRealm(): string {
