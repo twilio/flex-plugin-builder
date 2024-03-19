@@ -1,7 +1,9 @@
+import { join } from 'path';
+
+import daemonizeProcess from 'daemonize-process';
+
 import Telemetry from '../telemetry';
 import * as fsScripts from '../../../fs';
-import daemonizeProcess from 'daemonize-process';
-import { join } from 'path';
 
 jest.mock('daemonize-process', () => {
   return jest.fn();
@@ -61,7 +63,7 @@ describe('Telemetry', () => {
       userId: testAccountSid,
       event: 'testEvent',
       properties: {
-        //@ts-ignore
+        // @ts-ignore
         ...telemetry.commonProperties,
         accountSid: testAccountSid,
         ...testProperties,

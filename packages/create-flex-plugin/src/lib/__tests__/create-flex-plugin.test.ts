@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-import { logger, FlexPluginError, Telemetry, trackEventName } from '@twilio/flex-dev-utils';
+import { logger, FlexPluginError, Telemetry } from '@twilio/flex-dev-utils';
 import * as fsScripts from '@twilio/flex-dev-utils/dist/fs';
 
 import * as createFlexPluginScripts from '../create-flex-plugin';
@@ -152,7 +152,7 @@ describe('create-flex-plugin', () => {
         flexSdkVersion: '1.24.0',
         typescript: true,
       };
-      
+
       createFlexPluginScripts.track(mockTimeTaken, mockConfig as any);
       expect(Telemetry).toHaveBeenCalledTimes(1);
     });

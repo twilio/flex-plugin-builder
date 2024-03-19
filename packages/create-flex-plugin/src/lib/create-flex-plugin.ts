@@ -1,7 +1,14 @@
 import fs from 'fs';
 import { resolve, join } from 'path';
 
-import { logger, progress, FlexPluginError, singleLineString, Telemetry, trackEventName } from '@twilio/flex-dev-utils';
+import {
+  logger,
+  progress,
+  FlexPluginError,
+  singleLineString,
+  Telemetry,
+  TRACK_EVENT_NAME,
+} from '@twilio/flex-dev-utils';
 import { copyTemplateDir, checkPluginConfigurationExists } from '@twilio/flex-dev-utils/dist/fs';
 import { dirSync as tmpDirSync, DirResult as TmpDirResult } from 'tmp';
 
@@ -103,14 +110,14 @@ export const track = (timeTaken: number, config: FlexPluginArguments): void => {
   const accountSid: string = String(config.accountSid);
   const properties = {
     cliVersion: config.pluginScriptsVersion,
-    command: 'flex:plugins:create',
+    command: 'create',
     xtime: Math.round(timeTaken),
     pluginName: config.name,
     pluginVersion: '0.0.0',
     flexUiVersion: config.flexSdkVersion,
     typescript: config.typescript,
   };
-  telemetry.track(trackEventName, accountSid, properties);
+  telemetry.track(TRACK_EVENT_NAME, accountSid, properties);
 };
 
 /**

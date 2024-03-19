@@ -42,4 +42,4 @@ export * as packages from './packages';
 export { default as FormData } from 'form-data';
 export { default as axios } from './axios';
 export { urlJoin };
-export { Telemetry, trackEventName } from './telemetry';
+export { Telemetry, TRACK_EVENT_NAME, COMMAND_PREFIX } from './telemetry';

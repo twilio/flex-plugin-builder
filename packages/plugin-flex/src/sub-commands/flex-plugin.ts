@@ -27,7 +27,8 @@ import {
   semver,
   updateNotifier,
   chalk,
-  trackEventName,
+  TRACK_EVENT_NAME,
+  COMMAND_PREFIX,
 } from '@twilio/flex-dev-utils';
 import { spawn, SpawnPromise } from '@twilio/flex-dev-utils/dist/spawn';
 import dayjs from 'dayjs';
@@ -717,11 +718,13 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   trackTopic(timeTaken: number, properties: Record<string, any>): void {
     const combinedProperty = {
       cliVersion: this.cliPkg.version,
-      command: this.getTopicName(),
+      command: this.getTopicName().startsWith(COMMAND_PREFIX)
+        ? this.getTopicName().slice(COMMAND_PREFIX.length)
+        : this.getTopicName(),
       xtime: Math.round(timeTaken),
       ...properties,
     };
-    this._telemetry.track(trackEventName, this.currentProfile.accountSid, combinedProperty);
+    this._telemetry.track(TRACK_EVENT_NAME, this.currentProfile.accountSid, combinedProperty);
   }
 
   /**

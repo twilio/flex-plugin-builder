@@ -1,8 +1,11 @@
 import * as os from 'os';
+import { join } from 'path';
+
+import daemonizeProcess from 'daemonize-process';
+
+import { PRODUCT, SOURCE } from './constants';
 import * as fs from '../../fs';
 import { env } from '../../env';
-import daemonizeProcess from 'daemonize-process';
-import { join } from 'path';
 
 interface OsDetail {
   osType: string;
@@ -25,11 +28,6 @@ interface CommonProperties {
   nodeVersion: string;
   flexUiVersion: string;
 }
-
-const PRODUCT = 'Flex';
-const SOURCE = 'flexpluginscli';
-
-export const trackEventName = 'PCLI Run';
 
 export default class Telemetry {
   private commonProperties: CommonProperties;
