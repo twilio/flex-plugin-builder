@@ -866,6 +866,48 @@ describe('fs', () => {
     });
   });
 
+  describe('isPluginFolder', () => {
+    it('should test isPluginFolder to be false if no package.json is found', () => {
+      const checkAFileExists = jest.spyOn(fs, 'checkAFileExists').mockReturnValue(false);
+      expect(fs.isPluginFolder()).toBe(false);
+      expect(checkAFileExists).toHaveBeenCalledTimes(1);
+    });
+
+    it('should test isPluginFolder to be false if package was not found in package.json', () => {
+      jest.spyOn(fs, 'checkAFileExists').mockReturnValue(true);
+      const packageJson = jest.spyOn(fs, 'readAppPackageJson').mockReturnValue({
+        version: '1.0.0',
+        name: '',
+        dependencies: {
+          '@twilio/flex-plugin': '',
+          '@twilio/flex-plugin-scripts': '',
+        },
+        devDependencies: {
+          'not-a-valid-package': '',
+        },
+      });
+      expect(fs.isPluginFolder()).toBe(false);
+      expect(packageJson).toHaveBeenCalledTimes(1);
+    });
+
+    it('should test isPluginFolder to be true if both scripts found in devDependencies', () => {
+      jest.spyOn(fs, 'checkAFileExists').mockReturnValue(true);
+      jest.spyOn(fs, 'readAppPackageJson').mockReturnValue({
+        version: '1.0.0',
+        name: '',
+        dependencies: {
+          '@twilio/flex-plugin': '',
+          '@twilio/flex-plugin-scripts': '',
+        },
+        devDependencies: {
+          '@twilio/flex-plugin-scripts': '',
+          '@twilio/flex-ui': '^1',
+        },
+      });
+      expect(fs.isPluginFolder()).toBe(true);
+    });
+  });
+
   describe('packageDependencyVersion', () => {
     const pkg: PackageJson = {
       name: 'test',

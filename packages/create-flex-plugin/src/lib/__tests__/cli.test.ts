@@ -19,6 +19,7 @@ describe('CLI', () => {
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(0);
   });
+
   it('should have static description', () => {
     expect(CLI).toHaveProperty('description');
     expect(CLI.description).toContain('new Twilio Flex Plugin');

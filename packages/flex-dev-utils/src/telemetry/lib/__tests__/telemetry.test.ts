@@ -29,10 +29,13 @@ describe('Telemetry', () => {
   });
 
   it('should instantiate with correct common properties', () => {
+    process.env.LANG = 'test-lang';
     const telemetry = new Telemetry();
     expect(telemetry).toBeDefined();
     // @ts-ignore
     expect(telemetry.commonProperties.pluginName).toEqual('test-plugin');
+    // @ts-ignore
+    expect(telemetry.commonProperties.locale).toEqual('test-lang');
     // @ts-ignore
     expect(telemetry.commonProperties.typescript).toBeTruthy();
   });
@@ -44,6 +47,7 @@ describe('Telemetry', () => {
     const testProperties = { testKey: 'testValue' };
 
     process.env.CI = '';
+    process.env.LANG = 'test-lang';
     telemetry.track(testEvent, testAccountSid, testProperties);
     expect(daemonizeProcess).toHaveBeenCalled();
   });
@@ -89,5 +93,21 @@ describe('Telemetry', () => {
 
     // @ts-ignore
     expect(daemonizeProcess).not.toHaveBeenCalled();
+  });
+
+  describe('getRealm', () => {
+    it('should get stage-us1 when region is stage', () => {
+      const telemetry = new Telemetry();
+      process.env.TWILIO_REGION = 'stage';
+      // @ts-ignore
+      expect(telemetry.getRealm()).toEqual('stage-us1');
+    });
+
+    it('should get dev-us1 when region is dev', () => {
+      const telemetry = new Telemetry();
+      process.env.TWILIO_REGION = 'dev';
+      // @ts-ignore
+      expect(telemetry.getRealm()).toEqual('dev-us1');
+    });
   });
 });
