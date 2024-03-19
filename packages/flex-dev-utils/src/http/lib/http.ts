@@ -93,6 +93,8 @@ export default class Http {
 
   static UserAgent = 'User-Agent';
 
+  static REALM = 'us1';
+
   public static ContentTypeApplicationJson = 'application/json';
 
   public static ContentTypeUrlEncoded = 'application/x-www-form-urlencoded';
@@ -206,7 +208,8 @@ export default class Http {
       return baseUrl;
     }
 
-    const region = env.getRegion();
+    let region = env.getRegion();
+
     if (!region) {
       return baseUrl;
     }
@@ -217,11 +220,16 @@ export default class Http {
       );
     }
 
+    // Base URL contains realm for eg. us1 which needs to replaced with dev-us1/stage-us1
+    if (baseUrl.includes(`.${Http.REALM}.`)) {
+      region = `${region}-${Http.REALM}`;
+    }
+
     Http.REGIONS.forEach((r) => {
       baseUrl = baseUrl.replace(`.${r}.`, '.');
     });
 
-    return baseUrl.replace(/([a-zA-z-]+).(twilio.com)/, `$1.${region}.$2`);
+    return baseUrl.replace(new RegExp(`([a-zA-z-]+)(?:.${Http.REALM})?.(twilio.com)`), `$1.${region}.$2`);
   }
 
   /**
@@ -306,8 +314,8 @@ export default class Http {
       });
 
       req.data = qs.stringify(Object.assign({}, ...data), { encode: false, arrayFormat: 'repeat' });
-      logger.debug(`Request data ${req.data} and content-type ${req.headers?.['Content-Type']}`);
     }
+    logger.debug(`Request data ${JSON.stringify(req.data)} and content-type ${req.headers?.['Content-Type']}`);
 
     return Promise.resolve(req);
   }
@@ -545,6 +553,9 @@ export default class Http {
     }
 
     logger.debug(`Request errored with message ${err.message}`);
+    if (err.response?.data) {
+      logger.debug(`Error: `, err.response.data);
+    }
     return Promise.reject(err);
   };
 

@@ -1,50 +1,52 @@
 /* eslint-disable import/no-unused-modules */
 import { replaceInFile } from 'replace-in-file';
-import semver from 'semver';
+import { logger } from '@twilio/flex-dev-utils';
 
-import { assertion, joinPath, spawn, api } from '../utils';
+import { assertion, joinPath, spawn } from '../utils';
 import { TestSuite, TestParams } from '../core';
 
-// Deploy plugin
+export const originalCode = 'const [isOpen, setIsOpen] = useState(true);';
+export const codeWithViolation = `const config = {\n    colorTheme: {\n      baseLight: \"white\",\n    },\n    sdkOptions: {\n      voice: {\n        iceServers: [],\n      },\n    },\n  };\n  const [isOpen, setIsOpen] = useState(true);`;
+export const WARNING_REGEX = /(Warning:)/;
+
+// Validate plugin
 const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<void> => {
   const plugin = scenario.plugins[0];
-  assertion.not.isNull(plugin);
 
   const ext = scenario.isTS ? 'tsx' : 'jsx';
-  plugin.newlineValue = `This is a dismissible demo component ${Date.now()}`;
-  plugin.changelog = `e2e test ${Date.now()}`;
+
   await replaceInFile({
     files: joinPath(plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
-    from: /This is a dismissible demo component.*/,
-    to: plugin.newlineValue,
+    from: originalCode,
+    to: codeWithViolation,
   });
 
-  const resource = await api.getLatestPluginVersion(plugin.name);
-  plugin.version = semver.inc(resource?.version || '0.0.0', 'patch') as string;
-  const result = await spawn(
-    'twilio',
-    ['flex:plugins:deploy', '--changelog', `"${plugin.changelog}"`, '--patch', '-l', 'debug', ...config.regionFlag],
-    {
-      cwd: plugin.dir,
-    },
-  );
+  logger.info('Running {{twilio flex:plugins:validate}} on a plugin with validation issues');
 
-  assertion.fileExists([plugin.dir, 'build', `${plugin.name}.js`]);
-  assertion.fileContains([plugin.dir, 'build', `${plugin.name}.js`], plugin.newlineValue);
-  assertion.jsonFileContains([plugin.dir, 'package.json'], 'version', plugin.version);
-  assertion.stringContains(result.stdout, 'Next Steps');
-  assertion.stringContains(result.stdout, 'twilio flex:plugins:release');
-  assertion.stringContains(result.stdout, plugin.name);
+  let result = await spawn('twilio', ['flex:plugins:validate', '-l', 'debug', ...config.regionFlag], {
+    cwd: plugin.dir,
+  });
 
-  const apiPlugin = await api.getPlugin(plugin.name);
-  const pluginVersion = await api.getPluginVersion(plugin.name, plugin.version);
-  const latest = await api.getLatestPluginVersion(plugin.name);
+  let noWarnings: number = result.stdout.match(WARNING_REGEX)?.length || 0;
 
-  assertion.equal(apiPlugin.unique_name, plugin.name);
-  assertion.equal(pluginVersion.version, plugin.version);
-  assertion.equal(pluginVersion.changelog, plugin.changelog);
-  assertion.equal(pluginVersion, latest);
+  assertion.equal(noWarnings, 2);
+
+  await replaceInFile({
+    files: joinPath(plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
+    from: codeWithViolation,
+    to: originalCode,
+  });
+
+  logger.info('Running {{twilio flex:plugins:validate}} on a plugin with 0 validation issues');
+
+  result = await spawn('twilio', ['flex:plugins:validate', '-l', 'debug', ...config.regionFlag], {
+    cwd: plugin.dir,
+  });
+  noWarnings = result.stdout.match(WARNING_REGEX)?.length || 0;
+
+  assertion.equal(noWarnings, 0);
 };
-testSuite.description = 'Running {{twilio flex:plugins:deploy}}';
+
+testSuite.description = 'Running {{twilio flex:plugins:validate}}';
 
 export default testSuite;

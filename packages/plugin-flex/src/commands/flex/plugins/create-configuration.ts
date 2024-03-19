@@ -36,4 +36,11 @@ export default class FlexPluginsCreateConfiguration extends CreateConfiguration 
     );
     this._logger.newline();
   }
+
+  /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginsCreateConfiguration.topicName;
+  }
 }

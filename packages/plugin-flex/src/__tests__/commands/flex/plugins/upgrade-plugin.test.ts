@@ -8,6 +8,7 @@ import FlexPluginsUpgradePlugin, { DependencyUpdates } from '../../../../command
 
 jest.mock('@twilio/flex-dev-utils/dist/fs');
 jest.mock('@twilio/flex-dev-utils/dist/spawn');
+jest.mock('@twilio/flex-dev-utils/dist/telemetry/lib/telemetry');
 
 describe('Commands/FlexPluginsStart', () => {
   const serverlessSid = 'ZS00000000000000000000000000000000';

@@ -137,6 +137,7 @@ describe('SubCommands/FlexPlugin', () => {
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'doRun').mockResolvedValue('any');
+    jest.spyOn(cmd, 'trackTopic').mockImplementationOnce(async () => Promise.resolve());
 
     await cmd.run();
 
@@ -152,6 +153,7 @@ describe('SubCommands/FlexPlugin', () => {
     jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'doRun').mockResolvedValue('any');
+    jest.spyOn(cmd, 'trackTopic').mockImplementationOnce(async () => Promise.resolve());
 
     await cmd.run();
 
@@ -166,6 +168,7 @@ describe('SubCommands/FlexPlugin', () => {
     jest.spyOn(cmd, 'setupEnvironment').mockReturnThis();
     jest.spyOn(cmd, 'doRun').mockResolvedValue(null);
     jest.spyOn(fs, 'addCWDNodeModule');
+    jest.spyOn(cmd, 'trackTopic').mockImplementationOnce(async () => Promise.resolve());
 
     await cmd.run();
 
@@ -188,6 +191,7 @@ describe('SubCommands/FlexPlugin', () => {
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'setupEnvironment').mockReturnThis();
     jest.spyOn(cmd, 'doRun').mockResolvedValue({ object: 'result' });
+    jest.spyOn(cmd, 'trackTopic').mockImplementationOnce(async () => Promise.resolve());
 
     await cmd.run();
 
@@ -202,6 +206,7 @@ describe('SubCommands/FlexPlugin', () => {
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'setupEnvironment').mockReturnThis();
     jest.spyOn(cmd, 'doRun').mockResolvedValue({ object: 'result' });
+    jest.spyOn(cmd, 'trackTopic').mockImplementationOnce(async () => Promise.resolve());
 
     await cmd.run();
 
@@ -285,6 +290,7 @@ describe('SubCommands/FlexPlugin', () => {
     jest.spyOn(cmd, 'exit').mockReturnThis();
     jest.spyOn(cmd, 'doRun').mockReturnThis();
     jest.spyOn(cmd, 'pkg', 'get').mockReturnThis();
+    jest.spyOn(cmd, 'trackTopic').mockImplementationOnce(async () => Promise.resolve());
 
     await cmd.run();
     // @ts-ignore
@@ -301,6 +307,7 @@ describe('SubCommands/FlexPlugin', () => {
     jest.spyOn(cmd, 'checkCompatibility', 'get').mockReturnValue(true);
     jest.spyOn(cmd, 'exit').mockReturnThis();
     jest.spyOn(cmd, 'doRun').mockReturnThis();
+    jest.spyOn(cmd, 'trackTopic').mockImplementationOnce(async () => Promise.resolve());
 
     await cmd.run();
     // @ts-ignore
@@ -360,6 +367,38 @@ describe('SubCommands/FlexPlugin', () => {
     const cmd = await createCommand();
 
     expect(cmd.checkCompatibility).toEqual(false);
+  });
+
+  describe('trackTopic', () => {
+    it('tracks topic with correct properties', async () => {
+      const cmd = await createCommand();
+      // @ts-ignore
+      cmd._telemetry = {
+        track: jest.fn(),
+      } as any;
+
+      const timeTaken = 100;
+      const properties = { deployed: 0, violations: [] };
+
+      // @ts-ignore
+      cmd.cliPkg = { version: '1.0.0' } as any; // Mocking as any for simplicity
+      // @ts-ignore
+      cmd.currentProfile = { accountSid: 'AC123' } as any;
+
+      // @ts-ignore
+      await cmd.trackTopic(timeTaken, properties);
+      // @ts-ignore
+      expect(cmd._telemetry.track).toHaveBeenCalledWith(
+        expect.any(String),
+        'AC123',
+        expect.objectContaining({
+          cliVersion: '1.0.0',
+          command: expect.any(String),
+          xtime: 100,
+          ...properties,
+        }),
+      );
+    });
   });
 
   describe('setupEnvironment', () => {

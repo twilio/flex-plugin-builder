@@ -31,7 +31,7 @@ export const constants = {
 
 const context: Context = {};
 
-const getTmpDirectory = () => {
+export const getTmpDirectory = () => {
   if (!context.tmpDir) {
     context.tmpDir = tmp.dirSync({ unsafeCleanup: true });
   }

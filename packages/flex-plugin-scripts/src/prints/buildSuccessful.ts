@@ -10,7 +10,7 @@ import { Bundle } from '../scripts/build';
 export default (bundles: Bundle[], warnings?: string[]): void => {
   if (warnings && warnings.length) {
     const pkgName = logger.colors.yellow.bold(getPaths().app.name);
-    logger.error(`Plugin ${pkgName} was successfully compiled with some warnings.`);
+    logger.error(`\nPlugin ${pkgName} was successfully compiled with some warnings.`);
     logger.newline();
     warnings.forEach((warning, index) => {
       const title = logger.colors.bold(`Warning ${index + 1}`);

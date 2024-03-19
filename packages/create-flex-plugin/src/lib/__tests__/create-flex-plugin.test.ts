@@ -1,12 +1,13 @@
 import fs from 'fs';
 
-import { logger, FlexPluginError } from '@twilio/flex-dev-utils';
+import { logger, FlexPluginError, Telemetry } from '@twilio/flex-dev-utils';
 import * as fsScripts from '@twilio/flex-dev-utils/dist/fs';
 
 import * as createFlexPluginScripts from '../create-flex-plugin';
 import * as commands from '../commands';
 
 jest.mock('@twilio/flex-dev-utils/dist/logger/lib/logger');
+jest.mock('@twilio/flex-dev-utils/dist/telemetry/lib/telemetry');
 jest.mock('../../prints/finalMessage');
 
 describe('create-flex-plugin', () => {
@@ -138,6 +139,22 @@ describe('create-flex-plugin', () => {
 
       scaffold.mockRestore();
       install.mockRestore();
+    });
+  });
+
+  describe('track function', () => {
+    it('calls Telemetry.track with correct arguments', () => {
+      const mockTimeTaken = 123;
+      const mockConfig = {
+        accountSid: 'AC123456789',
+        pluginScriptsVersion: '1.0.0',
+        name: 'TestPlugin',
+        flexSdkVersion: '1.24.0',
+        typescript: true,
+      };
+
+      createFlexPluginScripts.track(mockTimeTaken, mockConfig as any);
+      expect(Telemetry).toHaveBeenCalledTimes(1);
     });
   });
 

@@ -177,7 +177,7 @@ describe('logger', () => {
     logger.debug('var1', 'var2');
 
     expect(info).toHaveBeenCalledTimes(1);
-    expect(info).toHaveBeenCalledWith('var1 var2');
+    expect(info).toHaveBeenCalledWith('[DEBUG] var1 var2');
   });
 
   it('should not call debug if debug is not set', () => {
@@ -350,7 +350,7 @@ describe('logger', () => {
       instance.debug('var1', 'var2');
 
       expect(info).toHaveBeenCalledTimes(1);
-      expect(info).toHaveBeenCalledWith('var1 var2');
+      expect(info).toHaveBeenCalledWith('[DEBUG] var1 var2');
       expect(env.isDebug).not.toHaveBeenCalled();
     });
 
@@ -510,6 +510,12 @@ describe('logger', () => {
         instance._log({ level: 'error', args: ['blah'] });
         expect(error).toHaveBeenCalledTimes(1);
       });
+    });
+  });
+  describe('linkText', () => {
+    it('should link text', () => {
+      const linkedText = logger.linkText('Hello', 'https://example.com');
+      expect(linkedText).toContain('Hello');
     });
   });
 });

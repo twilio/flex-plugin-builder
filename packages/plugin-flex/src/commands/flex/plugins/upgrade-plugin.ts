@@ -597,4 +597,11 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
 
     return semver.coerce(pkg)?.major;
   }
+
+  /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginsUpgradePlugin.topicName;
+  }
 }

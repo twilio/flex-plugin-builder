@@ -11,6 +11,8 @@ import {
   semver,
   ReleaseType,
   confirm,
+  choose,
+  logger,
 } from '@twilio/flex-dev-utils';
 import { getPaths } from '@twilio/flex-dev-utils/dist/fs';
 import { PluginResource } from '@twilio/flex-plugins-api-client';
@@ -20,6 +22,7 @@ import * as flags from '../../../utils/flags';
 import { createDescription, instanceOf } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import ServerlessClient from '../../../clients/ServerlessClient';
+import { ValidateResult } from './validate';
 
 interface ValidatePlugin {
   currentVersion: string;
@@ -46,6 +49,11 @@ export const parseVersionInput = (input: string): string => {
 const baseFlags = { ...FlexPlugin.flags };
 // @ts-ignore
 delete baseFlags.json;
+
+enum Options {
+  Deploy = 'deploy',
+  Fix = 'fix',
+}
 
 /**
  * Builds and then deploys the Flex Plugin
@@ -87,10 +95,20 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       description: FlexPluginsDeploy.topic.flags.description,
       max: 500,
     }),
+    option: flags.string({
+      description: FlexPluginsDeploy.topic.flags.option,
+      options: [Options.Deploy, Options.Fix],
+      hidden: true,
+    }),
   };
 
   // @ts-ignore
   public _flags: OutputFlags<typeof FlexPluginsDeploy.flags>;
+
+  public options = {
+    [Options.Fix]: '1. Go back and fix these issues now (recommended)',
+    [Options.Deploy]: '2. Continue with the deployment, understanding the risks.',
+  };
 
   // @ts-ignore
   private prints;
@@ -119,45 +137,93 @@ export default class FlexPluginsDeploy extends FlexPlugin {
 
     const name = `**${this.pkg.name}**`;
 
-    await progress(`Validating deployment of plugin ${name}`, async () => this.validatePlugin(), false);
     await progress(
-      `Compiling a production build of ${name}`,
-      async () => {
-        await this.runScript('pre-script-check', args);
-        const buildArgs = [...args];
-        if (this.nextVersion) {
-          buildArgs.push('--version', this.nextVersion);
-        }
-        return this.runScript('build', [...buildArgs]);
+      `Verifying plugin version`,
+      async (): Promise<void> => {
+        await this.validatePlugin();
       },
       false,
     );
 
-    const hasCollisionAndOverwrite = await this.hasCollisionAndOverwrite();
-    if (hasCollisionAndOverwrite) {
-      args.push('--overwrite');
+    const { violations, vtime, error }: ValidateResult = await progress(
+      `Validating plugin ${name}`,
+      async (): Promise<{
+        violations: string[];
+        vtime: number;
+        error: {
+          message: string;
+          timedOut: boolean;
+        };
+      }> => {
+        return this.runScript('validate', ['--deploy']);
+      },
+    );
+
+    if (error) {
+      const err = error.timedOut
+        ? 'Plugin validation timed out. Note: This may be an enterprise firewall issue.'
+        : 'Unable to validate the plugin at the moment.';
+      logger.error(err);
+      logger.warning('Continuing to deploy');
     }
 
-    await _verifyFlexUIConfiguration();
-    const deployedData: DeployResult = await progress(
-      `Uploading ${name}`,
-      async () => this.runScript('deploy', [...this.scriptArgs, ...args]),
-      false,
-    );
-    await progress(`Registering plugin ${name} with Plugins API`, async () => this.registerPlugin(), false);
-    const pluginVersion: PluginVersionResource = await progress(
-      `Registering version **v${deployedData.nextVersion}** with Plugins API`,
-      async () => this.registerPluginVersion(deployedData),
-      false,
-    );
+    let shouldContinue = this._flags.option === Options.Deploy || violations.length === 0;
 
-    /* c8 ignore next */
-    this.prints.deploySuccessful(
-      this.pkg.name,
-      pluginVersion.private ? 'private' : 'public',
-      deployedData,
-      this.argv.includes('--profile') ? this.currentProfile.id : null,
-    );
+    if (!shouldContinue && this._flags.option !== Options.Fix) {
+      const choice = await choose(
+        {
+          name: 'deployment',
+          message: 'Ignoring these issues could lead to unstable or unexpected behavior. Would you like to:',
+          type: 'list',
+        },
+        Object.values(this.options),
+      );
+      shouldContinue = choice === this.options[Options.Deploy];
+    }
+
+    if (shouldContinue) {
+      await progress(
+        `Compiling a production build of ${name}`,
+        async () => {
+          await this.runScript('pre-script-check', args);
+          const buildArgs = [...args];
+          if (this.nextVersion) {
+            buildArgs.push('--version', this.nextVersion);
+          }
+          return this.runScript('build', [...buildArgs]);
+        },
+        false,
+      );
+
+      const hasCollisionAndOverwrite = await this.hasCollisionAndOverwrite();
+      if (hasCollisionAndOverwrite) {
+        args.push('--overwrite');
+      }
+
+      await _verifyFlexUIConfiguration();
+      const deployedData: DeployResult = await progress(
+        `Uploading ${name}`,
+        async () => this.runScript('deploy', [...this.scriptArgs, ...args]),
+        false,
+      );
+      await progress(`Registering plugin ${name} with Plugins API`, async () => this.registerPlugin(), false);
+      const pluginVersion: PluginVersionResource = await progress(
+        `Registering version **v${deployedData.nextVersion}** with Plugins API`,
+        async () => this.registerPluginVersion(deployedData),
+        false,
+      );
+
+      /* c8 ignore next */
+      this.prints.deploySuccessful(
+        this.pkg.name,
+        pluginVersion.private ? 'private' : 'public',
+        deployedData,
+        this.argv.includes('--profile') ? this.currentProfile.id : null,
+      );
+      this.telemetryProperties = { violations, vtime: Math.round(vtime), error, deployed: 1 };
+    } else {
+      this.telemetryProperties = { violations, vtime: Math.round(vtime), error, deployed: 0 };
+    }
   }
 
   /**
@@ -264,7 +330,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
         }
 
         return;
-      } catch (e) {
+      } catch (e: any) {
         if (!instanceOf(e, TwilioCliError)) {
           throw e;
         }
@@ -309,5 +375,12 @@ export default class FlexPluginsDeploy extends FlexPlugin {
    */
   get checkCompatibility(): boolean {
     return true;
+  }
+
+  /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginsDeploy.topicName;
   }
 }

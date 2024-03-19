@@ -133,4 +133,11 @@ export default class FlexPluginsRelease extends CreateConfiguration {
   async createRelease(configurationSid: string): Promise<Release> {
     return this.pluginsApiToolkit.release({ configurationSid });
   }
+
+  /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginsRelease.topicName;
+  }
 }

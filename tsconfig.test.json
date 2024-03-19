@@ -2,5 +2,8 @@
   "extends": "./tsconfig.json",
   "files": [
     "./packages/flex-plugin-utils-jest/dist/index.d.ts"
-  ]
+  ],
+  "compilerOptions": {
+     "noImplicitAny": false,
+  }
 }

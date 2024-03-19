@@ -83,4 +83,11 @@ export default class FlexPluginsDescribeRelease extends InformationFlexPlugin<De
       this._logger.newline();
     });
   }
+
+  /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginsDescribeRelease.topicName;
+  }
 }

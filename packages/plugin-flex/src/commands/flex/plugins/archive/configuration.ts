@@ -45,4 +45,11 @@ export default class FlexPluginsArchiveConfiguration extends ArchiveResource<Con
   getResourceType(): string {
     return 'Flex Configuration';
   }
+
+  /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginsArchiveConfiguration.topicName;
+  }
 }

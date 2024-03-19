@@ -63,4 +63,11 @@ export default class FlexPluginsDescribeConfiguration extends InformationFlexPlu
       this._logger.newline();
     });
   }
+
+  /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginsDescribeConfiguration.topicName;
+  }
 }

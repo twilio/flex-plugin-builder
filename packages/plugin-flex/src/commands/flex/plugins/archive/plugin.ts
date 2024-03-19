@@ -62,6 +62,13 @@ export default class FlexPluginsArchivePlugin extends ArchiveResource<Plugin> {
   }
 
   /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginsArchivePlugin.topicName;
+  }
+
+  /**
    * Archives the resource on flex-plugins-api service
    * @private
    */

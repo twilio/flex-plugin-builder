@@ -44,26 +44,32 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`twilio flex:plugins:archive:configuration`](#twilio-flexpluginsarchiveconfiguration)
-* [`twilio flex:plugins:archive:plugin`](#twilio-flexpluginsarchiveplugin)
-* [`twilio flex:plugins:archive:plugin-version`](#twilio-flexpluginsarchiveplugin-version)
-* [`twilio flex:plugins:build`](#twilio-flexpluginsbuild)
-* [`twilio flex:plugins:create NAME`](#twilio-flexpluginscreate-name)
-* [`twilio flex:plugins:create-configuration`](#twilio-flexpluginscreate-configuration)
-* [`twilio flex:plugins:deploy`](#twilio-flexpluginsdeploy)
-* [`twilio flex:plugins:describe:configuration`](#twilio-flexpluginsdescribeconfiguration)
-* [`twilio flex:plugins:describe:plugin`](#twilio-flexpluginsdescribeplugin)
-* [`twilio flex:plugins:describe:plugin-version`](#twilio-flexpluginsdescribeplugin-version)
-* [`twilio flex:plugins:describe:release`](#twilio-flexpluginsdescriberelease)
-* [`twilio flex:plugins:diff ID1 [ID2]`](#twilio-flexpluginsdiff-id1-id2)
-* [`twilio flex:plugins:list:configurations`](#twilio-flexpluginslistconfigurations)
-* [`twilio flex:plugins:list:plugin-versions`](#twilio-flexpluginslistplugin-versions)
-* [`twilio flex:plugins:list:plugins`](#twilio-flexpluginslistplugins)
-* [`twilio flex:plugins:list:releases`](#twilio-flexpluginslistreleases)
-* [`twilio flex:plugins:release`](#twilio-flexpluginsrelease)
-* [`twilio flex:plugins:start`](#twilio-flexpluginsstart)
-* [`twilio flex:plugins:test`](#twilio-flexpluginstest)
-* [`twilio flex:plugins:upgrade-plugin`](#twilio-flexpluginsupgrade-plugin)
+- [@twilio-labs/plugin-flex](#twilio-labsplugin-flex)
+- [Requirements](#requirements)
+  - [Install the Twilio CLI](#install-the-twilio-cli)
+- [Usage](#usage)
+- [Commands](#commands)
+  - [`twilio flex:plugins:archive:configuration`](#twilio-flexpluginsarchiveconfiguration)
+  - [`twilio flex:plugins:archive:plugin`](#twilio-flexpluginsarchiveplugin)
+  - [`twilio flex:plugins:archive:plugin-version`](#twilio-flexpluginsarchiveplugin-version)
+  - [`twilio flex:plugins:build`](#twilio-flexpluginsbuild)
+  - [`twilio flex:plugins:create NAME`](#twilio-flexpluginscreate-name)
+  - [`twilio flex:plugins:create-configuration`](#twilio-flexpluginscreate-configuration)
+  - [`twilio flex:plugins:deploy`](#twilio-flexpluginsdeploy)
+  - [`twilio flex:plugins:describe:configuration`](#twilio-flexpluginsdescribeconfiguration)
+  - [`twilio flex:plugins:describe:plugin`](#twilio-flexpluginsdescribeplugin)
+  - [`twilio flex:plugins:describe:plugin-version`](#twilio-flexpluginsdescribeplugin-version)
+  - [`twilio flex:plugins:describe:release`](#twilio-flexpluginsdescriberelease)
+  - [`twilio flex:plugins:diff ID1 [ID2]`](#twilio-flexpluginsdiff-id1-id2)
+  - [`twilio flex:plugins:list:configurations`](#twilio-flexpluginslistconfigurations)
+  - [`twilio flex:plugins:list:plugin-versions`](#twilio-flexpluginslistplugin-versions)
+  - [`twilio flex:plugins:list:plugins`](#twilio-flexpluginslistplugins)
+  - [`twilio flex:plugins:list:releases`](#twilio-flexpluginslistreleases)
+  - [`twilio flex:plugins:release`](#twilio-flexpluginsrelease)
+  - [`twilio flex:plugins:start`](#twilio-flexpluginsstart)
+  - [`twilio flex:plugins:test`](#twilio-flexpluginstest)
+  - [`twilio flex:plugins:upgrade-plugin`](#twilio-flexpluginsupgrade-plugin)
+  - [`twilio flex:plugins:validate`](#twilio-flexpluginsvalidate)
 
 ## `twilio flex:plugins:archive:configuration`
 
@@ -511,4 +517,21 @@ OPTIONS
 ```
 
 _See code: [dist/commands/flex/plugins/upgrade-plugin.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/upgrade-plugin.js)_
+
+## `twilio flex:plugins:validate`
+
+Validates the Flex plugin by looking for any issues that could potentially break the plugin when in use. Generates a report with the identified issues, if any. This command needs to be invoked inside a plugin directory.
+
+```
+USAGE
+  $ twilio flex:plugins:validate
+
+OPTIONS
+  -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -p, --profile=profile            Shorthand identifier for your profile.
+  --clear-terminal                 Clears the terminal before running the command.
+  --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
+```
+
+_See code: [dist/commands/flex/plugins/validate.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/validate.js)_
 <!-- commandsstop -->

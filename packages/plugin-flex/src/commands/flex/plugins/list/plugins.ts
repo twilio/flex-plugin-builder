@@ -47,6 +47,13 @@ export default class FlexPluginsListPlugins extends InformationFlexPlugin<ListPl
     inactivePlugins.forEach(this._print.bind(this));
   }
 
+  /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginsListPlugins.topicName;
+  }
+
   /* c8 ignore next */
   private _print(plugin: ListPlugins) {
     this.printVersion(plugin.name);

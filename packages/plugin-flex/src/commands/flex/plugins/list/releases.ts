@@ -43,4 +43,11 @@ export default class FlexPluginsListPlugins extends InformationFlexPlugin<ListRe
       this._logger.newline();
     });
   }
+
+  /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginsListPlugins.topicName;
+  }
 }
