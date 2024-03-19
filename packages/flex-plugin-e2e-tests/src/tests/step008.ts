@@ -1,11 +1,10 @@
 /* eslint-disable import/no-unused-modules */
 import { replaceInFile } from 'replace-in-file';
-import semver from 'semver';
 import { logger } from '@twilio/flex-dev-utils';
 
 import { assertion, joinPath, spawn, api } from '../utils';
 import { TestSuite, TestParams } from '../core';
-import { codeWithViolation, originalCode } from './step007';
+import { WARNING_REGEX, codeWithViolation, originalCode } from './step007';
 
 // Deploy plugin
 const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<void> => {
@@ -49,10 +48,10 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
     },
   );
 
-  let noWarnings: number = result.stdout.match(/Warning:/)?.length || 0;
+  let noWarnings: number = result.stdout.match(WARNING_REGEX)?.length || 0;
 
   // Should display violations
-  assertion.equal(noWarnings, 1);
+  assertion.equal(noWarnings, 2);
 
   // Should not deploy the plugin
   assertion.not.stringContains(result.stdout, 'Next Steps');
@@ -79,10 +78,10 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
     },
   );
 
-  noWarnings = result.stdout.match(/Warning:/)?.length || 0;
+  noWarnings = result.stdout.match(WARNING_REGEX)?.length || 0;
 
   // Should display violations
-  assertion.equal(noWarnings, 1);
+  assertion.equal(noWarnings, 2);
 
   // Should deploy the plugin
   assertion.stringContains(result.stdout, 'Next Steps');
@@ -108,7 +107,7 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
   const resource = await api.getLatestPluginVersion(plugin.name);
   plugin.version = resource?.version || '0.0.2'; // 0.0.2 is the default for first time plugin deployment in a Flex account
 
-  noWarnings = result.stdout.match(/Warning:/)?.length || 0;
+  noWarnings = result.stdout.match(WARNING_REGEX)?.length || 0;
 
   // Should display 0 violations
   assertion.equal(noWarnings, 0);

@@ -6,7 +6,8 @@ import { assertion, joinPath, spawn } from '../utils';
 import { TestSuite, TestParams } from '../core';
 
 export const originalCode = 'const [isOpen, setIsOpen] = useState(true);';
-export const codeWithViolation = `manager.store.getState().flex.session.loginHandler.on('tokenUpdated', (token) => {})\n  const [isOpen, setIsOpen] = useState(true);`;
+export const codeWithViolation = `const config = {\n    colorTheme: {\n      baseLight: \"white\",\n    },\n    sdkOptions: {\n      voice: {\n        iceServers: [],\n      },\n    },\n  };\n  const [isOpen, setIsOpen] = useState(true);`;
+export const WARNING_REGEX = /(Warning:)/;
 
 // Validate plugin
 const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<void> => {
@@ -26,9 +27,9 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
     cwd: plugin.dir,
   });
 
-  let noWarnings: number = result.stdout.match(/Warning:/)?.length || 0;
+  let noWarnings: number = result.stdout.match(WARNING_REGEX)?.length || 0;
 
-  assertion.equal(noWarnings, 1);
+  assertion.equal(noWarnings, 2);
 
   await replaceInFile({
     files: joinPath(plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
@@ -41,7 +42,7 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
   result = await spawn('twilio', ['flex:plugins:validate', '-l', 'debug', ...config.regionFlag], {
     cwd: plugin.dir,
   });
-  noWarnings = result.stdout.match(/Warning:/)?.length || 0;
+  noWarnings = result.stdout.match(WARNING_REGEX)?.length || 0;
 
   assertion.equal(noWarnings, 0);
 };
