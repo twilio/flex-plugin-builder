@@ -42,6 +42,7 @@ describe('ValidateScript', () => {
         file: '/path/to/file1.ts',
         warnings: [
           {
+            id: 'wrong_method',
             name: 'Wrong method call',
             location: {
               line: 23,
@@ -62,6 +63,7 @@ describe('ValidateScript', () => {
         file: '/path/to/package.json',
         warnings: [
           {
+            id: 'wrong_version',
             name: 'Wrong version',
             warningMessage: 'Do not use version 1.2.0',
             recommendation: {

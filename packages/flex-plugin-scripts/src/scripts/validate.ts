@@ -136,10 +136,10 @@ const validate = async (
   return {
     violations: [
       ...report.api_compatibility.reduce(
-        (acc: string[], { warnings }) => [...acc, ...warnings.map(({ name }) => name)],
+        (acc: string[], { warnings }) => [...acc, ...warnings.map(({ id }) => id)],
         [],
       ), // API Compatibility Violations
-      ...(report.version_compatibility[0]?.warnings.map(({ name }) => name) || []), // Version Compatibility Violations
+      ...(report.version_compatibility[0]?.warnings.map(({ id }) => id) || []), // Version Compatibility Violations
     ],
     vtime: end - start,
   };

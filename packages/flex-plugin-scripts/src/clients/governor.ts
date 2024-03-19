@@ -6,6 +6,7 @@ import { HttpClient, FormData } from '@twilio/flex-dev-utils';
 export interface Warning {
   file: string;
   warnings: {
+    id: string;
     name: string;
     warningMessage: string;
     location?: {
@@ -45,7 +46,7 @@ export default class GovernorClient {
 
   constructor(username: string, password: string) {
     this.http = new HttpClient({
-      baseURL: `https://flex-plugin-upload.twilio.com/${GovernorClient.version}/Plugin`,
+      baseURL: `https://flex-plugin-upload.us1.twilio.com/${GovernorClient.version}/Plugin`,
       auth: { username, password },
       supportProxy: true,
     });
