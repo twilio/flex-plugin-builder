@@ -60,7 +60,7 @@ jobs:
     env:
       BRANCH: ${{ inputs.BRANCH }}
       NPM_IGNORE_PREFIX: ${{ inputs.NPM_IGNORE_PREFIX }}
-      PACKAGE_VERSION: ${{ inputs.PACKAGE_VERSION }}
+      PACKAGE_VERSION: 6.3.3-alpha.202403191236
       FLEX_UI_VERSION: ${{ inputs.FLEX_UI_VERSION }}
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
       CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
@@ -73,6 +73,7 @@ jobs:
       CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
       TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
       TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+      NODE_OPTIONS: --max-old-space-size=8192
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
