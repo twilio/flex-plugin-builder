@@ -60,7 +60,7 @@ jobs:
     env:
       BRANCH: ${{ inputs.BRANCH }}
       NPM_IGNORE_PREFIX: ${{ inputs.NPM_IGNORE_PREFIX }}
-      PACKAGE_VERSION: alpha
+      PACKAGE_VERSION: 6.3.3-alpha.202403191418
       FLEX_UI_VERSION: ${{ inputs.FLEX_UI_VERSION }}
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
       CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
