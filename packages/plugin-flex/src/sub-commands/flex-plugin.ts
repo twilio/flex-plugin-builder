@@ -49,6 +49,10 @@ import { getTopic, OclifConfig, OClifTopic } from '../utils';
 interface FlexPluginOption {
   strict: boolean;
   runInDirectory: boolean;
+  /**
+   * If set to `true`, runs the telemetry track method async in a daemon process
+   */
+  runTelemetryAsync: boolean;
 }
 
 const flexPluginScripts = '@twilio/flex-plugin-scripts';
@@ -132,6 +136,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   private static defaultOptions: FlexPluginOption = {
     strict: true,
     runInDirectory: true,
+    runTelemetryAsync: true,
   };
 
   // @ts-ignore
@@ -487,7 +492,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       flexConfigOptions,
     );
     this._serverlessClient = new ServerlessClient(this.twilioClient.serverless.v1.services, this._logger);
-    this._telemetry = new Telemetry();
+    this._telemetry = new Telemetry({ runAsync: this.opts.runTelemetryAsync });
 
     if (!this.isJson) {
       this._logger.notice(`Using profile **${this.currentProfile.id}** (${this.currentProfile.accountSid})`);
@@ -716,7 +721,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    * @param properties additional properties for track events
    */
   trackTopic(timeTaken: number, properties: Record<string, any>): void {
-    const combinedProperty = {
+    properties = {
       cliVersion: this.cliPkg.version,
       command: this.getTopicName().startsWith(COMMAND_PREFIX)
         ? this.getTopicName().slice(COMMAND_PREFIX.length)
@@ -724,7 +729,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       xtime: Math.round(timeTaken),
       ...properties,
     };
-    this._telemetry.track(TRACK_EVENT_NAME, this.currentProfile.accountSid, combinedProperty);
+    this._telemetry.track(TRACK_EVENT_NAME, this.currentProfile.accountSid, properties);
   }
 
   /**

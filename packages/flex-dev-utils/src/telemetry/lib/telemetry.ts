@@ -2,8 +2,9 @@ import * as os from 'os';
 import { join } from 'path';
 
 import daemonizeProcess from 'daemonize-process';
+import Analytics, { TrackParams } from '@segment/analytics-node';
 
-import { PRODUCT, SOURCE } from './constants';
+import { PRODUCT, SOURCE, DEV_VALUE, PROD_VALUE, STAGE_VALUE } from './constants';
 import * as fs from '../../fs';
 import { env } from '../../env';
 
@@ -29,14 +30,39 @@ interface CommonProperties {
   flexUiVersion: string;
 }
 
+const getKey = (): string => {
+  const region: string = env.getRegion();
+  if (region === 'stage') {
+    return STAGE_VALUE;
+  } else if (region === 'dev') {
+    return DEV_VALUE;
+  }
+  return PROD_VALUE;
+};
+
+export const track = (payload: TrackParams): void => {
+  const analytics = new Analytics({ writeKey: getKey() });
+  analytics.track(payload);
+};
+
+type TelemetryOpts = {
+  /**
+   * If set to `true` calls Segment APIs in a daemon process asynchronously
+   */
+  runAsync?: boolean;
+};
+
 export default class Telemetry {
   private commonProperties: CommonProperties;
+
+  private runAsync: boolean;
 
   /**
    * Creates an analytics instance
    *
    */
-  constructor() {
+  constructor({ runAsync = true }: TelemetryOpts = {}) {
+    this.runAsync = runAsync;
     const { env } = process;
     const language = env.LANG || env.LANGUAGE || env.LC_ALL || env.LC_MESSAGES;
     let pluginName = 'n/a';
@@ -73,7 +99,7 @@ export default class Telemetry {
    * @param properties Event properties
    */
   public track(event: string, accountSid: string, properties?: Record<string, any>): void {
-    const traceData = {
+    const payload: TrackParams = {
       userId: accountSid,
       event,
       properties: {
@@ -85,10 +111,14 @@ export default class Telemetry {
 
     if (!env.isCI()) {
       // Fork a new process for the daemon
-      daemonizeProcess({
-        script: join(__dirname, 'track.js'),
-        arguments: [JSON.stringify(traceData)],
-      });
+      if (this.runAsync) {
+        daemonizeProcess({
+          script: join(__dirname, 'track.js'),
+          arguments: [JSON.stringify(payload)],
+        });
+      } else {
+        track(payload);
+      }
     }
   }
 

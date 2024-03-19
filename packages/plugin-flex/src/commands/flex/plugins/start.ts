@@ -45,7 +45,7 @@ export default class FlexPluginsStart extends FlexPlugin {
   public _flags: OutputFlags<typeof FlexPluginsStart.flags>;
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
-    super(argv, config, secureStorage, { strict: false });
+    super(argv, config, secureStorage, { strict: false, runTelemetryAsync: false });
   }
 
   async init(): Promise<void> {
