@@ -41,7 +41,7 @@ const getKey = (): string => {
 };
 
 export const track = (payload: TrackParams): void => {
-  const analytics = new Analytics({ writeKey: getKey() });
+  const analytics = new Analytics({ writeKey: getKey(), flushAt: 1 });
   analytics.track(payload);
 };
 
