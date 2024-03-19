@@ -18,6 +18,7 @@ import ServerlessClient from '../../../../clients/ServerlessClient';
 jest.mock('@twilio/flex-dev-utils/dist/credentials');
 jest.mock('@twilio/flex-plugin-scripts/dist/utils/runtime');
 jest.mock('@twilio/flex-dev-utils/dist/fs');
+jest.mock('@twilio/flex-dev-utils/dist/telemetry/lib/telemetry');
 jest.mock('@twilio/flex-dev-utils/dist/updateNotifier');
 jest.mock('@twilio/flex-dev-utils/dist/spawn');
 

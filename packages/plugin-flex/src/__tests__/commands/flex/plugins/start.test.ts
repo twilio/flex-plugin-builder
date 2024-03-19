@@ -18,6 +18,7 @@ const flexUiSource = 'flex-ui-source';
 jest.mock('@twilio/flex-dev-utils/dist/fs');
 jest.mock('@twilio/flex-dev-utils/dist/updateNotifier');
 jest.mock('@twilio/flex-dev-utils/dist/spawn');
+jest.mock('@twilio/flex-dev-utils/dist/telemetry/lib/telemetry');
 
 describe('Commands/FlexPluginsStart', () => {
   const name = 'plugin-test';

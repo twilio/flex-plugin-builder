@@ -22,10 +22,13 @@ import {
   Logger,
   NotImplementedError,
   TwilioCliError,
+  Telemetry,
   env,
   semver,
   updateNotifier,
   chalk,
+  TRACK_EVENT_NAME,
+  COMMAND_PREFIX,
 } from '@twilio/flex-dev-utils';
 import { spawn, SpawnPromise } from '@twilio/flex-dev-utils/dist/spawn';
 import dayjs from 'dayjs';
@@ -156,6 +159,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   // Contains all the flags that are passed after --, i.e. `twilio flex:plugins:foo -- --arg1 --arg2
   protected internalScriptArgs: string[];
 
+  protected _telemetryProperties: Record<string, any>;
+
   private _pluginsApiToolkit?: FlexPluginsAPIToolkit;
 
   private _pluginsClient?: PluginsClient;
@@ -169,6 +174,8 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   private _flexConfigurationClient?: FlexConfigurationClient;
 
   private _serverlessClient?: ServerlessClient;
+
+  private _telemetry!: Telemetry;
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage, opts: Partial<FlexPluginOption>) {
     super(argv, config, secureStorage);
@@ -199,6 +206,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     }
     // TODO: get rid of scriptArgs and use argv instead
     this.scriptArgs = process.argv.slice(3);
+    this._telemetryProperties = {};
   }
 
   /**
@@ -387,6 +395,18 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   }
 
   /**
+   * Gets an instantiated {@link Telemetry}
+   * @returns {Telemetry}
+   */
+  get telemetry(): Telemetry {
+    if (!this._telemetry) {
+      throw new TwilioCliError('telementry is not initialized yet');
+    }
+
+    return this._telemetry;
+  }
+
+  /**
    * Returns the flex-ui version from the plugin
    */
   get flexUIVersion(): number {
@@ -397,6 +417,10 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     }
 
     return semver.coerce(dep)?.major || FlexPlugin.DEFAULT_FLEX_UI_VERSION;
+  }
+
+  set telemetryProperties(properties: Record<string, any>) {
+    this._telemetryProperties = { ...properties };
   }
 
   async init(): Promise<void> {
@@ -463,15 +487,21 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       flexConfigOptions,
     );
     this._serverlessClient = new ServerlessClient(this.twilioClient.serverless.v1.services, this._logger);
+    this._telemetry = new Telemetry();
 
     if (!this.isJson) {
       this._logger.notice(`Using profile **${this.currentProfile.id}** (${this.currentProfile.accountSid})`);
       this._logger.newline();
     }
+    const start = performance.now();
     const result = await this.doRun();
+    const end = performance.now();
+
     if (result && this.isJson && typeof result === 'object') {
       this._logger.info(JSON.stringify(result));
     }
+
+    this.trackTopic(end - start, this._telemetryProperties);
   }
 
   /**
@@ -626,6 +656,14 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   }
 
   /**
+   * Returns actual topicName
+   * @returns {string}
+   */
+  getTopicName(): string {
+    return FlexPlugin.topicName;
+  }
+
+  /**
    * Returns the error message text to display when the command is run outside of the plugin folder
    */
   get pluginFolderErrorMessage(): string {
@@ -670,6 +708,23 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   get _prints() {
     return prints(this._logger);
+  }
+
+  /**
+   * Keep tracks of the command
+   * @param timeTaken xtime for the command
+   * @param properties additional properties for track events
+   */
+  trackTopic(timeTaken: number, properties: Record<string, any>): void {
+    const combinedProperty = {
+      cliVersion: this.cliPkg.version,
+      command: this.getTopicName().startsWith(COMMAND_PREFIX)
+        ? this.getTopicName().slice(COMMAND_PREFIX.length)
+        : this.getTopicName(),
+      xtime: Math.round(timeTaken),
+      ...properties,
+    };
+    this._telemetry.track(TRACK_EVENT_NAME, this.currentProfile.accountSid, combinedProperty);
   }
 
   /**

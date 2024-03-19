@@ -67,4 +67,11 @@ export default class FlexPluginsDescribePluginVersion extends InformationFlexPlu
     this.printHeader('Private', version.isPrivate);
     this.printHeader('Created', version.dateCreated);
   }
+
+  /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginsDescribePluginVersion.topicName;
+  }
 }

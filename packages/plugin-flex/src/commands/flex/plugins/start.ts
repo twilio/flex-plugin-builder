@@ -225,6 +225,13 @@ export default class FlexPluginsStart extends FlexPlugin {
   }
 
   /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginsStart.topicName;
+  }
+
+  /**
    * Returns true if we are running multiple plugins
    * @private
    */

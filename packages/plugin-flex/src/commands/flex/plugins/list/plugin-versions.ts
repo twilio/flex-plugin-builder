@@ -66,4 +66,11 @@ export default class FlexPluginsListPluginVersions extends InformationFlexPlugin
       this._logger.newline();
     });
   }
+
+  /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginsListPluginVersions.topicName;
+  }
 }

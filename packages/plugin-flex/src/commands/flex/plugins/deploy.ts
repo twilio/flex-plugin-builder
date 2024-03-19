@@ -22,6 +22,7 @@ import * as flags from '../../../utils/flags';
 import { createDescription, instanceOf } from '../../../utils/general';
 import FlexPlugin, { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 import ServerlessClient from '../../../clients/ServerlessClient';
+import { ValidateResult } from './validate';
 
 interface ValidatePlugin {
   currentVersion: string;
@@ -144,7 +145,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       false,
     );
 
-    const { violations, vtime, error } = await progress(
+    const { violations, vtime, error }: ValidateResult = await progress(
       `Validating plugin ${name}`,
       async (): Promise<{
         violations: string[];
@@ -219,6 +220,9 @@ export default class FlexPluginsDeploy extends FlexPlugin {
         deployedData,
         this.argv.includes('--profile') ? this.currentProfile.id : null,
       );
+      this.telemetryProperties = { violations, vtime: Math.round(vtime), error, deployed: 1 };
+    } else {
+      this.telemetryProperties = { violations, vtime: Math.round(vtime), error, deployed: 0 };
     }
   }
 
@@ -371,5 +375,12 @@ export default class FlexPluginsDeploy extends FlexPlugin {
    */
   get checkCompatibility(): boolean {
     return true;
+  }
+
+  /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginsDeploy.topicName;
   }
 }

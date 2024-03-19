@@ -5,6 +5,15 @@ const baseFlags = { ...FlexPlugin.flags };
 // @ts-ignore
 delete baseFlags.json;
 
+export type ValidateResult = {
+  violations: string[];
+  vtime: number;
+  error?: {
+    message: string;
+    timedOut: boolean;
+  };
+};
+
 /**
  * Validates the plugin
  */
@@ -23,7 +32,15 @@ export default class FlexPluginValidate extends FlexPlugin {
    */
   async doRun(): Promise<void> {
     process.env.PERSIST_TERMINAL = 'true';
-    await this.runScript('validate');
+    const { violations, vtime, error }: ValidateResult = (await this.runScript('validate')) as ValidateResult;
+    this.telemetryProperties = { violations, vtime: Math.round(vtime), error, deployed: 0 };
+  }
+
+  /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginValidate.topicName;
   }
 
   /**
