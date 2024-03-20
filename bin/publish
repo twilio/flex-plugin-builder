@@ -41,6 +41,9 @@ if [ "${tag}" == "public" ] && [ "${branch}" != "main" ] ; then
   echo "Public release must be done on the main branch"
   exit 1
 fi
+
+echo "${branch}"
+
 if [ "${tag}" == "beta" ] && [[ ! "${branch}" =~ ^v.-beta$ ]] ; then
   echo "Beta release must be done on the v*-beta branch"
   exit 1
