@@ -5,6 +5,7 @@ import { logger, FlexPluginError, exit, env } from '@twilio/flex-dev-utils';
 import { Request, Response } from 'express-serve-static-core';
 import { FlexConfigurationPlugin, readPluginsJson } from '@twilio/flex-dev-utils/dist/fs';
 import { Configuration } from 'webpack-dev-server';
+import cookieParser from 'cookie-parser';
 
 import { remotePluginNotFound } from '../prints';
 
@@ -115,7 +116,16 @@ export const _getRemotePlugins = async (token: string, version: string | null | 
         const data: Buffer[] = [];
 
         res.on('data', (chunk) => data.push(chunk));
-        res.on('end', () => resolve(JSON.parse(Buffer.concat(data).toString()).filter((p: Plugin) => p.phase >= 3)));
+        res.on('end', () => {
+          const filteredPlugins = JSON.parse(Buffer.concat(data).toString()).filter((p: Plugin) => p.phase >= 3);
+          const pluginsList = filteredPlugins.map(
+            (p: Plugin): Plugin => ({
+              ...p,
+              src: p.src.match(/^https.+\.twilio.com(\/.+)$/)?.[1] || p.src,
+            }),
+          );
+          resolve(pluginsList);
+        });
       })
       .on('error', reject)
       .end();
@@ -179,10 +189,12 @@ export const _startServer = (
   config: StartServerConfig,
   onRemotePlugin: OnRemotePlugins,
 ) => {
-  const responseHeaders = _getHeaders();
-
   return async (req: Request, res: Response): Promise<void> => {
     const { headers, method } = req;
+    const jweToken = headers['x-flex-jwe'] as string;
+    const flexVersion = headers['x-flex-version'] as string;
+
+    const responseHeaders = _getHeaders();
 
     if (method === 'OPTIONS') {
       res.writeHead(200, responseHeaders);
@@ -196,8 +208,6 @@ export const _startServer = (
     }
     logger.debug('GET /plugins');
 
-    const jweToken = headers['x-flex-jwe'] as string;
-    const flexVersion = headers['x-flex-version'] as string;
     if (!jweToken) {
       res.writeHead(400, responseHeaders);
       res.end('No X-Flex-JWE was provided');
@@ -232,7 +242,10 @@ export const _startServer = (
           logger.trace('Got remote plugins', remotePlugins);
 
           onRemotePlugin([...versionedPlugins, ...remotePlugins]);
-          res.writeHead(200, responseHeaders);
+          res.writeHead(200, {
+            ...responseHeaders,
+            'Set-Cookie': `flex-jwe=${jweToken}`,
+          });
           res.end(JSON.stringify(_mergePlugins(localPlugins, remotePlugins, versionedPlugins)));
         })
         .catch((err) => {
@@ -241,6 +254,76 @@ export const _startServer = (
         })
     );
   };
+};
+
+const getPluginContent = async (token: string, pluginPath: string): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const headers = {
+      'X-Flex-JWE': token,
+    };
+
+    const options = {
+      hostname: 'flex.twilio.com',
+      port: 443,
+      path: `/plugins/v1${pluginPath}`,
+      method: 'GET',
+      headers,
+    };
+
+    https
+      .request(options, (res) => {
+        const data: Buffer[] = [];
+
+        res.on('data', (chunk) => {
+          data.push(chunk);
+        });
+        res.on('end', () => {
+          resolve(Buffer.concat(data).toString());
+        });
+      })
+      .on('error', reject)
+      .end();
+  });
+
+const _renderServer = async (req: Request, res: Response): Promise<any> => {
+  const { method } = req;
+
+  const jweToken = req.cookies['flex-jwe'] as string;
+  const pluginPath = `${req.url}${req.query}`;
+
+  const responseHeaders = _getHeaders();
+
+  if (method === 'OPTIONS') {
+    res.writeHead(200, responseHeaders);
+    res.end();
+    return;
+  }
+  if (method !== 'GET') {
+    res.writeHead(404, responseHeaders);
+    res.end('Route not found');
+    return;
+  }
+
+  if (!jweToken) {
+    logger.debug('No JWE Token');
+    res.writeHead(400, responseHeaders);
+    res.end('No X-Flex-JWE was provided');
+    return;
+  }
+
+  logger.debug(`GET ${pluginPath}`);
+
+  // eslint-disable-next-line consistent-return
+  return getPluginContent(jweToken, pluginPath)
+    .then((pluginContent) => {
+      logger.trace('Got remote plugin content', pluginContent);
+      res.writeHead(200, responseHeaders);
+      res.end(pluginContent);
+    })
+    .catch((err) => {
+      res.writeHead(500, responseHeaders);
+      res.end(err);
+    });
 };
 
 /**
@@ -279,6 +362,9 @@ export default (
   webpackConfig.before = (app, server) => {
     // @ts-ignore
     serverConfig.port = server.options.port || serverConfig.port;
+    // @ts-ignore
+    app.use(cookieParser());
     app.use('^/plugins$', _startServer(plugins, serverConfig, onRemotePlugin));
+    app.use('^/plugins/v1/', _renderServer);
   };
 };
