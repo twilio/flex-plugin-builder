@@ -47,7 +47,7 @@
     "@oclif/config": "^1.18.1",
     "@oclif/errors": "^1.3.5",
     "@oclif/parser": "^3.8.5",
-    "@twilio/cli-core": "^7.6.1",
+    "@twilio/cli-core": "^7.19.1",
     "@twilio/create-flex-plugin": "6.3.2",
     "@twilio/flex-dev-utils": "6.3.2",
     "@twilio/flex-plugin-scripts": "6.3.2",
@@ -56,7 +56,7 @@
     "lodash.startcase": "^4.4.0",
     "mkdirp": "^1.0.4",
     "package-json": "^7.0.0",
-    "rimraf": "^3.0.2",
+    "rimraf": "^4.0.0",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
