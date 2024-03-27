@@ -87,7 +87,7 @@ describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
       ],
     };
 
-    it('should fail to archive if archiving on plugins-api fails', async (done) => {
+    it('should fail to archive if archiving on plugins-api fails', async () => {
       const err = new Error('some message');
 
       const cmd = await createCmd();
@@ -102,11 +102,10 @@ describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
         expect(archivePluginVersion).toHaveBeenCalledTimes(1);
         expect(archivePluginVersion).toHaveBeenCalledWith({ name: pluginName, version: pluginVersion.version });
         expect(describePluginVersion).not.toHaveBeenCalled();
-        done();
       }
     });
 
-    it('should quit if already archived and no serviceSid is found', async (done) => {
+    it('should quit if already archived and no serviceSid is found', async () => {
       const err = new TwilioApiError(20400, 'Plugin version is already archived.', 400);
 
       const cmd = await createCmd();
@@ -126,11 +125,10 @@ describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
         expect(describePluginVersion).toHaveBeenCalledWith({ name: pluginName, version: pluginVersion.version });
         expect(getServerlessSid).toHaveBeenCalledTimes(1);
         expect(getBuild).not.toHaveBeenCalled();
-        done();
       }
     });
 
-    it('should quit if already archived and no build is found', async (done) => {
+    it('should quit if already archived and no build is found', async () => {
       const err = new TwilioApiError(20400, 'Plugin version is already archived.', 400);
 
       const cmd = await createCmd();
@@ -153,7 +151,6 @@ describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
         expect(getBuild).toHaveBeenCalledTimes(1);
         expect(getBuild).toHaveBeenCalledWith(serviceSid, pluginName);
         expect(createBuildAndDeploy).not.toHaveBeenCalled();
-        done();
       }
     });
 
@@ -172,7 +169,7 @@ describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
       expect(removeServerlessFilesSpy).not.toHaveBeenCalled();
     });
 
-    it('should quit if already archived and files already removed', async (done) => {
+    it('should quit if already archived and files already removed', async () => {
       const err = new TwilioApiError(20400, 'Plugin version is already archived.', 400);
 
       const cmd = await createCmd();
@@ -195,7 +192,6 @@ describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
         expect(getBuild).toHaveBeenCalledTimes(1);
         expect(getBuild).toHaveBeenCalledWith(serviceSid, pluginName);
         expect(createBuildAndDeploy).not.toHaveBeenCalled();
-        done();
       }
     });
 
@@ -296,7 +292,7 @@ describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
       expect(createBuildAndDeploy).toHaveBeenCalledTimes(1);
     });
 
-    it('should fail to remove files on first attempt, but remove on the second attempt', async (done) => {
+    it('should fail to remove files on first attempt, but remove on the second attempt', async () => {
       const cmd = await createCmd();
       mockPluginsApiToolkit(cmd);
 
@@ -322,7 +318,6 @@ describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
         expect(getBuild).toHaveBeenCalledTimes(1);
         expect(getBuild).toHaveBeenCalledWith(serviceSid, pluginName);
         expect(createBuildAndDeploy).toHaveBeenCalledTimes(1);
-        done();
       }
     });
   });

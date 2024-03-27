@@ -31,7 +31,7 @@ describe('toMatchPathContaining', () => {
       expect(path1).not.toMatchPathContaining(path2);
     });
 
-    it('should test match path fail symmetrically', (done) => {
+    it('should test match path fail symmetrically', () => {
       try {
         expect(path1).toMatchPathContaining(path2);
       } catch (e) {
@@ -42,12 +42,10 @@ describe('toMatchPathContaining', () => {
         expect(e.message).toContain('Received');
         expect(e.message).toContain(path1);
         expect(e.message).toContain(path2);
-
-        done();
       }
     });
 
-    it('should test negate match path fail symmetrically', (done) => {
+    it('should test negate match path fail symmetrically', () => {
       try {
         expect(path1).not.toMatchPathContaining(path1);
       } catch (e) {
@@ -56,8 +54,6 @@ describe('toMatchPathContaining', () => {
         expect(e.message).toContain('Expected value not to match');
         expect(e.message).toContain('Received');
         expect(e.message).toContain(path1);
-
-        done();
       }
     });
   });
@@ -71,25 +67,21 @@ describe('toMatchPathContaining', () => {
       expect(path1).not.toEqual(expect.toMatchPathContaining(path2));
     });
 
-    it('should test match path fail symmetrically', (done) => {
+    it('should test match path fail symmetrically', () => {
       try {
         expect(path1).toEqual(expect.toMatchPathContaining(path2));
       } catch (e) {
         expect(e.constructor.name).toEqual('JestAssertionError');
         expect(e.message).toContain(`toMatchPathContaining<${path2}>`);
-
-        done();
       }
     });
 
-    it('should test negate match path fail symmetrically', (done) => {
+    it('should test negate match path fail symmetrically', () => {
       try {
         expect(path1).not.toEqual(expect.toMatchPathContaining(path1Incomplete));
       } catch (e) {
         expect(e.constructor.name).toEqual('JestAssertionError');
         expect(e.message).toContain(`toMatchPathContaining<${path1Incomplete}>`);
-
-        done();
       }
     });
   });

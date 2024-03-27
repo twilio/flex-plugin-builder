@@ -23,14 +23,13 @@ describe('FileClient', () => {
   });
 
   describe('constructor', () => {
-    it('should throw error if invalid sid is provided', (done) => {
+    it('should throw error if invalid sid is provided', () => {
       try {
         // eslint-disable-next-line no-new
         new Test('ZB00000000000000000000000000000000');
       } catch (e) {
         expect(e.message).toContain('is not of type ZS');
         expect(e.message).toContain('ZB00000000000000000000000000000000');
-        done();
       }
     });
 

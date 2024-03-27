@@ -40,14 +40,13 @@ describe('EnvironmentClient', () => {
   });
 
   describe('constructor', () => {
-    it('should fail if incorrect serviceSid is provided', (done) => {
+    it('should fail if incorrect serviceSid is provided', () => {
       try {
         // eslint-disable-next-line no-new
         new EnvironmentClient(baseClient, 'ZF00000000000000000000000000000000');
       } catch (e) {
         expect(e.message).toContain('is not of type ZS');
         expect(e.message).toContain('ZF00000000000000000000000000000000');
-        done();
       }
     });
   });
@@ -86,7 +85,7 @@ describe('EnvironmentClient', () => {
       create.mockRestore();
     });
 
-    it('should not find environment, and throw an exception', async (done) => {
+    it('should not find environment, and throw an exception', async () => {
       const client = new EnvironmentClient(baseClient, serviceSid);
       // @ts-ignore
       const list = jest.spyOn(client, 'list').mockResolvedValue(resourceWithNoMatch);
@@ -97,21 +96,18 @@ describe('EnvironmentClient', () => {
       } catch (e) {
         list.mockRestore();
         create.mockRestore();
-
-        done();
       }
     });
   });
 
   describe('remove', () => {
-    it('should warn if incorrect sid is provided to remove', async (done) => {
+    it('should warn if incorrect sid is provided to remove', async () => {
       const client = new EnvironmentClient(baseClient, serviceSid);
 
       try {
         await client.remove(serviceSid);
       } catch (e) {
         expect(e.message).toContain('not of type ZE');
-        done();
       }
     });
 
