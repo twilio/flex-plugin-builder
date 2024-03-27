@@ -134,14 +134,13 @@ describe('StartScript', () => {
       expect(setCwd).toHaveBeenCalledTimes(1);
     });
 
-    it('should throw exception if plugin is not found', async (done) => {
+    it('should throw exception if plugin is not found', async () => {
       parseUserInputPlugins.mockReturnValue([{ name: 'plugin-bad', remote: false }]);
 
       try {
         await startScripts.default(...['plugin', '--name', 'plugin-bad']);
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
-        done();
       }
     });
   });

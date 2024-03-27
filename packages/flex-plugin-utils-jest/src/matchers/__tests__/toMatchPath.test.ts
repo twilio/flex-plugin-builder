@@ -30,7 +30,7 @@ describe('toMatchPath', () => {
       expect(path1).not.toMatchPath(path2);
     });
 
-    it('should test match path fail symmetrically', (done) => {
+    it('should test match path fail symmetrically', () => {
       try {
         expect(path1).toMatchPath(path2);
       } catch (e) {
@@ -41,12 +41,10 @@ describe('toMatchPath', () => {
         expect(e.message).toContain('Received');
         expect(e.message).toContain(path1);
         expect(e.message).toContain(path2);
-
-        done();
       }
     });
 
-    it('should test negate match path fail symmetrically', (done) => {
+    it('should test negate match path fail symmetrically', () => {
       try {
         expect(path1).not.toMatchPath(path1);
       } catch (e) {
@@ -55,8 +53,6 @@ describe('toMatchPath', () => {
         expect(e.message).toContain('Expected value not to match');
         expect(e.message).toContain('Received');
         expect(e.message).toContain(path1);
-
-        done();
       }
     });
   });
@@ -70,25 +66,21 @@ describe('toMatchPath', () => {
       expect(path1).not.toEqual(expect.toMatchPath(path2));
     });
 
-    it('should test match path fail symmetrically', (done) => {
+    it('should test match path fail symmetrically', () => {
       try {
         expect(path1).toEqual(expect.toMatchPath(path2));
       } catch (e) {
         expect(e.constructor.name).toEqual('JestAssertionError');
         expect(e.message).toContain(`toMatchPath<${path2}>`);
-
-        done();
       }
     });
 
-    it('should test negate match path fail symmetrically', (done) => {
+    it('should test negate match path fail symmetrically', () => {
       try {
         expect(path1).not.toEqual(expect.toMatchPath(path1));
       } catch (e) {
         expect(e.constructor.name).toEqual('JestAssertionError');
         expect(e.message).toContain(`toMatchPath<${path1}>`);
-
-        done();
       }
     });
   });

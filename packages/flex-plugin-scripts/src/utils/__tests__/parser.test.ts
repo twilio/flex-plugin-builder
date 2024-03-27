@@ -40,36 +40,33 @@ describe('parser', () => {
       expect(result).toEqual([{ name: pluginName, remote: true, version: '1.0.0' }]);
     });
 
-    it('should throw an error if the version is not in correct format', (done) => {
+    it('should throw an error if the version is not in correct format', () => {
       try {
         parserScripts.parseUserInputPlugins(true, ...['--name', 'plugin-test@a.b.c']);
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(readPluginsJson).toHaveBeenCalledTimes(1);
         expect(e.message).toContain(`The version 'a.b.c' is not a valid semver.`);
-        done();
       }
     });
 
-    it('should throw an error if local plugin is not found', (done) => {
+    it('should throw an error if local plugin is not found', () => {
       try {
         parserScripts.parseUserInputPlugins(true, ...['--name', 'plugin-unknown']);
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(readPluginsJson).toHaveBeenCalledTimes(1);
         expect(e.message).toContain('No plugin file');
-        done();
       }
     });
 
-    it('should throw an error if input is incorrect format', (done) => {
+    it('should throw an error if input is incorrect format', () => {
       try {
         parserScripts.parseUserInputPlugins(true, ...['--name', '!']);
       } catch (e) {
         expect(e).toBeInstanceOf(Error);
         expect(readPluginsJson).toHaveBeenCalledTimes(1);
         expect(e.message).toContain('Unexpected plugin name format');
-        done();
       }
     });
   });

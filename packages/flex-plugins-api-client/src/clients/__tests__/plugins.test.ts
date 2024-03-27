@@ -122,7 +122,7 @@ describe('PluginsClient', () => {
       expect(post).toHaveBeenCalledWith('Plugins', payload);
     });
 
-    it('should throw an exception', async (done) => {
+    it('should throw an exception', async () => {
       const exception = new TwilioApiError(400, 'message', 400, 'info');
       get.mockRejectedValue(exception);
 
@@ -136,7 +136,6 @@ describe('PluginsClient', () => {
         expect(get).toHaveBeenCalledTimes(1);
         expect(get).toHaveBeenCalledWith(pluginInstanceUri, { cacheable: true });
         expect(post).not.toHaveBeenCalled();
-        done();
       }
     });
   });

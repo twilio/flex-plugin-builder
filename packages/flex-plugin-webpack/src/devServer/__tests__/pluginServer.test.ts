@@ -60,14 +60,13 @@ describe('pluginServer', () => {
       ]);
     });
 
-    it('should throw error', (done) => {
+    it('should throw error', () => {
       try {
         pluginServerScript._getLocalPlugins(3000, ['plugin-unknown']);
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(readPluginsJson).toHaveBeenCalledTimes(1);
         expect(e.message).toContain('was not locally found');
-        done();
       }
     });
   });
@@ -88,13 +87,12 @@ describe('pluginServer', () => {
       ]);
     });
 
-    it('should throw error', (done) => {
+    it('should throw error', () => {
       try {
         pluginServerScript._getRemoteVersionedPlugins([badPlugin]);
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(e.message).toContain('Unexpected plugin name format was provided');
-        done();
       }
     });
   });
@@ -216,7 +214,7 @@ describe('pluginServer', () => {
       expect(resp.end).toHaveBeenCalledTimes(1);
     });
 
-    it('should getPlugins and rebase', async (done) => {
+    it('should getPlugins and rebase', async () => {
       const { req, resp } = getReqResp('GET', jweHeaders);
       const remotePlugin = [{ name: 'plugin-2' }] as pluginServerScript.Plugin[];
 
@@ -243,8 +241,6 @@ describe('pluginServer', () => {
       expect(onRemotePlugins).toHaveBeenCalledWith(remotePlugin);
       expect(resp.end).toHaveBeenCalledTimes(1);
       expect(resp.end).toHaveBeenCalledWith('[{"name":"plugin-1"},{"name":"plugin-2"}]');
-
-      done();
     });
 
     it('should fail', async () => {

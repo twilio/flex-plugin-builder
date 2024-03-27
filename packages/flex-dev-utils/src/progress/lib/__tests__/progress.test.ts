@@ -67,7 +67,7 @@ describe('Progress', () => {
       expect(spinner.fail).not.toBeCalled();
     });
 
-    it('should fail', async (done) => {
+    it('should fail', async () => {
       const error = 'the-error';
       const spinner = getMockedMethods();
       const callback = jest.fn().mockRejectedValue({ message: error });
@@ -80,8 +80,6 @@ describe('Progress', () => {
         expect(spinner.fail).toHaveBeenCalledWith(error);
         expect(spinner.succeed).not.toBeCalled();
         expect(e.message).toEqual(error);
-
-        done();
       }
     });
   });

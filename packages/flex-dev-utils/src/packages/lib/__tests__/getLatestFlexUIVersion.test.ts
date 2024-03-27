@@ -55,7 +55,7 @@ describe('getLatestFlexUIVersion', () => {
     expect(getRegistryVersion).toHaveBeenNthCalledWith(3, flexUI, 'alpha');
   });
 
-  it('should throw error if requested major version is not available', async (done) => {
+  it('should throw error if requested major version is not available', async () => {
     const getRegistryVersion = jest.spyOn(getRegistryVersionScripts, 'default');
     getRegistryVersion.mockResolvedValueOnce({ version: '1.0.0', ...abbreviatedMetadata });
     getRegistryVersion.mockResolvedValueOnce({ version: '1.0.0-beta', ...abbreviatedMetadata });
@@ -65,7 +65,6 @@ describe('getLatestFlexUIVersion', () => {
       await getLatestFlexUIVersion(2);
     } catch (e) {
       expect(e.message).toEqual('The major version you requested for flex ui (2) does not exist.');
-      done();
     }
   });
 

@@ -68,7 +68,7 @@ describe('DescribeConfigurationScript', () => {
     expect(getActiveRelease).not.toHaveBeenCalled();
   });
 
-  it('should fail if configuration is not found', async (done) => {
+  it('should fail if configuration is not found', async () => {
     getConfig.mockRejectedValue('something went wrong');
     try {
       await script(option);
@@ -79,8 +79,6 @@ describe('DescribeConfigurationScript', () => {
       expect(getConfig).toHaveBeenCalledWith(option.sid);
       expect(getActiveRelease).toHaveBeenCalledTimes(1);
       expect(listInstalledPlugins).not.toHaveBeenCalled();
-
-      done();
     }
   });
 

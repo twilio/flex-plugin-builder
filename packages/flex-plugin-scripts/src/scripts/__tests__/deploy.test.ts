@@ -122,37 +122,34 @@ describe('DeployScript', () => {
       readPackageJson.mockRestore();
     });
 
-    it('should thrown an exception if no command is provided', async (done) => {
+    it('should thrown an exception if no command is provided', async () => {
       try {
         await deployScript.default();
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(e.message).toContain('can only be');
-        done();
       }
 
       expect(doDeploy).not.toHaveBeenCalled();
     });
 
-    it('should throw an exception if incorrect command is provided', async (done) => {
+    it('should throw an exception if incorrect command is provided', async () => {
       try {
         await deployScript.default('foo');
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(e.message).toContain('can only be');
-        done();
       }
 
       expect(doDeploy).not.toHaveBeenCalled();
     });
 
-    it('should throw an exception if custom version is called without an argument', async (done) => {
+    it('should throw an exception if custom version is called without an argument', async () => {
       try {
         await deployScript.default('version');
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(e.message).toContain('Custom version bump');
-        done();
       }
 
       expect(doDeploy).not.toHaveBeenCalled();
@@ -217,7 +214,7 @@ describe('DeployScript', () => {
   });
 
   describe('_doDeploy', () => {
-    it('should quit if build does not exist', async (done) => {
+    it('should quit if build does not exist', async () => {
       const options = {
         isPublic: true,
         overwrite: false,
@@ -230,13 +227,12 @@ describe('DeployScript', () => {
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(e.message).toContain('Could not find');
-        done();
       }
 
       checkFilesExist.mockRestore();
     });
 
-    it('should quit if duplicate route is found and in CI', async (done) => {
+    it('should quit if duplicate route is found and in CI', async () => {
       process.env.CI = 'true';
       const options = {
         isPublic: true,
@@ -252,7 +248,6 @@ describe('DeployScript', () => {
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(e.message).toContain('You already have a plugin');
-        done();
       }
 
       checkFilesExist.mockRestore();
@@ -260,7 +255,7 @@ describe('DeployScript', () => {
       _verifyFlexUIConfiguration.mockRestore();
     });
 
-    it('should quit if duplicate route is found and caller is not the CLI', async (done) => {
+    it('should quit if duplicate route is found and caller is not the CLI', async () => {
       process.env.CI = 'false';
       const options = {
         isPublic: true,
@@ -276,7 +271,6 @@ describe('DeployScript', () => {
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(e.message).toContain('You already have a plugin');
-        done();
       }
 
       checkFilesExist.mockRestore();
@@ -436,7 +430,7 @@ describe('DeployScript', () => {
       jest.resetAllMocks();
     });
 
-    it('should throw exception if flex-ui < 1.19.0 and react versions are not 16.5.2', async (done) => {
+    it('should throw exception if flex-ui < 1.19.0 and react versions are not 16.5.2', async () => {
       const getFlexUIVersion = jest.fn().mockResolvedValue('1.18.0');
       const getUIDependencies = jest.fn().mockResolvedValue(dependencies);
       ConfigurationClient.mockImplementation(() => ({ getFlexUIVersion, getUIDependencies }));
@@ -445,7 +439,6 @@ describe('DeployScript', () => {
         await deployScript._verifyFlexUIConfiguration();
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
-        done();
       }
     });
 
@@ -529,7 +522,7 @@ describe('DeployScript', () => {
       expect(getPackageVersion).toHaveBeenCalledTimes(2);
     });
 
-    it('should reject confirm to allow deployment if react version is mismatched', async (done) => {
+    it('should reject confirm to allow deployment if react version is mismatched', async () => {
       const getFlexUIVersion = jest.fn().mockResolvedValue('^1');
       const getUIDependencies = jest.fn().mockResolvedValue(dependencies);
       ConfigurationClient.mockImplementation(() => ({ getFlexUIVersion, getUIDependencies }));
@@ -543,8 +536,6 @@ describe('DeployScript', () => {
         expect(confirm).toHaveBeenCalledTimes(1);
         expect(getPackageVersion).toHaveBeenCalledTimes(2);
         expect(e).toBeInstanceOf(UserActionError);
-
-        done();
       }
     });
   });

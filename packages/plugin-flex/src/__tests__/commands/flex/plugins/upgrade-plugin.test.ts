@@ -450,7 +450,7 @@ describe('Commands/FlexPluginsStart', () => {
       expect(cmd.upgradeToLatest).toHaveBeenCalledTimes(1);
     });
 
-    it('should throw error if flex ui is already 2.0 and --flex-ui-2.0 is not passed', async (done) => {
+    it('should throw error if flex ui is already 2.0 and --flex-ui-2.0 is not passed', async () => {
       const cmd = await createCommand();
       mockForDoRun(cmd);
       jest.spyOn(cmd, 'flexUIVersion', 'get').mockReturnValue(2);
@@ -460,7 +460,6 @@ describe('Commands/FlexPluginsStart', () => {
       } catch (e) {
         expect(e).toBeInstanceOf(TwilioCliError);
         expect(e.message).toContain('Incomplete arguments passed.');
-        done();
       }
     });
 

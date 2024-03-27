@@ -172,7 +172,7 @@ describe('CreateConfigurationScript', () => {
     jest.resetAllMocks();
   });
 
-  it('should throw error if plugins does not contain version', async (done) => {
+  it('should throw error if plugins does not contain version', async () => {
     const option = {
       ...requestObject,
       addPlugins: [plugin1.unique_name],
@@ -189,12 +189,10 @@ describe('CreateConfigurationScript', () => {
       expect(getLatestVersion).not.toHaveBeenCalled();
       expect(create).not.toHaveBeenCalled();
       expect(listConfiguredPlugins).not.toHaveBeenCalled();
-
-      done();
     }
   });
 
-  it('should throw an exception if a plugin is not found', async (done) => {
+  it('should throw an exception if a plugin is not found', async () => {
     const option = {
       ...requestObject,
       addPlugins: [`${plugin1.unique_name}@version1`],
@@ -212,12 +210,10 @@ describe('CreateConfigurationScript', () => {
       expect(getLatestVersion).not.toHaveBeenCalled();
       expect(create).not.toHaveBeenCalled();
       expect(listConfiguredPlugins).not.toHaveBeenCalled();
-
-      done();
     }
   });
 
-  it('should throw an exception if plugin version is not found', async (done) => {
+  it('should throw an exception if plugin version is not found', async () => {
     const option = {
       ...requestObject,
       addPlugins: [`${plugin1.unique_name}@version1`],
@@ -235,12 +231,10 @@ describe('CreateConfigurationScript', () => {
       expect(getLatestVersion).not.toHaveBeenCalled();
       expect(create).not.toHaveBeenCalled();
       expect(listConfiguredPlugins).not.toHaveBeenCalled();
-
-      done();
     }
   });
 
-  it('should throw an exception create configuration fails', async (done) => {
+  it('should throw an exception create configuration fails', async () => {
     const option = {
       ...requestObject,
       addPlugins: [`${plugin1.unique_name}@version1`],
@@ -264,8 +258,6 @@ describe('CreateConfigurationScript', () => {
         Plugins: [{ plugin_version: pluginVersion1.sid, phase: 3 }],
       });
       expect(listConfiguredPlugins).not.toHaveBeenCalled();
-
-      done();
     }
   });
 
@@ -623,7 +615,7 @@ describe('CreateConfigurationScript', () => {
     });
   });
 
-  it('should create fetch plugin version by latest', async (done) => {
+  it('should create fetch plugin version by latest', async () => {
     const option = {
       ...requestObject,
       addPlugins: ['plugin1@latest'],
@@ -639,8 +631,6 @@ describe('CreateConfigurationScript', () => {
       expect(getVersion).not.toHaveBeenCalled();
       expect(getLatestVersion).toHaveBeenCalledTimes(1);
       expect(getLatestVersion).toHaveBeenCalledWith(plugin1.unique_name);
-
-      done();
     }
   });
 

@@ -61,7 +61,7 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
     expect(cmd.serverlessClient.deleteEnvironment).toHaveBeenCalledWith(serviceSid, environment.sid);
   });
 
-  it('should quit if already archived and no serviceSid is found', async (done) => {
+  it('should quit if already archived and no serviceSid is found', async () => {
     const err = new TwilioApiError(20400, 'Plugin is already archived.', 400);
 
     const cmd = await createCmd();
@@ -80,11 +80,10 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
       expect(archivePlugin).toHaveBeenCalledTimes(1);
       expect(archivePlugin).toHaveBeenCalledWith({ name: plugin.name });
       expect(getServerlessSid).toHaveBeenCalledTimes(1);
-      done();
     }
   });
 
-  it('should quit if archiving on the api fails', async (done) => {
+  it('should quit if archiving on the api fails', async () => {
     const err = new TwilioApiError(20400, 'message', 500);
 
     const cmd = await createCmd();
@@ -101,7 +100,6 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
       expect(archivePlugin).toHaveBeenCalledTimes(1);
       expect(archivePlugin).toHaveBeenCalledWith({ name: plugin.name });
       expect(describePlugin).not.toHaveBeenCalled();
-      done();
     }
   });
 
@@ -120,7 +118,7 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
     expect(removeServerlessEnvironmentSpy).not.toHaveBeenCalled();
   });
 
-  it('should quit if already archived and no environment is found', async (done) => {
+  it('should quit if already archived and no environment is found', async () => {
     const err = new TwilioApiError(20400, 'Plugin is already archived.', 400);
 
     const cmd = await createCmd();
@@ -141,11 +139,10 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
       expect(archivePlugin).toHaveBeenCalledWith({ name: plugin.name });
       expect(getServerlessSid).toHaveBeenCalledTimes(1);
       expect(getEnvironment).toHaveBeenCalledTimes(1);
-      done();
     }
   });
 
-  it('should quit if archive on plugins API is successful but environment cleanup is not', async (done) => {
+  it('should quit if archive on plugins API is successful but environment cleanup is not', async () => {
     const cmd = await createCmd();
     mockPluginsApiToolkit(cmd);
 
@@ -165,7 +162,6 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
       expect(getEnvironment).toHaveBeenCalledTimes(1);
       expect(deleteEnvironment).toHaveBeenCalledTimes(1);
       expect(deleteEnvironment).toHaveBeenCalledWith(serviceSid, environment.sid);
-      done();
     }
   });
 
@@ -192,7 +188,7 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
     expect(deleteEnvironment).toHaveBeenCalledWith(serviceSid, environment.sid);
   });
 
-  it('should throw an if no environment is found and there plugin is already archive', async (done) => {
+  it('should throw an if no environment is found and there plugin is already archive', async () => {
     const err = new TwilioApiError(20400, 'Plugin is already archived.', 400);
 
     const cmd = await createCmd();
@@ -212,8 +208,6 @@ describe('Commands/Archive/FlexPluginsArchivePlugin', () => {
       expect(getServerlessSid).toHaveBeenCalledTimes(1);
       expect(getEnvironment).not.toHaveBeenCalled();
       expect(deleteEnvironment).not.toHaveBeenCalled();
-
-      done();
     }
   });
 

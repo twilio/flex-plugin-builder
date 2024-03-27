@@ -58,7 +58,7 @@ describe('commands', () => {
       expect(stdout).toEqual('the-output');
     });
 
-    it('should throw an exception if exists with errorCode 1', async (done) => {
+    it('should throw an exception if exists with errorCode 1', async () => {
       spawn.mockResolvedValue({
         exitCode: 1,
         stderr: 'the-error',
@@ -72,8 +72,6 @@ describe('commands', () => {
       } catch (e) {
         expect(spawn).toHaveBeenCalledTimes(1);
         expect(e.message).toEqual('the-error');
-
-        done();
       }
     });
   });

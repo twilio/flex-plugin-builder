@@ -69,7 +69,7 @@ describe('Utils/Parser', () => {
       parser._validate(flags, options);
     });
 
-    it('should should fail validation because flag is empty', (done) => {
+    it('should should fail validation because flag is empty', () => {
       const flags = { str: '', bool: true };
       const options = {
         str: {
@@ -86,11 +86,10 @@ describe('Utils/Parser', () => {
       } catch (e) {
         expect(e).toBeInstanceOf(CLIParseError);
         expect(e.message).toContain('cannot be empty');
-        done();
       }
     });
 
-    it('should should fail validation because flag is too small', (done) => {
+    it('should should fail validation because flag is too small', () => {
       const flags = { str: 'entry', bool: true };
       const options = {
         str: {
@@ -108,11 +107,10 @@ describe('Utils/Parser', () => {
         expect(e).toBeInstanceOf(CLIParseError);
         expect(e.message).toContain('must be at least');
         expect(e.message).toContain(`${options.str.min}`);
-        done();
       }
     });
 
-    it('should should fail validation because flag is too large', (done) => {
+    it('should should fail validation because flag is too large', () => {
       const flags = { str: 'large entry', bool: true };
       const options = {
         str: {
@@ -130,7 +128,6 @@ describe('Utils/Parser', () => {
         expect(e).toBeInstanceOf(CLIParseError);
         expect(e.message).toContain('cannot be longer');
         expect(e.message).toContain(`${options.str.max}`);
-        done();
       }
     });
   });

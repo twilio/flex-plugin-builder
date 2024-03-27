@@ -101,7 +101,7 @@ describe('Diff', () => {
     expect(findConfigurationsDiff).toHaveBeenCalledWith(config1, config2);
   });
 
-  it('should throw exception if no active release found', async (done) => {
+  it('should throw exception if no active release found', async () => {
     active.mockResolvedValue(null);
     const script = diffScript(configurationsClient, configuredPluginsClient, releasesClient);
 
@@ -110,11 +110,10 @@ describe('Diff', () => {
     } catch (e) {
       expect(e).toBeInstanceOf(TwilioApiError);
       expect(e.message).toContain('active release');
-      done();
     }
   });
 
-  it('should throw exception if resource is incorrect', async (done) => {
+  it('should throw exception if resource is incorrect', async () => {
     try {
       const script = diffScript(configurationsClient, configuredPluginsClient, releasesClient);
       // @ts-ignore
@@ -122,7 +121,6 @@ describe('Diff', () => {
     } catch (e) {
       expect(e).toBeInstanceOf(TwilioError);
       expect(e.message).toContain('must be');
-      done();
     }
   });
 });

@@ -124,23 +124,21 @@ describe('Commands/FlexPluginsDeploy', () => {
       ['1.0.0', '1.0.0-rc.1'].forEach((s) => expect(parseVersionInput(s)).toEqual(s));
     });
 
-    it('should throw error if invalid semver', (done) => {
+    it('should throw error if invalid semver', () => {
       try {
         parseVersionInput('not-a-semver');
       } catch (e) {
         expect(e instanceof CLIParseError).toEqual(true);
         expect(e.message).toContain('valid SemVer');
-        done();
       }
     });
 
-    it('should throw error version 0.0.0 is used', (done) => {
+    it('should throw error version 0.0.0 is used', () => {
       try {
         parseVersionInput('0.0.0');
       } catch (e) {
         expect(e instanceof CLIParseError).toEqual(true);
         expect(e.message).toContain('cannot be');
-        done();
       }
     });
   });
@@ -294,7 +292,7 @@ describe('Commands/FlexPluginsDeploy', () => {
     expect(args[1]).toEqual('2.1.0');
   });
 
-  it('should invalidate plugin because next version is smaller', async (done) => {
+  it('should invalidate plugin because next version is smaller', async () => {
     const cmd = await getCommand('--version', '0.0.1');
 
     jest.spyOn(cmd.pluginsClient, 'get').mockResolvedValue(pluginResource);
@@ -309,8 +307,6 @@ describe('Commands/FlexPluginsDeploy', () => {
       expect(cmd.pluginsClient.get).toHaveBeenCalledWith(pkg.name);
       expect(cmd.pluginVersionsClient.latest).toHaveBeenCalledTimes(1);
       expect(cmd.pluginVersionsClient.latest).toHaveBeenCalledWith(pkg.name);
-
-      done();
     }
   });
 
