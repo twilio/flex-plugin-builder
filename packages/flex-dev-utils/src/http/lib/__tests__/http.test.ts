@@ -299,7 +299,7 @@ describe('HttpClient', () => {
 
       expect(response).toEqual('get-result');
       expect(get).toHaveBeenCalledTimes(1);
-      expect(get).toHaveBeenCalledWith('the-uri', {});
+      expect(get).toHaveBeenCalledWith('the-uri', { cache: false });
     });
   });
 
@@ -543,23 +543,25 @@ describe('HttpClient', () => {
       const httpClient = new HttpClient(config);
 
       // @ts-ignore
-      expect(httpClient.getRequestOption()).toEqual({});
+      expect(httpClient.getRequestOption()).toEqual({ cache: false });
     });
 
     it('should return default maxAge', () => {
       const httpClient = new HttpClient(config);
 
       // @ts-ignore
-      const maxAge = httpClient.cacheAge;
+      const ttl = httpClient.cacheAge;
       // @ts-ignore
-      expect(httpClient.getRequestOption({ cacheable: true })).toEqual({ cache: { maxAge } });
+      expect(httpClient.getRequestOption({ cacheable: true })).toEqual({
+        cache: { ttl },
+      });
     });
 
     it('should return requested maxAge', () => {
       const httpClient = new HttpClient(config);
 
       // @ts-ignore
-      expect(httpClient.getRequestOption({ cacheable: true, cacheAge: 123 })).toEqual({ cache: { maxAge: 123 } });
+      expect(httpClient.getRequestOption({ cacheable: true, cacheAge: 123 })).toEqual({ cache: { ttl: 123 } });
     });
   });
 
