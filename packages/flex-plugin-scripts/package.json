@@ -51,7 +51,7 @@
     "@types/react-dom": "^16.9.14",
     "@types/react-redux": "5.0.22",
     "emotion": "9.2.12",
-    "esm": "^3.2.25",
+    "esm-wallaby": "^3.2.30",
     "jest": "^27.0.0",
     "prop-types": "^15.7.2",
     "querystring": "^0.2.1",
