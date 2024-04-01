@@ -1,3 +1,6 @@
+import https from 'https';
+import Stream from 'stream';
+
 import * as fsScript from '@twilio/flex-dev-utils/dist/fs';
 import { Request, Response } from 'express-serve-static-core';
 import { FlexPluginError } from '@twilio/flex-dev-utils';
@@ -22,6 +25,28 @@ describe('pluginServer', () => {
     version: '1.2.3',
     dependencies: {},
     devDependencies: {},
+  };
+
+  const getReqResp = (
+    method: string,
+    headers: Record<string, string>,
+    cookies: Record<string, string> = {},
+    url?: string,
+  ) => {
+    // @ts-ignore
+    const resp = {
+      writeHead: jest.fn(),
+      end: jest.fn(),
+    } as Response;
+    const req = {
+      method,
+      headers,
+      cookies,
+      url,
+    } as Request;
+    const next = jest.fn();
+
+    return { req, resp, next };
   };
 
   beforeEach(() => {
@@ -99,6 +124,57 @@ describe('pluginServer', () => {
     });
   });
 
+  describe('_makeRequestToFlex', () => {
+    it('should return data returned from Flex', async () => {
+      const streamStream = new Stream();
+      // @ts-ignore
+      const httpSpy = jest.spyOn(https, 'request').mockImplementation((_url, cb) => {
+        // @ts-ignore
+        // eslint-disable-next-line callback-return
+        cb(streamStream);
+
+        streamStream.emit('data', Buffer.from('some'));
+        streamStream.emit('data', Buffer.from('-'));
+        streamStream.emit('data', Buffer.from('data'));
+
+        streamStream.emit('end');
+      });
+
+      const data = await pluginServerScript._makeRequestToFlex('jwe-token', '/dummy-path');
+
+      expect(httpSpy).toHaveBeenCalledWith(
+        {
+          hostname: 'flex.twilio.com',
+          port: 443,
+          path: '/dummy-path',
+          method: 'GET',
+          headers: {
+            'X-Flex-JWE': 'jwe-token',
+          },
+        },
+        expect.any(Function),
+      );
+      expect(data).toBe('some-data');
+    });
+
+    it('should error if the request to Flex fails', async () => {
+      const streamStream = new Stream();
+      // @ts-ignore
+      jest.spyOn(https, 'request').mockImplementation((_url, cb) => {
+        // @ts-ignore
+        // eslint-disable-next-line callback-return
+        cb(streamStream);
+        streamStream.emit('error', 'some-error');
+      });
+
+      try {
+        await pluginServerScript._makeRequestToFlex('jwe-token', '/dummy-path');
+      } catch (e) {
+        expect(e.message).toContain('some-error');
+      }
+    });
+  });
+
   describe('_mergePlugins', () => {
     it('should return both remote and local plugins', () => {
       const localPlugin = { name: defaultPluginName, phase: 3 } as pluginServerScript.Plugin;
@@ -163,32 +239,7 @@ describe('pluginServer', () => {
     });
   });
 
-  describe('_startServer', () => {
-    const port = 9000;
-    const plugins = {
-      local: ['plugin-local1', 'plugin-local2'],
-      remote: ['plugin-remote1', 'plugin-remote2'],
-      versioned: ['plugin-remote2'],
-    };
-    const config = { port, remoteAll: true };
-    const jweHeaders = { 'x-flex-jwe': 'jweToken' };
-    const getReqResp = (method: string, headers: Record<string, string>, cookies: Record<string, string> = {}) => {
-      // @ts-ignore
-      const resp = {
-        writeHead: jest.fn(),
-        end: jest.fn(),
-      } as Response;
-      const req = {
-        method,
-        headers,
-        cookies,
-      } as Request;
-      const next = jest.fn();
-
-      return { req, resp, next };
-    };
-    const onRemotePlugins = jest.fn();
-
+  describe('_requestValidator', () => {
     it('should return 200 for OPTIONS request', async () => {
       const { req, resp, next } = getReqResp('OPTIONS', {});
       const _getHeaders = jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' });
@@ -222,6 +273,66 @@ describe('pluginServer', () => {
       expect(resp.writeHead).toHaveBeenCalledWith(400, { header: 'true' });
       expect(resp.end).toHaveBeenCalledTimes(1);
     });
+  });
+
+  describe('_renderPluginServer', () => {
+    const headers = {};
+    const cookies = {
+      'flex-jwe': 'jweToken',
+    };
+    const pluginPath = '/plugin-sample/1.0.0/bundle.js';
+
+    it('should render plugin content', async (done) => {
+      const { req, resp } = getReqResp('GET', headers, cookies, pluginPath);
+      const remotePluginContent = 'dummy-source-code-of-the-plugin';
+
+      jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' });
+      const _getPluginContent = jest
+        .spyOn(pluginServerScript, '_makeRequestToFlex')
+        .mockResolvedValue(remotePluginContent);
+
+      await pluginServerScript._renderPluginServer(req, resp);
+
+      expect(resp.writeHead).toHaveBeenCalledTimes(1);
+      expect(resp.writeHead).toHaveBeenCalledWith(200, {
+        header: 'true',
+      });
+      expect(_getPluginContent).toHaveBeenCalledTimes(1);
+      expect(_getPluginContent).toHaveBeenCalledWith(cookies['flex-jwe'], `/plugins/v1${pluginPath}`);
+      expect(resp.end).toHaveBeenCalledTimes(1);
+      expect(resp.end).toHaveBeenCalledWith(remotePluginContent);
+      done();
+    });
+
+    it('should 500 in case of errors', async () => {
+      const { req, resp } = getReqResp('GET', headers, cookies, pluginPath);
+
+      jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' });
+      const _getPluginContent = jest
+        .spyOn(pluginServerScript, '_makeRequestToFlex')
+        .mockRejectedValue('failed-message');
+
+      await pluginServerScript._renderPluginServer(req, resp);
+
+      expect(resp.writeHead).toHaveBeenCalledTimes(1);
+      expect(resp.writeHead).toHaveBeenCalledWith(500, { header: 'true' });
+      expect(_getPluginContent).toHaveBeenCalledTimes(1);
+      expect(_getPluginContent).toHaveBeenCalledWith(cookies['flex-jwe'], `/plugins/v1${pluginPath}`);
+      expect(resp.end).toHaveBeenCalledTimes(1);
+      expect(resp.end).toHaveBeenCalledWith('failed-message');
+    });
+  });
+
+  describe('_fetchPluginsServer', () => {
+    const port = 9000;
+    const plugins = {
+      local: ['plugin-local1', 'plugin-local2'],
+      remote: ['plugin-remote1', 'plugin-remote2'],
+      versioned: ['plugin-remote2'],
+    };
+    const config = { port, remoteAll: true };
+    const jweHeaders = { 'x-flex-jwe': 'jweToken' };
+    const onRemotePlugins = jest.fn();
 
     it('should getPlugins and rebase', async (done) => {
       const { req, resp } = getReqResp('GET', jweHeaders);

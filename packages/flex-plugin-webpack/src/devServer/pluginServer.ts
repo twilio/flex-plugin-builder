@@ -273,7 +273,7 @@ export const _fetchPluginsServer = (
 /**
  * Basic server to fetch plugin bundle content from Flex and return to the local dev-server
  */
-const _renderPluginServer = async (req: Request, res: Response): Promise<void> => {
+export const _renderPluginServer = async (req: Request, res: Response): Promise<void> => {
   const jweToken = req.cookies['flex-jwe'] as string;
   const responseHeaders = _getHeaders();
 
