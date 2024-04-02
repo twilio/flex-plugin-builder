@@ -25,6 +25,8 @@ export interface CreatePluginVersionResource {
   PluginUrl: string;
   Private?: boolean;
   Changelog?: string;
+  CliVersion?: string;
+  ValidateStatus?: string;
 }
 
 /**
