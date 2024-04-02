@@ -176,6 +176,7 @@ export const _makeRequestToFlex = async (token: string, path: string, version?: 
  */
 export const _requestValidator = (req: Request, res: Response, next: NextFunction) => {
   const { headers, method } = req;
+  // JWE token may be present in headers/cookies
   const jweToken = (headers['x-flex-jwe'] || req.cookies['flex-jwe']) as string;
   const responseHeaders = _getHeaders();
 
@@ -233,6 +234,7 @@ export const _fetchPluginsServer = (
           const pluginsList: Plugin[] = filteredPlugins.map(
             (p: Plugin): Plugin => ({
               ...p,
+              // Filter out the Flex endpoint without the base URL (https://flex.twilio.com) if it exists
               src: p.src?.match(/^https.+flex\.twilio\.com(\/.+)$/)?.[1] || p.src,
             }),
           );
@@ -258,6 +260,10 @@ export const _fetchPluginsServer = (
           onRemotePlugin([...versionedPlugins, ...remotePlugins]);
           res.writeHead(200, {
             ...responseHeaders,
+            /*
+             * Set the JWE token in the cookies so that in the subsequent plugin rendering requests
+             * dev server can retrieve it to make the request to Flex.
+             */
             'Set-Cookie': `flex-jwe=${jweToken}`,
           });
           res.end(JSON.stringify(_mergePlugins(localPlugins, remotePlugins, versionedPlugins)));

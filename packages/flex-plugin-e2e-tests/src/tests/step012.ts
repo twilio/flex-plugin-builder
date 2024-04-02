@@ -4,8 +4,8 @@ import semver from 'semver';
 
 import { TestSuite, TestParams, testParams } from '../core';
 import { spawn, Browser, pluginHelper, joinPath, assertion, killChildProcess, api } from '../utils';
-import { setupFlexBeforeLocalhost } from './step010';
 
+// Start the 2 local plugins and 1 versioned plugin
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
   const ext = scenario.isTS ? 'tsx' : 'jsx';
   const tmpComponentText = 'This is the new text for the next version!';
@@ -57,11 +57,8 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   await Promise.all([startPlugin(plugin2.localhostUrl), startPlugin(plugin3.localhostUrl)]);
 
   try {
-    // Login to Flex and setup the required flex.twilio.com cookies
-    await setupFlexBeforeLocalhost(config, secrets);
-
     // Load local plugin
-    await Browser.loadNewPage({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
+    await Browser.create({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
     await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort, false);
 
     // Check if local plugin loaded okay
