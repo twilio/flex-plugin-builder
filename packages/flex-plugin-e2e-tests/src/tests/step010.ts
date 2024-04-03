@@ -44,7 +44,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   // Start all 3 plugins (Note: cwd is plugin3 in this scenario since plugin is the remote one)
   const twilioCliResult = await spawn(
     'twilio',
-    ['flex:plugins:start', '--name', `${plugin1.name}@${plugin1.version}`, '--name', plugin2.name],
+    ['flex:plugins:start', '--name', `${plugin1.name}@${plugin1.version}`, '--name', plugin2.name, '-l', 'debug'],
     { detached: true, cwd: plugin3.dir },
   );
   await Promise.all([startPlugin(plugin2.localhostUrl), startPlugin(plugin3.localhostUrl)]);
