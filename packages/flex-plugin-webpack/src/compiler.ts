@@ -130,7 +130,7 @@ export default (
           appName: getPaths().app.name,
           lastPluginBundle: config.plugins.length === config.loadedPlugins.length,
         });
-      }, Math.round(Math.random() * 1000));
+      }, Math.round(Math.random() * 500));
     });
 
     return compiler;
