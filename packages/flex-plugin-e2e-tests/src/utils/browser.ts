@@ -49,17 +49,6 @@ export class Browser {
       }
       return request.continue();
     });
-
-    this._page.on('requestfailed', async (event) => {
-      try {
-        logger.error(`*** REQUEST FAILED FOR: ${event.url()} ***`);
-        logger.error(`*** Failure message: ${JSON.stringify(event.failure())} ***`);
-        const response = await event.response()?.json();
-        logger.error('*** Response ***', response);
-      } catch (e) {
-        // ignore
-      }
-    });
   }
 
   /**
