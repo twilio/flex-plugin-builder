@@ -3,7 +3,6 @@ import semver from 'semver';
 
 import { TestSuite, TestParams, testParams } from '../core';
 import { spawn, Browser, pluginHelper, api, assertion, killChildProcess } from '../utils';
-import { setupFlexBeforeLocalhost } from './step010';
 
 // Starting multiple plugins using --include-remote works
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
@@ -53,12 +52,9 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   );
 
   try {
-    // Login to Flex and setup the required flex.twilio.com cookies
-    await setupFlexBeforeLocalhost(config, secrets);
-
     // Load local plugin
-    await Browser.loadNewPage({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
-    await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort, false);
+    await Browser.create({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
+    await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort);
 
     // Check if local plugin loaded okay
     await assertion.app.view.agentDesktop.isVisible();
