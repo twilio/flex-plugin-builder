@@ -1,5 +1,4 @@
-@twilio-labs/plugin-flex
-========================
+# @twilio-labs/plugin-flex
 
 Twilio CLI plugin to interact with the [Flex Plugin Builder](https://github.com/twilio/flex-plugin-builder)
 
@@ -7,9 +6,10 @@ This plugin adds functionality to the [Twilio CLI](https://github.com/twilio/twi
 build and deploy [Twilio Flex plugins](https://www.twilio.com/docs/flex/plugin-builder); it uses the [Flex Plugin Builder](https://github.com/twilio/flex-plugin-builder).
 
 <!-- toc -->
-* [Requirements](#requirements)
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [Requirements](#requirements)
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
 
 # Requirements
@@ -44,26 +44,27 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`twilio flex:plugins:archive:configuration`](#twilio-flexpluginsarchiveconfiguration)
-* [`twilio flex:plugins:archive:plugin`](#twilio-flexpluginsarchiveplugin)
-* [`twilio flex:plugins:archive:plugin-version`](#twilio-flexpluginsarchiveplugin-version)
-* [`twilio flex:plugins:build`](#twilio-flexpluginsbuild)
-* [`twilio flex:plugins:create NAME`](#twilio-flexpluginscreate-name)
-* [`twilio flex:plugins:create-configuration`](#twilio-flexpluginscreate-configuration)
-* [`twilio flex:plugins:deploy`](#twilio-flexpluginsdeploy)
-* [`twilio flex:plugins:describe:configuration`](#twilio-flexpluginsdescribeconfiguration)
-* [`twilio flex:plugins:describe:plugin`](#twilio-flexpluginsdescribeplugin)
-* [`twilio flex:plugins:describe:plugin-version`](#twilio-flexpluginsdescribeplugin-version)
-* [`twilio flex:plugins:describe:release`](#twilio-flexpluginsdescriberelease)
-* [`twilio flex:plugins:diff ID1 [ID2]`](#twilio-flexpluginsdiff-id1-id2)
-* [`twilio flex:plugins:list:configurations`](#twilio-flexpluginslistconfigurations)
-* [`twilio flex:plugins:list:plugin-versions`](#twilio-flexpluginslistplugin-versions)
-* [`twilio flex:plugins:list:plugins`](#twilio-flexpluginslistplugins)
-* [`twilio flex:plugins:list:releases`](#twilio-flexpluginslistreleases)
-* [`twilio flex:plugins:release`](#twilio-flexpluginsrelease)
-* [`twilio flex:plugins:start`](#twilio-flexpluginsstart)
-* [`twilio flex:plugins:test`](#twilio-flexpluginstest)
-* [`twilio flex:plugins:upgrade-plugin`](#twilio-flexpluginsupgrade-plugin)
+
+- [`twilio flex:plugins:archive:configuration`](#twilio-flexpluginsarchiveconfiguration)
+- [`twilio flex:plugins:archive:plugin`](#twilio-flexpluginsarchiveplugin)
+- [`twilio flex:plugins:archive:plugin-version`](#twilio-flexpluginsarchiveplugin-version)
+- [`twilio flex:plugins:build`](#twilio-flexpluginsbuild)
+- [`twilio flex:plugins:create NAME`](#twilio-flexpluginscreate-name)
+- [`twilio flex:plugins:create-configuration`](#twilio-flexpluginscreate-configuration)
+- [`twilio flex:plugins:deploy`](#twilio-flexpluginsdeploy)
+- [`twilio flex:plugins:describe:configuration`](#twilio-flexpluginsdescribeconfiguration)
+- [`twilio flex:plugins:describe:plugin`](#twilio-flexpluginsdescribeplugin)
+- [`twilio flex:plugins:describe:plugin-version`](#twilio-flexpluginsdescribeplugin-version)
+- [`twilio flex:plugins:describe:release`](#twilio-flexpluginsdescriberelease)
+- [`twilio flex:plugins:diff ID1 [ID2]`](#twilio-flexpluginsdiff-id1-id2)
+- [`twilio flex:plugins:list:configurations`](#twilio-flexpluginslistconfigurations)
+- [`twilio flex:plugins:list:plugin-versions`](#twilio-flexpluginslistplugin-versions)
+- [`twilio flex:plugins:list:plugins`](#twilio-flexpluginslistplugins)
+- [`twilio flex:plugins:list:releases`](#twilio-flexpluginslistreleases)
+- [`twilio flex:plugins:release`](#twilio-flexpluginsrelease)
+- [`twilio flex:plugins:start`](#twilio-flexpluginsstart)
+- [`twilio flex:plugins:test`](#twilio-flexpluginstest)
+- [`twilio flex:plugins:upgrade-plugin`](#twilio-flexpluginsupgrade-plugin)
 
 ## `twilio flex:plugins:archive:configuration`
 
@@ -83,8 +84,6 @@ OPTIONS
   --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
 
-_See code: [dist/commands/flex/plugins/archive/configuration.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/archive/configuration.js)_
-
 ## `twilio flex:plugins:archive:plugin`
 
 Archives a Flex Plugin. Archived Plugins cannot be enabled on your Flex application and cannot be undone. Exercise extreme caution when using this command.
@@ -102,8 +101,6 @@ OPTIONS
   --name=name                      (required) The name of the Flex Plugin to archive.
   --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/archive/plugin.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/archive/plugin.js)_
 
 ## `twilio flex:plugins:archive:plugin-version`
 
@@ -124,8 +121,6 @@ OPTIONS
   --version=version                (required) The Flex Plugin Version to archive.
 ```
 
-_See code: [dist/commands/flex/plugins/archive/plugin-version.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/archive/plugin-version.js)_
-
 ## `twilio flex:plugins:build`
 
 Builds the Flex plugin and creates a JavaScript and sourcemap bundle. This command needs to be invoked inside a plugin directory.
@@ -142,8 +137,6 @@ OPTIONS
   --json                           Outputs the result of the command as json string.
   --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/build.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/build.js)_
 
 ## `twilio flex:plugins:create NAME`
 
@@ -179,8 +172,6 @@ DESCRIPTION
   Arguments:
   name	Name of your plugin. This command needs to be invoked inside a plugin directory.
 ```
-
-_See code: [dist/commands/flex/plugins/create.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/create.js)_
 
 ## `twilio flex:plugins:create-configuration`
 
@@ -219,8 +210,6 @@ OPTIONS
   --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
 
-_See code: [dist/commands/flex/plugins/create-configuration.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/create-configuration.js)_
-
 ## `twilio flex:plugins:deploy`
 
 Builds and deploys a new version of the Flex plugin to your Flex application. This command needs to be invoked inside a plugin directory.
@@ -245,8 +234,6 @@ OPTIONS
   --version=version                Publishes the version (SemVer).
 ```
 
-_See code: [dist/commands/flex/plugins/deploy.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/deploy.js)_
-
 ## `twilio flex:plugins:describe:configuration`
 
 Provides details of the Flex Plugin Configuration like status, description and its associated Plugins.
@@ -265,8 +252,6 @@ OPTIONS
   --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
 
-_See code: [dist/commands/flex/plugins/describe/configuration.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/describe/configuration.js)_
-
 ## `twilio flex:plugins:describe:plugin`
 
 Provides details of the Flex Plugin like status, description and its Flex Plugin Versions.
@@ -284,8 +269,6 @@ OPTIONS
   --name=name                      (required) The name of the Flex Plugin to describe.
   --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/describe/plugin.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/describe/plugin.js)_
 
 ## `twilio flex:plugins:describe:plugin-version`
 
@@ -306,8 +289,6 @@ OPTIONS
   --version=version                (required) The Flex Plugin Version to describe.
 ```
 
-_See code: [dist/commands/flex/plugins/describe/plugin-version.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/describe/plugin-version.js)_
-
 ## `twilio flex:plugins:describe:release`
 
 Provides details of the Flex Plugin Release like the underlying Plugin Configuration and Plugins.
@@ -326,8 +307,6 @@ OPTIONS
   --sid=sid                        The Flex Plugin Release SID to describe.
   --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/describe/release.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/describe/release.js)_
 
 ## `twilio flex:plugins:diff ID1 [ID2]`
 
@@ -350,8 +329,6 @@ OPTIONS
   --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
 
-_See code: [dist/commands/flex/plugins/diff.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/diff.js)_
-
 ## `twilio flex:plugins:list:configurations`
 
 Lists the Flex Plugin Configuration on the account.
@@ -368,8 +345,6 @@ OPTIONS
   --json                           Outputs the result of the command as json string.
   --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/list/configurations.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/list/configurations.js)_
 
 ## `twilio flex:plugins:list:plugin-versions`
 
@@ -389,8 +364,6 @@ OPTIONS
   --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
 
-_See code: [dist/commands/flex/plugins/list/plugin-versions.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/list/plugin-versions.js)_
-
 ## `twilio flex:plugins:list:plugins`
 
 Lists the Flex Plugins on the account.
@@ -408,8 +381,6 @@ OPTIONS
   --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
 
-_See code: [dist/commands/flex/plugins/list/plugins.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/list/plugins.js)_
-
 ## `twilio flex:plugins:list:releases`
 
 Lists the Flex Releases on the account.
@@ -426,8 +397,6 @@ OPTIONS
   --json                           Outputs the result of the command as json string.
   --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/list/releases.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/list/releases.js)_
 
 ## `twilio flex:plugins:release`
 
@@ -469,8 +438,6 @@ OPTIONS
   --silent                               Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
 
-_See code: [dist/commands/flex/plugins/release.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/release.js)_
-
 ## `twilio flex:plugins:start`
 
 Starts a dev-server to build the Flex plugin locally.
@@ -496,8 +463,6 @@ OPTIONS
   --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
 
-_See code: [dist/commands/flex/plugins/start.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/start.js)_
-
 ## `twilio flex:plugins:test`
 
 Runs the test suite. This command needs to be invoked inside a plugin directory.
@@ -514,8 +479,6 @@ OPTIONS
   --json                           Outputs the result of the command as json string.
   --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/test.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/test.js)_
 
 ## `twilio flex:plugins:upgrade-plugin`
 
@@ -547,5 +510,4 @@ OPTIONS
   --yes                            If set, will answer yes to all prompts.
 ```
 
-_See code: [dist/commands/flex/plugins/upgrade-plugin.js](https://github.com/twilio/flex-plugin-builder/blob/v6.3.3/dist/commands/flex/plugins/upgrade-plugin.js)_
 <!-- commandsstop -->
