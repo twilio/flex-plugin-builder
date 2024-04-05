@@ -209,7 +209,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       await progress(`Registering plugin ${name} with Plugins API`, async () => this.registerPlugin(), false);
       const pluginVersion: PluginVersionResource = await progress(
         `Registering version **v${deployedData.nextVersion}** with Plugins API`,
-        async () => this.registerPluginVersion(deployedData),
+        async () => this.registerPluginVersion(deployedData, error?.message),
         false,
       );
 
@@ -308,12 +308,14 @@ export default class FlexPluginsDeploy extends FlexPlugin {
    * @param deployResult
    * @returns {Promise}
    */
-  async registerPluginVersion(deployResult: DeployResult): Promise<PluginVersionResource> {
+  async registerPluginVersion(deployResult: DeployResult, validateErrorMsg?: string): Promise<PluginVersionResource> {
     return this.pluginVersionsClient.create(this.pkg.name, {
       Version: deployResult.nextVersion,
       PluginUrl: deployResult.pluginUrl,
       Private: !deployResult.isPublic,
       Changelog: this._flags.changelog || '',
+      CliVersion: this.cliPkg.version || '',
+      ValidateStatus: validateErrorMsg || '',
     });
   }
 
