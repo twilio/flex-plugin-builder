@@ -4,22 +4,6 @@ import { replaceInFile } from 'replace-in-file';
 import { TestSuite, TestParams, testParams, PluginType } from '../core';
 import { spawn, Browser, pluginHelper, joinPath, assertion, killChildProcess } from '../utils';
 
-/**
- * Log into Flex to set the required flex.twilio.com cookies
- * @param config Contains the urls requires to load in the browser
- * @param secrets Contains account info
- */
-export const setupFlexBeforeLocalhost = async (
-  config: TestParams['config'],
-  secrets: TestParams['secrets'],
-): Promise<void> => {
-  await Browser.create({ flex: config.hostedFlexBaseUrl, twilioConsole: config.consoleBaseUrl });
-  await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort);
-
-  // Check if Flex loaded okay
-  await assertion.app.view.adminDashboard.isVisible();
-};
-
 // Starting multiple plugins using 2 local and one remote works
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
   const plugin1 = scenario.plugins[0];
@@ -60,18 +44,15 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   // Start all 3 plugins (Note: cwd is plugin3 in this scenario since plugin is the remote one)
   const twilioCliResult = await spawn(
     'twilio',
-    ['flex:plugins:start', '--name', `${plugin1.name}@${plugin1.version}`, '--name', plugin2.name],
+    ['flex:plugins:start', '--name', `${plugin1.name}@${plugin1.version}`, '--name', plugin2.name, '-l', 'debug'],
     { detached: true, cwd: plugin3.dir },
   );
   await Promise.all([startPlugin(plugin2.localhostUrl), startPlugin(plugin3.localhostUrl)]);
 
   try {
-    // Login to Flex and setup the required flex.twilio.com cookies
-    await setupFlexBeforeLocalhost(config, secrets);
-
     // Load local plugin
-    await Browser.loadNewPage({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
-    await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort, false);
+    await Browser.create({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
+    await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort);
 
     // Check if local plugin loaded okay
     await assertion.app.view.agentDesktop.isVisible();

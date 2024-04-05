@@ -115,20 +115,22 @@ export default (
         compiler.hooks.tsCompiled.call(messages.warnings, messages.errors);
       }
 
-      const config = readRunPluginsJson();
+      setTimeout(() => {
+        const config = readRunPluginsJson();
 
-      // Add the plugin to the loaded plugins configuration file
-      if (isJavaScriptServer) {
-        config.loadedPlugins.push(getPaths().app.name);
-        writeJSONFile(config, getCliPaths().localPluginsJsonPath);
-      }
+        // Add the plugin to the loaded plugins configuration file
+        if (isJavaScriptServer) {
+          config.loadedPlugins.push(getPaths().app.name);
+          writeJSONFile(config, getCliPaths().localPluginsJsonPath);
+        }
 
-      // Check to see if the plugin is the last bundle to be loaded
-      onCompile({
-        result,
-        appName: getPaths().app.name,
-        lastPluginBundle: config.plugins.length === config.loadedPlugins.length,
-      });
+        // Check to see if the plugin is the last bundle to be loaded
+        onCompile({
+          result,
+          appName: getPaths().app.name,
+          lastPluginBundle: config.plugins.length === config.loadedPlugins.length,
+        });
+      }, Math.round(Math.random() * 500));
     });
 
     return compiler;
