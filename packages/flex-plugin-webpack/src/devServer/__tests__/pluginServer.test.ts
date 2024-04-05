@@ -280,7 +280,7 @@ describe('pluginServer', () => {
     };
     const pluginPath = '/plugin-sample/1.0.0/bundle.js';
 
-    it('should render plugin content', async (done) => {
+    it('should render plugin content', async () => {
       const { req, resp } = getReqResp('GET', headers, cookies, pluginPath);
       const remotePluginContent = 'dummy-source-code-of-the-plugin';
 
@@ -299,7 +299,6 @@ describe('pluginServer', () => {
       expect(_getPluginContent).toHaveBeenCalledWith(cookies['flex-jwe'], `/plugins/v1${pluginPath}`);
       expect(resp.end).toHaveBeenCalledTimes(1);
       expect(resp.end).toHaveBeenCalledWith(remotePluginContent);
-      done();
     });
 
     it('should 500 in case of errors', async () => {
