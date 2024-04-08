@@ -5,13 +5,15 @@ import path from 'path';
 
 import FormData from 'form-data';
 import qs from 'qs';
-import { setupCache } from 'axios-cache-adapter';
+import {
+  setupCache,
+  AxiosCacheInstance,
+  InternalCacheRequestConfig,
+  CacheAxiosResponse,
+  CacheRequestConfig,
+} from 'axios-cache-interceptor';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-// @ts-ignore
-import httpAdapter from 'axios/lib/adapters/http';
-// @ts-ignore
-import settle from 'axios/lib/core/settle';
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig, getAdapter } from 'axios';
 
 import * as fs from '../../fs';
 import { env } from '../../env';
@@ -19,11 +21,11 @@ import { logger } from '../../logger';
 import { TwilioApiError, TwilioCliError } from '../../errors';
 import { upperFirst } from '../../lodash';
 
-interface UploadRequestConfig extends AxiosRequestConfig {
+interface UploadRequestConfig extends CacheRequestConfig {
   headers: Record<string, string>;
 }
 
-type RequestInterceptor = (req: AxiosRequestConfig) => Promise<AxiosRequestConfig>;
+type RequestInterceptor = (req: InternalCacheRequestConfig) => Promise<InternalCacheRequestConfig>;
 interface Concurrency {
   pending: number;
   max: number;
@@ -99,7 +101,7 @@ export default class Http {
 
   public static ContentTypeUrlEncoded = 'application/x-www-form-urlencoded';
 
-  protected readonly client: AxiosInstance;
+  protected readonly client: AxiosCacheInstance;
 
   protected readonly cacheAge: number;
 
@@ -112,7 +114,6 @@ export default class Http {
   constructor(config: HttpClientConfig) {
     this.config = config;
     this.cacheAge = 15 * 60 * 1000;
-    const cache = setupCache({ maxAge: 0 });
 
     this.axiosConfig = {
       baseURL: Http.getBaseUrl(config.baseURL),
@@ -120,7 +121,6 @@ export default class Http {
         'Content-Type': config.json ? Http.ContentTypeApplicationJson : Http.ContentTypeUrlEncoded,
         ...config.headers,
       },
-      adapter: cache.adapter,
     };
 
     if (config.auth) {
@@ -143,7 +143,7 @@ export default class Http {
       this.axiosConfig.httpsAgent = new HttpsProxyAgent(env.getHttpProxy());
     }
 
-    this.client = axios.create(this.axiosConfig);
+    this.client = setupCache(axios.create(this.axiosConfig) as any);
 
     this.concurrency = {
       pending: 0,
@@ -170,7 +170,7 @@ export default class Http {
    */
   /* c8 ignore next */
   // eslint-disable-next-line @typescript-eslint/ban-types
-  public static async post<R>(uri: string, data: object, options?: AxiosRequestConfig): Promise<R> {
+  public static async post<R>(uri: string, data: object, options?: CacheRequestConfig): Promise<R> {
     return new Http({ baseURL: '' }).post(uri, data, options);
   }
 
@@ -186,7 +186,7 @@ export default class Http {
    * Creates an instance of the http client and calls the {@link #upload} method.
    */
   /* c8 ignore next */
-  public static async upload<T>(uri: string, formData: FormData, options?: AxiosRequestConfig): Promise<T> {
+  public static async upload<T>(uri: string, formData: FormData, options?: CacheRequestConfig): Promise<T> {
     return new Http({ baseURL: '' }).upload(uri, formData, options);
   }
 
@@ -194,7 +194,7 @@ export default class Http {
    * Creates an instance of the http client and calls the {@link #download} method.
    */
   /* c8 ignore next */
-  public static async download(url: string, directory: string, config?: AxiosRequestConfig): Promise<void> {
+  public static async download(url: string, directory: string, config?: CacheRequestConfig): Promise<void> {
     return new Http({ baseURL: '' }).download(url, directory, config);
   }
 
@@ -285,7 +285,7 @@ export default class Http {
    * Transforms the POST param if provided as object
    * @param req
    */
-  private static async transformRequestFormData(req: AxiosRequestConfig): Promise<AxiosRequestConfig> {
+  private static async transformRequestFormData(req: InternalCacheRequestConfig): Promise<InternalCacheRequestConfig> {
     const method = req.method ? req.method : 'GET';
     logger.debug(`Making a ${method.toUpperCase()} to ${req.baseURL}/${req.url}`);
 
@@ -313,9 +313,12 @@ export default class Http {
         return { [key]: value };
       });
 
-      req.data = qs.stringify(Object.assign({}, ...data), { encode: false, arrayFormat: 'repeat' });
+      req.data = qs.stringify(Object.assign({}, ...data), {
+        encode: false,
+        arrayFormat: 'repeat',
+      });
     }
-    logger.debug(`Request data ${JSON.stringify(req.data)} and content-type ${req.headers?.['Content-Type']}`);
+    logger.debug(`Request data ${req.data} and content-type ${req.headers?.['Content-Type']}`);
 
     return Promise.resolve(req);
   }
@@ -370,7 +373,7 @@ export default class Http {
    * @param data  the data to post
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
-  public async post<R>(uri: string, data: object, options?: AxiosRequestConfig): Promise<R> {
+  public async post<R>(uri: string, data: object, options?: CacheRequestConfig): Promise<R> {
     return this.client.post(uri, data, options);
   }
 
@@ -390,7 +393,7 @@ export default class Http {
    * @param formData  the {@link FormData}
    * @param options  the optional extra {@link AxiosRequestConfig} to pass
    */
-  public async upload<T>(uri: string, formData: FormData, options?: AxiosRequestConfig): Promise<T> {
+  public async upload<T>(uri: string, formData: FormData, options?: CacheRequestConfig): Promise<T> {
     options = {
       ...(await this.getUploadOptions(formData)),
       ...options,
@@ -405,7 +408,7 @@ export default class Http {
    * @param directory the directory to download to
    * @param config optional {@link AxiosRequestConfig}
    */
-  public async download(url: string, directory: string, config?: AxiosRequestConfig): Promise<void> {
+  public async download(url: string, directory: string, config?: CacheRequestConfig): Promise<void> {
     logger.debug(`Downloading ${url} to ${directory}`);
 
     config = {
@@ -457,9 +460,10 @@ export default class Http {
         config.data = uploadReportStream;
 
         return new Promise((resolve, reject) => {
-          httpAdapter(config)
+          const adapter = getAdapter(axios.defaults.adapter); // fallback to default
+          adapter(config as any)
             // @ts-ignore
-            .then((resp) => settle(resolve, reject, resp))
+            .then((resp) => resolve(resp))
             .catch(reject);
         });
       };
@@ -491,7 +495,7 @@ export default class Http {
    * @private
    */
   private useRequestInterceptors(interceptors: RequestInterceptor[]) {
-    return async (req: AxiosRequestConfig): Promise<AxiosRequestConfig> => {
+    return async (req: InternalCacheRequestConfig): Promise<InternalCacheRequestConfig> => {
       return interceptors.reduce(async (chain, current) => chain.then(current), Promise.resolve(req));
     };
   }
@@ -501,7 +505,9 @@ export default class Http {
    * @param req
    * @private
    */
-  private concurrencyRequestTransform = async (req: AxiosRequestConfig): Promise<AxiosRequestConfig> => {
+  private concurrencyRequestTransform = async (
+    req: InternalCacheRequestConfig,
+  ): Promise<InternalCacheRequestConfig> => {
     return new Promise((resolve) => {
       const interval = setInterval(() => {
         const { pending, max } = this.concurrency;
@@ -523,14 +529,14 @@ export default class Http {
    * Transforms the response object
    * @param resp
    */
-  private transformResponse = (resp: AxiosResponse) => {
+  private transformResponse = (resp: CacheAxiosResponse) => {
     this.decrementConcurrentRequests();
     const { data } = resp;
 
-    const servedFromCache = resp.request.fromCache === true ? '(served from cache) ' : '';
+    const servedFromCache = resp.cached === true ? '(served from cache) ' : '';
     const pretty = Http.prettyPrint(data);
     const url = `${resp.config.baseURL}/${resp.config.url}`;
-    const method = resp.request.method || '';
+    const method = resp.config.method || '';
     logger.debug(
       `${method} request to ${url} ${servedFromCache}responded with statusCode ${resp.status} and data\n${pretty}\n`,
     );
@@ -578,15 +584,15 @@ export default class Http {
    * @param option  request configuration
    */
   private getRequestOption(option?: RequestOption) {
-    const opt: AxiosRequestConfig = {};
+    const opt: CacheRequestConfig = {};
 
+    opt.cache = false;
     if (!option) {
       return opt;
     }
-
     if (option.cacheable) {
       opt.cache = {
-        maxAge: option.cacheAge || this.cacheAge,
+        ttl: option.cacheAge || this.cacheAge,
       };
     }
 

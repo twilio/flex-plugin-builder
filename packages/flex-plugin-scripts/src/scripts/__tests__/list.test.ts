@@ -44,14 +44,13 @@ describe('list', () => {
       doList.mockRestore();
     });
 
-    it('should quit if both --public-only and --private-only is provided', async (done) => {
+    it('should quit if both --public-only and --private-only is provided', async () => {
       try {
         await listScript.default('--public-only', privateOnly);
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(e.message).toContain('cannot use --public-only');
         expect(e.message).toContain(privateOnly);
-        done();
       }
     });
 
