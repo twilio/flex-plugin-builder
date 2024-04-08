@@ -1,5 +1,4 @@
-@twilio-labs/plugin-flex
-========================
+# @twilio-labs/plugin-flex
 
 Twilio CLI plugin to interact with the [Flex Plugin Builder](https://github.com/twilio/flex-plugin-builder)
 
@@ -7,9 +6,10 @@ This plugin adds functionality to the [Twilio CLI](https://github.com/twilio/twi
 build and deploy [Twilio Flex plugins](https://www.twilio.com/docs/flex/plugin-builder); it uses the [Flex Plugin Builder](https://github.com/twilio/flex-plugin-builder).
 
 <!-- toc -->
-* [Requirements](#requirements)
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [Requirements](#requirements)
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
 
 # Requirements
@@ -81,13 +81,13 @@ USAGE
 
 OPTIONS
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)       [default: columns] Format of command output.
   -p, --profile=profile            Shorthand identifier for your profile.
   --clear-terminal                 Clears the terminal before running the command.
+  --json                           Outputs the result of the command as json string.
   --sid=sid                        (required) The Flex Plugin Configuration SID to archive.
-  --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
+  --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/archive/configuration.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/archive/configuration.js)_
 
 ## `twilio flex:plugins:archive:plugin`
 
@@ -99,13 +99,13 @@ USAGE
 
 OPTIONS
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)       [default: columns] Format of command output.
   -p, --profile=profile            Shorthand identifier for your profile.
   --clear-terminal                 Clears the terminal before running the command.
+  --json                           Outputs the result of the command as json string.
   --name=name                      (required) The name of the Flex Plugin to archive.
-  --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
+  --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/archive/plugin.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/archive/plugin.js)_
 
 ## `twilio flex:plugins:archive:plugin-version`
 
@@ -117,14 +117,14 @@ USAGE
 
 OPTIONS
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)       [default: columns] Format of command output.
   -p, --profile=profile            Shorthand identifier for your profile.
   --clear-terminal                 Clears the terminal before running the command.
+  --json                           Outputs the result of the command as json string.
   --name=name                      (required) The Flex Plugin name of the Plugin Version to archive.
-  --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
+  --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
   --version=version                (required) The Flex Plugin Version to archive.
 ```
-
-_See code: [dist/commands/flex/plugins/archive/plugin-version.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/archive/plugin-version.js)_
 
 ## `twilio flex:plugins:build`
 
@@ -136,12 +136,12 @@ USAGE
 
 OPTIONS
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)       [default: columns] Format of command output.
   -p, --profile=profile            Shorthand identifier for your profile.
   --clear-terminal                 Clears the terminal before running the command.
-  --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
+  --json                           Outputs the result of the command as json string.
+  --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/build.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/build.js)_
 
 ## `twilio flex:plugins:create NAME`
 
@@ -158,21 +158,25 @@ ARGUMENTS
         name	Name of your plugin.
 
 OPTIONS
-  -a, --accountSid=accountSid  The Account SID for your Flex Project
+  -a, --accountSid=accountSid      The Account SID for your Flex Project
   -h, --help=help
-  -i, --install                Auto-install dependencies
-  -r, --runtimeUrl             The URL to your Twilio Flex Runtime
-  -s, --typescript             Create a TypeScript project
-  -t, --template=template      A GitHub URL that contains your template
+  -i, --install                    Auto-install dependencies
+  -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)       [default: columns] Format of command output.
+  -p, --profile=profile            Shorthand identifier for your profile.
+  -r, --runtimeUrl                 The URL to your Twilio Flex Runtime
+  -s, --typescript                 Create a TypeScript project
+  -t, --template=template          A GitHub URL that contains your template
   -v, --version=version
-  -y, --yarn                   Use yarn as your dependency manager
+  -y, --yarn                       Use yarn as your dependency manager
+  --flexui1                        Creates a plugin compatible with Flex UI major version 1.0
+  --flexui2                        Creates a plugin compatible with Flex UI major version 2.0
+  --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 
 DESCRIPTION
   Arguments:
   name	Name of your plugin. This command needs to be invoked inside a plugin directory.
 ```
-
-_See code: [dist/commands/flex/plugins/create.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/create.js)_
 
 ## `twilio flex:plugins:create-configuration`
 
@@ -184,6 +188,7 @@ USAGE
 
 OPTIONS
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)       [default: columns] Format of command output.
   -p, --profile=profile            Shorthand identifier for your profile.
   --clear-terminal                 Clears the terminal before running the command.
 
@@ -197,7 +202,9 @@ OPTIONS
                                    as a shortcut for enabling the latest version of the plugin. Use additional
                                    --enable-plugin to provide other plugins to enable.
 
-  --name=name                      (required) [default: Autogenerated Release 1644895745030] The friendly name of the
+  --json                           Outputs the result of the command as json string.
+
+  --name=name                      (required) [default: Autogenerated Release 1712245438960] The friendly name of the
                                    Flex Plugin Configuration.
 
   --new                            Creates a new Flex Plugin Configuration, otherwise will append to existing active
@@ -205,10 +212,8 @@ OPTIONS
 
   --plugin=plugin                  Alias for --enable-plugin.
 
-  --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
+  --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/create-configuration.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/create-configuration.js)_
 
 ## `twilio flex:plugins:deploy`
 
@@ -220,19 +225,19 @@ USAGE
 
 OPTIONS
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)       [default: columns] Format of command output.
   -p, --profile=profile            Shorthand identifier for your profile.
   --changelog=changelog            (required) The changes (added/removed) made in this plugin version.
   --clear-terminal                 Clears the terminal before running the command.
   --description=description        The description of this Flex plugin.
+  --json                           Outputs the result of the command as json string.
   --major                          Publishes the version as a major (SemVer).
   --minor                          Publishes the version as a minor (SemVer).
   --patch                          Publishes the version as a patch (SemVer); this is the default.
   --public                         Publishes the plugin as a public Twilio Asset; default is private.
-  --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
+  --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
   --version=version                Publishes the version (SemVer).
 ```
-
-_See code: [dist/commands/flex/plugins/deploy.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/deploy.js)_
 
 ## `twilio flex:plugins:describe:configuration`
 
@@ -244,14 +249,13 @@ USAGE
 
 OPTIONS
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)       [default: columns] Format of command output.
   -p, --profile=profile            Shorthand identifier for your profile.
   --clear-terminal                 Clears the terminal before running the command.
   --json                           Outputs the result of the command as json string.
   --sid=sid                        (required) The Flex Plugin Configuration SID.
-  --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
+  --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/describe/configuration.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/describe/configuration.js)_
 
 ## `twilio flex:plugins:describe:plugin`
 
@@ -263,14 +267,13 @@ USAGE
 
 OPTIONS
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)       [default: columns] Format of command output.
   -p, --profile=profile            Shorthand identifier for your profile.
   --clear-terminal                 Clears the terminal before running the command.
   --json                           Outputs the result of the command as json string.
   --name=name                      (required) The name of the Flex Plugin to describe.
-  --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
+  --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/describe/plugin.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/describe/plugin.js)_
 
 ## `twilio flex:plugins:describe:plugin-version`
 
@@ -282,15 +285,14 @@ USAGE
 
 OPTIONS
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)       [default: columns] Format of command output.
   -p, --profile=profile            Shorthand identifier for your profile.
   --clear-terminal                 Clears the terminal before running the command.
   --json                           Outputs the result of the command as json string.
   --name=name                      (required) The Flex Plugin name of the Plugin Version to describe.
-  --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
+  --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
   --version=version                (required) The Flex Plugin Version to describe.
 ```
-
-_See code: [dist/commands/flex/plugins/describe/plugin-version.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/describe/plugin-version.js)_
 
 ## `twilio flex:plugins:describe:release`
 
@@ -302,15 +304,14 @@ USAGE
 
 OPTIONS
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)       [default: columns] Format of command output.
   -p, --profile=profile            Shorthand identifier for your profile.
   --active                         The most recent release to describe.
   --clear-terminal                 Clears the terminal before running the command.
   --json                           Outputs the result of the command as json string.
   --sid=sid                        The Flex Plugin Release SID to describe.
-  --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
+  --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/describe/release.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/describe/release.js)_
 
 ## `twilio flex:plugins:diff ID1 [ID2]`
 
@@ -326,12 +327,12 @@ ARGUMENTS
 
 OPTIONS
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)       [default: columns] Format of command output.
   -p, --profile=profile            Shorthand identifier for your profile.
   --clear-terminal                 Clears the terminal before running the command.
-  --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
+  --json                           Outputs the result of the command as json string.
+  --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/diff.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/diff.js)_
 
 ## `twilio flex:plugins:list:configurations`
 
@@ -343,13 +344,12 @@ USAGE
 
 OPTIONS
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)       [default: columns] Format of command output.
   -p, --profile=profile            Shorthand identifier for your profile.
   --clear-terminal                 Clears the terminal before running the command.
   --json                           Outputs the result of the command as json string.
-  --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
+  --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/list/configurations.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/list/configurations.js)_
 
 ## `twilio flex:plugins:list:plugin-versions`
 
@@ -361,14 +361,13 @@ USAGE
 
 OPTIONS
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)       [default: columns] Format of command output.
   -p, --profile=profile            Shorthand identifier for your profile.
   --clear-terminal                 Clears the terminal before running the command.
   --json                           Outputs the result of the command as json string.
   --name=name                      (required) The plugin name to list its versions.
-  --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
+  --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/list/plugin-versions.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/list/plugin-versions.js)_
 
 ## `twilio flex:plugins:list:plugins`
 
@@ -380,13 +379,12 @@ USAGE
 
 OPTIONS
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)       [default: columns] Format of command output.
   -p, --profile=profile            Shorthand identifier for your profile.
   --clear-terminal                 Clears the terminal before running the command.
   --json                           Outputs the result of the command as json string.
-  --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
+  --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/list/plugins.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/list/plugins.js)_
 
 ## `twilio flex:plugins:list:releases`
 
@@ -398,13 +396,12 @@ USAGE
 
 OPTIONS
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)       [default: columns] Format of command output.
   -p, --profile=profile            Shorthand identifier for your profile.
   --clear-terminal                 Clears the terminal before running the command.
   --json                           Outputs the result of the command as json string.
-  --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
+  --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/list/releases.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/list/releases.js)_
 
 ## `twilio flex:plugins:release`
 
@@ -416,6 +413,7 @@ USAGE
 
 OPTIONS
   -l=(debug|info|warn|error|none)        [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)             [default: columns] Format of command output.
   -p, --profile=profile                  Shorthand identifier for your profile.
   --clear-terminal                       Clears the terminal before running the command.
 
@@ -432,7 +430,9 @@ OPTIONS
                                          pluginName@latest as a shortcut for enabling the latest version of the plugin.
                                          Use additional --enable-plugin to provide other plugins to enable.
 
-  --name=name                            [default: Autogenerated Release 1644895745030] The friendly name of the Flex
+  --json                                 Outputs the result of the command as json string.
+
+  --name=name                            [default: Autogenerated Release 1712245438960] The friendly name of the Flex
                                          Plugin Configuration.
 
   --new                                  Creates a new Flex Plugin Configuration, otherwise will append to existing
@@ -440,10 +440,8 @@ OPTIONS
 
   --plugin=plugin                        Alias for --enable-plugin.
 
-  --silent                               Suppress output and logs. This is a shorthand for "-l none -o none".
+  --silent                               Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/release.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/release.js)_
 
 ## `twilio flex:plugins:start`
 
@@ -455,9 +453,11 @@ USAGE
 
 OPTIONS
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)       [default: columns] Format of command output.
   -p, --profile=profile            Shorthand identifier for your profile.
   --clear-terminal                 Clears the terminal before running the command.
   --include-remote                 Use this flag to include all remote plugins in your build.
+  --json                           Outputs the result of the command as json string.
 
   --name=name                      The name of the plugin you would like to run. You can provide multiple to run them
                                    all concurrently. You can include specific active remote plugins using "--name
@@ -465,12 +465,8 @@ OPTIONS
 
   --port=port                      [default: 3000] The port to start your local development server on.
 
-  --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
+  --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-> **_NOTE:_** You need to be logged in to [Flex](https://flex.twilio.com) in your browser before running the command with the options `--include-remote`, `--name=plugin-name@remote` or `--name=plugin-name@1.0.0`.
-
-_See code: [dist/commands/flex/plugins/start.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/start.js)_
 
 ## `twilio flex:plugins:test`
 
@@ -482,12 +478,12 @@ USAGE
 
 OPTIONS
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)       [default: columns] Format of command output.
   -p, --profile=profile            Shorthand identifier for your profile.
   --clear-terminal                 Clears the terminal before running the command.
-  --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
+  --json                           Outputs the result of the command as json string.
+  --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 ```
-
-_See code: [dist/commands/flex/plugins/test.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/test.js)_
 
 ## `twilio flex:plugins:upgrade-plugin`
 
@@ -499,17 +495,20 @@ USAGE
 
 OPTIONS
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
+  -o=(columns|json|tsv|none)       [default: columns] Format of command output.
   -p, --profile=profile            Shorthand identifier for your profile.
   --beta                           If set, will upgrade to the latest beta version.
   --clear-terminal                 Clears the terminal before running the command.
   --dev                            If set, will upgrade to the latest dev version.
+  --flex-ui-2.0                    Update your plugin dependencies to be compatible with Flex UI 2.0.
   --install                        If set, will install the dependencies.
+  --json                           Outputs the result of the command as json string.
   --nightly                        If set, will upgrade to the latest nightly version.
 
   --remove-legacy-plugin           Deletes legacy plugin bundle hosted on Twilio Assets (deployed via plugin builder
                                    v3).
 
-  --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
+  --silent                         Suppress  output and logs. This is a shorthand for "-l none -o none".
 
   --yarn                           Use yarn for installation.
 

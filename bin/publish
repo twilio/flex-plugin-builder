@@ -70,6 +70,7 @@ if [ "${tag}" == "public" ] ; then
   ./node_modules/.bin/lerna publish \
     --force-publish="*" \
     --no-push \
+    --skip-npm \
     --exact \
     --yes \
     "${bump}"

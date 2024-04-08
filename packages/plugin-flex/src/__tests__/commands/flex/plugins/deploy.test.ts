@@ -336,6 +336,8 @@ describe('Commands/FlexPluginsDeploy', () => {
       PluginUrl: deployResult.pluginUrl,
       Private: !deployResult.isPublic,
       Changelog: 'sample%20changlog',
+      CliVersion: '6.3.3',
+      ValidateStatus: '',
     });
   });
 
@@ -351,6 +353,8 @@ describe('Commands/FlexPluginsDeploy', () => {
       PluginUrl: deployResult.pluginUrl,
       Private: !deployResult.isPublic,
       Changelog: 'the-changelog',
+      CliVersion: '6.3.3',
+      ValidateStatus: '',
     });
   });
 
