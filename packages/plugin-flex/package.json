@@ -71,7 +71,7 @@
     "twilio": "^3.71.2"
   },
   "engines": {
-    "node": "^14 || ^16 || ^18 || ^20"
+    "node": "^16 || ^18 || ^20"
   },
   "publishConfig": {
     "access": "public"
