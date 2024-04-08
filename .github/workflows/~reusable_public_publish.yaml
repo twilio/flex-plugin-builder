@@ -87,17 +87,15 @@ jobs:
         id: commit_version
         run: |
           git checkout -b bump-version-"$VERSION_NUMBER"
-          (echo "pushVersion=false" >> $GITHUB_OUTPUT) || (git commit -m "Updating version" --no-verify && git push origin bump-version-"$VERSION_NUMBER" --no-verify && echo "pushVersion=true" >> $GITHUB_OUTPUT)
+          git push origin bump-version-"$VERSION_NUMBER" --no-verify
         env:
           VERSION_NUMBER: ${{ steps.publicVersion.outputs.version  }}
       - name: Create PR for version
-        if: steps.commit_version.outputs.pushVersion == 'true'
         run: |
           gh pr create --base main --title "Update version" --body "Update version"
         env:
           GITHUB_TOKEN: ${{ steps.get_app_token.outputs.token }}
       - name: Approve and Merge PR
-        if: steps.commit_version.outputs.pushVersion == 'true'
         run: |
           gh pr review --approve
         env:
