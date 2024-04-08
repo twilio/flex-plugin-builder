@@ -98,5 +98,6 @@ jobs:
       - name: Approve and Merge PR
         run: |
           gh pr review --approve
+          gh pr merge --auto --merge
         env:
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
