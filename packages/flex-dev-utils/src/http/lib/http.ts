@@ -318,7 +318,7 @@ export default class Http {
         arrayFormat: 'repeat',
       });
     }
-    logger.debug(`Request data ${req.data} and content-type ${req.headers?.['Content-Type']}`);
+    logger.debug(`Request data ${JSON.stringify(req.data)} and content-type ${req.headers?.['Content-Type']}`);
 
     return Promise.resolve(req);
   }
