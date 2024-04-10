@@ -60,13 +60,13 @@
     "net": "^1.0.2",
     "open": "^8.2.1",
     "ora": "^5.4.1",
-    "package-json": "^6.5.0",
+    "package-json": "^7.0.0",
     "qs": "^6.10.3",
     "rimraf": "^3.0.2",
     "semver": "^7.3.5",
     "string-width": "^4.2.3",
     "table": "^6.7.3",
-    "update-notifier": "^5.1.0",
+    "update-notifier": "^6.0.0",
     "url": "^0.11.0",
     "url-join": "^4.0.1",
     "util": "^0.12.4",
@@ -92,9 +92,6 @@
   },
   "optionalDependencies": {
     "keytar": "^7.7.0"
-  },
-  "overrides": {
-    "latest-version": "7.0.0"
   },
   "publishConfig": {
     "access": "public"
