@@ -2,7 +2,7 @@
 
 'use strict';
 
-require = require('esm')(module /*, options*/);
+require = require('esm-wallaby')(module /*, options*/);
 
 const CLI = require('../dist').default;
 const cli = new CLI();

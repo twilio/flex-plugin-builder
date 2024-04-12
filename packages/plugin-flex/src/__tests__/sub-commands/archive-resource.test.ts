@@ -119,7 +119,7 @@ describe('SubCommands/ArchiveResource', () => {
     expect(cmd.prints.alreadyArchived).toHaveBeenCalledTimes(1);
   });
 
-  it('should throw an exception', async (done) => {
+  it('should throw an exception', async () => {
     const cmd = await createTest(Plugin)();
     const msg = 'some other message';
 
@@ -137,7 +137,6 @@ describe('SubCommands/ArchiveResource', () => {
       expect(cmd.prints.archivedSuccessfully).not.toHaveBeenCalled();
 
       expect(e.message).toEqual(msg);
-      done();
     }
   });
 });
