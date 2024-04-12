@@ -122,6 +122,16 @@ describe('Commands/FlexPluginsDeploy', () => {
     return cmd;
   };
 
+  const validateRetuningViolations = async (scriptName: string) => {
+    if (scriptName === 'validate') {
+      return Promise.resolve({
+        violations: ['violation 1'],
+        vtime: 3452,
+      });
+    }
+    return Promise.resolve(this);
+  };
+
   describe('parseVersionInput', () => {
     it('should parse semver', () => {
       ['1.0.0', '1.0.0-rc.1'].forEach((s) => expect(parseVersionInput(s)).toEqual(s));
@@ -271,15 +281,7 @@ describe('Commands/FlexPluginsDeploy', () => {
     jest.spyOn(cmd, 'checkServerlessInstance').mockReturnThis();
     jest.spyOn(cmd, 'checkForLegacy').mockReturnThis();
     jest.spyOn(cmd, 'validatePlugin').mockReturnThis();
-    jest.spyOn(cmd, 'runScript').mockImplementation(async (scriptName) => {
-      if (scriptName === 'validate') {
-        return Promise.resolve({
-          violations: ['violation 1'],
-          vtime: 3452,
-        });
-      }
-      return Promise.resolve(this);
-    });
+    jest.spyOn(cmd, 'runScript').mockImplementation(validateRetuningViolations);
     jest.spyOn(cmd, 'hasCollisionAndOverwrite').mockReturnThis();
     jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
     jest.spyOn(cmd, 'registerPlugin').mockReturnThis();
@@ -295,6 +297,30 @@ describe('Commands/FlexPluginsDeploy', () => {
     expect(deployScript._verifyFlexUIConfiguration).not.toHaveBeenCalled();
     expect(cmd.registerPlugin).not.toHaveBeenCalled();
     expect(cmd.registerPluginVersion).not.toHaveBeenCalled();
+  });
+
+  it('should continue to deploy if --bypass-validation flag is present', async () => {
+    const cmd = await createCommand('--changelog', defaultChangelog, '--bypass-validation');
+
+    jest.spyOn(cmd, 'checkServerlessInstance').mockReturnThis();
+    jest.spyOn(cmd, 'checkForLegacy').mockReturnThis();
+    jest.spyOn(cmd, 'validatePlugin').mockReturnThis();
+    jest.spyOn(cmd, 'runScript').mockImplementation(validateRetuningViolations);
+    jest.spyOn(cmd, 'hasCollisionAndOverwrite').mockReturnThis();
+    jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
+    jest.spyOn(cmd, 'registerPlugin').mockReturnThis();
+    jest.spyOn(cmd, 'registerPluginVersion').mockReturnThis();
+    jest.spyOn(devUtils, 'choose').mockReturnThis();
+    mockGetPkg(cmd, pkg);
+
+    await cmd.doRun();
+
+    expect(devUtils.choose).toHaveBeenCalledTimes(0);
+    expect(cmd.runScript).toHaveBeenCalledTimes(4);
+    expect(cmd.hasCollisionAndOverwrite).toHaveBeenCalledTimes(1);
+    expect(deployScript._verifyFlexUIConfiguration).toHaveBeenCalledTimes(1);
+    expect(cmd.registerPlugin).toHaveBeenCalledTimes(1);
+    expect(cmd.registerPluginVersion).toHaveBeenCalledTimes(1);
   });
 
   it('should have own flags', () => {

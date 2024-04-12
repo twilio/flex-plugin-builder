@@ -87,6 +87,35 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
   assertion.stringContains(result.stdout, 'Next Steps');
   assertion.stringContains(result.stdout, 'twilio flex:plugins:release');
 
+  // Deploy the plugin bypassing validation issues found in the plugin
+  logger.info('Running {{flex:plugins:deploy}} with --bypass-validation');
+
+  result = await spawn(
+    'twilio',
+    [
+      'flex:plugins:deploy',
+      '--changelog',
+      `"${plugin.changelog}"`,
+      '--patch',
+      '--bypass-validation',
+      '-l',
+      'debug',
+      ...config.regionFlag,
+    ],
+    {
+      cwd: plugin.dir,
+    },
+  );
+
+  noWarnings = result.stdout.match(WARNING_REGEX)?.length || 0;
+
+  // Should display violations
+  assertion.equal(noWarnings, 2);
+
+  // Should deploy the plugin
+  assertion.stringContains(result.stdout, 'Next Steps');
+  assertion.stringContains(result.stdout, 'twilio flex:plugins:release');
+
   // Deploy without validation errors in the plugin
   await replaceInFile({
     files: joinPath(plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
