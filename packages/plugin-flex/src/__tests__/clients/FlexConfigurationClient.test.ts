@@ -143,7 +143,7 @@ describe('FlexConfigurationClient', () => {
       createHttpClient.mockRestore();
     });
 
-    it('should throw an exception', async (done) => {
+    it('should throw an exception', async () => {
       // @ts-ignore
       const baseClient = new HttpClient({ ...FlexConfigurationClient.HttpClientOption, auth });
       // @ts-ignore
@@ -155,7 +155,6 @@ describe('FlexConfigurationClient', () => {
         await client.updateServerlessSids([]);
       } catch (e) {
         expect(e).toBeInstanceOf(TwilioCliError);
-        done();
       }
 
       createHttpClient.mockRestore();

@@ -23,7 +23,7 @@ describe('BuildClient', () => {
   });
 
   describe('constructor', () => {
-    it('should throw error if invalid sid is provided', (done) => {
+    it('should throw error if invalid sid is provided', () => {
       const sid = 'ZE00000000000000000000000000000000';
 
       try {
@@ -32,7 +32,6 @@ describe('BuildClient', () => {
       } catch (e) {
         expect(e.message).toContain('is not of type ZS');
         expect(e.message).toContain(sid);
-        done();
       }
     });
   });
@@ -90,7 +89,7 @@ describe('BuildClient', () => {
   });
 
   describe('get', () => {
-    it('should warn if incorrect sid is provided to remove', async (done) => {
+    it('should warn if incorrect sid is provided to remove', async () => {
       const client = new BuildClient(baseClient, serviceSid);
 
       try {
@@ -98,7 +97,6 @@ describe('BuildClient', () => {
       } catch (e) {
         expect(e.message).toContain('not of type ZB');
         expect(e.message).toContain(serviceSid);
-        done();
       }
     });
 

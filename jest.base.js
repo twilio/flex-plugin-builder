@@ -33,7 +33,7 @@ module.exports = (pkg, options) => {
     transform: {
       '^.+\\.js?$': '<rootDir>/../../node_modules/babel-jest',
     },
-    transformIgnorePatterns: ['/node_modules/(?!(axios)/)'],
+    transformIgnorePatterns: ['/node_modules/(?!(axios|@twilio/cli-core)/)'],
     testPathIgnorePatterns: ['/node_modules/', '<rootDir>/packages/flex-plugin-e2e-tests'],
     coveragePathIgnorePatterns: ['/node_modules/', 'jestTransforms'],
     globals: {
