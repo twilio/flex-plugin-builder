@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { replaceInFile } from 'replace-in-file';
 import { TestSuite, TestParams, testParams } from '../core';
-import { spawn, Browser, pluginHelper, joinPath, assertion, killChildProcess } from '../utils';
+import { spawn, Browser, pluginHelper, joinPath, assertion, killChildProcess, ConsoleAPI } from '../utils';
 
 // Plugin start
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
@@ -16,11 +16,13 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     testParams.config.start.timeout,
     testParams.config.start.pollInterval,
   );
+  const consoleApi = new ConsoleAPI(config.consoleBaseUrl, secrets.console);
+  const cookies = await consoleApi.getCookies();
   await Browser.create({ flex: plugin.localhostUrl, twilioConsole: config.consoleBaseUrl });
 
   try {
     // Plugin loads
-    await Browser.app.twilioConsole.login('agent-desktop', secrets.api.accountSid, config.localhostPort);
+    await Browser.app.twilioConsole.login(cookies, 'agent-desktop', secrets.api.accountSid, config.localhostPort);
     await assertion.app.view.agentDesktop.isVisible();
     await assertion.app.view.plugins.plugin.isVisible(plugin.componentText);
 
