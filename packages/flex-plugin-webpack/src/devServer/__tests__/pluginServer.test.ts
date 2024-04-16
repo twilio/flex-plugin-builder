@@ -85,14 +85,13 @@ describe('pluginServer', () => {
       ]);
     });
 
-    it('should throw error', (done) => {
+    it('should throw error', () => {
       try {
         pluginServerScript._getLocalPlugins(3000, ['plugin-unknown']);
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(readPluginsJson).toHaveBeenCalledTimes(1);
         expect(e.message).toContain('was not locally found');
-        done();
       }
     });
   });
@@ -113,13 +112,12 @@ describe('pluginServer', () => {
       ]);
     });
 
-    it('should throw error', (done) => {
+    it('should throw error', () => {
       try {
         pluginServerScript._getRemoteVersionedPlugins([badPlugin]);
       } catch (e) {
         expect(e).toBeInstanceOf(FlexPluginError);
         expect(e.message).toContain('Unexpected plugin name format was provided');
-        done();
       }
     });
   });
@@ -282,7 +280,7 @@ describe('pluginServer', () => {
     };
     const pluginPath = '/plugin-sample/1.0.0/bundle.js';
 
-    it('should render plugin content', async (done) => {
+    it('should render plugin content', async () => {
       const { req, resp } = getReqResp('GET', headers, cookies, pluginPath);
       const remotePluginContent = 'dummy-source-code-of-the-plugin';
 
@@ -301,7 +299,6 @@ describe('pluginServer', () => {
       expect(_getPluginContent).toHaveBeenCalledWith(cookies['flex-jwe'], `/plugins/v1${pluginPath}`);
       expect(resp.end).toHaveBeenCalledTimes(1);
       expect(resp.end).toHaveBeenCalledWith(remotePluginContent);
-      done();
     });
 
     it('should 500 in case of errors', async () => {
@@ -334,7 +331,7 @@ describe('pluginServer', () => {
     const jweHeaders = { 'x-flex-jwe': 'jweToken' };
     const onRemotePlugins = jest.fn();
 
-    it('should getPlugins and rebase', async (done) => {
+    it('should getPlugins and rebase', async () => {
       const { req, resp } = getReqResp('GET', jweHeaders);
       const remotePlugin = [{ name: 'plugin-2', phase: 3 }] as pluginServerScript.Plugin[];
 
@@ -366,8 +363,6 @@ describe('pluginServer', () => {
       expect(onRemotePlugins).toHaveBeenCalledWith(remotePlugin);
       expect(resp.end).toHaveBeenCalledTimes(1);
       expect(resp.end).toHaveBeenCalledWith('[{"name":"plugin-1"},{"name":"plugin-2"}]');
-
-      done();
     });
 
     it('should fail', async () => {
