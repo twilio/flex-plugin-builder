@@ -3,7 +3,6 @@ import { Page } from 'puppeteer';
 import { testParams } from '../../../core';
 import { Base } from './base';
 import { sleep } from '../../timers';
-import { logger } from '@twilio/flex-dev-utils';
 
 export class TwilioConsole extends Base {
   private static _loginForm = '#email';
@@ -47,7 +46,6 @@ export class TwilioConsole extends Base {
       });
 
       if (csrfToken) {
-        logger.debug('CSRF Token: ', csrfToken);
         const loginURL = `${this._baseUrl}/userauth/submitLoginPassword`;
         await this.page.evaluate(
           // eslint-disable-next-line @typescript-eslint/promise-function-async
@@ -72,18 +70,12 @@ export class TwilioConsole extends Base {
           },
         );
 
-        const pageCookies = await this.page.cookies();
-
-        logger.debug('Submitted login password');
-        logger.debug('Cookies set: ', JSON.stringify(pageCookies));
+        // Log in Flex via service login
+        await this.goto({ baseUrl: this._baseUrl, path });
+        await sleep(30000);
+      } else {
+        throw new Error('Unable to fetch CSRF token to login to Twilio Console');
       }
-
-      // Log in Flex via service login
-      await this.goto({ baseUrl: this._baseUrl, path });
-
-      logger.debug('Reloaded service login url. Going to wait for 30s');
     }
-
-    await sleep(30000);
   }
 }
