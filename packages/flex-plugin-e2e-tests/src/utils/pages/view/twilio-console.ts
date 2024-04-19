@@ -3,11 +3,10 @@ import { Page } from 'puppeteer';
 import { testParams } from '../../../core';
 import { Base } from './base';
 import { sleep } from '../../timers';
+import { logger } from '@twilio/flex-dev-utils';
 
 export class TwilioConsole extends Base {
   private static _loginForm = '#email';
-
-  private static _submitLoginPasswordURLPath = '/userauth/submitLoginPassword';
 
   assert = {};
 
@@ -48,6 +47,8 @@ export class TwilioConsole extends Base {
       });
 
       if (csrfToken) {
+        logger.debug('CSRF Token: ', csrfToken);
+        const loginURL = `${this._baseUrl}/userauth/submitLoginPassword`;
         await this.page.evaluate(
           // eslint-disable-next-line @typescript-eslint/promise-function-async
           (data: Record<string, string>) => {
@@ -64,19 +65,25 @@ export class TwilioConsole extends Base {
             });
           },
           {
-            url: `${this._baseUrl}${TwilioConsole._submitLoginPasswordURLPath}`,
+            url: loginURL,
             email: testParams.secrets.console.email,
             password: testParams.secrets.console.password,
             csrfToken,
           },
         );
 
-        // Log in Flex via service login
-        await this.page.reload();
-        await sleep(30000);
-      } else {
-        throw new Error('Unable to get CSRF token to login to Twilio Console');
+        const pageCookies = await this.page.cookies();
+
+        logger.debug('Submitted login password');
+        logger.debug('Cookies set: ', JSON.stringify(pageCookies));
       }
+
+      // Log in Flex via service login
+      await this.goto({ baseUrl: this._baseUrl, path });
+
+      logger.debug('Reloaded service login url. Going to wait for 30s');
     }
+
+    await sleep(30000);
   }
 }
