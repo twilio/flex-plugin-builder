@@ -3,7 +3,7 @@ import { replaceInFile } from 'replace-in-file';
 import semver from 'semver';
 
 import { TestSuite, TestParams, testParams } from '../core';
-import { spawn, Browser, pluginHelper, joinPath, assertion, killChildProcess, api, ConsoleAPI } from '../utils';
+import { spawn, Browser, pluginHelper, joinPath, assertion, killChildProcess, api } from '../utils';
 
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
   const ext = scenario.isTS ? 'tsx' : 'jsx';
@@ -57,10 +57,8 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
 
   try {
     // Load local plugin
-    const consoleApi = new ConsoleAPI(config.consoleBaseUrl, secrets.console);
-    const cookies = await consoleApi.getCookies();
     await Browser.create({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
-    await Browser.app.twilioConsole.login(cookies, 'admin', secrets.api.accountSid, config.localhostPort);
+    await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort);
 
     // Check if local plugin loaded okay
     await assertion.app.view.agentDesktop.isVisible();
