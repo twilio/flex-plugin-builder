@@ -1,6 +1,6 @@
 import { env } from '@twilio/flex-dev-utils';
 import { getLocalAndNetworkUrls } from '@twilio/flex-dev-utils/dist/urls';
-import { Configuration } from 'webpack-dev-server';
+import { ClientConfiguration, Configuration, Static } from 'webpack-dev-server';
 import { getPaths } from '@twilio/flex-dev-utils/dist/fs';
 
 import { WebpackType } from '..';
@@ -15,11 +15,17 @@ export const _getBase = (): Configuration => {
 
   return {
     compress: true,
-    clientLogLevel: 'none',
-    quiet: true,
+    static: {},
+    client: {
+      logging: 'none',
+      webSocketURL: {
+        hostname: local.host,
+        pathname: local.url,
+        port: env.getPort(),
+      },
+    },
     host: env.getHost(),
     port: env.getPort(),
-    public: local.url,
   };
 };
 
@@ -29,14 +35,27 @@ export const _getBase = (): Configuration => {
  */
 // eslint-disable-next-line import/no-unused-modules
 export const _getStaticConfiguration = (config: Configuration): Configuration => {
-  config.contentBase = [getPaths().app.publicDir, getPaths().scripts.devAssetsDir];
-  config.contentBasePublicPath = '/';
   config.historyApiFallback = {
     disableDotRule: true,
     index: '/',
   };
-  config.publicPath = '/';
-  config.watchContentBase = true;
+  config.static = [
+    {
+      directory: getPaths().app.publicDir,
+      publicPath: '/',
+      watch: true,
+    },
+    {
+      directory: getPaths().scripts.devAssetsDir,
+      publicPath: '/',
+      watch: true,
+    },
+  ];
+
+  // eslint-disable-next-line multiline-comment-style
+  // config.static = [getPaths().app.publicDir, getPaths().scripts.devAssetsDir];
+  // (config.static as Static).publicPath = '/';
+  // (config.static as Static).watch = true;
 
   return config;
 };
@@ -48,14 +67,15 @@ export const _getStaticConfiguration = (config: Configuration): Configuration =>
 // eslint-disable-next-line import/no-unused-modules
 export const _getJavaScriptConfiguration = (config: Configuration): Configuration => {
   const socket = env.getWSSocket();
-  config.injectClient = false;
-  config.serveIndex = false;
 
+  (config.static as Static).serveIndex = true;
   // We're using native sockjs-node
-  config.transportMode = 'ws';
-  config.sockHost = socket.host;
-  config.sockPath = socket.path;
-  config.sockPort = socket.port;
+  config.webSocketServer = 'ws';
+  (config.client as ClientConfiguration).webSocketURL = {
+    hostname: socket.host,
+    pathname: socket.path,
+    port: socket.port,
+  };
 
   // Hot reload
   config.hot = true;

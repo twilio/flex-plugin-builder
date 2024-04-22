@@ -19,16 +19,16 @@ export default (devCompiler: Compiler, devConfig: Configuration, type: WebpackTy
   const isJavaScriptServer = type === WebpackType.JavaScript;
   const isStaticServer = type === WebpackType.Static;
 
-  const devServer = new WebpackDevServer(devCompiler, devConfig);
+  const devServer = new WebpackDevServer(devConfig, devCompiler);
 
   if (!isStaticServer) {
     // Show TS errors on browser
     devCompiler.hooks.tsCompiled.tap('afterTSCompile', (warnings, errors) => {
       if (warnings.length) {
-        devServer.sockWrite(devServer.sockets, 'warnings', warnings);
+        devServer.sendMessage(devServer.webSocketServer?.clients ?? [], 'warnings', warnings);
       }
       if (errors.length) {
-        devServer.sockWrite(devServer.sockets, 'errors', errors);
+        devServer.sendMessage(devServer.webSocketServer?.clients ?? [], 'errors', errors);
       }
     });
   }
@@ -44,7 +44,7 @@ export default (devCompiler: Compiler, devConfig: Configuration, type: WebpackTy
     if (isJavaScriptServer) {
       logger.debug('Starting development server %s...', serverType);
     } else {
-      logger.clearTerminal();
+      // logger.clearTerminal();
       logger.notice('Starting development server %s...', serverType);
     }
 

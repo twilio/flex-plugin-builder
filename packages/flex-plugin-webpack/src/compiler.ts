@@ -162,14 +162,14 @@ export const compilerRenderer = (
       }
     });
 
-    logger.clearTerminal();
+    // logger.clearTerminal();
     devServerSuccessful(local, network, localPlugins, remotePlugins, hasRemote);
   };
 
   return {
     onRemotePlugins: serverSuccessful,
     onCompile: ({ result, appName }) => {
-      logger.clearTerminal();
+      // logger.clearTerminal();
       results[appName] = result;
 
       const isSuccessful = Object.values(results).every((r) => r.errors.length === 0 && r.warnings.length === 0);
