@@ -100,6 +100,10 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       options: [Options.Deploy, Options.Fix],
       hidden: true,
     }),
+    'bypass-validation': flags.boolean({
+      description: FlexPluginsDeploy.topic.flags['bypass-validation'],
+      default: false,
+    }),
   };
 
   // @ts-ignore
@@ -167,7 +171,8 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       logger.warning('Continuing to deploy');
     }
 
-    let shouldContinue = this._flags.option === Options.Deploy || violations.length === 0;
+    let shouldContinue =
+      this._flags['bypass-validation'] || this._flags.option === Options.Deploy || violations.length === 0;
 
     if (!shouldContinue && this._flags.option !== Options.Fix) {
       const choice = await choose(
@@ -180,6 +185,14 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       );
       shouldContinue = choice === this.options[Options.Deploy];
     }
+
+    this.telemetryProperties = {
+      violations,
+      vtime: Math.round(vtime),
+      error,
+      bypassed: this._flags['bypass-validation'],
+      deployed: 0,
+    };
 
     if (shouldContinue) {
       await progress(
@@ -220,9 +233,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
         deployedData,
         this.argv.includes('--profile') ? this.currentProfile.id : null,
       );
-      this.telemetryProperties = { violations, vtime: Math.round(vtime), error, deployed: 1 };
-    } else {
-      this.telemetryProperties = { violations, vtime: Math.round(vtime), error, deployed: 0 };
+      this.telemetryProperties = { ...this.telemetryProperties, deployed: 1 };
     }
   }
 

@@ -118,7 +118,8 @@
           "public": "Publishes the plugin as a public Twilio Asset; default is private.",
           "changelog": "The changes (added/removed) made in this plugin version.",
           "description": "The description of this Flex plugin.",
-          "option": "Option to automatically pick post validation of the plugin"
+          "option": "Option to automatically pick post validation of the plugin.",
+          "bypass-validation": "Publishes the plugin even if validation step identifies issues in the plugin."
         }
       },
       "flex:plugins:create-configuration": {
