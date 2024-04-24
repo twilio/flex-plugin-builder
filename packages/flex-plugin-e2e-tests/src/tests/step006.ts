@@ -1,6 +1,5 @@
 /* eslint-disable */
 import { replaceInFile } from 'replace-in-file';
-import { logger } from '@twilio/flex-dev-utils';
 
 import { TestSuite, TestParams, testParams } from '../core';
 import { spawn, Browser, pluginHelper, joinPath, assertion, killChildProcess } from '../utils';
@@ -26,7 +25,6 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   try {
     // Plugin loads
     await Browser.app.twilioConsole.login('agent-desktop', secrets.api.accountSid, config.localhostPort);
-    logger.debug('Login complete');
     await assertion.app.view.agentDesktop.isVisible();
     await assertion.app.view.plugins.plugin.isVisible(plugin.componentText);
 

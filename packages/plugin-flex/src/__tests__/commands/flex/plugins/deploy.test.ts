@@ -124,7 +124,7 @@ describe('Commands/FlexPluginsDeploy', () => {
     return cmd;
   };
 
-  const validateRetuningViolations = async (scriptName: string) => {
+  const validateReturningViolations = async (scriptName: string) => {
     if (scriptName === 'validate') {
       return Promise.resolve({
         violations: ['violation 1'],
@@ -281,7 +281,7 @@ describe('Commands/FlexPluginsDeploy', () => {
     jest.spyOn(cmd, 'checkServerlessInstance').mockReturnThis();
     jest.spyOn(cmd, 'checkForLegacy').mockReturnThis();
     jest.spyOn(cmd, 'validatePlugin').mockReturnThis();
-    jest.spyOn(cmd, 'runScript').mockImplementation(validateRetuningViolations);
+    jest.spyOn(cmd, 'runScript').mockImplementation(validateReturningViolations);
     jest.spyOn(cmd, 'hasCollisionAndOverwrite').mockReturnThis();
     jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
     jest.spyOn(cmd, 'registerPlugin').mockReturnThis();
@@ -305,7 +305,7 @@ describe('Commands/FlexPluginsDeploy', () => {
     jest.spyOn(cmd, 'checkServerlessInstance').mockReturnThis();
     jest.spyOn(cmd, 'checkForLegacy').mockReturnThis();
     jest.spyOn(cmd, 'validatePlugin').mockReturnThis();
-    jest.spyOn(cmd, 'runScript').mockImplementation(validateRetuningViolations);
+    jest.spyOn(cmd, 'runScript').mockImplementation(validateReturningViolations);
     jest.spyOn(cmd, 'hasCollisionAndOverwrite').mockReturnThis();
     jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
     jest.spyOn(cmd, 'registerPlugin').mockReturnThis();
