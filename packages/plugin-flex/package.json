@@ -231,7 +231,10 @@
         "description": "Lists the Flex Releases on the account."
       },
       "flex:plugins:validate": {
-        "description": "Validates the Flex plugin by looking for any issues that could potentially break the plugin when in use. Generates a report with the identified issues, if any."
+        "description": "Validates the Flex plugin by looking for any issues that could potentially break the plugin when in use. Generates a report with the identified issues, if any.",
+        "flags": {
+          "flexui2": "Validates the Flex plugin for compatibility with Flex UI 2.0."
+        }
       }
     }
   }

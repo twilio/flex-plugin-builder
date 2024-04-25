@@ -1,5 +1,7 @@
 import { createDescription } from '../../../utils/general';
 import FlexPlugin from '../../../sub-commands/flex-plugin';
+import { flags } from '@oclif/parser';
+import { OutputFlags } from '@oclif/parser/lib/parse';
 
 const baseFlags = { ...FlexPlugin.flags };
 // @ts-ignore
@@ -25,13 +27,25 @@ export default class FlexPluginValidate extends FlexPlugin {
 
   static flags = {
     ...baseFlags,
+    'flex-ui-2.0': flags.boolean({
+      description: FlexPluginValidate.topic.flags.flexui2,
+      default: false,
+    }),
   };
+
+  // @ts-ignore
+  public _flags: OutputFlags<typeof FlexPluginValidate.flags>;
+
+  async init(): Promise<void> {
+    this._flags = (await this.parseCommand(FlexPluginValidate)).flags;
+  }
 
   /**
    * @override
    */
   async doRun(): Promise<void> {
     process.env.PERSIST_TERMINAL = 'true';
+    this.scriptArgs = this._flags['flex-ui-2.0'] ? ['--flex-ui-2.0'] : [];
     const { violations, vtime, error }: ValidateResult = (await this.runScript('validate')) as ValidateResult;
     this.telemetryProperties = { violations, vtime: Math.round(vtime), error, deployed: 0 };
   }
