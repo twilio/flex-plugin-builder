@@ -35,7 +35,7 @@ const printWarnings = (issues: Warning[]): void => {
         }
         if (link) {
           logger.newline();
-          logger.info(`More details ${logger.coloredStrings.bold(logger.linkText('here', link))}`);
+          logger.info(`More details ${logger.coloredStrings.link(logger.coloredStrings.underline(link))}`);
         }
       }
     }
