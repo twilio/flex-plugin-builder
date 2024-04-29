@@ -44,6 +44,7 @@ USAGE
 # Commands
 
 <!-- commands -->
+
 - [@twilio-labs/plugin-flex](#twilio-labsplugin-flex)
 - [Requirements](#requirements)
   - [Install the Twilio CLI](#install-the-twilio-cli)
@@ -528,9 +529,11 @@ USAGE
 OPTIONS
   -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
   -p, --profile=profile            Shorthand identifier for your profile.
+  --flex-ui-2.0                    Validates the Flex plugin for compatibility with the latest Flex UI 2.x version.
   --clear-terminal                 Clears the terminal before running the command.
   --silent                         Suppress output and logs. This is a shorthand for "-l none -o none".
 ```
 
 _See code: [dist/commands/flex/plugins/validate.js](https://github.com/twilio/flex-plugin-builder/blob/v5.0.6-beta.0/dist/commands/flex/plugins/validate.js)_
+
 <!-- commandsstop -->
