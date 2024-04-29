@@ -119,6 +119,18 @@ describe('logger', () => {
     expect(info).toHaveBeenCalledWith('var1 var2');
   });
 
+  it('should log without markdown', () => {
+    // @ts-ignore
+    const logSpy = jest.spyOn(_logger, '_log');
+    logger.log('var1', 'var2');
+
+    expect(info).toHaveBeenCalledTimes(1);
+    expect(info).toHaveBeenCalledWith('var1 var2');
+    expect(logSpy).toHaveBeenCalledWith({ level: 'info', markdown: false, args: ['var1', 'var2'] });
+
+    logSpy.mockRestore();
+  });
+
   it('should print single entry column', () => {
     logger.columns([['one-entry']]);
 

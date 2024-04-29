@@ -20,22 +20,22 @@ const printWarnings = (issues: Warning[]): void => {
 
       if (line !== undefined && column !== undefined) {
         logger.newline();
-        logger.info(logger.coloredStrings.link(logger.coloredStrings.underline(`${file}:${line}:${column + 1}`)));
+        logger.log(logger.coloredStrings.link(logger.coloredStrings.underline(`${file}:${line}:${column + 1}`)));
       }
 
       logger.newline();
-      logger.info(`${logger.coloredStrings.warning('Warning:')} ${warningMessage}`);
+      logger.log(`${logger.coloredStrings.warning('Warning:')} ${warningMessage}`);
 
       if (message) {
         logger.newline();
-        logger.info(`${logger.coloredStrings.success('Recommendation:')} ${message}`);
+        logger.log(`${logger.coloredStrings.success('Recommendation:')} ${message}`);
         if (code) {
           logger.newline();
-          logger.info(logger.coloredStrings.code(code));
+          logger.log(logger.coloredStrings.code(code));
         }
         if (link) {
           logger.newline();
-          logger.info(`More details ${logger.coloredStrings.bold(logger.linkText('here', link))}`);
+          logger.log(`More details ${logger.coloredStrings.bold(logger.linkText('here', link))}`);
         }
       }
     }
