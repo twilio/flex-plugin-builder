@@ -1,7 +1,8 @@
-import { createDescription } from '../../../utils/general';
-import FlexPlugin from '../../../sub-commands/flex-plugin';
 import { flags } from '@oclif/parser';
 import { OutputFlags } from '@oclif/parser/lib/parse';
+
+import { createDescription } from '../../../utils/general';
+import FlexPlugin from '../../../sub-commands/flex-plugin';
 
 const baseFlags = { ...FlexPlugin.flags };
 // @ts-ignore
