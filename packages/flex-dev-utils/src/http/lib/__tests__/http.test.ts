@@ -96,13 +96,12 @@ describe('HttpClient', () => {
       expect(HttpClient.getBaseUrl('https://something.else.com')).toEqual('https://something.else.com');
     });
 
-    it('should throw a TwilioCliError if invalid region is provided', (done) => {
+    it('should throw a TwilioCliError if invalid region is provided', () => {
       try {
         jest.spyOn(env, 'getRegion').mockReturnValue('random');
         HttpClient.getBaseUrl('https://api.twilio.com');
       } catch (e) {
         expect(e).toBeInstanceOf(TwilioCliError);
-        done();
       }
     });
 
@@ -312,7 +311,7 @@ describe('HttpClient', () => {
 
       expect(response).toEqual('get-result');
       expect(get).toHaveBeenCalledTimes(1);
-      expect(get).toHaveBeenCalledWith('the-uri', {});
+      expect(get).toHaveBeenCalledWith('the-uri', { cache: false });
     });
   });
 
@@ -510,7 +509,7 @@ describe('HttpClient', () => {
   });
 
   describe('transformResponseError', () => {
-    it('should not transform any rejection if not a twilio error', async (done) => {
+    it('should not transform any rejection if not a twilio error', async () => {
       const err = new Error('the-error');
       const httpClient = new HttpClient(config);
 
@@ -519,11 +518,10 @@ describe('HttpClient', () => {
         await httpClient.transformResponseError(err);
       } catch (e) {
         expect(e).toEqual(err);
-        done();
       }
     });
 
-    it('should not transform rejection to twilio error', async (done) => {
+    it('should not transform rejection to twilio error', async () => {
       const err = {
         isAxiosError: true,
         response: {
@@ -546,7 +544,6 @@ describe('HttpClient', () => {
         expect((e as TwilioApiError).message).toEqual(err.response.data.message);
         expect((e as TwilioApiError).moreInfo).toEqual(err.response.data.more_info);
         expect((e as TwilioApiError).status).toEqual(err.response.data.status);
-        done();
       }
     });
   });
@@ -556,23 +553,25 @@ describe('HttpClient', () => {
       const httpClient = new HttpClient(config);
 
       // @ts-ignore
-      expect(httpClient.getRequestOption()).toEqual({});
+      expect(httpClient.getRequestOption()).toEqual({ cache: false });
     });
 
     it('should return default maxAge', () => {
       const httpClient = new HttpClient(config);
 
       // @ts-ignore
-      const maxAge = httpClient.cacheAge;
+      const ttl = httpClient.cacheAge;
       // @ts-ignore
-      expect(httpClient.getRequestOption({ cacheable: true })).toEqual({ cache: { maxAge } });
+      expect(httpClient.getRequestOption({ cacheable: true })).toEqual({
+        cache: { ttl },
+      });
     });
 
     it('should return requested maxAge', () => {
       const httpClient = new HttpClient(config);
 
       // @ts-ignore
-      expect(httpClient.getRequestOption({ cacheable: true, cacheAge: 123 })).toEqual({ cache: { maxAge: 123 } });
+      expect(httpClient.getRequestOption({ cacheable: true, cacheAge: 123 })).toEqual({ cache: { ttl: 123 } });
     });
   });
 
@@ -760,7 +759,7 @@ describe('HttpClient', () => {
       expect('adapter' in options).toEqual(true);
     });
 
-    it('should throw an error if no auth is provided', async (done) => {
+    it('should throw an error if no auth is provided', async () => {
       const httpClient = new HttpClient({ baseURL: '' });
       const form = new FormData();
 
@@ -769,7 +768,6 @@ describe('HttpClient', () => {
         await httpClient.getUploadOptions(form);
       } catch (e) {
         expect(e).toBeInstanceOf(TwilioCliError);
-        done();
       }
     });
   });

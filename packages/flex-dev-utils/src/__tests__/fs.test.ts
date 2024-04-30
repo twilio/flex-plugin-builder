@@ -264,15 +264,13 @@ describe('fs', () => {
       existsSync.mockRestore();
     });
 
-    it('should fail if it reaches root directory', (done) => {
+    it('should fail if it reaches root directory', () => {
       // @ts-ignore
       const existsSync = jest.spyOn(fs.default, 'existsSync').mockImplementation(() => false);
 
       try {
         fs.findUp(findUpDir, fileName);
-      } catch (e) {
-        done();
-      }
+      } catch (e) {}
 
       existsSync.mockRestore();
     });
@@ -558,14 +556,13 @@ describe('fs', () => {
       expect(resolveModulePath).toHaveBeenCalledWith(flexPluginScripts);
     });
 
-    it('should throw exception if package not found', (done) => {
+    it('should throw exception if package not found', () => {
       jest.spyOn(fs, 'resolveModulePath').mockReturnValue(false);
 
       try {
         fs._getFlexPluginScripts();
       } catch (e) {
         expect(e.message).toContain(`resolve ${flexPluginScripts}`);
-        done();
       }
     });
   });
@@ -582,14 +579,13 @@ describe('fs', () => {
       expect(resolveModulePath).toHaveBeenCalledWith(flexPluginWebpack, theModule);
     });
 
-    it('should throw exception if package not found', (done) => {
+    it('should throw exception if package not found', () => {
       jest.spyOn(fs, 'resolveModulePath').mockReturnValue(false);
 
       try {
         fs._getFlexPluginWebpackPath('path');
       } catch (e) {
         expect(e.message).toContain(`resolve ${flexPluginWebpack}`);
-        done();
       }
     });
   });
@@ -617,7 +613,7 @@ describe('fs', () => {
       readPackageJson.mockRestore();
     });
 
-    it('should throw exception if flexPluginScriptPath is not found', (done) => {
+    it('should throw exception if flexPluginScriptPath is not found', () => {
       jest.spyOn(fs, 'resolveModulePath').mockImplementation((pkg) => {
         if (pkg === flexPluginScripts) {
           return false;
@@ -630,11 +626,10 @@ describe('fs', () => {
         fs.getPaths();
       } catch (e) {
         expect(e.message).toContain(`resolve ${flexPluginScripts}`);
-        done();
       }
     });
 
-    it('should throw exception if flexPluginWebpackPath is not found', (done) => {
+    it('should throw exception if flexPluginWebpackPath is not found', () => {
       jest.spyOn(fs, 'resolveModulePath').mockImplementation((pkg) => {
         if (pkg === flexPluginWebpack) {
           return false;
@@ -647,7 +642,6 @@ describe('fs', () => {
         fs.getPaths();
       } catch (e) {
         expect(e.message).toContain(`resolve ${flexPluginWebpack}`);
-        done();
       }
     });
 

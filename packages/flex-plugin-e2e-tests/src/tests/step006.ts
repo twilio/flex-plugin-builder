@@ -1,5 +1,6 @@
 /* eslint-disable */
 import { replaceInFile } from 'replace-in-file';
+
 import { TestSuite, TestParams, testParams } from '../core';
 import { spawn, Browser, pluginHelper, joinPath, assertion, killChildProcess } from '../utils';
 
@@ -10,7 +11,10 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
 
   const ext = scenario.isTS ? 'tsx' : 'jsx';
   const tmpComponentText = 'hot reload works';
-  const twilioCliResult = await spawn('twilio', ['flex:plugins:start', '-l', 'debug'], { detached: true, cwd: plugin.dir });
+  const twilioCliResult = await spawn('twilio', ['flex:plugins:start', '-l', 'debug'], {
+    detached: true,
+    cwd: plugin.dir,
+  });
   await pluginHelper.waitForPluginToStart(
     plugin.localhostUrl,
     testParams.config.start.timeout,

@@ -16,8 +16,8 @@ describe('runner', () => {
     process.env = { ...OLD_ENV };
   });
 
-  it('should invoke callback', async (done) => {
-    await runner(done);
+  it('should invoke callback', async () => {
+    await runner(jest.fn());
 
     expect(exit).not.toHaveBeenCalled();
   });

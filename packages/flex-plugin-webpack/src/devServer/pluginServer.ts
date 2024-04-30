@@ -2,9 +2,10 @@ import https from 'https';
 import dns from 'dns';
 
 import { logger, FlexPluginError, exit, env } from '@twilio/flex-dev-utils';
-import { Request, Response } from 'express-serve-static-core';
+import { NextFunction, Request, Response } from 'express-serve-static-core';
 import { FlexConfigurationPlugin, readPluginsJson } from '@twilio/flex-dev-utils/dist/fs';
 import { Configuration } from 'webpack-dev-server';
+import cookieParser from 'cookie-parser';
 
 import { remotePluginNotFound } from '../prints';
 
@@ -72,57 +73,6 @@ export const _getLocalPlugins = (port: number, names: string[]): Plugin[] => {
 };
 
 /**
- * Generates the response headers
- *
- * @private
- */
-// eslint-disable-next-line import/no-unused-modules
-export const _getHeaders = (): Record<string, string> => ({
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET',
-  'Access-Control-Allow-Headers': 'Content-Type, X-Flex-Version, X-Flex-JWE',
-  'Access-Control-Allow-Credentials': 'true',
-  'Content-Type': 'application/json',
-});
-
-/**
- * Fetches the Plugins from Flex
- *
- * @param token     the JWE Token
- * @param version   the Flex version
- */
-/* c8 ignore next */
-// eslint-disable-next-line import/no-unused-modules
-export const _getRemotePlugins = async (token: string, version: string | null | undefined): Promise<Plugin[]> => {
-  return new Promise((resolve, reject) => {
-    const headers = {
-      'X-Flex-JWE': token,
-    };
-    if (version) {
-      headers['X-Flex-Version'] = version;
-    }
-
-    const options = {
-      hostname: 'flex.twilio.com',
-      port: 443,
-      path: '/plugins',
-      method: 'GET',
-      headers,
-    };
-
-    https
-      .request(options, (res) => {
-        const data: Buffer[] = [];
-
-        res.on('data', (chunk) => data.push(chunk));
-        res.on('end', () => resolve(JSON.parse(Buffer.concat(data).toString()).filter((p: Plugin) => p.phase >= 3)));
-      })
-      .on('error', reject)
-      .end();
-  });
-};
-
-/**
  * Returns versioned plugins from the CLI
  *
  * @param names
@@ -142,7 +92,7 @@ export const _getRemoteVersionedPlugins = (names: string[]): Plugin[] => {
     return {
       phase: 3,
       name,
-      src: `https://flex.twilio.com/plugins/v1/${name}/${version}/bundle.js`,
+      src: `/plugins/v1/${name}/${version}/bundle.js`,
       version,
     };
   });
@@ -168,71 +118,154 @@ export const _mergePlugins = (
 };
 
 /**
+ * Generates the response headers
+ *
+ * @private
+ */
+// eslint-disable-next-line import/no-unused-modules
+export const _getHeaders = (): Record<string, string> => ({
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET',
+  'Access-Control-Allow-Headers': 'Content-Type, X-Flex-Version, X-Flex-JWE',
+  'Access-Control-Allow-Credentials': 'true',
+  'Content-Type': 'application/json',
+});
+
+/**
+ * Forward the request to Flex to fetch the list of active plugins or render the plugin bundle
+ * @param token JWE token
+ * @param path Flex endpoint
+ * @param version Flex UI Version
+ * @returns Data returned by Flex
+ * @private
+ */
+export const _makeRequestToFlex = async (token: string, path: string, version?: string | null): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const headers = {
+      'X-Flex-JWE': token,
+    };
+    if (version) {
+      headers['X-Flex-Version'] = version;
+    }
+
+    const options = {
+      hostname: 'flex.twilio.com',
+      port: 443,
+      path,
+      method: 'GET',
+      headers,
+    };
+
+    https
+      .request(options, (res) => {
+        const data: Buffer[] = [];
+
+        res.on('data', (chunk) => data.push(chunk));
+
+        res.on('end', () => {
+          resolve(Buffer.concat(data).toString());
+        });
+      })
+      .on('error', reject)
+      .end();
+  });
+};
+
+/**
+ * Common middleware that validates the request data
+ */
+export const _requestValidator = (req: Request, res: Response, next: NextFunction) => {
+  const { headers, method } = req;
+  // JWE token may be present in headers/cookies
+  const jweToken = (headers['x-flex-jwe'] || req.cookies['flex-jwe']) as string;
+  const responseHeaders = _getHeaders();
+
+  if (method === 'OPTIONS') {
+    res.writeHead(200, responseHeaders);
+    res.end();
+    return;
+  }
+  if (method !== 'GET') {
+    res.writeHead(404, responseHeaders);
+    res.end('Route not found');
+    return;
+  }
+
+  if (!jweToken) {
+    logger.debug('No JWE Token');
+    res.writeHead(400, responseHeaders);
+    res.end('No X-Flex-JWE was provided');
+    return;
+  }
+  next();
+};
+
+/**
  * Basic server to fetch plugins from Flex and return to the local dev-server
  * @param plugins
  * @param config
  * @param onRemotePlugin
  */
 // eslint-disable-next-line import/no-unused-modules, @typescript-eslint/explicit-module-boundary-types
-export const _startServer = (
+export const _fetchPluginsServer = (
   plugins: StartServerPlugins,
   config: StartServerConfig,
   onRemotePlugin: OnRemotePlugins,
 ) => {
-  const responseHeaders = _getHeaders();
-
   return async (req: Request, res: Response): Promise<void> => {
-    const { headers, method } = req;
-
-    if (method === 'OPTIONS') {
-      res.writeHead(200, responseHeaders);
-      res.end();
-      return;
-    }
-    if (method !== 'GET') {
-      res.writeHead(404, responseHeaders);
-      res.end('Route not found');
-      return;
-    }
-    logger.debug('GET /plugins');
-
+    const { headers } = req;
     const jweToken = headers['x-flex-jwe'] as string;
     const flexVersion = headers['x-flex-version'] as string;
-    if (!jweToken) {
-      res.writeHead(400, responseHeaders);
-      res.end('No X-Flex-JWE was provided');
-      return;
-    }
+
+    const responseHeaders = _getHeaders();
 
     const hasRemotePlugin = config.remoteAll || plugins.remote.length !== 0;
     const localPlugins = _getLocalPlugins(config.port, plugins.local);
     const versionedPlugins = _getRemoteVersionedPlugins(plugins.versioned);
-    const promise: Promise<Plugin[]> = hasRemotePlugin ? _getRemotePlugins(jweToken, flexVersion) : Promise.resolve([]);
+    const promise: Promise<string> = hasRemotePlugin
+      ? _makeRequestToFlex(jweToken, '/plugins', flexVersion)
+      : Promise.resolve('[]');
 
     // eslint-disable-next-line consistent-return
     return (
       promise
-        .then((remotePlugins) => {
+        .then((pluginsResponse) => {
+          const filteredPlugins = JSON.parse(pluginsResponse).filter((p: Plugin) => p.phase >= 3);
+          const pluginsList: Plugin[] = filteredPlugins.map(
+            (p: Plugin): Plugin => ({
+              ...p,
+              // Filter out the Flex endpoint without the base URL (https://flex.twilio.com) if it exists
+              src: p.src?.match(/^https.+flex\.twilio\.com(\/.+)$/)?.[1] || p.src,
+            }),
+          );
+
           if (config.remoteAll) {
-            return remotePlugins;
+            return pluginsList;
           }
 
           // Check that all remote plugins inputted are valid
-          const notFoundPlugins = plugins.remote.filter((plgin) => !remotePlugins.find((r) => r.name === plgin));
+          const notFoundPlugins = plugins.remote.filter((plgin) => !pluginsList.find((r) => r.name === plgin));
           if (notFoundPlugins.length) {
-            remotePluginNotFound(notFoundPlugins, remotePlugins);
+            remotePluginNotFound(notFoundPlugins, pluginsList);
             exit(1);
           }
 
           // Filter and only return the ones that are in remoteInputPlugins
-          return remotePlugins.filter((r) => plugins.remote.includes(r.name));
+          return pluginsList.filter((r) => plugins.remote.includes(r.name));
         })
         // rebase will eventually get both local and remote plugins
         .then((remotePlugins) => {
           logger.trace('Got remote plugins', remotePlugins);
 
           onRemotePlugin([...versionedPlugins, ...remotePlugins]);
-          res.writeHead(200, responseHeaders);
+          res.writeHead(200, {
+            ...responseHeaders,
+            /*
+             * Set the JWE token in the cookies so that in the subsequent plugin rendering requests
+             * dev server can retrieve it to make the request to Flex.
+             */
+            'Set-Cookie': `flex-jwe=${jweToken}`,
+          });
           res.end(JSON.stringify(_mergePlugins(localPlugins, remotePlugins, versionedPlugins)));
         })
         .catch((err) => {
@@ -241,6 +274,28 @@ export const _startServer = (
         })
     );
   };
+};
+
+/**
+ * Basic server to fetch plugin bundle content from Flex and return to the local dev-server
+ */
+export const _renderPluginServer = async (req: Request, res: Response): Promise<void> => {
+  const jweToken = req.cookies['flex-jwe'] as string;
+  const responseHeaders = _getHeaders();
+
+  logger.debug(`GET ${req.url}`);
+
+  // eslint-disable-next-line consistent-return
+  return _makeRequestToFlex(jweToken, `/plugins/v1${req.url}`)
+    .then((pluginContent) => {
+      logger.trace('Got remote plugin content', pluginContent);
+      res.writeHead(200, responseHeaders);
+      res.end(pluginContent);
+    })
+    .catch((err) => {
+      res.writeHead(500, responseHeaders);
+      res.end(err);
+    });
 };
 
 /**
@@ -279,6 +334,11 @@ export default (
   webpackConfig.before = (app, server) => {
     // @ts-ignore
     serverConfig.port = server.options.port || serverConfig.port;
-    app.use('^/plugins$', _startServer(plugins, serverConfig, onRemotePlugin));
+    // @ts-ignore
+    app.use(cookieParser());
+    // @ts-ignore
+    app.use('^/plugins$', _requestValidator, _fetchPluginsServer(plugins, serverConfig, onRemotePlugin));
+    // @ts-ignore
+    app.use('^/plugins/v1/', _requestValidator, _renderPluginServer);
   };
 };

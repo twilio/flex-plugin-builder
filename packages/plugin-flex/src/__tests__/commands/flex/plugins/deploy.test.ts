@@ -37,6 +37,8 @@ describe('Commands/FlexPluginsDeploy', () => {
     accountSid: 'AC00000000000000000000000000000',
     environmentSid: 'ZE00000000000000000000000000000',
     domainName: 'ruby-fox-123.twil.io',
+    CliVersion: '6.3.3',
+    ValidateStatus: '',
     isPublic: false,
     nextVersion: '2.0.0',
     pluginUrl: 'https://ruby-fox-123.twil.io/plugin-url',
@@ -122,28 +124,36 @@ describe('Commands/FlexPluginsDeploy', () => {
     return cmd;
   };
 
+  const validateReturningViolations = async (scriptName: string) => {
+    if (scriptName === 'validate') {
+      return Promise.resolve({
+        violations: ['violation 1'],
+        vtime: 3452,
+      });
+    }
+    return Promise.resolve(this);
+  };
+
   describe('parseVersionInput', () => {
     it('should parse semver', () => {
       ['1.0.0', '1.0.0-rc.1'].forEach((s) => expect(parseVersionInput(s)).toEqual(s));
     });
 
-    it('should throw error if invalid semver', (done) => {
+    it('should throw error if invalid semver', () => {
       try {
         parseVersionInput('not-a-semver');
       } catch (e) {
         expect(e instanceof CLIParseError).toEqual(true);
         expect(e.message).toContain('valid SemVer');
-        done();
       }
     });
 
-    it('should throw error version 0.0.0 is used', (done) => {
+    it('should throw error version 0.0.0 is used', () => {
       try {
         parseVersionInput('0.0.0');
       } catch (e) {
         expect(e instanceof CLIParseError).toEqual(true);
         expect(e.message).toContain('cannot be');
-        done();
       }
     });
   });
@@ -271,15 +281,7 @@ describe('Commands/FlexPluginsDeploy', () => {
     jest.spyOn(cmd, 'checkServerlessInstance').mockReturnThis();
     jest.spyOn(cmd, 'checkForLegacy').mockReturnThis();
     jest.spyOn(cmd, 'validatePlugin').mockReturnThis();
-    jest.spyOn(cmd, 'runScript').mockImplementation(async (scriptName) => {
-      if (scriptName === 'validate') {
-        return Promise.resolve({
-          violations: ['violation 1'],
-          vtime: 3452,
-        });
-      }
-      return Promise.resolve(this);
-    });
+    jest.spyOn(cmd, 'runScript').mockImplementation(validateReturningViolations);
     jest.spyOn(cmd, 'hasCollisionAndOverwrite').mockReturnThis();
     jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
     jest.spyOn(cmd, 'registerPlugin').mockReturnThis();
@@ -295,6 +297,30 @@ describe('Commands/FlexPluginsDeploy', () => {
     expect(deployScript._verifyFlexUIConfiguration).not.toHaveBeenCalled();
     expect(cmd.registerPlugin).not.toHaveBeenCalled();
     expect(cmd.registerPluginVersion).not.toHaveBeenCalled();
+  });
+
+  it('should continue to deploy if --bypass-validation flag is present', async () => {
+    const cmd = await createCommand('--changelog', defaultChangelog, '--bypass-validation');
+
+    jest.spyOn(cmd, 'checkServerlessInstance').mockReturnThis();
+    jest.spyOn(cmd, 'checkForLegacy').mockReturnThis();
+    jest.spyOn(cmd, 'validatePlugin').mockReturnThis();
+    jest.spyOn(cmd, 'runScript').mockImplementation(validateReturningViolations);
+    jest.spyOn(cmd, 'hasCollisionAndOverwrite').mockReturnThis();
+    jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
+    jest.spyOn(cmd, 'registerPlugin').mockReturnThis();
+    jest.spyOn(cmd, 'registerPluginVersion').mockReturnThis();
+    jest.spyOn(devUtils, 'choose').mockReturnThis();
+    mockGetPkg(cmd, pkg);
+
+    await cmd.doRun();
+
+    expect(devUtils.choose).toHaveBeenCalledTimes(0);
+    expect(cmd.runScript).toHaveBeenCalledTimes(4);
+    expect(cmd.hasCollisionAndOverwrite).toHaveBeenCalledTimes(1);
+    expect(deployScript._verifyFlexUIConfiguration).toHaveBeenCalledTimes(1);
+    expect(cmd.registerPlugin).toHaveBeenCalledTimes(1);
+    expect(cmd.registerPluginVersion).toHaveBeenCalledTimes(1);
   });
 
   it('should have own flags', () => {
@@ -334,6 +360,8 @@ describe('Commands/FlexPluginsDeploy', () => {
     expect(cmd.pluginVersionsClient.create).toHaveBeenCalledWith(pkg.name, {
       Version: deployResult.nextVersion,
       PluginUrl: deployResult.pluginUrl,
+      CliVersion: deployResult.CliVersion,
+      ValidateStatus: deployResult.ValidateStatus,
       Private: !deployResult.isPublic,
       Changelog: 'sample%20changlog',
     });
@@ -349,6 +377,8 @@ describe('Commands/FlexPluginsDeploy', () => {
     expect(cmd.pluginVersionsClient.create).toHaveBeenCalledWith(pkg.name, {
       Version: deployResult.nextVersion,
       PluginUrl: deployResult.pluginUrl,
+      CliVersion: deployResult.CliVersion,
+      ValidateStatus: deployResult.ValidateStatus,
       Private: !deployResult.isPublic,
       Changelog: 'the-changelog',
     });
@@ -421,7 +451,7 @@ describe('Commands/FlexPluginsDeploy', () => {
     expect(args[1]).toEqual('2.1.0');
   });
 
-  it('should invalidate plugin because next version is smaller', async (done) => {
+  it('should invalidate plugin because next version is smaller', async () => {
     const cmd = await getCommand('--version', '0.0.1');
 
     jest.spyOn(cmd.pluginsClient, 'get').mockResolvedValue(pluginResource);
@@ -436,8 +466,6 @@ describe('Commands/FlexPluginsDeploy', () => {
       expect(cmd.pluginsClient.get).toHaveBeenCalledWith(pkg.name);
       expect(cmd.pluginVersionsClient.latest).toHaveBeenCalledTimes(1);
       expect(cmd.pluginVersionsClient.latest).toHaveBeenCalledWith(pkg.name);
-
-      done();
     }
   });
 
