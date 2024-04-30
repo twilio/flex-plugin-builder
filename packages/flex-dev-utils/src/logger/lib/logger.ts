@@ -312,10 +312,10 @@ export class Logger {
       const color = args.color ? chalk[args.color] : (msg: string) => msg;
       const msg = format.apply({}, args.args as any);
 
-      if (Boolean(args.markdown)) {
-        pipe(msg, color, this.markdown, log);
-      } else {
+      if (args.markdown === false) {
         pipe(msg, color, log);
+      } else {
+        pipe(msg, color, this.markdown, log);
       }
     }
   };
