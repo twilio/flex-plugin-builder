@@ -16,6 +16,11 @@ export interface PluginVersionResource {
 
 const RESPONSE_KEY = 'plugin_versions';
 
+export enum ValidateStatus {
+  Success = 'sucesss',
+  Failure = 'failure',
+}
+
 export interface PluginVersionResourcePage extends PaginationMeta {
   plugin_versions: PluginVersionResource[];
 }
@@ -26,7 +31,7 @@ export interface CreatePluginVersionResource {
   Private?: boolean;
   Changelog?: string;
   CliVersion?: string;
-  ValidateStatus?: string;
+  ValidateStatus?: ValidateStatus;
 }
 
 /**
