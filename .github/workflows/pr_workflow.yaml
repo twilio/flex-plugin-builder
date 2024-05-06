@@ -44,6 +44,22 @@ jobs:
   e2e-test-mac:
     uses: ./.github/workflows/~reusable_e2e.yaml
     with:
+      BRANCH: main
+      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+      PACKAGE_VERSION: latest
+      FLEX_UI_VERSION: latest
       OS: [ macos-latest ]
+    secrets:
+      CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+      CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
+      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
+      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
+      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
+      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
 
   
