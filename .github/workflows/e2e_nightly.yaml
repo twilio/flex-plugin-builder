@@ -1,28 +1,46 @@
 name: Flex Plugins CLI - Nightly E2E
 on:
   schedule:
-    - cron: '0 4 * * *'    # At 4:00 UTC (09:30 IST) every day
+    - cron: "0 3 * * *" # At 3:00 UTC (08:30 IST) every daẙ - MAC
+    - cron: "0 4 * * *" # At 4:00 UTC (09:30 IST) every daẙ - WINDOWS
+    - cron: "0 5 * * *" # At 5:00 UTC (10:30 IST) every daẙ - UBUNTU
 
 jobs:
-  scheduled-e2e-test:
+  with:
+    BRANCH: main
+    NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+    PACKAGE_VERSION: latest
+    FLEX_UI_VERSION: latest
+  secrets:
+    CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+    CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+    CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+    TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+    TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+    CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
+    TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
+    TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
+    CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
+    TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+    TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+
+  scheduled-e2e-test-mac:
     uses: ./.github/workflows/~reusable_e2e.yaml
+    if: github.event.schedule == '0 3 * * *'
     with:
-      BRANCH: main
-      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-      PACKAGE_VERSION: latest
-      FLEX_UI_VERSION: latest
-    secrets:
-      CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-      CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
-      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
-      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
-      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
-      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
-      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
-      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+      OS: [macos-latest]
+
+  scheduled-e2e-test-windows:
+    uses: ./.github/workflows/~reusable_e2e.yaml
+    if: github.event.schedule == '0 4 * * *'
+    with:
+      OS: [windows-latest]
+
+  scheduled-e2e-test-ubuntu:
+    uses: ./.github/workflows/~reusable_e2e.yaml
+    if: github.event.schedule == '0 5 * * *'
+    with:
+      OS: [ubuntu-latest]
 
   notify-failure:
     runs-on: ubuntu-latest
@@ -37,6 +55,6 @@ jobs:
           SLACK_COLOR: failure
           SLACK_USERNAME: Github Actions
           SLACK_ICON_EMOJI: ":ship:"
-          SLACK_TITLE: "Flex Plugins CLI - Nightly E2E"
-          SLACK_MESSAGE: '${{ github.repository }}/${{ github.ref }} - nightly E2E tests failed'
+          SLACK_TITLE: "Flex Plugins CLI - Nightly E2E - ${{ runner.os }}"
+          SLACK_MESSAGE: "${{ github.repository }}/${{ github.ref }} - nightly E2E tests failed for ${{ runner.os }}."
           MSG_MINIMAL: actions url
