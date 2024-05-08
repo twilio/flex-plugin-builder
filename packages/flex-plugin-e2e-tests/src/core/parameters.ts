@@ -3,7 +3,10 @@ import { platform } from 'os';
 
 import semver from 'semver';
 
-import { ConsoleAuthOptions } from '../utils';
+interface ConsoleAuthOptions {
+  email: string;
+  password: string;
+}
 
 interface Hidden {
   __hidden: boolean;
