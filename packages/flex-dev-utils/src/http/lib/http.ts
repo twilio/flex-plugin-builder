@@ -2,9 +2,11 @@
 
 import { Transform } from 'stream';
 import path from 'path';
+import { writeFileSync } from 'fs';
 
 import FormData from 'form-data';
 import qs from 'qs';
+import mkdirp from 'mkdirp';
 import { setupCache } from 'axios-cache-adapter';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 // @ts-ignore
@@ -12,12 +14,14 @@ import httpAdapter from 'axios/lib/adapters/http';
 // @ts-ignore
 import settle from 'axios/lib/core/settle';
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { TwilioApiError, TwilioCliError } from '@twilio/flex-plugins-utils-exception';
 
-import * as fs from '../../fs';
 import { env } from '../../env';
 import { logger } from '../../logger';
-import { TwilioApiError, TwilioCliError } from '../../errors';
 import { upperFirst } from '../../lodash';
+
+const mkdirpSync = mkdirp.sync;
+const writeFile = (str: string, ...paths: string[]): void => writeFileSync(path.join(...paths), str);
 
 interface UploadRequestConfig extends AxiosRequestConfig {
   headers: Record<string, string>;
@@ -408,9 +412,9 @@ export default class Http {
     };
 
     const dir = path.dirname(directory);
-    await fs.mkdirpSync(dir);
+    await mkdirpSync(dir);
 
-    return this.client.request(config).then((buffer) => fs.writeFile(buffer.toString(), directory));
+    return this.client.request(config).then((buffer) => writeFile(buffer.toString(), directory));
   }
 
   /**

@@ -1,4 +1,4 @@
-import { TwilioApiError } from '@twilio/flex-dev-utils/dist/errors';
+import { TwilioApiError } from '@twilio/flex-plugins-utils-exception';
 
 import PluginsClient from '../plugins';
 import PluginServiceHttpClient from '../client';

@@ -1,13 +1,17 @@
 /* eslint-disable camelcase */
+import fs from 'fs';
 
 import FormData from 'form-data';
 import { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import mkdirp from 'mkdirp';
 
 import * as fsScripts from '../../../fs';
 import { env } from '../../../env';
 import { TwilioApiError, TwilioCliError } from '../../../errors';
 import HttpClient, { HttpClientConfig } from '../http';
+
+jest.mock('mkdirp');
 
 describe('HttpClient', () => {
   const config: HttpClientConfig = {
@@ -698,8 +702,8 @@ describe('HttpClient', () => {
     it('should call request', async () => {
       const httpClient = new HttpClient({ ...config });
       const result = { data: 'the-data' };
-      const writeFileSync = jest.spyOn(fsScripts.default, 'writeFileSync').mockReturnValue(undefined);
-      const mkdirpSync = jest.spyOn(fsScripts, 'mkdirpSync').mockReturnValue(undefined);
+      const writeFileSync = jest.spyOn(fs, 'writeFileSync').mockReturnValue(undefined);
+      const mkdirpSync = jest.spyOn(mkdirp, 'sync').mockReturnValue(undefined);
       // @ts-ignore
       const request = jest.spyOn(httpClient.client, 'request').mockResolvedValue(result);
 

@@ -1,4 +1,5 @@
-import { urlJoin, Pagination, PaginationMeta } from '@twilio/flex-dev-utils';
+import { Pagination, PaginationMeta } from '@twilio/flex-dev-utils/dist/http';
+import urlJoin from 'url-join';
 
 import PluginServiceHttp from './client';
 

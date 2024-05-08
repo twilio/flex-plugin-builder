@@ -1,4 +1,5 @@
-import { lodash, HttpClient } from '@twilio/flex-dev-utils';
+import { HttpClient } from '@twilio/flex-dev-utils/dist/http';
+import lodash from '@twilio/flex-dev-utils/dist/lodash';
 
 import {
   ConfigurationsClient,
