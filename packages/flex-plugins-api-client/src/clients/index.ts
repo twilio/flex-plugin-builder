@@ -12,6 +12,7 @@ export {
   PluginVersionResource,
   PluginVersionResourcePage,
   CreatePluginVersionResource,
+  ValidateStatus,
 } from './pluginVersions';
 export {
   default as ConfigurationsClient,

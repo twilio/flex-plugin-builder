@@ -13,9 +13,15 @@ export interface PluginVersionResource {
   changelog: string;
   archived: boolean;
   date_created: string;
+  validated?: boolean;
 }
 
 const RESPONSE_KEY = 'plugin_versions';
+
+export enum ValidateStatus {
+  Success = 'sucesss',
+  Failure = 'failure',
+}
 
 export interface PluginVersionResourcePage extends PaginationMeta {
   plugin_versions: PluginVersionResource[];
@@ -26,6 +32,8 @@ export interface CreatePluginVersionResource {
   PluginUrl: string;
   Private?: boolean;
   Changelog?: string;
+  CliVersion?: string;
+  ValidateStatus?: ValidateStatus;
 }
 
 /**
