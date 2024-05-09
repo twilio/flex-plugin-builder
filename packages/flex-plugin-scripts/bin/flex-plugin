@@ -2,5 +2,5 @@
 
 'use strict';
 
-require = require('esm')(module /*, options*/);
+require = require('esm-wallaby')(module /*, options*/);
 require('../dist').default(...process.argv.splice(2));

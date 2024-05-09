@@ -74,7 +74,7 @@ describe('DescribePluginVersion', () => {
     expect(getActiveRelease).not.toHaveBeenCalled();
   });
 
-  it('should throw an error if plugin is not found', async (done) => {
+  it('should throw an error if plugin is not found', async () => {
     getPlugin.mockRejectedValue('something went wrong');
 
     try {
@@ -82,8 +82,6 @@ describe('DescribePluginVersion', () => {
     } catch (e) {
       expect(e).toContain('something went wrong');
       expectEndpointsCalled();
-
-      done();
     }
   });
 
