@@ -19,7 +19,7 @@ export interface PluginVersionResource {
 const RESPONSE_KEY = 'plugin_versions';
 
 export enum ValidateStatus {
-  Success = 'sucesss',
+  Success = 'success',
   Failure = 'failure',
 }
 
