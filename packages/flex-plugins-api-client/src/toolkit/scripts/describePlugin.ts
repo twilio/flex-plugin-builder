@@ -74,6 +74,7 @@ export default function describePlugin(
       isActive: false,
       isArchived: version.archived,
       dateCreated: version.date_created,
+      isValidated: version.validated,
     }));
 
     if (release) {

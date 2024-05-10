@@ -1,4 +1,5 @@
-import { urlJoin, Pagination, PaginationMeta } from '@twilio/flex-dev-utils';
+import { Pagination, PaginationMeta } from '@twilio/flex-dev-utils/dist/http';
+import urlJoin from 'url-join';
 
 import PluginServiceHttp from './client';
 
@@ -12,12 +13,13 @@ export interface PluginVersionResource {
   changelog: string;
   archived: boolean;
   date_created: string;
+  validated?: boolean;
 }
 
 const RESPONSE_KEY = 'plugin_versions';
 
 export enum ValidateStatus {
-  Success = 'sucesss',
+  Success = 'success',
   Failure = 'failure',
 }
 
