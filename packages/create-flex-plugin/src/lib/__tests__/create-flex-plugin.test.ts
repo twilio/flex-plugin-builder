@@ -70,7 +70,7 @@ describe('create-flex-plugin', () => {
       expect(installDependencies).toHaveBeenCalledWith(config);
     });
 
-    it('should quit if directory already exists', async (done) => {
+    it('should quit if directory already exists', async () => {
       const existsSync = jest.spyOn(fs, 'existsSync').mockReturnValue(true);
       const scaffold = jest.spyOn(createFlexPluginScripts, '_scaffold');
 
@@ -89,12 +89,10 @@ describe('create-flex-plugin', () => {
 
         existsSync.mockRestore();
         scaffold.mockRestore();
-
-        done();
       }
     });
 
-    it('should quit if scaffolding fails', async (done) => {
+    it('should quit if scaffolding fails', async () => {
       const existsSync = jest.spyOn(fs, 'existsSync').mockReturnValue(false);
       const scaffold = jest.spyOn(createFlexPluginScripts, '_scaffold').mockResolvedValue(false);
 
@@ -114,8 +112,6 @@ describe('create-flex-plugin', () => {
 
         existsSync.mockRestore();
         scaffold.mockRestore();
-
-        done();
       }
     });
 

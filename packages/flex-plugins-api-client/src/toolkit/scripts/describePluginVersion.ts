@@ -28,6 +28,7 @@ export interface PluginVersion {
   isPrivate: boolean;
   isArchived: boolean;
   dateCreated: string;
+  isValidated?: boolean;
 }
 
 export interface DescribePluginVersion extends PluginVersion {

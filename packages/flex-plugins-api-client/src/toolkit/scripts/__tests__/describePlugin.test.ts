@@ -100,7 +100,7 @@ describe('DescribePlugin', () => {
     expect(listInstalledPlugins).not.toHaveBeenCalled();
   });
 
-  it('should throw an error if plugin is not found', async (done) => {
+  it('should throw an error if plugin is not found', async () => {
     getPlugin.mockRejectedValue('something went wrong');
 
     try {
@@ -108,8 +108,6 @@ describe('DescribePlugin', () => {
     } catch (e) {
       expect(e).toContain('something went wrong');
       expectEndpointsCalled();
-
-      done();
     }
   });
 

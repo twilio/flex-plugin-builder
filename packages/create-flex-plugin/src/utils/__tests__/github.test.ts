@@ -57,13 +57,12 @@ describe('github', () => {
       expect(resp.owner).toEqual(org);
     });
 
-    it('should reject because main/main is not found', async (done) => {
+    it('should reject because main/main is not found', async () => {
       jest.spyOn(HttpClient, 'get').mockResolvedValue(branchesWithNeither);
       try {
         await github.parseGitHubUrl(gitHubUrl);
       } catch (e) {
         expect(e.message).toEqual(github.ERROR_BRANCH_MASTER_MAIN);
-        done();
       }
     });
 
@@ -75,12 +74,11 @@ describe('github', () => {
       expect(resp.owner).toEqual(org);
     });
 
-    it('should fail to parse', async (done) => {
+    it('should fail to parse', async () => {
       try {
         await github.parseGitHubUrl('/broken');
       } catch (e) {
         expect(e.message).toEqual(github.ERROR_GITHUB_URL_PARSE);
-        done();
       }
     });
   });
@@ -244,7 +242,7 @@ describe('github', () => {
       expect(_downloadFile).toHaveBeenNthCalledWith(1, secondResp[0].download_url, expect.toMatchPath('/dir/file2.js'));
     });
 
-    it('should throw error if type is not a file', async (done) => {
+    it('should throw error if type is not a file', async () => {
       const resp = [
         {
           type: 'foo',
@@ -257,11 +255,10 @@ describe('github', () => {
         await github._downloadDir(apiGithubUrlTemplated, '/dir', githubUrl);
       } catch (e) {
         expect(e.message).toContain('Unexpected content type');
-        done();
       }
     });
 
-    it('should throw error if url is incorrect', async (done) => {
+    it('should throw error if url is incorrect', async () => {
       const resp = [
         {
           type: 'file',
@@ -274,7 +271,6 @@ describe('github', () => {
         await github._downloadDir(apiGithubUrlTemplated, '/dir', 'github.com/twilio/template/');
       } catch (e) {
         expect(e.message).toContain('invalid URL');
-        done();
       }
     });
   });

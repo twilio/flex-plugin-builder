@@ -314,7 +314,7 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd._flags[flexUiSource]).toBeUndefined();
   });
 
-  it('should throw an error due to a user inputted port being unavailable', async (done) => {
+  it('should throw an error due to a user inputted port being unavailable', async () => {
     const cmd = await createCommand('--name', pluginNameOne, '--port', '3000');
 
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
@@ -334,8 +334,6 @@ describe('Commands/FlexPluginsStart', () => {
       expect(e.message).toContain('already in use. Use --port to choose another port');
       expect(cmd.runScript).not.toHaveBeenCalled();
       expect(cmd.spawnScript).not.toHaveBeenCalled();
-
-      done();
     }
   });
 
@@ -434,7 +432,7 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd.isPluginFolder).toHaveBeenCalledTimes(1);
   });
 
-  it('should error due to incorrectly formatted version input (semver)', async (done) => {
+  it('should error due to incorrectly formatted version input (semver)', async () => {
     const cmd = await createCommand('--name', 'plugin-testOne', '--name', `${name}@${badVersion}`);
 
     jest.spyOn(cmd, 'runScript').mockReturnThis();
@@ -448,12 +446,10 @@ describe('Commands/FlexPluginsStart', () => {
       expect(e.message).toContain('Version a.b.c is not a valid semver string.');
       expect(cmd.runScript).not.toHaveBeenCalled();
       expect(cmd.spawnScript).not.toHaveBeenCalled();
-
-      done();
     }
   });
 
-  it('should error due to incorrectly formatted version input (regex)', async (done) => {
+  it('should error due to incorrectly formatted version input (regex)', async () => {
     const cmd = await createCommand('--name', '!@!');
 
     jest.spyOn(cmd, 'runScript').mockReturnThis();
@@ -467,12 +463,10 @@ describe('Commands/FlexPluginsStart', () => {
       expect(e.message).toContain('Unexpected plugin format was provided.');
       expect(cmd.runScript).not.toHaveBeenCalled();
       expect(cmd.spawnScript).not.toHaveBeenCalled();
-
-      done();
     }
   });
 
-  it('should error due to version not found', async (done) => {
+  it('should error due to version not found', async () => {
     const cmd = await createCommand('--name', 'plugin-testOne', '--name', `${name}@${goodVersion}`);
 
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
@@ -496,7 +490,6 @@ describe('Commands/FlexPluginsStart', () => {
       expect(e.message).toContain(`Error finding plugin ${name} at version ${goodVersion}`);
 
       expect(get).toHaveBeenCalledTimes(1);
-      done();
     }
   });
 
