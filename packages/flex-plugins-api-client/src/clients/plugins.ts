@@ -1,5 +1,6 @@
-import { urlJoin, Pagination, PaginationMeta } from '@twilio/flex-dev-utils';
-import { TwilioApiError } from '@twilio/flex-dev-utils/dist/errors';
+import { Pagination, PaginationMeta } from '@twilio/flex-dev-utils/dist/http';
+import { TwilioApiError } from '@twilio/flex-plugins-utils-exception';
+import urlJoin from 'url-join';
 
 import PluginServiceHttp from './client';
 

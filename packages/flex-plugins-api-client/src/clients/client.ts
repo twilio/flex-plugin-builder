@@ -1,4 +1,4 @@
-import { HttpClient, OptionalHttpClientConfig } from '@twilio/flex-dev-utils';
+import { HttpClient, OptionalHttpClientConfig } from '@twilio/flex-dev-utils/dist/http';
 
 export type PluginServiceHttpOption = OptionalHttpClientConfig;
 

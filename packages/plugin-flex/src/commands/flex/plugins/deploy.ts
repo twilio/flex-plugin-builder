@@ -326,7 +326,6 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       Private: !deployResult.isPublic,
       Changelog: this._flags.changelog || '',
       CliVersion: this.cliPkg.version || '',
-      ValidateStatus: validateErrorMsg || '',
     });
   }
 
