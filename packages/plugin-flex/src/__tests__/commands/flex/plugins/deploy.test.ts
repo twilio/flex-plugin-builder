@@ -38,7 +38,6 @@ describe('Commands/FlexPluginsDeploy', () => {
     environmentSid: 'ZE00000000000000000000000000000',
     domainName: 'ruby-fox-123.twil.io',
     CliVersion: '6.3.3',
-    ValidateStatus: '',
     isPublic: false,
     nextVersion: '2.0.0',
     pluginUrl: 'https://ruby-fox-123.twil.io/plugin-url',
@@ -361,7 +360,6 @@ describe('Commands/FlexPluginsDeploy', () => {
       Version: deployResult.nextVersion,
       PluginUrl: deployResult.pluginUrl,
       CliVersion: deployResult.CliVersion,
-      ValidateStatus: deployResult.ValidateStatus,
       Private: !deployResult.isPublic,
       Changelog: 'sample%20changlog',
     });
@@ -378,7 +376,6 @@ describe('Commands/FlexPluginsDeploy', () => {
       Version: deployResult.nextVersion,
       PluginUrl: deployResult.pluginUrl,
       CliVersion: deployResult.CliVersion,
-      ValidateStatus: deployResult.ValidateStatus,
       Private: !deployResult.isPublic,
       Changelog: 'the-changelog',
     });
