@@ -90,6 +90,7 @@ const _getBabelLoader = (isProd: boolean) => ({
             svg: { ReactComponent: '@svgr/webpack?-svgo,+titleProp,+ref![path]' },
           },
         },
+        [require.resolve('@babel/plugin-proposal-private-property-in-object'), { loose: true }],
       ],
     ],
     compact: isProd,
