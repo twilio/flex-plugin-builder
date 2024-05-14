@@ -45,7 +45,7 @@ describe('PluginsClient', () => {
 
     expect(result).toEqual('item');
     expect(get).toHaveBeenCalledTimes(1);
-    expect(get).toHaveBeenCalledWith('Plugins/pluginId', { cacheable: true });
+    expect(get).toHaveBeenCalledWith('Plugins/pluginId');
   });
 
   it('should update plugin', async () => {
@@ -89,7 +89,7 @@ describe('PluginsClient', () => {
 
       expect(result).toEqual('existing-pluginA');
       expect(get).toHaveBeenCalledTimes(1);
-      expect(get).toHaveBeenCalledWith(pluginInstanceUri, { cacheable: true });
+      expect(get).toHaveBeenCalledWith(pluginInstanceUri);
       expect(post).not.toHaveBeenCalled();
     });
 
@@ -103,7 +103,7 @@ describe('PluginsClient', () => {
 
       expect(result).toEqual('updated-existing-plugin');
       expect(get).toHaveBeenCalledTimes(1);
-      expect(get).toHaveBeenCalledWith(pluginInstanceUri, { cacheable: true });
+      expect(get).toHaveBeenCalledWith(pluginInstanceUri);
       expect(post).toHaveBeenCalledTimes(1);
       expect(post).toHaveBeenCalledWith(pluginInstanceUri, updatePayload);
     });
@@ -117,7 +117,7 @@ describe('PluginsClient', () => {
 
       expect(result).toEqual('created-plugin');
       expect(get).toHaveBeenCalledTimes(1);
-      expect(get).toHaveBeenCalledWith(pluginInstanceUri, { cacheable: true });
+      expect(get).toHaveBeenCalledWith(pluginInstanceUri);
       expect(post).toHaveBeenCalledTimes(1);
       expect(post).toHaveBeenCalledWith('Plugins', payload);
     });
@@ -134,7 +134,7 @@ describe('PluginsClient', () => {
         expect(err).toEqual(exception);
 
         expect(get).toHaveBeenCalledTimes(1);
-        expect(get).toHaveBeenCalledWith(pluginInstanceUri, { cacheable: true });
+        expect(get).toHaveBeenCalledWith(pluginInstanceUri);
         expect(post).not.toHaveBeenCalled();
       }
     });

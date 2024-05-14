@@ -29,6 +29,6 @@ describe('ConfiguredPluginsClient', () => {
 
     expect(result).toEqual('item');
     expect(get).toHaveBeenCalledTimes(1);
-    expect(get).toHaveBeenCalledWith('Configurations/configId/Plugins/pluginId', { cacheable: true });
+    expect(get).toHaveBeenCalledWith('Configurations/configId/Plugins/pluginId');
   });
 });
