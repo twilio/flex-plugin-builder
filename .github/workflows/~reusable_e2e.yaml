@@ -79,7 +79,7 @@ jobs:
         with:
           node-version: "20"
       - name: Install project dependencies
-        run: npm i
+        run: npm ci
       - name: Build packages
         run: npm run build
       - name: Run e2e tests - JS

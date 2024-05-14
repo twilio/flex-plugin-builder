@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.23.7",
+    "@babel/plugin-proposal-private-property-in-object": "7.21.11",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-react": "^7.16.0",
     "@k88/cra-webpack-hot-dev-client": "^1.1.0",
