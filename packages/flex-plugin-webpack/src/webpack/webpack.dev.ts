@@ -52,11 +52,6 @@ export const _getStaticConfiguration = (config: Configuration): Configuration =>
     },
   ];
 
-  // eslint-disable-next-line multiline-comment-style
-  // config.static = [getPaths().app.publicDir, getPaths().scripts.devAssetsDir];
-  // (config.static as Static).publicPath = '/';
-  // (config.static as Static).watch = true;
-
   return config;
 };
 
@@ -78,7 +73,7 @@ export const _getJavaScriptConfiguration = (config: Configuration): Configuratio
   };
 
   // Hot reload
-  config.hot = true;
+  config.hot = false;
 
   return config;
 };

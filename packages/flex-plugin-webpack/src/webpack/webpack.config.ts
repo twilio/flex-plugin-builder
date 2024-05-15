@@ -496,7 +496,6 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
     pathinfo: !isProd,
     futureEmitAssets: true,
     filename: outputName,
-    publicPath: getPaths().app.publicDir,
     globalObject: 'this',
   };
   config.bail = isProd;

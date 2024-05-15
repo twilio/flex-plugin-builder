@@ -34,7 +34,7 @@ export default (devCompiler: Compiler, devConfig: Configuration, type: WebpackTy
   }
 
   // Start the dev-server
-  devServer.listen(local.port, local.host, async (err) => {
+  devServer.startCallback(async (err) => {
     if (err) {
       logger.error(err);
       return;
@@ -44,7 +44,7 @@ export default (devCompiler: Compiler, devConfig: Configuration, type: WebpackTy
     if (isJavaScriptServer) {
       logger.debug('Starting development server %s...', serverType);
     } else {
-      // logger.clearTerminal();
+      logger.clearTerminal();
       logger.notice('Starting development server %s...', serverType);
     }
 

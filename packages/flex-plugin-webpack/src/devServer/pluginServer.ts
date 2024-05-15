@@ -331,8 +331,7 @@ export default (
     return proxy;
   }, {});
 
-  webpackConfig.onBeforeSetupMiddleware = (server) => {
-    // @ts-ignore
+  webpackConfig.setupMiddlewares = (middlewares, server) => {
     serverConfig.port = server.options.port || serverConfig.port;
     // @ts-ignore
     server.app.use(cookieParser());
@@ -340,5 +339,6 @@ export default (
     server.app.use('^/plugins$', _requestValidator, _fetchPluginsServer(plugins, serverConfig, onRemotePlugin));
     // @ts-ignore
     server.app.use('^/plugins/v1/', _requestValidator, _renderPluginServer);
+    return middlewares;
   };
 };
