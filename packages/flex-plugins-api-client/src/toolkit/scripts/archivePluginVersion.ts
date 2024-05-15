@@ -24,6 +24,7 @@ export default function archivePluginVersion(pluginVersionsClient: PluginVersion
       isPrivate: pluginVersion.private,
       isArchived: pluginVersion.archived,
       dateCreated: pluginVersion.date_created,
+      isValidated: pluginVersion.validated,
     };
   };
 }

@@ -452,6 +452,11 @@ export const _getBase = (environment: Environment): Configuration => {
         {
           oneOf: [_getImageLoader(), _getBabelLoader(isProd), ..._getStyleLoaders(isProd)],
         },
+        {
+          test: /\.mjs$/,
+          include: /node_modules/,
+          type: 'javascript/auto',
+        },
       ],
     },
     plugins: _getBasePlugins(environment),

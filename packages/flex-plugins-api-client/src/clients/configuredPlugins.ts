@@ -1,4 +1,4 @@
-import { PaginationMeta } from '@twilio/flex-dev-utils';
+import { PaginationMeta } from '@twilio/flex-dev-utils/dist/http';
 
 import PluginServiceHttp from './client';
 

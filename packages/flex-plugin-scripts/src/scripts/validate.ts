@@ -39,7 +39,7 @@ const validate = async (
   };
 }> => {
   const isDeploy = argv.includes('--deploy');
-
+  const isFlexUI2 = argv.includes('--flex-ui-2.0');
   logger.debug('Running validation on Flex plugin bundle');
 
   setEnvironment(...argv);
@@ -58,7 +58,7 @@ const validate = async (
   const zipFile = resolve(os.tmpdir(), `tmp-${Date.now()}.zip`);
   const credentials = await getCredential();
   const governorClient = new GovernorClient(credentials.username, credentials.password);
-  const flexUIVersion = getPackageVersion('@twilio/flex-ui');
+  const flexUIVersion = isFlexUI2 ? '2.x' : getPackageVersion('@twilio/flex-ui');
   const pkgName = logger.coloredStrings.bold.yellow(paths.app.name);
 
   // Start timer for calculating time taken to validate the plugin

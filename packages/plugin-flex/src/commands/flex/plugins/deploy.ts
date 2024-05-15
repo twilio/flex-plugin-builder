@@ -15,7 +15,7 @@ import {
   logger,
 } from '@twilio/flex-dev-utils';
 import { getPaths } from '@twilio/flex-dev-utils/dist/fs';
-import { PluginResource } from '@twilio/flex-plugins-api-client';
+import { PluginResource, ValidateStatus } from '@twilio/flex-plugins-api-client';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import * as flags from '../../../utils/flags';
@@ -100,6 +100,10 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       options: [Options.Deploy, Options.Fix],
       hidden: true,
     }),
+    'bypass-validation': flags.boolean({
+      description: FlexPluginsDeploy.topic.flags['bypass-validation'],
+      default: false,
+    }),
   };
 
   // @ts-ignore
@@ -150,7 +154,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       async (): Promise<{
         violations: string[];
         vtime: number;
-        error: {
+        error?: {
           message: string;
           timedOut: boolean;
         };
@@ -158,6 +162,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
         return this.runScript('validate', ['--deploy']);
       },
     );
+    const validateStatus = error?.message ? ValidateStatus.Failure : ValidateStatus.Success;
 
     if (error) {
       const err = error.timedOut
@@ -167,7 +172,8 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       logger.warning('Continuing to deploy');
     }
 
-    let shouldContinue = this._flags.option === Options.Deploy || violations.length === 0;
+    let shouldContinue =
+      this._flags['bypass-validation'] || this._flags.option === Options.Deploy || violations.length === 0;
 
     if (!shouldContinue && this._flags.option !== Options.Fix) {
       const choice = await choose(
@@ -180,6 +186,14 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       );
       shouldContinue = choice === this.options[Options.Deploy];
     }
+
+    this.telemetryProperties = {
+      violations,
+      vtime: Math.round(vtime),
+      error,
+      bypassed: this._flags['bypass-validation'],
+      deployed: 0,
+    };
 
     if (shouldContinue) {
       await progress(
@@ -207,9 +221,10 @@ export default class FlexPluginsDeploy extends FlexPlugin {
         false,
       );
       await progress(`Registering plugin ${name} with Plugins API`, async () => this.registerPlugin(), false);
+
       const pluginVersion: PluginVersionResource = await progress(
         `Registering version **v${deployedData.nextVersion}** with Plugins API`,
-        async () => this.registerPluginVersion(deployedData, error?.message),
+        async () => this.registerPluginVersion(deployedData, validateStatus),
         false,
       );
 
@@ -220,9 +235,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
         deployedData,
         this.argv.includes('--profile') ? this.currentProfile.id : null,
       );
-      this.telemetryProperties = { violations, vtime: Math.round(vtime), error, deployed: 1 };
-    } else {
-      this.telemetryProperties = { violations, vtime: Math.round(vtime), error, deployed: 0 };
+      this.telemetryProperties = { ...this.telemetryProperties, deployed: 1 };
     }
   }
 
@@ -308,14 +321,17 @@ export default class FlexPluginsDeploy extends FlexPlugin {
    * @param deployResult
    * @returns {Promise}
    */
-  async registerPluginVersion(deployResult: DeployResult, validateErrorMsg?: string): Promise<PluginVersionResource> {
+  async registerPluginVersion(
+    deployResult: DeployResult,
+    validateStatus: ValidateStatus,
+  ): Promise<PluginVersionResource> {
     return this.pluginVersionsClient.create(this.pkg.name, {
       Version: deployResult.nextVersion,
       PluginUrl: deployResult.pluginUrl,
       Private: !deployResult.isPublic,
       Changelog: this._flags.changelog || '',
       CliVersion: this.cliPkg.version || '',
-      ValidateStatus: validateErrorMsg || '',
+      ValidateStatus: validateStatus,
     });
   }
 

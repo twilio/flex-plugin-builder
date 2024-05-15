@@ -1,6 +1,6 @@
 {
   "name": "@twilio-labs/plugin-flex",
-  "version": "6.3.3",
+  "version": "6.4.0",
   "description": "Create, develop and deploy Flex plugins using the Twilio CLI",
   "keywords": [
     "twilio",
@@ -48,10 +48,10 @@
     "@oclif/errors": "^1.3.5",
     "@oclif/parser": "^3.8.5",
     "@twilio/cli-core": "^7.19.1",
-    "@twilio/create-flex-plugin": "6.3.3",
-    "@twilio/flex-dev-utils": "6.3.3",
-    "@twilio/flex-plugin-scripts": "6.3.3",
-    "@twilio/flex-plugins-api-client": "6.3.3",
+    "@twilio/create-flex-plugin": "6.4.0",
+    "@twilio/flex-dev-utils": "6.4.0",
+    "@twilio/flex-plugin-scripts": "6.4.0",
+    "@twilio/flex-plugins-api-client": "6.4.0",
     "dayjs": "^1.10.7",
     "lodash.startcase": "^4.4.0",
     "mkdirp": "^1.0.4",
@@ -118,7 +118,8 @@
           "public": "Publishes the plugin as a public Twilio Asset; default is private.",
           "changelog": "The changes (added/removed) made in this plugin version.",
           "description": "The description of this Flex plugin.",
-          "option": "Option to automatically pick post validation of the plugin"
+          "option": "Option to automatically pick post validation of the plugin.",
+          "bypass-validation": "Publishes the plugin even if validation step identifies issues in the plugin."
         }
       },
       "flex:plugins:create-configuration": {
@@ -231,7 +232,10 @@
         "description": "Lists the Flex Releases on the account."
       },
       "flex:plugins:validate": {
-        "description": "Validates the Flex plugin by looking for any issues that could potentially break the plugin when in use. Generates a report with the identified issues, if any."
+        "description": "Validates the Flex plugin by looking for any issues that could potentially break the plugin when in use. Generates a report with the identified issues, if any.",
+        "flags": {
+          "flexui2": "Validates the Flex plugin for compatibility with the latest Flex UI 2.x version."
+        }
       }
     }
   }

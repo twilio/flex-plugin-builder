@@ -22,6 +22,7 @@ export type LogLevels = 'debug' | 'info' | 'warning' | 'error' | 'trace' | 'succ
 interface LogArg {
   color?: Color;
   level: Level;
+  markdown?: boolean;
   args: string[];
 }
 
@@ -130,6 +131,14 @@ export class Logger {
   constructor(options?: LoggerOptions) {
     this.options = options || {};
   }
+
+  /**
+   * simple log without markdown
+   * @param args
+   */
+  public log = (...args: any[]): void => {
+    this._log({ level: 'info', markdown: false, args });
+  };
 
   /**
    * debug level log
@@ -303,7 +312,11 @@ export class Logger {
       const color = args.color ? chalk[args.color] : (msg: string) => msg;
       const msg = format.apply({}, args.args as any);
 
-      pipe(msg, color, this.markdown, log);
+      if (args.markdown === false) {
+        pipe(msg, color, log);
+      } else {
+        pipe(msg, color, this.markdown, log);
+      }
     }
   };
 
@@ -354,8 +367,21 @@ const wrap = (input: string, columns: number, options = DefaultWrapOptions): str
  * You can create an instance to overwrite default behavior.
  */
 export const _logger = new Logger();
-const { debug, info, warning, error, trace, success, newline, notice, installInfo, clearTerminal, markdown, columns } =
-  _logger;
+const {
+  log,
+  debug,
+  info,
+  warning,
+  error,
+  trace,
+  success,
+  newline,
+  notice,
+  installInfo,
+  clearTerminal,
+  markdown,
+  columns,
+} = _logger;
 
 export default {
   debug,
@@ -374,4 +400,5 @@ export default {
   colors: chalk,
   coloredStrings,
   linkText,
+  log,
 };
