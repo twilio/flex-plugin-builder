@@ -55,7 +55,7 @@ describe('PluginVersionsClient', () => {
 
     expect(result).toEqual('item');
     expect(get).toHaveBeenCalledTimes(1);
-    expect(get).toHaveBeenCalledWith('Plugins/pluginId/Versions/versionId', { cacheable: true });
+    expect(get).toHaveBeenCalledWith('Plugins/pluginId/Versions/versionId');
   });
 
   it('should create plugin version', async () => {

@@ -62,6 +62,7 @@ export interface OptionalHttpClientConfig {
   };
   requestInterceptors?: [RequestInterceptor];
   maxConcurrentRequests?: number;
+  skipCacheSetup?: boolean;
 }
 
 export interface HttpClientConfig extends OptionalHttpClientConfig {
@@ -145,7 +146,11 @@ export default class Http {
       this.axiosConfig.httpsAgent = new HttpsProxyAgent(env.getHttpProxy());
     }
 
-    this.client = setupCache(axios.create(this.axiosConfig) as any);
+    if (config.skipCacheSetup) {
+      this.client = axios.create(this.axiosConfig) as any;
+    } else {
+      this.client = setupCache(axios.create(this.axiosConfig) as any);
+    }
 
     this.concurrency = {
       pending: 0,

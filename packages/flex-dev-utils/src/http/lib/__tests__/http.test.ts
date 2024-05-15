@@ -44,6 +44,16 @@ describe('HttpClient', () => {
       expect(http.client.defaults.headers).not.toHaveProperty(HttpClient.UserAgent);
     });
 
+    it('should not setup cache', () => {
+      let http = new HttpClient({ ...config, skipCacheSetup: true });
+      // @ts-ignore
+      expect(http.client.storage).toBe(undefined);
+
+      http = new HttpClient({ ...config, skipCacheSetup: false });
+      // @ts-ignore
+      expect(http.client.storage).not.toBe(undefined);
+    });
+
     it('should set user-agent', () => {
       // @ts-ignore
       jest.spyOn(fsScripts, 'getPaths').mockReturnValue(paths);
