@@ -22,6 +22,7 @@ export default class PluginServiceHttp extends HttpClient {
       caller,
       packages,
       supportProxy: true,
+      skipCacheSetup: true,
     });
   }
 }
