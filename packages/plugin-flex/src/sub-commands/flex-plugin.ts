@@ -101,7 +101,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
   static topicName = 'flex:plugins';
 
-  static BUILDER_VERSION = 6;
+  static BUILDER_VERSION = 7;
 
   /**
    * Getter for the topic
