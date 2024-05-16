@@ -1,4 +1,4 @@
-export { PaginationMeta, Meta, Pagination } from '@twilio/flex-dev-utils';
+export { PaginationMeta, Meta, Pagination } from '@twilio/flex-dev-utils/dist/http';
 export { default as PluginServiceHTTPClient } from './client';
 export {
   default as PluginsClient,
@@ -12,6 +12,7 @@ export {
   PluginVersionResource,
   PluginVersionResourcePage,
   CreatePluginVersionResource,
+  ValidateStatus,
 } from './pluginVersions';
 export {
   default as ConfigurationsClient,

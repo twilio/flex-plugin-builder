@@ -1,4 +1,4 @@
-import { HttpClient } from '@twilio/flex-dev-utils';
+import { HttpClient } from '@twilio/flex-dev-utils/dist/http';
 
 import PluginServiceHttp from '../client';
 

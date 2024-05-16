@@ -15,7 +15,7 @@ import {
   logger,
 } from '@twilio/flex-dev-utils';
 import { getPaths } from '@twilio/flex-dev-utils/dist/fs';
-import { PluginResource } from '@twilio/flex-plugins-api-client';
+import { PluginResource, ValidateStatus } from '@twilio/flex-plugins-api-client';
 import { OutputFlags } from '@oclif/parser/lib/parse';
 
 import * as flags from '../../../utils/flags';
@@ -154,7 +154,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       async (): Promise<{
         violations: string[];
         vtime: number;
-        error: {
+        error?: {
           message: string;
           timedOut: boolean;
         };
@@ -162,6 +162,7 @@ export default class FlexPluginsDeploy extends FlexPlugin {
         return this.runScript('validate', ['--deploy']);
       },
     );
+    const validateStatus = error?.message ? ValidateStatus.Failure : ValidateStatus.Success;
 
     if (error) {
       const err = error.timedOut
@@ -220,9 +221,10 @@ export default class FlexPluginsDeploy extends FlexPlugin {
         false,
       );
       await progress(`Registering plugin ${name} with Plugins API`, async () => this.registerPlugin(), false);
+
       const pluginVersion: PluginVersionResource = await progress(
         `Registering version **v${deployedData.nextVersion}** with Plugins API`,
-        async () => this.registerPluginVersion(deployedData, error?.message),
+        async () => this.registerPluginVersion(deployedData, validateStatus),
         false,
       );
 
@@ -319,14 +321,17 @@ export default class FlexPluginsDeploy extends FlexPlugin {
    * @param deployResult
    * @returns {Promise}
    */
-  async registerPluginVersion(deployResult: DeployResult, validateErrorMsg?: string): Promise<PluginVersionResource> {
+  async registerPluginVersion(
+    deployResult: DeployResult,
+    validateStatus: ValidateStatus,
+  ): Promise<PluginVersionResource> {
     return this.pluginVersionsClient.create(this.pkg.name, {
       Version: deployResult.nextVersion,
       PluginUrl: deployResult.pluginUrl,
       Private: !deployResult.isPublic,
       Changelog: this._flags.changelog || '',
       CliVersion: this.cliPkg.version || '',
-      ValidateStatus: validateErrorMsg || '',
+      ValidateStatus: validateStatus,
     });
   }
 

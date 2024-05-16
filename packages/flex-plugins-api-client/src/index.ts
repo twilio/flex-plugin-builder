@@ -24,6 +24,7 @@ export {
   PaginationMeta,
   Meta,
   Pagination,
+  ValidateStatus,
 } from './clients';
 
 export {

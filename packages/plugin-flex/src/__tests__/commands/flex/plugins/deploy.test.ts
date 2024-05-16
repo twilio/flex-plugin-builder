@@ -5,7 +5,7 @@ import { TwilioCliError, FlexPluginError } from '@twilio/flex-dev-utils';
 import * as credentials from '@twilio/flex-dev-utils/dist/credentials';
 import * as runtime from '@twilio/flex-plugin-scripts/dist/utils/runtime';
 import * as fs from '@twilio/flex-dev-utils/dist/fs';
-import { PluginVersionResource } from '@twilio/flex-plugins-api-client/dist/clients/pluginVersions';
+import { PluginVersionResource, ValidateStatus } from '@twilio/flex-plugins-api-client/dist/clients/pluginVersions';
 import { PluginResource } from '@twilio/flex-plugins-api-client';
 import * as deployScript from '@twilio/flex-plugin-scripts/dist/scripts/deploy';
 import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
@@ -37,8 +37,7 @@ describe('Commands/FlexPluginsDeploy', () => {
     accountSid: 'AC00000000000000000000000000000',
     environmentSid: 'ZE00000000000000000000000000000',
     domainName: 'ruby-fox-123.twil.io',
-    CliVersion: '6.3.3',
-    ValidateStatus: '',
+    CliVersion: '6.4.0',
     isPublic: false,
     nextVersion: '2.0.0',
     pluginUrl: 'https://ruby-fox-123.twil.io/plugin-url',
@@ -353,7 +352,7 @@ describe('Commands/FlexPluginsDeploy', () => {
 
   it('should call registerPluginVersion without any changelog', async () => {
     const cmd = await getPluginVersionsCommand();
-    const result = await cmd.registerPluginVersion(deployResult);
+    const result = await cmd.registerPluginVersion(deployResult, ValidateStatus.Success);
 
     expect(result).toEqual(pluginVersionResource);
     expect(cmd.pluginVersionsClient.create).toHaveBeenCalledTimes(1);
@@ -361,7 +360,7 @@ describe('Commands/FlexPluginsDeploy', () => {
       Version: deployResult.nextVersion,
       PluginUrl: deployResult.pluginUrl,
       CliVersion: deployResult.CliVersion,
-      ValidateStatus: deployResult.ValidateStatus,
+      ValidateStatus: ValidateStatus.Success,
       Private: !deployResult.isPublic,
       Changelog: 'sample%20changlog',
     });
@@ -370,7 +369,7 @@ describe('Commands/FlexPluginsDeploy', () => {
   it('should call registerPluginVersion with changelog', async () => {
     const cmd = await getPluginVersionsCommand('the-changelog');
 
-    const result = await cmd.registerPluginVersion(deployResult);
+    const result = await cmd.registerPluginVersion(deployResult, ValidateStatus.Success);
 
     expect(result).toEqual(pluginVersionResource);
     expect(cmd.pluginVersionsClient.create).toHaveBeenCalledTimes(1);
@@ -378,7 +377,7 @@ describe('Commands/FlexPluginsDeploy', () => {
       Version: deployResult.nextVersion,
       PluginUrl: deployResult.pluginUrl,
       CliVersion: deployResult.CliVersion,
-      ValidateStatus: deployResult.ValidateStatus,
+      ValidateStatus: ValidateStatus.Success,
       Private: !deployResult.isPublic,
       Changelog: 'the-changelog',
     });

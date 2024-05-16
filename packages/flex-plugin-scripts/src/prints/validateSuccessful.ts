@@ -62,6 +62,7 @@ export default (report: ValidateReport): void => {
       logger.newline();
     }
 
+    logger.newline();
     logger.warning(
       logger.coloredStrings.bold(
         logger.coloredStrings.error(
@@ -77,6 +78,7 @@ export default (report: ValidateReport): void => {
     );
     logger.newline();
   } else {
+    logger.newline();
     logger.success(`Validation complete. Found ${logger.coloredStrings.digit(0)} issues 🎉`);
   }
 };
