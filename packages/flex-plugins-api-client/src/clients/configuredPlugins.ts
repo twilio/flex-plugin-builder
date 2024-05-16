@@ -64,6 +64,6 @@ export default class ConfiguredPluginsClient {
    * @param id the plugin identifier
    */
   public async get(configId: string, id: string): Promise<ConfiguredPluginResource> {
-    return this.client.get<ConfiguredPluginResource>(ConfiguredPluginsClient.getUrl(configId, id), { cacheable: true });
+    return this.client.get<ConfiguredPluginResource>(ConfiguredPluginsClient.getUrl(configId, id));
   }
 }

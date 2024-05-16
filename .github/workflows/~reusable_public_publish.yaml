@@ -46,7 +46,7 @@ jobs:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
       - name: Install dependencies
-        run: npm i
+        run: npm ci
       - name: Slack Started Notification
         uses: rtCamp/action-slack-notify@v2
         env:

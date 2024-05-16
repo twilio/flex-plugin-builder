@@ -52,7 +52,7 @@ describe('ReleasesClient', () => {
 
     expect(result).toEqual('item');
     expect(get).toHaveBeenCalledTimes(1);
-    expect(get).toHaveBeenCalledWith('Releases/releaseId', { cacheable: true });
+    expect(get).toHaveBeenCalledWith('Releases/releaseId');
   });
 
   it('should create a release', async () => {
