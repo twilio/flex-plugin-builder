@@ -1,3 +1,4 @@
+import * as devUtils from '@twilio/flex-dev-utils';
 import { TwilioCliError, env as utilsEnv } from '@twilio/flex-dev-utils';
 import * as fs from '@twilio/flex-dev-utils/dist/fs';
 import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
@@ -133,7 +134,7 @@ describe('SubCommands/FlexPlugin', () => {
   it('should call setEnvironment', async () => {
     const cmd = await createCommand();
 
-    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'doRun').mockResolvedValue('any');
     jest.spyOn(cmd, 'trackTopic').mockImplementationOnce(async () => Promise.resolve());
@@ -149,7 +150,7 @@ describe('SubCommands/FlexPlugin', () => {
   it('should set debug env to true', async () => {
     const cmd = await createCommand('-l', 'debug');
 
-    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'doRun').mockResolvedValue('any');
     jest.spyOn(cmd, 'trackTopic').mockImplementationOnce(async () => Promise.resolve());
@@ -162,7 +163,7 @@ describe('SubCommands/FlexPlugin', () => {
   it('should run the main command successfully', async () => {
     const cmd = await createCommand();
 
-    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'setupEnvironment').mockReturnThis();
     jest.spyOn(cmd, 'doRun').mockResolvedValue(null);
@@ -171,7 +172,7 @@ describe('SubCommands/FlexPlugin', () => {
 
     await cmd.run();
 
-    expect(cmd.checkForUpdate).toHaveBeenCalledTimes(1);
+    expect(devUtils.checkForUpdate).toHaveBeenCalledTimes(1);
     expect(cmd.pluginsApiToolkit).toBeDefined();
     expect(cmd.pluginsClient).toBeDefined();
     expect(cmd.pluginVersionsClient).toBeDefined();
@@ -186,7 +187,7 @@ describe('SubCommands/FlexPlugin', () => {
   it('should return raw format', async () => {
     const cmd = await createCommand('--json');
 
-    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'setupEnvironment').mockReturnThis();
     jest.spyOn(cmd, 'doRun').mockResolvedValue({ object: 'result' });
@@ -201,7 +202,7 @@ describe('SubCommands/FlexPlugin', () => {
   it('should not return raw format', async () => {
     const cmd = await createCommand();
 
-    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'setupEnvironment').mockReturnThis();
     jest.spyOn(cmd, 'doRun').mockResolvedValue({ object: 'result' });
@@ -216,7 +217,7 @@ describe('SubCommands/FlexPlugin', () => {
   it('should throw exception if script needs to run in plugin directory but is not', async () => {
     const cmd = await createCommand();
 
-    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
     jest.spyOn(cmd, 'doRun').mockResolvedValue(null);
 
@@ -281,7 +282,7 @@ describe('SubCommands/FlexPlugin', () => {
   it('should quit if builder version is incorrect', async () => {
     const cmd = await createCommand();
 
-    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(3);
     jest.spyOn(cmd, 'checkCompatibility', 'get').mockReturnValue(true);
@@ -299,7 +300,7 @@ describe('SubCommands/FlexPlugin', () => {
   it('should not quit if builder version is correct', async () => {
     const cmd = await createCommand();
 
-    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(6);
     jest.spyOn(cmd, 'checkCompatibility', 'get').mockReturnValue(true);

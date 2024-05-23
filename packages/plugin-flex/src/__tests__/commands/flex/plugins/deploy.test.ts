@@ -96,7 +96,7 @@ describe('Commands/FlexPluginsDeploy', () => {
 
     const cmd = await createCommand('--changelog', defaultChangelog, ...args);
 
-    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'doRun').mockReturnThis();
