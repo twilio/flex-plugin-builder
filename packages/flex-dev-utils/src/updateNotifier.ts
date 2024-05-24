@@ -26,7 +26,7 @@ export const checkForUpdate = async (
 
   const message = `${
     pkgInfo.deprecated
-      ? `${chalk.bgRed.bold('You are currently using a deprecated version of Flex Plugin CLI')}\n\n`
+      ? `${chalk.bgYellow.bold('You are currently using a deprecated version of Flex Plugin CLI')}\n\n`
       : ''
   }Update available ${chalk.dim(notifier.update?.current)}${chalk.reset(' → ')}${chalk.green(
     notifier.update?.latest,
