@@ -435,7 +435,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    */
   async run(): Promise<void> {
     await super.run();
-    checkForUpdate();
+    await checkForUpdate();
     addCWDNodeModule();
 
     if (!this.skipEnvironmentalSetup) {

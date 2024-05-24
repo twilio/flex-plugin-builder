@@ -80,7 +80,7 @@ export default class FlexPluginsCreate extends baseCommands.TwilioClientCommand 
    */
   async run(): Promise<void> {
     await super.run();
-    checkForUpdate();
+    await checkForUpdate();
 
     // @ts-ignore
     const { flags: instanceFlags, args } = await this.parse(FlexPluginsCreate);

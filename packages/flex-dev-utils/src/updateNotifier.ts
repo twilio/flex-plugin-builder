@@ -1,4 +1,5 @@
 import updateNotifier, { NotifyOptions, Settings } from 'update-notifier';
+import npmGetPackageInfo from 'npm-get-package-info';
 
 import { readPackageJson, findUp, readAppPackageJson } from './fs';
 import { chalk } from '.';
@@ -10,12 +11,24 @@ export default updateNotifier;
  */
 /* c8 ignore next */
 // eslint-disable-next-line import/no-unused-modules
-export const checkForUpdate = (settings: Partial<Settings> = {}, customMessage: Partial<NotifyOptions> = {}): void => {
+export const checkForUpdate = async (
+  settings: Partial<Settings> = {},
+  customMessage: Partial<NotifyOptions> = {},
+): Promise<void> => {
   const pkg = module.parent ? readPackageJson(findUp(module.parent.filename, 'package.json')) : readAppPackageJson();
+  const pkgInfo = await npmGetPackageInfo({
+    name: pkg.name,
+    version: pkg.version,
+    info: ['deprecated'],
+  });
 
   const notifier = updateNotifier({ pkg, updateCheckInterval: 1000, ...settings });
 
-  const message = `Update available ${chalk.dim(notifier.update?.current)}${chalk.reset(' → ')}${chalk.green(
+  const message = `${
+    pkgInfo.deprecated
+      ? `${chalk.bgRed.bold('You are currently using a deprecated version of Flex Plugin CLI')}\n\n`
+      : ''
+  }Update available ${chalk.dim(notifier.update?.current)}${chalk.reset(' → ')}${chalk.green(
     notifier.update?.latest,
   )} \nRun ${chalk.cyan('twilio plugins:install @twilio-labs/plugin-flex')} to update`;
 
