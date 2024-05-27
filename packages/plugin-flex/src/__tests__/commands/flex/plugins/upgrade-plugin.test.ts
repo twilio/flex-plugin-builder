@@ -1,4 +1,5 @@
 import { TwilioApiError, TwilioCliError, packages } from '@twilio/flex-dev-utils';
+import * as devUtils from '@twilio/flex-dev-utils';
 import * as fs from '@twilio/flex-dev-utils/dist/fs';
 import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
 
@@ -47,6 +48,7 @@ describe('Commands/FlexPluginsStart', () => {
     // @ts-ignore
     jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
     jest.spyOn(spawn, 'spawn').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
   });
 
   it('should have own flags', () => {
