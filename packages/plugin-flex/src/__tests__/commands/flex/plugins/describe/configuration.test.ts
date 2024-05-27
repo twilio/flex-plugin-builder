@@ -49,4 +49,10 @@ describe('Commands/Describe/FlexPluginsDescribeConfiguration', () => {
     expect(cmd.pluginsApiToolkit.describeConfiguration).toHaveBeenCalledTimes(1);
     expect(cmd.pluginsApiToolkit.describeConfiguration).toHaveBeenCalledWith({ sid: configuration.sid });
   });
+
+  it('should get topic name', async () => {
+    const cmd = await createCommand('--sid', configuration.sid);
+
+    expect(cmd.getTopicName()).toContain(FlexPluginsDescribeConfiguration.topicName);
+  });
 });

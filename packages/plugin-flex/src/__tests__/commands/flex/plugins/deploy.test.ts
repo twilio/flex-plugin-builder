@@ -678,4 +678,10 @@ describe('Commands/FlexPluginsDeploy', () => {
 
     expect(getCredential).toHaveBeenCalledTimes(0);
   });
+
+  it('should get topic name', async () => {
+    const cmd = await getCommand();
+
+    expect(cmd.getTopicName()).toContain(FlexPluginsDeploy.topicName);
+  });
 });

@@ -35,4 +35,10 @@ describe('Build2', () => {
 
     expect(cmd.checkCompatibility).toEqual(true);
   });
+
+  it('should get topic name', async () => {
+    const cmd = await createTest(FlexPluginsBuild)();
+
+    expect(cmd.getTopicName()).toContain(FlexPluginsBuild.topicName);
+  });
 });

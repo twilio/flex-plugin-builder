@@ -528,4 +528,10 @@ describe('Commands/FlexPluginsStart', () => {
     expect(get).toHaveBeenCalledTimes(1);
     expect(get).toHaveBeenCalledWith(name, goodVersion);
   });
+
+  it('should get topic name', async () => {
+    const cmd = await createCommand('--name', pluginNameOne);
+
+    expect(cmd.getTopicName()).toContain(FlexPluginsStart.topicName);
+  });
 });
