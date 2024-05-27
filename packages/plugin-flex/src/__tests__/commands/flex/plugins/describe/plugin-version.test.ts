@@ -16,4 +16,10 @@ describe('Commands/Describe/FlexPluginsDescribePluginVersion', () => {
     await cmd.init();
     expect(cmd._flags).toBeDefined();
   });
+
+  it('should get topic name', async () => {
+    const cmd = await createTest(FlexPluginsDescribePluginVersion)('--name', 'plugin-one', '--version', '1.0.2');
+
+    expect(cmd.getTopicName()).toContain(FlexPluginsDescribePluginVersion.topicName);
+  });
 });

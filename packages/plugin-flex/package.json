@@ -119,7 +119,7 @@
           "changelog": "The changes (added/removed) made in this plugin version.",
           "description": "The description of this Flex plugin.",
           "option": "Option to automatically pick post validation of the plugin.",
-          "bypass-validation": "Publishes the plugin even if validation step identifies issues in the plugin."
+          "bypass-validation": "Validates the plugin and continues to plugin deployment ignoring validation issues, if any."
         }
       },
       "flex:plugins:create-configuration": {

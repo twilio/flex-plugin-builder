@@ -32,4 +32,10 @@ describe('Validate', () => {
     const cmd = await createCommand();
     expect(cmd.checkCompatibility).toEqual(true);
   });
+
+  it('should get topic name', async () => {
+    const cmd = await createCommand();
+
+    expect(cmd.getTopicName()).toContain(FlexPluginsValidate.topicName);
+  });
 });

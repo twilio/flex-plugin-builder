@@ -25,8 +25,7 @@ import {
   Telemetry,
   env,
   semver,
-  updateNotifier,
-  chalk,
+  checkForUpdate,
   TRACK_EVENT_NAME,
   COMMAND_PREFIX,
 } from '@twilio/flex-dev-utils';
@@ -97,8 +96,6 @@ const packageJsonStr = 'package.json';
  * This will ensure the script is running on a Flex-plugin project, otherwise will throw an error
  */
 export default class FlexPlugin extends baseCommands.TwilioClientCommand {
-  static checkForUpdateFrequency = 1000 * 60 * 60 * 24; // daily
-
   static topicName = 'flex:plugins';
 
   static BUILDER_VERSION = 7;
@@ -438,7 +435,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    */
   async run(): Promise<void> {
     await super.run();
-    this.checkForUpdate();
+    await checkForUpdate();
     addCWDNodeModule();
 
     if (!this.skipEnvironmentalSetup) {
@@ -632,20 +629,6 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
     } else {
       this._logger.info(`**@@${key}@@**`);
     }
-  }
-
-  /**
-   * Checks for CLI update
-   */
-  /* c8 ignore next */
-  checkForUpdate(): void {
-    const notifier = updateNotifier({ pkg: this.cliPkg, updateCheckInterval: FlexPlugin.checkForUpdateFrequency });
-    // template taken from the update-checker
-    const message = `Update available ${chalk.dim(notifier.update?.current)}${chalk.reset(' → ')}${chalk.green(
-      notifier.update?.latest,
-    )} \nRun ${chalk.cyan('twilio plugins:install @twilio-labs/plugin-flex')} to update`;
-
-    notifier.notify({ message });
   }
 
   /**

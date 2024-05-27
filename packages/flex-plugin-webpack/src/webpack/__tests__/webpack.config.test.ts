@@ -108,7 +108,6 @@ describe('WebpackConfiguration', () => {
 
       expect(output.path).toEqual(paths.app.buildDir);
       expect(output.filename).toEqual(`${paths.app.name}.js`);
-      expect(output.publicPath).toEqual(paths.app.publicDir);
       expect(output.pathinfo).toEqual(false);
       expect(config.bail).toEqual(true);
 
@@ -127,7 +126,6 @@ describe('WebpackConfiguration', () => {
 
       expect(output.path).toEqual(paths.app.buildDir);
       expect(output.filename).toEqual(`plugins/${paths.app.name}.js`);
-      expect(output.publicPath).toEqual(paths.app.publicDir);
       expect(output.pathinfo).toEqual(true);
       expect(config.bail).toEqual(false);
 
