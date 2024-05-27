@@ -60,6 +60,12 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd._flags).toBeDefined();
   });
 
+  it('should get topic name', async () => {
+    const cmd = await createCommand();
+
+    expect(cmd.getTopicName()).toContain(FlexPluginsUpgradePlugin.topicName);
+  });
+
   it('should should return then version of @twilio/flex-plugin-scripts from dependencies', async () => {
     const cmd = await createCommand();
 

@@ -123,7 +123,9 @@ const validate = async (
     if (e?.code === ETIMEDOUT) {
       logger.error('Plugin validation timed out. Note: This may be an enterprise firewall issue');
     } else {
-      logger.error(`Validation of plugin ${pkgName} failed`);
+      const errorResponse = e.response?.data?.message;
+      const errorMessage = errorResponse ? `${errorResponse}\n\n` : '';
+      logger.error(`${errorMessage}Validation of plugin ${pkgName} failed`);
     }
     throw new TwilioCliError();
   }
