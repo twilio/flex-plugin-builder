@@ -216,14 +216,12 @@ describe('Commands/FlexPluginsDeploy', () => {
     jest.spyOn(cmd, 'registerPlugin').mockReturnThis();
     jest.spyOn(cmd, 'registerPluginVersion').mockReturnThis();
     jest.spyOn(devUtils, 'choose').mockResolvedValue(cmd.options.deploy);
-    jest.spyOn(devUtils.logger, 'error').mockReturnThis();
     jest.spyOn(devUtils.logger, 'warning').mockReturnThis();
     mockGetPkg(cmd, pkg);
 
     await cmd.doRun();
 
     expect(devUtils.choose).not.toHaveBeenCalled();
-    expect(devUtils.logger.error).toHaveBeenCalledWith('Unable to validate the plugin at the moment.');
     expect(devUtils.logger.warning).toHaveBeenCalledWith('Continuing to deploy');
     expect(cmd.runScript).toHaveBeenCalledTimes(4);
     expect(cmd.hasCollisionAndOverwrite).toHaveBeenCalledTimes(1);
@@ -256,16 +254,12 @@ describe('Commands/FlexPluginsDeploy', () => {
     jest.spyOn(cmd, 'registerPlugin').mockReturnThis();
     jest.spyOn(cmd, 'registerPluginVersion').mockReturnThis();
     jest.spyOn(devUtils, 'choose').mockResolvedValue(cmd.options.deploy);
-    jest.spyOn(devUtils.logger, 'error').mockReturnThis();
     jest.spyOn(devUtils.logger, 'warning').mockReturnThis();
     mockGetPkg(cmd, pkg);
 
     await cmd.doRun();
 
     expect(devUtils.choose).not.toHaveBeenCalled();
-    expect(devUtils.logger.error).toHaveBeenCalledWith(
-      'Plugin validation timed out. Note: This may be an enterprise firewall issue.',
-    );
     expect(devUtils.logger.warning).toHaveBeenCalledWith('Continuing to deploy');
     expect(cmd.runScript).toHaveBeenCalledTimes(4);
     expect(cmd.hasCollisionAndOverwrite).toHaveBeenCalledTimes(1);

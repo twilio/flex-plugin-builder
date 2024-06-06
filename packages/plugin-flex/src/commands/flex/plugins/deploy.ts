@@ -165,10 +165,6 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     const validateStatus = error?.message ? ValidateStatus.Failure : ValidateStatus.Success;
 
     if (error) {
-      const err = error.timedOut
-        ? 'Plugin validation timed out. Note: This may be an enterprise firewall issue.'
-        : 'Unable to validate the plugin at the moment.';
-      logger.error(err);
       logger.warning('Continuing to deploy');
     }
 

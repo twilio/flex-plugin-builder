@@ -107,7 +107,21 @@ const validate = async (
     // Print validation report
     validateSuccessful(report);
   } catch (e: any) {
+    const errResponse = e.response?.data;
+    const errMessage = errResponse?.message || errResponse?.params.error_detail;
+    const timedOut = e?.code === ETIMEDOUT;
+
     removeFile(zipFile);
+
+    logger.newline();
+
+    if (timedOut) {
+      logger.error('Plugin validation timed out. Note: This may be an enterprise firewall issue');
+    } else if (errMessage) {
+      logger.error(`${errMessage}`);
+    } else {
+      logger.error('Unable to validate the plugin at the moment.');
+    }
 
     if (isDeploy) {
       return {
@@ -115,18 +129,12 @@ const validate = async (
         vtime: 0,
         error: {
           message: e?.message,
-          timedOut: e?.code === ETIMEDOUT,
+          timedOut,
         },
       };
     }
 
-    if (e?.code === ETIMEDOUT) {
-      logger.error('Plugin validation timed out. Note: This may be an enterprise firewall issue');
-    } else {
-      const errorResponse = e.response?.data?.message;
-      const errorMessage = errorResponse ? `${errorResponse}\n\n` : '';
-      logger.error(`${errorMessage}Validation of plugin ${pkgName} failed`);
-    }
+    logger.error(`\n\nValidation of plugin ${pkgName} failed`);
     throw new TwilioCliError();
   }
 
