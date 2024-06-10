@@ -1,6 +1,6 @@
 {
   "name": "@twilio/flex-plugin-test",
-  "version": "6.4.1",
+  "version": "7.0.0",
   "description": "Flex Plugin default test framework that uses Jest Preset",
   "keywords": [
     "flex",
@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.16.0",
-    "@twilio/flex-dev-utils": "6.4.1",
+    "@twilio/flex-dev-utils": "7.0.0",
     "babel-jest": "^27.0.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-react-app": "^10.0.1",
