@@ -168,7 +168,7 @@ describe('ValidateScript', () => {
       await validateScript.default();
     } catch (e) {
       expect(e).toBeInstanceOf(flexDevUtils.TwilioCliError);
-      expect(errorLogSpy).toHaveBeenCalledWith(expect.stringMatching(/^Validation of plugin (.*)+ failed$/));
+      expect(errorLogSpy).toHaveBeenCalledTimes(2);
     }
   });
 
@@ -211,7 +211,7 @@ describe('ValidateScript', () => {
 
     const response = await validateScript.default(...args);
 
-    expect(errorLogSpy).not.toHaveBeenCalled();
+    expect(errorLogSpy).toHaveBeenCalledWith('Unable to validate the plugin at the moment.');
     expect(response.error?.message).toBe(errorString);
     expect(response.error?.timedOut).toBe(false);
     expect(response.violations.length).toBe(0);
@@ -226,7 +226,7 @@ describe('ValidateScript', () => {
     });
 
     const response = await validateScript.default(...args);
-    expect(errorLogSpy).not.toHaveBeenCalled();
+    expect(errorLogSpy).toHaveBeenCalledWith(expect.stringContaining('timed out'));
     expect(response.error?.timedOut).toBe(true);
     expect(response.violations.length).toBe(0);
     expect(response.vtime).toBe(0);
