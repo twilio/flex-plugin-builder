@@ -1,7 +1,7 @@
 import { Page } from 'puppeteer';
 
-import { Base } from './base';
 import { testParams } from '../../../core';
+import { Base } from './base';
 import { sleep } from '../../timers';
 
 export class TwilioConsole extends Base {
@@ -27,6 +27,7 @@ export class TwilioConsole extends Base {
 
   /**
    * Logs user in through service-login
+   * @param cookies
    * @param flexBaseUrl
    * @param flexPath
    * @param accountSid
@@ -36,10 +37,10 @@ export class TwilioConsole extends Base {
       ? TwilioConsole._createLocalhostUrl(localhostPort)
       : this._flexBaseUrl;
     const path = `console/flex/service-login/${accountSid}/?path=/${flexPath}&referer=${redirectUrl}`;
-
     await this.goto({ baseUrl: this._baseUrl, path });
 
     if (firstLoad) {
+      await this.elementVisible(TwilioConsole._loginForm, `Twilio Console's Login form`);
       const csrfToken = await this.page.evaluate(() => {
         return document.head.querySelector('meta[name="csrfToken"]')?.getAttribute('content');
       });

@@ -96,4 +96,10 @@ describe('Commands/FlexPluginsDeploy', () => {
     expect(cmd.printDiff).toHaveBeenCalledWith(diffs.plugins['plugin-added'][0], prefix);
     expect(cmd.printDiff).toHaveBeenCalledWith(diffs.plugins['plugin-deleted'][0], prefix);
   });
+
+  it('should get topic name', async () => {
+    const cmd = await createCommand(configId1, configId2);
+
+    expect(cmd.getTopicName()).toContain(FlexPluginsDiff.topicName);
+  });
 });

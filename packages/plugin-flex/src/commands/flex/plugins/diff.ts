@@ -143,4 +143,11 @@ export default class FlexPluginsDiff extends FlexPlugin {
       this._logger.info(`${prefix}${header}: ${FlexPlugin.getValue(path, before)}`);
     }
   }
+
+  /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginsDiff.topicName;
+  }
 }

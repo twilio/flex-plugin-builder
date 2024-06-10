@@ -18,7 +18,7 @@ export default class FlexPluginsTest extends FlexPlugin {
   };
 
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
-    super(argv, config, secureStorage, { strict: false });
+    super(argv, config, secureStorage, { strict: false, runTelemetryAsync: false });
   }
 
   /**
@@ -35,5 +35,12 @@ export default class FlexPluginsTest extends FlexPlugin {
    */
   get checkCompatibility(): boolean {
     return true;
+  }
+
+  /**
+   * @override
+   */
+  getTopicName(): string {
+    return FlexPluginsTest.topicName;
   }
 }

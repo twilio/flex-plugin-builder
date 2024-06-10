@@ -47,4 +47,10 @@ describe('Commands/FlexPluginsRelease', () => {
       expect(e).toBeInstanceOf(RequiredFlagError);
     }
   });
+
+  it('should get topic name', async () => {
+    const cmd = await createTest(FlexPluginsRelease)('--configuration-sid', configurationSid);
+
+    expect(cmd.getTopicName()).toContain(FlexPluginsRelease.topicName);
+  });
 });

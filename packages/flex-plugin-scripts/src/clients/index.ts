@@ -19,3 +19,4 @@ export { default as BuildClient, ServerlessBuild, BuildStatus } from './builds';
 export { default as DeploymentClient } from './deployments';
 export { default as ConfigurationClient, UIDependencies } from './configurations';
 export { default as ServerlessClient } from './serverless-client';
+export { default as GovernorClient } from './governor';

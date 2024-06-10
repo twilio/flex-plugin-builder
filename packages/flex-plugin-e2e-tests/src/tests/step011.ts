@@ -1,10 +1,10 @@
 /* eslint-disable import/no-unused-modules */
-import semver from 'semver';
+import { replaceInFile } from 'replace-in-file';
 
-import { TestSuite, TestParams, testParams } from '../core';
-import { spawn, Browser, pluginHelper, api, assertion, killChildProcess } from '../utils';
+import { TestSuite, TestParams, testParams, PluginType } from '../core';
+import { spawn, Browser, pluginHelper, joinPath, assertion, killChildProcess } from '../utils';
 
-// Starting multiple plugins using --include-remote works
+// Starting multiple plugins using 2 local and one remote works
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
   const plugin1 = scenario.plugins[0];
   const plugin2 = scenario.plugins[1];
@@ -16,40 +16,38 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   if (!plugin1.newlineValue) {
     throw new Error('scenario.plugin.newlineValue does not have a valid value');
   }
+  const flags: string[] = [];
+  const ext = scenario.isTS ? 'tsx' : 'jsx';
+  const startPlugin = async (url: string) =>
+    pluginHelper.waitForPluginToStart(url, testParams.config.start.timeout, testParams.config.start.pollInterval);
 
-  // Deploy plugin2
-  const resource = await api.getLatestPluginVersion(plugin2.name);
-  const oldVersion = resource?.version || '0.0.0';
-  plugin2.changelog = `e2e test ${Date.now()}`;
-  plugin2.version = semver.inc(oldVersion, 'patch') as string;
-  await spawn(
+  if (scenario.isTS) {
+    flags.push('--typescript');
+  }
+
+  // Create and setup a new plugin
+  const setup = async (plugin: PluginType) => {
+    await spawn('twilio', ['flex:plugins:create', plugin.name, ...flags]);
+    pluginHelper.changeFlexUIVersionIfRequired(scenario, plugin);
+    await spawn('npm', ['i'], { cwd: plugin.dir });
+
+    await replaceInFile({
+      files: joinPath(plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
+      from: /This is a dismissible demo component.*/,
+      to: plugin.componentText,
+    });
+  };
+
+  // Set up two new plugins
+  await Promise.all([setup(plugin2), setup(plugin3)]);
+
+  // Start all 3 plugins (Note: cwd is plugin3 in this scenario since plugin is the remote one)
+  const twilioCliResult = await spawn(
     'twilio',
-    ['flex:plugins:deploy', '--changelog', `"${plugin2.changelog}"`, '--patch', '-l', 'debug', ...config.regionFlag],
-    {
-      cwd: plugin2.dir,
-    },
+    ['flex:plugins:start', '--name', `${plugin1.name}@${plugin1.version}`, '--name', plugin2.name],
+    { detached: true, cwd: plugin3.dir },
   );
-
-  // Release plugin2
-  await spawn('twilio', [
-    'flex:plugins:release',
-    '--plugin',
-    `${plugin2.name}@${plugin2.version}`,
-    '-l',
-    'debug',
-    ...config.regionFlag,
-  ]);
-
-  // Start 1 local plugin and all remote plugins (note: local is plugin3 by cwd)
-  const twilioCliResult = await spawn('twilio', ['flex:plugins:start --include-remote'], {
-    detached: true,
-    cwd: plugin3.dir,
-  });
-  await pluginHelper.waitForPluginToStart(
-    plugin3.localhostUrl,
-    testParams.config.start.timeout,
-    testParams.config.start.pollInterval,
-  );
+  await Promise.all([startPlugin(plugin2.localhostUrl), startPlugin(plugin3.localhostUrl)]);
 
   try {
     // Load local plugin
@@ -70,7 +68,6 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     await killChildProcess(twilioCliResult.child, environment.operatingSystem);
   }
 };
-testSuite.description =
-  'Running {{twilio flex:plugins:start --include-remote}} with 1 local plugin and all remote plugins';
+testSuite.description = 'Running {{twilio flex:plugins:start}} with multiple plugins: 2 local and 1 remote';
 
 export default testSuite;

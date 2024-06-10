@@ -5,12 +5,9 @@ import { join, dirname } from 'path';
 
 import { env, exit, logger } from '@twilio/flex-dev-utils';
 import { spawn } from '@twilio/flex-dev-utils/dist/spawn';
-import { checkForUpdate } from '@twilio/flex-dev-utils/dist/updateNotifier';
 import { getPaths, getCwd, addCWDNodeModule } from '@twilio/flex-dev-utils/dist/fs';
 // eslint-disable-next-line import/no-unused-modules
 export { PluginsConfig, PLUGIN_INPUT_PARSER_REGEX } from '@twilio/flex-plugin-webpack';
-
-checkForUpdate();
 
 const spawnScript = async (...argv: string[]): Promise<void> => {
   // Directory of this file

@@ -1,60 +1,55 @@
 /* eslint-disable import/no-unused-modules */
-import { replaceInFile } from 'replace-in-file';
 import semver from 'semver';
 
 import { TestSuite, TestParams, testParams } from '../core';
-import { spawn, Browser, pluginHelper, joinPath, assertion, killChildProcess, api } from '../utils';
+import { spawn, Browser, pluginHelper, api, assertion, killChildProcess } from '../utils';
 
-// Start the 2 local plugins and 1 versioned plugin
+// Starting multiple plugins using --include-remote works
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
-  const ext = scenario.isTS ? 'tsx' : 'jsx';
-  const tmpComponentText = 'This is the new text for the next version!';
-  const startPlugin = async (url: string) =>
-    pluginHelper.waitForPluginToStart(url, testParams.config.start.timeout, testParams.config.start.pollInterval);
   const plugin1 = scenario.plugins[0];
   const plugin2 = scenario.plugins[1];
   const plugin3 = scenario.plugins[2];
   assertion.not.isNull(plugin1);
   assertion.not.isNull(plugin2);
   assertion.not.isNull(plugin3);
-  assertion.not.isNull(plugin1.newlineValue, 'scenario.plugins[0].newlineValue does not have a valid value');
 
-  // Edit remote plugin to have different text
-  await replaceInFile({
-    files: joinPath(plugin1.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
-    from: plugin1.componentText,
-    to: tmpComponentText,
-  });
+  if (!plugin1.newlineValue) {
+    throw new Error('scenario.plugin.newlineValue does not have a valid value');
+  }
 
-  // Deploy the edited plugin
-  const resource = await api.getLatestPluginVersion(plugin1.name);
+  // Deploy plugin2
+  const resource = await api.getLatestPluginVersion(plugin2.name);
   const oldVersion = resource?.version || '0.0.0';
-  plugin1.version = semver.inc(oldVersion, 'patch') as string;
+  plugin2.changelog = `e2e test ${Date.now()}`;
+  plugin2.version = semver.inc(oldVersion, 'patch') as string;
   await spawn(
     'twilio',
-    ['flex:plugins:deploy', '--changelog', `"${plugin1.changelog}"`, '--patch', '-l', 'debug', ...config.regionFlag],
+    ['flex:plugins:deploy', '--changelog', `"${plugin2.changelog}"`, '--patch', '-l', 'debug', ...config.regionFlag],
     {
-      cwd: plugin1.dir,
+      cwd: plugin2.dir,
     },
   );
 
-  // Release the edited plugin
+  // Release plugin2
   await spawn('twilio', [
     'flex:plugins:release',
     '--plugin',
+    `${plugin2.name}@${plugin2.version}`,
     '-l',
     'debug',
-    `${plugin1.name}@${plugin1.version}`,
     ...config.regionFlag,
   ]);
 
-  // Start the 2 local plugins and 1 versioned plugin (Note: cwd is plugin3 in this scenario since plugin is the remote one)
-  const flags = ['--name', `${plugin1.name}@${oldVersion}`, '--name', plugin2.name];
-  const twilioCliResult = await spawn('twilio', ['flex:plugins:start', '-l', 'debug', ...flags], {
+  // Start 1 local plugin and all remote plugins (note: local is plugin3 by cwd)
+  const twilioCliResult = await spawn('twilio', ['flex:plugins:start --include-remote'], {
     detached: true,
     cwd: plugin3.dir,
   });
-  await Promise.all([startPlugin(plugin2.localhostUrl), startPlugin(plugin3.localhostUrl)]);
+  await pluginHelper.waitForPluginToStart(
+    plugin3.localhostUrl,
+    testParams.config.start.timeout,
+    testParams.config.start.pollInterval,
+  );
 
   try {
     // Load local plugin
@@ -64,7 +59,6 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     // Check if local plugin loaded okay
     await assertion.app.view.agentDesktop.isVisible();
 
-    // @ts-ignore
     await assertion.app.view.plugins.plugin.isVisible(plugin1.newlineValue);
     await assertion.app.view.plugins.plugin.isVisible(plugin2.componentText);
     await assertion.app.view.plugins.plugin.isVisible(plugin3.componentText);
@@ -76,7 +70,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     await killChildProcess(twilioCliResult.child, environment.operatingSystem);
   }
 };
-
-testSuite.description = 'Running {{twilio flex:plugins:start}} with multiple plugins: 2 local and 1 versioned';
+testSuite.description =
+  'Running {{twilio flex:plugins:start --include-remote}} with 1 local plugin and all remote plugins';
 
 export default testSuite;

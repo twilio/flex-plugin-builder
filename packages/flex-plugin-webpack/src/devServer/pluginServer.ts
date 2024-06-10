@@ -4,7 +4,7 @@ import dns from 'dns';
 import { logger, FlexPluginError, exit, env } from '@twilio/flex-dev-utils';
 import { NextFunction, Request, Response } from 'express-serve-static-core';
 import { FlexConfigurationPlugin, readPluginsJson } from '@twilio/flex-dev-utils/dist/fs';
-import { Configuration } from 'webpack-dev-server';
+import { Configuration, Port } from 'webpack-dev-server';
 import cookieParser from 'cookie-parser';
 
 import { remotePluginNotFound } from '../prints';
@@ -25,7 +25,7 @@ interface StartServerPlugins {
 }
 
 interface StartServerConfig {
-  port: number;
+  port: Port;
   remoteAll: boolean;
 }
 
@@ -52,7 +52,7 @@ export const _getLocalPlugin = (name: string): FlexConfigurationPlugin | undefin
  * @private
  */
 // eslint-disable-next-line import/no-unused-modules
-export const _getLocalPlugins = (port: number, names: string[]): Plugin[] => {
+export const _getLocalPlugins = (port: Port, names: string[]): Plugin[] => {
   const protocol = `http${env.isHTTPS() ? 's' : ''}://`;
 
   return names.map((name) => {
@@ -331,14 +331,14 @@ export default (
     return proxy;
   }, {});
 
-  webpackConfig.before = (app, server) => {
-    // @ts-ignore
+  webpackConfig.setupMiddlewares = (middlewares, server) => {
     serverConfig.port = server.options.port || serverConfig.port;
     // @ts-ignore
-    app.use(cookieParser());
+    server.app.use(cookieParser());
     // @ts-ignore
-    app.use('^/plugins$', _requestValidator, _fetchPluginsServer(plugins, serverConfig, onRemotePlugin));
+    server.app.use('^/plugins$', _requestValidator, _fetchPluginsServer(plugins, serverConfig, onRemotePlugin));
     // @ts-ignore
-    app.use('^/plugins/v1/', _requestValidator, _renderPluginServer);
+    server.app.use('^/plugins/v1/', _requestValidator, _renderPluginServer);
+    return middlewares;
   };
 };

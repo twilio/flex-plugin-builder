@@ -10,7 +10,7 @@ import stringWidth from 'string-width';
 import columnify from './columnify';
 
 type Level = 'info' | 'error' | 'warn';
-type Color = 'red' | 'yellow' | 'green' | 'cyan' | 'magenta';
+type Color = 'red' | 'yellow' | 'green' | 'cyan' | 'magenta' | 'dim';
 
 interface ColumnsOptions {
   indent?: boolean;
@@ -22,6 +22,7 @@ export type LogLevels = 'debug' | 'info' | 'warning' | 'error' | 'trace' | 'succ
 interface LogArg {
   color?: Color;
   level: Level;
+  markdown?: boolean;
   args: string[];
 }
 
@@ -56,6 +57,21 @@ export const coloredStrings = {
   headline: chalk.bold.green,
   name: chalk.bold.magenta,
   digit: chalk.magenta,
+  underline: chalk.underline,
+};
+
+/**
+ * Links the url to the specific text displayed in the logs
+ * @param text Text to underlink and link
+ * @param url URL to link the text to
+ * @returns linked text string
+ */
+const linkText = (text: string, url: string): string => {
+  const OSC = '\u001B]';
+  const BEL = '\u0007';
+  const SEP = ';';
+
+  return [OSC, '8', SEP, SEP, url, BEL, text, OSC, '8', SEP, SEP, BEL].join('');
 };
 
 /**
@@ -117,12 +133,21 @@ export class Logger {
   }
 
   /**
+   * simple log without markdown
+   * @param args
+   */
+  public log = (...args: any[]): void => {
+    this._log({ level: 'info', markdown: false, args });
+  };
+
+  /**
    * debug level log
    * @param args
    */
   public debug = (...args: any[]): void => {
     if (this.isDebug()) {
-      this._log({ level: 'info', args });
+      args.unshift('[DEBUG]');
+      this._log({ level: 'info', color: 'dim', args });
     }
   };
 
@@ -287,7 +312,11 @@ export class Logger {
       const color = args.color ? chalk[args.color] : (msg: string) => msg;
       const msg = format.apply({}, args.args as any);
 
-      pipe(msg, color, this.markdown, log);
+      if (args.markdown === false) {
+        pipe(msg, color, log);
+      } else {
+        pipe(msg, color, this.markdown, log);
+      }
     }
   };
 
@@ -338,8 +367,21 @@ const wrap = (input: string, columns: number, options = DefaultWrapOptions): str
  * You can create an instance to overwrite default behavior.
  */
 export const _logger = new Logger();
-const { debug, info, warning, error, trace, success, newline, notice, installInfo, clearTerminal, markdown, columns } =
-  _logger;
+const {
+  log,
+  debug,
+  info,
+  warning,
+  error,
+  trace,
+  success,
+  newline,
+  notice,
+  installInfo,
+  clearTerminal,
+  markdown,
+  columns,
+} = _logger;
 
 export default {
   debug,
@@ -357,4 +399,6 @@ export default {
   columns,
   colors: chalk,
   coloredStrings,
+  linkText,
+  log,
 };

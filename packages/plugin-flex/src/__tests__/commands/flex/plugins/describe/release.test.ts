@@ -22,4 +22,10 @@ describe('Commands/Describe/FlexPluginsDescribeRelease', () => {
     const cmd = await createCommand('--sid', sid);
     expect(cmd._flags).toBeDefined();
   });
+
+  it('should get topic name', async () => {
+    const cmd = await createCommand('--sid', sid);
+
+    expect(cmd.getTopicName()).toContain(FlexPluginsDescribeRelease.topicName);
+  });
 });

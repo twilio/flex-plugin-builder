@@ -44,22 +44,18 @@
     "@twilio/flex-plugin": "6.4.1",
     "@twilio/flex-plugin-test": "6.4.1",
     "@twilio/flex-plugin-webpack": "6.4.1",
-    "@types/enzyme": "^3.10.10",
-    "@types/jest": "^27.0.0",
-    "@types/node": "^14.17.18",
-    "@types/react": "^16.14.15",
-    "@types/react-dom": "^16.9.14",
-    "@types/react-redux": "5.0.22",
-    "emotion": "9.2.12",
     "esm-wallaby": "^3.2.30",
     "jest": "^27.0.0",
     "prop-types": "^15.7.2",
-    "querystring": "^0.2.1",
-    "react": "^16",
-    "react-emotion": "9.2.12"
+    "querystring": "^0.2.1"
+  },
+  "devDependencies": {
+    "@types/enzyme": "^3.10.10",
+    "@types/jest": "^27.0.0",
+    "@types/node": "^14.17.18"
   },
   "engines": {
-    "node": "^14 || ^16 || ^18 || ^20"
+    "node": "^16 || ^18 || ^20"
   },
   "publishConfig": {
     "access": "public"

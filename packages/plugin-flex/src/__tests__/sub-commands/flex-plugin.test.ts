@@ -1,3 +1,4 @@
+import * as devUtils from '@twilio/flex-dev-utils';
 import { TwilioCliError, env as utilsEnv } from '@twilio/flex-dev-utils';
 import * as fs from '@twilio/flex-dev-utils/dist/fs';
 import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
@@ -133,9 +134,10 @@ describe('SubCommands/FlexPlugin', () => {
   it('should call setEnvironment', async () => {
     const cmd = await createCommand();
 
-    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'doRun').mockResolvedValue('any');
+    jest.spyOn(cmd, 'trackTopic').mockImplementationOnce(async () => Promise.resolve());
 
     await cmd.run();
 
@@ -148,9 +150,10 @@ describe('SubCommands/FlexPlugin', () => {
   it('should set debug env to true', async () => {
     const cmd = await createCommand('-l', 'debug');
 
-    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'doRun').mockResolvedValue('any');
+    jest.spyOn(cmd, 'trackTopic').mockImplementationOnce(async () => Promise.resolve());
 
     await cmd.run();
 
@@ -160,15 +163,16 @@ describe('SubCommands/FlexPlugin', () => {
   it('should run the main command successfully', async () => {
     const cmd = await createCommand();
 
-    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'setupEnvironment').mockReturnThis();
     jest.spyOn(cmd, 'doRun').mockResolvedValue(null);
     jest.spyOn(fs, 'addCWDNodeModule');
+    jest.spyOn(cmd, 'trackTopic').mockImplementationOnce(async () => Promise.resolve());
 
     await cmd.run();
 
-    expect(cmd.checkForUpdate).toHaveBeenCalledTimes(1);
+    expect(devUtils.checkForUpdate).toHaveBeenCalledTimes(1);
     expect(cmd.pluginsApiToolkit).toBeDefined();
     expect(cmd.pluginsClient).toBeDefined();
     expect(cmd.pluginVersionsClient).toBeDefined();
@@ -183,10 +187,11 @@ describe('SubCommands/FlexPlugin', () => {
   it('should return raw format', async () => {
     const cmd = await createCommand('--json');
 
-    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'setupEnvironment').mockReturnThis();
     jest.spyOn(cmd, 'doRun').mockResolvedValue({ object: 'result' });
+    jest.spyOn(cmd, 'trackTopic').mockImplementationOnce(async () => Promise.resolve());
 
     await cmd.run();
 
@@ -197,10 +202,11 @@ describe('SubCommands/FlexPlugin', () => {
   it('should not return raw format', async () => {
     const cmd = await createCommand();
 
-    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'setupEnvironment').mockReturnThis();
     jest.spyOn(cmd, 'doRun').mockResolvedValue({ object: 'result' });
+    jest.spyOn(cmd, 'trackTopic').mockImplementationOnce(async () => Promise.resolve());
 
     await cmd.run();
 
@@ -211,7 +217,7 @@ describe('SubCommands/FlexPlugin', () => {
   it('should throw exception if script needs to run in plugin directory but is not', async () => {
     const cmd = await createCommand();
 
-    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(false);
     jest.spyOn(cmd, 'doRun').mockResolvedValue(null);
 
@@ -276,13 +282,14 @@ describe('SubCommands/FlexPlugin', () => {
   it('should quit if builder version is incorrect', async () => {
     const cmd = await createCommand();
 
-    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(3);
     jest.spyOn(cmd, 'checkCompatibility', 'get').mockReturnValue(true);
     jest.spyOn(cmd, 'exit').mockReturnThis();
     jest.spyOn(cmd, 'doRun').mockReturnThis();
     jest.spyOn(cmd, 'pkg', 'get').mockReturnThis();
+    jest.spyOn(cmd, 'trackTopic').mockImplementationOnce(async () => Promise.resolve());
 
     await cmd.run();
     // @ts-ignore
@@ -293,12 +300,13 @@ describe('SubCommands/FlexPlugin', () => {
   it('should not quit if builder version is correct', async () => {
     const cmd = await createCommand();
 
-    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
-    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(6);
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(7);
     jest.spyOn(cmd, 'checkCompatibility', 'get').mockReturnValue(true);
     jest.spyOn(cmd, 'exit').mockReturnThis();
     jest.spyOn(cmd, 'doRun').mockReturnThis();
+    jest.spyOn(cmd, 'trackTopic').mockImplementationOnce(async () => Promise.resolve());
 
     await cmd.run();
     // @ts-ignore
@@ -357,6 +365,38 @@ describe('SubCommands/FlexPlugin', () => {
     const cmd = await createCommand();
 
     expect(cmd.checkCompatibility).toEqual(false);
+  });
+
+  describe('trackTopic', () => {
+    it('tracks topic with correct properties', async () => {
+      const cmd = await createCommand();
+      // @ts-ignore
+      cmd._telemetry = {
+        track: jest.fn(),
+      } as any;
+
+      const timeTaken = 100;
+      const properties = { deployed: 0, violations: [] };
+
+      // @ts-ignore
+      cmd.cliPkg = { version: '1.0.0' } as any; // Mocking as any for simplicity
+      // @ts-ignore
+      cmd.currentProfile = { accountSid: 'AC123' } as any;
+
+      // @ts-ignore
+      await cmd.trackTopic(timeTaken, properties);
+      // @ts-ignore
+      expect(cmd._telemetry.track).toHaveBeenCalledWith(
+        expect.any(String),
+        'AC123',
+        expect.objectContaining({
+          cliVersion: '1.0.0',
+          command: expect.any(String),
+          xtime: 100,
+          ...properties,
+        }),
+      );
+    });
   });
 
   describe('setupEnvironment', () => {

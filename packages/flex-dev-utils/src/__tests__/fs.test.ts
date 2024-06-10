@@ -1,5 +1,8 @@
+import path from 'path';
+
 import appModule from 'app-module-path';
 import * as globby from 'globby';
+import * as AdmZip from 'adm-zip';
 
 import * as fs from '../fs';
 import * as questions from '../questions';
@@ -7,6 +10,7 @@ import { PackageJson } from '../fs';
 
 jest.mock('globby');
 jest.mock('app-module-path');
+jest.mock('adm-zip');
 
 describe('fs', () => {
   const flexPluginScripts = '@twilio/flex-plugin-scripts';
@@ -856,6 +860,48 @@ describe('fs', () => {
     });
   });
 
+  describe('isPluginFolder', () => {
+    it('should test isPluginFolder to be false if no package.json is found', () => {
+      const checkAFileExists = jest.spyOn(fs, 'checkAFileExists').mockReturnValue(false);
+      expect(fs.isPluginFolder()).toBe(false);
+      expect(checkAFileExists).toHaveBeenCalledTimes(1);
+    });
+
+    it('should test isPluginFolder to be false if package was not found in package.json', () => {
+      jest.spyOn(fs, 'checkAFileExists').mockReturnValue(true);
+      const packageJson = jest.spyOn(fs, 'readAppPackageJson').mockReturnValue({
+        version: '1.0.0',
+        name: '',
+        dependencies: {
+          '@twilio/flex-plugin': '',
+          '@twilio/flex-plugin-scripts': '',
+        },
+        devDependencies: {
+          'not-a-valid-package': '',
+        },
+      });
+      expect(fs.isPluginFolder()).toBe(false);
+      expect(packageJson).toHaveBeenCalledTimes(1);
+    });
+
+    it('should test isPluginFolder to be true if both scripts found in devDependencies', () => {
+      jest.spyOn(fs, 'checkAFileExists').mockReturnValue(true);
+      jest.spyOn(fs, 'readAppPackageJson').mockReturnValue({
+        version: '1.0.0',
+        name: '',
+        dependencies: {
+          '@twilio/flex-plugin': '',
+          '@twilio/flex-plugin-scripts': '',
+        },
+        devDependencies: {
+          '@twilio/flex-plugin-scripts': '',
+          '@twilio/flex-ui': '^1',
+        },
+      });
+      expect(fs.isPluginFolder()).toBe(true);
+    });
+  });
+
   describe('packageDependencyVersion', () => {
     const pkg: PackageJson = {
       name: 'test',
@@ -898,6 +944,59 @@ describe('fs', () => {
       expect(packageDependencyVersion).toHaveBeenCalledTimes(1);
       expect(packageDependencyVersion).toHaveBeenCalledWith(pkg, 'test');
       expect(_require).toHaveBeenCalledWith(flexUIPkgPath);
+    });
+  });
+
+  describe('zipPluginFiles', () => {
+    it('should zip plugin files', () => {
+      const location = '/path/to/zip/file';
+      const zipPath = 'plugin';
+      const files = ['/directory/one', '/file/two.js'];
+
+      const addLocalFileFn = jest.fn();
+      const addLocalFolderFn = jest.fn();
+      const writeZipFn = jest.fn();
+
+      const admZipSpy = jest.spyOn(AdmZip, 'default').mockReturnValue({
+        addLocalFile: addLocalFileFn,
+        addLocalFolder: addLocalFolderFn,
+        writeZip: writeZipFn,
+      } as any);
+
+      const statsSpy = jest.spyOn(fs.default, 'statSync');
+
+      const pathParseSpy = jest.spyOn(path, 'parse').mockReturnValue({
+        name: 'one',
+      } as any);
+
+      const pathJoinSpy = jest.spyOn(path, 'join').mockReturnValue('/plugin/one');
+
+      statsSpy.mockReturnValueOnce({
+        isDirectory() {
+          return true;
+        },
+      } as any);
+
+      statsSpy.mockReturnValueOnce({
+        isDirectory() {
+          return false;
+        },
+      } as any);
+
+      fs.zipPluginFiles(location, zipPath, ...files);
+
+      expect(admZipSpy).toHaveBeenCalledTimes(1);
+      expect(statsSpy).toHaveBeenCalledTimes(2);
+      expect(pathParseSpy).toHaveBeenCalledTimes(1);
+      expect(pathParseSpy).toHaveBeenCalledWith(files[0]);
+      expect(pathJoinSpy).toHaveBeenCalledTimes(1);
+      expect(pathJoinSpy).toHaveBeenCalledWith(zipPath, 'one');
+      expect(addLocalFolderFn).toHaveBeenCalledTimes(1);
+      expect(addLocalFolderFn).toHaveBeenCalledWith(files[0], '/plugin/one');
+      expect(addLocalFileFn).toHaveBeenCalledTimes(1);
+      expect(addLocalFileFn).toHaveBeenCalledWith(files[1], zipPath);
+      expect(writeZipFn).toHaveBeenCalledTimes(1);
+      expect(writeZipFn).toHaveBeenCalledWith(location);
     });
   });
 });

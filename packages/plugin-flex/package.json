@@ -71,7 +71,7 @@
     "twilio": "^3.71.2"
   },
   "engines": {
-    "node": "^14 || ^16 || ^18 || ^20"
+    "node": "^16 || ^18 || ^20"
   },
   "publishConfig": {
     "access": "public"
@@ -117,7 +117,9 @@
           "version": "Publishes the version (SemVer).",
           "public": "Publishes the plugin as a public Twilio Asset; default is private.",
           "changelog": "The changes (added/removed) made in this plugin version.",
-          "description": "The description of this Flex plugin."
+          "description": "The description of this Flex plugin.",
+          "option": "Option to automatically pick post validation of the plugin.",
+          "bypass-validation": "Validates the plugin and continues to plugin deployment ignoring validation issues, if any."
         }
       },
       "flex:plugins:create-configuration": {
@@ -228,6 +230,12 @@
       },
       "flex:plugins:list:releases": {
         "description": "Lists the Flex Releases on the account."
+      },
+      "flex:plugins:validate": {
+        "description": "Validates the Flex plugin by looking for any issues that could potentially break the plugin when in use. Generates a report with the identified issues, if any.",
+        "flags": {
+          "flexui2": "Validates the Flex plugin for compatibility with the latest Flex UI 2.x version."
+        }
       }
     }
   }

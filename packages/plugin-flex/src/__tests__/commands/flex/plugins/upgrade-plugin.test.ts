@@ -1,4 +1,5 @@
 import { TwilioApiError, TwilioCliError, packages } from '@twilio/flex-dev-utils';
+import * as devUtils from '@twilio/flex-dev-utils';
 import * as fs from '@twilio/flex-dev-utils/dist/fs';
 import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
 
@@ -8,6 +9,7 @@ import FlexPluginsUpgradePlugin, { DependencyUpdates } from '../../../../command
 
 jest.mock('@twilio/flex-dev-utils/dist/fs');
 jest.mock('@twilio/flex-dev-utils/dist/spawn');
+jest.mock('@twilio/flex-dev-utils/dist/telemetry/lib/telemetry');
 
 describe('Commands/FlexPluginsStart', () => {
   const serverlessSid = 'ZS00000000000000000000000000000000';
@@ -46,6 +48,7 @@ describe('Commands/FlexPluginsStart', () => {
     // @ts-ignore
     jest.spyOn(fs, 'getPaths').mockReturnValue(paths);
     jest.spyOn(spawn, 'spawn').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
   });
 
   it('should have own flags', () => {
@@ -55,6 +58,12 @@ describe('Commands/FlexPluginsStart', () => {
   it('should set parsed flags', async () => {
     const cmd = await createCommand();
     expect(cmd._flags).toBeDefined();
+  });
+
+  it('should get topic name', async () => {
+    const cmd = await createCommand();
+
+    expect(cmd.getTopicName()).toContain(FlexPluginsUpgradePlugin.topicName);
   });
 
   it('should should return then version of @twilio/flex-plugin-scripts from dependencies', async () => {

@@ -1,10 +1,11 @@
 /* eslint-disable camelcase */
 import { CLIParseError } from '@oclif/parser/lib/errors';
+import * as devUtils from '@twilio/flex-dev-utils';
 import { TwilioCliError, FlexPluginError } from '@twilio/flex-dev-utils';
 import * as credentials from '@twilio/flex-dev-utils/dist/credentials';
 import * as runtime from '@twilio/flex-plugin-scripts/dist/utils/runtime';
 import * as fs from '@twilio/flex-dev-utils/dist/fs';
-import { PluginVersionResource } from '@twilio/flex-plugins-api-client/dist/clients/pluginVersions';
+import { PluginVersionResource, ValidateStatus } from '@twilio/flex-plugins-api-client/dist/clients/pluginVersions';
 import { PluginResource } from '@twilio/flex-plugins-api-client';
 import * as deployScript from '@twilio/flex-plugin-scripts/dist/scripts/deploy';
 import * as spawn from '@twilio/flex-dev-utils/dist/spawn';
@@ -17,6 +18,7 @@ import ServerlessClient from '../../../../clients/ServerlessClient';
 jest.mock('@twilio/flex-dev-utils/dist/credentials');
 jest.mock('@twilio/flex-plugin-scripts/dist/utils/runtime');
 jest.mock('@twilio/flex-dev-utils/dist/fs');
+jest.mock('@twilio/flex-dev-utils/dist/telemetry/lib/telemetry');
 jest.mock('@twilio/flex-dev-utils/dist/updateNotifier');
 jest.mock('@twilio/flex-dev-utils/dist/spawn');
 
@@ -35,6 +37,7 @@ describe('Commands/FlexPluginsDeploy', () => {
     accountSid: 'AC00000000000000000000000000000',
     environmentSid: 'ZE00000000000000000000000000000',
     domainName: 'ruby-fox-123.twil.io',
+    CliVersion: '6.4.1',
     isPublic: false,
     nextVersion: '2.0.0',
     pluginUrl: 'https://ruby-fox-123.twil.io/plugin-url',
@@ -93,7 +96,7 @@ describe('Commands/FlexPluginsDeploy', () => {
 
     const cmd = await createCommand('--changelog', defaultChangelog, ...args);
 
-    jest.spyOn(cmd, 'checkForUpdate').mockReturnThis();
+    jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(FlexPlugin.BUILDER_VERSION);
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
     jest.spyOn(cmd, 'doRun').mockReturnThis();
@@ -110,6 +113,7 @@ describe('Commands/FlexPluginsDeploy', () => {
   const getPluginVersionsCommand = async (changelog?: string) => {
     const args = [];
     if (changelog) {
+      // @ts-ignore
       args.push('--changelog', changelog);
     }
 
@@ -117,6 +121,16 @@ describe('Commands/FlexPluginsDeploy', () => {
     jest.spyOn(cmd.pluginVersionsClient, 'create').mockResolvedValue(pluginVersionResource);
 
     return cmd;
+  };
+
+  const validateReturningViolations = async (scriptName: string) => {
+    if (scriptName === 'validate') {
+      return Promise.resolve({
+        violations: ['violation 1'],
+        vtime: 3452,
+      });
+    }
+    return Promise.resolve(this);
   };
 
   describe('parseVersionInput', () => {
@@ -149,11 +163,20 @@ describe('Commands/FlexPluginsDeploy', () => {
     jest.spyOn(cmd, 'checkServerlessInstance').mockReturnThis();
     jest.spyOn(cmd, 'checkForLegacy').mockReturnThis();
     jest.spyOn(cmd, 'validatePlugin').mockReturnThis();
-    jest.spyOn(cmd, 'runScript').mockReturnThis();
+    jest.spyOn(cmd, 'runScript').mockImplementation(async (scriptName) => {
+      if (scriptName === 'validate') {
+        return Promise.resolve({
+          violations: ['violation 1', 'violation 2'],
+          vtime: 3834.345,
+        });
+      }
+      return Promise.resolve(this);
+    });
     jest.spyOn(cmd, 'hasCollisionAndOverwrite').mockReturnThis();
     jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
     jest.spyOn(cmd, 'registerPlugin').mockReturnThis();
     jest.spyOn(cmd, 'registerPluginVersion').mockReturnThis();
+    jest.spyOn(devUtils, 'choose').mockResolvedValue(cmd.options.deploy);
     mockGetPkg(cmd, pkg);
 
     await cmd.doRun();
@@ -161,7 +184,132 @@ describe('Commands/FlexPluginsDeploy', () => {
     expect(cmd.checkServerlessInstance).toHaveBeenCalledTimes(1);
     expect(cmd.checkForLegacy).toHaveBeenCalledTimes(1);
     expect(cmd.validatePlugin).toHaveBeenCalledTimes(1);
-    expect(cmd.runScript).toHaveBeenCalledTimes(3);
+    expect(devUtils.choose).toHaveBeenCalledTimes(1);
+    expect(cmd.runScript).toHaveBeenCalledTimes(4);
+    expect(cmd.hasCollisionAndOverwrite).toHaveBeenCalledTimes(1);
+    expect(deployScript._verifyFlexUIConfiguration).toHaveBeenCalledTimes(1);
+    expect(cmd.registerPlugin).toHaveBeenCalledTimes(1);
+    expect(cmd.registerPluginVersion).toHaveBeenCalledTimes(1);
+  });
+
+  it('should continue deploy when validate script returns an error', async () => {
+    const cmd = await createCommand('--changelog', defaultChangelog);
+
+    jest.spyOn(cmd, 'checkServerlessInstance').mockReturnThis();
+    jest.spyOn(cmd, 'checkForLegacy').mockReturnThis();
+    jest.spyOn(cmd, 'validatePlugin').mockReturnThis();
+    jest.spyOn(cmd, 'runScript').mockImplementation(async (scriptName) => {
+      if (scriptName === 'validate') {
+        return Promise.resolve({
+          violations: [],
+          vtime: 0,
+          error: {
+            message: 'Request failed with error: 401 Unauthorised',
+            timedOut: false,
+          },
+        });
+      }
+      return Promise.resolve(this);
+    });
+    jest.spyOn(cmd, 'hasCollisionAndOverwrite').mockReturnThis();
+    jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
+    jest.spyOn(cmd, 'registerPlugin').mockReturnThis();
+    jest.spyOn(cmd, 'registerPluginVersion').mockReturnThis();
+    jest.spyOn(devUtils, 'choose').mockResolvedValue(cmd.options.deploy);
+    jest.spyOn(devUtils.logger, 'warning').mockReturnThis();
+    mockGetPkg(cmd, pkg);
+
+    await cmd.doRun();
+
+    expect(devUtils.choose).not.toHaveBeenCalled();
+    expect(devUtils.logger.warning).toHaveBeenCalledWith('Continuing to deploy');
+    expect(cmd.runScript).toHaveBeenCalledTimes(4);
+    expect(cmd.hasCollisionAndOverwrite).toHaveBeenCalledTimes(1);
+    expect(deployScript._verifyFlexUIConfiguration).toHaveBeenCalledTimes(1);
+    expect(cmd.registerPlugin).toHaveBeenCalledTimes(1);
+    expect(cmd.registerPluginVersion).toHaveBeenCalledTimes(1);
+  });
+
+  it('should display timeout error if valdiation fails with ETIMEDOUT and continue deployment', async () => {
+    const cmd = await createCommand('--changelog', defaultChangelog);
+
+    jest.spyOn(cmd, 'checkServerlessInstance').mockReturnThis();
+    jest.spyOn(cmd, 'checkForLegacy').mockReturnThis();
+    jest.spyOn(cmd, 'validatePlugin').mockReturnThis();
+    jest.spyOn(cmd, 'runScript').mockImplementation(async (scriptName) => {
+      if (scriptName === 'validate') {
+        return Promise.resolve({
+          violations: [],
+          vtime: 0,
+          error: {
+            message: 'Request timed out',
+            timedOut: true,
+          },
+        });
+      }
+      return Promise.resolve(this);
+    });
+    jest.spyOn(cmd, 'hasCollisionAndOverwrite').mockReturnThis();
+    jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
+    jest.spyOn(cmd, 'registerPlugin').mockReturnThis();
+    jest.spyOn(cmd, 'registerPluginVersion').mockReturnThis();
+    jest.spyOn(devUtils, 'choose').mockResolvedValue(cmd.options.deploy);
+    jest.spyOn(devUtils.logger, 'warning').mockReturnThis();
+    mockGetPkg(cmd, pkg);
+
+    await cmd.doRun();
+
+    expect(devUtils.choose).not.toHaveBeenCalled();
+    expect(devUtils.logger.warning).toHaveBeenCalledWith('Continuing to deploy');
+    expect(cmd.runScript).toHaveBeenCalledTimes(4);
+    expect(cmd.hasCollisionAndOverwrite).toHaveBeenCalledTimes(1);
+    expect(deployScript._verifyFlexUIConfiguration).toHaveBeenCalledTimes(1);
+    expect(cmd.registerPlugin).toHaveBeenCalledTimes(1);
+    expect(cmd.registerPluginVersion).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not continue to deploy if user opts to fix the issues found during validation', async () => {
+    const cmd = await createCommand('--changelog', defaultChangelog);
+
+    jest.spyOn(cmd, 'checkServerlessInstance').mockReturnThis();
+    jest.spyOn(cmd, 'checkForLegacy').mockReturnThis();
+    jest.spyOn(cmd, 'validatePlugin').mockReturnThis();
+    jest.spyOn(cmd, 'runScript').mockImplementation(validateReturningViolations);
+    jest.spyOn(cmd, 'hasCollisionAndOverwrite').mockReturnThis();
+    jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
+    jest.spyOn(cmd, 'registerPlugin').mockReturnThis();
+    jest.spyOn(cmd, 'registerPluginVersion').mockReturnThis();
+    jest.spyOn(devUtils, 'choose').mockResolvedValue(cmd.options.fix);
+    mockGetPkg(cmd, pkg);
+
+    await cmd.doRun();
+
+    expect(devUtils.choose).toHaveBeenCalledTimes(1);
+    expect(cmd.runScript).toHaveBeenCalledTimes(1);
+    expect(cmd.hasCollisionAndOverwrite).not.toHaveBeenCalled();
+    expect(deployScript._verifyFlexUIConfiguration).not.toHaveBeenCalled();
+    expect(cmd.registerPlugin).not.toHaveBeenCalled();
+    expect(cmd.registerPluginVersion).not.toHaveBeenCalled();
+  });
+
+  it('should continue to deploy if --bypass-validation flag is present', async () => {
+    const cmd = await createCommand('--changelog', defaultChangelog, '--bypass-validation');
+
+    jest.spyOn(cmd, 'checkServerlessInstance').mockReturnThis();
+    jest.spyOn(cmd, 'checkForLegacy').mockReturnThis();
+    jest.spyOn(cmd, 'validatePlugin').mockReturnThis();
+    jest.spyOn(cmd, 'runScript').mockImplementation(validateReturningViolations);
+    jest.spyOn(cmd, 'hasCollisionAndOverwrite').mockReturnThis();
+    jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
+    jest.spyOn(cmd, 'registerPlugin').mockReturnThis();
+    jest.spyOn(cmd, 'registerPluginVersion').mockReturnThis();
+    jest.spyOn(devUtils, 'choose').mockReturnThis();
+    mockGetPkg(cmd, pkg);
+
+    await cmd.doRun();
+
+    expect(devUtils.choose).toHaveBeenCalledTimes(0);
+    expect(cmd.runScript).toHaveBeenCalledTimes(4);
     expect(cmd.hasCollisionAndOverwrite).toHaveBeenCalledTimes(1);
     expect(deployScript._verifyFlexUIConfiguration).toHaveBeenCalledTimes(1);
     expect(cmd.registerPlugin).toHaveBeenCalledTimes(1);
@@ -198,13 +346,15 @@ describe('Commands/FlexPluginsDeploy', () => {
 
   it('should call registerPluginVersion without any changelog', async () => {
     const cmd = await getPluginVersionsCommand();
-    const result = await cmd.registerPluginVersion(deployResult);
+    const result = await cmd.registerPluginVersion(deployResult, ValidateStatus.Success);
 
     expect(result).toEqual(pluginVersionResource);
     expect(cmd.pluginVersionsClient.create).toHaveBeenCalledTimes(1);
     expect(cmd.pluginVersionsClient.create).toHaveBeenCalledWith(pkg.name, {
       Version: deployResult.nextVersion,
       PluginUrl: deployResult.pluginUrl,
+      CliVersion: deployResult.CliVersion,
+      ValidateStatus: ValidateStatus.Success,
       Private: !deployResult.isPublic,
       Changelog: 'sample%20changlog',
     });
@@ -213,13 +363,15 @@ describe('Commands/FlexPluginsDeploy', () => {
   it('should call registerPluginVersion with changelog', async () => {
     const cmd = await getPluginVersionsCommand('the-changelog');
 
-    const result = await cmd.registerPluginVersion(deployResult);
+    const result = await cmd.registerPluginVersion(deployResult, ValidateStatus.Success);
 
     expect(result).toEqual(pluginVersionResource);
     expect(cmd.pluginVersionsClient.create).toHaveBeenCalledTimes(1);
     expect(cmd.pluginVersionsClient.create).toHaveBeenCalledWith(pkg.name, {
       Version: deployResult.nextVersion,
       PluginUrl: deployResult.pluginUrl,
+      CliVersion: deployResult.CliVersion,
+      ValidateStatus: ValidateStatus.Success,
       Private: !deployResult.isPublic,
       Changelog: 'the-changelog',
     });
@@ -519,5 +671,11 @@ describe('Commands/FlexPluginsDeploy', () => {
     await cmd.hasCollisionAndOverwrite();
 
     expect(getCredential).toHaveBeenCalledTimes(0);
+  });
+
+  it('should get topic name', async () => {
+    const cmd = await getCommand();
+
+    expect(cmd.getTopicName()).toContain(FlexPluginsDeploy.topicName);
   });
 });

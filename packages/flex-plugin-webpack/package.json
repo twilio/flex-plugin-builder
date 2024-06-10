@@ -67,7 +67,7 @@
     "ts-pnp": "^1.2.0",
     "url-loader": "^4.1.1",
     "webpack": "^4.47.0",
-    "webpack-dev-server": "^3.11.3"
+    "webpack-dev-server": "^4.15.2"
   },
   "devDependencies": {
     "@types/cookie-parser": "1.4.7",
@@ -76,12 +76,11 @@
     "@types/tapable": "^1.0.8",
     "@types/terser-webpack-plugin": "^2.2.1",
     "@types/webpack": "^4.41.26",
-    "@types/webpack-dev-server": "^3.11.2",
     "express-serve-static-core": "^0.1.1",
     "typescript": "^4.2.3"
   },
   "engines": {
-    "node": "^14 || ^16 || ^18 || ^20"
+    "node": "^16 || ^18 || ^20"
   },
   "publishConfig": {
     "access": "public"

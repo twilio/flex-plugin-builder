@@ -335,4 +335,10 @@ describe('Commands/Archive/FlexPluginsArchivePluginVersion', () => {
     expect(cmd.getResourceType()).toContain('Flex');
     expect(cmd.getResourceType()).toContain('Plugin Version');
   });
+
+  it('should get topic name', async () => {
+    const cmd = await createCmd();
+
+    expect(cmd.getTopicName()).toContain(FlexPluginsArchivePluginVersion.topicName);
+  });
 });

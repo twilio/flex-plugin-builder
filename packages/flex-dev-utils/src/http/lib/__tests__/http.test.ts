@@ -132,80 +132,93 @@ describe('HttpClient', () => {
       });
     });
 
-    describe('list', () => {
-      const http = new HttpClient({ ...config });
-      const get = jest.spyOn(http, 'get');
+    it('should return the correct stage urls if base url contains realm', () => {
+      jest.spyOn(env, 'getRegion').mockReturnValue('stage');
+      const urls = [
+        ['https://api.us1.twilio.com', 'https://api.stage-us1.twilio.com'],
+        ['https://api-prefix.us1.twilio.com', 'https://api-prefix.stage-us1.twilio.com'],
+        ['https://api.us1.twilio.com/v1/service?query=true', 'https://api.stage-us1.twilio.com/v1/service?query=true'],
+      ];
 
-      it('should create no query parameter if no pagination is provided', async () => {
-        get.mockResolvedValue({ meta: {}, data: [] });
-        const result = await http.list('/the-url', 'data');
-
-        expect(result).toEqual({ meta: {}, data: [] });
-        expect(get).toHaveBeenCalledTimes(1);
-        expect(get).toHaveBeenCalledWith('/the-url?');
+      urls.forEach(([url, expected]) => {
+        expect(HttpClient.getBaseUrl(url)).toEqual(expected);
       });
+    });
+  });
 
-      it('should add one pagination parameter', async () => {
-        get.mockResolvedValue({ meta: {}, data: [] });
-        const result = await http.list('/the-url', 'data', { pageSize: 5 });
+  describe('list', () => {
+    const http = new HttpClient({ ...config });
+    const get = jest.spyOn(http, 'get');
 
-        expect(result).toEqual({ meta: {}, data: [] });
-        expect(get).toHaveBeenCalledTimes(1);
-        expect(get).toHaveBeenCalledWith('/the-url?PageSize=5');
+    it('should create no query parameter if no pagination is provided', async () => {
+      get.mockResolvedValue({ meta: {}, data: [] });
+      const result = await http.list('/the-url', 'data');
+
+      expect(result).toEqual({ meta: {}, data: [] });
+      expect(get).toHaveBeenCalledTimes(1);
+      expect(get).toHaveBeenCalledWith('/the-url?');
+    });
+
+    it('should add one pagination parameter', async () => {
+      get.mockResolvedValue({ meta: {}, data: [] });
+      const result = await http.list('/the-url', 'data', { pageSize: 5 });
+
+      expect(result).toEqual({ meta: {}, data: [] });
+      expect(get).toHaveBeenCalledTimes(1);
+      expect(get).toHaveBeenCalledWith('/the-url?PageSize=5');
+    });
+
+    it('should add multiple pagination parameters', async () => {
+      get.mockResolvedValue({ meta: {}, data: [] });
+      const result = await http.list('/the-url', 'data', { page: 1, pageSize: 5 });
+
+      expect(result).toEqual({ meta: {}, data: [] });
+      expect(get).toHaveBeenCalledTimes(1);
+      expect(get).toHaveBeenCalledWith('/the-url?Page=1&PageSize=5');
+    });
+
+    it('should return meta with next token', async () => {
+      get.mockResolvedValue({
+        meta: {
+          next_page_url: 'https://api.twilio.com/Data?PageToken=123',
+        },
+        data: [],
       });
+      const result = await http.list('/the-url', 'data');
 
-      it('should add multiple pagination parameters', async () => {
-        get.mockResolvedValue({ meta: {}, data: [] });
-        const result = await http.list('/the-url', 'data', { page: 1, pageSize: 5 });
+      expect(result.meta.next_token).toEqual('123');
+      expect(get).toHaveBeenCalledTimes(1);
+      expect(get).toHaveBeenCalledWith('/the-url?');
+    });
 
-        expect(result).toEqual({ meta: {}, data: [] });
-        expect(get).toHaveBeenCalledTimes(1);
-        expect(get).toHaveBeenCalledWith('/the-url?Page=1&PageSize=5');
+    it('should return meta with previous token', async () => {
+      get.mockResolvedValue({
+        meta: {
+          previous_page_url: 'https://api.twilio.com/Data?PageToken=321',
+        },
+        data: [],
       });
+      const result = await http.list('/the-url', 'data');
 
-      it('should return meta with next token', async () => {
-        get.mockResolvedValue({
-          meta: {
-            next_page_url: 'https://api.twilio.com/Data?PageToken=123',
-          },
-          data: [],
-        });
-        const result = await http.list('/the-url', 'data');
+      expect(result.meta.previous_token).toEqual('321');
+      expect(get).toHaveBeenCalledTimes(1);
+      expect(get).toHaveBeenCalledWith('/the-url?');
+    });
 
-        expect(result.meta.next_token).toEqual('123');
-        expect(get).toHaveBeenCalledTimes(1);
-        expect(get).toHaveBeenCalledWith('/the-url?');
+    it('should change response key with provided key', async () => {
+      get.mockResolvedValue({
+        meta: {
+          previous_token: '321',
+        },
+        results: [],
       });
+      const result = await http.list('/the-url', 'plugins');
 
-      it('should return meta with previous token', async () => {
-        get.mockResolvedValue({
-          meta: {
-            previous_page_url: 'https://api.twilio.com/Data?PageToken=321',
-          },
-          data: [],
-        });
-        const result = await http.list('/the-url', 'data');
-
-        expect(result.meta.previous_token).toEqual('321');
-        expect(get).toHaveBeenCalledTimes(1);
-        expect(get).toHaveBeenCalledWith('/the-url?');
-      });
-
-      it('should change response key with provided key', async () => {
-        get.mockResolvedValue({
-          meta: {
-            previous_token: '321',
-          },
-          results: [],
-        });
-        const result = await http.list('/the-url', 'plugins');
-
-        expect(result.meta.previous_token).toEqual('321');
-        expect(get).toHaveBeenCalledTimes(1);
-        expect(get).toHaveBeenCalledWith('/the-url?');
-        // @ts-ignore
-        expect(result.plugins).toEqual([]);
-      });
+      expect(result.meta.previous_token).toEqual('321');
+      expect(get).toHaveBeenCalledTimes(1);
+      expect(get).toHaveBeenCalledWith('/the-url?');
+      // @ts-ignore
+      expect(result.plugins).toEqual([]);
     });
   });
 
