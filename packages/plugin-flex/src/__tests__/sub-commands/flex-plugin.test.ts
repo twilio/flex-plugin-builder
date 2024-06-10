@@ -302,7 +302,7 @@ describe('SubCommands/FlexPlugin', () => {
 
     jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
     jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
-    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(6);
+    jest.spyOn(cmd, 'builderVersion', 'get').mockReturnValue(7);
     jest.spyOn(cmd, 'checkCompatibility', 'get').mockReturnValue(true);
     jest.spyOn(cmd, 'exit').mockReturnThis();
     jest.spyOn(cmd, 'doRun').mockReturnThis();
