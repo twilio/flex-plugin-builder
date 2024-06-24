@@ -35,7 +35,7 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
   assertion.not.isNull(plugin3);
 
   // Set 3 plugins
-  await Promise.all([setup(plugin2, false), setup(plugin2), setup(plugin3)]);
+  await Promise.all([setup(plugin1, false), setup(plugin2), setup(plugin3)]);
 
   // Assert files/directories exist
   assertion.fileExists([plugin1.dir], 'Plugin directory does not exist');
