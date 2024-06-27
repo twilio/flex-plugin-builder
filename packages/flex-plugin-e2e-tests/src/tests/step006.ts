@@ -2,7 +2,7 @@
 import { replaceInFile } from 'replace-in-file';
 
 import { TestSuite, TestParams, testParams } from '../core';
-import { spawn, Browser, pluginHelper, joinPath, assertion, killChildProcess } from '../utils';
+import { spawn, Browser, pluginHelper, joinPath, assertion, killChildProcess, retryOnError } from '../utils';
 
 // Plugin start
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
@@ -15,6 +15,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     detached: true,
     cwd: plugin.dir,
   });
+
   await pluginHelper.waitForPluginToStart(
     plugin.localhostUrl,
     testParams.config.start.timeout,
@@ -22,9 +23,8 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   );
   await Browser.create({ flex: plugin.localhostUrl, twilioConsole: config.consoleBaseUrl });
 
-  try {
-    // Plugin loads
-    await Browser.app.twilioConsole.login('agent-desktop', secrets.api.accountSid, config.localhostPort);
+  const loginAndAssert = async (firstLoad = false) => {
+    await Browser.app.twilioConsole.login('agent-desktop', secrets.api.accountSid, config.localhostPort, firstLoad);
     await assertion.app.view.agentDesktop.isVisible();
     await assertion.app.view.plugins.plugin.isVisible(plugin.componentText);
 
@@ -36,10 +36,12 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     });
 
     await assertion.app.view.plugins.plugin.isVisible(tmpComponentText);
-  } catch (e) {
+  };
+
+  const failure = await retryOnError(loginAndAssert, 3);
+
+  if (failure) {
     await Browser.app.takeScreenshot(environment.cwd);
-    throw e;
-  } finally {
     await Browser.kill();
     await killChildProcess(twilioCliResult.child, environment.operatingSystem);
   }

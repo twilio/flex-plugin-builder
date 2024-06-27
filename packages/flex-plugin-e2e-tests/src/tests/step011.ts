@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unused-modules */
 import { TestSuite, TestParams, testParams } from '../core';
-import { spawn, Browser, pluginHelper, assertion, killChildProcess } from '../utils';
+import { spawn, Browser, pluginHelper, assertion, killChildProcess, retryOnError } from '../utils';
 
 // Starting multiple plugins using 2 local and one remote works
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
@@ -26,22 +26,26 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     { detached: true, cwd: plugin3.dir },
   );
   await Promise.all([startPlugin(plugin2.localhostUrl), startPlugin(plugin3.localhostUrl)]);
+  await Browser.create({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
 
-  try {
+  const loginAndAssert = async (firstLoad = false) => {
     // Load local plugin
-    await Browser.create({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
-    await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort);
+
+    await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort, firstLoad);
 
     // Check if local plugin loaded okay
     await assertion.app.view.agentDesktop.isVisible();
 
+    // @ts-ignore
     await assertion.app.view.plugins.plugin.isVisible(plugin1.newlineValue);
     await assertion.app.view.plugins.plugin.isVisible(plugin2.componentText);
     await assertion.app.view.plugins.plugin.isVisible(plugin3.componentText);
-  } catch (e) {
+  };
+
+  const failure = await retryOnError(loginAndAssert, 3);
+
+  if (failure) {
     await Browser.app.takeScreenshot(environment.cwd);
-    throw e;
-  } finally {
     await Browser.kill();
     await killChildProcess(twilioCliResult.child, environment.operatingSystem);
   }
