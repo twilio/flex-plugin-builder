@@ -144,3 +144,31 @@ export const killChildProcess = async (
     child.kill();
   }
 };
+
+export const retryOnError = async (
+  method: (first: boolean) => Promise<unknown>,
+  onError: (e: any) => Promise<unknown>,
+  onFinally: () => Promise<unknown>,
+  maxRetries: number,
+): Promise<void> => {
+  let retries = 0;
+
+  do {
+    try {
+      await method(retries === 0);
+      break;
+    } catch (e) {
+      logger.error(e);
+      retries += 1;
+
+      if (retries === maxRetries) {
+        await onError(e);
+      } else {
+        logger.info(`Retry count: ${retries}`);
+        continue;
+      }
+    } finally {
+      await onFinally();
+    }
+  } while (retries < maxRetries);
+};
