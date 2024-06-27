@@ -38,13 +38,17 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     await assertion.app.view.plugins.plugin.isVisible(tmpComponentText);
   };
 
-  const failure = await retryOnError(loginAndAssert, 3);
-
-  if (failure) {
+  const onError = async (e: any) => {
     await Browser.app.takeScreenshot(environment.cwd);
+    throw e;
+  };
+
+  const onFinally = async () => {
     await Browser.kill();
     await killChildProcess(twilioCliResult.child, environment.operatingSystem);
-  }
+  };
+
+  await retryOnError(loginAndAssert, onError, onFinally, 3);
 
   await replaceInFile({
     files: joinPath(plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
