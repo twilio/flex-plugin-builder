@@ -352,7 +352,7 @@ describe('pluginServer', () => {
       expect(resp.writeHead).toHaveBeenCalledTimes(1);
       expect(resp.writeHead).toHaveBeenCalledWith(200, {
         header: 'true',
-        'Set-Cookie': `flex-jwe=${jweHeaders['x-flex-jwe']}`,
+        'Set-Cookie': [`flex-jwe=${jweHeaders['x-flex-jwe']}`],
       });
       expect(_getRemotePlugins).toHaveBeenCalledTimes(1);
       expect(_getRemotePlugins).toHaveBeenCalledWith('jweToken', '/plugins', undefined);
