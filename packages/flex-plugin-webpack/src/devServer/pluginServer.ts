@@ -171,18 +171,18 @@ export const _makeRequestToFlex = async (token: string, path: string, version?: 
   });
 };
 
-const splitTokenToChunks = (str: string, length: number): string[] => {
+const splitTokenToChunks = (token: string, length: number): string[] => {
   if (length <= 0) {
     throw new Error('Length must be a positive integer');
   }
 
-  const chunks: string[] = [];
-  for (let i = 0; i < str.length; i += length) {
-    const chunk = str.slice(i, i + length);
-    chunks.push(chunk);
+  const tokenChunks: string[] = [];
+  for (let i = 0; i < token.length; i += length) {
+    const chunk = token.slice(i, i + length);
+    tokenChunks.push(chunk);
   }
 
-  return chunks;
+  return tokenChunks;
 };
 
 const combineJweToken = (cookies: { [key: string]: string }): string => {
