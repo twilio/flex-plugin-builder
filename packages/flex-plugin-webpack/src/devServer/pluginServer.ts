@@ -305,7 +305,7 @@ export const _fetchPluginsServer = (
           onRemotePlugin([...versionedPlugins, ...remotePlugins]);
           let cookiesToSet = [`flex-jwe=${jweToken}`];
           if (jweToken.length > JWE_TOKEN_LIMIT) {
-            const jweTokenChunks = splitTokenToChunks(jweToken, 3900);
+            const jweTokenChunks = splitTokenToChunks(jweToken, JWE_TOKEN_LIMIT);
             logger.debug(
               `The JWE token is too long (${jweToken.length} characters). It will be split into ${jweTokenChunks.length} chunks.`,
             );
