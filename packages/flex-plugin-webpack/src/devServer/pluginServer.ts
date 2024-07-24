@@ -37,6 +37,7 @@ export interface PluginsConfig {
 
 export type OnRemotePlugins = (remotePlugins: Plugin[]) => void;
 
+export const JWE_TOKEN_LIMIT = 3900;
 /**
  * Returns the plugin from the local configuration file
  * @param name  the plugin name
@@ -172,6 +173,50 @@ export const _makeRequestToFlex = async (token: string, path: string, version?: 
 };
 
 /**
+ * Split Large token to chunks
+ * @param token JWE token
+ * @param length chunk length
+ * @returns Chunks of the token
+ * @private
+ */
+export const splitTokenToChunks = (token: string, length: number): string[] => {
+  if (length <= 0) {
+    throw new FlexPluginError('Token chunks Length must be a positive integer');
+  }
+
+  const tokenChunks: string[] = [];
+  for (let i = 0; i < token.length; i += length) {
+    const chunk = token.slice(i, i + length);
+    tokenChunks.push(chunk);
+  }
+
+  return tokenChunks;
+};
+
+/**
+ * Combine chunks to on JWE token
+ * @param cookes request cookies
+ * @param length chunk length
+ * @returns JWE token
+ * @private
+ */
+export const combineJweToken = (cookies: { [key: string]: string }): string => {
+  const chunks: string[] = [];
+  let key = 0;
+
+  while (true) {
+    const token = cookies[`flex-jwe${key === 0 ? '' : `-${key + 1}`}`];
+    if (token === undefined) {
+      break;
+    }
+    chunks.push(token);
+    key += 1;
+  }
+
+  return chunks.join('');
+};
+
+/**
  * Common middleware that validates the request data
  */
 export const _requestValidator = (req: Request, res: Response, next: NextFunction) => {
@@ -258,13 +303,23 @@ export const _fetchPluginsServer = (
           logger.trace('Got remote plugins', remotePlugins);
 
           onRemotePlugin([...versionedPlugins, ...remotePlugins]);
+          let cookiesToSet = [`flex-jwe=${jweToken}`];
+          if (jweToken.length > JWE_TOKEN_LIMIT) {
+            const jweTokenChunks = splitTokenToChunks(jweToken, JWE_TOKEN_LIMIT);
+            logger.debug(
+              `The JWE token is too long (${jweToken.length} characters). It will be split into ${jweTokenChunks.length} chunks.`,
+            );
+            cookiesToSet = jweTokenChunks.map((chunk, index) => {
+              return `flex-jwe${index === 0 ? '' : `-${index + 1}`}=${chunk};`;
+            });
+          }
           res.writeHead(200, {
             ...responseHeaders,
             /*
              * Set the JWE token in the cookies so that in the subsequent plugin rendering requests
              * dev server can retrieve it to make the request to Flex.
              */
-            'Set-Cookie': `flex-jwe=${jweToken}`,
+            'Set-Cookie': cookiesToSet,
           });
           res.end(JSON.stringify(_mergePlugins(localPlugins, remotePlugins, versionedPlugins)));
         })
@@ -280,7 +335,7 @@ export const _fetchPluginsServer = (
  * Basic server to fetch plugin bundle content from Flex and return to the local dev-server
  */
 export const _renderPluginServer = async (req: Request, res: Response): Promise<void> => {
-  const jweToken = req.cookies['flex-jwe'] as string;
+  const jweToken = combineJweToken(req.cookies);
   const responseHeaders = _getHeaders();
 
   logger.debug(`GET ${req.url}`);
