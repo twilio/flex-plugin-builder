@@ -37,6 +37,7 @@ export interface PluginsConfig {
 
 export type OnRemotePlugins = (remotePlugins: Plugin[]) => void;
 
+export const JWE_TOKEN_LIMIT = 3900;
 /**
  * Returns the plugin from the local configuration file
  * @param name  the plugin name
@@ -171,9 +172,16 @@ export const _makeRequestToFlex = async (token: string, path: string, version?: 
   });
 };
 
-const splitTokenToChunks = (token: string, length: number): string[] => {
+/**
+ * Split Large token to chunks
+ * @param token JWE token
+ * @param length chunk length
+ * @returns Chunks of the token
+ * @private
+ */
+export const splitTokenToChunks = (token: string, length: number): string[] => {
   if (length <= 0) {
-    throw new Error('Length must be a positive integer');
+    throw new FlexPluginError('Token chunks Length must be a positive integer');
   }
 
   const tokenChunks: string[] = [];
@@ -185,7 +193,14 @@ const splitTokenToChunks = (token: string, length: number): string[] => {
   return tokenChunks;
 };
 
-const combineJweToken = (cookies: { [key: string]: string }): string => {
+/**
+ * Combine chunks to on JWE token
+ * @param cookes request cookies
+ * @param length chunk length
+ * @returns JWE token
+ * @private
+ */
+export const combineJweToken = (cookies: { [key: string]: string }): string => {
   const chunks: string[] = [];
   let key = 0;
 
@@ -289,7 +304,7 @@ export const _fetchPluginsServer = (
 
           onRemotePlugin([...versionedPlugins, ...remotePlugins]);
           let cookiesToSet = [`flex-jwe=${jweToken}`];
-          if (jweToken.length > 3900) {
+          if (jweToken.length > JWE_TOKEN_LIMIT) {
             const jweTokenChunks = splitTokenToChunks(jweToken, 3900);
             logger.debug(
               `The JWE token is too long (${jweToken.length} characters). It will be split into ${jweTokenChunks.length} chunks.`,
