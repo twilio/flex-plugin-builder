@@ -1,5 +1,6 @@
 name: Flex Plugins CLI - E2E Testing
-on: workflow_dispatch
+on:
+  workflow_dispatch
 
 jobs:
   scheduled-e2e-test:
