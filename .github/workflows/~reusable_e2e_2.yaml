@@ -17,6 +17,10 @@ on:
         description: 'A npm-ignore-prefix passed from the caller workflow.'
         required: true
         type: string
+      OS:
+        description: 'Operating system passed from the caller workflow, it decides the OS on which the tests will run.'
+        required: true
+        type: string
 
     secrets:
       CONSOLE_EMAIL:
@@ -69,7 +73,7 @@ env:
   NODE_OPTIONS: --max-old-space-size=8192
 
 jobs:
-  node20-ubuntu:
+  node20:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
