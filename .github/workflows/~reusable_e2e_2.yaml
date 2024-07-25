@@ -18,9 +18,9 @@ on:
         required: true
         type: string
       OS:
-      description: 'Operating system passed from the caller workflow, it decides the OS on which the tests will run.'
-      required: true
-      type: string
+        description: 'Operating system passed from the caller workflow, it decides the OS on which the tests will run.'
+        required: true
+        type: string
 
     secrets:
       CONSOLE_EMAIL:
