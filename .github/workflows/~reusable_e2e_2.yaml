@@ -74,7 +74,10 @@ env:
 
 jobs:
   node20:
-    runs-on: ${{ inputs.OS }}
+    strategy:
+      matrix:
+        os: ${{ inputs.OS }}
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
@@ -91,9 +94,9 @@ jobs:
         env:
           TS: 0
       - name: Kill node for Windows os
-        if: ${{ inputs.OS == 'windows-latest' }}
+        if: ${{ matrix.os == 'windows-latest' }}
         run: |
-          echo "os is: ${{ inputs.OS }} ${{ runner.os }}"
+          echo "os is: ${{ matrix.os }} ${{ runner.os }}"
           taskkill /f /im node.exe
       - name: Run e2e tests - TS
         env:
