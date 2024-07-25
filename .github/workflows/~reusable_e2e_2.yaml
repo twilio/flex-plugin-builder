@@ -1,0 +1,109 @@
+on:
+  workflow_call:
+    inputs:
+      BRANCH:
+        description: 'A branch passed from the caller workflow to run the test on.'
+        required: true
+        type: string
+      PACKAGE_VERSION:
+        description: 'A package-version of cli passed from the caller workflow. Which will be used to create and release plugins.'
+        required: true
+        type: string
+      FLEX_UI_VERSION:
+        description: 'A flex-ui version passed from the caller workflow. It decides the version of FLEX UI on tests will run on.'
+        required: true
+        type: string
+      NPM_IGNORE_PREFIX:
+        description: 'A npm-ignore-prefix passed from the caller workflow.'
+        required: true
+        type: string
+      OS:
+      description: 'Operating system passed from the caller workflow, it decides the OS on which the tests will run.'
+      required: true
+      type: string
+
+    secrets:
+      CONSOLE_EMAIL:
+        required: true
+      CONSOLE_PASSWORD:
+        required: true
+      CONSOLE_EMAIL_linux:
+        description: 'An email passed from the caller workflow, it will be used for login in linux environment.'
+        required: true
+      TWILIO_ACCOUNT_SID_linux:
+        description: 'An account-sid passed from the caller workflow, it will be used for authentication of APIs in linux environment.'
+        required: true
+      TWILIO_AUTH_TOKEN_linux:
+        description: 'An account-token passed from the caller workflow, it will be used for authentication of APIs in linux environment.'
+        required: true
+      CONSOLE_EMAIL_win32:
+        description: 'An email passed from the caller workflow, it will be used for login in windows environment.'
+        required: true
+      TWILIO_ACCOUNT_SID_win32:
+        description: 'An account-sid passed from the caller workflow, it will be used for authentication of APIs in windows environment.'
+        required: true
+      TWILIO_AUTH_TOKEN_win32:
+        description: 'An account-token passed from the caller workflow, it will be used for authentication of APIs in windows environment.'
+        required: true
+      CONSOLE_EMAIL_darwin:
+        description: 'An email passed from the caller workflow, it will be used for login in mac environment.'
+        required: true
+      TWILIO_ACCOUNT_SID_darwin:
+        description: 'An account-sid passed from the caller workflow, it will be used for authentication of APIs in mac environment.'
+        required: true
+      TWILIO_AUTH_TOKEN_darwin:
+        description: 'An account-token passed from the caller workflow, it will be used for authentication of APIs in mac environment.'
+        required: true
+env:
+  BRANCH: ${{ inputs.BRANCH }}
+  NPM_IGNORE_PREFIX: ${{ inputs.NPM_IGNORE_PREFIX }}
+  PACKAGE_VERSION: ${{ inputs.PACKAGE_VERSION }}
+  FLEX_UI_VERSION: ${{ inputs.FLEX_UI_VERSION }}
+  CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+  CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+  CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+  TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+  TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+  CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
+  TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
+  TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
+  CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
+  TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+  TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+  NODE_OPTIONS: --max-old-space-size=8192
+
+jobs:
+  node20:
+    runs-on: ${{ inputs.OS }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - name: Install project dependencies
+        run: npm ci
+      - name: Build packages
+        run: npm run build
+      - name: Run e2e tests - JS
+        run: |
+          cd packages/flex-plugin-e2e-tests
+          npm run start
+        env:
+          TS: 0
+      - name: Kill node for Windows os
+        if: ${{ inputs.OS == 'windows-latest' }}
+        run: |
+          echo "os is: ${{ inputs.OS }} ${{ runner.os }}"
+          taskkill /f /im node.exe
+      - name: Run e2e tests - TS
+        env:
+          TS: 1
+        run: |
+          cd packages/flex-plugin-e2e-tests
+          npm run start
+      - name: Upload Screenshots
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: Ubuntu-screenshots
+          path: packages/flex-plugin-e2e-tests/screenshots
