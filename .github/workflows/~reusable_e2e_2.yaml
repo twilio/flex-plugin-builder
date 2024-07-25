@@ -74,7 +74,7 @@ env:
 
 jobs:
   node20:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.OS }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
