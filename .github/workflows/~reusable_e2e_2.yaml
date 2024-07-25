@@ -17,10 +17,6 @@ on:
         description: 'A npm-ignore-prefix passed from the caller workflow.'
         required: true
         type: string
-      OS:
-        description: 'Operating system passed from the caller workflow, it decides the OS on which the tests will run.'
-        required: true
-        type: string
 
     secrets:
       CONSOLE_EMAIL:
@@ -73,7 +69,7 @@ env:
   NODE_OPTIONS: --max-old-space-size=8192
 
 jobs:
-  node20:
+  node20-ubuntu:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -90,11 +86,6 @@ jobs:
           npm run start
         env:
           TS: 0
-      - name: Kill node for Windows os
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: |
-          echo "os is: ${{ matrix.os }} ${{ runner.os }}"
-          taskkill /f /im node.exe
       - name: Run e2e tests - TS
         env:
           TS: 1
