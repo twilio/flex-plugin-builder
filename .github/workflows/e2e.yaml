@@ -1,6 +1,12 @@
 name: Flex Plugins CLI - E2E Testing
+
 on:
   workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Test scenario tags'
+        required: true
+        type: string
 
 jobs:
   scheduled-e2e-test:
