@@ -90,6 +90,11 @@ jobs:
           npm run start
         env:
           TS: 0
+      - name: Kill node for Windows os
+        if: ${{ inputs.OS == 'windows-latest' }}
+        run: |
+          echo "os is: ${{ inputs.OS }} ${{ runner.os }}"
+          taskkill /f /im node.exe
       - name: Run e2e tests - TS
         env:
           TS: 1
