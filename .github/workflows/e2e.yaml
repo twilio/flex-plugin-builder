@@ -25,7 +25,6 @@ jobs:
 
   scheduled-e2e-test:
     uses: ./.github/workflows/~reusable_e2e_2.yaml
-    if: github.event.schedule == '0 13 * * *'
     with:
       OS: ubuntu-latest
 
