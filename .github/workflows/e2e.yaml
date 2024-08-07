@@ -5,7 +5,7 @@ on:
     - cron: '0 17 * * *' # At 4:00 UTC (09:30 IST) every day
 
 jobs:
-  scheduled-e2e-test-unix:
+  scheduled-e2e-test:
     uses: ./.github/workflows/~reusable_e2e_2.yaml
     if: github.event.schedule == '0 17 * * *'
     with:
