@@ -2,20 +2,60 @@ name: Flex Plugins CLI - E2E Testing
 
 on:
   schedule:
-    - cron: '0 21 * * *' # At 4:00 UTC (09:30 IST) every day
     - cron: '0 22 * * *' # At 4:00 UTC (09:30 IST) every day
     - cron: '0 23 * * *' # At 4:00 UTC (09:30 IST) every day
+    - cron: '0 0 * * *' # At 4:00 UTC (09:30 IST) every day
 
 jobs:
-  scheduled-e2e:
+  scheduled-e2e-unix:
+    if: github.event.schedule == '0 22 * * *'
     uses: ./.github/workflows/~reusable_e2e_2.yaml
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        schedule: ['0 21 * * *', '0 22 * * *', '0 23 * * *']
-    if: contains(github.event.schedule, matrix.schedule)
     with:
-      OS: ${{ matrix.os }}
+      OS: ubuntu-latest
+      BRANCH: main
+      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+      PACKAGE_VERSION: latest
+      FLEX_UI_VERSION: latest
+    secrets:
+      CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+      CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
+      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
+      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
+      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
+      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+
+  scheduled-e2e-macos:
+    if: github.event.schedule == '0 23 * * *'
+    uses: ./.github/workflows/~reusable_e2e_2.yaml
+    with:
+      OS: macos-latest
+      BRANCH: main
+      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+      PACKAGE_VERSION: latest
+      FLEX_UI_VERSION: latest
+    secrets:
+      CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+      CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
+      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
+      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
+      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
+      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+
+  scheduled-e2e-windows:
+    if: github.event.schedule == '0 0 * * *'
+    uses: ./.github/workflows/~reusable_e2e_2.yaml
+    with:
+      OS: windows-latest
       BRANCH: main
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       PACKAGE_VERSION: latest
