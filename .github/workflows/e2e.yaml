@@ -28,6 +28,7 @@ jobs:
       CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
       TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
       TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+      SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
   scheduled-e2e-macos:
     if: github.event.schedule == '0 23 * * *'
@@ -50,6 +51,7 @@ jobs:
       CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
       TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
       TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+      SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
   scheduled-e2e-windows:
     if: github.event.schedule == '0 0 * * *'
@@ -72,3 +74,4 @@ jobs:
       CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
       TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
       TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+      SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
