@@ -54,6 +54,9 @@ on:
       TWILIO_AUTH_TOKEN_darwin:
         description: 'An account-token passed from the caller workflow, it will be used for authentication of APIs in mac environment.'
         required: true
+      SLACK_WEB_HOOK:
+        description: 'A slack-web-hook passed from the caller workflow, it will be used for sending notifications.'
+        required: true
 env:
   BRANCH: ${{ inputs.BRANCH }}
   NPM_IGNORE_PREFIX: ${{ inputs.NPM_IGNORE_PREFIX }}
