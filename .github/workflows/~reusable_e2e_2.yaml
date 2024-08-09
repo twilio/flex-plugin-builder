@@ -88,11 +88,19 @@ jobs:
       - name: Build packages
         run: npm run build
       - name: Run e2e tests - JS
+        env:
+          TS: 0
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 65
+          max_attempts: 2
+          retry_on: timeout
+          command: |
+            cd packages/flex-plugin-e2e-tests
+            npm run start
         run: |
           cd packages/flex-plugin-e2e-tests
           npm run start
-        env:
-          TS: 0
       - name: Kill node for Windows os
         if: ${{ inputs.OS == 'windows-latest' }}
         run: |
@@ -101,9 +109,14 @@ jobs:
       - name: Run e2e tests - TS
         env:
           TS: 1
-        run: |
-          cd packages/flex-plugin-e2e-tests
-          npm run start
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 65
+          max_attempts: 2
+          retry_on: timeout
+          command: |
+            cd packages/flex-plugin-e2e-tests
+            npm run start
       - name: Upload Screenshots
         uses: actions/upload-artifact@v3
         if: always()
