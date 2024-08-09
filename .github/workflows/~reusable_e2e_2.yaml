@@ -98,9 +98,6 @@ jobs:
           command: |
             cd packages/flex-plugin-e2e-tests
             npm run start
-        run: |
-          cd packages/flex-plugin-e2e-tests
-          npm run start
       - name: Kill node for Windows os
         if: ${{ inputs.OS == 'windows-latest' }}
         run: |
