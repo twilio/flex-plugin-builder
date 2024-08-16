@@ -10,7 +10,7 @@ function getJsonValue() {
 
 tag="${1}"
 bump="${2}"
-branch="${BRANCH}"
+branch="FLEXY-5323-6.4.2"
 currentVersion=$(cat ./lerna.json | getJsonValue 'version' |  cut -f1 -d"-")
 semver=( ${currentVersion//./ } )
 major="${semver[0]}"

@@ -83,21 +83,3 @@ jobs:
           SLACK_TITLE: "Flex Plugins CLI"
           SLACK_MESSAGE: "🎉:tada: Released a new public *version* `${{ steps.publicVersion.outputs.version  }}`"
           MSG_MINIMAL: actions url
-      - name: Commit Version
-        id: commit_version
-        run: |
-          git checkout -b bump-version-"$VERSION_NUMBER"
-          git push origin bump-version-"$VERSION_NUMBER" --no-verify
-        env:
-          VERSION_NUMBER: ${{ steps.publicVersion.outputs.version  }}
-      - name: Create PR for version
-        run: |
-          gh pr create --base main --title "Update version" --body "Update version"
-        env:
-          GITHUB_TOKEN: ${{ steps.get_app_token.outputs.token }}
-      - name: Approve and Merge PR
-        run: |
-          gh pr review --approve
-          gh pr merge --auto --merge
-        env:
-          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
