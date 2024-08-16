@@ -52,7 +52,7 @@
     "react-dom": "^16",
     "react-test-renderer": "^16"
   },
-  "resolutions": {
+  "overrides": {
     "cheerio": "1.0.0-rc.12"
   },
   "devDependencies": {
