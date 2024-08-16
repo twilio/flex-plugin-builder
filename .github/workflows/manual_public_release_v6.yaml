@@ -14,7 +14,7 @@ on:
 
 jobs:
   release-public-version:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/FLEXY-5323-6.4.2'
     uses: ./.github/workflows/~reusable_public_publish.yaml
     with:
       TAG: public
@@ -29,12 +29,12 @@ jobs:
       APP_KEY: ${{ secrets.APP_KEY }}
 
   release-tag:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/FLEXY-5323-6.4.2'
     needs: release-public-version
     uses: ./.github/workflows/tag.yaml
 
   e2e-node16:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/FLEXY-5323-6.4.2'
     uses: ./.github/workflows/~reusable_e2e.yaml
     needs: release-tag
     with:
