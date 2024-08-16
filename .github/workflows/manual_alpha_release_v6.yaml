@@ -15,7 +15,7 @@ on:
 jobs:
   release-public-version:
     if: github.ref == 'refs/heads/main'
-    uses: ./.github/workflows/~reusable_publish.yaml
+    uses: ./.github/workflows/~reusable_public_publish.yaml
     with:
       TAG: alpha
       VERSION: patch
