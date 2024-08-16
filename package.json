@@ -41,11 +41,8 @@
     "test:one": "npm run test -- $@",
     "test:watch": "npm run test -- --watchAll"
   },
-  "overrides": {
-    "cheerio": "1.0.0-rc.12"
-  },
   "resolutions": {
-    "cheerio": "1.0.0-rc.12"
+    "cheerio": "1.0.0-rc.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
