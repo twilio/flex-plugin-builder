@@ -37,8 +37,8 @@
   },
   "dependencies": {
     "@babel/core": "^7.16.0",
+    "@babel/plugin-transform-private-property-in-object": "^7.24.7",
     "@twilio/flex-dev-utils": "7.0.4",
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "babel-jest": "^27.0.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-react-app": "^10.0.1",
