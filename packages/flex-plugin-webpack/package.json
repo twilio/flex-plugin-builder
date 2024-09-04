@@ -37,6 +37,7 @@
     "@babel/core": "^7.23.7",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-react": "^7.16.0",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@k88/cra-webpack-hot-dev-client": "^1.1.0",
     "@k88/format-webpack-messages": "^1.1.0",
     "@k88/interpolate-html-plugin": "^1.0.5",
@@ -76,7 +77,6 @@
     "@types/tapable": "^1.0.8",
     "@types/terser-webpack-plugin": "^2.2.1",
     "@types/webpack": "^4.41.26",
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "express-serve-static-core": "^0.1.1",
     "typescript": "^4.2.3"
   },
