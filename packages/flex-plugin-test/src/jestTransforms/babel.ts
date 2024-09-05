@@ -2,7 +2,7 @@
 import babelJest from 'babel-jest';
 
 module.exports = (babelJest as any).createTransformer({
-  presets: [require.resolve('babel-preset-react-app')],
+  presets: [],
   babelrc: false,
   configFile: false,
 });

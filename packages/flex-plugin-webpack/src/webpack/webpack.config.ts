@@ -78,10 +78,9 @@ const _getBabelLoader = (isProd: boolean) => ({
   include: getPaths().app.srcDir,
   loader: require.resolve('babel-loader'),
   options: {
-    customize: require.resolve('babel-preset-react-app/webpack-overrides'),
     babelrc: false,
     configFile: false,
-    presets: [require.resolve('babel-preset-react-app')],
+    presets: [],
     plugins: [
       [
         require.resolve('babel-plugin-named-asset-import'),
