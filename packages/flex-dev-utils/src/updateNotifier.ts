@@ -1,5 +1,5 @@
 import updateNotifier, { NotifyOptions, Settings } from 'update-notifier';
-import npmGetPackageInfo from 'npm-get-package-info';
+import packageJson from 'package-json';
 
 import { readPackageJson, findUp, readAppPackageJson } from './fs';
 import { chalk } from '.';
@@ -16,12 +16,7 @@ export const checkForUpdate = async (
   customMessage: Partial<NotifyOptions> = {},
 ): Promise<void> => {
   const pkg = module.parent ? readPackageJson(findUp(module.parent.filename, 'package.json')) : readAppPackageJson();
-  const pkgInfo = await npmGetPackageInfo({
-    name: pkg.name,
-    version: pkg.version,
-    info: ['deprecated'],
-  });
-
+  const pkgInfo = await packageJson(pkg.name, { version: pkg.version });
   const notifier = updateNotifier({ pkg, updateCheckInterval: 1000, ...settings });
 
   const message = `${

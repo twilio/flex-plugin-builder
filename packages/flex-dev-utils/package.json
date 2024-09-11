@@ -58,7 +58,6 @@
     "log-symbols": "^4.1.0",
     "mkdirp": "^1.0.4",
     "net": "^1.0.2",
-    "npm-get-package-info": "2.0.2",
     "open": "^8.2.1",
     "ora": "^5.4.1",
     "package-json": "^7.0.0",

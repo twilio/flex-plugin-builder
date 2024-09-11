@@ -1,14 +1,14 @@
-import npmGetPackageInfo from 'npm-get-package-info';
+import packageJson from 'package-json';
 import updateNotifier from 'update-notifier';
 
 import * as fs from '../fs';
 import { checkForUpdate } from '../updateNotifier';
 import { chalk } from '../..';
 
-jest.mock('npm-get-package-info');
+jest.mock('package-json');
 jest.mock('update-notifier');
 
-const getPackageInfoMock = npmGetPackageInfo as jest.Mock;
+const getPackageInfoMock = packageJson as unknown as jest.Mock;
 const updateNotifierMock = updateNotifier as unknown as jest.Mock;
 
 describe('checkForUpdate', () => {
