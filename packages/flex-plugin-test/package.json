@@ -37,10 +37,11 @@
   },
   "dependencies": {
     "@babel/core": "^7.16.0",
-    "@babel/plugin-transform-private-property-in-object": "^7.24.7",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@twilio/flex-dev-utils": "7.0.4",
     "babel-jest": "^27.0.0",
     "babel-polyfill": "^6.26.0",
+    "babel-preset-react-app": "^10.0.1",
     "cheerio": "1.0.0-rc.12",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1",
