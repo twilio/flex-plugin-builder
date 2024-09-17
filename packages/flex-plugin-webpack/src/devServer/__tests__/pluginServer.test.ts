@@ -122,6 +122,36 @@ describe('pluginServer', () => {
     });
   });
 
+  describe('splitTokenToChunks', () => {
+    const token = 't'.repeat(4000);
+
+    it('should return splitted tokens', () => {
+      const result = pluginServerScript.splitTokenToChunks(token, pluginServerScript.JWE_TOKEN_LIMIT);
+      expect(result).toEqual(['t'.repeat(pluginServerScript.JWE_TOKEN_LIMIT), 't'.repeat(100)]);
+    });
+
+    it('should throw error', () => {
+      try {
+        pluginServerScript.splitTokenToChunks(token, -1);
+      } catch (e) {
+        expect(e).toBeInstanceOf(FlexPluginError);
+        expect(e.message).toContain('Token chunks Length must be a positive integer');
+      }
+    });
+  });
+
+  describe('combineJweToken', () => {
+    const tokenChunks = {
+      'flex-jwe': 't'.repeat(pluginServerScript.JWE_TOKEN_LIMIT),
+      'flex-jwe-2': 't'.repeat(100),
+    };
+
+    it('should return combined token', () => {
+      const result = pluginServerScript.combineJweToken(tokenChunks);
+      expect(result).toEqual('t'.repeat(pluginServerScript.JWE_TOKEN_LIMIT + 100));
+    });
+  });
+
   describe('_makeRequestToFlex', () => {
     it('should return data returned from Flex', async () => {
       const streamStream = new Stream();
@@ -329,6 +359,7 @@ describe('pluginServer', () => {
     };
     const config = { port, remoteAll: true };
     const jweHeaders = { 'x-flex-jwe': 'jweToken' };
+    const jweHeadersLargeToken = { 'x-flex-jwe': 't'.repeat(4000) };
     const onRemotePlugins = jest.fn();
 
     it('should getPlugins and rebase', async () => {
@@ -352,10 +383,50 @@ describe('pluginServer', () => {
       expect(resp.writeHead).toHaveBeenCalledTimes(1);
       expect(resp.writeHead).toHaveBeenCalledWith(200, {
         header: 'true',
-        'Set-Cookie': `flex-jwe=${jweHeaders['x-flex-jwe']}`,
+        'Set-Cookie': [`flex-jwe=${jweHeaders['x-flex-jwe']}`],
       });
       expect(_getRemotePlugins).toHaveBeenCalledTimes(1);
       expect(_getRemotePlugins).toHaveBeenCalledWith('jweToken', '/plugins', undefined);
+      expect(_getRemoteVersionedPlugins).toHaveBeenCalledTimes(1);
+      expect(_getRemoteVersionedPlugins).toHaveBeenCalledWith(plugins.versioned);
+      expect(_mergePlugins).toHaveBeenCalledTimes(1);
+      expect(onRemotePlugins).toHaveBeenCalledTimes(1);
+      expect(onRemotePlugins).toHaveBeenCalledWith(remotePlugin);
+      expect(resp.end).toHaveBeenCalledTimes(1);
+      expect(resp.end).toHaveBeenCalledWith('[{"name":"plugin-1"},{"name":"plugin-2"}]');
+    });
+
+    it('should getPlugins and rebase even if token size has increased', async () => {
+      const { req, resp } = getReqResp('GET', jweHeadersLargeToken);
+      const remotePlugin = [{ name: 'plugin-2', phase: 3 }] as pluginServerScript.Plugin[];
+
+      jest.spyOn(pluginServerScript, '_getHeaders').mockReturnValue({ header: 'true' });
+      const _getRemotePlugins = jest
+        .spyOn(pluginServerScript, '_makeRequestToFlex')
+        .mockResolvedValue(JSON.stringify(remotePlugin));
+      const _getRemoteVersionedPlugins = jest
+        .spyOn(pluginServerScript, '_getRemoteVersionedPlugins')
+        .mockReturnValue([]);
+      const _mergePlugins = jest
+        .spyOn(pluginServerScript, '_mergePlugins')
+        .mockReturnValue([{ name: 'plugin-1' }, { name: 'plugin-2' }] as pluginServerScript.Plugin[]);
+      jest.spyOn(fsScript, 'readPluginsJson').mockReturnValue({ plugins: [{ name: 'plugin-1', dir: pluginDir }] });
+
+      await pluginServerScript._fetchPluginsServer(plugins, config, onRemotePlugins)(req, resp);
+
+      expect(resp.writeHead).toHaveBeenCalledTimes(1);
+      const flexJwe = 't'.repeat(pluginServerScript.JWE_TOKEN_LIMIT);
+      const flexJwe2 = 't'.repeat(100);
+      expect(resp.writeHead).toHaveBeenCalledWith(200, {
+        header: 'true',
+        'Set-Cookie': [`flex-jwe=${flexJwe};`, `flex-jwe-2=${flexJwe2};`],
+      });
+      expect(_getRemotePlugins).toHaveBeenCalledTimes(1);
+      expect(_getRemotePlugins).toHaveBeenCalledWith(
+        't'.repeat(pluginServerScript.JWE_TOKEN_LIMIT + 100),
+        '/plugins',
+        undefined,
+      );
       expect(_getRemoteVersionedPlugins).toHaveBeenCalledTimes(1);
       expect(_getRemoteVersionedPlugins).toHaveBeenCalledWith(plugins.versioned);
       expect(_mergePlugins).toHaveBeenCalledTimes(1);
