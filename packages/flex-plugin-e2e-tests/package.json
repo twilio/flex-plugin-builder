@@ -38,7 +38,7 @@
     "@twilio/flex-plugins-api-client": "7.0.5",
     "axios": "^0.24.0",
     "lodash": "4.17.21",
-    "package-json": "^10.0.0",
+    "package-json": "^7.0.0",
     "puppeteer": "^21.3.7",
     "replace-in-file": "^6.3.2",
     "semver": "^7.3.5"
