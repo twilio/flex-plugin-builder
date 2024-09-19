@@ -72,7 +72,8 @@ const getArgs = (flag: string): string[] => {
  */
 const beforeAll = async (testParams: TestParams) => {
   if (testParams.scenario.packageVersion === 'latest') {
-    const pkg = await packageJson('@twilio/flex-plugin-scripts', { version: 'latest' });
+    logger.info('Fetching latest version of @twilio/flex-plugin-scripts', testParams.scenario.packageVersion);
+    const pkg = await packageJson('@twilio/flex-plugin-scripts');
     testParams.scenario.packageVersion = pkg.version as string;
   }
 };
