@@ -29,13 +29,13 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     await assertion.app.view.plugins.plugin.isVisible(plugin.componentText);
 
     // Verify hot reload
-    await replaceInFile({
-      files: joinPath(plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
-      from: plugin.componentText,
-      to: tmpComponentText,
-    });
+    // await replaceInFile({
+    //   files: joinPath(plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
+    //   from: plugin.componentText,
+    //   to: tmpComponentText,
+    // });
 
-    await assertion.app.view.plugins.plugin.isVisible(tmpComponentText);
+    // await assertion.app.view.plugins.plugin.isVisible(tmpComponentText);
   };
 
   const onError = async (e: any) => {

@@ -77,7 +77,11 @@ jobs:
         with:
           node-version: '20'
       - name: Install project dependencies
-        run: npm ci
+        run: |
+          echo "Starting npm ci with a 10-minute timeout"
+          for i in 1 2 3; do # Retry logic, retry 3 times
+            timeout 20m npm ci && break || echo "npm ci failed, retrying ($i/3)..."
+          done
       - name: Build packages
         run: npm run build
       - name: Run e2e tests - JS
@@ -108,7 +112,7 @@ jobs:
           node-version: '20'
       - name: Install project dependencies
         run: |
-          echo "Starting npm ci with a 20-minute timeout"
+          echo "Starting npm ci with a 10-minute timeout"
           brew install coreutils
           for i in 1 2 3; do # Retry logic, retry 3 times
             gtimeout 20m npm ci && break || echo "npm ci failed, retrying ($i/3)..."
@@ -143,7 +147,11 @@ jobs:
         with:
           node-version: '20'
       - name: Install project dependencies
-        run: npm ci
+        run: |
+          echo "Starting npm ci with a 10-minute timeout"
+          for i in 1 2 3; do # Retry logic, retry 3 times
+            timeout 20m npm ci && break || echo "npm ci failed, retrying ($i/3)..."
+          done
       - name: Build packages
         run: npm run build
       - name: Run e2e tests - JS
