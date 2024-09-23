@@ -147,7 +147,7 @@ jobs:
         with:
           node-version: '20'
       - name: Install project dependencies
-              run: |
+        run: |
         echo "Starting npm ci with a 10-minute timeout"
         powershell -Command "Try { 
           For ($i=1; $i -le 3; $i++) { 
