@@ -100,7 +100,6 @@ jobs:
   #         path: packages/flex-plugin-e2e-tests/screenshots
 
   node20-macos:
-    needs: node20-ubuntu
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -131,7 +130,6 @@ jobs:
           path: packages/flex-plugin-e2e-tests/screenshots
 
   node20-windows:
-    needs: [ node20-ubuntu, node20-macos ]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
