@@ -147,11 +147,22 @@ jobs:
         with:
           node-version: '20'
       - name: Install project dependencies
-        run: |
-          echo "Starting npm ci with a 10-minute timeout"
-          for i in 1 2 3; do # Retry logic, retry 3 times
-            timeout 10m npm ci && break || echo "npm ci failed, retrying ($i/3)..."
-          done
+              run: |
+        echo "Starting npm ci with a 10-minute timeout"
+        powershell -Command "Try { 
+          For ($i=1; $i -le 3; $i++) { 
+            $process = Start-Process -FilePath 'npm' -ArgumentList 'ci' -NoNewWindow -PassThru
+            if ($process.WaitForExit(600000)) { # 10 minutes in milliseconds
+              Exit 0
+            } else {
+              echo 'npm ci timed out. Retrying...'
+              Stop-Process -Id $process.Id
+            }
+          }
+        } Catch { 
+          echo 'npm ci failed after 3 retries.' 
+          Exit 1 
+        }"
       - name: Build packages
         run: npm run build
       - name: Run e2e tests - JS
