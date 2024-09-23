@@ -17,7 +17,11 @@ export class Browser {
    * Initializes browser object
    */
   static async create(baseUrls: BaseUrl): Promise<void> {
-    this._browser = await Puppeteer.launch({ headless: true, args: ['--use-fake-ui-for-media-stream'] });
+    this._browser = await Puppeteer.launch({
+      headless: true,
+      protocolTimeout: 300000,
+      args: ['--use-fake-ui-for-media-stream'],
+    });
     this._page = await this._browser.newPage();
     await this._page.setRequestInterception(true);
     this._attachLogListener();
