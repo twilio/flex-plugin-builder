@@ -69,35 +69,35 @@ env:
   NODE_OPTIONS: --max-old-space-size=8192
 
 jobs:
-  # node20-ubuntu:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/setup-node@v3
-  #       with:
-  #         node-version: '20'
-  #     - name: Install project dependencies
-  #       run: npm ci
-  #     - name: Build packages
-  #       run: npm run build
-  #     - name: Run e2e tests - JS
-  #       run: |
-  #         cd packages/flex-plugin-e2e-tests
-  #         npm run start
-  #       env:
-  #         TS: 0
-  #     - name: Run e2e tests - TS
-  #       env:
-  #         TS: 1
-  #       run: |
-  #         cd packages/flex-plugin-e2e-tests
-  #         npm run start
-  #     - name: Upload Screenshots
-  #       uses: actions/upload-artifact@v3
-  #       if: always()
-  #       with:
-  #         name: Ubuntu-screenshots
-  #         path: packages/flex-plugin-e2e-tests/screenshots
+  node20-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - name: Install project dependencies
+        run: npm ci
+      - name: Build packages
+        run: npm run build
+      - name: Run e2e tests - JS
+        run: |
+          cd packages/flex-plugin-e2e-tests
+          npm run start
+        env:
+          TS: 0
+      - name: Run e2e tests - TS
+        env:
+          TS: 1
+        run: |
+          cd packages/flex-plugin-e2e-tests
+          npm run start
+      - name: Upload Screenshots
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: Ubuntu-screenshots
+          path: packages/flex-plugin-e2e-tests/screenshots
 
   node20-macos:
     runs-on: macos-latest
