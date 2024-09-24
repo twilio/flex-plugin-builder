@@ -1,3 +1,4 @@
+import { logger } from '@twilio/flex-dev-utils';
 import { ElementHandle, Page } from 'puppeteer';
 
 export abstract class Base {
@@ -18,7 +19,11 @@ export abstract class Base {
    */
   protected async goto({ baseUrl, path }: { baseUrl: string; path?: string }): Promise<void> {
     const fullPath = path ? `${baseUrl}/${path}` : baseUrl;
-    await this.page.goto(fullPath, { waitUntil: 'load', timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT });
+    const data = await this.page.goto(fullPath, {
+      waitUntil: 'domcontentloaded',
+      timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT,
+    });
+    logger.info('Page navigate', data);
   }
 
   /**
