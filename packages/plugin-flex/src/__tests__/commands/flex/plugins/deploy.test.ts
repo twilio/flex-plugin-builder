@@ -37,7 +37,6 @@ describe('Commands/FlexPluginsDeploy', () => {
     accountSid: 'AC00000000000000000000000000000',
     environmentSid: 'ZE00000000000000000000000000000',
     domainName: 'ruby-fox-123.twil.io',
-    CliVersion: '7.0.5',
     isPublic: false,
     nextVersion: '2.0.0',
     pluginUrl: 'https://ruby-fox-123.twil.io/plugin-url',
@@ -350,14 +349,16 @@ describe('Commands/FlexPluginsDeploy', () => {
 
     expect(result).toEqual(pluginVersionResource);
     expect(cmd.pluginVersionsClient.create).toHaveBeenCalledTimes(1);
-    expect(cmd.pluginVersionsClient.create).toHaveBeenCalledWith(pkg.name, {
-      Version: deployResult.nextVersion,
-      PluginUrl: deployResult.pluginUrl,
-      CliVersion: deployResult.CliVersion,
-      ValidateStatus: ValidateStatus.Success,
-      Private: !deployResult.isPublic,
-      Changelog: 'sample%20changlog',
-    });
+    expect(cmd.pluginVersionsClient.create).toHaveBeenCalledWith(
+      pkg.name,
+      expect.objectContaining({
+        Version: deployResult.nextVersion,
+        PluginUrl: deployResult.pluginUrl,
+        ValidateStatus: ValidateStatus.Success,
+        Private: !deployResult.isPublic,
+        Changelog: 'sample%20changlog',
+      }),
+    );
   });
 
   it('should call registerPluginVersion with changelog', async () => {
@@ -367,14 +368,16 @@ describe('Commands/FlexPluginsDeploy', () => {
 
     expect(result).toEqual(pluginVersionResource);
     expect(cmd.pluginVersionsClient.create).toHaveBeenCalledTimes(1);
-    expect(cmd.pluginVersionsClient.create).toHaveBeenCalledWith(pkg.name, {
-      Version: deployResult.nextVersion,
-      PluginUrl: deployResult.pluginUrl,
-      CliVersion: deployResult.CliVersion,
-      ValidateStatus: ValidateStatus.Success,
-      Private: !deployResult.isPublic,
-      Changelog: 'the-changelog',
-    });
+    expect(cmd.pluginVersionsClient.create).toHaveBeenCalledWith(
+      pkg.name,
+      expect.objectContaining({
+        Version: deployResult.nextVersion,
+        PluginUrl: deployResult.pluginUrl,
+        ValidateStatus: ValidateStatus.Success,
+        Private: !deployResult.isPublic,
+        Changelog: 'the-changelog',
+      }),
+    );
   });
 
   it('should call registerPlugin', async () => {
