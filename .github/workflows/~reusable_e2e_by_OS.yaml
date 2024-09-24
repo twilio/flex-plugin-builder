@@ -102,7 +102,6 @@ jobs:
         with:
           timeout_minutes: 15
           max_attempts: 2
-          retry_on: timeout
           command: |
             npm ci
       - name: Build packages
@@ -110,7 +109,6 @@ jobs:
         with:
           timeout_minutes: 2
           max_attempts: 2
-          retry_on: timeout
           command: |
             npm run build
       - name: Run e2e tests - JS
@@ -120,7 +118,6 @@ jobs:
         with:
           timeout_minutes: 90
           max_attempts: 2
-          retry_on: timeout
           command: |
             cd packages/flex-plugin-e2e-tests
             npm run start
@@ -136,7 +133,6 @@ jobs:
         with:
           timeout_minutes: 90
           max_attempts: 2
-          retry_on: timeout
           command: |
             cd packages/flex-plugin-e2e-tests
             npm run start
