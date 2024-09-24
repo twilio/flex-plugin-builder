@@ -37,7 +37,6 @@ describe('Commands/FlexPluginsDeploy', () => {
     accountSid: 'AC00000000000000000000000000000',
     environmentSid: 'ZE00000000000000000000000000000',
     domainName: 'ruby-fox-123.twil.io',
-    CliVersion: '7.0.5',
     isPublic: false,
     nextVersion: '2.0.0',
     pluginUrl: 'https://ruby-fox-123.twil.io/plugin-url',
