@@ -17,6 +17,10 @@ on:
         description: 'A npm-ignore-prefix passed from the caller workflow.'
         required: true
         type: string
+      SEND_NOTIFICATION:
+        description: 'A flag passed from the caller workflow, it decides whether to send slack notification or not.'
+        required: true
+        type: boolean
 
     secrets:
       CONSOLE_EMAIL:
@@ -50,6 +54,9 @@ on:
       TWILIO_AUTH_TOKEN_darwin:
         description: 'An account-token passed from the caller workflow, it will be used for authentication of APIs in mac environment.'
         required: true
+      SLACK_WEB_HOOK:
+        description: 'A slack-web-hook passed from the caller workflow, it will be used for sending notifications.'
+        required: true
 env:
   BRANCH: ${{ inputs.BRANCH }}
   NPM_IGNORE_PREFIX: ${{ inputs.NPM_IGNORE_PREFIX }}
@@ -69,96 +76,29 @@ env:
   NODE_OPTIONS: --max-old-space-size=8192
 
 jobs:
-  node20-ubuntu:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-      - name: Install project dependencies
-        run: npm ci
-      - name: Build packages
-        run: npm run build
-      - name: Run e2e tests - JS
-        run: |
-          cd packages/flex-plugin-e2e-tests
-          npm run start
-        env:
-          TS: 0
-      - name: Run e2e tests - TS
-        env:
-          TS: 1
-        run: |
-          cd packages/flex-plugin-e2e-tests
-          npm run start
-      - name: Upload Screenshots
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: Ubuntu-screenshots
-          path: packages/flex-plugin-e2e-tests/screenshots
+  node20:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
+    with:
+      OS: ${{ matrix.os }}
+      BRANCH: main
+      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+      PACKAGE_VERSION: latest
+      FLEX_UI_VERSION: latest
+      SEND_NOTIFICATION: ${{ inputs.SEND_NOTIFICATION }}
+    secrets:
+      CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+      CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
+      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
+      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
+      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
+      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+      SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
-  node20-macos:
-    needs: node20-ubuntu
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-      - name: Install project dependencies
-        run: npm ci
-      - name: Build packages
-        run: npm run build
-      - name: Run e2e tests - JS
-        run: |
-          cd packages/flex-plugin-e2e-tests
-          npm run start
-        env:
-          TS: 0
-      - name: Run e2e tests - TS
-        env:
-          TS: 1
-        run: |
-          cd packages/flex-plugin-e2e-tests
-          npm run start
-      - name: Upload Screenshots
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: Macos-screenshots
-          path: packages/flex-plugin-e2e-tests/screenshots
-
-  node20-windows:
-    needs: [ node20-ubuntu, node20-macos ]
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-      - name: Install project dependencies
-        run: npm ci
-      - name: Build packages
-        run: npm run build
-      - name: Run e2e tests - JS
-        run: |
-          cd packages/flex-plugin-e2e-tests
-          npm run start
-        env:
-          TS: 0
-      - name: Kill node for Windows os
-        run: taskkill /f /im node.exe
-      - name: Run e2e tests - TS
-        env:
-          TS: 1
-        run: |
-          cd packages/flex-plugin-e2e-tests
-          npm run start
-      - name: Upload Screenshots
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: Windows-screenshots
-          path: packages/flex-plugin-e2e-tests/screenshots
