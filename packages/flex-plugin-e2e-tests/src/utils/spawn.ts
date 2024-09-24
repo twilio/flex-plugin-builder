@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unused-modules */
 import { ChildProcessWithoutNullStreams, spawn, SpawnOptionsWithoutStdio } from 'child_process';
 
 import { logger } from '@twilio/flex-dev-utils';
@@ -151,6 +152,7 @@ export const retryOnError = async (
   onFinally: () => Promise<unknown>,
   maxRetries: number,
 ): Promise<void> => {
+  logger.info(`Retrying method ${method.name} with ${maxRetries} retries`);
   let retries = 0;
 
   do {
