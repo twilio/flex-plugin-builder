@@ -24,11 +24,10 @@ export abstract class Base {
 
     while (attempts < maxAttempts) {
       try {
-        const data = await this.page.goto(fullPath, {
-          waitUntil: 'domcontentloaded',
+        await this.page.goto(fullPath, {
+          waitUntil: 'load',
           timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT,
         });
-        logger.info('Page navigate', await data?.text());
         return; // Exit the function if the page loaded successfully
       } catch (error) {
         // eslint-disable-next-line no-plusplus
@@ -41,7 +40,7 @@ export abstract class Base {
 
         if (attempts < maxAttempts) {
           logger.info(`Retrying... Reloading the page (Attempt ${attempts})`);
-          await this.page.reload({ waitUntil: 'domcontentloaded' });
+          await this.page.reload({ waitUntil: 'load' });
         } else {
           logger.error('Maximum attempts reached. Failed to load the page.');
           throw new Error(`Failed to load page after ${maxAttempts} attempts.`);
