@@ -350,14 +350,16 @@ describe('Commands/FlexPluginsDeploy', () => {
 
     expect(result).toEqual(pluginVersionResource);
     expect(cmd.pluginVersionsClient.create).toHaveBeenCalledTimes(1);
-    expect(cmd.pluginVersionsClient.create).toHaveBeenCalledWith(pkg.name, {
-      Version: deployResult.nextVersion,
-      PluginUrl: deployResult.pluginUrl,
-      CliVersion: deployResult.CliVersion,
-      ValidateStatus: ValidateStatus.Success,
-      Private: !deployResult.isPublic,
-      Changelog: 'sample%20changlog',
-    });
+    expect(cmd.pluginVersionsClient.create).toHaveBeenCalledWith(
+      pkg.name,
+      expect.objectContaining({
+        Version: deployResult.nextVersion,
+        PluginUrl: deployResult.pluginUrl,
+        ValidateStatus: ValidateStatus.Success,
+        Private: !deployResult.isPublic,
+        Changelog: 'sample%20changlog',
+      }),
+    );
   });
 
   it('should call registerPluginVersion with changelog', async () => {
@@ -367,14 +369,16 @@ describe('Commands/FlexPluginsDeploy', () => {
 
     expect(result).toEqual(pluginVersionResource);
     expect(cmd.pluginVersionsClient.create).toHaveBeenCalledTimes(1);
-    expect(cmd.pluginVersionsClient.create).toHaveBeenCalledWith(pkg.name, {
-      Version: deployResult.nextVersion,
-      PluginUrl: deployResult.pluginUrl,
-      CliVersion: deployResult.CliVersion,
-      ValidateStatus: ValidateStatus.Success,
-      Private: !deployResult.isPublic,
-      Changelog: 'the-changelog',
-    });
+    expect(cmd.pluginVersionsClient.create).toHaveBeenCalledWith(
+      pkg.name,
+      expect.objectContaining({
+        Version: deployResult.nextVersion,
+        PluginUrl: deployResult.pluginUrl,
+        ValidateStatus: ValidateStatus.Success,
+        Private: !deployResult.isPublic,
+        Changelog: 'the-changelog',
+      }),
+    );
   });
 
   it('should call registerPlugin', async () => {

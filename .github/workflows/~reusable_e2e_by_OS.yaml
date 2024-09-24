@@ -84,9 +84,21 @@ jobs:
         with:
           node-version: '20'
       - name: Install project dependencies
-        run: npm ci
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 15
+          max_attempts: 2
+          retry_on: timeout
+          command: |
+            npm ci
       - name: Build packages
-        run: npm run build
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 2
+          max_attempts: 2
+          retry_on: timeout
+          command: |
+            npm run build
       - name: Run e2e tests - JS
         env:
           TS: 0
@@ -134,6 +146,6 @@ jobs:
           SLACK_COLOR: failure
           SLACK_USERNAME: Github Actions
           SLACK_ICON_EMOJI: ':ship:'
-          SLACK_TITLE: 'Flex Plugins CLI - Nightly E2E - ${{ inputs.OS }}'
+          SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly - ${{ inputs.OS }}'
           SLACK_MESSAGE: '${{ github.repository }}/${{ github.ref }} - nightly E2E tests failed for ${{ inputs.OS }}.'
           MSG_MINIMAL: actions url
