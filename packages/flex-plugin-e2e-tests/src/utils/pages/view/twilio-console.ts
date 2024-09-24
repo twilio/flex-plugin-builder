@@ -1,4 +1,5 @@
 import { Page } from 'puppeteer';
+import { logger } from '@twilio/flex-dev-utils';
 
 import { testParams } from '../../../core';
 import { Base } from './base';
@@ -33,6 +34,7 @@ export class TwilioConsole extends Base {
    * @param accountSid
    */
   async login(flexPath: string, accountSid: string, localhostPort: number, firstLoad: boolean = true): Promise<void> {
+    logger.info('firstload', firstLoad);
     const redirectUrl = this._flexBaseUrl.includes('localhost')
       ? TwilioConsole._createLocalhostUrl(localhostPort)
       : this._flexBaseUrl;

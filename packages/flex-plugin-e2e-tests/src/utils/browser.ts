@@ -31,6 +31,7 @@ export class Browser {
   }
 
   static async kill(): Promise<void> {
+    logger.info('Finally called');
     try {
       this._page.removeAllListeners();
       await this._browser.close();

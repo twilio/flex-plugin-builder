@@ -23,7 +23,7 @@ export abstract class Base {
       waitUntil: 'domcontentloaded',
       timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT,
     });
-    logger.info('Page navigate', data);
+    logger.info('Page navigate', data?.text());
   }
 
   /**
