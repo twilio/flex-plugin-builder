@@ -40,12 +40,37 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     const accountSid = await Browser.app.getFlexAccountSid();
     assertion.equal(accountSid, secrets.api.accountSid);
 
+    const assertRetry = async () => {
+      const maxRetries = 2;
+      let attempts = 0;
+      let success = false;
+
+      while (attempts <= maxRetries && !success) {
+        try {
+          await Browser.app.agentDesktop.open();
+          logger.info('Agent Desktop opened');
+
+          // Check if the element is visible
+          await assertion.app.view.plugins.plugin.isVisible(plugin.newlineValue!);
+          success = true; // If no error, mark success
+        } catch (error) {
+          attempts += 1;
+          if (attempts > maxRetries) {
+            if (error instanceof Error) {
+              logger.error(`Failed to open Agent Desktop after ${attempts} attempts: ${error.message}`);
+            } else {
+              logger.error(`Failed to open Agent Desktop after ${attempts} attempts: ${String(error)}`);
+            }
+            throw new Error(`Failed to open Agent Desktop after ${attempts} attempts`);
+          } else {
+            logger.info(`Attempt ${attempts} failed. Retrying...`);
+          }
+        }
+      }
+    };
     // Make sure that /plugins contain the plugin
     await pluginHelper.waitForPluginToRelease(releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
-    await Browser.app.agentDesktop.open();
-
-    logger.info('Agent Desktop opened');
-    await assertion.app.view.plugins.plugin.isVisible(plugin.newlineValue);
+    await assertRetry();
   } catch (e) {
     await Browser.app.takeScreenshot(environment.cwd);
     throw e;
