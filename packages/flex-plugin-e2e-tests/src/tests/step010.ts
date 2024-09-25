@@ -2,7 +2,7 @@
 import { logger } from '@twilio/flex-dev-utils';
 
 import { TestSuite, TestParams } from '../core';
-import { api, assertion, Browser, pluginHelper } from '../utils';
+import { api, assertion, Browser, pluginHelper, retryOnError } from '../utils';
 
 const PLUGIN_RELEASED_TIMEOUT = 30000;
 const PLUGIN_RELEASED_POLL_INTERVAL = 5000;
@@ -39,38 +39,30 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     // Verify that user is on the right account
     const accountSid = await Browser.app.getFlexAccountSid();
     assertion.equal(accountSid, secrets.api.accountSid);
-
-    const assertRetry = async () => {
-      const maxRetries = 2;
-      let attempts = 0;
-      let success = false;
-
-      while (attempts <= maxRetries && !success) {
-        try {
-          await Browser.app.agentDesktop.open();
-          logger.info('Agent Desktop opened');
-
-          // Check if the element is visible
-          await assertion.app.view.plugins.plugin.isVisible(plugin.newlineValue!);
-          success = true; // If no error, mark success
-        } catch (error) {
-          attempts += 1;
-          if (attempts > maxRetries) {
-            if (error instanceof Error) {
-              logger.error(`Failed to open Agent Desktop after ${attempts} attempts: ${error.message}`);
-            } else {
-              logger.error(`Failed to open Agent Desktop after ${attempts} attempts: ${String(error)}`);
-            }
-            throw new Error(`Failed to open Agent Desktop after ${attempts} attempts`);
-          } else {
-            logger.info(`Attempt ${attempts} failed. Retrying...`);
-          }
-        }
-      }
-    };
     // Make sure that /plugins contain the plugin
     await pluginHelper.waitForPluginToRelease(releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
-    await assertRetry();
+    // await assertRetry();
+
+    const loginAndAssert = async () => {
+      // Load local plugin
+
+      await Browser.app.agentDesktop.open();
+      logger.info('Agent Desktop opened');
+
+      // Check if the element is visible
+      await assertion.app.view.plugins.plugin.isVisible(plugin.newlineValue!);
+    };
+
+    const onError = async (e: any) => {
+      await Browser.app.takeScreenshot(environment.cwd);
+      throw e;
+    };
+
+    const onFinally = async () => {
+      await Browser.kill();
+    };
+
+    await retryOnError(loginAndAssert, onError, onFinally, 3);
   } catch (e) {
     await Browser.app.takeScreenshot(environment.cwd);
     throw e;

@@ -152,25 +152,23 @@ export const retryOnError = async (
   onFinally: () => Promise<unknown>,
   maxRetries: number,
 ): Promise<void> => {
-  logger.info(`Retrying method ${method.name} with ${maxRetries} retries`);
-  let retries = 0;
-
-  do {
+  let attempts = 0;
+  while (attempts <= maxRetries) {
     try {
-      await method(retries === 0);
-      break;
-    } catch (e) {
-      logger.error(e);
-      retries += 1;
-
-      if (retries === maxRetries) {
-        await onError(e);
+      attempts += 1;
+      await method(attempts === 0); // Attempt the main operation
+      return; // If operation succeeds, exit the loop
+    } catch (error) {
+      if (attempts > maxRetries) {
+        await onError(error); // Handle error if all retries fail
+        throw new Error(`Operation failed after ${maxRetries} retries`);
       } else {
-        logger.info(`Retry count: ${retries}`);
-        continue;
+        logger.info(`Attempt ${attempts} failed. Retrying...`);
       }
     } finally {
-      await onFinally();
+      if (attempts > maxRetries) {
+        await onFinally(); // Perform cleanup after the final attempt
+      }
     }
-  } while (retries < maxRetries);
+  }
 };

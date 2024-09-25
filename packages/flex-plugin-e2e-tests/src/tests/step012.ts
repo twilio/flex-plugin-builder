@@ -54,7 +54,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   await Browser.create({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
 
   const loginAndAssert = async (firstLoad = false) => {
-    await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort, firstLoad);
+    await Browser.app.twilioConsole.login('agent-desktop', secrets.api.accountSid, config.localhostPort, firstLoad);
 
     // Check if local plugin loaded okay
     await assertion.app.view.agentDesktop.isVisible();
