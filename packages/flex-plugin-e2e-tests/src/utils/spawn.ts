@@ -155,7 +155,6 @@ export const retryOnError = async (
   let attempts = 0;
   while (attempts <= maxRetries) {
     try {
-      attempts += 1;
       await method(attempts === 0); // Attempt the main operation
       return; // If operation succeeds, exit the loop
     } catch (error) {
@@ -164,6 +163,7 @@ export const retryOnError = async (
         throw new Error(`Operation failed after ${maxRetries} retries`);
       } else {
         logger.info(`Attempt ${attempts} failed. Retrying...`);
+        attempts += 1;
       }
     } finally {
       if (attempts > maxRetries) {
