@@ -28,6 +28,8 @@ export abstract class Base {
           waitUntil: 'load',
           timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT,
         });
+
+        logger.info('Page loaded successfully');
         return; // Exit the function if the page loaded successfully
       } catch (error) {
         // eslint-disable-next-line no-plusplus

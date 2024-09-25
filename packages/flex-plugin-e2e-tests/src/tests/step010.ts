@@ -1,4 +1,6 @@
 /* eslint-disable import/no-unused-modules */
+import { logger } from '@twilio/flex-dev-utils';
+
 import { TestSuite, TestParams } from '../core';
 import { api, assertion, Browser, pluginHelper } from '../utils';
 
@@ -42,6 +44,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     await pluginHelper.waitForPluginToRelease(releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
     await Browser.app.agentDesktop.open();
 
+    logger.info('Agent Desktop opened');
     await assertion.app.view.plugins.plugin.isVisible(plugin.newlineValue);
   } catch (e) {
     await Browser.app.takeScreenshot(environment.cwd);
