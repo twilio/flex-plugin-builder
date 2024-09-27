@@ -152,22 +152,20 @@ export const retryOnError = async (
   onFinally: () => Promise<unknown>,
   maxRetries: number,
 ): Promise<void> => {
-  let attempts = 0;
+  let attempts = 1;
   while (attempts <= maxRetries) {
     try {
-      await method(attempts === 0); // Attempt the main operation
+      await method(attempts === 1); // Attempt the main operation
       return; // If operation succeeds, exit the loop
     } catch (error) {
-      if (attempts > maxRetries) {
+      logger.info('Shwet', error);
+      if (attempts === maxRetries) {
         await onError(error); // Handle error if all retries fail
+        await onFinally(); // cleanup
         throw new Error(`Operation failed after ${maxRetries} retries`);
       } else {
         logger.info(`Attempt ${attempts} failed. Retrying...`);
         attempts += 1;
-      }
-    } finally {
-      if (attempts > maxRetries) {
-        await onFinally(); // Perform cleanup after the final attempt
       }
     }
   }
