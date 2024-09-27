@@ -49,7 +49,7 @@ export default class DeploymentClient {
 
     return this.http.post<ServerlessDeployment>(
       urlJoin('Services', this.serviceSid, 'Environments', this.environmentSid, 'Deployments'),
-      { BuildSid: buildSid },
+      { BuildSid: buildSid, IsPlugin: true },
     );
   };
 }

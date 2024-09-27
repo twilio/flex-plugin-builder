@@ -67,6 +67,7 @@ describe('DeploymentClient', () => {
       expect(post).toHaveBeenCalledTimes(1);
       expect(post).toHaveBeenCalledWith(`Services/${serviceSid}/Environments/${environmentSid}/Deployments`, {
         BuildSid: sid,
+        IsPlugin: true,
       });
 
       post.mockRestore();
