@@ -96,7 +96,7 @@ const cleanPluginVersions = async (name: string): Promise<void> => {
   logger.info(`Cleaning up plugin versions for ${name}`, plugin);
   const versions = await versionsClient.list(plugin.sid);
   for (const version of versions.plugin_versions) {
-    await versionsClient.archive(plugin.sid, version.sid);
+    if (!version.archived) await versionsClient.archive(plugin.sid, version.sid);
   }
 };
 
