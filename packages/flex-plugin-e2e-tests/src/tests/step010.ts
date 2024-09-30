@@ -54,7 +54,6 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
 
   const onError = async (e: any) => {
     await Browser.app.takeScreenshot(environment.cwd);
-    throw e;
   };
 
   const onFinally = async () => {

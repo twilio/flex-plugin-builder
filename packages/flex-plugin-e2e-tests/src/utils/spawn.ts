@@ -160,8 +160,8 @@ export const retryOnError = async (
     } catch (error) {
       logger.info('Shwet', error);
       if (attempts === maxRetries) {
-        await onFinally(); // cleanup
         await onError(error); // Handle error if all retries fail
+        await onFinally(); // cleanup
         throw new Error(`Operation failed after ${maxRetries} retries`);
       } else {
         logger.info(`Attempt ${attempts} failed. Retrying...`);

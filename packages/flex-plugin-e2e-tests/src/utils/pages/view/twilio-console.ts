@@ -73,6 +73,7 @@ export class TwilioConsole extends Base {
         );
 
         // Log in Flex via service login
+        logger.info('Logging in Flex via service login on first load');
         await this.goto({ baseUrl: this._baseUrl, path });
       } else {
         throw new Error('Unable to fetch CSRF token to login to Twilio Console');

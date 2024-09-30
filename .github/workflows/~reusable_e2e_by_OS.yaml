@@ -160,7 +160,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: Ubuntu-screenshots
+          name: ${{ inputs.OS }}-screenshots
           path: packages/flex-plugin-e2e-tests/screenshots
 
   notify-failure:
