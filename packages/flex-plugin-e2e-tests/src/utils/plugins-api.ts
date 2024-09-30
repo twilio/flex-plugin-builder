@@ -91,6 +91,15 @@ const getActivePlugins = async (sid: string): Promise<ConfiguredPluginResourcePa
   return configuredPluginsClient.list(sid);
 };
 
+const cleanPluginVersions = async (name: string): Promise<void> => {
+  const plugin = await getPlugin(name);
+  logger.info(`Cleaning up plugin versions for ${name}`, plugin);
+  const versions = await versionsClient.list(plugin.sid);
+  for (const version of versions.plugin_versions) {
+    await versionsClient.archive(plugin.sid, version.sid);
+  }
+};
+
 export default {
   cleanup,
   getPluginVersion,
@@ -99,4 +108,5 @@ export default {
   getActiveRelease,
   getConfiguration,
   getActivePlugins,
+  cleanPluginVersions,
 };
