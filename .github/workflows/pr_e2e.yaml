@@ -44,13 +44,14 @@ jobs:
 
   e2e-test:
     needs: [ get-version, release-alpha-version ]
-    uses: ./.github/workflows/~reusable_e2e.yaml
+    uses: ./.github/workflows/~reusable_e2e_all_OS.yaml
     if: ${{ always() && ((github.event.label.name == vars.E2E_LABEL) || (github.event.label.name == vars.PUBLISH_AND_E2E_LABEL)) }}
     with:
       BRANCH: ${{ needs.get-version.outputs.branch }}
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       PACKAGE_VERSION: ${{ github.event.label.name == vars.E2E_LABEL && 'latest' || needs.get-version.outputs.version }}
       FLEX_UI_VERSION: latest
+      SEND_NOTIFICATION: false
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
       CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
@@ -63,6 +64,7 @@ jobs:
       CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
       TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
       TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+      SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
   remove-label-on-failure:
     needs: e2e-test
