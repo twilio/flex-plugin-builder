@@ -34,7 +34,7 @@ on:
         description: 'A message passed from the caller workflow, it will be used in slack notification.'
         required: false
         type: string
-        default: 'E2E tests failed for'
+        default: 'E2E tests'
 
     secrets:
       CONSOLE_EMAIL:
@@ -170,12 +170,11 @@ jobs:
     steps:
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
-        if: needs.node20.result != 'success'
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEB_HOOK }}
-          SLACK_COLOR: failure
+          SLACK_COLOR: needs.node20.result
           SLACK_USERNAME: Github Actions
           SLACK_ICON_EMOJI: ':ship:'
           SLACK_TITLE: '${{ inputs.SLACK_TITLE }} - ${{ inputs.OS }}'
-          SLACK_MESSAGE: '${{ github.repository }}/${{ github.ref }} - ${{ inputs.SLACK_MESSAGE }} ${{ inputs.OS }}.'
+          SLACK_MESSAGE: '${{ github.repository }}/${{ github.ref }} - ${{ inputs.SLACK_MESSAGE }} {{ needs.node20.result }} for ${{ inputs.OS }}.'
           MSG_MINIMAL: actions url

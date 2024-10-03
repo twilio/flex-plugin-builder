@@ -16,6 +16,8 @@ jobs:
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
+      SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly'
+      SEND_NOTIFICATION: true
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
       CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
@@ -39,6 +41,8 @@ jobs:
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
+      SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly'
+      SEND_NOTIFICATION: true
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
       CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
@@ -62,6 +66,8 @@ jobs:
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
+      SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly'
+      SEND_NOTIFICATION: true
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
       CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}

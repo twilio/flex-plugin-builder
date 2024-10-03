@@ -27,15 +27,6 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     await Browser.app.twilioConsole.login('agent-desktop', secrets.api.accountSid, config.localhostPort, firstLoad);
     await assertion.app.view.agentDesktop.isVisible();
     await assertion.app.view.plugins.plugin.isVisible(plugin.componentText);
-
-    // Verify hot reload
-    // await replaceInFile({
-    //   files: joinPath(plugin.dir, 'src', 'components', 'CustomTaskList', `CustomTaskList.${ext}`),
-    //   from: plugin.componentText,
-    //   to: tmpComponentText,
-    // });
-
-    // await assertion.app.view.plugins.plugin.isVisible(tmpComponentText);
   };
 
   const onError = async (e: any) => {

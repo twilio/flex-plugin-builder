@@ -43,7 +43,7 @@ jobs:
       PACKAGE_VERSION: 6.4.2
       FLEX_UI_VERSION: latest
       SEND_NOTIFICATION: true
-      SLACK_TITLE: 'Public Manual Release E2E for Version ${{ github.event.inputs.version }}'
+      SLACK_TITLE: 'Public Manual Release v6 E2E for Version ${{ github.event.inputs.version }}'
       SLACK_MESSAGE: 'Release E2E'
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
