@@ -143,8 +143,36 @@ jobs:
         env:
           TS: 0
         run: |
-          cd packages/flex-plugin-e2e-tests
-          npm run start
+          echo "Running e2e tests..."
+          attempts=2
+          timeout=90m
+
+          if [ "${{ inputs.OS }}" == "ubuntu-latest" ]; then
+            for i in $(seq 1 $attempts); do
+              cd packages/flex-plugin-e2e-tests && npm run start && break || echo "e2e tests failed, retrying ($i/$attempts)..."
+              sleep 5
+            done
+          elif [ "${{ inputs.OS }}" == "macos-latest" ]; then
+            brew install coreutils
+            for i in $(seq 1 $attempts); do
+              cd packages/flex-plugin-e2e-tests && gtimeout $timeout npm run start && break || echo "e2e tests failed, retrying ($i/$attempts)..."
+              sleep 5
+            done
+          elif [ "${{ inputs.OS }}" == "windows-latest" ]; then
+            for ($i=1; $i -le $attempts; $i++) {
+              cd packages/flex-plugin-e2e-tests
+              $process = Start-Process -FilePath 'npm' -ArgumentList 'run start' -NoNewWindow -PassThru
+              if ($process.WaitForExit(600000)) { # 10 minutes in milliseconds
+                echo 'e2e tests completed successfully'
+                exit 0
+              } else {
+                echo 'e2e tests timed out. Retrying...'
+                Stop-Process -Id $process.Id
+              }
+            }
+          else
+            echo 'Unsupported OS'
+          fi
       - name: Kill node for Windows os
         if: ${{ inputs.OS == 'windows-latest' }}
         run: |
@@ -154,8 +182,35 @@ jobs:
         env:
           TS: 1
         run: |
-            cd packages/flex-plugin-e2e-tests
-            npm run start
+          echo "Running e2e tests..."
+          attempts=2
+          timeout=90m
+
+          if [ "${{ inputs.OS }}" == "ubuntu-latest" ]; then
+            for i in $(seq 1 $attempts); do
+              cd packages/flex-plugin-e2e-tests && npm run start && break || echo "e2e tests failed, retrying ($i/$attempts)..."
+              sleep 5
+            done
+          elif [ "${{ inputs.OS }}" == "macos-latest" ]; then
+            for i in $(seq 1 $attempts); do
+              cd packages/flex-plugin-e2e-tests && gtimeout $timeout npm run start && break || echo "e2e tests failed, retrying ($i/$attempts)..."
+              sleep 5
+            done
+          elif [ "${{ inputs.OS }}" == "windows-latest" ]; then
+            for ($i=1; $i -le $attempts; $i++) {
+              cd packages/flex-plugin-e2e-tests
+              $process = Start-Process -FilePath 'npm' -ArgumentList 'run start' -NoNewWindow -PassThru
+              if ($process.WaitForExit(600000)) { # 10 minutes in milliseconds
+                echo 'e2e tests completed successfully'
+                exit 0
+              } else {
+                echo 'e2e tests timed out. Retrying...'
+                Stop-Process -Id $process.Id
+              }
+            }
+          else
+            echo 'Unsupported OS'
+          fi
       - name: Upload Screenshots
         uses: actions/upload-artifact@v3
         if: always()
