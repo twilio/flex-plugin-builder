@@ -1,4 +1,3 @@
-import { logger } from '@twilio/flex-dev-utils';
 import { ElementHandle, Page } from 'puppeteer';
 
 export abstract class Base {
