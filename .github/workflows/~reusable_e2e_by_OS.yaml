@@ -107,7 +107,6 @@ jobs:
       - name: Install project dependencies (Macos)
         if: ${{ inputs.OS == 'macos-latest' }}
         run: |
-          run: |
           echo "Starting npm ci with a 10-minute timeout"
           brew install coreutils
           for i in 1 2 3; do # Retry logic, retry 3 times
@@ -139,78 +138,105 @@ jobs:
       - name: Build packages
         run: |
           npm run build
-      - name: Run e2e tests - JS
+      - name: Run e2e tests - JS (Linux)
+        if: ${{ inputs.OS == 'ubuntu-latest' }}
         env:
           TS: 0
         run: |
-          echo "Running e2e tests..."
-          attempts=2
-          timeout=90m
-
-          if [ "${{ inputs.OS }}" == "ubuntu-latest" ]; then
-            for i in $(seq 1 $attempts); do
-              cd packages/flex-plugin-e2e-tests && npm run start && break || echo "e2e tests failed, retrying ($i/$attempts)..."
-              sleep 5
-            done
-          elif [ "${{ inputs.OS }}" == "macos-latest" ]; then
-            brew install coreutils
-            for i in $(seq 1 $attempts); do
-              cd packages/flex-plugin-e2e-tests && gtimeout $timeout npm run start && break || echo "e2e tests failed, retrying ($i/$attempts)..."
-              sleep 5
-            done
-          elif [ "${{ inputs.OS }}" == "windows-latest" ]; then
+          echo "Starting npm ci with a 10-minute timeout"
+          cd packages/flex-plugin-e2e-tests
+          for i in 1 2 3; do # Retry logic, retry 3 times
+            timeout 90m  npm run start && break || echo "npm ci failed, retrying ($i/3)..."
+          done
+      - name: Run e2e tests - JS (Macos)
+        if: ${{ inputs.OS == 'macos-latest' }}
+        env:
+          TS: 0
+        run: |
+          echo "Starting npm ci with a 10-minute timeout"
+          cd packages/flex-plugin-e2e-tests
+          for i in 1 2 3; do # Retry logic, retry 3 times
+            gtimeout 90m npm run start && break || echo "npm ci failed, retrying ($i/3)..."
+          done
+      - name: Run e2e tests - JS (Windows)
+        if: ${{ inputs.OS == 'windows-latest' }}
+        env:
+          TS: 0
+        run: |
+          echo "Starting npm ci with a 10-minute timeout"
+            $attempts = 3
+            $timeout = 5400000 # 90 minutes in milliseconds
+            cd packages/flex-plugin-e2e-tests
             for ($i=1; $i -le $attempts; $i++) {
-              cd packages/flex-plugin-e2e-tests
-              $process = Start-Process -FilePath 'npm' -ArgumentList 'run start' -NoNewWindow -PassThru
-              if ($process.WaitForExit(600000)) { # 10 minutes in milliseconds
-                echo 'e2e tests completed successfully'
-                exit 0
-              } else {
-                echo 'e2e tests timed out. Retrying...'
-                Stop-Process -Id $process.Id
+              try {
+                $process = Start-Process -FilePath 'npm' -ArgumentList 'run start' -NoNewWindow -PassThru
+                if ($process.WaitForExit($timeout)) {
+                  echo 'npm ci completed successfully'
+                  exit 0
+                } else {
+                  echo 'npm ci timed out. Retrying...'
+                  Stop-Process -Id $process.Id
+                }
+              } catch {
+                echo 'npm ci failed.'
+                if ($i -eq $attempts) {
+                  throw 'npm ci failed after 3 retries.'
+                }
               }
             }
-          else
-            echo 'Unsupported OS'
-          fi
+        shell: pwsh
       - name: Kill node for Windows os
         if: ${{ inputs.OS == 'windows-latest' }}
         run: |
           echo "os is: ${{ inputs.OS }} ${{ runner.os }}"
           taskkill /f /im node.exe
-      - name: Run e2e tests - TS
+      - name: Run e2e tests - JS (Linux)
+        if: ${{ inputs.OS == 'ubuntu-latest' }}
         env:
           TS: 1
         run: |
-          echo "Running e2e tests..."
-          attempts=2
-          timeout=90m
-
-          if [ "${{ inputs.OS }}" == "ubuntu-latest" ]; then
-            for i in $(seq 1 $attempts); do
-              cd packages/flex-plugin-e2e-tests && npm run start && break || echo "e2e tests failed, retrying ($i/$attempts)..."
-              sleep 5
-            done
-          elif [ "${{ inputs.OS }}" == "macos-latest" ]; then
-            for i in $(seq 1 $attempts); do
-              cd packages/flex-plugin-e2e-tests && gtimeout $timeout npm run start && break || echo "e2e tests failed, retrying ($i/$attempts)..."
-              sleep 5
-            done
-          elif [ "${{ inputs.OS }}" == "windows-latest" ]; then
+          echo "Starting npm ci with a 10-minute timeout"
+          cd packages/flex-plugin-e2e-tests
+          for i in 1 2; do # Retry logic, retry 3 times
+            timeout 90m  npm run start && break || echo "npm ci failed, retrying ($i/3)..."
+          done
+      - name: Run e2e tests - JS (Macos)
+        if: ${{ inputs.OS == 'macos-latest' }}
+        env:
+          TS: 1
+        run: |
+          echo "Starting npm ci with a 10-minute timeout"
+          cd packages/flex-plugin-e2e-tests
+          for i in 1 2; do # Retry logic, retry 3 times
+            gtimeout 90m npm run start && break || echo "npm ci failed, retrying ($i/3)..."
+          done
+      - name: Run e2e tests - JS (Windows)
+        if: ${{ inputs.OS == 'windows-latest' }}
+        env:
+          TS: 1
+        run: |
+          echo "Starting npm ci with a 10-minute timeout"
+            $attempts = 2
+            $timeout = 5400000 # 90 minutes in milliseconds
+            cd packages/flex-plugin-e2e-tests
             for ($i=1; $i -le $attempts; $i++) {
-              cd packages/flex-plugin-e2e-tests
-              $process = Start-Process -FilePath 'npm' -ArgumentList 'run start' -NoNewWindow -PassThru
-              if ($process.WaitForExit(600000)) { # 10 minutes in milliseconds
-                echo 'e2e tests completed successfully'
-                exit 0
-              } else {
-                echo 'e2e tests timed out. Retrying...'
-                Stop-Process -Id $process.Id
+              try {
+                $process = Start-Process -FilePath 'npm' -ArgumentList 'run start' -NoNewWindow -PassThru
+                if ($process.WaitForExit($timeout)) {
+                  echo 'npm ci completed successfully'
+                  exit 0
+                } else {
+                  echo 'npm ci timed out. Retrying...'
+                  Stop-Process -Id $process.Id
+                }
+              } catch {
+                echo 'npm ci failed.'
+                if ($i -eq $attempts) {
+                  throw 'npm ci failed after 3 retries.'
+                }
               }
             }
-          else
-            echo 'Unsupported OS'
-          fi
+        shell: pwsh
       - name: Upload Screenshots
         uses: actions/upload-artifact@v3
         if: always()
