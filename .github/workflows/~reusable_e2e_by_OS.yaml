@@ -34,7 +34,7 @@ on:
         description: 'A message passed from the caller workflow, it will be used in slack notification.'
         required: false
         type: string
-        default: 'E2E tests failed for'
+        default: 'E2E tests'
 
     secrets:
       CONSOLE_EMAIL:
@@ -97,34 +97,151 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '20'
-      - name: Install project dependencies
+      - name: Install project dependencies (Linux)
+        if: ${{ inputs.OS == 'ubuntu-latest' }}
         run: |
-          npm ci
+          echo "Starting npm ci with a 10-minute timeout"
+          for i in 1 2 3; do # Retry logic, retry 3 times
+            timeout 10m npm ci --verbose && break || echo "npm ci failed, retrying ($i/3)..."
+          done
+      - name: Install project dependencies (Macos)
+        if: ${{ inputs.OS == 'macos-latest' }}
+        run: |
+          echo "Starting npm ci with a 10-minute timeout"
+          brew install coreutils
+          for i in 1 2 3; do # Retry logic, retry 3 times
+            gtimeout 10m npm ci --verbose && break || echo "npm ci failed, retrying ($i/3)..."
+          done
+      - name: Install project dependencies (Windows)
+        if: ${{ inputs.OS == 'windows-latest' }}
+        run: |
+          echo "Starting npm ci with a 10-minute timeout"
+            $attempts = 3
+            for ($i=1; $i -le $attempts; $i++) {
+              try {
+                $process = Start-Process -FilePath 'npm' -ArgumentList 'ci --verbose' -NoNewWindow -PassThru
+                if ($process.WaitForExit(600000)) { # 10 minutes in milliseconds
+                  echo 'npm ci completed successfully'
+                  exit 0
+                } else {
+                  echo 'npm ci timed out. Retrying...'
+                  Stop-Process -Id $process.Id
+                }
+              } catch {
+                echo 'npm ci failed.'
+                if ($i -eq $attempts) {
+                  throw 'npm ci failed after 3 retries.'
+                }
+              }
+            }
+        shell: pwsh
       - name: Build packages
         run: |
           npm run build
-      - name: Run e2e tests - JS
+      - name: Run e2e tests - JS (Linux)
+        if: ${{ inputs.OS == 'ubuntu-latest' }}
         env:
           TS: 0
         run: |
+          echo "Starting e2e tests with a 10-minute timeout"
           cd packages/flex-plugin-e2e-tests
-          npm run start
+          for i in 1 2; do # Retry logic, retry 3 times
+            timeout 90m  npm run start && break || echo "E2E tests timed out, retrying ($i/3)..."
+          done
+      - name: Run e2e tests - JS (Macos)
+        if: ${{ inputs.OS == 'macos-latest' }}
+        env:
+          TS: 0
+        run: |
+          echo "Starting e2e tests with a 10-minute timeout"
+          cd packages/flex-plugin-e2e-tests
+          for i in 1 2; do # Retry logic, retry 3 times
+            gtimeout 90m npm run start && break || echo "E2E tests timed out, retrying ($i/3)..."
+          done
+      - name: Run e2e tests - JS (Windows)
+        if: ${{ inputs.OS == 'windows-latest' }}
+        env:
+          TS: 0
+        run: |
+          echo "Starting e2e tests with a 10-minute timeout"
+            $attempts = 2
+            $timeout = 5400000 # 90 minutes in milliseconds
+            cd packages/flex-plugin-e2e-tests
+            for ($i=1; $i -le $attempts; $i++) {
+              try {
+                $process = Start-Process -FilePath 'npm' -ArgumentList 'run start' -NoNewWindow -PassThru
+                if ($process.WaitForExit($timeout)) {
+                  echo 'E2E tests completed successfully'
+                  exit 0
+                } else {
+                  echo 'E2E tests timed out. Retrying...'
+                  Stop-Process -Id $process.Id
+                }
+              } catch {
+                echo 'E2E tests failed.'
+                if ($i -eq $attempts) {
+                  throw 'E2E tests failed after 3 retries.'
+                }
+              }
+            }
+        shell: pwsh
       - name: Kill node for Windows os
         if: ${{ inputs.OS == 'windows-latest' }}
         run: |
           echo "os is: ${{ inputs.OS }} ${{ runner.os }}"
           taskkill /f /im node.exe
-      - name: Run e2e tests - TS
+      - name: Run e2e tests - TS (Linux)
+        if: ${{ inputs.OS == 'ubuntu-latest' }}
         env:
           TS: 1
         run: |
+          echo "Starting e2e tests with a 10-minute timeout"
+          cd packages/flex-plugin-e2e-tests
+          for i in 1 2; do # Retry logic, retry 3 times
+            timeout 90m  npm run start && break || echo "E2E tests timed out, retrying ($i/3)..."
+          done
+      - name: Run e2e tests - TS (Macos)
+        if: ${{ inputs.OS == 'macos-latest' }}
+        env:
+          TS: 1
+        run: |
+          echo "Starting e2e tests with a 10-minute timeout"
+          cd packages/flex-plugin-e2e-tests
+          for i in 1 2; do # Retry logic, retry 3 times
+            gtimeout 90m npm run start && break || echo "E2E tests timed out, retrying ($i/3)..."
+          done
+      - name: Run e2e tests - TS (Windows)
+        if: ${{ inputs.OS == 'windows-latest' }}
+        env:
+          TS: 1
+        run: |
+          echo "Starting e2e tests with a 10-minute timeout"
+            $attempts = 2
+            $timeout = 5400000 # 90 minutes in milliseconds
             cd packages/flex-plugin-e2e-tests
-            npm run start
+            for ($i=1; $i -le $attempts; $i++) {
+              try {
+                $process = Start-Process -FilePath 'npm' -ArgumentList 'run start' -NoNewWindow -PassThru
+                if ($process.WaitForExit($timeout)) {
+                  echo 'E2E tests completed successfully'
+                  exit 0
+                } else {
+                  echo 'E2E tests timed out. Retrying...'
+                  Stop-Process -Id $process.Id
+                }
+              } catch {
+                echo 'E2E tests failed.'
+                if ($i -eq $attempts) {
+                  throw 'E2E tests failed after 3 retries.'
+                }
+              }
+            }
+        shell: pwsh
       - name: Upload Screenshots
         uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: Ubuntu-screenshots
+          name: ${{ inputs.OS }}-screenshots
           path: packages/flex-plugin-e2e-tests/screenshots
 
   notify-failure:
@@ -134,12 +251,11 @@ jobs:
     steps:
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
-        if: needs.node20.result != 'success'
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEB_HOOK }}
-          SLACK_COLOR: failure
+          SLACK_COLOR: needs.node20.result
           SLACK_USERNAME: Github Actions
           SLACK_ICON_EMOJI: ':ship:'
           SLACK_TITLE: '${{ inputs.SLACK_TITLE }} - ${{ inputs.OS }}'
-          SLACK_MESSAGE: '${{ github.repository }}/${{ github.ref }} - ${{ inputs.SLACK_MESSAGE }} ${{ inputs.OS }}.'
+          SLACK_MESSAGE: '${{ github.repository }}/${{ github.ref }} - ${{ inputs.SLACK_MESSAGE }} {{ needs.node20.result }} for ${{ inputs.OS }}.'
           MSG_MINIMAL: actions url

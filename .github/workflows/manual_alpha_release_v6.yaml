@@ -21,6 +21,9 @@ jobs:
       VERSION: patch
       BRANCH: FLEXY-5323-6.4.2
       ENVIRONMENT: alpha_release
+      SEND_NOTIFICATION: true
+      SLACK_TITLE: 'Manual Alpha Release E2E for Version ${{ github.event.inputs.version }}'
+      SLACK_MESSAGE: 'Release E2E'
     secrets:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}

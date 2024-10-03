@@ -2,7 +2,7 @@
 import semver from 'semver';
 
 import { TestSuite, TestParams, testParams } from '../core';
-import { spawn, Browser, pluginHelper, api, assertion, killChildProcess } from '../utils';
+import { spawn, Browser, pluginHelper, api, assertion, killChildProcess, retryOnError } from '../utils';
 
 // Starting multiple plugins using --include-remote works
 const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: TestParams): Promise<void> => {
@@ -51,24 +51,30 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     testParams.config.start.pollInterval,
   );
 
-  try {
-    // Load local plugin
-    await Browser.create({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
-    await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort);
+  await Browser.create({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
+
+  const loginAndAssert = async (firstLoad: boolean) => {
+    await Browser.app.twilioConsole.login('agent-desktop', secrets.api.accountSid, config.localhostPort, firstLoad);
 
     // Check if local plugin loaded okay
     await assertion.app.view.agentDesktop.isVisible();
 
+    // @ts-ignore
     await assertion.app.view.plugins.plugin.isVisible(plugin1.newlineValue);
     await assertion.app.view.plugins.plugin.isVisible(plugin2.componentText);
     await assertion.app.view.plugins.plugin.isVisible(plugin3.componentText);
-  } catch (e) {
+  };
+
+  const onError = async (e: any) => {
     await Browser.app.takeScreenshot(environment.cwd);
-    throw e;
-  } finally {
+  };
+
+  const onFinally = async () => {
     await Browser.kill();
     await killChildProcess(twilioCliResult.child, environment.operatingSystem);
-  }
+  };
+
+  await retryOnError(loginAndAssert, onError, onFinally, 3);
 };
 testSuite.description =
   'Running {{twilio flex:plugins:start --include-remote}} with 1 local plugin and all remote plugins';

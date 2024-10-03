@@ -8,6 +8,14 @@ import { WARNING_REGEX, codeWithViolation, originalCode } from './step007';
 
 // Deploy plugin
 const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<void> => {
+  // Starting deployment process with cleaning up the plugin versions to be used in further steps
+  await Promise.all(
+    scenario.plugins
+      .filter((plugin) => plugin.name !== 'flex-e2e-tester-plugin-3')
+      .map(async (plugin) => {
+        await api.cleanPluginVersions(plugin.name);
+      }),
+  );
   const plugin = scenario.plugins[0];
   assertion.not.isNull(plugin);
 

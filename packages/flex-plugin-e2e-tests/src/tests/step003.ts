@@ -10,7 +10,7 @@ const testSuite: TestSuite = async ({ scenario }: TestParams): Promise<void> => 
 
   pluginHelper.changeFlexUIVersionIfRequired(scenario, plugin);
 
-  await spawn('npm', ['i'], { cwd: plugin.dir });
+  // await spawn('npm', ['i'], { cwd: plugin.dir });
 
   assertion.fileExists([plugin.dir, 'node_modules']);
   assertion.fileExists([plugin.dir, 'node_modules', '@twilio/flex-plugin-scripts']);

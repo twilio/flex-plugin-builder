@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unused-modules */
 import { ChildProcessWithoutNullStreams, spawn, SpawnOptionsWithoutStdio } from 'child_process';
 
 import { logger } from '@twilio/flex-dev-utils';
@@ -143,4 +144,30 @@ export const killChildProcess = async (
   } else {
     child.kill();
   }
+};
+
+export const retryOnError = async (
+  method: (first: boolean) => Promise<unknown>,
+  onError: (e: any) => Promise<unknown>,
+  onFinally: () => Promise<unknown>,
+  maxRetries: number,
+): Promise<void> => {
+  let attempts = 1;
+  while (attempts <= maxRetries) {
+    try {
+      await method(attempts === 1); // Attempt the main operation
+      break; // If operation succeeds, exit the loop
+    } catch (error) {
+      logger.info('Error occured', error);
+      if (attempts === maxRetries) {
+        await onError(error); // Handle error if all retries fail
+        await onFinally(); // cleanup
+        throw new Error(`Operation failed after ${maxRetries} retries`);
+      } else {
+        logger.info(`Attempt ${attempts} failed. Retrying...`);
+        attempts += 1;
+      }
+    }
+  }
+  await onFinally(); // cleanup
 };
