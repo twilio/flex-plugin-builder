@@ -143,44 +143,44 @@ jobs:
         env:
           TS: 0
         run: |
-          echo "Starting npm ci with a 10-minute timeout"
+          echo "Starting e2e tests with a 10-minute timeout"
           cd packages/flex-plugin-e2e-tests
-          for i in 1 2 3; do # Retry logic, retry 3 times
-            timeout 90m  npm run start && break || echo "npm ci failed, retrying ($i/3)..."
+          for i in 1 2; do # Retry logic, retry 3 times
+            timeout 90m  npm run start && break || echo "E2E tests timed out, retrying ($i/3)..."
           done
       - name: Run e2e tests - JS (Macos)
         if: ${{ inputs.OS == 'macos-latest' }}
         env:
           TS: 0
         run: |
-          echo "Starting npm ci with a 10-minute timeout"
+          echo "Starting e2e tests with a 10-minute timeout"
           cd packages/flex-plugin-e2e-tests
-          for i in 1 2 3; do # Retry logic, retry 3 times
-            gtimeout 90m npm run start && break || echo "npm ci failed, retrying ($i/3)..."
+          for i in 1 2; do # Retry logic, retry 3 times
+            gtimeout 90m npm run start && break || echo "E2E tests timed out, retrying ($i/3)..."
           done
       - name: Run e2e tests - JS (Windows)
         if: ${{ inputs.OS == 'windows-latest' }}
         env:
           TS: 0
         run: |
-          echo "Starting npm ci with a 10-minute timeout"
-            $attempts = 3
+          echo "Starting e2e tests with a 10-minute timeout"
+            $attempts = 2
             $timeout = 5400000 # 90 minutes in milliseconds
             cd packages/flex-plugin-e2e-tests
             for ($i=1; $i -le $attempts; $i++) {
               try {
                 $process = Start-Process -FilePath 'npm' -ArgumentList 'run start' -NoNewWindow -PassThru
                 if ($process.WaitForExit($timeout)) {
-                  echo 'npm ci completed successfully'
+                  echo 'E2E tests completed successfully'
                   exit 0
                 } else {
-                  echo 'npm ci timed out. Retrying...'
+                  echo 'E2E tests timed out. Retrying...'
                   Stop-Process -Id $process.Id
                 }
               } catch {
-                echo 'npm ci failed.'
+                echo 'E2E tests failed.'
                 if ($i -eq $attempts) {
-                  throw 'npm ci failed after 3 retries.'
+                  throw 'E2E tests failed after 3 retries.'
                 }
               }
             }
@@ -195,27 +195,27 @@ jobs:
         env:
           TS: 1
         run: |
-          echo "Starting npm ci with a 10-minute timeout"
+          echo "Starting e2e tests with a 10-minute timeout"
           cd packages/flex-plugin-e2e-tests
           for i in 1 2; do # Retry logic, retry 3 times
-            timeout 90m  npm run start && break || echo "npm ci failed, retrying ($i/3)..."
+            timeout 90m  npm run start && break || echo "E2E tests timed out, retrying ($i/3)..."
           done
       - name: Run e2e tests - TS (Macos)
         if: ${{ inputs.OS == 'macos-latest' }}
         env:
           TS: 1
         run: |
-          echo "Starting npm ci with a 10-minute timeout"
+          echo "Starting e2e tests with a 10-minute timeout"
           cd packages/flex-plugin-e2e-tests
           for i in 1 2; do # Retry logic, retry 3 times
-            gtimeout 90m npm run start && break || echo "npm ci failed, retrying ($i/3)..."
+            gtimeout 90m npm run start && break || echo "E2E tests timed out, retrying ($i/3)..."
           done
       - name: Run e2e tests - TS (Windows)
         if: ${{ inputs.OS == 'windows-latest' }}
         env:
           TS: 1
         run: |
-          echo "Starting npm ci with a 10-minute timeout"
+          echo "Starting e2e tests with a 10-minute timeout"
             $attempts = 2
             $timeout = 5400000 # 90 minutes in milliseconds
             cd packages/flex-plugin-e2e-tests
@@ -223,16 +223,16 @@ jobs:
               try {
                 $process = Start-Process -FilePath 'npm' -ArgumentList 'run start' -NoNewWindow -PassThru
                 if ($process.WaitForExit($timeout)) {
-                  echo 'npm ci completed successfully'
+                  echo 'E2E tests completed successfully'
                   exit 0
                 } else {
-                  echo 'npm ci timed out. Retrying...'
+                  echo 'E2E tests timed out. Retrying...'
                   Stop-Process -Id $process.Id
                 }
               } catch {
-                echo 'npm ci failed.'
+                echo 'E2E tests failed.'
                 if ($i -eq $attempts) {
-                  throw 'npm ci failed after 3 retries.'
+                  throw 'E2E tests failed after 3 retries.'
                 }
               }
             }
