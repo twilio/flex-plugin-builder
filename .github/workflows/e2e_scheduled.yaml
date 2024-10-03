@@ -16,6 +16,7 @@ jobs:
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
+      SEND_NOTIFICATION: true
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
       CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
@@ -39,6 +40,7 @@ jobs:
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
+      SEND_NOTIFICATION: true
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
       CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
@@ -62,6 +64,7 @@ jobs:
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
+      SEND_NOTIFICATION: true
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
       CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
