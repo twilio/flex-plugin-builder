@@ -223,8 +223,14 @@ jobs:
               try {
                 $process = Start-Process -FilePath 'npm' -ArgumentList 'run start' -NoNewWindow -PassThru
                 if ($process.WaitForExit($timeout)) {
-                  echo 'E2E tests completed successfully'
-                  exit 0
+                  if ($process.ExitCode -eq 0) {
+                    echo 'E2E tests completed successfully'
+                    exit 0
+                  } else {
+                    echo "E2E tests failed with exit code $($process.ExitCode). Retrying..."
+                    Stop-Process -Id $process.Id
+                    taskkill /f /im node.exe
+                  }
                 } else {
                   echo 'E2E tests timed out. Retrying...'
                   Stop-Process -Id $process.Id
