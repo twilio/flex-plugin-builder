@@ -143,7 +143,7 @@ jobs:
         env:
           TS: 0
         run: |
-          echo "Starting e2e tests with a 10-minute timeout"
+          echo "Starting e2e tests with a 90-minute timeout"
           cd packages/flex-plugin-e2e-tests
           for i in 1 2; do # Retry logic, retry 3 times
             timeout 90m  npm run start && break || echo "E2E tests timed out, retrying ($i/3)..."
@@ -153,7 +153,7 @@ jobs:
         env:
           TS: 0
         run: |
-          echo "Starting e2e tests with a 10-minute timeout"
+          echo "Starting e2e tests with a 90-minute timeout"
           cd packages/flex-plugin-e2e-tests
           for i in 1 2; do # Retry logic, retry 3 times
             gtimeout 90m npm run start && break || echo "E2E tests timed out, retrying ($i/3)..."
@@ -163,7 +163,7 @@ jobs:
         env:
           TS: 0
         run: |
-          echo "Starting e2e tests with a 10-minute timeout"
+          echo "Starting e2e tests with a 90-minute timeout"
             $attempts = 2
             $timeout = 5400000 # 90 minutes in milliseconds
             cd packages/flex-plugin-e2e-tests
@@ -195,7 +195,7 @@ jobs:
         env:
           TS: 1
         run: |
-          echo "Starting e2e tests with a 10-minute timeout"
+          echo "Starting e2e tests with a 90-minute timeout"
           cd packages/flex-plugin-e2e-tests
           for i in 1 2; do # Retry logic, retry 3 times
             timeout 90m  npm run start && break || echo "E2E tests timed out, retrying ($i/3)..."
@@ -205,7 +205,7 @@ jobs:
         env:
           TS: 1
         run: |
-          echo "Starting e2e tests with a 10-minute timeout"
+          echo "Starting e2e tests with a 90-minute timeout"
           cd packages/flex-plugin-e2e-tests
           for i in 1 2; do # Retry logic, retry 3 times
             gtimeout 90m npm run start && break || echo "E2E tests timed out, retrying ($i/3)..."
@@ -215,7 +215,7 @@ jobs:
         env:
           TS: 1
         run: |
-          echo "Starting e2e tests with a 10-minute timeout"
+          echo "Starting e2e tests with a 90-minute timeout"
             $attempts = 2
             $timeout = 5400000 # 90 minutes in milliseconds
             cd packages/flex-plugin-e2e-tests
@@ -223,11 +223,18 @@ jobs:
               try {
                 $process = Start-Process -FilePath 'npm' -ArgumentList 'run start' -NoNewWindow -PassThru
                 if ($process.WaitForExit($timeout)) {
-                  echo 'E2E tests completed successfully'
-                  exit 0
+                  if ($process.ExitCode -eq 0) {
+                    echo 'E2E tests completed successfully'
+                    exit 0
+                  } else {
+                    echo "E2E tests failed with exit code $($process.ExitCode). Retrying..."
+                    Stop-Process -Id $process.Id
+                    taskkill /f /im node.exe
+                  }
                 } else {
                   echo 'E2E tests timed out. Retrying...'
                   Stop-Process -Id $process.Id
+                  taskkill /f /im node.exe
                 }
               } catch {
                 echo 'E2E tests failed.'
