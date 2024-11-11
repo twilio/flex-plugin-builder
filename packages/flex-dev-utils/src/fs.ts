@@ -648,7 +648,10 @@ export const isPluginFolder = (): boolean => {
     return false;
   }
   const packageJson: PackageJson = readAppPackageJson();
-  return Boolean(packageJson.dependencies[flexUI] || packageJson.devDependencies[flexUI]);
+  return Boolean(
+    (packageJson?.dependencies && packageJson.dependencies[flexUI]) ||
+      (packageJson?.devDependencies && packageJson.devDependencies[flexUI]),
+  );
 };
 
 /**
