@@ -25,10 +25,11 @@ describe('fs', () => {
     version: '1',
     name: pluginName,
     dependencies: {
-      [flexPluginScripts]: '1',
       '@twilio/flex-plugin': '2',
     },
-    devDependencies: {},
+    devDependencies: {
+      [flexPluginScripts]: '1',
+    },
   };
 
   beforeEach(() => {
@@ -874,11 +875,11 @@ describe('fs', () => {
         name: '',
         dependencies: {
           '@twilio/flex-plugin': '',
-          '@twilio/flex-plugin-scripts': '',
         },
         devDependencies: {
+          '@twilio/flex-plugin-scripts': '',
           'not-a-valid-package': '',
-        },
+        } as any,
       });
       expect(fs.isPluginFolder()).toBe(false);
       expect(packageJson).toHaveBeenCalledTimes(1);
@@ -891,12 +892,11 @@ describe('fs', () => {
         name: '',
         dependencies: {
           '@twilio/flex-plugin': '',
-          '@twilio/flex-plugin-scripts': '',
         },
         devDependencies: {
           '@twilio/flex-plugin-scripts': '',
           '@twilio/flex-ui': '^1',
-        },
+        } as any,
       });
       expect(fs.isPluginFolder()).toBe(true);
     });

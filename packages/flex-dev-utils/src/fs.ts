@@ -12,6 +12,7 @@ import appModule from 'app-module-path';
 import AdmZip from 'adm-zip';
 
 import { confirm } from './questions';
+import { logger } from './logger';
 
 const flexUI = '@twilio/flex-ui';
 const react = 'react';
@@ -28,6 +29,8 @@ export interface PackageJson {
 export interface AppPackageJson extends PackageJson {
   dependencies: {
     '@twilio/flex-plugin': string;
+  };
+  devDependencies: {
     '@twilio/flex-plugin-scripts': string;
   };
 }
@@ -472,6 +475,7 @@ export const resolveModulePath = (pkg: string, ...paths: string[]): string | fal
  */
 export const _getFlexPluginScripts = (): string => {
   const flexPluginScriptPath = resolveModulePath('@twilio/flex-plugin-scripts');
+  logger.info('flexPluginScriptPath', flexPluginScriptPath);
   if (flexPluginScriptPath === false) {
     throw new Error('Could not resolve @twilio/flex-plugin-scripts');
   }
@@ -497,16 +501,22 @@ export const _getFlexPluginWebpackPath = (scriptsNodeModulesDir: string): string
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const getPaths = () => {
   const cwd = getCwd();
+  logger.info('cwd', cwd);
   const nodeModulesDir = resolveCwd('node_modules');
+  logger.info('nodeModulesDir', nodeModulesDir);
   const scriptsDir = _getFlexPluginScripts();
+  logger.info('scriptsDir', scriptsDir);
   const scriptsNodeModulesDir = resolveRelative(scriptsDir, 'node_modules');
+  logger.info('scriptsNodeModulesDir', scriptsNodeModulesDir);
   const devAssetsDir = resolveRelative(scriptsDir, 'dev_assets');
+  logger.info('devAssetsDir', devAssetsDir);
   const publicDir = resolveCwd('public');
   const buildDir = resolveCwd('build');
   const srcDir = resolveCwd('src');
   const flexUIDir = resolveRelative(nodeModulesDir, flexUI);
   const tsConfigPath = resolveCwd('tsconfig.json');
   const webpackDir = _getFlexPluginWebpackPath(scriptsNodeModulesDir);
+  logger.info('webpackDir', webpackDir);
 
   // package.json information
   let pkgName = '';

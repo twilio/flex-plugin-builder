@@ -532,11 +532,12 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
     return {
       remove: FlexPluginsUpgradePlugin.packagesToRemove,
       deps: {
-        [scopedFlexPluginScriptPackage]: '*',
         react,
         'react-dom': react,
+        [scopedFlexPluginPackage]: '*',
       },
       devDeps: {
+        [scopedFlexPluginScriptPackage]: '*',
         [flexUI]: '^1',
         'react-test-renderer': react,
       },

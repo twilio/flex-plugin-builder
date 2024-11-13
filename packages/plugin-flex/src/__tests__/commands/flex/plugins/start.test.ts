@@ -44,16 +44,18 @@ describe('Commands/FlexPluginsStart', () => {
     name: pluginNameBad,
     dependencies: {
       '@twilio/flex-ui': '1.0.0',
+    },
+    devDependencies: {
       '@twilio/flex-plugin-scripts': '3.9.9',
     },
-    devDependencies: {},
   };
   const badPluginsPkg = {
     name: 'fakePlugin',
-    devDependencies: {},
+    devDependencies: {
+      '@twilio/flex-plugin-scripts': '4.0.0',
+    },
     dependencies: {
       '@twilio/flex-ui': '1.0.0',
-      '@twilio/flex-plugin-scripts': '4.0.0',
     },
   };
   const config = {
