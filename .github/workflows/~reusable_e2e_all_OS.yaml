@@ -85,9 +85,9 @@ jobs:
     with:
       OS: ${{ matrix.os }}
       BRANCH: main
-      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-      PACKAGE_VERSION: ${{ vars.PACKAGE_VERSION }}
-      FLEX_UI_VERSION: ${{ vars.FLEX_UI_VERSION }}
+      NPM_IGNORE_PREFIX: ${{ inputs.NPM_IGNORE_PREFIX }}
+      PACKAGE_VERSION: ${{ inputs.PACKAGE_VERSION }}
+      FLEX_UI_VERSION: ${{ inputs.FLEX_UI_VERSION }}
       SEND_NOTIFICATION: ${{ inputs.SEND_NOTIFICATION }}
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
