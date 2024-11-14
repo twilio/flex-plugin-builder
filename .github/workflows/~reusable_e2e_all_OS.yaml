@@ -17,6 +17,16 @@ on:
         description: 'A npm-ignore-prefix passed from the caller workflow.'
         required: true
         type: string
+      SLACK_TITLE:
+        description: 'A title passed from the caller workflow, it will be used in slack notification.'
+        required: false
+        type: string
+        default: 'Flex Plugins CLI - E2E'
+      SLACK_MESSAGE:
+        description: 'A message passed from the caller workflow, it will be used in slack notification.'
+        required: false
+        type: string
+        default: 'E2E tests'
       SEND_NOTIFICATION:
         description: 'A flag passed from the caller workflow, it decides whether to send slack notification or not.'
         required: true
@@ -89,6 +99,8 @@ jobs:
       PACKAGE_VERSION: ${{ inputs.PACKAGE_VERSION }}
       FLEX_UI_VERSION: ${{ inputs.FLEX_UI_VERSION }}
       SEND_NOTIFICATION: ${{ inputs.SEND_NOTIFICATION }}
+      SLACK_TITLE: ${{ inputs.SLACK_TITLE }}
+      SLACK_MESSAGE: ${{ inputs.SLACK_MESSAGE }}
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
       CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
