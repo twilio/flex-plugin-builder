@@ -47,6 +47,7 @@ export const setupConfiguration = async (config: FlexPluginArguments): Promise<F
   config.targetDirectory = resolveCwd(name);
   config.flexSdkVersion = await packages.getLatestFlexUIVersion(2);
   config.pluginScriptsVersion = pkg.devDependencies['@twilio/flex-plugin-scripts'];
+  config.flexPluginVersion = pkg.devDependencies['@twilio/flex-plugin'];
   config.flexui2 = config.flexui2 || true;
   config.flexui1 = config.flexui1 || false;
 

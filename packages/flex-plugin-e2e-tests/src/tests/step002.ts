@@ -57,7 +57,7 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
   // Assert package.json
   assertion.jsonFileContains(
     [plugin1.dir, 'package.json'],
-    "dependencies['@twilio/flex-plugin-scripts']",
+    "devDependencies['@twilio/flex-plugin-scripts']",
     scenario.packageVersion,
   );
   assertion.jsonFileContains([plugin1.dir, 'package.json'], "dependencies['react']", `17.0.2`);

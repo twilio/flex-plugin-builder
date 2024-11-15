@@ -29,8 +29,7 @@ describe('TwilioError', () => {
     const error = new TwilioError();
     const noConstuctorError = new TwilioError();
 
-    // @ts-expect-error
-    noConstuctorError.constructor = null;
+    noConstuctorError.constructor = jest.fn();
 
     expect(apiError.instanceOf(Foo)).toEqual(false);
     expect(error.instanceOf(TwilioApiError)).toEqual(false);

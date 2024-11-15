@@ -12,6 +12,7 @@ import appModule from 'app-module-path';
 import AdmZip from 'adm-zip';
 
 import { confirm } from './questions';
+import { logger } from './logger';
 
 const flexUI = '@twilio/flex-ui';
 const react = 'react';
@@ -28,6 +29,8 @@ export interface PackageJson {
 export interface AppPackageJson extends PackageJson {
   dependencies: {
     '@twilio/flex-plugin': string;
+  };
+  devDependencies: {
     '@twilio/flex-plugin-scripts': string;
   };
 }
