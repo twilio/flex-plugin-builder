@@ -36,7 +36,7 @@
   "dependencies": {
     "@twilio/flex-dev-utils": "7.0.7",
     "@twilio/flex-plugins-api-client": "7.0.7",
-    "axios": "^0.24.0",
+    "axios": "^1.7.8",
     "lodash": "4.17.21",
     "package-json": "^7.0.0",
     "puppeteer": "^21.3.7",
