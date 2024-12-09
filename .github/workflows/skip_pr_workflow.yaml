@@ -1,0 +1,23 @@
+name: Skip Test
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'lerna.json'
+  push:
+    branches:
+      - main
+    paths:
+      - 'lerna.json'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Test execution not required. Passing status check"
+  release-alpha-version:
+    uses: ./.github/workflows/skip_publish.yaml
+  e2e-test:
+    uses: ./.github/workflows/skip_e2e.yaml
