@@ -95,9 +95,9 @@ jobs:
     with:
       OS: ${{ matrix.os }}
       BRANCH: main
-      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-      PACKAGE_VERSION: latest
-      FLEX_UI_VERSION: latest
+      NPM_IGNORE_PREFIX: ${{ inputs.NPM_IGNORE_PREFIX }}
+      PACKAGE_VERSION: ${{ inputs.PACKAGE_VERSION }}
+      FLEX_UI_VERSION: ${{ inputs.FLEX_UI_VERSION }}
       SEND_NOTIFICATION: ${{ inputs.SEND_NOTIFICATION }}
       SLACK_TITLE: ${{ inputs.SLACK_TITLE }}
       SLACK_MESSAGE: ${{ inputs.SLACK_MESSAGE }}

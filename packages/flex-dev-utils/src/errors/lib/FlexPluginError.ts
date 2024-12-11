@@ -26,13 +26,13 @@ export default class FlexPluginError extends TwilioError {
   public details = (): void => {
     const { headline } = logger.coloredStrings;
     if (this.pkg) {
-      const deps = this.pkg.dependencies;
+      const allDeps = { ...this.pkg.dependencies, ...this.pkg.devDependencies };
       const names = ['@twilio/flex-plugin', '@twilio/flex-plugin-scripts'];
 
       logger.newline();
       logger.info(`Your plugin ${this.pkg.name} is using the following versions:`);
       logger.newline();
-      names.forEach((name) => logger.info(`\t ${headline(`"${name}": "${deps[name]}"`)}`));
+      names.forEach((name) => logger.info(`\t ${headline(`"${name}": "${allDeps[name]}"`)}`));
       logger.newline();
     }
   };

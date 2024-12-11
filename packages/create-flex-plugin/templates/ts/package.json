@@ -6,12 +6,13 @@
     "postinstall": "flex-plugin pre-script-check"
   },
   "dependencies": {
-    "@twilio/flex-plugin-scripts": "{{pluginScriptsVersion}}",
+    "@twilio/flex-plugin": "{{flexPluginVersion}}",
     "react": "16.5.2",
     "react-dom": "16.5.2",
     "react-emotion": "9.2.12"
   },
   "devDependencies": {
+    "@twilio/flex-plugin-scripts": "{{pluginScriptsVersion}}",
     "@twilio/flex-ui": "{{flexSdkVersion}}",
     "react-test-renderer": "16.5.2",
     "typescript": "^4"

@@ -738,21 +738,23 @@ describe('Commands/FlexPluginsStart', () => {
       devDependencies: {
         '@twilio/flex-ui': '^1',
         'react-test-renderer': '16.0.0',
+        '@twilio/flex-plugin-scripts': '4.1.3',
       },
       dependencies: {
         react: '15.0.2',
         'react-dom': '15.0.2',
-        '@twilio/flex-plugin-scripts': '4.1.3',
+        '@twilio/flex-plugin': '4.1.3',
       },
     };
     const olderReturn: DependencyUpdates = {
       remove: FlexPluginsUpgradePlugin.packagesToRemove,
       deps: {
-        '@twilio/flex-plugin-scripts': '*',
+        '@twilio/flex-plugin': '*',
         react: 'react || 16.5.2',
         'react-dom': 'react || 16.5.2',
       },
       devDeps: {
+        '@twilio/flex-plugin-scripts': '*',
         '@twilio/flex-ui': '^1',
         'react-test-renderer': 'react || 16.5.2',
       },
