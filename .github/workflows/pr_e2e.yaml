@@ -7,7 +7,7 @@ on:
 jobs:
   get-version:
     if: ${{ (github.event.label.name == vars.E2E_LABEL) || (github.event.label.name == vars.PUBLISH_AND_E2E_LABEL) }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       branch: ${{ steps.extractBranch.outputs.branch }}
       version: ${{ steps.alphaVersion.outputs.version }}
@@ -69,7 +69,7 @@ jobs:
   remove-label-on-failure:
     needs: e2e-test
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions-ecosystem/action-remove-labels@v1
         if: needs.e2e-test.result != 'success'

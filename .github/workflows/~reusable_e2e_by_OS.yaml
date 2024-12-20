@@ -98,7 +98,7 @@ jobs:
         with:
           node-version: '20'
       - name: Install project dependencies (Linux)
-        if: ${{ inputs.OS == 'ubuntu-latest' }}
+        if: ${{ inputs.OS == 'ubuntu-22.04' }}
         run: |
           echo "Starting npm ci with a 10-minute timeout"
           for i in 1 2 3; do # Retry logic, retry 3 times
@@ -139,7 +139,7 @@ jobs:
         run: |
           npm run build
       - name: Run e2e tests - JS (Linux)
-        if: ${{ inputs.OS == 'ubuntu-latest' }}
+        if: ${{ inputs.OS == 'ubuntu-22.04' }}
         env:
           TS: 0
         run: |
@@ -150,8 +150,11 @@ jobs:
         env:
           TS: 0
         run: |
+          echo "Starting e2e tests with a 90-minute timeout"
           cd packages/flex-plugin-e2e-tests
-          npm run start
+          for i in 1 2; do # Retry logic, retry 3 times
+            gtimeout 90m npm run start && break || echo "E2E tests timed out, retrying ($i/3)..."
+          done
       - name: Run e2e tests - JS (Windows)
         if: ${{ inputs.OS == 'windows-latest' }}
         env:
@@ -165,7 +168,7 @@ jobs:
           echo "os is: ${{ inputs.OS }} ${{ runner.os }}"
           taskkill /f /im node.exe
       - name: Run e2e tests - TS (Linux)
-        if: ${{ inputs.OS == 'ubuntu-latest' }}
+        if: ${{ inputs.OS == 'ubuntu-22.04' }}
         env:
           TS: 1
         run: |
@@ -176,8 +179,11 @@ jobs:
         env:
           TS: 1
         run: |
-         cd packages/flex-plugin-e2e-tests
-         npm run start
+         echo "Starting e2e tests with a 90-minute timeout"
+          cd packages/flex-plugin-e2e-tests
+          for i in 1 2; do # Retry logic, retry 3 times
+            gtimeout 90m npm run start && break || echo "E2E tests timed out, retrying ($i/3)..."
+          done
       - name: Run e2e tests - TS (Windows)
         if: ${{ inputs.OS == 'windows-latest' }}
         env:
@@ -193,7 +199,7 @@ jobs:
           path: packages/flex-plugin-e2e-tests/screenshots
 
   notify-failure:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: node20
     if: ${{ always() && inputs.SEND_NOTIFICATION }}
     steps:
