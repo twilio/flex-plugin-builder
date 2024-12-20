@@ -90,7 +90,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ ubuntu-22.04, windows-latest, macos-latest ]
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: ${{ matrix.os }}
