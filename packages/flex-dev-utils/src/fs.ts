@@ -5,7 +5,7 @@ import { promisify } from 'util';
 import crypto from 'crypto';
 
 import FindInFiles from 'find-in-files';
-import { sync as globbySync } from 'globby';
+import { globbySync } from 'globby';
 import mkdirp from 'mkdirp';
 import rimRaf from 'rimraf';
 import appModule from 'app-module-path';

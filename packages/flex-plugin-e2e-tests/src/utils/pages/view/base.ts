@@ -70,7 +70,7 @@ export abstract class Base {
    * @param timeout time to wait for until element is visible in the UI
    */
   protected async elementVisible(
-    seletor: string,
+    selector: string,
     elementName: string,
     timeout = Base.DEFAULT_LOCATE_TIMEOUT,
   ): Promise<ElementHandle<Node | Element>> {
@@ -78,11 +78,11 @@ export abstract class Base {
 
     let element: ElementHandle<Element | Node> | null;
 
-    if (seletor.startsWith('//')) {
-      element = await this.page.waitForXPath(seletor, waitOptions);
+    if (selector.startsWith('//')) {
+      element = await this.page.waitForSelector(`xpath/${selector}`, waitOptions);
     } else {
       // @ts-ignore
-      element = await this.page.waitForSelector(seletor, waitOptions);
+      element = await this.page.waitForSelector(selector, waitOptions);
     }
 
     if (!element) {
