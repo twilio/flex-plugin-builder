@@ -115,7 +115,7 @@ jobs:
       - name: Install project dependencies (Windows)
         if: ${{ inputs.OS == 'windows-latest' }}
         run: |
-          npm --version
+          npm install -g npm@10.8.2
           echo "Starting npm ci with a 10-minute timeout"
             $attempts = 3
             for ($i=1; $i -le $attempts; $i++) {
