@@ -48,7 +48,7 @@
     "@types/semver": "^7.3.9"
   },
   "engines": {
-    "node": "^16 || ^18 || ^20"
+    "node": "^16 || ^18 || ^20 || ^22"
   },
   "publishConfig": {
     "access": "public"
