@@ -49,7 +49,7 @@ jobs:
     with:
       BRANCH: ${{ needs.get-version.outputs.branch }}
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-      PACKAGE_VERSION: ${{ github.event.label.name == vars.E2E_LABEL && '7.1.1-alpha.202505150546' || needs.get-version.outputs.version }}
+      PACKAGE_VERSION: ${{ github.event.label.name == vars.E2E_LABEL && 'latest' || needs.get-version.outputs.version }}
       FLEX_UI_VERSION: latest
       SEND_NOTIFICATION: false
     secrets:
