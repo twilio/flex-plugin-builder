@@ -3,11 +3,11 @@ name: Flex Plugins CLI - E2E Nightly
 on:
   schedule:
     - cron: '0 4 * * *' # At 4:00 UTC (09:30 IST) every day
-    - cron: '0 5 * * *' # At 4:00 UTC (10:30 IST) every day
-    - cron: '0 6 * * *' # At 4:00 UTC (11:30 IST) every day
-    - cron: '0 7 * * *' # At 4:00 UTC (12:30 IST) every day
-    - cron: '0 8 * * *' # At 4:00 UTC (13:30 IST) every day
-    - cron: '0 9 * * *' # At 4:00 UTC (14:30 IST) every day
+    - cron: '0 5 * * *' # At 5:00 UTC (10:30 IST) every day
+    - cron: '0 6 * * *' # At 6:00 UTC (11:30 IST) every day
+    - cron: '0 7 * * *' # At 7:00 UTC (12:30 IST) every day
+    - cron: '0 8 * * *' # At 8:00 UTC (13:30 IST) every day
+    - cron: '0 9 * * *' # At 9:00 UTC (14:30 IST) every day
 
 jobs:
   scheduled-e2e-unix:
