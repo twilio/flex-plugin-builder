@@ -1,14 +1,14 @@
-name: Flex Plugins CLI - E2E Nightly
+name: Flex Plugins CLI - Jailbrake E2E Nightly
 
 on:
   schedule:
-    - cron: '0 4 * * *' # At 4:00 UTC (09:30 IST) every day
-    - cron: '0 5 * * *' # At 5:00 UTC (10:30 IST) every day
-    - cron: '0 6 * * *' # At 6:00 UTC (11:30 IST) every day
+    - cron: '0 7 * * *' # At 7:00 UTC (12:30 IST) every day
+    - cron: '0 8 * * *' # At 8:00 UTC (13:30 IST) every day
+    - cron: '0 9 * * *' # At 9:00 UTC (14:30 IST) every day
 
 jobs:
-  scheduled-e2e-unix:
-    if: github.event.schedule == '0 4 * * *'
+  scheduled-e2e-unix-jailbreak:
+    if: github.event.schedule == '0 7 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: ubuntu-22.04
@@ -16,7 +16,7 @@ jobs:
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
-      SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly'
+      SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly for Jailbrea'
       SEND_NOTIFICATION: true
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
@@ -41,8 +41,8 @@ jobs:
       TWILIO_ACCOUNT_SID_darwin_jailbreak: ${{ secrets.TWILIO_ACCOUNT_SID_darwin_jailbreak }}
       TWILIO_AUTH_TOKEN_darwin_jailbreak: ${{ secrets.TWILIO_AUTH_TOKEN_darwin_jailbreak }}
 
-  scheduled-e2e-macos:
-    if: github.event.schedule == '0 5 * * *'
+  scheduled-e2e-macos-jailbreak:
+    if: github.event.schedule == '0 8 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: macos-latest
@@ -50,7 +50,7 @@ jobs:
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
-      SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly'
+      SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly for Jailbreak'
       SEND_NOTIFICATION: true
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
@@ -75,8 +75,8 @@ jobs:
       TWILIO_ACCOUNT_SID_darwin_jailbreak: ${{ secrets.TWILIO_ACCOUNT_SID_darwin_jailbreak }}
       TWILIO_AUTH_TOKEN_darwin_jailbreak: ${{ secrets.TWILIO_AUTH_TOKEN_darwin_jailbreak }}
 
-  scheduled-e2e-windows:
-    if: github.event.schedule == '0 6 * * *'
+  scheduled-e2e-windows-jailbreak:
+    if: github.event.schedule == '0 9 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: windows-latest
@@ -84,7 +84,7 @@ jobs:
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
-      SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly'
+      SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly for Jailbreak'
       SEND_NOTIFICATION: true
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
