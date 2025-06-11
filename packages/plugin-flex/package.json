@@ -72,8 +72,7 @@
     }
   },
   "resolutions": {
-    "enzyme/cheerio": "1.0.0-rc.12",
-    "@twilio/flex-plugin-scripts/**/cheerio": "1.0.0-rc.12"
+    "**/cheerio": "1.0.0-rc.12"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.5",

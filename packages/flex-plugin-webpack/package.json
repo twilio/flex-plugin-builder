@@ -92,9 +92,8 @@
       }
     }
   },
-  "resolutions": {
-    "enzyme/cheerio": "1.0.0-rc.12",
-    "@twilio/flex-plugin-scripts/**/cheerio": "1.0.0-rc.12"
+    "resolutions": {
+    "**/cheerio": "1.0.0-rc.12"
   },
   "engines": {
     "node": "^16 || ^18 || ^20 || ^22"
