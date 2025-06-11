@@ -80,7 +80,7 @@
     "express-serve-static-core": "^0.1.1",
     "typescript": "^4.2.3"
   },
-"overrides": {
+  "overrides": {
     "@twilio/flex-plugin-test": {
       "enzyme": {
         "cheerio": "1.0.0-rc.12"
@@ -91,6 +91,10 @@
         "cheerio": "1.0.0-rc.12"
       }
     }
+  },
+  "resolutions": {
+    "enzyme/cheerio": "1.0.0-rc.12",
+    "@twilio/flex-plugin-scripts/**/cheerio": "1.0.0-rc.12"
   },
   "engines": {
     "node": "^16 || ^18 || ^20 || ^22"

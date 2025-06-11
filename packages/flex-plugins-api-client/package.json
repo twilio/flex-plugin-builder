@@ -29,7 +29,7 @@
   "files": [
     "dist"
   ],
-"overrides": {
+  "overrides": {
     "@twilio/flex-plugin-test": {
       "enzyme": {
         "cheerio": "1.0.0-rc.12"
@@ -40,6 +40,10 @@
         "cheerio": "1.0.0-rc.12"
       }
     }
+  },
+  "resolutions": {
+    "enzyme/cheerio": "1.0.0-rc.12",
+    "@twilio/flex-plugin-scripts/**/cheerio": "1.0.0-rc.12"
   },
   "scripts": {
     "prebuild": "npm run clean",

@@ -36,7 +36,7 @@
     "test": "cd ../.. && jest packages/flex-plugin --color",
     "test:watch": "cd ../.. && jest packages/flex-plugin --watch --color"
   },
-"overrides": {
+  "overrides": {
     "@twilio/flex-plugin-test": {
       "enzyme": {
         "cheerio": "1.0.0-rc.12"
@@ -47,6 +47,10 @@
         "cheerio": "1.0.0-rc.12"
       }
     }
+  },
+  "resolutions": {
+    "enzyme/cheerio": "1.0.0-rc.12",
+    "@twilio/flex-plugin-scripts/**/cheerio": "1.0.0-rc.12"
   },
   "devDependencies": {
     "@twilio/flex-ui": "^1"
