@@ -21,15 +21,6 @@ jobs:
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
       CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
-      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
-      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
-      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
-      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
-      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
-      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
       CONSOLE_EMAIL_linux_jailbreak: ${{ secrets.CONSOLE_EMAIL_linux_jailbreak }}
       TWILIO_ACCOUNT_SID_linux_jailbreak: ${{ secrets.TWILIO_ACCOUNT_SID_linux_jailbreak }}
@@ -55,15 +46,6 @@ jobs:
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
       CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
-      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
-      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
-      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
-      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
-      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
-      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
       CONSOLE_EMAIL_linux_jailbreak: ${{ secrets.CONSOLE_EMAIL_linux_jailbreak }}
       TWILIO_ACCOUNT_SID_linux_jailbreak: ${{ secrets.TWILIO_ACCOUNT_SID_linux_jailbreak }}
@@ -89,15 +71,6 @@ jobs:
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
       CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
-      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
-      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
-      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
-      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
-      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
-      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
       CONSOLE_EMAIL_linux_jailbreak: ${{ secrets.CONSOLE_EMAIL_linux_jailbreak }}
       TWILIO_ACCOUNT_SID_linux_jailbreak: ${{ secrets.TWILIO_ACCOUNT_SID_linux_jailbreak }}
