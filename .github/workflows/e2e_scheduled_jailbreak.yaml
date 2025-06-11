@@ -21,25 +21,16 @@ jobs:
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
       CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
-      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
-      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
-      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
-      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
-      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
-      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux_jailbreak }}
+      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux_jailbreak }}
+      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux_jailbreak }}
+      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32_jailbreak }}
+      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32_jailbreak }}
+      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32_jailbreak }}
+      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin_jailbreak }}
+      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin_jailbreak }}
+      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin_jailbreak }}
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
-      CONSOLE_EMAIL_linux_jailbreak: ${{ secrets.CONSOLE_EMAIL_linux_jailbreak }}
-      TWILIO_ACCOUNT_SID_linux_jailbreak: ${{ secrets.TWILIO_ACCOUNT_SID_linux_jailbreak }}
-      TWILIO_AUTH_TOKEN_linux_jailbreak: ${{ secrets.TWILIO_AUTH_TOKEN_linux_jailbreak }}
-      CONSOLE_EMAIL_win32_jailbreak: ${{ secrets.CONSOLE_EMAIL_win32_jailbreak }}
-      TWILIO_ACCOUNT_SID_win32_jailbreak: ${{ secrets.TWILIO_ACCOUNT_SID_win32_jailbreak }}
-      TWILIO_AUTH_TOKEN_win32_jailbreak: ${{ secrets.TWILIO_AUTH_TOKEN_win32_jailbreak }}
-      CONSOLE_EMAIL_darwin_jailbreak: ${{ secrets.CONSOLE_EMAIL_darwin_jailbreak }}
-      TWILIO_ACCOUNT_SID_darwin_jailbreak: ${{ secrets.TWILIO_ACCOUNT_SID_darwin_jailbreak }}
-      TWILIO_AUTH_TOKEN_darwin_jailbreak: ${{ secrets.TWILIO_AUTH_TOKEN_darwin_jailbreak }}
 
   scheduled-e2e-macos-jailbreak:
     if: github.event.schedule == '0 8 * * *'
@@ -55,25 +46,16 @@ jobs:
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
       CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
-      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
-      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
-      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
-      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
-      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
-      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux_jailbreak }}
+      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux_jailbreak }}
+      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux_jailbreak }}
+      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32_jailbreak }}
+      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32_jailbreak }}
+      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32_jailbreak }}
+      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin_jailbreak }}
+      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin_jailbreak }}
+      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin_jailbreak }}
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
-      CONSOLE_EMAIL_linux_jailbreak: ${{ secrets.CONSOLE_EMAIL_linux_jailbreak }}
-      TWILIO_ACCOUNT_SID_linux_jailbreak: ${{ secrets.TWILIO_ACCOUNT_SID_linux_jailbreak }}
-      TWILIO_AUTH_TOKEN_linux_jailbreak: ${{ secrets.TWILIO_AUTH_TOKEN_linux_jailbreak }}
-      CONSOLE_EMAIL_win32_jailbreak: ${{ secrets.CONSOLE_EMAIL_win32_jailbreak }}
-      TWILIO_ACCOUNT_SID_win32_jailbreak: ${{ secrets.TWILIO_ACCOUNT_SID_win32_jailbreak }}
-      TWILIO_AUTH_TOKEN_win32_jailbreak: ${{ secrets.TWILIO_AUTH_TOKEN_win32_jailbreak }}
-      CONSOLE_EMAIL_darwin_jailbreak: ${{ secrets.CONSOLE_EMAIL_darwin_jailbreak }}
-      TWILIO_ACCOUNT_SID_darwin_jailbreak: ${{ secrets.TWILIO_ACCOUNT_SID_darwin_jailbreak }}
-      TWILIO_AUTH_TOKEN_darwin_jailbreak: ${{ secrets.TWILIO_AUTH_TOKEN_darwin_jailbreak }}
 
   scheduled-e2e-windows-jailbreak:
     if: github.event.schedule == '0 9 * * *'
@@ -89,22 +71,13 @@ jobs:
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
       CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
-      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
-      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
-      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
-      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
-      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
-      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux_jailbreak }}
+      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux_jailbreak }}
+      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux_jailbreak }}
+      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32_jailbreak }}
+      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32_jailbreak }}
+      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32_jailbreak }}
+      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin_jailbreak }}
+      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin_jailbreak }}
+      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin_jailbreak }}
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
-      CONSOLE_EMAIL_linux_jailbreak: ${{ secrets.CONSOLE_EMAIL_linux_jailbreak }}
-      TWILIO_ACCOUNT_SID_linux_jailbreak: ${{ secrets.TWILIO_ACCOUNT_SID_linux_jailbreak }}
-      TWILIO_AUTH_TOKEN_linux_jailbreak: ${{ secrets.TWILIO_AUTH_TOKEN_linux_jailbreak }}
-      CONSOLE_EMAIL_win32_jailbreak: ${{ secrets.CONSOLE_EMAIL_win32_jailbreak }}
-      TWILIO_ACCOUNT_SID_win32_jailbreak: ${{ secrets.TWILIO_ACCOUNT_SID_win32_jailbreak }}
-      TWILIO_AUTH_TOKEN_win32_jailbreak: ${{ secrets.TWILIO_AUTH_TOKEN_win32_jailbreak }}
-      CONSOLE_EMAIL_darwin_jailbreak: ${{ secrets.CONSOLE_EMAIL_darwin_jailbreak }}
-      TWILIO_ACCOUNT_SID_darwin_jailbreak: ${{ secrets.TWILIO_ACCOUNT_SID_darwin_jailbreak }}
-      TWILIO_AUTH_TOKEN_darwin_jailbreak: ${{ secrets.TWILIO_AUTH_TOKEN_darwin_jailbreak }}
