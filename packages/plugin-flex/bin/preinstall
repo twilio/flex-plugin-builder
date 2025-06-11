@@ -2,6 +2,7 @@
 
 set -e
 
+if [ -d ~/.twilio-cli ]; then
 echo "Pre-installing cheerio version 1.0.0-rc.12 to avoid yarn issues with the latest version"
 cat >> ~/.twilio-cli/yarn.lock << EOL
 
@@ -19,3 +20,5 @@ cheerio@^1.0.0-rc.3:
     parse5-htmlparser2-tree-adapter "^7.0.0"
 
 EOL
+
+fi
