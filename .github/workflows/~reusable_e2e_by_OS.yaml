@@ -125,6 +125,7 @@ jobs:
         env:
           TS: 0
         run: |
+          npm ls --all
           cd packages/flex-plugin-e2e-tests
           npm run start
       - name: Run e2e tests - JS (Macos)
