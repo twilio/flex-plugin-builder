@@ -28,7 +28,7 @@
     "lint:fix": "lerna run lint:fix",
     "preinstall": "npm install npm-force-resolutions --location=global",
     "postbootstrap": "npm run build",
-    "postinstall": "npm run bootstrap",
+    "postinstall": "npm run bootstrap && patch-package",
     "prepare": "husky install",
     "pretesst": "rimraf -rf coverage",
     "publish:alpha": "./bin/publish alpha $1",
@@ -40,6 +40,9 @@
     "test:ci": "jest --clearCache && npm run test -- --no-cache --coverage --coverage-provider=v8",
     "test:one": "npm run test -- $@",
     "test:watch": "npm run test -- --watchAll"
+  },
+  "dependencies": {
+    "cheerio": "1.0.0-rc.12"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
@@ -64,5 +67,8 @@
     "ts-jest": "^27.0.0",
     "typescript": "4.3.5",
     "ultra-runner": "^3.10.5"
+  },
+  "overrides": {
+    "cheerio": "1.0.0-rc.12"
   }
 }
