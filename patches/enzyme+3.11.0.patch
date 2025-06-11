@@ -1,0 +1,13 @@
+diff --git a/node_modules/enzyme/package.json b/node_modules/enzyme/package.json
+index 3e1a54f..4e8bc76 100644
+--- a/node_modules/enzyme/package.json
++++ b/node_modules/enzyme/package.json
+@@ -33,7 +33,7 @@
+     "array.prototype.flat": "^1.2.3",
+     "chalk": "^2.4.2",
+     "classnames": "^2.2.6",
+-    "cheerio": "^1.0.0-rc.3",
++    "cheerio": "1.0.0-rc.12",
+     "function.prototype.name": "^1.1.0",
+     "has": "^1.0.3",
+     "is-subset": "^0.1.1",
