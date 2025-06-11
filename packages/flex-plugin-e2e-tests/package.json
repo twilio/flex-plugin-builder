@@ -50,8 +50,8 @@
   "engines": {
     "node": "^16 || ^18 || ^20 || ^22"
   },
-  "overrides": {
-    "cheerio": "1.0.0-rc.12"
+   "overrides": {
+   "**/cheerio": "1.0.0-rc.12"
   },
   "publishConfig": {
     "access": "public"

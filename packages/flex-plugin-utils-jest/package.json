@@ -35,8 +35,8 @@
   "devDependencies": {
     "jest-matcher-utils": "^26.6.2"
   },
-  "overrides": {
-    "cheerio": "1.0.0-rc.12"
+   "overrides": {
+   "**/cheerio": "1.0.0-rc.12"
   },
   "engines": {
     "node": "^16 || ^18 || ^20 || ^22"
