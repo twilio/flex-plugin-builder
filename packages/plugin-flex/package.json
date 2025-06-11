@@ -70,6 +70,9 @@
     "tmp": "^0.2.1",
     "twilio": "^3.71.2"
   },
+  "resolutions": {
+    "**/cheerio": "npm:cheerio@1.0.0-rc.12"
+  },
   "engines": {
     "node": "^16 || ^18 || ^20 || ^22"
   },
