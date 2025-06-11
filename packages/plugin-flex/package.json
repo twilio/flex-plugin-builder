@@ -59,6 +59,9 @@
     "rimraf": "^4.0.0",
     "yargs": "^16.2.0"
   },
+  "overrides": {
+   "**/cheerio": "1.0.0-rc.12"
+  },
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.5",
     "@types/lodash.startcase": "^4.4.6",
