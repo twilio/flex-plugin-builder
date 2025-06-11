@@ -30,6 +30,7 @@
     "package.json"
   ],
   "scripts": {
+    "preinstall": "./bin/preinstall",
     "prebuild": "npm run clean",
     "build": "cd ../.. && tsc -p \"packages/plugin-flex/tsconfig.json\"",
     "clean": "rm -rf dist",
