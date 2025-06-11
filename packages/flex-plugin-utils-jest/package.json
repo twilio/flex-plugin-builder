@@ -32,6 +32,21 @@
     "lint:fix": "npm run lint -- --fix",
     "test": "exit 0"
   },
+  "overrides": {
+    "@twilio/flex-plugin-test": {
+      "enzyme": {
+        "cheerio": "1.0.0-rc.12"
+      }
+    },
+    "flex-plugin-test": {
+      "enzyme": {
+        "cheerio": "1.0.0-rc.12"
+      }
+    }
+  },
+    "resolutions": {
+    "cheerio": "1.0.0-rc.12"
+  },
   "devDependencies": {
     "jest-matcher-utils": "^26.6.2"
   },

@@ -54,7 +54,24 @@
     "@types/tmp": "^0.2.1",
     "@types/yargs": "^16.0.4"
   },
+  "overrides": {
+    "@twilio/flex-plugin-test": {
+      "enzyme": {
+        "cheerio": "1.0.0-rc.12"
+      }
+    },
+    "flex-plugin-test": {
+      "enzyme": {
+        "cheerio": "1.0.0-rc.12"
+      }
+    }
+  },
+    "resolutions": {
+    "cheerio": "1.0.0-rc.12"
+  },
   "publishConfig": {
     "access": "public"
   }
 }
+
+

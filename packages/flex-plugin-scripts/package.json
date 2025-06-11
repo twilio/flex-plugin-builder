@@ -49,6 +49,21 @@
     "prop-types": "^15.7.2",
     "querystring": "^0.2.1"
   },
+  "overrides": {
+    "@twilio/flex-plugin-test": {
+      "enzyme": {
+        "cheerio": "1.0.0-rc.12"
+      }
+    },
+    "flex-plugin-test": {
+      "enzyme": {
+        "cheerio": "1.0.0-rc.12"
+      }
+    }
+  },
+    "resolutions": {
+    "cheerio": "1.0.0-rc.12"
+  },
   "devDependencies": {
     "@types/enzyme": "^3.10.10",
     "@types/jest": "^27.0.0",

@@ -29,6 +29,21 @@
   "files": [
     "dist"
   ],
+  "overrides": {
+    "@twilio/flex-plugin-test": {
+      "enzyme": {
+        "cheerio": "1.0.0-rc.12"
+      }
+    },
+    "flex-plugin-test": {
+      "enzyme": {
+        "cheerio": "1.0.0-rc.12"
+      }
+    }
+  },
+    "resolutions": {
+    "cheerio": "1.0.0-rc.12"
+  },
   "scripts": {
     "prebuild": "npm run clean",
     "build": "cd ../.. && tsc -p \"packages/flex-plugins-api-client/tsconfig.json\"",

@@ -53,7 +53,19 @@
     "react-dom": "^16",
     "react-test-renderer": "^16"
   },
-  "resolutions": {
+  "overrides": {
+    "@twilio/flex-plugin-test": {
+      "enzyme": {
+        "cheerio": "1.0.0-rc.12"
+      }
+    },
+    "flex-plugin-test": {
+      "enzyme": {
+        "cheerio": "1.0.0-rc.12"
+      }
+    }
+  },
+    "resolutions": {
     "cheerio": "1.0.0-rc.12"
   },
   "devDependencies": {
