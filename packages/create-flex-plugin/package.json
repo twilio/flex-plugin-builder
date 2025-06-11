@@ -47,6 +47,9 @@
     "tmp": "^0.2.1",
     "yargs": "^16.2.0"
   },
+  "overrides": {
+    "cheerio": "1.0.0-rc.12"
+  },
   "devDependencies": {
     "@twilio/flex-plugin": "7.1.1",
     "@twilio/flex-plugin-scripts": "7.1.1",

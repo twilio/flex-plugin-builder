@@ -36,6 +36,9 @@
     "test": "cd ../.. && jest packages/flex-plugin --color",
     "test:watch": "cd ../.. && jest packages/flex-plugin --watch --color"
   },
+  "overrides": {
+    "cheerio": "1.0.0-rc.12"
+  },
   "devDependencies": {
     "@twilio/flex-ui": "^1"
   },
