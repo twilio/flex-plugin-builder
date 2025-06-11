@@ -34,6 +34,7 @@
     "build": "cd ../.. && tsc -p \"packages/plugin-flex/tsconfig.json\"",
     "clean": "rm -rf dist",
     "link": "twilio plugins:link .",
+    "preinstall": "npx npm-force-resolutions",
     "lint": "eslint --ext ts src/",
     "lint:fix": "npm run lint -- --fix",
     "prepack": "./bin/prepack",
@@ -72,7 +73,7 @@
     }
   },
   "resolutions": {
-    "**/cheerio": "1.0.0-rc.12"
+    "cheerio": "1.0.0-rc.12"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.5",

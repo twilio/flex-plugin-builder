@@ -45,7 +45,7 @@
     }
   },
     "resolutions": {
-    "**/cheerio": "1.0.0-rc.12"
+    "cheerio": "1.0.0-rc.12"
   },
   "dependencies": {
     "@k88/pipe-compose": "^2.5.0",

@@ -66,7 +66,7 @@
     }
   },
     "resolutions": {
-    "**/cheerio": "1.0.0-rc.12"
+    "cheerio": "1.0.0-rc.12"
   },
   "devDependencies": {
     "@jest/types": "^27.0.0"
