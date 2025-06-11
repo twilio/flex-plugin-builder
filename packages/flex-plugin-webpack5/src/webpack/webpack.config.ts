@@ -1,35 +1,42 @@
 /* eslint-disable global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires */
 /// <reference path="../module.d.ts" />
 
-import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
 import ModuleScopePlugin from '@k88/module-scope-plugin';
 import typescriptFormatter from '@k88/typescript-compile-error-formatter';
 import { semver, env, logger } from '@twilio/flex-dev-utils';
 import { Environment } from '@twilio/flex-dev-utils/dist/env';
-import { getDependencyVersion, getPaths, resolveModulePath } from '@twilio/flex-dev-utils/dist/fs';
+import fs, { getDependencyVersion, getPaths, resolveModulePath } from '@twilio/flex-dev-utils/dist/fs';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin-wp5';
 import PnpWebpackPlugin from 'pnp-webpack-plugin';
-import TerserPlugin from 'terser-webpack-plugin';
-import webpack, {
+import TerserPlugin from 'terser-webpack-plugin-wp5';
+import {
   Configuration,
   DefinePlugin,
   HotModuleReplacementPlugin,
-  Loader,
-  Plugin,
-  Resolve,
   RuleSetRule,
+  WebpackPluginInstance,
   SourceMapDevToolPlugin,
-} from 'webpack';
+  ResolveOptions,
+} from 'webpack5';
+import { template } from 'lodash';
 
 import { getSanitizedProcessEnv } from './clientVariables';
-import { WebpackType } from '..';
-import Optimization = webpack.Options.Optimization;
+import { WebpackTypeWp5 } from '..';
 
 interface LoaderOption {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [name: string]: any;
 }
+
+/*
+ * interface Optimization {
+ *   splitChunks?: false;
+ *   runtimeChunk: boolean;
+ *   minimize: boolean;
+ *   minimizer: WebpackPluginInstance;
+ * }
+ */
 
 const IMAGE_SIZE_BYTE = 10 * 1024;
 const FLEX_SHIM = '@twilio/flex-plugin-scripts/dev_assets/flex-shim.js';
@@ -81,7 +88,11 @@ const _getBabelLoader = (isProd: boolean) => ({
     customize: require.resolve('babel-preset-react-app/webpack-overrides'),
     babelrc: false,
     configFile: false,
-    presets: [require.resolve('babel-preset-react-app')],
+    presets: [
+      require.resolve('@babel/preset-react'),
+      require.resolve('@babel/preset-env'),
+      require.resolve('@babel/preset-typescript'),
+    ],
     plugins: [
       [
         require.resolve('babel-plugin-named-asset-import'),
@@ -101,7 +112,7 @@ const _getBabelLoader = (isProd: boolean) => ({
  * @private
  */
 /* c8 ignore next */
-export const _getImageLoader = (): RuleSetRule => ({
+const _getImageLoader = (): RuleSetRule => ({
   test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
   loader: require.resolve('url-loader'),
   options: {
@@ -114,7 +125,7 @@ export const _getImageLoader = (): RuleSetRule => ({
  * @param isProd  whether this is a production build
  * @private
  */
-export const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
+const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
   /**
    * Gets the loader for the given style
    * @param options the options
@@ -122,9 +133,11 @@ export const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
    * @param implementation  the implementation for thr scss-loader
    */
   const getStyleLoader = (options: LoaderOption, preProcessor?: string, implementation?: string) => {
-    const loaders: Loader[] = [];
+    const loaders = [];
+
     // Main style loader to work when compiled
     loaders.push(require.resolve('style-loader'));
+
     // All css loader
     loaders.push(
       {
@@ -149,17 +162,20 @@ export const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
         },
       },
     );
+
     // Add a pre-processor loader (converting SCSS to CSS)
     if (preProcessor) {
       const preProcessorOptions: Record<string, unknown> = {
         sourceMap: isProd,
       };
+
       if (implementation) {
         const nodePath = resolveModulePath(implementation);
         if (nodePath) {
           preProcessorOptions.implementation = require(nodePath);
         }
       }
+
       loaders.push(
         {
           loader: require.resolve('resolve-url-loader'),
@@ -173,8 +189,10 @@ export const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
         },
       );
     }
+
     return loaders;
   };
+
   return [
     {
       test: /\.css$/,
@@ -226,8 +244,8 @@ export const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
  * @param environment the environment
  * @private
  */
-export const _getBasePlugins = (environment: Environment): Plugin[] => {
-  const plugins: Plugin[] = [];
+export const _getBasePlugins = (environment: Environment) => {
+  const plugins: WebpackPluginInstance[] = [];
 
   const flexUIVersion = getDependencyVersion('@twilio/flex-ui');
   const reactVersion = getDependencyVersion('react');
@@ -267,8 +285,8 @@ export const _getBasePlugins = (environment: Environment): Plugin[] => {
  * Returns an array of {@link Plugin} for Webpack Static
  * @param environment
  */
-export const _getStaticPlugins = (environment: Environment): Plugin[] => {
-  const plugins: Plugin[] = [];
+export const _getStaticPlugins = (environment: Environment) => {
+  const plugins: WebpackPluginInstance[] = [];
   const { dependencies } = getPaths().app;
 
   // index.html entry point
@@ -276,22 +294,23 @@ export const _getStaticPlugins = (environment: Environment): Plugin[] => {
     plugins.push(new HotModuleReplacementPlugin());
     plugins.push(
       new HtmlWebpackPlugin({
-        inject: false,
-        hash: false,
-        template: getPaths().scripts.indexHTMLPath,
-      }),
-    );
-    plugins.push(
-      new InterpolateHtmlPlugin({
-        __FPB_JS_SCRIPTS: _getJSScripts(
-          dependencies.flexUI.version,
-          dependencies.react.version,
-          dependencies.reactDom.version,
-        ).join('\n'),
-      }),
+        inject: false, // Preventing automatic injection
+        templateContent: ({ htmlWebpackPlugin }) => {
+          let content = fs.readFileSync(getPaths().scripts.indexHTMLPath, 'utf8');
+          // Ensure Webpack 5 expected syntax is in place
+          content = content.replace('%__FPB_JS_SCRIPTS%', '<%= __FPB_JS_SCRIPTS %>');
+          // Manually process the EJS template using lodash.template
+          return template(content)({
+            __FPB_JS_SCRIPTS: _getJSScripts(
+              dependencies.flexUI.version,
+              dependencies.react.version,
+              dependencies.reactDom.version,
+            ).join('\n'),
+          });
+        },
+      }) as unknown as WebpackPluginInstance,
     );
   }
-  logger.info('WP4-------------------', JSON.stringify(plugins));
 
   return plugins;
 };
@@ -300,14 +319,16 @@ export const _getStaticPlugins = (environment: Environment): Plugin[] => {
  * Returns an array of {@link Plugin} for Webpack Javascript
  * @param environment
  */
-export const _getJSPlugins = (environment: Environment): Plugin[] => {
-  const plugins: Plugin[] = [];
+export const _getJSPlugins = (environment: Environment) => {
+  const plugins = [];
   const isDev = environment === Environment.Development;
   const isProd = environment === Environment.Production;
 
   if (isProd) {
     plugins.push(
       new SourceMapDevToolPlugin({
+        filename: `${getPaths().app.name}.js.map`,
+        module: false,
         append: '\n//# sourceMappingURL=bundle.js.map',
       }),
     );
@@ -361,7 +382,7 @@ export const _getJavaScriptEntries = (): string[] => {
  * @private
  */
 /* c8 ignore next */
-export const _getOptimization = (environment: Environment): Optimization => {
+export const _getOptimization = (environment: Environment): any => {
   const isProd = environment === Environment.Production;
   return {
     splitChunks: false,
@@ -371,11 +392,10 @@ export const _getOptimization = (environment: Environment): Optimization => {
       new TerserPlugin({
         terserOptions: {
           parse: {
-            ecma: 8,
+            ecma: 2017,
           },
           compress: {
             ecma: 5,
-            warnings: false,
             comparisons: false,
             inline: 2,
           },
@@ -392,8 +412,8 @@ export const _getOptimization = (environment: Environment): Optimization => {
             // eslint-disable-next-line camelcase
             ascii_only: true,
           },
+          sourceMap: isProd,
         },
-        sourceMap: true,
       }),
     ],
   };
@@ -404,7 +424,7 @@ export const _getOptimization = (environment: Environment): Optimization => {
  * @param environment the environment
  * @private
  */
-export const _getResolve = (environment: Environment): Resolve => {
+const _getResolve = (environment: Environment) => {
   const isProd = environment === Environment.Production;
   const extensions = getPaths().app.isTSProject()
     ? getPaths().extensions
@@ -412,7 +432,7 @@ export const _getResolve = (environment: Environment): Resolve => {
 
   const paths = getPaths();
 
-  const resolve: Resolve = {
+  const resolve: ResolveOptions = {
     modules: [
       'node_modules',
       paths.app.nodeModulesDir,
@@ -449,14 +469,8 @@ export const _getBase = (environment: Environment): Configuration => {
     module: {
       strictExportPresence: true,
       rules: [
-        { parser: { requireEnsure: false } },
         {
           oneOf: [_getImageLoader(), _getBabelLoader(isProd), ..._getStyleLoaders(isProd)],
-        },
-        {
-          test: /\.mjs$/,
-          include: /node_modules/,
-          type: 'javascript/auto',
         },
       ],
     },
@@ -479,7 +493,7 @@ export const _getBase = (environment: Environment): Configuration => {
 export const _getStaticConfiguration = (config: Configuration, environment: Environment): Configuration => {
   config.plugins = config.plugins ? config.plugins : [];
   config.plugins.push(..._getStaticPlugins(environment));
-  logger.info('WP4 Static-------------------', JSON.stringify(config.plugins));
+
   return config;
 };
 
@@ -488,8 +502,9 @@ export const _getStaticConfiguration = (config: Configuration, environment: Envi
  * @private
  */
 export const _getJavaScriptConfiguration = (config: Configuration, environment: Environment): Configuration => {
+  logger.info('CAME IN WP5 CONFIG');
   const isProd = environment === Environment.Production;
-  const filename = `${getPaths().app.name}.js`;
+  const filename = `${getPaths().app.name}`;
   const outputName = environment === Environment.Production ? filename : `plugins/${filename}`;
 
   config.entry = config.entry ? config.entry : [];
@@ -500,26 +515,17 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
   config.output = {
     path: getPaths().app.buildDir,
     pathinfo: !isProd,
-    futureEmitAssets: true,
-    filename: outputName,
+    filename: `${outputName}.js`,
+    sourceMapFilename: `${outputName}.[contenthash].js.map`,
+    publicPath: '/',
     globalObject: 'this',
   };
   config.bail = isProd;
-  config.devtool = isProd ? 'hidden-source-map' : 'source-map';
+  config.devtool = isProd ? 'cheap-source-map' : 'source-map';
   config.optimization = _getOptimization(environment);
-  config.node = {
-    module: 'empty',
-    dgram: 'empty',
-    dns: 'mock',
-    fs: 'empty',
-    http2: 'empty',
-    net: 'empty',
-    tls: 'empty',
-    // eslint-disable-next-line camelcase
-    child_process: 'empty',
-  };
+  config.node = false;
   config.plugins.push(..._getJSPlugins(environment));
-  logger.info('WP4 JS-------------------', JSON.stringify(config.plugins));
+
   return config;
 };
 
@@ -528,13 +534,13 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
  * @param environment
  * @param type
  */
-export default (environment: Environment, type: WebpackType): Configuration => {
+export default (environment: Environment, type: WebpackTypeWp5): Configuration => {
   const config = _getBase(environment);
 
-  if (type === WebpackType.Static) {
+  if (type === WebpackTypeWp5.Static) {
     return _getStaticConfiguration(config, environment);
   }
-  if (type === WebpackType.JavaScript) {
+  if (type === WebpackTypeWp5.JavaScript) {
     return _getJavaScriptConfiguration(config, environment);
   }
 

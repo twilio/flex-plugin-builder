@@ -1,9 +1,10 @@
 import { env, logger, exit, Callback } from '@twilio/flex-dev-utils';
 import { Environment } from '@twilio/flex-dev-utils/dist/env';
 import { addCWDNodeModule, getFileSizeInMB, getPaths, updateAppVersion } from '@twilio/flex-dev-utils/dist/fs';
+import { webpack5, Stats } from '@twilio/flex-plugin-webpack5';
 import { webpack, WebpackCompiler } from '@twilio/flex-plugin-webpack';
 
-import getConfiguration, { ConfigurationType } from '../config';
+import getConfiguration, { ConfigurationType, getConfigurationForWp5 } from '../config';
 import { setEnvironment } from '..';
 import { buildFailure, buildSuccessful, fileTooLarge } from '../prints';
 import run from '../utils/run';
@@ -29,6 +30,27 @@ const MAX_BUILD_SIZE_MB = 10;
  * @private
  */
 // eslint-disable-next-line import/no-unused-modules
+export const _handlerWp5 =
+  (resolve: Callback<BuildBundle>, reject: Callback<Error | string | string[]>): any =>
+  (err: Error, stats: Stats) => {
+    if (err) {
+      logger.info(`error`);
+      reject(err);
+      return;
+    }
+
+    const result = stats.toJson({ all: false, warnings: true, errors: true });
+    if (stats.hasErrors()) {
+      reject(result.errors?.map((e) => e.message) as string[]);
+      return;
+    }
+
+    resolve({
+      bundles: stats.toJson({ assets: true }).assets as Bundle[],
+      warnings: result.warnings?.map((w) => w.message),
+    });
+  };
+
 export const _handler =
   (resolve: Callback<BuildBundle>, reject: Callback<Error | string | string[]>): WebpackCompiler.Handler =>
   (err: Error, stats) => {
@@ -50,6 +72,20 @@ export const _handler =
   };
 
 /**
+ * Promisify the webpack 5 runner
+ * @private
+ */
+/* c8 ignore next */
+// eslint-disable-next-line import/no-unused-modules
+export const _runWebpack5 = async (): Promise<BuildBundle> => {
+  logger.debug('Building Flex plugin bundle in webpack 5');
+  return new Promise(async (resolve, reject) => {
+    const config = await getConfigurationForWp5(ConfigurationType.Webpack, Environment.Production, false);
+    webpack5(config).run(_handlerWp5(resolve, reject));
+  });
+};
+
+/**
  * Promisify the webpack runner
  * @private
  */
@@ -66,6 +102,7 @@ export const _runWebpack = async (): Promise<BuildBundle> => {
  * Builds the bundle
  */
 const build = async (...argv: string[]): Promise<void> => {
+  const isWp5 = argv.includes('--wp5');
   setEnvironment(...argv);
   logger.debug('Building Flex plugin bundle');
 
@@ -84,7 +121,7 @@ const build = async (...argv: string[]): Promise<void> => {
   logger.newline();
 
   try {
-    const { warnings, bundles } = await _runWebpack();
+    const { warnings, bundles } = isWp5 ? await _runWebpack5() : await _runWebpack();
     const bundleSize = getFileSizeInMB(getPaths().app.bundlePath);
     const sourceMapSize = getFileSizeInMB(getPaths().app.sourceMapPath);
 

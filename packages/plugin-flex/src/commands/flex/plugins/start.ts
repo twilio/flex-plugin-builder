@@ -39,6 +39,10 @@ export default class FlexPluginsStart extends FlexPlugin {
     'flex-ui-source': flags.string({
       hidden: true,
     }),
+    wp5: flags.boolean({
+      description: FlexPluginsStart.topic.flags.wp5,
+      default: false,
+    }),
   };
 
   // @ts-ignore
@@ -94,6 +98,9 @@ export default class FlexPluginsStart extends FlexPlugin {
 
     if (this._flags['include-remote']) {
       flexArgs.push('--include-remote');
+    }
+    if (this._flags.wp5) {
+      flexArgs.push('--wp5');
     }
 
     if (this._flags['flex-ui-source']) {

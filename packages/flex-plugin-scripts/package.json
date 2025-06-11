@@ -44,6 +44,7 @@
     "@twilio/flex-plugin": "7.1.0",
     "@twilio/flex-plugin-test": "7.1.0",
     "@twilio/flex-plugin-webpack": "7.1.0",
+    "@twilio/flex-plugin-webpack5": "7.1.0",
     "esm-wallaby": "^3.2.30",
     "jest": "^27.0.0",
     "prop-types": "^15.7.2",
