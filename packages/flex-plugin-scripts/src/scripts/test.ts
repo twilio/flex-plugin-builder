@@ -60,7 +60,7 @@ export const _parseArgs = (...args: string[]): { jestEnv: string; cleanArgs: str
  * Runs Jest tests
  */
 const test = async (...args: string[]): Promise<void> => {
-  logger.debug('Running tests');
+  logger.debug('Running tests with local CLI');
 
   addCWDNodeModule();
 
@@ -72,7 +72,7 @@ const test = async (...args: string[]): Promise<void> => {
   const { jestEnv, cleanArgs } = _parseArgs(...args);
 
   logger.clearTerminal();
-  logger.notice('Running tests...');
+  logger.notice('Running tests with local cli...');
 
   // We run this as a separate module here so that we don't have to import optional `jest` module if not needed
   // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require, @typescript-eslint/no-require-imports

@@ -38,16 +38,16 @@
   "dependencies": {
     "@babel/core": "^7.16.0",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@testing-library/dom": "10.4.0",
+    "@testing-library/react": "16.3.0",
     "@twilio/flex-dev-utils": "7.1.1",
     "babel-jest": "^27.0.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-react-app": "^10.0.1",
-    "@testing-library/react": "16.3.0",
-    "@testing-library/dom": "10.4.0",
-    "jsdom": "26.1.0",
     "jest": "^27.0.0",
     "jest-environment-jsdom": "^27.0.0",
     "jest-watch-typeahead": "^0.6.4",
+    "jsdom": "26.1.0",
     "react-app-polyfill": "^1.0.6"
   },
   "devDependencies": {
