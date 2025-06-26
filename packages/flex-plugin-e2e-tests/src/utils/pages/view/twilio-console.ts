@@ -62,6 +62,7 @@ export class TwilioConsole extends Base {
                 password: data.password,
               }),
               method: 'POST',
+              credentials: 'include',
             });
           },
           {
