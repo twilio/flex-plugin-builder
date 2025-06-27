@@ -1,10 +1,10 @@
-name: Flex Plugins CLI - Jailbrake E2E Nightly
+name: Flex Plugins CLI - Jailbreak E2E Nightly
 
 on:
   schedule:
-    - cron: '0 7 * * *' # At 7:00 UTC (12:30 IST) every day
-    - cron: '0 8 * * *' # At 8:00 UTC (13:30 IST) every day
-    - cron: '0 9 * * *' # At 9:00 UTC (14:30 IST) every day
+    - cron: '0 21 * * *' # At 21:00 UTC (02:30 IST) every day
+    - cron: '0 22 * * *' # At 22:00 UTC (03:30 IST) every day
+    - cron: '0 23 * * *' # At 23:00 UTC (04:30 IST) every day
 
 jobs:
   scheduled-e2e-unix-jailbreak:
@@ -16,7 +16,7 @@ jobs:
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
-      SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly for Jailbrea'
+      SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly for Jailbreak'
       SEND_NOTIFICATION: true
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
