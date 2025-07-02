@@ -33,10 +33,10 @@ export class TwilioConsole extends Base {
     try {
       const response = await fetch('https://www.twilio.com/api/csrf');
       const data = await response.json();
-      console.info('CSRF Token fetched:', data.csrf);
+      logger.info('CSRF Token fetched:', data.csrf);
       return data.csrf;
     } catch (error) {
-      console.error('Error fetching CSRF token:', error);
+      logger.error('Error fetching CSRF token:', error);
       return null;
     }
   }
