@@ -27,21 +27,6 @@ export class TwilioConsole extends Base {
   private static _createLocalhostUrl = (port: number) => `http://localhost:${port}&localPort=${port}`;
 
   /**
-   * Fetches CSRF token
-   */
-  async fetchCsrfToken() {
-    try {
-      const response = await fetch('https://www.twilio.com/api/csrf');
-      const data = await response.json();
-      logger.info('CSRF Token fetched:', data.csrf);
-      return data.csrf;
-    } catch (error) {
-      logger.error('Error fetching CSRF token:', error);
-      return null;
-    }
-  }
-
-  /**
    * Logs user in through service-login
    * @param cookies
    * @param flexBaseUrl
@@ -58,7 +43,18 @@ export class TwilioConsole extends Base {
 
     if (firstLoad) {
       await this.elementVisible(TwilioConsole._loginForm, `Twilio Console's Login form`);
-      const csrfToken = await this.fetchCsrfToken();
+
+      const csrfToken = await this.page.evaluate(async () => {
+        const response = await fetch('https://www.twilio.com/api/csrf');
+        try {
+          const data = await response.json();
+          logger.info('CSRF Token fetched:', data.csrf);
+          return data.csrf;
+        } catch (e) {
+          logger.error('Error fetching CSRF token:', e);
+          return null;
+        }
+      });
 
       if (csrfToken) {
         const loginURL = `${this._baseUrl}/userauth/submitLoginPassword`;
