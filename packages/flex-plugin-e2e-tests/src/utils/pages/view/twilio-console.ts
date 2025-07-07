@@ -43,8 +43,12 @@ export class TwilioConsole extends Base {
 
     if (firstLoad) {
       await this.elementVisible(TwilioConsole._loginForm, `Twilio Console's Login form`);
-      const csrfToken = await this.page.evaluate(() => {
-        return document.head.querySelector('meta[name="csrfToken"]')?.getAttribute('content');
+      const csrfToken = await this.page.evaluate(async () => {
+        const response = await fetch('https://www.twilio.com/api/csrf', {
+          credentials: 'include',
+        });
+        const data = await response.json();
+        return data.csrf;
       });
 
       if (csrfToken) {
