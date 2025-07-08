@@ -41,17 +41,17 @@ export class TwilioConsole extends Base {
     const path = `console/flex/service-login/${accountSid}/?path=/${flexPath}&referer=${redirectUrl}`;
     await this.goto({ baseUrl: this._baseUrl, path });
 
+    logger.info("Before firstload")
     if (firstLoad) {
       await this.elementVisible(TwilioConsole._loginForm, `Twilio Console's Login form`);
       const csrfToken = await this.page.evaluate(async () => {
-        const response = await fetch('https://www.twilio.com/api/csrf', {
-          credentials: 'include',
-        });
+        const response = await fetch('https://www.twilio.com/api/csrf');
         const data = await response.json();
         return data.csrf;
       });
 
       if (csrfToken) {
+        logger.info('CSRF token fetched successfully, proceeding with login');
         const loginURL = `${this._baseUrl}/userauth/submitLoginPassword`;
         await this.page.evaluate(
           // eslint-disable-next-line @typescript-eslint/promise-function-async
@@ -81,6 +81,7 @@ export class TwilioConsole extends Base {
         logger.info('Logging in Flex via service login on first load');
         await this.goto({ baseUrl: this._baseUrl, path });
       } else {
+        logger.error("Unable to fetch CSRF token for Twilio Console login");
         throw new Error('Unable to fetch CSRF token to login to Twilio Console');
       }
     }
