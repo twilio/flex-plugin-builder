@@ -44,15 +44,17 @@ export class TwilioConsole extends Base {
     logger.info("Before firstload")
     if (firstLoad) {
       await this.elementVisible(TwilioConsole._loginForm, `Twilio Console's Login form`);
+      logger.info("Login form is visible, proceeding with login");
       const csrfToken = await this.page.evaluate(async () => {
         const response = await fetch('https://www.twilio.com/api/csrf');
         const data = await response.json();
         return data.csrf;
       });
 
+      logger.info("CSRF token fetched, proceeding with login", csrfToken);
       if (csrfToken) {
-        logger.info('CSRF token fetched successfully, proceeding with login');
         const loginURL = `${this._baseUrl}/userauth/submitLoginPassword`;
+        logger.info('loginURL', loginURL);
         await this.page.evaluate(
           // eslint-disable-next-line @typescript-eslint/promise-function-async
           (data: Record<string, string>) => {
