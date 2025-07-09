@@ -55,33 +55,35 @@ export class TwilioConsole extends Base {
       if (csrfToken) {
         const loginURL = `${this._baseUrl}/userauth/submitLoginPassword`;
         logger.info('loginURL', loginURL);
+
+        const loginData = {
+          url: loginURL,
+          email: testParams.secrets.console.email,
+          password: testParams.secrets.console.password,
+          csrfToken,
+        };
+
         await this.page.evaluate(
-          // eslint-disable-next-line @typescript-eslint/promise-function-async
-          (data: Record<string, string>) => {
-            return fetch(data.url, {
-              headers: {
-                'x-twilio-csrf': data.csrfToken,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                email: data.email,
-                password: data.password,
-              }),
-              method: 'POST',
-              credentials: 'include',
-            });
-          },
-          {
-            url: loginURL,
-            email: testParams.secrets.console.email,
-            password: testParams.secrets.console.password,
-            csrfToken,
-          },
+            async (data) => {
+              await fetch(data.url, {
+                headers: {
+                  'x-twilio-csrf': data.csrfToken,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  email: data.email,
+                  password: data.password,
+                }),
+                method: 'POST',
+                credentials: 'include',
+              });
+            },
+            loginData
         );
 
-        // Log in Flex via service login
         logger.info('Logging in Flex via service login on first load');
         await this.goto({ baseUrl: this._baseUrl, path });
+
       } else {
         logger.error("Unable to fetch CSRF token for Twilio Console login");
         throw new Error('Unable to fetch CSRF token to login to Twilio Console');
