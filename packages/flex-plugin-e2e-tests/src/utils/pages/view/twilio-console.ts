@@ -46,9 +46,16 @@ export class TwilioConsole extends Base {
       await this.elementVisible(TwilioConsole._loginForm, `Twilio Console's Login form`);
       logger.info("Login form is visible, proceeding with login");
       const csrfToken = await this.page.evaluate(async () => {
-        const response = await fetch('https://www.twilio.com/api/csrf');
-        const data = await response.json();
-        return data.csrf;
+        try {
+          const response = await fetch('https://www.twilio.com/api/csrf');
+          console.log('Fetched CSRF response:', response.status);
+          const data = await response.json();
+          console.log('CSRF response JSON:', data);
+          return data.csrf;
+        } catch (e) {
+          console.error('CSRF fetch failed:', e);
+          return null;
+        }
       });
 
       logger.info("CSRF token fetched, proceeding with login", csrfToken);
