@@ -68,23 +68,20 @@ export class TwilioConsole extends Base {
           csrfToken,
         };
 
-        await this.page.evaluate(
-            async (data) => {
-              await fetch(data.url, {
-                headers: {
-                  'x-twilio-csrf': data.csrfToken,
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  email: data.email,
-                  password: data.password,
-                }),
-                method: 'POST',
-                credentials: 'include',
-              });
+        await this.page.evaluate((data) => {
+          return fetch(data.url, {
+            headers: {
+              'x-twilio-csrf': data.csrfToken,
+              'Content-Type': 'application/json',
             },
-            loginData
-        );
+            body: JSON.stringify({
+              email: data.email,
+              password: data.password,
+            }),
+            method: 'POST',
+            credentials: 'include',
+          });
+        }, loginData);
 
         logger.info('Logging in Flex via service login on first load');
         await this.goto({ baseUrl: this._baseUrl, path });
