@@ -68,7 +68,7 @@ export class TwilioConsole extends Base {
           csrfToken,
         };
 
-        await this.page.evaluate((data) => {
+        const result = await this.page.evaluate((data) => {
           return fetch(data.url, {
             headers: {
               'X-Twilio-Csrf': data.csrfToken,
@@ -82,24 +82,25 @@ export class TwilioConsole extends Base {
             credentials: 'include',
           })
               .then(response => {
-                logger.info('Response status:', response.status);
-
-                const headers = {};
-                response.headers.forEach((value, key) => {
-                  headers[key] = value;
-                });
-                logger.info('Response headers:', headers);
-
-                return response.text();
-              })
-              .then(body => {
-                logger.info('Response body:', body);
+                return {
+                  status: response.status,
+                  headers: (() => {
+                    const headersObj = {};
+                    response.headers.forEach((value, key) => {
+                      headersObj[key] = value;
+                    });
+                    return headersObj;
+                  })(),
+                };
               })
               .catch(err => {
-                logger.error('Fetch error:', err);
+                return {
+                  error: err.message || 'Unknown error during fetch',
+                };
               });
         }, loginData);
 
+        logger.info('Fetch result from browser:', result);
 
         logger.info('Logging in Flex via service login on first load');
         await this.goto({ baseUrl: this._baseUrl, path });
