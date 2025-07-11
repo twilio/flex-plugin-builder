@@ -80,8 +80,26 @@ export class TwilioConsole extends Base {
             }),
             method: 'POST',
             credentials: 'include',
-          });
+          })
+              .then(response => {
+                logger.info('Response status:', response.status);
+
+                const headers = {};
+                response.headers.forEach((value, key) => {
+                  headers[key] = value;
+                });
+                logger.info('Response headers:', headers);
+
+                return response.text();
+              })
+              .then(body => {
+                logger.info('Response body:', body);
+              })
+              .catch(err => {
+                logger.error('Fetch error:', err);
+              });
         }, loginData);
+
 
         logger.info('Logging in Flex via service login on first load');
         await this.goto({ baseUrl: this._baseUrl, path });
