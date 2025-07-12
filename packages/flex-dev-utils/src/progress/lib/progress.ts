@@ -75,6 +75,7 @@ export const progress = async <R>(title: string, action: Callback<R>, disabled =
 
     return response;
   } catch (e) {
+    // @ts-ignore
     spinner.fail(e.message);
 
     throw e;
