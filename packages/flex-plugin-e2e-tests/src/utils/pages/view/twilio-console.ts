@@ -45,6 +45,7 @@ export class TwilioConsole extends Base {
     if (firstLoad) {
       await this.elementVisible(TwilioConsole._loginForm, `Twilio Console's Login form`);
       logger.info("Login form is visible, proceeding with login");
+
       let csrfToken = null;
       try {
         const response = await fetch('https://www.twilio.com/api/csrf');
@@ -53,61 +54,52 @@ export class TwilioConsole extends Base {
         logger.info('CSRF response JSON:', data);
         csrfToken =  data.csrf;
       } catch (e) {
-        logger.info('CSRF fetch failed:', e);
+        logger.error('CSRF fetch failed:', e);
+        throw new Error('CSRF token is null');
+      }
+
+      if (!csrfToken) {
+        logger.error("Unable to fetch CSRF token for Twilio Console login");
+        throw new Error('CSRF token is null');
       }
 
       logger.info("CSRF token fetched, proceeding with login", csrfToken);
-      if (csrfToken) {
-        const loginURL = `${this._baseUrl}/userauth/submitLoginPassword`;
-        logger.info('loginURL', loginURL);
+      const loginURL = `${this._baseUrl}/userauth/submitLoginPassword`;
+      logger.info('loginURL', loginURL);
 
-        const loginData = {
-          url: loginURL,
-          email: testParams.secrets.console.email,
-          password: testParams.secrets.console.password,
-          csrfToken,
-        };
+      try {
+        const response = await fetch(loginURL, {
+          method: 'POST',
+          headers: {
+            'x-twilio-csrf': csrfToken,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: testParams.secrets.console.email,
+            password: testParams.secrets.console.password,
+          }),
+          credentials: 'include', // not needed in node-fetch, but okay
+        });
 
-        const result = await this.page.evaluate((data) => {
-          return fetch(data.url, {
-            headers: {
-              'X-Twilio-Csrf': data.csrfToken,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: data.email,
-              password: data.password,
-            }),
-            method: 'POST',
-            credentials: 'include',
-          })
-              .then(response => {
-                return {
-                  status: response.status,
-                  headers: (() => {
-                    const headersObj = {};
-                    response.headers.forEach((value, key) => {
-                      headersObj[key] = value;
-                    });
-                    return headersObj;
-                  })(),
-                };
-              })
-              .catch(err => {
-                return {
-                  error: err.message || 'Unknown error during fetch',
-                };
-              });
-        }, loginData);
+        const responseBody = await response.text();
 
-        logger.info('Fetch result from browser:', result);
+        logger.info('Login response status:', response.status);
+        const headersObj: Record<string, string> = {};
+        response.headers.forEach((value, key) => {
+          headersObj[key] = value;
+        });
+        logger.info('Login response headers:', headersObj);
+        logger.info('Login response body:', responseBody);
 
-        logger.info('Logging in Flex via service login on first load');
+        if (response.status !== 200) {
+          throw new Error(`Login failed with status ${response.status}`);
+        }
+
+        logger.info('Login successful, proceeding to Flex');
         await this.goto({ baseUrl: this._baseUrl, path });
-
-      } else {
-        logger.error("Unable to fetch CSRF token for Twilio Console login");
-        throw new Error('Unable to fetch CSRF token to login to Twilio Console');
+      } catch (e) {
+        logger.error('Login request failed:', e);
+        throw e;
       }
     }
 
