@@ -4,6 +4,9 @@ import { logger } from '@twilio/flex-dev-utils';
 import { testParams } from '../../../core';
 import { Base } from './base';
 import { sleep } from '../../timers';
+import fetch, { Response, RequestInit } from 'node-fetch';
+import fetchCookie from 'fetch-cookie';
+import {CookieJar} from 'tough-cookie';
 
 export class TwilioConsole extends Base {
   private static _loginForm = '#email';
@@ -26,6 +29,23 @@ export class TwilioConsole extends Base {
    */
   private static _createLocalhostUrl = (port: number) => `http://localhost:${port}&localPort=${port}`;
 
+  private async fetchWithCookies(url: string, options: RequestInit = {}): Promise<Response> {
+    const cookies = await this.page.cookies();
+    const cookieHeader = cookies.map(c => `${c.name}=${c.value}`).join('; ');
+
+    const headers = {
+      ...(options.headers || {}),
+      'Cookie': cookieHeader,
+    };
+
+    logger.info("headers", headers);
+
+    return fetch(url, {
+      ...options,
+      headers,
+    });
+  }
+
   /**
    * Logs user in through service-login
    * @param cookies
@@ -34,6 +54,9 @@ export class TwilioConsole extends Base {
    * @param accountSid
    */
   async login(flexPath: string, accountSid: string, localhostPort: number, firstLoad: boolean = true): Promise<void> {
+    const cookieJar = new CookieJar();
+    const fetchWithCookies = fetchCookie(fetch, cookieJar);
+
     logger.info('firstload', firstLoad);
     const redirectUrl = this._flexBaseUrl.includes('localhost')
       ? TwilioConsole._createLocalhostUrl(localhostPort)
@@ -48,11 +71,17 @@ export class TwilioConsole extends Base {
 
       let csrfToken = null;
       try {
-        const response = await fetch('https://www.twilio.com/api/csrf');
-        logger.info('Fetched CSRF response:', response.status);
-        const data = await response.json();
+        const csrfResponse = await fetchWithCookies('https://www.twilio.com/api/csrf', {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+        });
+        logger.info('Fetched CSRF response:', csrfResponse.status);
+        const data = await csrfResponse.json();
+        // @ts-ignore
+        csrfToken = data.csrf;
         logger.info('CSRF response JSON:', data);
-        csrfToken =  data.csrf;
       } catch (e) {
         logger.error('CSRF fetch failed:', e);
         throw new Error('CSRF token is null');
@@ -68,7 +97,7 @@ export class TwilioConsole extends Base {
       logger.info('loginURL', loginURL);
 
       try {
-        const response = await fetch(loginURL, {
+        const response = await this.fetchWithCookies(loginURL, {
           method: 'POST',
           headers: {
             'x-twilio-csrf': csrfToken,
@@ -78,7 +107,6 @@ export class TwilioConsole extends Base {
             email: testParams.secrets.console.email,
             password: testParams.secrets.console.password,
           }),
-          credentials: 'include', // not needed in node-fetch, but okay
         });
 
         const responseBody = await response.text();
