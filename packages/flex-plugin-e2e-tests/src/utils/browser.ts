@@ -20,7 +20,13 @@ export class Browser {
     this._browser = await Puppeteer.launch({
       headless: true,
       protocolTimeout: 300000,
-      args: ['--use-fake-ui-for-media-stream'],
+      args: [
+          '--use-fake-ui-for-media-stream',
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-web-security',
+          '--disable-features=IsolateOrigins,site-per-process',
+      ],
     });
     this._page = await this._browser.newPage();
     await this._page.setRequestInterception(true);

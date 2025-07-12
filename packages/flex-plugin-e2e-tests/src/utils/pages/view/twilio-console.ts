@@ -4,6 +4,9 @@ import { logger } from '@twilio/flex-dev-utils';
 import { testParams } from '../../../core';
 import { Base } from './base';
 import { sleep } from '../../timers';
+import fetch from 'node-fetch';
+import fetchCookie from 'fetch-cookie';
+import {CookieJar} from 'tough-cookie';
 
 export class TwilioConsole extends Base {
   private static _loginForm = '#email';
@@ -34,6 +37,9 @@ export class TwilioConsole extends Base {
    * @param accountSid
    */
   async login(flexPath: string, accountSid: string, localhostPort: number, firstLoad: boolean = true): Promise<void> {
+    const cookieJar = new CookieJar();
+    const fetchWithCookies = fetchCookie(fetch, cookieJar);
+
     logger.info('firstload', firstLoad);
     const redirectUrl = this._flexBaseUrl.includes('localhost')
       ? TwilioConsole._createLocalhostUrl(localhostPort)
@@ -41,47 +47,70 @@ export class TwilioConsole extends Base {
     const path = `console/flex/service-login/${accountSid}/?path=/${flexPath}&referer=${redirectUrl}`;
     await this.goto({ baseUrl: this._baseUrl, path });
 
+    logger.info("Before firstload")
     if (firstLoad) {
       await this.elementVisible(TwilioConsole._loginForm, `Twilio Console's Login form`);
-      const csrfToken = await this.page.evaluate(async () => {
-        const response = await fetch('https://www.twilio.com/api/csrf', {
-          credentials: 'include',
-        });
-        const data = await response.json();
-        return data.csrf;
-      });
+      logger.info("Login form is visible, proceeding with login");
 
-      if (csrfToken) {
-        const loginURL = `${this._baseUrl}/userauth/submitLoginPassword`;
-        await this.page.evaluate(
-          // eslint-disable-next-line @typescript-eslint/promise-function-async
-          (data: Record<string, string>) => {
-            return fetch(data.url, {
-              headers: {
-                'x-twilio-csrf': data.csrfToken,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                email: data.email,
-                password: data.password,
-              }),
-              method: 'POST',
-              credentials: 'include',
-            });
+      let csrfToken = null;
+      try {
+        const csrfResponse = await fetchWithCookies('https://www.twilio.com/api/csrf', {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
           },
-          {
-            url: loginURL,
+        });
+        logger.info('Fetched CSRF response:', csrfResponse.status);
+        const data = await csrfResponse.json();
+        // @ts-ignore
+        csrfToken = data.csrf;
+        logger.info('CSRF response JSON:', data);
+      } catch (e) {
+        logger.error('CSRF fetch failed:', e);
+        throw new Error('CSRF token is null');
+      }
+
+      if (!csrfToken) {
+        logger.error("Unable to fetch CSRF token for Twilio Console login");
+        throw new Error('CSRF token is null');
+      }
+
+      logger.info("CSRF token fetched, proceeding with login", csrfToken);
+      const loginURL = `${this._baseUrl}/userauth/submitLoginPassword`;
+      logger.info('loginURL', loginURL);
+
+      try {
+        const response = await fetchWithCookies(loginURL, {
+          method: 'POST',
+          headers: {
+            'x-twilio-csrf': csrfToken,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
             email: testParams.secrets.console.email,
             password: testParams.secrets.console.password,
-            csrfToken,
-          },
-        );
+          }),
+        });
 
-        // Log in Flex via service login
-        logger.info('Logging in Flex via service login on first load');
+        const responseBody = await response.text();
+
+        logger.info('Login response status:', response.status);
+        const headersObj: Record<string, string> = {};
+        response.headers.forEach((value, key) => {
+          headersObj[key] = value;
+        });
+        logger.info('Login response headers:', headersObj);
+        logger.info('Login response body:', responseBody);
+
+        if (response.status !== 200) {
+          throw new Error(`Login failed with status ${response.status}`);
+        }
+
+        logger.info('Login successful, proceeding to Flex');
         await this.goto({ baseUrl: this._baseUrl, path });
-      } else {
-        throw new Error('Unable to fetch CSRF token to login to Twilio Console');
+      } catch (e) {
+        logger.error('Login request failed:', e);
+        throw e;
       }
     }
 
