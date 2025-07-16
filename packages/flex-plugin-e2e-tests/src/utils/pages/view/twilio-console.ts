@@ -48,7 +48,7 @@ export class TwilioConsole extends Base {
           credentials: 'include',
         });
         const data = await response.json();
-        return data.body.csrf;
+        return JSON.parse(data.body).csrf;
       });
 
       if (csrfToken) {
