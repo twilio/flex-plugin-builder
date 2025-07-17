@@ -36,20 +36,23 @@ export class TwilioConsole extends Base {
   async login(flexPath: string, accountSid: string, localhostPort: number, firstLoad: boolean = true): Promise<void> {
     logger.info('firstload', firstLoad);
     const redirectUrl = this._flexBaseUrl.includes('localhost')
-      ? TwilioConsole._createLocalhostUrl(localhostPort)
-      : this._flexBaseUrl;
+        ? TwilioConsole._createLocalhostUrl(localhostPort)
+        : this._flexBaseUrl;
     const path = `console/flex/service-login/${accountSid}/?path=/${flexPath}&referer=${redirectUrl}`;
     await this.goto({ baseUrl: this._baseUrl, path });
 
     logger.info("Before firstload")
     if (firstLoad) {
       await this.elementVisible(TwilioConsole._loginForm, `Twilio Console's Login form`);
-      logger.info("Login form is visible, proceeding with login");
-      const csrfToken = await this.page.evaluate(async () => {
+      let csrfToken = null;
+      try {
         const response = await fetch('https://www.twilio.com/api/csrf');
         const data = await response.json();
-        return JSON.parse(data.body).csrf;
-      });
+        logger.info('CSRF response JSON:', data);
+        csrfToken =  JSON.parse(data.body).csrf;
+      } catch (e) {
+        logger.info('CSRF fetch failed:', e);
+      }
 
       logger.info("CSRF token fetched, proceeding with login", csrfToken);
       if (csrfToken) {
@@ -63,23 +66,39 @@ export class TwilioConsole extends Base {
           csrfToken,
         };
 
-        await this.page.evaluate(
-            async (data) => {
-              await fetch(data.url, {
-                headers: {
-                  'x-twilio-csrf': data.csrfToken,
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  email: data.email,
-                  password: data.password,
-                }),
-                method: 'POST',
-                credentials: 'include',
-              });
+        const result = await this.page.evaluate((data) => {
+          return fetch(data.url, {
+            headers: {
+              'X-Twilio-Csrf': data.csrfToken,
+              'Content-Type': 'application/json',
             },
-            loginData
-        );
+            body: JSON.stringify({
+              email: data.email,
+              password: data.password,
+            }),
+            method: 'POST',
+            credentials: 'include',
+          })
+              .then(response => {
+                return {
+                  status: response.status,
+                  headers: (() => {
+                    const headersObj = {};
+                    response.headers.forEach((value, key) => {
+                      headersObj[key] = value;
+                    });
+                    return headersObj;
+                  })(),
+                };
+              })
+              .catch(err => {
+                return {
+                  error: err.message || 'Unknown error during fetch',
+                };
+              });
+        }, loginData);
+
+        logger.info('Fetch result from browser:', result);
 
         logger.info('Logging in Flex via service login on first load');
         await this.goto({ baseUrl: this._baseUrl, path });
