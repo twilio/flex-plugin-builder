@@ -48,7 +48,7 @@ export class TwilioConsole extends Base {
       const csrfToken = await this.page.evaluate(async () => {
         const response = await fetch('https://www.twilio.com/api/csrf');
         const data = await response.json();
-        return data.csrf;
+        return JSON.parse(data.body).csrf;
       });
 
       logger.info("CSRF token fetched, proceeding with login", csrfToken);
