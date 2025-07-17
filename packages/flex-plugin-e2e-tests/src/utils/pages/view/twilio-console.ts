@@ -58,7 +58,7 @@ export class TwilioConsole extends Base {
           (data: Record<string, string>) => {
             return fetch(data.url, {
               headers: {
-                'x-twilio-csrf': data.csrfToken,
+                'x-twilio-csrf': csrfToken,
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
