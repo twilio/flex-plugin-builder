@@ -48,18 +48,44 @@ export class TwilioConsole extends Base {
           credentials: 'include',
         });
         const data = await response.json();
-        return JSON.parse(data.body).csrf;
+        // Get tw-visitor cookie from response headers
+        let twVisitor = '';
+        try {
+          // @ts-ignore
+          const rawHeaders = response.headers.get('set-cookie') || document.cookie;
+          const match = rawHeaders.match(/tw-visitor=([^;]+);?/);
+          if (match) {
+            twVisitor = match[1];
+          }
+        } catch (e) {
+          // fallback: try document.cookie
+          const match = document.cookie.match(/tw-visitor=([^;]+);?/);
+          if (match) {
+            twVisitor = match[1];
+          }
+        }
+        return {
+          csrfToken: JSON.parse(data.body).csrf,
+          twVisitorCookie: twVisitor,
+        };
       });
 
-      if (csrfToken) {
+      if (csrfToken.csrfToken && csrfToken.twVisitorCookie) {
         const loginURL = `${this._baseUrl}/userauth/submitLoginPassword`;
         await this.page.evaluate(
           // eslint-disable-next-line @typescript-eslint/promise-function-async
-          (data: Record<string, string>) => {
+          (data: {
+            url: string;
+            email: string;
+            password: string;
+            csrfToken: { csrfToken: any; twVisitorCookie: string };
+            twVisitorCookie: string;
+          }) => {
             return fetch(data.url, {
               headers: {
-                'x-twilio-csrf': csrfToken,
+                'x-twilio-csrf': data.csrfToken.csrfToken,
                 'Content-Type': 'application/json',
+                cookie: `tw-visitor=${data.twVisitorCookie}`,
               },
               body: JSON.stringify({
                 email: data.email,
@@ -74,14 +100,14 @@ export class TwilioConsole extends Base {
             email: testParams.secrets.console.email,
             password: testParams.secrets.console.password,
             csrfToken,
+            twVisitorCookie: csrfToken.twVisitorCookie,
           },
         );
 
-        // Log in Flex via service login
         logger.info('Logging in Flex via service login on first load');
         await this.goto({ baseUrl: this._baseUrl, path });
       } else {
-        throw new Error('Unable to fetch CSRF token to login to Twilio Console');
+        throw new Error('Unable to fetch CSRF token or tw-visitor cookie to login to Twilio Console');
       }
     }
 
