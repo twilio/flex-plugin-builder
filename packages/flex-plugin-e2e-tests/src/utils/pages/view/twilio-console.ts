@@ -62,7 +62,7 @@ export class TwilioConsole extends Base {
 
         const data = await csrfResponse.json();
         logger.info('CSRF response :', data);
-        csrfToken = data.csrfToken || null;
+        csrfToken = data.csrf || null;
         logger.info('CSRF token:', csrfToken);
         logger.info('tw-visitor cookie:', twVisitorCookie);
       } catch (e) {
