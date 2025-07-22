@@ -63,7 +63,8 @@ export class TwilioConsole extends Base {
         const data = await csrfResponse.json();
         logger.info('CSRF response :', data);
         csrfToken = data.csrf || null;
-        logger.info('CSRF token:', csrfToken);
+        logger.info('CSRF token with data:', data.csrf);
+        logger.info('csrfToken:', csrfToken);
         logger.info('tw-visitor cookie:', twVisitorCookie);
       } catch (e) {
         logger.info('CSRF fetch failed:', e);
@@ -85,9 +86,9 @@ export class TwilioConsole extends Base {
         const result = await this.page.evaluate(async (data) => {
           return fetch(data.url, {
             headers: {
-              'X-Twilio-Csrf': csrfToken || '',
+              'X-Twilio-Csrf': data.csrfToken || '',
               'Content-Type': 'application/json',
-              cookie: `tw-visitor=${twVisitorCookie}` || '',
+              Cookie: `tw-visitor=${data.twVisitorCookie}` || '',
             },
             body: JSON.stringify({
               email: data.email,
@@ -114,7 +115,6 @@ export class TwilioConsole extends Base {
               };
             });
         }, loginData);
-
         logger.info('Fetch result from browser:', result);
 
         logger.info('Logging in Flex via service login on first load');
