@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@types/lodash": "4.14.177",
+    "@types/node-fetch": "^2.6.12",
     "@types/semver": "^7.3.9"
   },
   "engines": {

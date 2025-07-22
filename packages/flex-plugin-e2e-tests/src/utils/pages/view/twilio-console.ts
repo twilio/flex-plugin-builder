@@ -11,6 +11,7 @@ export class TwilioConsole extends Base {
   assert = {};
 
   private readonly _baseUrl: string;
+
   private readonly _flexBaseUrl: string;
 
   constructor(page: Page, { flex, twilioConsole }: { flex: string; twilioConsole: string }) {
@@ -40,13 +41,14 @@ export class TwilioConsole extends Base {
     const path = `console/flex/service-login/${accountSid}/?path=/${flexPath}&referer=${redirectUrl}`;
     await this.goto({ baseUrl: this._baseUrl, path });
 
-    logger.info("Before firstload");
+    logger.info('Before firstload');
     if (firstLoad) {
       await this.elementVisible(TwilioConsole._loginForm, `Twilio Console's Login form`);
       let csrfToken: string | null = null;
       let twVisitorCookie: string | null = null;
       try {
         // Fetch CSRF and cookies using node-fetch
+        // eslint-disable-next-line import/no-extraneous-dependencies
         const nodeFetch = (await import('node-fetch')).default;
         const csrfResponse = await nodeFetch(`${this._baseUrl}/api/csrf`, { method: 'GET' });
         const setCookieHeader = csrfResponse.headers.get('set-cookie');
@@ -58,14 +60,16 @@ export class TwilioConsole extends Base {
           logger.info('tw-visitor cookie:', twVisitorCookie);
         }
 
-        const data = await csrfResponse.text();
+        const data = await csrfResponse.json();
         logger.info('CSRF response :', data);
-        csrfToken = JSON.parse(data).csrf;
+        csrfToken = data.csrfToken || null;
+        logger.info('CSRF token:', csrfToken);
+        logger.info('tw-visitor cookie:', twVisitorCookie);
       } catch (e) {
         logger.info('CSRF fetch failed:', e);
       }
 
-      logger.info("CSRF token fetched, proceeding with login", csrfToken);
+      logger.info('CSRF token fetched, proceeding with login', csrfToken);
       if (csrfToken && twVisitorCookie) {
         const loginURL = `${this._baseUrl}/userauth/submitLoginPassword`;
         logger.info('loginURL', loginURL);
@@ -78,12 +82,12 @@ export class TwilioConsole extends Base {
           twVisitorCookie,
         };
 
-        const result = await this.page.evaluate((data) => {
+        const result = await this.page.evaluate(async (data) => {
           return fetch(data.url, {
             headers: {
-              'X-Twilio-Csrf': data.csrfToken,
+              'X-Twilio-Csrf': csrfToken,
               'Content-Type': 'application/json',
-              cookie: `tw-visitor=${data.twVisitorCookie}`,
+              cookie: `tw-visitor=${twVisitorCookie}`,
             },
             body: JSON.stringify({
               email: data.email,
@@ -92,7 +96,7 @@ export class TwilioConsole extends Base {
             method: 'POST',
             credentials: 'include',
           })
-            .then(response => {
+            .then((response) => {
               return {
                 status: response.status,
                 headers: (() => {
@@ -104,7 +108,7 @@ export class TwilioConsole extends Base {
                 })(),
               };
             })
-            .catch(err => {
+            .catch((err) => {
               return {
                 error: err.message || 'Unknown error during fetch',
               };
@@ -115,9 +119,8 @@ export class TwilioConsole extends Base {
 
         logger.info('Logging in Flex via service login on first load');
         await this.goto({ baseUrl: this._baseUrl, path });
-
       } else {
-        logger.error("Unable to fetch CSRF token or tw-visitor cookie for Twilio Console login");
+        logger.error('Unable to fetch CSRF token or tw-visitor cookie for Twilio Console login');
         throw new Error('Unable to fetch CSRF token or tw-visitor cookie to login to Twilio Console');
       }
     }
