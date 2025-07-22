@@ -83,7 +83,7 @@ export class TwilioConsole extends Base {
           twVisitorCookie,
         };
 
-        const result = await this.page.evaluate(async (data) => {
+        const result = await this.page.evaluate(function (data) {
           return fetch(data.url, {
             headers: {
               'X-Twilio-Csrf': data.csrfToken || '',
@@ -101,7 +101,7 @@ export class TwilioConsole extends Base {
               return {
                 status: response.status,
                 headers: (() => {
-                  const headersObj: Record<string, string> = {};
+                  const headersObj = {};
                   response.headers.forEach((value, key) => {
                     headersObj[key] = value;
                   });
