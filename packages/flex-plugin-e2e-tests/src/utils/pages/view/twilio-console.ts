@@ -48,7 +48,7 @@ export class TwilioConsole extends Base {
           credentials: 'include',
         });
         const data = await response.json();
-        return JSON.parse(data.body).csrf;
+        return data.csrf;
       });
 
       if (csrfToken) {
@@ -58,7 +58,7 @@ export class TwilioConsole extends Base {
           (data: Record<string, string>) => {
             return fetch(data.url, {
               headers: {
-                'x-twilio-csrf': csrfToken,
+                'X-Twilio-Csrf': csrfToken,
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
