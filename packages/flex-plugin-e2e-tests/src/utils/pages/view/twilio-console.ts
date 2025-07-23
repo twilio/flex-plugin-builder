@@ -5,6 +5,10 @@ import { testParams } from '../../../core';
 import { Base } from './base';
 import { sleep } from '../../timers';
 
+interface CsrfResponse {
+  csrf?: string;
+}
+
 export class TwilioConsole extends Base {
   private static _loginForm = '#email';
 
@@ -62,8 +66,8 @@ export class TwilioConsole extends Base {
 
         const data = await csrfResponse.json();
         logger.info('CSRF response :', data);
-        csrfToken = data.csrf || null;
-        logger.info('CSRF token with data:', data.csrf);
+        csrfToken = (data as CsrfResponse).csrf || null;
+        logger.info('CSRF token with data:', (data as CsrfResponse).csrf);
         logger.info('csrfToken:', csrfToken);
         logger.info('tw-visitor cookie:', twVisitorCookie);
       } catch (e) {
