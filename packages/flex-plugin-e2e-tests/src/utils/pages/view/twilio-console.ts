@@ -77,7 +77,8 @@ export class TwilioConsole extends Base {
       if (csrfToken && twVisitorCookie) {
         const loginURL = `${this._baseUrl}/userauth/submitLoginPassword`;
         logger.info('loginURL', loginURL);
-
+        console.log('email', testParams.secrets.console.email);
+        console.log('password', testParams.secrets.console.password);
         const loginData = {
           url: loginURL,
           email: testParams.secrets.console.email,
