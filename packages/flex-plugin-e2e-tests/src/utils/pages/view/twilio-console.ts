@@ -77,30 +77,26 @@ export class TwilioConsole extends Base {
       if (csrfToken && twVisitorCookie) {
         const loginURL = `${this._baseUrl}/userauth/submitLoginPassword`;
         logger.info('loginURL', loginURL);
-        console.log('email', testParams.secrets.console.email);
-        console.log('password', testParams.secrets.console.password);
         const loginData = {
-          // url: loginURL,
+          url: loginURL,
           email: testParams.secrets.console.email,
           password: testParams.secrets.console.password,
-          /*
-           * csrfToken,
-           * twVisitorCookie,
-           */
+          csrfToken,
+          twVisitorCookie,
         };
 
         const result = await this.page.evaluate(function (data) {
           return fetch(data.url, {
             headers: {
               'X-Twilio-Csrf': data.csrfToken || '',
-              cookie: `tw-visitor=${data.twVisitorCookie}` || '',
-              credentials: 'include',
+              Cookie: `tw-visitor=${data.twVisitorCookie}` || '',
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
               email: data.email,
               password: data.password,
             }),
+            credentials: 'include',
             method: 'POST',
           })
             .then((response) => {
