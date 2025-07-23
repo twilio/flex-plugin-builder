@@ -80,11 +80,13 @@ export class TwilioConsole extends Base {
         console.log('email', testParams.secrets.console.email);
         console.log('password', testParams.secrets.console.password);
         const loginData = {
-          url: loginURL,
+          // url: loginURL,
           email: testParams.secrets.console.email,
           password: testParams.secrets.console.password,
-          csrfToken,
-          twVisitorCookie,
+          /*
+           * csrfToken,
+           * twVisitorCookie,
+           */
         };
 
         const result = await this.page.evaluate(function (data) {
