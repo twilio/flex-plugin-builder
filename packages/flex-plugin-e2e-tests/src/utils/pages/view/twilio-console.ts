@@ -67,7 +67,6 @@ export class TwilioConsole extends Base {
         const data = await csrfResponse.json();
         logger.info('CSRF response :', data);
         csrfToken = (data as CsrfResponse).csrf || null;
-        logger.info('CSRF token with data:', (data as CsrfResponse).csrf);
         logger.info('csrfToken:', csrfToken);
         logger.info('tw-visitor cookie:', twVisitorCookie);
       } catch (e) {
@@ -91,15 +90,15 @@ export class TwilioConsole extends Base {
           return fetch(data.url, {
             headers: {
               'X-Twilio-Csrf': data.csrfToken || '',
+              cookie: `tw-visitor=${data.twVisitorCookie}` || '',
+              credentials: 'include',
               'Content-Type': 'application/json',
-              Cookie: `tw-visitor=${data.twVisitorCookie}` || '',
             },
             body: JSON.stringify({
               email: data.email,
               password: data.password,
             }),
             method: 'POST',
-            credentials: 'include',
           })
             .then((response) => {
               return {
