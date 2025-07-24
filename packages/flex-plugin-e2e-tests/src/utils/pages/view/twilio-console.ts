@@ -84,41 +84,52 @@ export class TwilioConsole extends Base {
           csrfToken,
           twVisitorCookie,
         };
-
-        const result = await this.page.evaluate(function (data) {
-          // eslint-disable-next-line no-console
-          console.log('Executing login in browser context with data:', JSON.stringify(data));
-          return fetch(data.url, {
-            headers: {
-              'X-Twilio-Csrf': data.csrfToken || '',
-              Cookie: `tw-visitor=${data.twVisitorCookie}` || '',
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: data.email,
-              password: data.password,
-            }),
-            credentials: 'include',
-            method: 'POST',
-          })
-            .then((response) => {
-              return {
-                status: response.status,
-                headers: (() => {
-                  const headersObj = {};
-                  response.headers.forEach((value, key) => {
-                    headersObj[key] = value;
-                  });
-                  return headersObj;
-                })(),
-              };
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.page.setCookie({
+          name: 'tw-visitor',
+          value: twVisitorCookie,
+        });
+        const result = await this.page.evaluate(
+          function (data) {
+            return fetch(data.url, {
+              headers: {
+                'x-twilio-csrf': data.csrfToken || '',
+                // cookie: `tw-visitor=${data.twVisitorCookie}` || '',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                email: data.email,
+                password: data.password,
+              }),
+              credentials: 'include',
+              method: 'POST',
             })
-            .catch((err) => {
-              return {
-                error: err.message || 'Unknown error during fetch',
-              };
-            });
-        }, loginData);
+              .then((response) => {
+                return {
+                  status: response.status,
+                  headers: (() => {
+                    const headersObj = {};
+                    response.headers.forEach((value, key) => {
+                      headersObj[key] = value;
+                    });
+                    return headersObj;
+                  })(),
+                };
+              })
+              .catch((err) => {
+                return {
+                  error: err.message || 'Unknown error during fetch',
+                };
+              });
+          },
+          {
+            url: loginURL,
+            email: testParams.secrets.console.email,
+            password: testParams.secrets.console.password,
+            csrfToken,
+            twVisitorCookie,
+          },
+        );
         logger.info('Fetch result from browser:', result);
 
         logger.info('Logging in Flex via service login on first load');
