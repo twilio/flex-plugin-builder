@@ -56,34 +56,20 @@ export class TwilioConsole extends Base {
         const nodeFetch = (await import('node-fetch')).default;
         const csrfResponse = await nodeFetch(`${this._baseUrl}/api/csrf`, { method: 'GET' });
         const setCookieHeader = csrfResponse.headers.get('set-cookie');
-        logger.info('CSRF set-cookie header:', setCookieHeader);
 
         if (setCookieHeader) {
           const match = setCookieHeader.match(/tw-visitor=([^;]+);/);
           twVisitorCookie = match ? match[1] : null;
-          logger.info('tw-visitor cookie:', twVisitorCookie);
         }
 
         const data = await csrfResponse.json();
-        logger.info('CSRF response :', data);
         csrfToken = (data as CsrfResponse).csrf || null;
-        logger.info('csrfToken:', csrfToken);
-        logger.info('tw-visitor cookie:', twVisitorCookie);
       } catch (e) {
         logger.info('CSRF fetch failed:', e);
       }
 
-      logger.info('CSRF token fetched, proceeding with login', csrfToken);
       if (csrfToken && twVisitorCookie) {
         const loginURL = `${this._baseUrl}/userauth/submitLoginPassword`;
-        logger.info('loginURL', loginURL);
-        const loginData = {
-          url: loginURL,
-          email: testParams.secrets.console.email,
-          password: testParams.secrets.console.password,
-          csrfToken,
-          twVisitorCookie,
-        };
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.page.setCookie({
           name: 'tw-visitor',
@@ -94,7 +80,6 @@ export class TwilioConsole extends Base {
             return fetch(data.url, {
               headers: {
                 'x-twilio-csrf': data.csrfToken || '',
-                // cookie: `tw-visitor=${data.twVisitorCookie}` || '',
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
