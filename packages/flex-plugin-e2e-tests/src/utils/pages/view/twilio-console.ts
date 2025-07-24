@@ -86,7 +86,8 @@ export class TwilioConsole extends Base {
         };
 
         const result = await this.page.evaluate(function (data) {
-          logger.info('Executing login in browser context with data:', JSON.stringify(data));
+          // eslint-disable-next-line no-console
+          console.log('Executing login in browser context with data:', JSON.stringify(data));
           return fetch(data.url, {
             headers: {
               'X-Twilio-Csrf': data.csrfToken || '',
