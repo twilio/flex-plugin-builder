@@ -1,5 +1,6 @@
 import { Page } from 'puppeteer';
 import { logger } from '@twilio/flex-dev-utils';
+import nodeFetch from 'node-fetch';
 
 import { testParams } from '../../../core';
 import { Base } from './base';
@@ -45,15 +46,11 @@ export class TwilioConsole extends Base {
     const path = `console/flex/service-login/${accountSid}/?path=/${flexPath}&referer=${redirectUrl}`;
     await this.goto({ baseUrl: this._baseUrl, path });
 
-    logger.info('Before firstload');
     if (firstLoad) {
       await this.elementVisible(TwilioConsole._loginForm, `Twilio Console's Login form`);
       let csrfToken: string | null = null;
       let twVisitorCookie: string | null = null;
       try {
-        // Fetch CSRF and cookies using node-fetch
-        // eslint-disable-next-line import/no-extraneous-dependencies
-        const nodeFetch = (await import('node-fetch')).default;
         const csrfResponse = await nodeFetch(`${this._baseUrl}/api/csrf`, { method: 'GET' });
         const setCookieHeader = csrfResponse.headers.get('set-cookie');
 

@@ -38,6 +38,7 @@
     "@twilio/flex-plugins-api-client": "7.1.2",
     "axios": "^0.24.0",
     "lodash": "4.17.21",
+    "node-fetch": "^3.3.2",
     "package-json": "^7.0.0",
     "puppeteer": "^21.3.7",
     "replace-in-file": "^6.3.2",
