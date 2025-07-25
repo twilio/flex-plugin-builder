@@ -13,6 +13,11 @@ on:
         description: 'A flex-ui version passed from the caller workflow. It decides the version of FLEX UI on tests will run on.'
         required: true
         type: string
+      NODE_VERSION:
+        description: 'A node-version passed from the caller workflow. It decides the version of node on which tests will run.'
+        required: false
+        type: string
+        default: '22'
       NPM_IGNORE_PREFIX:
         description: 'A npm-ignore-prefix passed from the caller workflow.'
         required: true
@@ -96,7 +101,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
-          node-version: '22'
+          node-version: ${{ inputs.NODE_VERSION }}
       - name: Install project dependencies (Linux)
         if: ${{ inputs.OS == 'ubuntu-22.04' }}
         run: |
