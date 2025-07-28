@@ -2,13 +2,13 @@ name: Flex Plugins CLI - Jailbreak E2E Nightly
 
 on:
   schedule:
-    - cron: '0 21 * * *' # At 21:00 UTC (02:30 IST) every day
-    - cron: '0 22 * * *' # At 22:00 UTC (03:30 IST) every day
-    - cron: '0 23 * * *' # At 23:00 UTC (04:30 IST) every day
+    - cron: '0 24 * * *' # At 21:00 UTC (02:30 IST) every day
+    - cron: '0 25 * * *' # At 22:00 UTC (03:30 IST) every day
+    - cron: '0 26 * * *' # At 23:00 UTC (04:30 IST) every day
 
 jobs:
   scheduled-e2e-unix-jailbreak:
-    if: github.event.schedule == '0 21 * * *'
+    if: github.event.schedule == '0 24 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: ubuntu-22.04
@@ -33,7 +33,7 @@ jobs:
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
   scheduled-e2e-macos-jailbreak:
-    if: github.event.schedule == '0 22 * * *'
+    if: github.event.schedule == '0 25 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: macos-latest
@@ -58,7 +58,7 @@ jobs:
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
   scheduled-e2e-windows-jailbreak:
-    if: github.event.schedule == '0 23 * * *'
+    if: github.event.schedule == '0 26 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: windows-latest
