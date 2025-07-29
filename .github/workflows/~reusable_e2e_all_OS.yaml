@@ -86,7 +86,7 @@ env:
   NODE_OPTIONS: --max-old-space-size=8192
 
 jobs:
-  node20:
+  node:
     strategy:
       fail-fast: false
       matrix:
