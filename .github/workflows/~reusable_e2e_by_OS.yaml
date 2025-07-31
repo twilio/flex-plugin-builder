@@ -110,14 +110,23 @@ jobs:
         shell: powershell
         run: |
           $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
-          (Get-Content $hostsPath) | ForEach-Object {
-            if ($_ -match "^::1\s+localhost") {
-              "#$_"
+          $tempPath = "$env:TEMP\hosts"
+
+          Get-Content $hostsPath | ForEach-Object {
+            if ($_ -match '^::1\s+localhost') {
+              "# $_"
             } else {
               $_
             }
-          } | Set-Content $hostsPath -Force
+          } | Set-Content $tempPath
+
+          Move-Item -Path $tempPath -Destination $hostsPath -Force
         if: ${{ inputs.OS == 'windows-latest' && inputs.NODE_VERSION == '18' }}
+      - name: Verify hosts file (Windows)
+        shell: powershell
+        run: |
+          Get-Content "$env:SystemRoot\System32\drivers\etc\hosts"
+        if: ${{ inputs.OS == 'windows-latest'}}
       - name: Install project dependencies (Linux)
         if: ${{ inputs.OS == 'ubuntu-22.04' }}
         run: |
