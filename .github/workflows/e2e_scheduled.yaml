@@ -2,16 +2,16 @@ name: Flex Plugins CLI - E2E Nightly
 
 on:
   schedule:
-    - cron: '0 18 * * *' # At 18:00 UTC (23:30 IST) every day
-    - cron: '0 19 * * *' # At 19:00 UTC (00:30 IST) every day
-    - cron: '0 20 * * *' # At 20:00 UTC (01:30 IST) every day
-    - cron: '0 21 * * *' # At 21:00 UTC (02:30 IST) every day
-    - cron: '0 22 * * *' # At 22:00 UTC (03:30 IST) every day
-    - cron: '0 23 * * *' # At 23:00 UTC (04:30 IST) every day
+   - cron: '0 4 * * *'  # At 04:00 UTC (10:00 AM IST)
+   - cron: '0 5 * * *'  # At 05:00 UTC (11:00 AM IST)
+   - cron: '0 6 * * *'  # At 06:00 UTC (12:00 PM IST)
+   - cron: '0 7 * * *'  # At 07:00 UTC (01:00 PM IST)
+   - cron: '0 8 * * *'  # At 08:00 UTC (02:00 PM IST)
+   - cron: '0 9 * * *'  # At 09:00 UTC (03:00 PM IST)
 
 jobs:
   scheduled-e2e-unix:
-    if: github.event.schedule == '0 18 * * *'
+    if: github.event.schedule == ''0 4 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: ubuntu-22.04
@@ -37,7 +37,7 @@ jobs:
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
   scheduled-e2e-unix-node-18:
-    if: github.event.schedule == '0 19 * * *'
+    if: github.event.schedule == '0 5 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: ubuntu-22.04
@@ -63,7 +63,7 @@ jobs:
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
   scheduled-e2e-macos:
-    if: github.event.schedule == '0 20 * * *'
+    if: github.event.schedule == '0 6 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: macos-latest
@@ -89,7 +89,7 @@ jobs:
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
   
   scheduled-e2e-macos-node-18:
-    if: github.event.schedule == '0 21 * * *'
+    if: github.event.schedule == '0 7 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: macos-latest
@@ -115,7 +115,7 @@ jobs:
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
   scheduled-e2e-windows:
-    if: github.event.schedule == '0 22 * * *'
+    if: github.event.schedule == '0 8 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: windows-latest
@@ -141,7 +141,7 @@ jobs:
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
     
   scheduled-e2e-windows-node-18:
-    if: github.event.schedule == '0 23 * * *'
+    if: github.event.schedule == '0 9 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: windows-latest

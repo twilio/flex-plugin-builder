@@ -1,6 +1,5 @@
 import { Page } from 'puppeteer';
 import { logger } from '@twilio/flex-dev-utils';
-import nodeFetch from 'node-fetch';
 
 import { testParams } from '../../../core';
 import { Base } from './base';
@@ -51,7 +50,7 @@ export class TwilioConsole extends Base {
       let csrfToken: string | null = null;
       let twVisitorCookie: string | null = null;
       try {
-        const csrfResponse = await nodeFetch(`${this._baseUrl}/api/csrf`, { method: 'GET' });
+        const csrfResponse = await fetch(`${this._baseUrl}/api/csrf`, { method: 'GET' });
         const setCookieHeader = csrfResponse.headers.get('set-cookie');
 
         if (setCookieHeader) {
@@ -73,7 +72,7 @@ export class TwilioConsole extends Base {
           value: twVisitorCookie,
         });
         const result = await this.page.evaluate(
-          function (data) {
+          async function (data) {
             return fetch(data.url, {
               headers: {
                 'x-twilio-csrf': data.csrfToken || '',
