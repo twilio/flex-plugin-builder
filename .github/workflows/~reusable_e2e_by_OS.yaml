@@ -105,7 +105,7 @@ jobs:
       - name: Override localhost to IPv4
         run: |
           sudo sed -i '/localhost/s/::1/#::1/' /etc/hosts
-        if: ${{ inputs.OS == 'ubuntu-22.04' && inputs.NODE_VERSION == '18' }}
+        if: ${{ inputs.OS != 'macos-latest' && inputs.NODE_VERSION == '18' }}
       - name: Install project dependencies (Linux)
         if: ${{ inputs.OS == 'ubuntu-22.04' }}
         run: |
