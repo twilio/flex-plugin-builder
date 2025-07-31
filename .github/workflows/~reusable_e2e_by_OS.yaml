@@ -107,6 +107,7 @@ jobs:
           sudo sed -i '/localhost/s/::1/#::1/' /etc/hosts
         if: ${{ inputs.OS == 'ubuntu-22.04' && inputs.NODE_VERSION == '18' }}
       - name: Override localhost to IPv4 in windows for Node 18
+        shell: powershell
         run: |
           $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
           (Get-Content $hostsPath) | ForEach-Object {
