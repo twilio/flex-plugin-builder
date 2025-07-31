@@ -8,7 +8,7 @@ on:
 
 jobs:
   scheduled-e2e-unix-jailbreak:
-    if: github.event.schedule == '0 10 * * *'
+    if: github.event.schedule == '0 9 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: ubuntu-22.04
@@ -33,7 +33,7 @@ jobs:
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
   scheduled-e2e-macos-jailbreak:
-    if: github.event.schedule == '0 11 * * *'
+    if: github.event.schedule == '0 10 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: macos-latest
@@ -58,7 +58,7 @@ jobs:
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
   scheduled-e2e-windows-jailbreak:
-    if: github.event.schedule == '0 12 * * *'
+    if: github.event.schedule == '0 11 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: windows-latest
