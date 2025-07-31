@@ -111,15 +111,18 @@ jobs:
         run: |
           $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
           $tempPath = "$env:TEMP\hosts"
+          $content = Get-Content $hostsPath
 
-          Get-Content $hostsPath | ForEach-Object {
-            if ($_ -match '^::1\s+localhost') {
+          $updated = $content | ForEach-Object {
+            if ($_ -match '^\s*#\s*127\.0\.0\.1\s+localhost') {
+              '127.0.0.1       localhost'
+            } elseif ($_ -match '^\s*::1\s+localhost') {
               "# $_"
             } else {
               $_
             }
-          } | Set-Content $tempPath
-
+          }
+          $updated | Set-Content $tempPath
           Move-Item -Path $tempPath -Destination $hostsPath -Force
         if: ${{ inputs.OS == 'windows-latest' && inputs.NODE_VERSION == '18' }}
       - name: Verify hosts file (Windows)
