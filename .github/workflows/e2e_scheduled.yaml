@@ -2,12 +2,11 @@ name: Flex Plugins CLI - E2E Nightly
 
 on:
   schedule:
-   - cron: '0 4 * * *'  # At 04:00 UTC (10:00 AM IST)
-   - cron: '0 5 * * *'  # At 05:00 UTC (11:00 AM IST)
-   - cron: '0 6 * * *'  # At 06:00 UTC (12:00 PM IST)
-   - cron: '0 7 * * *'  # At 07:00 UTC (01:00 PM IST)
-   - cron: '0 8 * * *'  # At 08:00 UTC (02:00 PM IST)
-   - cron: '0 9 * * *'  # At 09:00 UTC (03:00 PM IST)
+   - cron: '0 4 * * *'  # At 04:00 UTC (09:30 AM IST)
+   - cron: '0 5 * * *'  # At 05:00 UTC (10:30 AM IST)
+   - cron: '0 6 * * *'  # At 06:00 UTC (11:30 AM IST)
+   - cron: '0 7 * * *'  # At 07:00 UTC (12:30 PM IST)
+   - cron: '0 8 * * *'  # At 08:00 UTC (01:30 PM IST)
 
 jobs:
   scheduled-e2e-unix:
@@ -122,32 +121,6 @@ jobs:
       BRANCH: main
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       NODE_VERSION: '22'
-      PACKAGE_VERSION: latest
-      FLEX_UI_VERSION: latest
-      SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly'
-      SEND_NOTIFICATION: true
-    secrets:
-      CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
-      CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
-      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
-      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
-      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
-      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
-      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
-      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
-      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
-      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
-      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
-      SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
-    
-  scheduled-e2e-windows-node-18:
-    if: github.event.schedule == '0 9 * * *'
-    uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
-    with:
-      OS: windows-latest
-      BRANCH: main
-      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-      NODE_VERSION: '18'
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
       SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly'

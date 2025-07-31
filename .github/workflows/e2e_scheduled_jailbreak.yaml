@@ -2,9 +2,9 @@ name: Flex Plugins CLI - Jailbreak E2E Nightly
 
 on:
   schedule:
-    - cron: '0 10 * * *' # At 10:00 UTC (04:00 PM IST)
-    - cron: '0 11 * * *' # At 11:00 UTC (05:00 PM IST)
-    - cron: '0 12 * * *' # At 12:00 UTC (06:30 PM IST)
+    - cron: '0 9 * * *' # At 09:00 UTC (02:30 PM IST)
+    - cron: '0 10 * * *' # At 10:00 UTC (03:30 PM IST)
+    - cron: '0 11 * * *' # At 11:00 UTC (04:30 PM IST)
 
 jobs:
   scheduled-e2e-unix-jailbreak:

@@ -106,30 +106,6 @@ jobs:
         run: |
           sudo sed -i '/localhost/s/::1/#::1/' /etc/hosts
         if: ${{ inputs.OS == 'ubuntu-22.04' && inputs.NODE_VERSION == '18' }}
-      - name: Override localhost to IPv4 in windows for Node 18
-        shell: powershell
-        run: |
-          $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
-          $tempPath = "$env:TEMP\hosts"
-          $content = Get-Content $hostsPath
-
-          $updated = $content | ForEach-Object {
-            if ($_ -match '^\s*#\s*127\.0\.0\.1\s+localhost') {
-              '127.0.0.1       localhost'
-            } elseif ($_ -match '^\s*::1\s+localhost') {
-              "# $_"
-            } else {
-              $_
-            }
-          }
-          $updated | Set-Content $tempPath
-          Move-Item -Path $tempPath -Destination $hostsPath -Force
-        if: ${{ inputs.OS == 'windows-latest' && inputs.NODE_VERSION == '18' }}
-      - name: Verify hosts file (Windows)
-        shell: powershell
-        run: |
-          Get-Content "$env:SystemRoot\System32\drivers\etc\hosts"
-        if: ${{ inputs.OS == 'windows-latest'}}
       - name: Install project dependencies (Linux)
         if: ${{ inputs.OS == 'ubuntu-22.04' }}
         run: |
