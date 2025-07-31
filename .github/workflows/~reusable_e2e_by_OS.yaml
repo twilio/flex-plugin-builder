@@ -102,6 +102,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ inputs.NODE_VERSION }}
+      - name: Override localhost to IPv4
+        run: |
+          sudo sed -i '/localhost/s/::1/#::1/' /etc/hosts
+        if: ${{ inputs.NODE_VERSION == '18' }}
       - name: Install project dependencies (Linux)
         if: ${{ inputs.OS == 'ubuntu-22.04' }}
         run: |
