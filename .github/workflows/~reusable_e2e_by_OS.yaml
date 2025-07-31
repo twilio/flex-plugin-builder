@@ -102,10 +102,21 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ inputs.NODE_VERSION }}
-      - name: Override localhost to IPv4
+      - name: Override localhost to IPv4 in Linux for Node 18
         run: |
           sudo sed -i '/localhost/s/::1/#::1/' /etc/hosts
-        if: ${{ inputs.OS != 'macos-latest' && inputs.NODE_VERSION == '18' }}
+        if: ${{ inputs.OS == 'ubuntu-22.04' && inputs.NODE_VERSION == '18' }}
+      - name: Override localhost to IPv4 in windows for Node 18
+        run: |
+          $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
+          (Get-Content $hostsPath) | ForEach-Object {
+            if ($_ -match "^::1\s+localhost") {
+              "#$_"
+            } else {
+              $_
+            }
+          } | Set-Content $hostsPath -Force
+        if: ${{ inputs.OS == 'windows-latest' && inputs.NODE_VERSION == '18' }}
       - name: Install project dependencies (Linux)
         if: ${{ inputs.OS == 'ubuntu-22.04' }}
         run: |
