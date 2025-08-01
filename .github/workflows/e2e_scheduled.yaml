@@ -10,7 +10,7 @@ on:
 
 jobs:
   scheduled-e2e-unix:
-    if: github.event.schedule == ''0 4 * * *'
+    if: github.event.schedule == '0 4 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: ubuntu-22.04
