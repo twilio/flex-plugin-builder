@@ -1,4 +1,4 @@
-import { ElementHandle, Page } from 'puppeteer';
+import { ElementHandle, Page, PuppeteerLifeCycleEvent } from 'puppeteer';
 
 export abstract class Base {
   protected static readonly DEFAULT_LOCATE_TIMEOUT = 3000000;
@@ -16,9 +16,17 @@ export abstract class Base {
    * @param baseUrl
    * @param path
    */
-  protected async goto({ baseUrl, path }: { baseUrl: string; path?: string }): Promise<void> {
+  protected async goto({
+    baseUrl,
+    path,
+    waitUntil,
+  }: {
+    baseUrl: string;
+    path?: string;
+    waitUntil?: PuppeteerLifeCycleEvent;
+  }): Promise<void> {
     const fullPath = path ? `${baseUrl}/${path}` : baseUrl;
-    await this.page.goto(fullPath, { waitUntil: 'load', timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT });
+    await this.page.goto(fullPath, { waitUntil: waitUntil || 'load', timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT });
   }
 
   /**
