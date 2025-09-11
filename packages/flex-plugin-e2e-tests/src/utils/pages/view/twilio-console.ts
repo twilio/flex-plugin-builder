@@ -43,7 +43,6 @@ export class TwilioConsole extends Base {
       ? TwilioConsole._createLocalhostUrl(localhostPort)
       : this._flexBaseUrl;
     const path = `console/flex/service-login/${accountSid}/?path=/${flexPath}&referer=${redirectUrl}`;
-    await this.goto({ baseUrl: this._baseUrl, path });
 
     await Promise.all([
       this.page.waitForNavigation({
