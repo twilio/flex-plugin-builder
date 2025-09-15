@@ -26,7 +26,13 @@ export abstract class Base {
     waitUntil?: PuppeteerLifeCycleEvent;
   }): Promise<void> {
     const fullPath = path ? `${baseUrl}/${path}` : baseUrl;
-    await this.page.goto(fullPath, { waitUntil: waitUntil || 'load', timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT });
+    await Promise.all([
+      this.page.waitForNavigation({
+        waitUntil: 'load', // condition to consider navigation finished
+        timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT,
+      }),
+      await this.page.goto(fullPath, { waitUntil: waitUntil || 'load', timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT }),
+    ]);
   }
 
   /**

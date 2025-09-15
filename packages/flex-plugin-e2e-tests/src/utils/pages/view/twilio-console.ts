@@ -44,13 +44,7 @@ export class TwilioConsole extends Base {
       : this._flexBaseUrl;
     const path = `console/flex/service-login/${accountSid}/?path=/${flexPath}&referer=${redirectUrl}`;
 
-    await Promise.all([
-      this.page.waitForNavigation({
-        waitUntil: 'load', // condition to consider navigation finished
-        timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT,
-      }),
-      this.goto({ baseUrl: this._baseUrl, path }),
-    ]);
+    await this.goto({ baseUrl: this._baseUrl, path });
 
     if (firstLoad) {
       await this.elementVisible(TwilioConsole._loginForm, `Twilio Console's Login form`);
