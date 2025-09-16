@@ -1,3 +1,4 @@
+import { logger } from '@twilio/flex-dev-utils';
 import { ElementHandle, Page, PuppeteerLifeCycleEvent } from 'puppeteer';
 
 export abstract class Base {
@@ -26,13 +27,21 @@ export abstract class Base {
     waitUntil?: PuppeteerLifeCycleEvent;
   }): Promise<void> {
     const fullPath = path ? `${baseUrl}/${path}` : baseUrl;
-    await Promise.all([
-      this.page.waitForNavigation({
-        waitUntil: 'load', // condition to consider navigation finished
-        timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT,
-      }),
-      await this.page.goto(fullPath, { waitUntil: waitUntil || 'load', timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT }),
-    ]);
+    try {
+      await Promise.all([
+        this.page.waitForNavigation({
+          waitUntil: 'load', // condition to consider navigation finished
+          timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT,
+        }),
+        this.page.goto(fullPath, {
+          waitUntil: waitUntil || 'load',
+          timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT,
+        }),
+      ]);
+    } catch (err) {
+      logger.error(`Ignoring navigation error to ${fullPath} and ${(err as Error).message}`);
+      // Intentionally doing nothing on error
+    }
   }
 
   /**
