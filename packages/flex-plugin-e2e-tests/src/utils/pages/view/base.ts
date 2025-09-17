@@ -1,6 +1,8 @@
 import { logger } from '@twilio/flex-dev-utils';
 import { ElementHandle, Page, PuppeteerLifeCycleEvent } from 'puppeteer';
 
+import { sleep } from '../../timers';
+
 export abstract class Base {
   protected static readonly DEFAULT_LOCATE_TIMEOUT = 3000000;
 
@@ -30,16 +32,23 @@ export abstract class Base {
     try {
       await Promise.all([
         this.page.waitForNavigation({
-          waitUntil: 'load', // condition to consider navigation finished
+          waitUntil: 'networkidle2', // condition to consider navigation finished
           timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT,
         }),
         this.page.goto(fullPath, {
-          waitUntil: waitUntil || 'load',
+          waitUntil: waitUntil || 'networkidle2',
           timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT,
         }),
       ]);
     } catch (err) {
-      logger.error(`Ignoring navigation error to ${fullPath} and ${(err as Error).message}`);
+      if (err.message.includes('detached')) {
+        logger.error('Page has been detached. adding a sleep to let other processes finish');
+        /*
+         * Just let it wait the rest of the timeout so the other contestants in the rest
+         * can finish first.
+         */
+        await sleep(5000);
+      }
       // Intentionally doing nothing on error
     }
   }
