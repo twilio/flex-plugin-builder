@@ -41,7 +41,7 @@
     "node-fetch": "^3.3.2",
     "package-json": "^7.0.0",
     "puppeteer": "^21.3.7",
-    "replace-in-file": "^6.3.2",
+    "replace-in-file": "^8.0.0",
     "semver": "^7.3.5"
   },
   "devDependencies": {
