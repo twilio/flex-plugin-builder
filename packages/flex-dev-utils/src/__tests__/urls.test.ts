@@ -45,7 +45,7 @@ describe('urls', () => {
 
       expect(result.local.host).toEqual('0.0.0.0');
       expect(result.local.port).toEqual(1234);
-      expect(result.local.url).toEqual('http://localhost:1234/');
+      expect(result.local.url).toEqual('http://flex.local.com:1234/');
 
       expect(result.network.host).toEqual('192.0.0.0');
       expect(result.network.port).toEqual(1234);
@@ -61,7 +61,7 @@ describe('urls', () => {
 
       expect(result.local.host).toEqual('0.0.0.0');
       expect(result.local.port).toEqual(1234);
-      expect(result.local.url).toEqual('https://localhost:1234/');
+      expect(result.local.url).toEqual('https://flex.local.com:1234/');
 
       expect(result.network.host).toEqual('192.0.0.0');
       expect(result.network.port).toEqual(1234);

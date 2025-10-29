@@ -43,7 +43,7 @@ export const setupConfiguration = async (config: FlexPluginArguments): Promise<F
 
   config.pluginClassName = `${upperFirst(camelCase(name)).replace('Plugin', '')}Plugin`;
   config.pluginNamespace = name.toLowerCase().replace('plugin-', '');
-  config.runtimeUrl = config.runtimeUrl || 'http://localhost:3000';
+  config.runtimeUrl = config.runtimeUrl || 'http://flex.local.com:3000';
   config.targetDirectory = resolveCwd(name);
   config.flexSdkVersion = await packages.getLatestFlexUIVersion(2);
   config.pluginScriptsVersion = pkg.devDependencies['@twilio/flex-plugin-scripts'];
