@@ -36,6 +36,8 @@ Please visit [Twilio Docs](https://www.twilio.com/docs/flex/developer/plugins) f
 * [Plugins API](https://www.twilio.com/docs/flex/developer/plugins/api)
 * [Troubleshooting and FAQ](faq.md)
 
+> **Important:** Starting with the latest version, local development uses `flex.local.com` instead of `localhost`. Please see the [FAQ](faq.md) for setup instructions.
+
 ## Changelog
 
 Major changelogs can be found in the [changelog directory](/changelog).
