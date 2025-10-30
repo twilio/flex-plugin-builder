@@ -36,7 +36,7 @@ Please visit [Twilio Docs](https://www.twilio.com/docs/flex/developer/plugins) f
 * [Plugins API](https://www.twilio.com/docs/flex/developer/plugins/api)
 * [Troubleshooting and FAQ](faq.md)
 
-> **Important:** Starting with the latest version, local development uses `flex.local.com` instead of `localhost`. Please see the [FAQ](faq.md) for setup instructions.
+> **Note:** When using SSO v2 (OAuth flow), you may need to configure a custom domain for local development using the `--domain` flag to avoid authentication issues. See the [FAQ](faq.md) for setup instructions.
 
 ## Changelog
 

@@ -36,6 +36,9 @@ export default class FlexPluginsStart extends FlexPlugin {
       description: FlexPluginsStart.topic.flags.port,
       default: 3000,
     }),
+    domain: flags.string({
+      description: FlexPluginsStart.topic.flags.domain,
+    }),
     'flex-ui-source': flags.string({
       hidden: true,
     }),
@@ -114,6 +117,11 @@ export default class FlexPluginsStart extends FlexPlugin {
 
     const flexPort = await this.getPort();
     flexArgs.push('--port', flexPort.toString());
+
+    if (this._flags.domain) {
+      const customDomain = this._flags.domain;
+      env.setDomain(customDomain);
+    }
 
     if (flexArgs.length && localPluginNames.length) {
       // Verify the users environment is ready to run plugins locally

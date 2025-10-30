@@ -12,6 +12,7 @@ import { WebpackType } from '..';
 // eslint-disable-next-line import/no-unused-modules
 export const _getBase = (): Configuration => {
   const { local } = getLocalAndNetworkUrls(env.getPort());
+  const customDomain = env.getDomain();
 
   return {
     compress: true,
@@ -19,12 +20,12 @@ export const _getBase = (): Configuration => {
     client: {
       logging: 'none',
       webSocketURL: {
-        hostname: local.host,
+        hostname: customDomain || local.host,
         pathname: local.url,
         port: env.getPort(),
       },
     },
-    host: env.getHost(),
+    host: env.getHost() || '0.0.0.0', // Keep binding to 0.0.0.0 for network access
     port: env.getPort(),
   };
 };
