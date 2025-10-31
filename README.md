@@ -28,6 +28,44 @@ Flex Plugin Builder requires [Node.js](https://nodejs.org/). We support and reco
 
 - [@twilio-labs/plugin-flex](packages/plugin-flex): The CLI tool for creating, building, testing, deploying, and managing your plugins
 
+## Local Development Setup
+
+For local development of the Flex Plugin Builder itself, follow these steps:
+
+### Initial Setup
+
+1. Clone the repository and install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Link all packages for local development:
+   ```bash
+   npm run link-packages
+   ```
+   
+   This command will:
+   - Create global npm links for all packages in the `/packages` folder
+   - Link internal dependencies between packages
+   - Run `npm run link` in the plugin-flex package to register the CLI tool
+
+### Development Workflow
+
+After making any changes to the source code, rebuild the packages:
+
+```bash
+npm run build
+```
+
+This ensures that all TypeScript files are compiled and changes are reflected across linked packages.
+
+### Development Tips
+
+- The `link-packages` script only needs to be run once during initial setup
+- Run `npm run build` after every code change to see your changes take effect
+- Use `npm run test` to run all tests across packages
+- Individual packages can be built using `lerna run build --scope=@twilio/<package-name>`
+
 ## User Guide
 
 Please visit [Twilio Docs](https://www.twilio.com/docs/flex/developer/plugins) for the latest docs on Plugins CLI and API.
