@@ -24,6 +24,7 @@
     "clean": "lerna run clean",
     "coverage": "codecov",
     "docs": "./bin/docs-generator.js",
+    "link-packages": "node link-packages.js",
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint:fix",
     "preinstall": "npm install npm-force-resolutions --location=global",
