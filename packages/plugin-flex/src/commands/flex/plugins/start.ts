@@ -74,8 +74,6 @@ export default class FlexPluginsStart extends FlexPlugin {
     const flexPort = await this.getPort();
     flexArgs.push(PORT_FLAG, flexPort.toString());
 
-    this.setupCustomDomain();
-
     if (flexArgs.length && localPluginNames.length) {
       await this.runPlugins(flexArgs, localPluginNames, flexPort);
     }
@@ -213,6 +211,11 @@ export default class FlexPluginsStart extends FlexPlugin {
     if (this._flags['flex-ui-source']) {
       env.setFlexUISrc(this._flags['flex-ui-source']);
     }
+
+    if (this._flags.domain) {
+      const customDomain = this._flags.domain;
+      env.setDomain(customDomain);
+    }
   }
 
   /**
@@ -237,16 +240,6 @@ export default class FlexPluginsStart extends FlexPlugin {
       throw new TwilioCliError(
         'You must run at least one local plugin. To view all remote plugins, go to flex.twilio.com.',
       );
-    }
-  }
-
-  /**
-   * Sets up custom domain if provided
-   */
-  private setupCustomDomain(): void {
-    if (this._flags.domain) {
-      const customDomain = this._flags.domain;
-      env.setDomain(customDomain);
     }
   }
 
