@@ -55,6 +55,7 @@ export const _getLocalPlugin = (name: string): FlexConfigurationPlugin | undefin
 // eslint-disable-next-line import/no-unused-modules
 export const _getLocalPlugins = (port: Port, names: string[]): Plugin[] => {
   const protocol = `http${env.isHTTPS() ? 's' : ''}://`;
+  const domain = env.getDomain() || 'localhost';
 
   return names.map((name) => {
     const match = _getLocalPlugin(name);
@@ -63,7 +64,7 @@ export const _getLocalPlugins = (port: Port, names: string[]): Plugin[] => {
       return {
         phase: 3,
         name,
-        src: `${protocol}localhost:${port}/plugins/${name}.js`,
+        src: `${protocol}${domain}:${port}/plugins/${name}.js`,
       };
     }
 

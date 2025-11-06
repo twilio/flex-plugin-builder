@@ -86,6 +86,9 @@ export const getAccountSid = (): string | undefined => getProcessEnv('TWILIO_ACC
 export const getAuthToken = (): string | undefined => getProcessEnv('TWILIO_AUTH_TOKEN');
 export const hasHost = (): boolean => isDefined(getProcessEnv('HOST'));
 export const getHost = (): string | undefined => getProcessEnv('HOST');
+export const hasDomain = (): boolean => isDefined(getProcessEnv('DOMAIN'));
+export const getDomain = (): string | undefined => getProcessEnv('DOMAIN');
+export const setDomain = (domain: string): void => setProcessEnv('DOMAIN', domain);
 export const setHost = (host: string): void => setProcessEnv('HOST', host);
 export const hasPort = (): boolean => isDefined(getProcessEnv('PORT'));
 export const getPort = (): number => Number(getProcessEnv('PORT'));
@@ -257,6 +260,9 @@ export default {
   hasHost,
   getHost,
   setHost,
+  hasDomain,
+  getDomain,
+  setDomain,
   hasPort,
   getPort,
   setPort,

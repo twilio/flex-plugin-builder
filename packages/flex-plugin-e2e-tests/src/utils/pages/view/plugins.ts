@@ -28,7 +28,7 @@ export class Plugins extends Base {
 
   constructor(page: Page, baseUrl: string) {
     super(page);
-    this._baseUrl = baseUrl.includes('localhost') ? 'https://flex.twilio.com' : baseUrl;
+    this._baseUrl = baseUrl.includes('flex.local.com') ? 'https://flex.twilio.com' : baseUrl;
   }
 
   /**
