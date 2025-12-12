@@ -34,7 +34,7 @@ TWILIO_ACCOUNT_SID_drawin=ACxxx TWILIO_AUTH_TOKEN_darwin=123 CONSOLE_EMAIL="user
 You can also override certain defaults by setting these additional environment variables:
 
 - `FLEX_UI_VERSION` - the flexUIVersion to use. Defaults to `^1` otherwise
-- `PLUGIN_BASE_URL` - the baseUrl. Defaults to `http://localhost:3000` otherwise
+- `PLUGIN_BASE_URL` - the baseUrl. Defaults to `http://flex.local.com:3000` otherwise
 - `TWILIO_REGION` - the twilio region to use
 
 You can also run a specific step by using (don't forget the environment variables):
