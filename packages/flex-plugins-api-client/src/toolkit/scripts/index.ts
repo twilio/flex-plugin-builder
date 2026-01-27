@@ -18,8 +18,7 @@ export interface Page {
 // The List Resources interface
 export type ListResource<K extends ResourceNames, T> = {
   [key in K]: T[];
-} &
-  PaginationMeta;
+} & PaginationMeta;
 
 export { default as deployScript, DeployScript, DeployOption, DeployPlugin } from './deploy';
 export {
