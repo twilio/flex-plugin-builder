@@ -116,6 +116,7 @@ export class TwilioConsole extends Base {
 
         logger.info('Logging in Flex via service login on first load');
         await this.goto({ baseUrl: this._baseUrl, path });
+        logger.info('>> logged in successfully');
       } else {
         logger.error('Unable to fetch CSRF token or tw-visitor cookie for Twilio Console login');
         throw new Error('Unable to fetch CSRF token or tw-visitor cookie to login to Twilio Console');

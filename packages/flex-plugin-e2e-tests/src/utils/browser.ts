@@ -19,12 +19,14 @@ export class Browser {
   static async create(baseUrls: BaseUrl): Promise<void> {
     this._browser = await Puppeteer.launch({
       headless: true,
-      protocolTimeout: 300000,
+      protocolTimeout: 600000,
       args: [
         '--use-fake-ui-for-media-stream',
         '--disable-features=site-per-process',
         '--no-sandbox',
         '--disable-setuid-sandbox',
+        '--disable-features=BlockInsecurePrivateNetworkRequests,BlockInsecurePrivateNetworkRequestsFromPrivate',
+        '--disable-dev-shm-usage',
       ],
     });
     this._page = await this._browser.newPage();
