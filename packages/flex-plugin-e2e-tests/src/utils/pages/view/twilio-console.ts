@@ -123,19 +123,8 @@ export class TwilioConsole extends Base {
         // Wait for cookies to be set after successful login
         await sleep(2000);
 
-        // Verify cookies are set
-        const cookiesBeforeNav = await this.page.cookies();
-        logger.info('Cookies after login:', cookiesBeforeNav.map((c) => `${c.name} (domain: ${c.domain})`).join(', '));
-
         logger.info('Navigating to Flex admin directly after successful login');
         await this.goto({ baseUrl: this._flexBaseUrl, path: flexPath });
-
-        // Check if cookies persisted after navigation
-        const cookiesAfterNav = await this.page.cookies();
-        logger.info('Cookies after navigation:', cookiesAfterNav.map((c) => `${c.name} (domain: ${c.domain})`).join(', '));
-
-        // Check current URL
-        logger.info('Current URL after navigation:', this.page.url());
       } else {
         logger.error('Unable to fetch CSRF token or tw-visitor cookie for Twilio Console login');
         throw new Error('Unable to fetch CSRF token or tw-visitor cookie to login to Twilio Console');
