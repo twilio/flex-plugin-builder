@@ -67,10 +67,10 @@ export class TwilioConsole extends Base {
 
       if (csrfToken && twVisitorCookie) {
         const loginURL = `${this._baseUrl}/userauth/submitLoginPassword`;
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.page.setCookie({
+        await this.page.setCookie({
           name: 'tw-visitor',
           value: twVisitorCookie,
+          domain: new URL(this._baseUrl).hostname,
         });
         const result = await this.page.evaluate(
           async function (data) {
@@ -113,6 +113,18 @@ export class TwilioConsole extends Base {
           },
         );
         logger.info('Fetch result from browser:', result);
+
+        if (result.status !== 200) {
+          logger.error(`Login failed with status: ${result.status}`);
+          throw new Error(`Login failed with status: ${result.status}`);
+        }
+
+        // Wait for cookies to be set after successful login
+        await sleep(2000);
+
+        // Verify cookies are set
+        const cookies = await this.page.cookies();
+        logger.info('Cookies after login:', cookies.map((c) => c.name).join(', '));
 
         logger.info('Logging in Flex via service login on first load');
         await this.goto({ baseUrl: this._baseUrl, path });
