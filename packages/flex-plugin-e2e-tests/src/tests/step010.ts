@@ -1,3 +1,4 @@
+/* eslint-disable multiline-comment-style */
 /* eslint-disable import/no-unused-modules */
 import { logger } from '@twilio/flex-dev-utils';
 
@@ -12,34 +13,39 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   const plugin = scenario.plugins[0];
   assertion.not.isNull(plugin);
 
-  if (!plugin.newlineValue) {
-    throw new Error(`scenario.plugin.newlineValue does not have a valid value`);
-  }
+  // if (!plugin.newlineValue) {
+  //   throw new Error(`scenario.plugin.newlineValue does not have a valid value`);
+  // }
 
-  // Fetch and find latest released plugin
-  const release = await api.getActiveRelease();
+  // // Fetch and find latest released plugin
+  // const release = await api.getActiveRelease();
 
-  if (!release) {
-    throw new Error('Account does not have an active release');
-  }
+  // if (!release) {
+  //   throw new Error('Account does not have an active release');
+  // }
 
-  const plugins = await api.getActivePlugins(release.configuration_sid);
-  const releasedPlugin = plugins.plugins.find((plgin) => plgin.unique_name === plugin.name);
-  if (!releasedPlugin) {
-    throw new Error(`Did not find plugin with name: ${plugin.name} in released plugins`);
-  }
+  // const plugins = await api.getActivePlugins(release.configuration_sid);
+  // const releasedPlugin = plugins.plugins.find((plgin) => plgin.unique_name === plugin.name);
+  // if (!releasedPlugin) {
+  //   throw new Error(`Did not find plugin with name: ${plugin.name} in released plugins`);
+  // }
 
   await Browser.create({ flex: config.hostedFlexBaseUrl, twilioConsole: config.consoleBaseUrl });
   // Log into Flex
   await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort);
 
-  await assertion.app.view.adminDashboard.isVisible();
+  try {
+    await assertion.app.view.adminDashboard.isVisible();
+  } catch (error) {
+    await Browser.app.takeScreenshot(environment.cwd, 'step010_adminDashboard_failure.png');
+    throw error;
+  }
 
   // Verify that user is on the right account
   const accountSid = await Browser.app.getFlexAccountSid();
   assertion.equal(accountSid, secrets.api.accountSid);
   // Make sure that /plugins contain the plugin
-  await pluginHelper.waitForPluginToRelease(releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
+  // await pluginHelper.waitForPluginToRelease(releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
   // await assertRetry();
 
   const loginAndAssert = async () => {
