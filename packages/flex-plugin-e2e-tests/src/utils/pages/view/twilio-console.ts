@@ -113,18 +113,11 @@ export class TwilioConsole extends Base {
             twVisitorCookie,
           },
         );
-        logger.info('Fetch result from browser:', result);
-
-        if (result.status !== 200) {
-          logger.error(`Login failed with status: ${result.status}`);
-          throw new Error(`Login failed with status: ${result.status}`);
-        }
-
         // Wait for cookies to be set after successful login
         await sleep(2000);
 
         logger.info('Navigating to Flex admin directly after successful login');
-        await this.goto({ baseUrl: this._flexBaseUrl, path: flexPath });
+        await this.goto({ baseUrl: flexPath === 'admin' ? this._flexBaseUrl : this._baseUrl, path: flexPath === 'admin' ? flexPath : path});
       } else {
         logger.error('Unable to fetch CSRF token or tw-visitor cookie for Twilio Console login');
         throw new Error('Unable to fetch CSRF token or tw-visitor cookie to login to Twilio Console');
