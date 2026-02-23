@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Page } from 'puppeteer';
 import { logger } from '@twilio/flex-dev-utils';
 
@@ -123,11 +124,18 @@ export class TwilioConsole extends Base {
         await sleep(2000);
 
         // Verify cookies are set
-        const cookies = await this.page.cookies();
-        logger.info('Cookies after login:', cookies.map((c) => c.name).join(', '));
+        const cookiesBeforeNav = await this.page.cookies();
+        logger.info('Cookies after login:', cookiesBeforeNav.map((c) => `${c.name} (domain: ${c.domain})`).join(', '));
 
-        logger.info('Logging in Flex via service login on first load');
-        await this.goto({ baseUrl: this._baseUrl, path });
+        logger.info('Navigating to Flex admin directly after successful login');
+        await this.goto({ baseUrl: this._flexBaseUrl, path: flexPath });
+
+        // Check if cookies persisted after navigation
+        const cookiesAfterNav = await this.page.cookies();
+        logger.info('Cookies after navigation:', cookiesAfterNav.map((c) => `${c.name} (domain: ${c.domain})`).join(', '));
+
+        // Check current URL
+        logger.info('Current URL after navigation:', this.page.url());
       } else {
         logger.error('Unable to fetch CSRF token or tw-visitor cookie for Twilio Console login');
         throw new Error('Unable to fetch CSRF token or tw-visitor cookie to login to Twilio Console');

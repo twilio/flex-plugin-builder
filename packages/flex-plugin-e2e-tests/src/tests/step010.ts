@@ -66,8 +66,9 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     // await retryOnError(loginAndAssert, onError, onFinally, 3);
   } catch (error) {
     await Browser.app.takeScreenshot(environment.cwd, 'step010_failure.png');
-    await Browser.kill();
     throw error;
+  } finally {
+    await Browser.kill();
   }
 };
 testSuite.description = 'Released Plugin visible on the Hosted Flex';
