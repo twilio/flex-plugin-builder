@@ -40,6 +40,7 @@ export abstract class Base {
           timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT,
         }),
       ]);
+      logger.info(`Navigated to ${fullPath}`);
     } catch (err) {
       if (err.message.includes('detached')) {
         logger.error('Page has been detached. adding a sleep to let other processes finish');

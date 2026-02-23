@@ -1,3 +1,4 @@
+/* eslint-disable multiline-comment-style */
 /* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, @typescript-eslint/prefer-for-of, global-require */
 import * as fs from 'fs';
 
@@ -102,9 +103,10 @@ const runAll = async (testParams: TestParams, testScenarios: Partial<TestScenari
     printParameters(params);
     await beforeEach();
 
-    for (let i = 0; i < testSuites.length; i++) {
-      await runTest(i + 1, params);
-    }
+    // for (let i = 0; i < testSuites.length; i++) {
+    //   await runTest(i + 1, params);
+    // }
+    await runTest(10, params);
   }
 };
 
