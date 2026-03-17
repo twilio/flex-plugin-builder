@@ -11,7 +11,7 @@ export class Browser {
 
   private static _page: Page;
 
-  private static _domainsToInclude = ['twilio', 'localhost', 'flex.local.com', 'unpkg'];
+  private static _domainsToInclude = ['twilio', 'localhost', 'unpkg'];
 
   /**
    * Initializes browser object
