@@ -77,7 +77,6 @@ export const findPort = async (startPort: number = 3000): Promise<number> => {
 /**
  * Returns the local and network urls
  * @param port  the port the server is running on
- * @note Changed from localhost to flex.local.com to avoid login-related issues
  */
 export const getLocalAndNetworkUrls = (port: number): InternalServiceUrls => {
   const protocol = env.isHTTPS() ? 'https' : 'http';
@@ -85,7 +84,7 @@ export const getLocalAndNetworkUrls = (port: number): InternalServiceUrls => {
   const localUrl = url.format({
     protocol,
     port,
-    hostname: 'flex.local.com',
+    hostname: 'localhost',
     pathname: '/',
   });
   const networkUrl = url.format({
