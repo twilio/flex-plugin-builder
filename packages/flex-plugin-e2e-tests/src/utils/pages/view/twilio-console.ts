@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Page } from 'puppeteer';
 import { logger } from '@twilio/flex-dev-utils';
 
@@ -67,10 +68,10 @@ export class TwilioConsole extends Base {
 
       if (csrfToken && twVisitorCookie) {
         const loginURL = `${this._baseUrl}/userauth/submitLoginPassword`;
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.page.setCookie({
+        await this.page.setCookie({
           name: 'tw-visitor',
           value: twVisitorCookie,
+          domain: new URL(this._baseUrl).hostname,
         });
         const result = await this.page.evaluate(
           async function (data) {
@@ -112,10 +113,11 @@ export class TwilioConsole extends Base {
             twVisitorCookie,
           },
         );
-        logger.info('Fetch result from browser:', result);
+        // Wait for cookies to be set after successful login
+        await sleep(2000);
 
-        logger.info('Logging in Flex via service login on first load');
-        await this.goto({ baseUrl: this._baseUrl, path });
+        logger.info('Navigating to Flex admin directly after successful login');
+        await this.goto({ baseUrl: flexPath === 'admin' ? this._flexBaseUrl : this._baseUrl, path: flexPath === 'admin' ? flexPath : path});
       } else {
         logger.error('Unable to fetch CSRF token or tw-visitor cookie for Twilio Console login');
         throw new Error('Unable to fetch CSRF token or tw-visitor cookie to login to Twilio Console');

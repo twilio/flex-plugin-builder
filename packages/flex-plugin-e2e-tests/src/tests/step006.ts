@@ -30,7 +30,7 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   };
 
   const onError = async (e: any) => {
-    await Browser.app.takeScreenshot(environment.cwd);
+    await Browser.app.takeScreenshot(environment.cwd, 'step006_failure.png');
   };
 
   const onFinally = async () => {
