@@ -24,7 +24,7 @@ export const _getBase = (): Configuration => {
         port: env.getPort(),
       },
     },
-    host: env.getHost(),
+    host: env.getHost() || '0.0.0.0', // Keep binding to 0.0.0.0 for network access
     port: env.getPort(),
   };
 };
