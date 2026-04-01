@@ -18,7 +18,7 @@ jobs:
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       NODE_VERSION: '22'
       PACKAGE_VERSION: latest
-      FLEX_UI_VERSION: latest
+      FLEX_UI_VERSION: 2.14.0
       SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly'
       SEND_NOTIFICATION: true
     secrets:
@@ -44,7 +44,7 @@ jobs:
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       NODE_VERSION: '18'
       PACKAGE_VERSION: latest
-      FLEX_UI_VERSION: latest
+      FLEX_UI_VERSION: 2.14.0
       SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly'
       SEND_NOTIFICATION: true
     secrets:
@@ -70,7 +70,7 @@ jobs:
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       NODE_VERSION: '22'
       PACKAGE_VERSION: latest
-      FLEX_UI_VERSION: latest
+      FLEX_UI_VERSION: 2.14.0
       SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly'
       SEND_NOTIFICATION: true
     secrets:
@@ -96,7 +96,7 @@ jobs:
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       NODE_VERSION: '18'
       PACKAGE_VERSION: latest
-      FLEX_UI_VERSION: latest
+      FLEX_UI_VERSION: 2.14.0
       SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly'
       SEND_NOTIFICATION: true
     secrets:
@@ -122,7 +122,7 @@ jobs:
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       NODE_VERSION: '22'
       PACKAGE_VERSION: latest
-      FLEX_UI_VERSION: latest
+      FLEX_UI_VERSION: 2.14.0
       SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly'
       SEND_NOTIFICATION: true
     secrets:
