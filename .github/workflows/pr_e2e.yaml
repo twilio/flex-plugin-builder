@@ -67,7 +67,7 @@ jobs:
   #     SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
   remove-label-on-failure:
-    needs: e2e-test
+    needs: release-alpha-version
     if: always()
     runs-on: ubuntu-22.04
     steps:
