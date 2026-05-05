@@ -2,6 +2,11 @@ name: Test GitHub App Token
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - FLEXY-6241-new
+    paths:
+      - '.github/workflows/test_github_app_token.yaml'
 
 jobs:
   test-app-token:
