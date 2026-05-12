@@ -68,6 +68,7 @@ npm run build
 
 if [ "${tag}" == "public" ] ; then
   ./node_modules/.bin/lerna publish \
+    --loglevel verbose \
     --force-publish="*" \
     --no-push \
     --exact \
@@ -75,6 +76,7 @@ if [ "${tag}" == "public" ] ; then
     "${bump}"
 else
   ./node_modules/.bin/lerna publish \
+    --loglevel verbose \
     --force-publish="*" \
     --preid "${tag}" \
     --pre-dist-tag "${tag}" \
