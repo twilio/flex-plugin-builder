@@ -36,7 +36,7 @@
   "dependencies": {
     "@twilio/flex-dev-utils": "7.1.2",
     "@twilio/flex-plugins-api-client": "7.1.2",
-    "axios": "^0.24.0",
+    "axios": "^1.15.0",
     "lodash": "4.17.21",
     "node-fetch": "^3.3.2",
     "package-json": "^7.0.0",
