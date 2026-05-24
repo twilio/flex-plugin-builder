@@ -325,6 +325,33 @@ describe('env', () => {
     });
   });
 
+  describe('domain', () => {
+    it('should return domain', () => {
+      process.env.DOMAIN = 'flex.local.com';
+      expect(env.getDomain()).toEqual('flex.local.com');
+    });
+
+    it('getDomain should return nothing', () => {
+      expect(env.getDomain()).toEqual(undefined);
+    });
+
+    it('should set domain', () => {
+      expect(env.getDomain()).toEqual(undefined);
+      env.setDomain('my-custom.domain');
+      expect(env.getDomain()).toEqual('my-custom.domain');
+    });
+
+    it('hasDomain should return true when domain is set', () => {
+      env.setDomain('test.domain');
+      expect(env.hasDomain()).toBe(true);
+    });
+
+    it('hasDomain should return false when domain is not set', () => {
+      delete process.env.DOMAIN;
+      expect(env.hasDomain()).toBe(false);
+    });
+  });
+
   describe('port', () => {
     it('should return port', () => {
       process.env.PORT = '1234';

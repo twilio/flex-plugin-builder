@@ -74,6 +74,8 @@ Please visit [Twilio Docs](https://www.twilio.com/docs/flex/developer/plugins) f
 * [Plugins API](https://www.twilio.com/docs/flex/developer/plugins/api)
 * [Troubleshooting and FAQ](faq.md)
 
+> **Note:** When using SSO v2 (OAuth flow), you may need to configure a custom domain for local development using the `--domain` flag to avoid authentication issues. See the [FAQ](faq.md) for setup instructions.
+
 ## Changelog
 
 Major changelogs can be found in the [changelog directory](/changelog).

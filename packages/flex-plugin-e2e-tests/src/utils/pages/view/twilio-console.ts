@@ -26,10 +26,10 @@ export class TwilioConsole extends Base {
   }
 
   /**
-   * Creates a localhost url
+   * Creates a flex.local.com url
    * @param port
    */
-  private static _createLocalhostUrl = (port: number) => `http://localhost:${port}&localPort=${port}`;
+  private static _createLocalhostUrl = (port: number) => `http://flex.local.com:${port}&localPort=${port}`;
 
   /**
    * Logs user in through service-login
@@ -40,7 +40,7 @@ export class TwilioConsole extends Base {
    */
   async login(flexPath: string, accountSid: string, localhostPort: number, firstLoad: boolean = true): Promise<void> {
     logger.info('firstload', firstLoad);
-    const redirectUrl = this._flexBaseUrl.includes('localhost')
+    const redirectUrl = this._flexBaseUrl.includes('flex.local.com')
       ? TwilioConsole._createLocalhostUrl(localhostPort)
       : this._flexBaseUrl;
     const path = `console/flex/service-login/${accountSid}/?path=/${flexPath}&referer=${redirectUrl}`;
