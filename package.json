@@ -42,6 +42,14 @@
     "test:one": "npm run test -- $@",
     "test:watch": "npm run test -- --watchAll"
   },
+  "overrides": {
+    "serialize-javascript": "7.0.3",
+    "minimatch@3.0.5": "3.1.5",
+    "axios@>=1.0.0 <1.13.5": "1.13.5",
+    "axios@<1.0.0": "0.30.3",
+    "braces@<3.0.3": "3.0.3",
+    "tar": "7.5.8"
+  },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
