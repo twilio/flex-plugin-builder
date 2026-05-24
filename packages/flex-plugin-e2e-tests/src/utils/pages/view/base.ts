@@ -30,18 +30,12 @@ export abstract class Base {
   }): Promise<void> {
     const fullPath = path ? `${baseUrl}/${path}` : baseUrl;
     try {
-      await Promise.all([
-        this.page.waitForNavigation({
-          waitUntil: 'networkidle2', // condition to consider navigation finished
-          timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT,
-        }),
-        this.page.goto(fullPath, {
-          waitUntil: waitUntil || 'networkidle2',
-          timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT,
-        }),
-      ]);
+      await this.page.goto(fullPath, {
+        waitUntil: waitUntil || 'networkidle2',
+        timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT,
+      });
     } catch (err) {
-      if (err.message.includes('detached')) {
+      if (err instanceof Error && err.message.includes('detached')) {
         logger.error('Page has been detached. adding a sleep to let other processes finish');
         /*
          * Just let it wait the rest of the timeout so the other contestants in the rest
@@ -49,7 +43,8 @@ export abstract class Base {
          */
         await sleep(5000);
       }
-      // Intentionally doing nothing on error
+      // Re-throw all errors so they propagate to test error handlers for screenshots
+      throw err;
     }
   }
 
