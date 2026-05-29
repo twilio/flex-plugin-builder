@@ -44,7 +44,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: 'https://npmjs.artifacts.twilio.com/artifactory/api/npm/virtual-npm-thirdparty'
       - name: Install dependencies
         run: |
           echo "Starting npm ci with a 10-minute timeout"
@@ -61,6 +61,8 @@ jobs:
           SLACK_TITLE: 'Flex Plugins CLI'
           SLACK_MESSAGE: ':ship_it_parrot: Releasing new public *version* of `flex-plugin-builder`'
           MSG_MINIMAL: actions url
+      - name: Configure npm for publish
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NODE_AUTH_TOKEN }}" >> ~/.npmrc
       - name: Publish Version
         run: |
           git config user.name github-actions
