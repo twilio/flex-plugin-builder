@@ -143,7 +143,6 @@ describe('create-flex-plugin', () => {
       const mockTimeTaken = 123;
       const mockConfig = {
         accountSid: 'AC123456789',
-        pluginScriptsVersion: '1.0.0',
         name: 'TestPlugin',
         flexSdkVersion: '1.24.0',
         typescript: true,

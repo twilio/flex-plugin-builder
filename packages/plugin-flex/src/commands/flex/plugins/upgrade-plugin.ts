@@ -24,7 +24,6 @@ const appConfig = 'appConfig.js';
 const crackoConfig = 'craco.config.js';
 
 const flexUI = '@twilio/flex-ui';
-const scopedFlexPluginScriptPackage = '@twilio/flex-plugin-scripts';
 const flexPluginScriptPackage = 'flex-plugin-scripts';
 const scopedFlexPluginPackage = '@twilio/flex-plugin';
 const flexPluginPackage = 'flex-plugin';
@@ -83,7 +82,6 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   };
 
   static packagesToRemove = [
-    scopedFlexPluginScriptPackage, // remove and then re-add
     'react-app-rewire-flex-plugin',
     'react-app-rewired',
     'react-scripts',
@@ -186,10 +184,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       return;
     }
 
-    const pkgJson = await packages.getRegistryVersion(
-      scopedFlexPluginScriptPackage,
-      this._flags.beta ? 'beta' : 'latest',
-    );
+    const pkgJson = await packages.getRegistryVersion(scopedFlexPluginPackage, this._flags.beta ? 'beta' : 'latest');
     const latestVersion = pkgJson ? semver.coerce(pkgJson.version as string)?.major : 0;
     if (currentPkgVersion !== latestVersion) {
       await this.cleanupNodeModules();
@@ -537,7 +532,6 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         [scopedFlexPluginPackage]: '*',
       },
       devDeps: {
-        [scopedFlexPluginScriptPackage]: '*',
         [flexUI]: '^1',
         'react-test-renderer': react,
       },
@@ -584,16 +578,12 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
    */
   get pkgVersion(): number | undefined {
     const pkg =
-      this.pkg.dependencies[scopedFlexPluginScriptPackage] ||
-      this.pkg.devDependencies[scopedFlexPluginScriptPackage] ||
-      this.pkg.dependencies[flexPluginScriptPackage] ||
-      this.pkg.devDependencies[flexPluginScriptPackage] ||
       this.pkg.dependencies[scopedFlexPluginPackage] ||
       this.pkg.devDependencies[scopedFlexPluginPackage] ||
       this.pkg.dependencies[flexPluginPackage] ||
       this.pkg.devDependencies[flexPluginPackage];
     if (!pkg) {
-      throw new TwilioCliError(`Package '${scopedFlexPluginScriptPackage}' was not found`);
+      throw new TwilioCliError(`Package '${scopedFlexPluginPackage}' was not found`);
     }
 
     return semver.coerce(pkg)?.major;

@@ -167,9 +167,9 @@ export default class FlexPluginsStart extends FlexPlugin {
     // Verify plugin's flex-plugin-scripts is v4
     const pkgDir = `${plugin.dir}/package.json`;
     const pkg = readJsonFile<Pkg>(pkgDir);
-    let scriptVersion = semver.coerce(pkg.dependencies['@twilio/flex-plugin-scripts']);
+    let scriptVersion = semver.coerce(pkg.dependencies['@twilio/flex-plugin']);
     if (!scriptVersion) {
-      scriptVersion = semver.coerce(pkg.devDependencies['@twilio/flex-plugin-scripts']);
+      scriptVersion = semver.coerce(pkg.devDependencies['@twilio/flex-plugin']);
     }
   }
 

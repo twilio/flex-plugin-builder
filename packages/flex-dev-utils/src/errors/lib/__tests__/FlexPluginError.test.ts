@@ -34,15 +34,13 @@ describe('FlexPluginError', () => {
       dependencies: {
         '@twilio/flex-plugin': '2.0.0',
       },
-      devDependencies: {
-        '@twilio/flex-plugin-scripts': '3.0.0',
-      },
+      devDependencies: {},
     });
 
     const err = new FlexPluginError();
 
     err.details();
-    expect(logger.info).toHaveBeenCalledTimes(3);
+    expect(logger.info).toHaveBeenCalledTimes(2);
   });
 
   it('should not print any details if pkg is not found', () => {
