@@ -19,8 +19,6 @@ on:
         type: string
         default: alpha_release
     secrets:
-      NODE_AUTH_TOKEN:
-        required: true
       SLACK_WEB_HOOK:
         required: true
       G_TOKEN:
@@ -34,6 +32,9 @@ jobs:
   publish:
     runs-on: ubuntu-22.04
     environment: ${{ inputs.ENVIRONMENT }}
+    permissions:
+      id-token: write # Required for OIDC authentication to npm
+      contents: write # Required for git operations
     steps:
       - uses: actions/create-github-app-token@v3
         id: get_app_token
@@ -71,7 +72,7 @@ jobs:
           BRANCH: ${{ inputs.BRANCH }}
           NODE_OPTIONS: --no-experimental-fetch
           CI: ''
-          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+          # OIDC authentication - no NODE_AUTH_TOKEN needed for public npm registry
       - name: Retrieve Version
         id: publicVersion
         run: |
