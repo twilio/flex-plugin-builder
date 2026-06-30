@@ -184,7 +184,7 @@ jobs:
           path: packages/flex-plugin-e2e-tests/screenshots
 
   notify-failure:
-    runs-on: ubuntu-22.04
+    runs-on: twilio-internal-ubuntu-latest-slim
     needs: node
     if: ${{ always() && inputs.SEND_NOTIFICATION }}
     steps:

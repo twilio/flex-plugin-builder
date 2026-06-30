@@ -3,7 +3,7 @@ on:
 
 jobs:
   tag:
-    runs-on: ubuntu-22.04
+    runs-on: twilio-internal-ubuntu-latest-slim
     steps:
       - name: wait-job
         run: sleep 10s

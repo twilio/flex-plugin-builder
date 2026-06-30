@@ -18,7 +18,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-22.04
+    runs-on: twilio-internal-ubuntu-latest-slim
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
