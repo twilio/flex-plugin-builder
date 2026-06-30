@@ -98,8 +98,8 @@ jobs:
   node:
     runs-on: ${{ inputs.OS }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
         with:
           node-version: ${{ inputs.NODE_VERSION }}
       - name: Override localhost to IPv4 in Linux for Node 18
@@ -177,7 +177,7 @@ jobs:
           cd packages/flex-plugin-e2e-tests
           npm run start
       - name: Upload Screenshots
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: ${{ inputs.OS }}-screenshots
@@ -189,7 +189,7 @@ jobs:
     if: ${{ always() && inputs.SEND_NOTIFICATION }}
     steps:
       - name: Slack Notification
-        uses: rtCamp/action-slack-notify@v2
+        uses: rtCamp/action-slack-notify@33fa0808da52e41c8dcec3cc101c0027442ed173 # v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEB_HOOK }}
           SLACK_COLOR: ${{ needs.node.result }}

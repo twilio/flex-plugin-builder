@@ -30,8 +30,8 @@ jobs:
       id-token: write # Required for OIDC authentication to npm
       contents: read # Required for checkout
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
         with:
           node-version: "22"
           registry-url: "https://registry.npmjs.org"
@@ -50,7 +50,7 @@ jobs:
           CI: ""
           # OIDC authentication - no NODE_AUTH_TOKEN needed for public npm registry
       - name: Slack Notification
-        uses: rtCamp/action-slack-notify@v2
+        uses: rtCamp/action-slack-notify@33fa0808da52e41c8dcec3cc101c0027442ed173 # v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEB_HOOK }}
           SLACK_COLOR: ${{ job.status }}
