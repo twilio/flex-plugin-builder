@@ -24,7 +24,7 @@ on:
 
 jobs:
   publish:
-    runs-on: twilio-internal-ubuntu-latest-slim
+    runs-on: ubuntu-latest-large
     environment: ${{ inputs.ENVIRONMENT }}
     permissions:
       id-token: write # Required for OIDC authentication to npm

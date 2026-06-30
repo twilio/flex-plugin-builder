@@ -90,7 +90,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ twilio-internal-ubuntu-latest-slim ]
+        os: [ ubuntu-latest-large, windows-latest-large, macos-latest-large ]
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: ${{ matrix.os }}

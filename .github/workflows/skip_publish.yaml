@@ -3,6 +3,6 @@ on:
 
 jobs:
   publish:
-    runs-on: twilio-internal-ubuntu-latest-slim
+    runs-on: ubuntu-latest-large
     steps:
       - run: echo "Skip Publish, Passing status check"

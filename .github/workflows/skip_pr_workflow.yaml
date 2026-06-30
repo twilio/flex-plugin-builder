@@ -14,7 +14,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: twilio-internal-ubuntu-latest-slim
+    runs-on: ubuntu-latest-large
     steps:
       - run: echo "Test execution not required. Passing status check"
   release-alpha-version:
