@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
         with:
-          node-version: '22'
+          node-version: '20'
       - name: Install project dependencies
         run: |
           echo "Starting npm ci with a 10-minute timeout"

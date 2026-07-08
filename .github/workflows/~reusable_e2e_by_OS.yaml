@@ -17,7 +17,7 @@ on:
         description: 'A node-version passed from the caller workflow. It decides the version of node on which tests will run.'
         required: false
         type: string
-        default: '22'
+        default: '20'
       NPM_IGNORE_PREFIX:
         description: 'A npm-ignore-prefix passed from the caller workflow.'
         required: true

@@ -16,13 +16,13 @@ const testSuite: TestSuite = async ({ environment, scenario }: TestParams): Prom
 
   await spawn('twilio', ['plugins:install', `@twilio-labs/plugin-flex@${scenario.packageVersion}`]);
 
-  /*
-   * Link local packages to replace the installed CLI with local development version
-   * Go up two directories from e2e-tests package to reach repo root
-   */
-  const repoRoot = join(environment.cwd, '..', '..');
-  const linkPackagesScript = join(repoRoot, 'link-packages.js');
-  await spawn('node', [linkPackagesScript], { cwd: repoRoot });
+  // /*
+  //  * Link local packages to replace the installed CLI with local development version
+  //  * Go up two directories from e2e-tests package to reach repo root
+  //  */
+  // const repoRoot = join(environment.cwd, '..', '..');
+  // const linkPackagesScript = join(repoRoot, 'link-packages.js');
+  // await spawn('node', [linkPackagesScript], { cwd: repoRoot });
 };
 testSuite.description = 'Installing Twilio CLI and Plugins CLI';
 
