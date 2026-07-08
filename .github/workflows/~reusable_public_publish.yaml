@@ -30,7 +30,7 @@ on:
 
 jobs:
   publish:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest-large
     environment: ${{ inputs.ENVIRONMENT }}
     permissions:
       id-token: write # Required for OIDC authentication to npm
