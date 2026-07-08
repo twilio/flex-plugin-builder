@@ -71,7 +71,8 @@ jobs:
     if: always()
     runs-on: ubuntu-latest-large
     steps:
-      - uses: actions-ecosystem/action-remove-labels@2ce5d41b4b6aa8503e285553f75ed56e0a40bae0 # v1
+      - name: Remove label on failure
         if: needs.e2e-test.result != 'success'
-        with:
-          labels: ${{ github.event.label.name }}
+        run: gh pr edit ${{ github.event.pull_request.number }} --remove-label "${{ github.event.label.name }}"
+        env:
+          GH_TOKEN: ${{ github.token }}
