@@ -39,7 +39,6 @@ jobs:
       BRANCH: ${{ needs.get-version.outputs.branch }}
       ENVIRONMENT: alpha_release
     secrets:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
   e2e-test:
