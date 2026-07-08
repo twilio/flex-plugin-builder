@@ -1,7 +1,6 @@
 /* eslint-disable import/no-unused-modules */
 import { TestSuite, TestParams } from '../core';
 import { spawn } from '../utils';
-import { join } from 'path';
 
 // Install Twilio CLI and Plugins CLI
 const testSuite: TestSuite = async ({ environment, scenario }: TestParams): Promise<void> => {
@@ -16,8 +15,8 @@ const testSuite: TestSuite = async ({ environment, scenario }: TestParams): Prom
   await spawn('twilio', ['plugins:install', `@twilio-labs/plugin-flex@${scenario.packageVersion}`]);
 
   // Link local packages to replace the installed CLI with local development version
-  const rootDir = join(__dirname, '../../../../..');
-  await spawn('npm', ['run', 'link-packages'], { cwd: rootDir });
+  // Use environment.cwd which points to the repo root where the E2E tests are run from
+  await spawn('npm', ['run', 'link-packages'], { cwd: environment.cwd });
 };
 testSuite.description = 'Installing Twilio CLI and Plugins CLI';
 
