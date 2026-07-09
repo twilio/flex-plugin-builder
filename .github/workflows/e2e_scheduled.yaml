@@ -16,7 +16,7 @@ jobs:
       OS: ubuntu-latest-large
       BRANCH: main
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-      NODE_VERSION: '20'
+      NODE_VERSION: '22'
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
       SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly'
@@ -42,7 +42,7 @@ jobs:
       OS: macos-latest-large
       BRANCH: main
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-      NODE_VERSION: '20'
+      NODE_VERSION: '22'
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
       SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly'
@@ -68,7 +68,7 @@ jobs:
       OS: windows-latest-large
       BRANCH: main
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-      NODE_VERSION: '20'
+      NODE_VERSION: '22'
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
       SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly'
