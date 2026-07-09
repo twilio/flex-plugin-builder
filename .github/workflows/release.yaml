@@ -2,19 +2,19 @@ on:
   workflow_call:
     inputs:
       TAG:
-        description: 'A tag passed from the caller workflow, it decides the type of release. Allowed values are [rc | beta | alpha | public | dev]'
+        description: "A tag passed from the caller workflow, it decides the type of release. Allowed values are [rc | beta | alpha | public | dev]"
         required: true
         type: string
       VERSION:
-        description: 'A specific version passed from the caller workflow which will be release as it is.'
+        description: "A specific version passed from the caller workflow which will be release as it is."
         required: true
         type: string
       BRANCH:
-        description: 'A branch passed from the caller workflow, it decides which branch will be pushed to npm.'
+        description: "A branch passed from the caller workflow, it decides which branch will be pushed to npm."
         required: true
         type: string
       ENVIRONMENT:
-        description: 'A environment passed from the caller workflow, it controls the reviewing process of a release.'
+        description: "A environment passed from the caller workflow, it controls the reviewing process of a release."
         required: true
         type: string
         default: alpha_release
@@ -22,37 +22,45 @@ on:
       SLACK_WEB_HOOK:
         required: true
       G_TOKEN:
-        required: true
+        required: false
       APP_ID:
-        required: true
+        required: false
       APP_KEY:
-        required: true
+        required: false
 
 jobs:
   publish:
-    runs-on: ubuntu-latest-large
+    runs-on: ubuntu-x64
     environment: ${{ inputs.ENVIRONMENT }}
     permissions:
-      id-token: write # Required for OIDC authentication to npm
-      contents: write # Required for git operations
+      id-token: write # Required for OIDC authentication to npm and Artifactory
+      contents: write # Required for checkout and git operations (public releases)
+    env:
+      ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
     steps:
-      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+      - name: Create GitHub App token (for public releases)
+        if: inputs.TAG == 'public'
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
         id: get_app_token
         with:
           client-id: ${{ secrets.APP_ID }}
           private_key: ${{ secrets.APP_KEY }}
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: ./.github/actions/artifactory-oidc
       - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
         with:
-          node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+      - name: Authenticate to Artifactory (OIDC)
+        uses: ./.github/actions/artifactory-oidc
       - name: Install dependencies
         run: |
           echo "Starting npm ci with a 10-minute timeout"
           for i in 1 2 3; do # Retry logic, retry 3 times
             timeout 10m npm ci --verbose && break || echo "npm ci failed, retrying ($i/3)..."
           done
-      - name: Slack Started Notification
+      - name: Slack Started Notification (public releases only)
+        if: inputs.TAG == 'public'
         run: |
           curl -X POST "${{ secrets.SLACK_WEB_HOOK }}" \
             -H 'Content-Type: application/json' \
@@ -72,21 +80,24 @@ jobs:
             }"
       - name: Publish Version
         run: |
-          git config user.name github-actions
-          git config user.email noreply@github.com
+          if [ "${{ inputs.TAG }}" = "public" ]; then
+            git config user.name github-actions
+            git config user.email noreply@github.com
+          fi
           npm run publish:${{ inputs.TAG }} ${{ inputs.VERSION }}
         env:
           VERSION: ${{ inputs.VERSION }}
           BRANCH: ${{ inputs.BRANCH }}
           NODE_OPTIONS: --no-experimental-fetch
-          CI: ''
+          CI: ""
           # OIDC authentication - no NODE_AUTH_TOKEN needed for public npm registry
-      - name: Retrieve Version
+      - name: Retrieve Version (public releases only)
+        if: inputs.TAG == 'public'
         id: publicVersion
         run: |
           echo "version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)"
           echo "version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)" >> "$GITHUB_OUTPUT"
-      - name: Slack Completed Notification
+      - name: Slack Completion Notification
         if: always()
         run: |
           STATUS_COLOR="good"
@@ -94,6 +105,13 @@ jobs:
             STATUS_COLOR="danger"
           elif [ "${{ job.status }}" = "cancelled" ]; then
             STATUS_COLOR="warning"
+          fi
+
+          # Determine message based on release type
+          if [ "${{ inputs.TAG }}" = "public" ]; then
+            MESSAGE="🎉:tada: Released a new public *version* \\\`${{ steps.publicVersion.outputs.version }}\\\`"
+          else
+            MESSAGE="🎉 Released a new version with *tag* \\\`${{ inputs.TAG }}\\\` and *version* \\\`${{ inputs.VERSION }}\\\`"
           fi
 
           curl -X POST "${{ secrets.SLACK_WEB_HOOK }}" \
@@ -104,7 +122,7 @@ jobs:
               \"attachments\": [{
                 \"color\": \"${STATUS_COLOR}\",
                 \"title\": \"Flex Plugins CLI\",
-                \"text\": \"🎉:tada: Released a new public *version* \\\`${{ steps.publicVersion.outputs.version }}\\\`\",
+                \"text\": \"${MESSAGE}\",
                 \"actions\": [{
                   \"type\": \"button\",
                   \"text\": \"View Action\",
@@ -112,19 +130,22 @@ jobs:
                 }]
               }]
             }"
-      - name: Commit Version
+      - name: Commit Version (public releases only)
+        if: inputs.TAG == 'public'
         id: commit_version
         run: |
           git checkout -b bump-version-"$VERSION_NUMBER"
           git push origin bump-version-"$VERSION_NUMBER" --no-verify
         env:
-          VERSION_NUMBER: ${{ steps.publicVersion.outputs.version  }}
-      - name: Create PR for version
+          VERSION_NUMBER: ${{ steps.publicVersion.outputs.version }}
+      - name: Create PR for version (public releases only)
+        if: inputs.TAG == 'public'
         run: |
           gh pr create --base main --title "Update version" --body "Update version"
         env:
           GITHUB_TOKEN: ${{ steps.get_app_token.outputs.token }}
-      - name: Approve and Merge PR
+      - name: Approve and Merge PR (public releases only)
+        if: inputs.TAG == 'public'
         run: |
           gh pr review --approve
           gh pr merge --auto --merge
