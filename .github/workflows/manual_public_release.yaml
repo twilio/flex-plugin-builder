@@ -15,7 +15,7 @@ on:
 jobs:
   release-public-version:
     if: github.ref == 'refs/heads/main'
-    uses: ./.github/workflows/release.yaml
+    uses: ./.github/workflows/publish.yml
     with:
       TAG: public
       VERSION: ${{ github.event.inputs.version }}

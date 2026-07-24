@@ -31,7 +31,7 @@ jobs:
 
   release-alpha-version:
     needs: get-version
-    uses: ./.github/workflows/release.yaml
+    uses: ./.github/workflows/publish.yml
     if: ${{ github.event.label.name == vars.PUBLISH_AND_E2E_LABEL }}
     with:
       TAG: alpha
