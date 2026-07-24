@@ -66,14 +66,16 @@ echo -e "------------------------------------\n"
 npm run lint:fix
 npm run build
 
+# Configure npm to use provenance and ignore scripts
+npm config set provenance true
+npm config set ignore-scripts true
+
 if [ "${tag}" == "public" ] ; then
   ./node_modules/.bin/lerna publish \
     --force-publish="*" \
     --no-push \
     --exact \
     --yes \
-    --provenance \
-    --ignore-scripts \
     "${bump}"
 else
   ./node_modules/.bin/lerna publish \
@@ -86,8 +88,6 @@ else
     --no-push \
     --exact \
     --yes \
-    --provenance \
-    --ignore-scripts \
     "${bump}"
 
     version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
