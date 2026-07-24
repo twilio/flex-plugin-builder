@@ -77,6 +77,7 @@ on:
         description: 'A slack-web-hook passed from the caller workflow, it will be used for sending notifications.'
         required: true
 env:
+  ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
   BRANCH: ${{ inputs.BRANCH }}
   NPM_IGNORE_PREFIX: ${{ inputs.NPM_IGNORE_PREFIX }}
   PACKAGE_VERSION: ${{ inputs.PACKAGE_VERSION }}
@@ -97,11 +98,19 @@ env:
 jobs:
   node:
     runs-on: ${{ inputs.OS }}
+    permissions:
+      id-token: write # Required for Artifactory OIDC
+      contents: read
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Authenticate to Artifactory (OIDC)
+        uses: ./.github/actions/artifactory-oidc
+
       - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
         with:
           node-version: ${{ inputs.NODE_VERSION }}
+
       - name: Install project dependencies (Linux)
         if: ${{ inputs.OS == 'ubuntu-latest-large' }}
         run: |
@@ -180,7 +189,7 @@ jobs:
           path: packages/flex-plugin-e2e-tests/screenshots
 
   notify-failure:
-    runs-on: ubuntu-latest-large
+    runs-on: ubuntu-x64
     needs: node
     if: ${{ always() && inputs.SEND_NOTIFICATION }}
     steps:

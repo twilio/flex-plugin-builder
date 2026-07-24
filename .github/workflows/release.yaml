@@ -28,15 +28,44 @@ on:
       APP_KEY:
         required: false
 
+env:
+  ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
+
 jobs:
+  build:
+    runs-on: ubuntu-x64
+    permissions:
+      id-token: write # Required for Artifactory OIDC
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Authenticate to Artifactory (OIDC)
+        uses: ./.github/actions/artifactory-oidc
+
+      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: |
+          echo "Starting npm ci with a 10-minute timeout"
+          for i in 1 2 3; do # Retry logic, retry 3 times
+            timeout 10m npm ci --verbose && break || echo "npm ci failed, retrying ($i/3)..."
+          done
+
+      - name: Build packages
+        run: |
+          npm run lint:fix
+          npm run build
+
   publish:
+    needs: build
     runs-on: ubuntu-x64
     environment: ${{ inputs.ENVIRONMENT }}
     permissions:
-      id-token: write # Required for OIDC authentication to npm and Artifactory
-      contents: write # Required for checkout and git operations (public releases)
-    env:
-      ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
+      id-token: write # Required for npm OIDC trusted publishing
+      contents: write # Required for git operations (public releases)
     steps:
       - name: Create GitHub App token (for public releases)
         if: inputs.TAG == 'public'
@@ -45,23 +74,14 @@ jobs:
         with:
           client-id: ${{ secrets.APP_ID }}
           private_key: ${{ secrets.APP_KEY }}
+
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-      - uses: ./.github/actions/artifactory-oidc
+
       - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
         with:
           node-version: "22"
           registry-url: "https://registry.npmjs.org"
-      - name: Install dependencies
-        run: |
-          echo "Starting npm ci with a 10-minute timeout"
-          for i in 1 2 3; do # Retry logic, retry 3 times
-            timeout 10m npm ci --verbose && break || echo "npm ci failed, retrying ($i/3)..."
-          done
-      - name: Restore npm registry to public npm (for publishing)
-        run: |
-          npm config set registry https://registry.npmjs.org/
-          npm config delete //build-partners.svc.twilio-artifactory.com/artifactory/api/npm/virtual-npm-thirdparty/:_authToken || true
-          echo "Registry restored to public npm for publishing"
+
       - name: Slack Started Notification (public releases only)
         if: inputs.TAG == 'public'
         run: |
