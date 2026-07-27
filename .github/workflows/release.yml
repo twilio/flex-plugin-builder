@@ -30,7 +30,7 @@ on:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest-large
+    runs-on: ubuntu-x64
     environment: ${{ inputs.ENVIRONMENT }}
     permissions:
       id-token: write # Required for npm OIDC trusted publishing
