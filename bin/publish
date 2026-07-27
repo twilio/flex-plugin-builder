@@ -72,6 +72,7 @@ if [ "${tag}" == "public" ] ; then
     --no-push \
     --exact \
     --yes \
+    --loglevel verbose \
     "${bump}"
 else
   ./node_modules/.bin/lerna publish \
@@ -84,6 +85,7 @@ else
     --no-push \
     --exact \
     --yes \
+    --loglevel verbose \
     "${bump}"
 
     version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)

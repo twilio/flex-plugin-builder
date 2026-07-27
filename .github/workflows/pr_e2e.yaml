@@ -37,7 +37,7 @@ jobs:
       TAG: alpha
       VERSION: ${{ needs.get-version.outputs.version }}
       BRANCH: ${{ needs.get-version.outputs.branch }}
-      ENVIRONMENT: alpha_release
+      ENVIRONMENT: production
     secrets:
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 

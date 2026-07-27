@@ -21,7 +21,7 @@ env:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-x64
+    runs-on: ubuntu-latest-large
     permissions:
       id-token: write # Required for Artifactory OIDC
       contents: read
