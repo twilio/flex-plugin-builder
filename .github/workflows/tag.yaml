@@ -3,12 +3,12 @@ on:
 
 jobs:
   tag:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest-large
     steps:
       - name: wait-job
         run: sleep 10s
         shell: bash
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           ref: main
       - name: Retrieve Version

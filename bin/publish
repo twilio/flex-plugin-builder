@@ -62,9 +62,9 @@ echo -e "-- Publishing as \033[1m${tag}\033[0m :: \033[1m${bump}\033[0m release 
 echo -e "-- Publishing as \033[1m${tag}\033[0m :: \033[1m${bump}\033[0m release --"
 echo -e "------------------------------------\n"
 
-# Run unit-tests one more time
-npm run lint:fix
-npm run build
+# Configure npm to use provenance and ignore scripts
+npm config set provenance true
+npm config set ignore-scripts true
 
 if [ "${tag}" == "public" ] ; then
   ./node_modules/.bin/lerna publish \
@@ -72,6 +72,7 @@ if [ "${tag}" == "public" ] ; then
     --no-push \
     --exact \
     --yes \
+    --loglevel verbose \
     "${bump}"
 else
   ./node_modules/.bin/lerna publish \
@@ -84,6 +85,7 @@ else
     --no-push \
     --exact \
     --yes \
+    --loglevel verbose \
     "${bump}"
 
     version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)

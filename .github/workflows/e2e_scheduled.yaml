@@ -13,7 +13,7 @@ jobs:
     if: github.event.schedule == '0 4 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
-      OS: ubuntu-22.04
+      OS: ubuntu-latest-large
       BRANCH: main
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       NODE_VERSION: '22'
@@ -39,7 +39,7 @@ jobs:
     if: github.event.schedule == '0 6 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
-      OS: macos-latest
+      OS: macos-latest-large
       BRANCH: main
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       NODE_VERSION: '22'
@@ -65,7 +65,7 @@ jobs:
     if: github.event.schedule == '0 8 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
-      OS: windows-latest
+      OS: windows-latest-large
       BRANCH: main
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       NODE_VERSION: '22'

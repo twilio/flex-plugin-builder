@@ -22,6 +22,7 @@
     "bootstrap": "lerna bootstrap --no-ci",
     "build": "lerna run build",
     "clean": "lerna run clean",
+    "cleanup": "rm -rf node_modules packages/*/node_modules",
     "coverage": "codecov",
     "docs": "./bin/docs-generator.js",
     "link-packages": "node link-packages.js",

@@ -7,13 +7,13 @@ on:
 jobs:
   get-version:
     if: ${{ (github.event.label.name == vars.E2E_LABEL) || (github.event.label.name == vars.PUBLISH_AND_E2E_LABEL) }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest-large
     outputs:
       branch: ${{ steps.extractBranch.outputs.branch }}
       version: ${{ steps.alphaVersion.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
         with:
           node-version: '22'
       - name: Extract branch name
@@ -31,15 +31,14 @@ jobs:
 
   release-alpha-version:
     needs: get-version
-    uses: ./.github/workflows/~reusable_publish.yaml
+    uses: ./.github/workflows/release.yml
     if: ${{ github.event.label.name == vars.PUBLISH_AND_E2E_LABEL }}
     with:
       TAG: alpha
       VERSION: ${{ needs.get-version.outputs.version }}
       BRANCH: ${{ needs.get-version.outputs.branch }}
-      ENVIRONMENT: alpha_release
+      ENVIRONMENT: production
     secrets:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
   e2e-test:
@@ -69,9 +68,10 @@ jobs:
   remove-label-on-failure:
     needs: e2e-test
     if: always()
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest-large
     steps:
-      - uses: actions-ecosystem/action-remove-labels@v1
+      - name: Remove label on failure
         if: needs.e2e-test.result != 'success'
-        with:
-          labels: ${{ github.event.label.name }}
+        run: gh pr edit ${{ github.event.pull_request.number }} --remove-label "${{ github.event.label.name }}"
+        env:
+          GH_TOKEN: ${{ github.token }}
