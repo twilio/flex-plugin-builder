@@ -54,6 +54,9 @@
     "@types/tmp": "^0.2.1",
     "@types/yargs": "^16.0.4"
   },
+  "overrides": {
+    "axios": "^1.7.9"
+  },
   "publishConfig": {
     "access": "public"
   }

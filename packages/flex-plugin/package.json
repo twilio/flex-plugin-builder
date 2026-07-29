@@ -39,6 +39,9 @@
   "devDependencies": {
     "@twilio/flex-ui": "^1"
   },
+  "overrides": {
+    "axios": "^1.7.9"
+  },
   "publishConfig": {
     "access": "public"
   }
