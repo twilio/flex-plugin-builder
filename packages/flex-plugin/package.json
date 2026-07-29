@@ -37,10 +37,7 @@
     "test:watch": "cd ../.. && jest packages/flex-plugin --watch --color"
   },
   "devDependencies": {
-    "@twilio/flex-ui": "^1"
-  },
-  "overrides": {
-    "axios": "^1.7.9"
+    "@twilio/flex-ui": "^2"
   },
   "publishConfig": {
     "access": "public"

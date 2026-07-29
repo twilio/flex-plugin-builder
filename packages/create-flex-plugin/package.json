@@ -50,12 +50,9 @@
   "devDependencies": {
     "@twilio/flex-plugin": "7.1.2",
     "@twilio/flex-plugin-scripts": "7.1.2",
-    "@twilio/flex-ui": "^1",
+    "@twilio/flex-ui": "^2",
     "@types/tmp": "^0.2.1",
     "@types/yargs": "^16.0.4"
-  },
-  "overrides": {
-    "axios": "^1.7.9"
   },
   "publishConfig": {
     "access": "public"
