@@ -27,10 +27,6 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-
-      - name: Authenticate to Artifactory (OIDC)
-        uses: ./.github/actions/artifactory-oidc
-
       - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
         with:
           node-version: '22'
