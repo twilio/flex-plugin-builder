@@ -1,6 +1,6 @@
 {
   "name": "@twilio/flex-plugin-webpack5",
-  "version": "7.1.0",
+  "version": "7.1.2",
   "description": "Flex Plugin Webpack and Webpack dev-server configurations",
   "keywords": [
     "flex",

@@ -2,9 +2,11 @@ name: Flex Plugins CLI - E2E Nightly
 
 on:
   schedule:
-    - cron: '0 4 * * *' # At 4:00 UTC (09:30 IST) every day
-    - cron: '0 5 * * *' # At 4:00 UTC (10:30 IST) every day
-    - cron: '0 6 * * *' # At 4:00 UTC (11:30 IST) every day
+    - cron: '0 4 * * *' # At 04:00 UTC (09:30 AM IST)
+    - cron: '0 5 * * *' # At 05:00 UTC (10:30 AM IST)
+    - cron: '0 6 * * *' # At 06:00 UTC (11:30 AM IST)
+    - cron: '0 7 * * *' # At 07:00 UTC (12:30 PM IST)
+    - cron: '0 8 * * *' # At 08:00 UTC (01:30 PM IST)
 
 jobs:
   scheduled-e2e-unix:
@@ -14,6 +16,7 @@ jobs:
       OS: ubuntu-22.04
       BRANCH: main
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+      NODE_VERSION: '22'
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
       SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly'
@@ -33,12 +36,13 @@ jobs:
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
   scheduled-e2e-macos:
-    if: github.event.schedule == '0 5 * * *'
+    if: github.event.schedule == '0 6 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: macos-latest
       BRANCH: main
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+      NODE_VERSION: '22'
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
       SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly'
@@ -58,12 +62,13 @@ jobs:
       SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
   scheduled-e2e-windows:
-    if: github.event.schedule == '0 6 * * *'
+    if: github.event.schedule == '0 8 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: windows-latest
       BRANCH: main
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+      NODE_VERSION: '22'
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
       SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly'

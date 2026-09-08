@@ -1,4 +1,7 @@
-import { ElementHandle, Page } from 'puppeteer';
+import { logger } from '@twilio/flex-dev-utils';
+import { ElementHandle, Page, PuppeteerLifeCycleEvent } from 'puppeteer';
+
+import { sleep } from '../../timers';
 
 export abstract class Base {
   protected static readonly DEFAULT_LOCATE_TIMEOUT = 3000000;
@@ -16,9 +19,38 @@ export abstract class Base {
    * @param baseUrl
    * @param path
    */
-  protected async goto({ baseUrl, path }: { baseUrl: string; path?: string }): Promise<void> {
+  protected async goto({
+    baseUrl,
+    path,
+    waitUntil,
+  }: {
+    baseUrl: string;
+    path?: string;
+    waitUntil?: PuppeteerLifeCycleEvent;
+  }): Promise<void> {
     const fullPath = path ? `${baseUrl}/${path}` : baseUrl;
-    await this.page.goto(fullPath, { waitUntil: 'load', timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT });
+    try {
+      await Promise.all([
+        this.page.waitForNavigation({
+          waitUntil: 'networkidle2', // condition to consider navigation finished
+          timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT,
+        }),
+        this.page.goto(fullPath, {
+          waitUntil: waitUntil || 'networkidle2',
+          timeout: Base.DEFAULT_PAGE_LOAD_TIMEOUT,
+        }),
+      ]);
+    } catch (err) {
+      if (err.message.includes('detached')) {
+        logger.error('Page has been detached. adding a sleep to let other processes finish');
+        /*
+         * Just let it wait the rest of the timeout so the other contestants in the rest
+         * can finish first.
+         */
+        await sleep(5000);
+      }
+      // Intentionally doing nothing on error
+    }
   }
 
   /**

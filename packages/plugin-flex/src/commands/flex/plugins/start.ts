@@ -96,12 +96,7 @@ export default class FlexPluginsStart extends FlexPlugin {
       }
     }
 
-    if (this._flags['include-remote']) {
-      flexArgs.push('--include-remote');
-    }
-    if (this._flags.wp5) {
-      flexArgs.push('--wp5');
-    }
+    this.appendBooleanFlags(flexArgs);
 
     if (this._flags['flex-ui-source']) {
       env.setFlexUISrc(this._flags['flex-ui-source']);
@@ -259,5 +254,19 @@ export default class FlexPluginsStart extends FlexPlugin {
     }
 
     return false;
+  }
+
+  /**
+   * Appends the simple boolean pass-through flags to the flex-plugin-scripts args
+   * @param flexArgs the args array to append to
+   * @private
+   */
+  private appendBooleanFlags(flexArgs: string[]): void {
+    if (this._flags['include-remote']) {
+      flexArgs.push('--include-remote');
+    }
+    if (this._flags.wp5) {
+      flexArgs.push('--wp5');
+    }
   }
 }

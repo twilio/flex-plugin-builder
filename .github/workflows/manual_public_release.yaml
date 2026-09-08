@@ -33,7 +33,7 @@ jobs:
     needs: release-public-version
     uses: ./.github/workflows/tag.yaml
 
-  e2e-node20:
+  e2e-node:
     if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/~reusable_e2e_all_OS.yaml
     needs: release-tag

@@ -13,6 +13,11 @@ on:
         description: 'A flex-ui version passed from the caller workflow. It decides the version of FLEX UI on tests will run on.'
         required: true
         type: string
+      NODE_VERSION:
+        description: 'A node-version passed from the caller workflow. It decides the version of node on which tests will run.'
+        required: false
+        type: string
+        default: '22'
       NPM_IGNORE_PREFIX:
         description: 'A npm-ignore-prefix passed from the caller workflow.'
         required: true
@@ -90,13 +95,17 @@ env:
   NODE_OPTIONS: --max-old-space-size=8192
 
 jobs:
-  node20:
+  node:
     runs-on: ${{ inputs.OS }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: ${{ inputs.NODE_VERSION }}
+      - name: Override localhost to IPv4 in Linux for Node 18
+        run: |
+          sudo sed -i '/localhost/s/::1/#::1/' /etc/hosts
+        if: ${{ inputs.OS == 'ubuntu-22.04' && inputs.NODE_VERSION == '18' }}
       - name: Install project dependencies (Linux)
         if: ${{ inputs.OS == 'ubuntu-22.04' }}
         run: |
@@ -115,25 +124,7 @@ jobs:
       - name: Install project dependencies (Windows)
         if: ${{ inputs.OS == 'windows-latest' }}
         run: |
-          echo "Starting npm ci with a 10-minute timeout"
-            $attempts = 3
-            for ($i=1; $i -le $attempts; $i++) {
-              try {
-                $process = Start-Process -FilePath 'npm' -ArgumentList 'ci --verbose' -NoNewWindow -PassThru
-                if ($process.WaitForExit(600000)) { # 10 minutes in milliseconds
-                  echo 'npm ci completed successfully'
-                  exit 0
-                } else {
-                  echo 'npm ci timed out. Retrying...'
-                  Stop-Process -Id $process.Id
-                }
-              } catch {
-                echo 'npm ci failed.'
-                if ($i -eq $attempts) {
-                  throw 'npm ci failed after 3 retries.'
-                }
-              }
-            }
+            npm ci --verbose
         shell: pwsh
       - name: Build packages
         run: |
@@ -150,11 +141,8 @@ jobs:
         env:
           TS: 0
         run: |
-          echo "Starting e2e tests with a 90-minute timeout"
           cd packages/flex-plugin-e2e-tests
-          for i in 1 2; do # Retry logic, retry 3 times
-            gtimeout 90m npm run start && break || echo "E2E tests timed out, retrying ($i/3)..."
-          done
+          npm run start
       - name: Run e2e tests - JS (Windows)
         if: ${{ inputs.OS == 'windows-latest' }}
         env:
@@ -179,11 +167,8 @@ jobs:
         env:
           TS: 1
         run: |
-         echo "Starting e2e tests with a 90-minute timeout"
           cd packages/flex-plugin-e2e-tests
-          for i in 1 2; do # Retry logic, retry 3 times
-            gtimeout 90m npm run start && break || echo "E2E tests timed out, retrying ($i/3)..."
-          done
+          npm run start
       - name: Run e2e tests - TS (Windows)
         if: ${{ inputs.OS == 'windows-latest' }}
         env:
@@ -192,7 +177,7 @@ jobs:
           cd packages/flex-plugin-e2e-tests
           npm run start
       - name: Upload Screenshots
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: ${{ inputs.OS }}-screenshots
@@ -200,16 +185,16 @@ jobs:
 
   notify-failure:
     runs-on: ubuntu-22.04
-    needs: node20
+    needs: node
     if: ${{ always() && inputs.SEND_NOTIFICATION }}
     steps:
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEB_HOOK }}
-          SLACK_COLOR: ${{ needs.node20.result }}
+          SLACK_COLOR: ${{ needs.node.result }}
           SLACK_USERNAME: Github Actions
           SLACK_ICON_EMOJI: ':ship:'
-          SLACK_TITLE: '${{ inputs.SLACK_TITLE }} - ${{ inputs.OS }}'
-          SLACK_MESSAGE: '${{ github.repository }}/${{ github.ref }} - ${{ inputs.SLACK_MESSAGE }} ${{ needs.node20.result }} for ${{ inputs.OS }}.'
+          SLACK_TITLE: '${{ inputs.SLACK_TITLE }} - ${{ inputs.OS }} - ${{ inputs.NODE_VERSION }}'
+          SLACK_MESSAGE: '${{ github.repository }}/${{ github.ref }} - ${{ inputs.SLACK_MESSAGE }} ${{ needs.node.result }} for ${{ inputs.OS }}.'
           MSG_MINIMAL: actions url
