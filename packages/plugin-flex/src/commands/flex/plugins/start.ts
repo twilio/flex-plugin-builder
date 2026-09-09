@@ -136,14 +136,18 @@ export default class FlexPluginsStart extends FlexPlugin {
       await this.runScript('start', ['flex', ...flexArgs, '--plugin-config', JSON.stringify(pluginsConfig)]);
 
       for (let i = 0; localPluginNames && i < localPluginNames.length; i++) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.spawnScript('start', [
+        const pluginArgs = [
           'plugin',
           '--name',
           localPluginNames[i],
           '--port',
           pluginsConfig[localPluginNames[i]].port.toString(),
-        ]);
+        ];
+        if (this._flags.wp5) {
+          pluginArgs.push('--wp5');
+        }
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.spawnScript('start', pluginArgs);
       }
     }
   }

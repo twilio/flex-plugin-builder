@@ -2,8 +2,7 @@
 /// <reference path="../module.d.ts" />
 
 import ModuleScopePlugin from '@k88/module-scope-plugin';
-import typescriptFormatter from '@k88/typescript-compile-error-formatter';
-import { semver, env, logger } from '@twilio/flex-dev-utils';
+import { semver, env } from '@twilio/flex-dev-utils';
 import { Environment } from '@twilio/flex-dev-utils/dist/env';
 import fs, { getDependencyVersion, getPaths, resolveModulePath } from '@twilio/flex-dev-utils/dist/fs';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
@@ -28,6 +27,27 @@ interface LoaderOption {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [name: string]: any;
 }
+
+/**
+ * Resolves the `typescript` module to use for type-checking a plugin project.
+ *
+ * `resolveModulePath('typescript')` resolves relative to this package's own installation
+ * (it only ever falls back to other paths if the bare `require.resolve` throws, which it
+ * never does here since this package always has some version of `typescript` available).
+ * That means, unpatched, every plugin gets type-checked against whatever TypeScript version
+ * this package happens to be built with, regardless of what the plugin itself declares and
+ * has installed - silently ignoring newer syntax the plugin's own TypeScript could parse fine.
+ * Prefer the plugin project's own installed `typescript`, and only fall back to this
+ * package's copy if the plugin has none.
+ * @private
+ */
+export const _resolveProjectTypescriptPath = (): string | false => {
+  try {
+    return require.resolve('typescript', { paths: [getPaths().app.nodeModulesDir] });
+  } catch {
+    return resolveModulePath('typescript');
+  }
+};
 
 /*
  * interface Optimization {
@@ -295,7 +315,7 @@ export const _getStaticPlugins = (environment: Environment) => {
     plugins.push(
       new HtmlWebpackPlugin({
         inject: false, // Preventing automatic injection
-        templateContent: ({ htmlWebpackPlugin }) => {
+        templateContent: () => {
           let content = fs.readFileSync(getPaths().scripts.indexHTMLPath, 'utf8');
           // Ensure Webpack 5 expected syntax is in place
           content = content.replace('%__FPB_JS_SCRIPTS%', '<%= __FPB_JS_SCRIPTS %>');
@@ -333,33 +353,44 @@ export const _getJSPlugins = (environment: Environment) => {
       }),
     );
   }
-  const hasPnp = 'pnp' in process.versions;
-
   if (getPaths().app.isTSProject()) {
-    const typescriptPath = resolveModulePath('typescript');
-    const config: Partial<ForkTsCheckerWebpackPlugin.Options> = {
-      typescript: typescriptPath || undefined,
+    const typescriptPath = _resolveProjectTypescriptPath();
+    /*
+     * Type of the constructor options for the currently installed fork-ts-checker-webpack-plugin,
+     * avoids depending on a type export the package doesn't provide at its root.
+     */
+    type Options = ConstructorParameters<typeof ForkTsCheckerWebpackPlugin>[0];
+    const config: Options = {
       async: isDev,
-      useTypescriptIncrementalApi: true,
-      checkSyntacticErrors: true,
-      resolveModuleNameModule: hasPnp ? `${__dirname}/webpack/pnpTs.js` : undefined,
-      resolveTypeReferenceDirectiveModule: hasPnp ? `${__dirname}/webpack/pnpTs.js` : undefined,
-      tsconfig: getPaths().app.tsConfigPath,
-      reportFiles: [
-        '**',
-        '!**/__tests__/**',
-        '!**/__mocks__/**',
-        '!**/?(*.)(spec|test).*',
-        '!**/src/setupProxy.*',
-        '!**/src/setupTests.*',
-      ],
-      silent: true,
+      typescript: {
+        typescriptPath: typescriptPath || undefined,
+        configFile: getPaths().app.tsConfigPath,
+        diagnosticOptions: {
+          syntactic: true,
+          semantic: true,
+          declaration: false,
+          global: false,
+        },
+      },
+      issue: {
+        include: [{ file: '**' }],
+        exclude: [
+          { file: '**/__tests__/**' },
+          { file: '**/__mocks__/**' },
+          { file: '**/?(*.)(spec|test).*' },
+          { file: '**/src/setupProxy.*' },
+          { file: '**/src/setupTests.*' },
+        ],
+      },
+      formatter: isProd ? 'codeframe' : 'basic',
+      logger: 'webpack-infrastructure',
     };
-    if (isProd) {
-      config.formatter = typescriptFormatter;
-    }
 
-    plugins.push(new ForkTsCheckerWebpackPlugin(config));
+    /*
+     * fork-ts-checker-webpack-plugin resolves its own nested copy of the `webpack` peer dependency,
+     * which TypeScript sees as a distinct (though compatible) Compiler type from our own webpack5 import.
+     */
+    plugins.push(new ForkTsCheckerWebpackPlugin(config) as unknown as WebpackPluginInstance);
   }
 
   return plugins;
@@ -502,7 +533,6 @@ export const _getStaticConfiguration = (config: Configuration, environment: Envi
  * @private
  */
 export const _getJavaScriptConfiguration = (config: Configuration, environment: Environment): Configuration => {
-  logger.info('CAME IN WP5 CONFIG');
   const isProd = environment === Environment.Production;
   const filename = `${getPaths().app.name}`;
   const outputName = environment === Environment.Production ? filename : `plugins/${filename}`;

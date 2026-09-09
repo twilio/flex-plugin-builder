@@ -4,7 +4,7 @@
 import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
 import ModuleScopePlugin from '@k88/module-scope-plugin';
 import typescriptFormatter from '@k88/typescript-compile-error-formatter';
-import { semver, env, logger } from '@twilio/flex-dev-utils';
+import { semver, env } from '@twilio/flex-dev-utils';
 import { Environment } from '@twilio/flex-dev-utils/dist/env';
 import { getDependencyVersion, getPaths, resolveModulePath } from '@twilio/flex-dev-utils/dist/fs';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
@@ -291,7 +291,6 @@ export const _getStaticPlugins = (environment: Environment): Plugin[] => {
       }),
     );
   }
-  logger.info('WP4-------------------', JSON.stringify(plugins));
 
   return plugins;
 };
@@ -479,7 +478,7 @@ export const _getBase = (environment: Environment): Configuration => {
 export const _getStaticConfiguration = (config: Configuration, environment: Environment): Configuration => {
   config.plugins = config.plugins ? config.plugins : [];
   config.plugins.push(..._getStaticPlugins(environment));
-  logger.info('WP4 Static-------------------', JSON.stringify(config.plugins));
+
   return config;
 };
 
@@ -519,7 +518,7 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
     child_process: 'empty',
   };
   config.plugins.push(..._getJSPlugins(environment));
-  logger.info('WP4 JS-------------------', JSON.stringify(config.plugins));
+
   return config;
 };
 

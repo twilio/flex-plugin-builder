@@ -4,7 +4,7 @@ import { logger, FunctionalCallback } from '@twilio/flex-dev-utils';
 import { FlexPluginError } from '@twilio/flex-dev-utils/dist/errors';
 import { AsyncSeriesHook, SyncHook } from 'tapable';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
-import typescriptFormatter, { Issue } from '@k88/typescript-compile-error-formatter';
+import type { Issue } from 'fork-ts-checker-webpack-plugin/lib/issue/issue';
 import webpack, { Compiler as WebpackCompiler, Configuration, StatsError, WebpackError, Stats } from 'webpack5';
 import { getCliPaths, getPaths, readRunPluginsJson, writeJSONFile } from '@twilio/flex-dev-utils/dist/fs';
 import webpackFormatMessages from '@k88/format-webpack-messages';
@@ -82,20 +82,29 @@ export default (
         });
       });
 
-      ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).receive.tap(
-        'afterTSCheck',
-        (diagnostics: Issue[], lints: Issue[]) => {
-          const allMsgs = [...diagnostics, ...lints];
-          const format = (issue: Issue) => `${issue.file}\n${typescriptFormatter(issue)}`;
+      /*
+       * fork-ts-checker-webpack-plugin resolves its own nested copy of the `webpack` peer dependency,
+       * which TypeScript sees as a distinct (though compatible) Compiler type from our own webpack5 import.
+       */
+      ForkTsCheckerWebpackPlugin.getCompilerHooks(
+        compiler as unknown as Parameters<typeof ForkTsCheckerWebpackPlugin.getCompilerHooks>[0],
+      ).issues.tap('afterTSCheck', (issues: Issue[]) => {
+        const format = (issue: Issue) => {
+          const location = issue.location ? `:${issue.location.start.line}:${issue.location.start.column}` : '';
 
-          if (tsMessagesResolver) {
-            tsMessagesResolver({
-              errors: allMsgs.filter((msg) => msg.severity === 'error').map(format),
-              warnings: allMsgs.filter((msg) => msg.severity === 'warning').map(format),
-            });
-          }
-        },
-      );
+          return `${issue.file ?? ''}${location}\n${issue.code}: ${issue.message}`;
+        };
+
+        if (tsMessagesResolver) {
+          tsMessagesResolver({
+            errors: issues.filter((issue) => issue.severity === 'error').map(format),
+            warnings: issues.filter((issue) => issue.severity === 'warning').map(format),
+          });
+        }
+
+        // issues is a SyncWaterfallHook - must return the (possibly filtered) issues to pass along
+        return issues;
+      });
     }
 
     // invalid is `bundle invalidated` and is invoked when files are modified in dev-server.

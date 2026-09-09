@@ -26,7 +26,6 @@ import {
   emitDevServerCrashedWp5,
   IPCTypeWp5,
   onIPCServerMessageWp5,
-  PluginWp5,
   pluginServerWp5,
   startIPCClientWp5,
   startIPCServerWp5,
