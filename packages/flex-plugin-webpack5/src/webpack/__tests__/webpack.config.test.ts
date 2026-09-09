@@ -7,7 +7,7 @@ import * as clientVariables from '../clientVariables';
 import { WebpackTypeWp5 } from '../..';
 
 jest.mock('@twilio/flex-dev-utils/dist/fs');
-jest.mock('webpack/lib/DefinePlugin');
+jest.mock('webpack5/lib/DefinePlugin');
 
 describe('WebpackConfiguration', () => {
   const isTSProject = jest.fn();

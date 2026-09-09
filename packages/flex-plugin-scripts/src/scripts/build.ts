@@ -26,6 +26,21 @@ interface BuildBundle {
 const MAX_BUILD_SIZE_MB = 10;
 
 /**
+ * Webpack 5's Stats schema nests related assets (e.g. a chunk's sourcemap) inside that asset's
+ * own `related` array, rather than listing them as independent top-level entries the way
+ * Webpack 4 does. Flatten them back into a single list so the printed file count/summary
+ * includes every emitted file (e.g. the .map), matching Webpack 4's reporting.
+ * @private
+ */
+// eslint-disable-next-line import/no-unused-modules
+export const _flattenAssetsWp5 = (assets: Bundle[]): Bundle[] =>
+  assets.flatMap((asset) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const related = ((asset as any).related as Bundle[] | undefined) ?? [];
+    return [asset, ...related];
+  });
+
+/**
  * Builds the JS and Sourcemap bundles
  * @private
  */
@@ -46,7 +61,7 @@ export const _handlerWp5 =
     }
 
     resolve({
-      bundles: stats.toJson({ assets: true }).assets as Bundle[],
+      bundles: _flattenAssetsWp5(stats.toJson({ assets: true }).assets as Bundle[]),
       warnings: result.warnings?.map((w) => w.message),
     });
   };

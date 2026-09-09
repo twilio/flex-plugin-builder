@@ -22,6 +22,12 @@ import { template } from 'lodash';
 
 import { getSanitizedProcessEnv } from './clientVariables';
 import { WebpackTypeWp5 } from '..';
+/*
+ * Self-import so internal calls between these exports go through the (spy-able) module
+ * namespace rather than a fixed local binding - lets jest.spyOn intercept same-module calls in tests.
+ */
+// eslint-disable-next-line import/no-self-import
+import * as self from './webpack.config';
 
 interface LoaderOption {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -523,7 +529,7 @@ export const _getBase = (environment: Environment): Configuration => {
  */
 export const _getStaticConfiguration = (config: Configuration, environment: Environment): Configuration => {
   config.plugins = config.plugins ? config.plugins : [];
-  config.plugins.push(..._getStaticPlugins(environment));
+  config.plugins.push(...self._getStaticPlugins(environment));
 
   return config;
 };
@@ -541,7 +547,7 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
   config.plugins = config.plugins ? config.plugins : [];
 
   // @ts-ignore
-  config.entry.push(..._getJavaScriptEntries());
+  config.entry.push(...self._getJavaScriptEntries());
   config.output = {
     path: getPaths().app.buildDir,
     pathinfo: !isProd,
@@ -552,9 +558,9 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
   };
   config.bail = isProd;
   config.devtool = isProd ? 'cheap-source-map' : 'source-map';
-  config.optimization = _getOptimization(environment);
+  config.optimization = self._getOptimization(environment);
   config.node = false;
-  config.plugins.push(..._getJSPlugins(environment));
+  config.plugins.push(...self._getJSPlugins(environment));
 
   return config;
 };
@@ -565,14 +571,14 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
  * @param type
  */
 export default (environment: Environment, type: WebpackTypeWp5): Configuration => {
-  const config = _getBase(environment);
+  const config = self._getBase(environment);
 
   if (type === WebpackTypeWp5.Static) {
-    return _getStaticConfiguration(config, environment);
+    return self._getStaticConfiguration(config, environment);
   }
   if (type === WebpackTypeWp5.JavaScript) {
-    return _getJavaScriptConfiguration(config, environment);
+    return self._getJavaScriptConfiguration(config, environment);
   }
 
-  return _getJavaScriptConfiguration(_getStaticConfiguration(config, environment), environment);
+  return self._getJavaScriptConfiguration(self._getStaticConfiguration(config, environment), environment);
 };

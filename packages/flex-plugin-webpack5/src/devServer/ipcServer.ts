@@ -2,6 +2,12 @@ import ipc from 'node-ipc';
 import { env, logger } from '@twilio/flex-dev-utils';
 import webpack from 'webpack5';
 
+/*
+ * Self-import so internal calls between these exports go through the (spy-able) module namespace
+ * rather than a fixed local binding - lets jest.spyOn intercept same-module calls in tests.
+ */
+// eslint-disable-next-line import/no-self-import
+import * as self from './ipcServer';
 import ToJsonOutput = webpack.StatsCompilation;
 
 interface Client {
@@ -100,7 +106,7 @@ const _onServerMessage = (data: { payload: unknown; type: string }): void => {
  */
 export const _onClientConnected = async (): Promise<void> => {
   _isClientConnected = true;
-  await _processEmitQueue();
+  await self._processEmitQueue();
 };
 
 /**
@@ -111,7 +117,7 @@ export const _onClientConnected = async (): Promise<void> => {
  */
 export const _emitToServer = async <T extends IPCType>(type: T, payload: IPCPayload[T]): Promise<void> => {
   emitQueue.push({ type, payload });
-  await _processEmitQueue();
+  await self._processEmitQueue();
 };
 
 /**
@@ -161,16 +167,17 @@ export const onIPCServerMessage = <T extends IPCType>(type: T, callback: Message
  * @param payload
  * @returns
  */
-export const emitAllCompilesComplete = async (): Promise<void> => _emitToServer(IPCType.onEmitAllCompilesComplete, {});
+export const emitAllCompilesComplete = async (): Promise<void> =>
+  self._emitToServer(IPCType.onEmitAllCompilesComplete, {});
 
 /**
  * Emits a compilation complete event
  * @param payload
  */
 export const emitCompileComplete = async (payload: OnCompileCompletePayload): Promise<void> => {
-  await _emitToServer(IPCType.onCompileComplete, payload);
+  await self._emitToServer(IPCType.onCompileComplete, payload);
   if (payload.lastPluginBundle) {
-    await emitAllCompilesComplete();
+    await self.emitAllCompilesComplete();
   }
 };
 
@@ -179,7 +186,7 @@ export const emitCompileComplete = async (payload: OnCompileCompletePayload): Pr
  * @param error
  */
 export const emitDevServerCrashed = async (error: Error): Promise<void> =>
-  _emitToServer(IPCType.onDevServerCrashed, {
+  self._emitToServer(IPCType.onDevServerCrashed, {
     exception: {
       message: error.message,
       stack: error.stack,

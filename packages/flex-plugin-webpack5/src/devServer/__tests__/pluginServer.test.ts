@@ -257,7 +257,7 @@ describe('pluginServer', () => {
       expect(resp.end).toHaveBeenCalledTimes(1);
     });
 
-    it('should getPlugins and rebase', async (done) => {
+    it('should getPlugins and rebase', async () => {
       const { req, resp } = getReqResp('GET', jweHeaders);
       const remotePlugin = [{ name: 'plugin-2' }] as pluginServerScript.Plugin[];
 
@@ -284,8 +284,6 @@ describe('pluginServer', () => {
       expect(onRemotePlugins).toHaveBeenCalledWith(remotePlugin);
       expect(resp.end).toHaveBeenCalledTimes(1);
       expect(resp.end).toHaveBeenCalledWith('[{"name":"plugin-1"},{"name":"plugin-2"}]');
-
-      done();
     });
 
     it('should fail', async () => {

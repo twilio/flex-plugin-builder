@@ -3,6 +3,12 @@ import { readFileSync, getPaths, resolveRelative, checkAFileExists } from '@twil
 import { env } from '@twilio/flex-dev-utils';
 
 import { dotEnvIncorrectVariable } from '../prints';
+/*
+ * Self-import so getSanitizedProcessEnv's call to _readEnvFile goes through the (spy-able)
+ * module namespace rather than a fixed local binding - lets jest.spyOn intercept it in tests.
+ */
+// eslint-disable-next-line import/no-self-import
+import * as self from './clientVariables';
 
 type CodeValueObject = {
   [key: string]: any;
@@ -59,14 +65,14 @@ export const getSanitizedProcessEnv = (): SanitizedProcessEnv => {
 
   // Support .env file if provided
   if (appPaths.hasEnvFile()) {
-    variables = { ...variables, ..._readEnvFile('.env', appPaths.envPath) };
+    variables = { ...variables, ...self._readEnvFile('.env', appPaths.envPath) };
   }
   // Support for profile specific .env file (this should come after .env to allow overwrite)
   if (env.getTwilioProfile()) {
     const filename = `.${env.getTwilioProfile()}.env`;
     const profileEnvPath = resolveRelative(cwd, `/${filename}`);
     if (checkAFileExists(profileEnvPath)) {
-      variables = { ...variables, ..._readEnvFile(filename, profileEnvPath) };
+      variables = { ...variables, ...self._readEnvFile(filename, profileEnvPath) };
     }
   }
 

@@ -6,6 +6,12 @@ import { FlexConfigurationPlugin, readPluginsJson } from '@twilio/flex-dev-utils
 import { Configuration, Port } from 'webpack-dev-server-wp5';
 
 import { remotePluginNotFound } from '../prints';
+/*
+ * Self-import so internal calls between these exports go through the (spy-able) module
+ * namespace rather than a fixed local binding - lets jest.spyOn intercept same-module calls in tests.
+ */
+// eslint-disable-next-line import/no-self-import
+import * as self from './pluginServer';
 
 export const PLUGIN_INPUT_PARSER_REGEX = /([\w-]+)(?:@(\S+))?/;
 
@@ -54,7 +60,7 @@ export const _getLocalPlugins = (port: number, names: string[]): Plugin[] => {
   const protocol = `http${env.isHTTPS() ? 's' : ''}://`;
 
   return names.map((name) => {
-    const match = _getLocalPlugin(name);
+    const match = self._getLocalPlugin(name);
 
     if (match) {
       return {
@@ -178,7 +184,7 @@ export const _startServer = (
   config: StartServerConfig,
   onRemotePlugin: OnRemotePlugins,
 ) => {
-  const responseHeaders = _getHeaders();
+  const responseHeaders = self._getHeaders();
 
   return async (req: Request, res: Response): Promise<void> => {
     const { headers, method } = req;
@@ -204,9 +210,11 @@ export const _startServer = (
     }
 
     const hasRemotePlugin = config.remoteAll || plugins.remote.length !== 0;
-    const localPlugins = _getLocalPlugins(config.port as number, plugins.local);
-    const versionedPlugins = _getRemoteVersionedPlugins(plugins.versioned);
-    const promise: Promise<Plugin[]> = hasRemotePlugin ? _getRemotePlugins(jweToken, flexVersion) : Promise.resolve([]);
+    const localPlugins = self._getLocalPlugins(config.port as number, plugins.local);
+    const versionedPlugins = self._getRemoteVersionedPlugins(plugins.versioned);
+    const promise: Promise<Plugin[]> = hasRemotePlugin
+      ? self._getRemotePlugins(jweToken, flexVersion)
+      : Promise.resolve([]);
 
     // eslint-disable-next-line consistent-return
     return (
@@ -232,7 +240,7 @@ export const _startServer = (
 
           onRemotePlugin([...versionedPlugins, ...remotePlugins]);
           res.writeHead(200, responseHeaders);
-          res.end(JSON.stringify(_mergePlugins(localPlugins, remotePlugins, versionedPlugins)));
+          res.end(JSON.stringify(self._mergePlugins(localPlugins, remotePlugins, versionedPlugins)));
         })
         .catch((err) => {
           res.writeHead(500, responseHeaders);

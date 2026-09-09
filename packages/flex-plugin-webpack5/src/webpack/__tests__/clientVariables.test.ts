@@ -2,7 +2,11 @@ import { env } from '@twilio/flex-dev-utils';
 import * as fs from '@twilio/flex-dev-utils/dist/fs';
 import dotenv from 'dotenv';
 
-import * as prints from '../../prints';
+/*
+ * Imported directly (not via the '../../prints' barrel): TypeScript compiles barrel re-exports
+ * as non-configurable getters, which jest.spyOn cannot redefine.
+ */
+import * as dotEnvIncorrectVariableModule from '../../prints/dotEnvIncorrectVariable';
 import * as clientVariables from '../clientVariables';
 
 describe('clientVariables', () => {
@@ -127,15 +131,15 @@ describe('clientVariables', () => {
   describe('_readEnvFile', () => {
     it('should parse file and log warning', () => {
       jest.spyOn(dotenv, 'parse').mockReturnValue(vars);
-      jest.spyOn(prints, 'dotEnvIncorrectVariable').mockReturnThis();
+      jest.spyOn(dotEnvIncorrectVariableModule, 'default').mockReturnThis();
       jest.spyOn(fs, 'readFileSync').mockReturnValue('data');
       const variables = clientVariables._readEnvFile('.env', 'the/path');
 
       expect(variables.FLEX_APP_VAR1).toEqual(vars.FLEX_APP_VAR1);
       expect(variables.REACT_APP_VAR2).toEqual(vars.REACT_APP_VAR2);
       expect(variables.BAD_SECRET).toEqual(vars.BAD_SECRET);
-      expect(prints.dotEnvIncorrectVariable).toHaveBeenCalledTimes(1);
-      expect(prints.dotEnvIncorrectVariable).toHaveBeenCalledWith('.env', 'BAD_SECRET');
+      expect(dotEnvIncorrectVariableModule.default).toHaveBeenCalledTimes(1);
+      expect(dotEnvIncorrectVariableModule.default).toHaveBeenCalledWith('.env', 'BAD_SECRET');
     });
   });
 });
