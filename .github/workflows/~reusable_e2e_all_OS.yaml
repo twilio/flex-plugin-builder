@@ -100,7 +100,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest-large, windows-latest-large, macos-latest-large ]
+        os: [ ubuntu-latest-large, windows-latest-large, macos-latest ]
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
       OS: ${{ matrix.os }}

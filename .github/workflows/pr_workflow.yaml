@@ -32,11 +32,6 @@ jobs:
           node-version: '22'
       - name: Authenticate with Artifactory
         uses: ./.github/actions/artifactory-oidc
-      # TEMPORARY (FLEXY-6498): report which tarballs JFrog curation blocks
-      # (full lockfile scan + candidate versions). Remove once versions are settled.
-      - name: "TEMP: probe Artifactory curation"
-        continue-on-error: true
-        run: node .github/scripts/curation-probe.js
       - name: Install project dependencies
         run: |
           echo "Starting npm ci with a 10-minute timeout"

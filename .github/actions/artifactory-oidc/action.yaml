@@ -37,11 +37,15 @@ runs:
         echo "::add-mask::$ART_TOKEN"
 
         # 3. Configure npm to use Artifactory registry
+        #    always-auth: yarn 1 (bundled in twilio-cli, used by `twilio plugins:install`
+        #    in the e2e tests) only sends the _authToken when always-auth is set;
+        #    without it Artifactory returns 401 and yarn reports "Couldn't find package".
         REGISTRY="${ARTIFACTORY_URL}/artifactory/api/npm/virtual-npm-thirdparty/"
         HOST=$(echo "${ARTIFACTORY_URL}" | sed -E 's#^https?://##')
         {
           echo "registry=${REGISTRY}"
           echo "//${HOST}/artifactory/api/npm/virtual-npm-thirdparty/:_authToken=${ART_TOKEN}"
+          echo "always-auth=true"
         } > ~/.npmrc
 
         echo "::notice::npm configured to use Artifactory registry"

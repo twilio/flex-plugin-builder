@@ -127,7 +127,7 @@ jobs:
             echo "npm ci failed, retrying ($i/3)..."
           done
       - name: Install project dependencies (Macos)
-        if: ${{ inputs.OS == 'macos-latest-large' }}
+        if: ${{ inputs.OS == 'macos-latest' }}
         run: |
           echo "Starting npm ci with a 10-minute timeout"
           brew install coreutils
@@ -155,7 +155,7 @@ jobs:
           cd packages/flex-plugin-e2e-tests
           npm run start
       - name: Run e2e tests - JS (Macos)
-        if: ${{ inputs.OS == 'macos-latest-large' }}
+        if: ${{ inputs.OS == 'macos-latest' }}
         env:
           TS: 0
         run: |
@@ -181,7 +181,7 @@ jobs:
           cd packages/flex-plugin-e2e-tests
           npm run start
       - name: Run e2e tests - TS (Macos)
-        if: ${{ inputs.OS == 'macos-latest-large' }}
+        if: ${{ inputs.OS == 'macos-latest' }}
         env:
           TS: 1
         run: |
