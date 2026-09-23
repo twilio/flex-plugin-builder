@@ -32,11 +32,36 @@ jobs:
           node-version: '22'
       - name: Authenticate with Artifactory
         uses: ./.github/actions/artifactory-oidc
+      # TEMPORARY (FLEXY-6498): probe which versions of the curation-blocked
+      # packages Artifactory will serve. Remove once versions are decided.
+      - name: "TEMP: probe Artifactory curation for blocked packages"
+        continue-on-error: true
+        run: |
+          echo "Registry: $(npm config get registry)"
+          probe() {
+            pkg="$1"; shift
+            for v in "$@"; do
+              # Fresh cache so a cached tarball can't mask a curation block
+              if out=$(npm pack "$pkg@$v" --dry-run --cache "$(mktemp -d)" 2>&1); then
+                echo "ALLOWED  $pkg@$v"
+              else
+                reason=$(echo "$out" | grep -oE 'E[0-9]{3}|blocked by jfrog packages curation' | head -1)
+                echo "BLOCKED  $pkg@$v (${reason:-unknown error})"
+              fi
+            done
+          }
+          probe ejs 3.1.8 3.1.9 3.1.10 4.0.1 5.0.1 5.0.2 6.0.1
+          probe rfc6902 3.1.1 4.0.0 4.0.2 5.0.0 5.3.0
       - name: Install project dependencies
         run: |
           echo "Starting npm ci with a 10-minute timeout"
           for i in 1 2 3; do # Retry logic, retry 3 times
-            timeout 10m npm ci --verbose && break || echo "npm ci failed, retrying ($i/3)..."
+            timeout 10m npm ci --verbose && break
+            if [ "$i" -eq 3 ]; then
+              echo "::error::npm ci failed after 3 attempts"
+              exit 1
+            fi
+            echo "npm ci failed, retrying ($i/3)..."
           done
       - name: Run linter
         run: npm run lint:fix
