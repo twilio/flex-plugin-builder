@@ -29,8 +29,8 @@ jobs:
     runs-on: ubuntu-22.04
     environment: ${{ inputs.ENVIRONMENT }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: "22"
           registry-url: "https://registry.npmjs.org"
@@ -49,7 +49,7 @@ jobs:
           CI: ""
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
       - name: Slack Notification
-        uses: rtCamp/action-slack-notify@v2
+        uses: rtCamp/action-slack-notify@33fa0808da52e41c8dcec3cc101c0027442ed173 # v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEB_HOOK }}
           SLACK_COLOR: ${{ job.status }}
