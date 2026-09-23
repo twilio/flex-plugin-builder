@@ -3,7 +3,7 @@ on:
 
 jobs:
   tag:
-    runs-on: ubuntu-x64
+    runs-on: ubuntu-latest-large
     steps:
       - name: wait-job
         run: sleep 10s

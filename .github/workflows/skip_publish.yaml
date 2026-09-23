@@ -3,6 +3,6 @@ on:
 
 jobs:
   publish:
-    runs-on: ubuntu-x64
+    runs-on: ubuntu-latest-large
     steps:
       - run: echo "Skip Publish, Passing status check"

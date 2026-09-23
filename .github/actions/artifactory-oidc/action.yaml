@@ -1,0 +1,47 @@
+name: 'Artifactory OIDC Auth'
+description: 'Exchange GitHub OIDC token for Artifactory access token and configure npm'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Exchange OIDC token for Artifactory access token
+      shell: bash
+      run: |
+        # 1. Request GitHub JWT with Artifactory as audience
+        GITHUB_JWT=$(curl -sS \
+          -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+          "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${ARTIFACTORY_URL}" \
+          | jq -r '.value')
+
+        # Decode and log claims for debugging (payload is base64url, not secret)
+        PAYLOAD=$(echo "$GITHUB_JWT" | cut -d. -f2 | sed 's/-/+/g; s/_/\//g' | base64 -d 2>/dev/null || true)
+        echo "::debug::OIDC claims: sub=$(echo "$PAYLOAD" | jq -r '.sub'), aud=$(echo "$PAYLOAD" | jq -r '.aud')"
+
+        # 2. Exchange GitHub JWT for Artifactory access token.
+        #    Must be a JSON body and MUST include provider_name so JFrog knows
+        #    which OIDC configuration to match (without it, no token is issued).
+        #    Capture the full response so JFrog's error is visible on failure.
+        RESP=$(curl -sS "${ARTIFACTORY_URL}/access/api/v1/oidc/token" \
+          -H 'Content-Type: application/json' \
+          -d "{\"grant_type\":\"urn:ietf:params:oauth:grant-type:token-exchange\",
+               \"subject_token_type\":\"urn:ietf:params:oauth:token-type:id_token\",
+               \"subject_token\":\"${GITHUB_JWT}\",
+               \"provider_name\":\"github-actions\"}")
+        ART_TOKEN=$(echo "$RESP" | jq -r '.access_token // empty')
+
+        if [ -z "$ART_TOKEN" ]; then
+          echo "::error::OIDC token exchange failed. Raw response (token field redacted):"
+          echo "$RESP" | jq 'if .access_token then .access_token="<redacted>" else . end' 2>/dev/null || echo "$RESP"
+          exit 1
+        fi
+        echo "::add-mask::$ART_TOKEN"
+
+        # 3. Configure npm to use Artifactory registry
+        REGISTRY="${ARTIFACTORY_URL}/artifactory/api/npm/virtual-npm-thirdparty/"
+        HOST=$(echo "${ARTIFACTORY_URL}" | sed -E 's#^https?://##')
+        {
+          echo "registry=${REGISTRY}"
+          echo "//${HOST}/artifactory/api/npm/virtual-npm-thirdparty/:_authToken=${ART_TOKEN}"
+        } > ~/.npmrc
+
+        echo "::notice::npm configured to use Artifactory registry"

@@ -16,14 +16,22 @@ on:
       - '**/package-lock.json'
       - '**/package.json'
 
+env:
+  ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
+
 jobs:
   build-and-test:
     runs-on: ubuntu-x64
+    permissions:
+      id-token: write # Required for Artifactory OIDC
+      contents: read
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '22'
+      - name: Authenticate with Artifactory
+        uses: ./.github/actions/artifactory-oidc
       - name: Install project dependencies
         run: |
           echo "Starting npm ci with a 10-minute timeout"

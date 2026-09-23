@@ -5,7 +5,7 @@ jobs:
   node:
     strategy:
       matrix:
-        os: [ubuntu-x64, windows-latest, macos-latest]
+        os: [ubuntu-latest-large, windows-latest-large, macos-latest-large]
     runs-on: ${{ matrix.os }}
     steps:
       - run: echo "e2e not required. Passing status check"
