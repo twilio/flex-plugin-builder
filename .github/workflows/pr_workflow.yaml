@@ -32,26 +32,11 @@ jobs:
           node-version: '22'
       - name: Authenticate with Artifactory
         uses: ./.github/actions/artifactory-oidc
-      # TEMPORARY (FLEXY-6498): probe which versions of the curation-blocked
-      # packages Artifactory will serve. Remove once versions are decided.
-      - name: "TEMP: probe Artifactory curation for blocked packages"
+      # TEMPORARY (FLEXY-6498): report which tarballs JFrog curation blocks
+      # (full lockfile scan + candidate versions). Remove once versions are settled.
+      - name: "TEMP: probe Artifactory curation"
         continue-on-error: true
-        run: |
-          echo "Registry: $(npm config get registry)"
-          probe() {
-            pkg="$1"; shift
-            for v in "$@"; do
-              # Fresh cache so a cached tarball can't mask a curation block
-              if out=$(npm pack "$pkg@$v" --dry-run --cache "$(mktemp -d)" 2>&1); then
-                echo "ALLOWED  $pkg@$v"
-              else
-                reason=$(echo "$out" | grep -oE 'E[0-9]{3}|blocked by jfrog packages curation' | head -1)
-                echo "BLOCKED  $pkg@$v (${reason:-unknown error})"
-              fi
-            done
-          }
-          probe ejs 3.1.8 3.1.9 3.1.10 4.0.1 5.0.1 5.0.2 6.0.1
-          probe rfc6902 3.1.1 4.0.0 4.0.2 5.0.0 5.3.0
+        run: node .github/scripts/curation-probe.js
       - name: Install project dependencies
         run: |
           echo "Starting npm ci with a 10-minute timeout"
