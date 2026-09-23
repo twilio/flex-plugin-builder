@@ -3,7 +3,7 @@ import { ChildProcessWithoutNullStreams, spawn, SpawnOptionsWithoutStdio } from 
 
 import { logger } from '@twilio/flex-dev-utils';
 
-import { homeDir, testParams } from '../core';
+import { homeDir, testParams, twilioCliDataDir } from '../core';
 
 interface SpawnResult {
   stdout: string;
@@ -42,6 +42,8 @@ export const promisifiedSpawn = async (
         TWILIO_AUTH_TOKEN: testParams.secrets.api.authToken,
         TWILIO_REGION: testParams.config.region,
         NODE_OPTIONS: testParams.environment.nodeOptions,
+        // Keep every `twilio` invocation on the plugins directory that step001 pre-seeds
+        TWILIO_DATA_DIR: twilioCliDataDir,
       },
       shell: true,
     };

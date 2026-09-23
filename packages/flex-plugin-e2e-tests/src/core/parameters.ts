@@ -87,6 +87,12 @@ requiredEnvs.forEach((env) => {
 // Export parameters for use
 export const homeDir = join(process.env.HOME as string, '.local');
 
+/*
+ * Data directory for the Twilio CLI (where `twilio plugins:install` keeps its package.json
+ * and node_modules). Pinned via TWILIO_DATA_DIR so step001 can pre-seed that package.json.
+ */
+export const twilioCliDataDir = join(homeDir, 'twilio-cli-data');
+
 export const testParams: TestParams = {
   environment: {
     __hidden: false,
