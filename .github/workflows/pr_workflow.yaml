@@ -41,9 +41,5 @@ jobs:
           CI: ""
       - name: Build packages
         run: npm run build
-      - name: Codecov report
-        uses: codecov/codecov-action@0cfda1dd0a4ad9efc75517f399d859cd1ea4ced1 # v4.0.2
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
 
   
