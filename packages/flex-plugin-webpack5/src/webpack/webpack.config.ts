@@ -14,6 +14,7 @@ import {
   DefinePlugin,
   HotModuleReplacementPlugin,
   RuleSetRule,
+  RuleSetUseItem,
   WebpackPluginInstance,
   SourceMapDevToolPlugin,
   ResolveOptions,
@@ -159,7 +160,7 @@ const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
    * @param implementation  the implementation for thr scss-loader
    */
   const getStyleLoader = (options: LoaderOption, preProcessor?: string, implementation?: string) => {
-    const loaders = [];
+    const loaders: RuleSetUseItem[] = [];
 
     // Main style loader to work when compiled
     loaders.push(require.resolve('style-loader'));
@@ -346,7 +347,7 @@ export const _getStaticPlugins = (environment: Environment) => {
  * @param environment
  */
 export const _getJSPlugins = (environment: Environment) => {
-  const plugins = [];
+  const plugins: WebpackPluginInstance[] = [];
   const isDev = environment === Environment.Development;
   const isProd = environment === Environment.Production;
 

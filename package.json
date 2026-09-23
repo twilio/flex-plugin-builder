@@ -72,13 +72,13 @@
   },
   "overrides": {
     "@twilio/flex-ui": {
-      "axios": "^0.31.1"
+      "axios": "0.26.1"
     },
     "twilio-taskrouter": {
-      "axios": "^0.31.1"
+      "axios": "0.26.1"
     },
     "twilio": {
-      "axios": "^0.31.1"
+      "axios": "0.26.1"
     },
     "flatted": "^3.4.2",
     "form-data@^3": "^3.0.4",
