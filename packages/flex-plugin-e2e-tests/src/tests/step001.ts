@@ -8,12 +8,15 @@ import { spawn } from '../utils';
 /*
  * `twilio plugins:install` installs plugins with yarn into the CLI data directory, resolving
  * against that directory's package.json - the repo's npm overrides do not apply there.
- * The published plugin-flex pulls ejs@3.x (via @twilio/cli-core -> @oclif/core@1), which
- * Artifactory curation blocks, so pin it to the allowed 6.x through yarn resolutions.
- * ejs@6 keeps the CommonJS `render` API @oclif/core uses.
+ * The published plugin-flex pulls versions Artifactory curation blocks, so pin them to
+ * allowed ones through yarn resolutions:
+ *  - ejs@3.x (via @twilio/cli-core -> @oclif/core@1): ejs@6 keeps the CommonJS `render` API
+ *  - undici@5.x (via @twilio/cli-core -> @actions/core -> @actions/http-client@2): undici@6
+ *    is what @actions/http-client@3+ uses and still provides the ProxyAgent it relies on
  */
 const pluginResolutions = {
   ejs: '^6.0.1',
+  undici: '^6.28.1',
 };
 
 const seedPluginsPackageJson = (): void => {

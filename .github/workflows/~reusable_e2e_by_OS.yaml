@@ -114,12 +114,6 @@ jobs:
           node-version: ${{ inputs.NODE_VERSION }}
       - name: Authenticate with Artifactory
         uses: ./.github/actions/artifactory-oidc
-      # TEMPORARY (FLEXY-6498): list every package the e2e installs (plugins:install,
-      # created plugins' npm i) that JFrog curation blocks, with allowed alternatives.
-      - name: "TEMP: probe Artifactory curation for e2e installs"
-        if: ${{ inputs.OS == 'ubuntu-latest-large' }}
-        continue-on-error: true
-        run: node .github/scripts/curation-probe.js
       - name: Install project dependencies (Linux)
         if: ${{ inputs.OS == 'ubuntu-latest-large' }}
         run: |
