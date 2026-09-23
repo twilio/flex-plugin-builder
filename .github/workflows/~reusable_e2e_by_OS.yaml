@@ -18,6 +18,11 @@ on:
         required: false
         type: string
         default: '22'
+      WP5:
+        description: 'A flag passed from the caller workflow, it decides whether the plugins are built/started with webpack 5 (--wp5).'
+        required: false
+        type: boolean
+        default: false
       NPM_IGNORE_PREFIX:
         description: 'A npm-ignore-prefix passed from the caller workflow.'
         required: true
@@ -81,6 +86,7 @@ env:
   NPM_IGNORE_PREFIX: ${{ inputs.NPM_IGNORE_PREFIX }}
   PACKAGE_VERSION: ${{ inputs.PACKAGE_VERSION }}
   FLEX_UI_VERSION: ${{ inputs.FLEX_UI_VERSION }}
+  WP5: ${{ inputs.WP5 && '1' || '0' }}
   CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
   CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
   CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}

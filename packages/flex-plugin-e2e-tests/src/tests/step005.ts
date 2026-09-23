@@ -17,7 +17,8 @@ const testSuite: TestSuite = async ({ scenario }: TestParams): Promise<void> => 
     to: plugin.componentText,
   });
 
-  await spawn('twilio', ['flex:plugins:build', '-l', 'debug'], { cwd: plugin.dir });
+  const wp5Flag = scenario.wp5 ? ['--wp5'] : [];
+  await spawn('twilio', ['flex:plugins:build', '-l', 'debug', ...wp5Flag], { cwd: plugin.dir });
 
   assertion.not.dirIsEmpty([plugin.dir, 'build']);
   assertion.fileExists([plugin.dir, 'build', `${plugin.name}.js`]);

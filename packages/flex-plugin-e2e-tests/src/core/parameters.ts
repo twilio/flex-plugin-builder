@@ -30,6 +30,7 @@ export interface TestScenario {
   flexUIVersion?: string;
   reactVersion?: string;
   isTS?: boolean;
+  wp5?: boolean;
 }
 
 export interface TestParams {
@@ -123,6 +124,7 @@ export const testParams: TestParams = {
   scenario: {
     __hidden: false,
     packageVersion: process.env.PACKAGE_VERSION as string,
+    wp5: process.env.WP5 === '1',
     plugins: [
       {
         name: pluginName,

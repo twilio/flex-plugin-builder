@@ -11,7 +11,8 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
 
   const ext = scenario.isTS ? 'tsx' : 'jsx';
   const tmpComponentText = 'hot reload works';
-  const twilioCliResult = await spawn('twilio', ['flex:plugins:start', '-l', 'debug'], {
+  const wp5Flag = scenario.wp5 ? ['--wp5'] : [];
+  const twilioCliResult = await spawn('twilio', ['flex:plugins:start', '-l', 'debug', ...wp5Flag], {
     detached: true,
     cwd: plugin.dir,
   });
