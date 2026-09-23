@@ -3,7 +3,7 @@ on:
 
 jobs:
   tag:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-x64
     steps:
       - name: wait-job
         run: sleep 10s

@@ -13,7 +13,7 @@ jobs:
     if: github.event.schedule == '0 4 * * *'
     uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
     with:
-      OS: ubuntu-22.04
+      OS: ubuntu-x64
       BRANCH: main
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       NODE_VERSION: '22'
