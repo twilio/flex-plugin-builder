@@ -77,17 +77,6 @@
     "twilio-taskrouter": {
       "axios": "0.26.1"
     },
-    "twilio": {
-      "axios": "0.26.1"
-    },
-    "flatted": "^3.4.2",
-    "form-data@^3": "^3.0.4",
-    "handlebars": "^4.7.9",
-    "immutable": "^4.3.8",
-    "ip": "^2.0.1",
-    "lodash-es": "^4.18.0",
-    "lodash.template": "^4.18.1",
-    "proxy-addr": "^2.0.8",
     "ejs": "^6.0.1",
     "rfc6902": "^5.3.0"
   }

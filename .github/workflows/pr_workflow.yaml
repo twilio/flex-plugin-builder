@@ -8,6 +8,7 @@ on:
       - 'lerna.json'
       - '**/package-lock.json'
       - '**/package.json'
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -32,6 +33,10 @@ jobs:
           node-version: '22'
       - name: Authenticate with Artifactory
         uses: ./.github/actions/artifactory-oidc
+      - name: Check curated-repo parent versions
+        # Curation is only enforced under the workflow's OIDC identity; a laptop
+        # gets anonymous, ungated reads, so this can only be answered from CI.
+        run: node .github/scripts/curation-probe.js
       - name: Install project dependencies
         run: |
           echo "Starting npm ci with a 10-minute timeout"
