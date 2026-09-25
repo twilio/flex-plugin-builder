@@ -1,0 +1,91 @@
+name: Flex Plugins CLI - E2E Nightly - WebPack5 (Node 24)
+
+on:
+  schedule:
+    - cron: '15 4 * * *' # At 04:15 UTC (09:45 AM IST)
+    - cron: '15 5 * * *' # At 05:15 UTC (10:45 AM IST)
+    - cron: '15 6 * * *' # At 06:15 UTC (11:45 AM IST)
+    - cron: '15 7 * * *' # At 07:15 UTC (12:45 PM IST)
+    - cron: '15 8 * * *' # At 08:15 UTC (01:45 PM IST)
+
+jobs:
+  scheduled-e2e-wp5-unix:
+    if: github.event.schedule == '15 4 * * *'
+    uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
+    with:
+      OS: ubuntu-latest-large
+      BRANCH: main
+      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+      NODE_VERSION: '24'
+      WP5: true
+      PACKAGE_VERSION: latest
+      FLEX_UI_VERSION: latest
+      SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly - WebPack5'
+      SEND_NOTIFICATION: true
+    secrets:
+      CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+      CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
+      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
+      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
+      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
+      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+      SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
+
+  scheduled-e2e-wp5-macos:
+    if: github.event.schedule == '15 6 * * *'
+    uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
+    with:
+      OS: macos-latest
+      BRANCH: main
+      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+      NODE_VERSION: '24'
+      WP5: true
+      PACKAGE_VERSION: latest
+      FLEX_UI_VERSION: latest
+      SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly - WebPack5'
+      SEND_NOTIFICATION: true
+    secrets:
+      CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+      CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
+      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
+      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
+      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
+      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+      SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
+
+  scheduled-e2e-wp5-windows:
+    if: github.event.schedule == '15 8 * * *'
+    uses: ./.github/workflows/~reusable_e2e_by_OS.yaml
+    with:
+      OS: windows-latest-large
+      BRANCH: main
+      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+      NODE_VERSION: '24'
+      WP5: true
+      PACKAGE_VERSION: latest
+      FLEX_UI_VERSION: latest
+      SLACK_TITLE: 'Flex Plugins CLI - E2E Nightly - WebPack5'
+      SEND_NOTIFICATION: true
+    secrets:
+      CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+      CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
+      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
+      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
+      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
+      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+      SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}

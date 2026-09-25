@@ -7,13 +7,13 @@ on:
 jobs:
   get-version:
     if: ${{ (github.event.label.name == vars.E2E_LABEL) || (github.event.label.name == vars.PUBLISH_AND_E2E_LABEL) }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest-large
     outputs:
       branch: ${{ steps.extractBranch.outputs.branch }}
       version: ${{ steps.alphaVersion.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '22'
       - name: Extract branch name
@@ -69,9 +69,10 @@ jobs:
   remove-label-on-failure:
     needs: e2e-test
     if: always()
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest-large
     steps:
-      - uses: actions-ecosystem/action-remove-labels@v1
+      - name: Remove label on failure
         if: needs.e2e-test.result != 'success'
-        with:
-          labels: ${{ github.event.label.name }}
+        run: gh pr edit ${{ github.event.pull_request.number }} --remove-label "${{ github.event.label.name }}"
+        env:
+          GH_TOKEN: ${{ github.token }}

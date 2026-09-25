@@ -39,6 +39,10 @@ export default class FlexPluginsStart extends FlexPlugin {
     'flex-ui-source': flags.string({
       hidden: true,
     }),
+    wp5: flags.boolean({
+      description: FlexPluginsStart.topic.flags.wp5,
+      default: false,
+    }),
   };
 
   // @ts-ignore
@@ -92,9 +96,7 @@ export default class FlexPluginsStart extends FlexPlugin {
       }
     }
 
-    if (this._flags['include-remote']) {
-      flexArgs.push('--include-remote');
-    }
+    this.appendBooleanFlags(flexArgs);
 
     if (this._flags['flex-ui-source']) {
       env.setFlexUISrc(this._flags['flex-ui-source']);
@@ -134,14 +136,18 @@ export default class FlexPluginsStart extends FlexPlugin {
       await this.runScript('start', ['flex', ...flexArgs, '--plugin-config', JSON.stringify(pluginsConfig)]);
 
       for (let i = 0; localPluginNames && i < localPluginNames.length; i++) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.spawnScript('start', [
+        const pluginArgs = [
           'plugin',
           '--name',
           localPluginNames[i],
           '--port',
           pluginsConfig[localPluginNames[i]].port.toString(),
-        ]);
+        ];
+        if (this._flags.wp5) {
+          pluginArgs.push('--wp5');
+        }
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.spawnScript('start', pluginArgs);
       }
     }
   }
@@ -252,5 +258,19 @@ export default class FlexPluginsStart extends FlexPlugin {
     }
 
     return false;
+  }
+
+  /**
+   * Appends the simple boolean pass-through flags to the flex-plugin-scripts args
+   * @param flexArgs the args array to append to
+   * @private
+   */
+  private appendBooleanFlags(flexArgs: string[]): void {
+    if (this._flags['include-remote']) {
+      flexArgs.push('--include-remote');
+    }
+    if (this._flags.wp5) {
+      flexArgs.push('--wp5');
+    }
   }
 }

@@ -8,6 +8,7 @@ on:
       - 'lerna.json'
       - '**/package-lock.json'
       - '**/package.json'
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -16,19 +17,36 @@ on:
       - '**/package-lock.json'
       - '**/package.json'
 
+env:
+  ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
+
 jobs:
   build-and-test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-x64
+    permissions:
+      id-token: write # Required for Artifactory OIDC
+      contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '22'
+      - name: Authenticate with Artifactory
+        uses: ./.github/actions/artifactory-oidc
+      - name: Check curated-repo parent versions
+        # Curation is only enforced under the workflow's OIDC identity; a laptop
+        # gets anonymous, ungated reads, so this can only be answered from CI.
+        run: node .github/scripts/curation-probe.js
       - name: Install project dependencies
         run: |
           echo "Starting npm ci with a 10-minute timeout"
           for i in 1 2 3; do # Retry logic, retry 3 times
-            timeout 10m npm ci --verbose && break || echo "npm ci failed, retrying ($i/3)..."
+            timeout 10m npm ci --verbose && break
+            if [ "$i" -eq 3 ]; then
+              echo "::error::npm ci failed after 3 attempts"
+              exit 1
+            fi
+            echo "npm ci failed, retrying ($i/3)..."
           done
       - name: Run linter
         run: npm run lint:fix
@@ -41,9 +59,5 @@ jobs:
           CI: ""
       - name: Build packages
         run: npm run build
-      - name: Codecov report
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
 
   
