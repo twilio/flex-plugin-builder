@@ -71,13 +71,6 @@
     "ultra-runner": "^3.10.5"
   },
   "overrides": {
-    "@twilio/flex-ui": {
-      "axios": "0.26.1"
-    },
-    "twilio-taskrouter": {
-      "axios": "0.26.1"
-    },
-    "ejs": "^6.0.1",
-    "rfc6902": "^5.3.0"
+    "ejs": "^6.0.1"
   }
 }

@@ -24,6 +24,10 @@ const PARENTS = [
   { name: '@nx/devkit', watch: ['ejs'] },
 ];
 
+// The versions each parent resolves to on its own, i.e. exactly what a customer
+// gets with no overrides in play. If these are allowed, the overrides can go.
+const DEPS = ['ejs@3.1.10', 'ejs@5.0.1', 'ejs@6.0.1', 'rfc6902@3.1.1', 'axios@0.21.4'];
+
 const npmrc = fs.readFileSync(path.join(os.homedir(), '.npmrc'), 'utf8');
 const registry = (npmrc.match(/^registry=(.+)$/m) || [])[1];
 const token = (npmrc.match(/:_authToken=(.+)$/m) || [])[1];
@@ -70,6 +74,15 @@ const status = async (url) => {
       lines.push(`  ${verdict.padEnd(8)} ${`${name}@${v}`.padEnd(30)} ${declared || '—'}`);
     }
   }
+  lines.push('\nUn-overridden dependency versions');
+  for (const spec of DEPS) {
+    const at = spec.lastIndexOf('@');
+    const [name, v] = [spec.slice(0, at), spec.slice(at + 1)];
+    const st = await status(`${base}${name}/-/${name.split('/').pop()}-${v}.tgz`);
+    const verdict = st === 403 ? 'BLOCKED' : typeof st === 'number' && st < 400 ? 'ALLOWED' : `?? (${st})`;
+    lines.push(`  ${verdict.padEnd(8)} ${spec}`);
+  }
+
   const report = lines.join('\n');
   console.log(report);
   if (process.env.GITHUB_STEP_SUMMARY) {
