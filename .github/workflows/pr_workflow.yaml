@@ -50,6 +50,12 @@ jobs:
           done
       - name: Run linter
         run: npm run lint:fix
+      - name: Re-authenticate with Artifactory
+        # The OIDC token issued above expires after ~10 minutes. Some tests reach
+        # the registry (setupConfiguration -> getLatestFlexUIVersion -> package-json),
+        # and once npm ci + lint push them past that window those requests 401.
+        # Refresh the token immediately before the tests rather than racing it.
+        uses: ./.github/actions/artifactory-oidc
       - name: Run Tests
         run: npm run test:ci
         env:
