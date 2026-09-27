@@ -187,7 +187,7 @@ describe('StartScript', () => {
     const pluginServer = jest.spyOn(pluginServerScripts, 'default');
 
     beforeEach(() => {
-      getConfiguration.mockReturnThis();
+      getConfiguration.mockResolvedValue({} as never);
       getLocalAndNetworkUrls.mockReturnValue({ local: url, network: url });
       compiler.mockReturnThis();
       compilerRenderer.mockReturnValue({ onCompile: defaultOnCompile, onRemotePlugins });

@@ -15,7 +15,6 @@ describe('finalMessage', () => {
     pluginClassName: 'PluginFinalMessage',
     pluginNamespace: 'PluginFinalMessage',
     flexui2: true,
-    flexui1: false,
   };
 
   beforeEach(() => {

@@ -1,5 +1,5 @@
 import yargs, { Argv, Options } from 'yargs';
-import { runner, exit, multilineString } from '@twilio/flex-dev-utils';
+import { runner, exit, multilineString, FlexPluginError } from '@twilio/flex-dev-utils';
 
 import { FlexPluginArguments, createFlexPlugin } from './create-flex-plugin';
 
@@ -8,6 +8,14 @@ const usage = multilineString(
   '',
   'Arguments:',
   'name\tName of your plugin.',
+);
+
+export const FLEX_UI_1_EOL = multilineString(
+  'Flex UI 1.x has reached end of life and plugins can no longer be created for it.',
+  'New plugins target Flex UI 2.',
+  '',
+  'To migrate an existing Flex UI 1 plugin, run:',
+  '  twilio flex:plugins:upgrade-plugin',
 );
 
 export interface CLIArguments {
@@ -27,6 +35,16 @@ export interface CLIArguments {
   flexui2?: boolean;
   flexui1?: boolean;
 }
+
+/**
+ * Rejects Flex UI 1.x, which is end of life. `argv` is optional because yargs
+ * returns undefined when it exits on a validation failure.
+ */
+export const assertFlexUiSupported = (argv?: CLIArguments): void => {
+  if (argv?.flexui1) {
+    throw new FlexPluginError(FLEX_UI_1_EOL);
+  }
+};
 
 export default class CLI {
   public static description = usage;
@@ -75,15 +93,17 @@ export default class CLI {
     version: {
       alias: 'v',
     },
+    /*
+     * Still registered so that `--flexui1` fails with the message below rather than
+     * yargs' generic "Unknown argument"; Flex UI 1 is EOL and cannot be scaffolded.
+     */
     flexui1: {
       type: 'boolean',
-      describe: 'Creates a plugin compatible with Flex UI major version 1.0',
-      conflicts: 'flexui2',
+      describe: 'No longer supported - Flex UI 1.x is end of life',
     },
     flexui2: {
       type: 'boolean',
-      describe: 'Creates a plugin compatible with Flex UI major version 2.0',
-      conflicts: 'flexui1',
+      describe: 'Creates a plugin compatible with Flex UI major version 2.0 (the only supported version)',
     },
   };
 
@@ -98,7 +118,11 @@ export default class CLI {
   public parse = async (...args: string[]): Promise<void> => {
     const argv: CLIArguments = this.parser.parse(args);
 
-    await runner(async () => createFlexPlugin(argv as FlexPluginArguments));
+    await runner(async () => {
+      assertFlexUiSupported(argv);
+
+      return createFlexPlugin(argv as FlexPluginArguments);
+    });
     exit(0);
   };
 

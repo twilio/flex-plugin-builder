@@ -19,8 +19,6 @@ import validate from '../utils/validators';
 
 const templatesRootDir = resolve(__dirname, '../../templates');
 const templateCorePath = resolve(templatesRootDir, 'core');
-const templateJsPath = resolve(templatesRootDir, 'js');
-const templateTsPath = resolve(templatesRootDir, 'ts');
 const templateJs2Path = resolve(templatesRootDir, 'js2');
 const templateTs2Path = resolve(templatesRootDir, 'ts2');
 
@@ -33,7 +31,6 @@ export interface FlexPluginArguments extends CLIArguments {
   pluginClassName: string;
   pluginNamespace: string;
   flexui2: boolean;
-  flexui1: boolean;
 }
 
 /**
@@ -63,10 +60,10 @@ export const _scaffold = async (config: FlexPluginArguments): Promise<boolean> =
     await copyTemplateDir(templateCorePath, config.targetDirectory, config);
 
     // Get src directory from template URL if provided
-    let srcPath = config.flexui1 ? templateJsPath : templateJs2Path;
+    let srcPath = templateJs2Path;
 
     if (config.typescript) {
-      srcPath = config.flexui1 ? templateTsPath : templateTs2Path;
+      srcPath = templateTs2Path;
     }
     if (config.template) {
       dirObject = tmpDirSync();

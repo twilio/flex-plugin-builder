@@ -82,7 +82,7 @@ describe('PreScriptCheck', () => {
       _checkExternalDepsVersions.mockReturnThis();
       _validateTypescriptProject.mockReturnValue(undefined);
       _checkPluginCount.mockReturnValue(undefined);
-      checkPluginConfigurationExists.mockReturnThis();
+      checkPluginConfigurationExists.mockResolvedValue(true as never);
       _setPluginDir.mockReturnThis();
       _comparePluginAndCLIVersions.mockReturnThis();
       cwd.mockReturnValue(pluginDir);

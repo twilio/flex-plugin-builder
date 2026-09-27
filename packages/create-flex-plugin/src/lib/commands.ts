@@ -49,12 +49,7 @@ export const setupConfiguration = async (config: FlexPluginArguments): Promise<F
   config.pluginScriptsVersion = pkg.devDependencies['@twilio/flex-plugin-scripts'];
   config.flexPluginVersion = pkg.devDependencies['@twilio/flex-plugin'];
   config.flexui2 = config.flexui2 || true;
-  config.flexui1 = config.flexui1 || false;
 
-  // Upgrade to latest Flex UI Version for 1.0 if selected
-  if (config.flexui1) {
-    config.flexSdkVersion = pkg.devDependencies['@twilio/flex-ui'];
-  }
   return config;
 };
 
