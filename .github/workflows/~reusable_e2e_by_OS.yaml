@@ -147,6 +147,13 @@ jobs:
       - name: Build packages
         run: |
           npm run build
+      - name: Re-authenticate with Artifactory (JS)
+        # The OIDC token lasts ~10 minutes and this suite runs for hours. Registry
+        # access is front-loaded into step001 (twilio plugins:install) and step002
+        # (flex:plugins:create), so refresh immediately before each e2e invocation.
+        # A long install can still outlive the token; the durable fix is a longer
+        # TTL on the Artifactory OIDC provider.
+        uses: ./.github/actions/artifactory-oidc
       - name: Run e2e tests - JS (Linux)
         if: ${{ inputs.OS == 'ubuntu-latest-large' }}
         env:
@@ -173,6 +180,13 @@ jobs:
         run: |
           echo "os is: ${{ inputs.OS }} ${{ runner.os }}"
           taskkill /f /im node.exe
+      - name: Re-authenticate with Artifactory (TS)
+        # The OIDC token lasts ~10 minutes and this suite runs for hours. Registry
+        # access is front-loaded into step001 (twilio plugins:install) and step002
+        # (flex:plugins:create), so refresh immediately before each e2e invocation.
+        # A long install can still outlive the token; the durable fix is a longer
+        # TTL on the Artifactory OIDC provider.
+        uses: ./.github/actions/artifactory-oidc
       - name: Run e2e tests - TS (Linux)
         if: ${{ inputs.OS == 'ubuntu-latest-large' }}
         env:
