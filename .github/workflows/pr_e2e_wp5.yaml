@@ -76,6 +76,6 @@ jobs:
     steps:
       - name: Remove label on failure
         if: needs.e2e-test.result != 'success'
-        run: gh pr edit ${{ github.event.pull_request.number }} --remove-label "${{ github.event.label.name }}"
+        run: gh pr edit ${{ github.event.pull_request.number }} --repo ${{ github.repository }} --remove-label "${{ github.event.label.name }}"
         env:
           GH_TOKEN: ${{ github.token }}
