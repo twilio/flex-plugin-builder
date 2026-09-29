@@ -51,10 +51,16 @@ jobs:
 
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
+      # No registry-url on purpose. Given one, setup-node writes an .npmrc with
+      # //registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN} and, with no token
+      # supplied, exports NODE_AUTH_TOKEN as the literal placeholder
+      # XXXXX-XXXXX-XXXXX-XXXXX. npm then has a credential, uses it, and never
+      # attempts the OIDC exchange, so trusted publishing is bypassed and the
+      # registry rejects the placeholder. bin/publish passes --registry
+      # explicitly instead.
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
 
       # Dependencies come from the curated Artifactory repository, so a release
       # is built against the versions curation actually allows. Only the install
@@ -116,6 +122,13 @@ jobs:
         run: |
           npm install -g npm@^11.5.1
           npm --version
+
+      # Checks every package for a trusted publisher record before anything is
+      # uploaded. The exchange is per package, so without this a publish stops
+      # at the first unregistered one, having already pushed the ones before it
+      # at versions npm will never allow to be reused.
+      - name: Trusted publisher preflight
+        run: .github/scripts/npm-oidc-preflight.sh
 
       - name: Publish Version
         run: |

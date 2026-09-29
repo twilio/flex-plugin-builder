@@ -106,7 +106,8 @@ fi
        --registry https://registry.npmjs.org \
        --tag "${distTag}" \
        --access public \
-       --provenance
+       --provenance \
+       --verbose
 
 if [ "${tag}" != "public" ] ; then
     version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)

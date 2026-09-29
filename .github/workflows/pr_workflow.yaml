@@ -69,6 +69,11 @@ jobs:
         run: node .github/scripts/curation-probe.js --scan-lockfile
       - name: Run linter
         run: npm run lint:fix
+      # The Artifactory token from the install step lasts about ten minutes,
+      # and install plus lint already exceeds that, so anything the tests fetch
+      # would hit an expired credential. Re-exchange before running them.
+      - name: Refresh Artifactory token
+        run: .github/scripts/artifactory-npm-auth.sh
       - name: Run Tests
         run: npm run test:ci
         env:
