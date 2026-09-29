@@ -96,10 +96,17 @@ else
   distTag="${tag}"
 fi
 
+# --registry is stated explicitly because the install step authenticates against
+# the curated Artifactory repository, and the packages themselves are published
+# to public npm regardless of where they were installed from.
 ./node_modules/.bin/lerna exec \
   --no-private \
   --concurrency 1 \
-  -- npm publish --tag "${distTag}" --access public --provenance
+  -- npm publish \
+       --registry https://registry.npmjs.org \
+       --tag "${distTag}" \
+       --access public \
+       --provenance
 
 if [ "${tag}" != "public" ] ; then
     version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
