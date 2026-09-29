@@ -72,3 +72,6 @@ plugin-test/
 .idea
 .lerna_backup
 .ultra.cache.json
+
+# Claude Code local settings
+.claude/

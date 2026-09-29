@@ -16,8 +16,15 @@ describe('create-flex-plugin', () => {
   const pluginTargetDirectory = 'test-dir';
 
   const clearDir = () => {
-    if (fs.existsSync(pluginName)) {
+    /*
+     * Deliberately not guarded by fs.existsSync: a later test spies on it and
+     * resetAllMocks() leaves the spy returning undefined, which silently skipped
+     * cleanup and left plugin-test/ behind to fail the following run.
+     */
+    try {
       fsScripts.rmRfSync(pluginName);
+    } catch {
+      // nothing to remove
     }
   };
 
@@ -196,54 +203,6 @@ describe('create-flex-plugin', () => {
       expect(downloadFromGitHub).toHaveBeenCalledTimes(1);
       expect(copyTemplateDir).not.toHaveBeenCalledWith(
         expect.stringContaining('templates/ts2'),
-        expect.anything(),
-        expect.anything(),
-      );
-    });
-
-    it('should use typescript 1.0 template', async () => {
-      const config = {
-        name: pluginName,
-        accountSid,
-        install: true,
-        typescript: true,
-        targetDirectory: '',
-        flexui1: true,
-      } as createFlexPluginScripts.FlexPluginArguments;
-
-      const copyTemplateDir = jest.spyOn(fsScripts, 'copyTemplateDir').mockReturnThis();
-      jest.spyOn(fs, 'renameSync').mockReturnThis();
-      const downloadFromGitHub = jest.spyOn(commands, 'downloadFromGitHub').mockReturnThis();
-
-      await createFlexPluginScripts._scaffold(config);
-      expect(downloadFromGitHub).not.toHaveBeenCalled();
-      expect(copyTemplateDir).toHaveBeenCalledTimes(2);
-      expect(copyTemplateDir).toHaveBeenCalledWith(
-        expect.toMatchPathContaining('templates/ts'),
-        expect.anything(),
-        expect.anything(),
-      );
-    });
-
-    it('should use javascript 1.0 template', async () => {
-      const config = {
-        name: pluginName,
-        accountSid,
-        install: true,
-        typescript: false,
-        targetDirectory: '',
-        flexui1: true,
-      } as createFlexPluginScripts.FlexPluginArguments;
-
-      const copyTemplateDir = jest.spyOn(fsScripts, 'copyTemplateDir').mockReturnThis();
-      jest.spyOn(fs, 'renameSync').mockReturnThis();
-      const downloadFromGitHub = jest.spyOn(commands, 'downloadFromGitHub').mockReturnThis();
-
-      await createFlexPluginScripts._scaffold(config);
-      expect(downloadFromGitHub).not.toHaveBeenCalled();
-      expect(copyTemplateDir).toHaveBeenCalledTimes(2);
-      expect(copyTemplateDir).toHaveBeenCalledWith(
-        expect.toMatchPathContaining('templates/js'),
         expect.anything(),
         expect.anything(),
       );

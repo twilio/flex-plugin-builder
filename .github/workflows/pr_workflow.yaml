@@ -18,20 +18,62 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-x64
+    permissions:
+      contents: read
+      id-token: write # Artifactory exchanges this for an access token to install with
+    env:
+      ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
+      ARTIFACTORY_NPM_REGISTRY: ${{ vars.ARTIFACTORY_URL }}/artifactory/api/npm/virtual-npm-thirdparty/
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '22'
-      - name: Install project dependencies
+      # Installs from the curated Artifactory repository, the same way a release
+      # does, so that a version curation forbids fails here on the pull request
+      # rather than part-way through an alpha release.
+      #
+      # The lockfile's resolved URLs all name registry.npmjs.org, but npm
+      # rewrites a resolved host matching replaceRegistryHost (which defaults to
+      # registry.npmjs.org) to whatever --registry says, so the tarballs come
+      # from Artifactory.
+      - name: Install project dependencies (curated Artifactory)
+        id: install
         run: |
-          echo "Starting npm ci with a 10-minute timeout"
+          installed=false
           for i in 1 2 3; do # Retry logic, retry 3 times
-            timeout 10m npm ci --verbose && break || echo "npm ci failed, retrying ($i/3)..."
+            # Artifactory's OIDC token lasts about ten minutes, so take a fresh
+            # one per attempt and keep each attempt inside that window.
+            .github/scripts/artifactory-npm-auth.sh
+            echo "Starting npm ci against $ARTIFACTORY_NPM_REGISTRY (attempt $i/3, 8-minute timeout)"
+            if timeout 8m npm ci --registry="$ARTIFACTORY_NPM_REGISTRY" --verbose; then
+              installed=true
+              break
+            fi
+            echo "npm ci failed, retrying ($i/3)..."
           done
+          if [ "$installed" != true ]; then
+            echo "::error::npm ci failed after 3 attempts"
+            exit 1
+          fi
+
+      # Only runs when the install failed, so it costs nothing on a green build.
+      # A curation 403 says which version is forbidden but not what to move to,
+      # and npm aborts on the first forbidden tarball, so an install only ever
+      # reveals one package per run. This scans every tarball in the lockfile so
+      # the whole blocked set, and an allowed version for each, comes back in one
+      # go instead of one push per package.
+      - name: Which packages does curation block?
+        if: failure() && steps.install.conclusion == 'failure'
+        run: node .github/scripts/curation-probe.js --scan-lockfile
       - name: Run linter
         run: npm run lint:fix
+      # The Artifactory token from the install step lasts about ten minutes,
+      # and install plus lint already exceeds that, so anything the tests fetch
+      # would hit an expired credential. Re-exchange before running them.
+      - name: Refresh Artifactory token
+        run: .github/scripts/artifactory-npm-auth.sh
       - name: Run Tests
         run: npm run test:ci
         env:
@@ -41,9 +83,5 @@ jobs:
           CI: ""
       - name: Build packages
         run: npm run build
-      - name: Codecov report
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
 
   

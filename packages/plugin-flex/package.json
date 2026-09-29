@@ -95,7 +95,10 @@
         }
       },
       "flex:plugins:build": {
-        "description": "Builds the Flex plugin and creates a JavaScript and sourcemap bundle."
+        "description": "Builds the Flex plugin and creates a JavaScript and sourcemap bundle.",
+        "flags": {
+          "wp5": "Use webpack 5 for building the plugin"
+        }
       },
       "flex:plugins:test": {
         "description": "Runs the test suite."
@@ -105,7 +108,8 @@
         "flags": {
           "name": "The name of the plugin you would like to run. You can provide multiple to run them all concurrently. You can include specific active remote plugins using \"--name 'plugin-name@remote'\" or \"--name 'plugin-name@0.0.0'\" for a specific remote version.",
           "includeRemote": "Use this flag to include all remote plugins in your build.",
-          "port": "The port to start your local development server on."
+          "port": "The port to start your local development server on.",
+          "wp5": "Use webpack 5 for building the plugin"
         }
       },
       "flex:plugins:deploy": {

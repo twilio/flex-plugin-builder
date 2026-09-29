@@ -62,30 +62,54 @@ echo -e "-- Publishing as \033[1m${tag}\033[0m :: \033[1m${bump}\033[0m release 
 echo -e "-- Publishing as \033[1m${tag}\033[0m :: \033[1m${bump}\033[0m release --"
 echo -e "------------------------------------\n"
 
-# Run unit-tests one more time
-npm run lint:fix
-npm run build
+#
+# Versioning and publishing are two separate steps here.
+#
+# `lerna version` only rewrites the package.json files (and tags, for a public
+# release). The upload is then done by the npm CLI, because npm trusted
+# publishing (OIDC) lives in the CLI: it exchanges the workflow's id-token for a
+# short-lived, package-scoped registry token. lerna cannot do that — it uploads
+# through its bundled libnpmpublish@6, which predates OIDC and only knows how to
+# read an _authToken. Running `lerna publish` here would need NODE_AUTH_TOKEN.
+#
+# `lerna exec` walks the packages in topological order, so a dependency is
+# always published before the packages that depend on it.
+#
 
 if [ "${tag}" == "public" ] ; then
-  ./node_modules/.bin/lerna publish \
+  ./node_modules/.bin/lerna version \
     --force-publish="*" \
     --no-push \
     --exact \
     --yes \
     "${bump}"
+  distTag="latest"
 else
-  ./node_modules/.bin/lerna publish \
+  ./node_modules/.bin/lerna version \
     --force-publish="*" \
     --preid "${tag}" \
-    --pre-dist-tag "${tag}" \
-    --dist-tag "${tag}" \
-    --skip-git \
     --no-git-tag-version \
     --no-push \
     --exact \
     --yes \
     "${bump}"
+  distTag="${tag}"
+fi
 
+# --registry is stated explicitly because the install step authenticates against
+# the curated Artifactory repository, and the packages themselves are published
+# to public npm regardless of where they were installed from.
+./node_modules/.bin/lerna exec \
+  --no-private \
+  --concurrency 1 \
+  -- npm publish \
+       --registry https://registry.npmjs.org \
+       --tag "${distTag}" \
+       --access public \
+       --provenance \
+       --verbose
+
+if [ "${tag}" != "public" ] ; then
     version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)
 
     if [ "${tag}" == "beta" ] ; then

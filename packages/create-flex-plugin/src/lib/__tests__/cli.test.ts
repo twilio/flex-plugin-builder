@@ -1,4 +1,4 @@
-import CLI from '../cli';
+import CLI, { FLEX_UI_1_EOL, assertFlexUiSupported } from '../cli';
 import { createFlexPlugin } from '../create-flex-plugin';
 
 jest.mock('../create-flex-plugin');
@@ -18,6 +18,22 @@ describe('CLI', () => {
     expect(createFlexPlugin).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(0);
+  });
+
+  it('should still register --flexui1 so it fails with guidance', () => {
+    expect(CLI.flags).toHaveProperty('flexui1');
+    expect(FLEX_UI_1_EOL).toContain('end of life');
+    expect(FLEX_UI_1_EOL).toContain('twilio flex:plugins:upgrade-plugin');
+  });
+
+  it('should reject --flexui1', () => {
+    expect(() => assertFlexUiSupported({ flexui1: true })).toThrow(FLEX_UI_1_EOL);
+  });
+
+  it('should allow everything else', () => {
+    expect(() => assertFlexUiSupported({})).not.toThrow();
+    expect(() => assertFlexUiSupported({ flexui2: true })).not.toThrow();
+    expect(() => assertFlexUiSupported(undefined)).not.toThrow();
   });
 
   it('should have static description', () => {

@@ -718,12 +718,11 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   /**
    * The command parse override
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected async parseCommand<F, A extends { [name: string]: any }>(
+  protected async parseCommand<F extends Parser.flags.Output, A extends Parser.OutputArgs>(
     options?: Parser.Input<F>,
     argv = this.argv,
   ): Promise<Parser.Output<F, A>> {
-    return parser(super.parse.bind(this))(options, argv);
+    return parser(super.parse.bind(this))(options, argv) as Promise<Parser.Output<F, A>>;
   }
 
   /**
