@@ -58,9 +58,12 @@ jobs:
       # attempts the OIDC exchange, so trusted publishing is bypassed and the
       # registry rejects the placeholder with a 404. The publish step passes
       # --registry explicitly instead.
+      # Node 24 for the npm it bundles: trusted publishing needs npm >= 11.5.1.
+      # This matches flex-monorepo, which publishes through OIDC successfully,
+      # and avoids upgrading npm globally mid-job.
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
-          node-version: '22'
+          node-version: 24
 
       # Dependencies come from the curated Artifactory repository, so a release
       # is built against the versions curation actually allows. Only the install
@@ -117,14 +120,6 @@ jobs:
                 }]
               }]
             }"
-
-      # node 22 bundles npm 10.x, which has no trusted-publishing support.
-      # OIDC token exchange on publish needs npm >= 11.5.1. Upgrading only here
-      # keeps `npm ci` above on the npm that CI already validates.
-      - name: Upgrade npm for trusted publishing
-        run: |
-          npm install -g npm@^11.5.1
-          npm --version
 
       # Publishes each package's already-built dist through the npm CLI, one
       # package at a time, so that npm trusted publishing (OIDC) authenticates
@@ -198,16 +193,16 @@ jobs:
               # longer provides. Its oclif.manifest.json is committed instead,
               # so nothing is lost; skipping postpack also stops it deleting
               # that committed file.
-              # No --registry: npm's built-in default is already
-              # https://registry.npmjs.org/ and npm decides whether a publish is
-              # eligible for trusted publishing by comparing the registry URL.
-              # Passing the same host without its trailing slash risks looking
-              # like a third-party registry, which would skip OIDC entirely.
+              # --registry is spelled exactly as flex-monorepo spells it, which
+              # publishes through OIDC successfully. An earlier guess that the
+              # missing trailing slash was making npm skip trusted publishing
+              # was wrong: that repo passes the same form and it works.
               #
               # --verbose so npm's OIDC token-exchange attempt is visible. At
               # default verbosity a failed exchange is silent and shows up only
               # as ENEEDAUTH, which is indistinguishable from never trying.
               npm publish \
+                --registry https://registry.npmjs.org \
                 --tag "$distTag" \
                 --access public \
                 --ignore-scripts \
@@ -218,8 +213,11 @@ jobs:
         env:
           VERSION: ${{ inputs.VERSION }}
           BRANCH: ${{ inputs.BRANCH }}
-          NODE_OPTIONS: --no-experimental-fetch
           CI: ""
+          # NODE_OPTIONS is gone with the move to node 24, which no longer
+          # accepts --no-experimental-fetch. Nothing here needs it: the step
+          # only runs a node script and npm publish.
+          #
           # No NODE_AUTH_TOKEN: the npm CLI authenticates via OIDC trusted publishing.
 
       - name: Retrieve Version (public releases only)
