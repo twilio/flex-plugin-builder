@@ -1,4 +1,39 @@
 on:
+  # Dispatched directly, so that this file is the workflow GitHub names in the
+  # OIDC token. When a reusable workflow is called, the token's workflow_ref is
+  # the caller's, and only job_workflow_ref names this file, so a publish run
+  # through pr_e2e presented itself as pr_e2e.yaml and could never match a
+  # trusted publisher registered against publish.yml.
+  workflow_dispatch:
+    inputs:
+      TAG:
+        description: 'Release type'
+        required: true
+        type: choice
+        options:
+          - alpha
+          - beta
+          - rc
+          - dev
+          - public
+      VERSION:
+        description: 'Exact version to release, or a bump level (patch | minor | major) for a public release'
+        required: true
+        type: string
+      BRANCH:
+        description: 'Branch being released'
+        required: true
+        type: string
+      ENVIRONMENT:
+        description: 'Environment gating the release'
+        required: true
+        type: choice
+        default: alpha_release
+        options:
+          - alpha_release
+          - production
+          - public_release
+
   workflow_call:
     inputs:
       TAG:
