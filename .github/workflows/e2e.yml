@@ -1,0 +1,51 @@
+name: E2E
+
+# Runs the e2e suite against a specific published package version.
+#
+# pr_e2e covers the label-driven cases, but its version is either 'latest' or a
+# freshly computed timestamp, so there was no way to point e2e at a particular
+# alpha. This takes the version as an input.
+#
+# Like publish.yml, this has to exist on the default branch for GitHub to expose
+# the workflow_dispatch trigger; a run can then target any branch.
+
+on:
+  workflow_dispatch:
+    inputs:
+      PACKAGE_VERSION:
+        description: "Published version of @twilio-labs/plugin-flex to test, e.g. 7.1.3-alpha.202609291943, or 'latest'"
+        required: true
+        type: string
+        default: latest
+      BRANCH:
+        description: 'Branch to check the e2e suite out from'
+        required: true
+        type: string
+      FLEX_UI_VERSION:
+        description: 'Flex UI version to test against'
+        required: true
+        type: string
+        default: latest
+
+jobs:
+  e2e-test:
+    uses: ./.github/workflows/~reusable_e2e_all_OS.yaml
+    with:
+      BRANCH: ${{ inputs.BRANCH }}
+      NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
+      PACKAGE_VERSION: ${{ inputs.PACKAGE_VERSION }}
+      FLEX_UI_VERSION: ${{ inputs.FLEX_UI_VERSION }}
+      SEND_NOTIFICATION: false
+    secrets:
+      CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
+      CONSOLE_PASSWORD: ${{ secrets.CONSOLE_PASSWORD }}
+      CONSOLE_EMAIL_linux: ${{ secrets.CONSOLE_EMAIL_linux }}
+      TWILIO_ACCOUNT_SID_linux: ${{ secrets.TWILIO_ACCOUNT_SID_linux }}
+      TWILIO_AUTH_TOKEN_linux: ${{ secrets.TWILIO_AUTH_TOKEN_linux }}
+      CONSOLE_EMAIL_win32: ${{ secrets.CONSOLE_EMAIL_win32 }}
+      TWILIO_ACCOUNT_SID_win32: ${{ secrets.TWILIO_ACCOUNT_SID_win32 }}
+      TWILIO_AUTH_TOKEN_win32: ${{ secrets.TWILIO_AUTH_TOKEN_win32 }}
+      CONSOLE_EMAIL_darwin: ${{ secrets.CONSOLE_EMAIL_darwin }}
+      TWILIO_ACCOUNT_SID_darwin: ${{ secrets.TWILIO_ACCOUNT_SID_darwin }}
+      TWILIO_AUTH_TOKEN_darwin: ${{ secrets.TWILIO_AUTH_TOKEN_darwin }}
+      SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
