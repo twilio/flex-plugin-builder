@@ -121,12 +121,24 @@ jobs:
               }]
             }"
 
+      # Reports which packages have an npm trusted publisher configured, all of
+      # them in one run, without uploading anything. The exchange is per
+      # package, so a real publish only ever reveals the first unregistered one
+      # before aborting.
+      - name: Trusted publisher preflight
+        run: .github/scripts/npm-oidc-preflight.sh
+
+      # Publishing is disabled while the trusted publisher records are being
+      # sorted out. The preflight above is what runs instead; re-enable this
+      # step once it reports every package as registered.
+      #
       # Publishes each package's already-built dist through the npm CLI, one
       # package at a time, so that npm trusted publishing (OIDC) authenticates
       # every upload. bin/publish is not used here: it drives lerna, whose
       # bundled libnpmpublish predates OIDC and needs NODE_AUTH_TOKEN, and it
       # would need the node_modules that the disabled install no longer provides.
       - name: Publish Version
+        if: false # preflight only, do not publish
         run: |
           set -euo pipefail
 
