@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bk --version)",
+      "Read(//Users/shmohanty/.config/**)"
+    ]
+  }
+}

@@ -3,18 +3,24 @@ import { CLIParseError } from '@oclif/parser/lib/errors';
 
 import { IOptionFlag } from './flags';
 
-type Input<F> = Parser.Input<F>;
-type Output<F, A> = Parser.Output<F, A>;
+type FlagsShape = Parser.flags.Output;
+type ArgsShape = Parser.OutputArgs;
+
+type Input<F extends FlagsShape> = Parser.Input<F>;
+type Output<F extends FlagsShape, A extends ArgsShape> = Parser.Output<F, A>;
 
 /**
  * Sanitizes the object
  * @param obj
  * @private
  */
-export const _sanitize = <F>(obj: F): F => {
-  Object.keys(obj).forEach((key) => {
-    if (typeof obj[key] === 'string') {
-      obj[key] = encodeURIComponent(obj[key].trim());
+export const _sanitize = <F extends FlagsShape>(obj: F): F => {
+  // a generic indexed access is read-only, so write through a widened alias
+  const record = obj as Record<string, unknown>;
+  Object.keys(record).forEach((key) => {
+    const value = record[key];
+    if (typeof value === 'string') {
+      record[key] = encodeURIComponent(value.trim());
     }
   });
 
@@ -28,11 +34,17 @@ export const _sanitize = <F>(obj: F): F => {
  * @param parse
  * @private
  */
-export const _validate = <F, A>(flags: F, options: Parser.flags.Input<F>, parse?: Output<F, A>): void => {
+export const _validate = <F extends FlagsShape, A extends ArgsShape>(
+  flags: F,
+  options: Parser.flags.Input<F>,
+  parse?: Output<F, A>,
+): void => {
   Object.keys(flags).forEach((flag) => {
-    const option = options[flag];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const option: any = options[flag];
     const input = flags[flag];
-    const cliErrorOption = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const cliErrorOption: any = {
       parse: {
         input: option,
         output: parse,
@@ -63,7 +75,7 @@ export const _validate = <F, A>(flags: F, options: Parser.flags.Input<F>, parse?
  * Prepares the options for parsing
  * @param options
  */
-export const _prepareFlags = <F>(options?: Input<F>): Input<F> | undefined => {
+export const _prepareFlags = <F extends FlagsShape>(options?: Input<F>): Input<F> | undefined => {
   if (!options) {
     return options;
   }
@@ -82,7 +94,7 @@ export const _prepareFlags = <F>(options?: Input<F>): Input<F> | undefined => {
  * Combines the alias flags
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const _combineFlags = <F, A extends { [name: string]: any }>(
+export const _combineFlags = <F extends FlagsShape, A extends ArgsShape>(
   parsed: Output<F, A>,
   options?: Input<F>,
 ): Output<F, A> => {
@@ -96,11 +108,13 @@ export const _combineFlags = <F, A extends { [name: string]: any }>(
      * Append the 'alias' to the actual (non-alias) flag
      * That check is entry[0] !== entry[1].alias (i.e. the alias option and the flag name are not the same)
      */
-    if (entry[1].alias && entry[0] !== entry[1].alias && parsed.flags[entry[1].alias]) {
-      if (parsed.flags[entry[0]]) {
-        parsed.flags[entry[0]].push(...parsed.flags[entry[1].alias]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const parsedFlags = parsed.flags as Record<string, any>;
+    if (entry[1].alias && entry[0] !== entry[1].alias && parsedFlags[entry[1].alias]) {
+      if (parsedFlags[entry[0]]) {
+        parsedFlags[entry[0]].push(...parsedFlags[entry[1].alias]);
       } else {
-        parsed.flags[entry[0]] = [...parsed.flags[entry[1].alias]];
+        parsedFlags[entry[0]] = [...parsedFlags[entry[1].alias]];
       }
     }
   });
@@ -122,7 +136,7 @@ export const _combineFlags = <F, A extends { [name: string]: any }>(
 /* c8 ignore next */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parser =
-  <F, A extends { [name: string]: any }>(OclifParser: (options?: Input<F>, argv?: string[]) => Output<F, A>) =>
+  <F extends FlagsShape, A extends ArgsShape>(OclifParser: (options?: Input<F>, argv?: string[]) => Output<F, A>) =>
   async (options?: Input<F>, argv: string[] = []): Promise<Output<F, A>> => {
     const preparedFlags = _prepareFlags(options);
     const parsed: Output<F, A> = _combineFlags(await OclifParser(preparedFlags, argv), options);
