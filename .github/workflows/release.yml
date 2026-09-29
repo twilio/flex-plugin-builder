@@ -31,7 +31,7 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-x64
-    environment: ${{ inputs.ENVIRONMENT }}
+    environment: production
     permissions:
       # Used twice over: Artifactory exchanges it for an access token to install
       # with, and npm exchanges it for a registry token to publish with.
