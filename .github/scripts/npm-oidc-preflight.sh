@@ -38,20 +38,39 @@ for dir in packages/*/; do
       --loglevel verbose 2>&1
   )
 
-  oidc=$(grep -m1 'npm verbose oidc' <<<"$out" || true)
+  # Always print the evidence, whatever the verdict. Reporting a conclusion
+  # without the registry's own words made an earlier run useless: twelve
+  # identical verdicts with no oidc line anywhere, and no way afterwards to
+  # tell a real answer from a misclassification.
+  oidc=$(grep -m1 'oidc' <<<"$out" || true)
+  exchange=$(grep -m1 'oidc/token/exchange' <<<"$out" || true)
+  errcode=$(grep -m1 'npm error code' <<<"$out" || true)
+  echo "--- ${name}"
+  echo "    exchange : ${exchange:-<none attempted>}"
+  echo "    oidc     : ${oidc:-<no oidc line>}"
+  echo "    error    : ${errcode:-<none>}"
 
-  if grep -q 'package not found' <<<"$out"; then
+  if [ -z "$oidc" ] && [ -z "$exchange" ]; then
+    # No exchange attempted, so this says nothing about registration. Dump the
+    # tail of npm's own output once, so the reason is visible instead of
+    # inferred: --dry-run may simply short-circuit before authenticating.
+    unclear+=("${name} :: npm attempted no OIDC exchange")
+    echo "    verdict  : INCONCLUSIVE (no exchange attempted)"
+    if [ "${dumped:-0}" = "0" ]; then
+      dumped=1
+      echo "    --- last 40 lines of npm output for ${name} ---"
+      tail -40 <<<"$out" | sed 's/^/    | /'
+      echo "    --- end ---"
+    fi
+  elif grep -q 'package not found' <<<"$out"; then
     missing+=("$name")
-    echo "NOT REGISTERED  ${name}"
-  elif [ -n "$oidc" ] && ! grep -q 'Failed token exchange' <<<"$out"; then
-    registered+=("$name")
-    echo "registered      ${name}"
+    echo "    verdict  : NOT REGISTERED"
+  elif grep -q 'Failed token exchange' <<<"$out"; then
+    unclear+=("${name} :: ${oidc}")
+    echo "    verdict  : INCONCLUSIVE (exchange failed for another reason)"
   else
-    # Either npm never attempted an exchange, or it failed for some other
-    # reason. Keep the line so the cause is visible rather than guessed at.
-    detail=$(grep -m1 'npm error code\|Failed token exchange' <<<"$out" || echo 'no oidc line in output')
-    unclear+=("${name} :: ${detail}")
-    echo "INCONCLUSIVE    ${name} :: ${detail}"
+    registered+=("$name")
+    echo "    verdict  : registered"
   fi
 done
 
@@ -82,5 +101,12 @@ fi
 
 if [ "${#missing[@]}" -gt 0 ]; then
   echo "::error::${#missing[@]} package(s) have no npm trusted publisher configured"
+  exit 1
+fi
+
+# An inconclusive preflight cannot protect the publish that follows, so treat it
+# as a failure rather than waving a possibly-unregistered package through.
+if [ "${#unclear[@]}" -gt 0 ]; then
+  echo "::error::${#unclear[@]} package(s) could not be checked; not proceeding to publish"
   exit 1
 fi
