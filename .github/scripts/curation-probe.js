@@ -1,24 +1,27 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
 //
-// When an install fails because JFrog curation forbids a version, this answers
-// the only question that matters next: which nearby versions does curation
-// allow, so what should the dependency be moved to?
+// Answers the question a curation 403 leaves open: which versions does curation
+// actually allow, so what should the dependency be moved to?
 //
-// It reads the failed `npm ci` output, picks out every tarball that came back
-// 403, and for each one probes the versions just above it plus the newest of
-// each later major. A probe is the only way to know: curation is enforced
-// against the Artifactory registry under the workflow's OIDC identity, and
-// reads from a laptop are anonymous and ungated, so they always look allowed.
+// It has to run in CI. Curation is enforced against the Artifactory registry
+// under the workflow's OIDC identity, and reads from a laptop are anonymous and
+// ungated, so locally every version looks allowed.
 //
-// Usage: node .github/scripts/curation-probe.js <npm-ci-log>
-//        node .github/scripts/curation-probe.js --package axios@0.24.0
+// Modes:
+//   --scan-lockfile [path]   check every tarball in the lockfile and report all
+//                            blocked ones at once. npm aborts on the first
+//                            forbidden tarball, so an install only ever reveals
+//                            one per run; this reveals the whole set.
+//   <npm-ci-log>             report only what the failed install already hit.
+//   --package <name@version> check one package.
 
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
 const CANDIDATES_PER_PACKAGE = 8;
+const CONCURRENCY = 24;
 
 const registry = process.env.ARTIFACTORY_NPM_REGISTRY;
 if (!registry) {
@@ -42,43 +45,90 @@ const cmp = (a, b) => {
   return x[0] - y[0] || x[1] - y[1] || x[2] - y[2];
 };
 
-// A tarball URL is <base><name>/-/<basename>-<version>.tgz, where name may be
-// scoped and so contain its own slash.
-const parseTarball = (url) => {
-  const rest = url.slice(base.length);
+// A tarball URL is <root>/<name>/-/<basename>-<version>.tgz, where name may be
+// scoped and so contain its own slash. Handles both the Artifactory URLs that
+// appear in install logs and the registry.npmjs.org URLs the lockfile records.
+const tarballInfo = (url) => {
+  let rest;
+  if (url.startsWith(base)) {
+    rest = url.slice(base.length);
+  } else {
+    try {
+      rest = new URL(url).pathname.replace(/^\//, '');
+    } catch {
+      return null;
+    }
+  }
   const at = rest.lastIndexOf('/-/');
   if (at === -1) {
     return null;
   }
   const name = decodeURIComponent(rest.slice(0, at));
-  const file = rest.slice(at + 3);
-  const version = file.replace(/^.*?-(?=\d)/, '').replace(/\.tgz$/, '');
+  const version = rest
+    .slice(at + 3)
+    .replace(/^.*?-(?=\d)/, '')
+    .replace(/\.tgz$/, '');
   return /^\d+\.\d+\.\d+/.test(version) ? { name, version } : null;
 };
+
+const tarballUrl = ({ name, version }) => `${base}${name}/-/${name.split('/').pop()}-${version}.tgz`;
+
+const dedupe = (hits) => [...new Map(hits.map((h) => [`${h.name}@${h.version}`, h])).values()];
 
 const blockedFromLog = (file) => {
   const log = fs.readFileSync(file, 'utf8');
   const urls = log.match(/403 Forbidden - \w+ (\S+\.tgz)/g) || [];
-  const seen = new Map();
-  for (const line of urls) {
-    const hit = parseTarball(line.split(' ').pop());
-    if (hit) {
-      seen.set(`${hit.name}@${hit.version}`, hit);
+  return dedupe(urls.map((line) => tarballInfo(line.split(' ').pop())).filter(Boolean));
+};
+
+const fromLockfile = (file) => {
+  const lock = JSON.parse(fs.readFileSync(file, 'utf8'));
+  const urls = new Set();
+  for (const entry of Object.values(lock.packages || {})) {
+    if (entry.resolved && entry.resolved.endsWith('.tgz')) {
+      urls.add(entry.resolved);
     }
   }
-  return [...seen.values()];
+  return dedupe([...urls].map(tarballInfo).filter(Boolean));
 };
 
 const status = async (url) => {
-  try {
-    const res = await fetch(url, { headers, redirect: 'manual' });
-    if (res.body) {
-      await res.body.cancel();
+  for (const method of ['HEAD', 'GET']) {
+    try {
+      const res = await fetch(url, { method, headers, redirect: 'manual' });
+      if (res.body) {
+        await res.body.cancel();
+      }
+      // Some registries refuse HEAD on tarballs; retry those with GET.
+      if (method === 'HEAD' && (res.status === 405 || res.status === 501)) {
+        continue;
+      }
+      return res.status;
+    } catch (e) {
+      if (method === 'GET') {
+        return `ERR ${e.message}`;
+      }
     }
-    return res.status;
-  } catch (e) {
-    return `ERR ${e.message}`;
   }
+  return 'ERR unreachable';
+};
+
+const verdictOf = (code) => (code === 403 ? 'BLOCKED' : typeof code === 'number' && code < 400 ? 'ALLOWED' : `?? (${code})`);
+
+// Runs fn over items with a bounded number in flight, so a full lockfile scan
+// does not open thousands of sockets at once.
+const mapLimit = async (items, limit, fn) => {
+  const out = new Array(items.length);
+  let next = 0;
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (next < items.length) {
+      const i = next;
+      next += 1;
+      out[i] = await fn(items[i]);
+    }
+  });
+  await Promise.all(workers);
+  return out;
 };
 
 // The versions worth suggesting: the next few above the blocked one within its
@@ -94,60 +144,84 @@ const candidatesFor = (stable, blocked) => {
   return [...new Set([...sameMajor, ...laterMajors])].slice(0, CANDIDATES_PER_PACKAGE);
 };
 
+const suggestFor = async ({ name, version }) => {
+  const lines = [`\n${name}@${version} is BLOCKED by curation. Nearby versions:`];
+  const res = await fetch(`${base}${name.replace('/', '%2f')}`, { headers });
+  if (!res.ok) {
+    lines.push(`  could not read packument (${res.status})`);
+    return lines;
+  }
+  const stable = Object.keys((await res.json()).versions || {})
+    .filter((v) => /^\d+\.\d+\.\d+$/.test(v))
+    .sort(cmp);
+
+  const candidates = candidatesFor(stable, version);
+  if (!candidates.length) {
+    lines.push('  no newer release exists — this needs the parent dependency upgraded instead');
+    return lines;
+  }
+  const codes = await mapLimit(candidates, CONCURRENCY, (v) => status(tarballUrl({ name, version: v })));
+  candidates.forEach((v, i) => lines.push(`  ${verdictOf(codes[i]).padEnd(8)} ${name}@${v}`));
+  return lines;
+};
+
+const report = (lines) => {
+  const text = lines.join('\n');
+  console.log(text);
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Curation report\n\n\`\`\`\n${text}\n\`\`\`\n`);
+  }
+};
+
 (async () => {
   const arg = process.argv[2];
   if (!arg) {
-    console.error('::error::usage: curation-probe.js <npm-ci-log> | --package <name@version>');
+    console.error(
+      '::error::usage: curation-probe.js --scan-lockfile [path] | <npm-ci-log> | --package <name@version>',
+    );
     process.exit(1);
   }
 
-  let targets;
-  if (arg === '--package') {
-    const at = process.argv[3].lastIndexOf('@');
-    targets = [{ name: process.argv[3].slice(0, at), version: process.argv[3].slice(at + 1) }];
+  const lines = [`Registry: ${base}`];
+  let blocked;
+
+  if (arg === '--scan-lockfile') {
+    const file = process.argv[3] || 'package-lock.json';
+    const all = fromLockfile(file);
+    lines.push(`Scanning ${all.length} unique tarballs from ${file}`);
+    const codes = await mapLimit(all, CONCURRENCY, (t) => status(tarballUrl(t)));
+
+    blocked = all.filter((_, i) => codes[i] === 403);
+    const odd = all.map((t, i) => [t, codes[i]]).filter(([, c]) => c !== 403 && !(typeof c === 'number' && c < 400));
+
+    lines.push(`  allowed: ${all.length - blocked.length - odd.length}`);
+    lines.push(`  blocked: ${blocked.length}`);
+    if (odd.length) {
+      lines.push(`  inconclusive: ${odd.length}`);
+      odd.slice(0, 10).forEach(([t, c]) => lines.push(`    ${verdictOf(c)} ${t.name}@${t.version}`));
+    }
+    if (blocked.length) {
+      lines.push('\nAll blocked packages:');
+      blocked.forEach((t) => lines.push(`  ${t.name}@${t.version}`));
+    }
+  } else if (arg === '--package') {
+    const spec = process.argv[3];
+    const at = spec.lastIndexOf('@');
+    blocked = [{ name: spec.slice(0, at), version: spec.slice(at + 1) }];
   } else {
-    targets = blockedFromLog(arg);
+    blocked = blockedFromLog(arg);
   }
 
-  if (!targets.length) {
-    console.log('No curation 403s found in the install log; nothing to probe.');
+  if (!blocked.length) {
+    lines.push('\nNothing blocked by curation.');
+    report(lines);
     return;
   }
 
-  const lines = [`Registry: ${base}`];
-  for (const { name, version } of targets) {
-    lines.push(`\n${name}@${version} is BLOCKED by curation. Nearby versions:`);
-
-    const res = await fetch(`${base}${name.replace('/', '%2f')}`, { headers });
-    if (!res.ok) {
-      lines.push(`  could not read packument (${res.status})`);
-      continue;
-    }
-    const stable = Object.keys((await res.json()).versions || {})
-      .filter((v) => /^\d+\.\d+\.\d+$/.test(v))
-      .sort(cmp);
-
-    const candidates = candidatesFor(stable, version);
-    if (!candidates.length) {
-      lines.push('  no newer release exists — this needs the parent dependency upgraded instead');
-      continue;
-    }
-
-    for (const v of candidates) {
-      const code = await status(`${base}${name}/-/${name.split('/').pop()}-${v}.tgz`);
-      const verdict = code === 403 ? 'BLOCKED' : typeof code === 'number' && code < 400 ? 'ALLOWED' : `?? (${code})`;
-      lines.push(`  ${verdict.padEnd(8)} ${name}@${v}`);
-    }
+  for (const target of blocked) {
+    lines.push(...(await suggestFor(target)));
   }
-
-  const report = lines.join('\n');
-  console.log(report);
-  if (process.env.GITHUB_STEP_SUMMARY) {
-    fs.appendFileSync(
-      process.env.GITHUB_STEP_SUMMARY,
-      `## Curation: which versions are allowed?\n\n\`\`\`\n${report}\n\`\`\`\n`,
-    );
-  }
+  report(lines);
 })().catch((e) => {
   console.error(`::error::probe failed: ${e.stack || e.message}`);
   process.exit(1);
