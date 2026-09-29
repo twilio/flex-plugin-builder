@@ -65,29 +65,32 @@ jobs:
       # rewrites a resolved host that matches replaceRegistryHost (which
       # defaults to registry.npmjs.org) to whatever --registry says, so the
       # tarballs are fetched from Artifactory.
-      - name: Install dependencies (curated Artifactory)
-        run: |
-          installed=false
-          for i in 1 2 3; do # Retry logic, retry 3 times
-            # Artifactory's OIDC token lasts about ten minutes, so take a fresh
-            # one per attempt and keep each attempt inside that window.
-            .github/scripts/artifactory-npm-auth.sh
-            echo "Starting npm ci against $ARTIFACTORY_NPM_REGISTRY (attempt $i/3, 8-minute timeout)"
-            if timeout 8m npm ci --registry="$ARTIFACTORY_NPM_REGISTRY" --verbose; then
-              installed=true
-              break
-            fi
-            echo "npm ci failed, retrying ($i/3)..."
-          done
-          if [ "$installed" != true ]; then
-            echo "::error::npm ci failed after 3 attempts"
-            exit 1
-          fi
-
-      - name: Build packages
-        run: |
-          npm run lint:fix
-          npm run build
+      # Install and build are deliberately disabled: this job only publishes
+      # what is already built. Re-enable both to go back to building here.
+      #
+      # - name: Install dependencies (curated Artifactory)
+      #   run: |
+      #     installed=false
+      #     for i in 1 2 3; do # Retry logic, retry 3 times
+      #       # Artifactory's OIDC token lasts about ten minutes, so take a fresh
+      #       # one per attempt and keep each attempt inside that window.
+      #       .github/scripts/artifactory-npm-auth.sh
+      #       echo "Starting npm ci against $ARTIFACTORY_NPM_REGISTRY (attempt $i/3, 8-minute timeout)"
+      #       if timeout 8m npm ci --registry="$ARTIFACTORY_NPM_REGISTRY" --verbose; then
+      #         installed=true
+      #         break
+      #       fi
+      #       echo "npm ci failed, retrying ($i/3)..."
+      #     done
+      #     if [ "$installed" != true ]; then
+      #       echo "::error::npm ci failed after 3 attempts"
+      #       exit 1
+      #     fi
+      #
+      # - name: Build packages
+      #   run: |
+      #     npm run lint:fix
+      #     npm run build
 
       - name: Slack Started Notification (public releases only)
         if: inputs.TAG == 'public'
@@ -117,13 +120,80 @@ jobs:
           npm install -g npm@^11.5.1
           npm --version
 
+      # Publishes each package's already-built dist through the npm CLI, one
+      # package at a time, so that npm trusted publishing (OIDC) authenticates
+      # every upload. bin/publish is not used here: it drives lerna, whose
+      # bundled libnpmpublish predates OIDC and needs NODE_AUTH_TOKEN, and it
+      # would need the node_modules that the disabled install no longer provides.
       - name: Publish Version
         run: |
+          set -euo pipefail
+
           if [ "${{ inputs.TAG }}" = "public" ]; then
             git config user.name github-actions
             git config user.email noreply@github.com
+            distTag="latest"
+          else
+            distTag="${{ inputs.TAG }}"
           fi
-          npm run publish:${{ inputs.TAG }} ${{ inputs.VERSION }}
+
+          # Versions are stamped by editing the manifests directly. lerna is
+          # unavailable without node_modules, and `npm version --workspaces`
+          # resolves the whole dependency tree and rewrites the lockfile, which
+          # takes minutes here and is not wanted in a publish-only job.
+          #
+          # Internal cross-dependencies are pinned to the same exact version,
+          # which is what `lerna version --exact` did. Without that, every
+          # published package would still depend on the previous release.
+          node -e '
+            const fs = require("fs");
+            const version = process.env.VERSION;
+            const files = fs
+              .readdirSync("packages")
+              .map((d) => `packages/${d}/package.json`)
+              .filter((f) => fs.existsSync(f));
+            const manifests = files.map((f) => [f, JSON.parse(fs.readFileSync(f, "utf8"))]);
+            const local = new Set(manifests.map(([, p]) => p.name));
+            const fields = ["dependencies", "devDependencies", "peerDependencies", "optionalDependencies"];
+            for (const [file, pkg] of manifests) {
+              pkg.version = version;
+              for (const field of fields) {
+                for (const dep of Object.keys(pkg[field] || {})) {
+                  if (local.has(dep)) pkg[field][dep] = version;
+                }
+              }
+              fs.writeFileSync(file, `${JSON.stringify(pkg, null, 2)}\n`);
+            }
+            console.log(`stamped ${manifests.length} packages at ${version}`);
+          '
+
+          for dir in packages/*/; do
+            [ -f "${dir}package.json" ] || continue
+
+            name=$(node -p "require('./${dir}package.json').name")
+            if [ "$(node -p "require('./${dir}package.json').private === true")" = "true" ]; then
+              echo "skipping ${name}: private"
+              continue
+            fi
+
+            # Every package publishes files: ["dist"]. Without a dist the upload
+            # would succeed and put an empty package on npm at a version number
+            # that can never be reused, so stop instead.
+            if [ ! -d "${dir}dist" ]; then
+              echo "::error::${name} has no ${dir}dist to publish; build it before releasing"
+              exit 1
+            fi
+
+            echo "Publishing ${name}@${VERSION} from ${dir}"
+            (
+              cd "$dir"
+              npm publish \
+                --registry https://registry.npmjs.org \
+                --tag "$distTag" \
+                --access public \
+                --provenance
+            )
+          done
         env:
           VERSION: ${{ inputs.VERSION }}
           BRANCH: ${{ inputs.BRANCH }}
