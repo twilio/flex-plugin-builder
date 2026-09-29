@@ -67,6 +67,6 @@
     "ultra-runner": "^3.10.5"
   },
   "overrides": {
-    "axios": "0.26.1"
+    "axios@<1": "0.26.1"
   }
 }
