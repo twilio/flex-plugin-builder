@@ -76,14 +76,15 @@ jobs:
       ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
       ARTIFACTORY_NPM_REGISTRY: ${{ vars.ARTIFACTORY_URL }}/artifactory/api/npm/virtual-npm-thirdparty/
     steps:
-      - name: Create GitHub App token (public releases only)
-        if: inputs.TAG == 'public'
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
-        id: get_app_token
-        with:
-          client-id: ${{ secrets.APP_ID }}
-          private_key: ${{ secrets.APP_KEY }}
-
+      # Disabled: public-release-only step.
+      # - name: Create GitHub App token (public releases only)
+      #   if: inputs.TAG == 'public'
+      #   uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+      #   id: get_app_token
+      #   with:
+      #     client-id: ${{ secrets.APP_ID }}
+      #     private_key: ${{ secrets.APP_KEY }}
+      #
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       # No registry-url on purpose. Given one, setup-node writes an .npmrc with
@@ -130,29 +131,30 @@ jobs:
           npm run lint:fix
           npm run build
 
-      - name: Slack Started Notification (public releases only)
-        if: inputs.TAG == 'public'
-        run: |
-          curl -X POST "${{ secrets.SLACK_WEB_HOOK }}" \
-            -H 'Content-Type: application/json' \
-            -d "{
-              \"username\": \"Github Actions\",
-              \"icon_emoji\": \":ship:\",
-              \"attachments\": [{
-                \"color\": \"good\",
-                \"title\": \"Flex Plugins CLI\",
-                \"text\": \":ship_it_parrot: Releasing new public *version* of \\\`flex-plugin-builder\\\`\",
-                \"actions\": [{
-                  \"type\": \"button\",
-                  \"text\": \"View Action\",
-                  \"url\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"
-                }]
-              }]
-            }"
-
-      # node 22 bundles npm 10.x, which has no trusted-publishing support.
-      # OIDC token exchange on publish needs npm >= 11.5.1. Upgrading only here
-      # keeps `npm ci` above on the npm that CI already validates.
+      # Disabled: public-release-only step.
+      # - name: Slack Started Notification (public releases only)
+      #   if: inputs.TAG == 'public'
+      #   run: |
+      #     curl -X POST "${{ secrets.SLACK_WEB_HOOK }}" \
+      #       -H 'Content-Type: application/json' \
+      #       -d "{
+      #         \"username\": \"Github Actions\",
+      #         \"icon_emoji\": \":ship:\",
+      #         \"attachments\": [{
+      #           \"color\": \"good\",
+      #           \"title\": \"Flex Plugins CLI\",
+      #           \"text\": \":ship_it_parrot: Releasing new public *version* of \\\`flex-plugin-builder\\\`\",
+      #           \"actions\": [{
+      #             \"type\": \"button\",
+      #             \"text\": \"View Action\",
+      #             \"url\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"
+      #           }]
+      #         }]
+      #       }"
+      #
+      # # node 22 bundles npm 10.x, which has no trusted-publishing support.
+      # # OIDC token exchange on publish needs npm >= 11.5.1. Upgrading only here
+      # # keeps `npm ci` above on the npm that CI already validates.
       - name: Upgrade npm for trusted publishing
         run: |
           npm install -g npm@^11.5.1
@@ -212,22 +214,24 @@ jobs:
               }]
             }"
 
-      - name: Commit Version (public releases only)
-        if: inputs.TAG == 'public'
-        id: commit_version
-        run: |
-          git checkout -b bump-version-"$VERSION_NUMBER"
-          git push origin bump-version-"$VERSION_NUMBER" --no-verify
-        env:
-          VERSION_NUMBER: ${{ steps.publicVersion.outputs.version }}
-
-      - name: Create PR for version (public releases only)
-        if: inputs.TAG == 'public'
-        run: |
-          gh pr create --base main --title "Update version" --body "Update version"
-        env:
-          GITHUB_TOKEN: ${{ steps.get_app_token.outputs.token }}
-
+      # Disabled: public-release-only step.
+      # - name: Commit Version (public releases only)
+      #   if: inputs.TAG == 'public'
+      #   id: commit_version
+      #   run: |
+      #     git checkout -b bump-version-"$VERSION_NUMBER"
+      #     git push origin bump-version-"$VERSION_NUMBER" --no-verify
+      #   env:
+      #     VERSION_NUMBER: ${{ steps.publicVersion.outputs.version }}
+      #
+      # Disabled: public-release-only step.
+      # - name: Create PR for version (public releases only)
+      #   if: inputs.TAG == 'public'
+      #   run: |
+      #     gh pr create --base main --title "Update version" --body "Update version"
+      #   env:
+      #     GITHUB_TOKEN: ${{ steps.get_app_token.outputs.token }}
+      #
       - name: Approve and Merge PR (public releases only)
         if: inputs.TAG == 'public'
         run: |
