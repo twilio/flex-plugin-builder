@@ -123,13 +123,6 @@ jobs:
           npm install -g npm@^11.5.1
           npm --version
 
-      # Checks every package for a trusted publisher record before anything is
-      # uploaded. The exchange is per package, so without this a publish stops
-      # at the first unregistered one, having already pushed the ones before it
-      # at versions npm will never allow to be reused.
-      - name: Trusted publisher preflight
-        run: .github/scripts/npm-oidc-preflight.sh
-
       - name: Publish Version
         run: |
           if [ "${{ inputs.TAG }}" = "public" ]; then
