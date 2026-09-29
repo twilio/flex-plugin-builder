@@ -25,7 +25,9 @@ jobs:
     env:
       ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
       ARTIFACTORY_NPM_REGISTRY: ${{ vars.ARTIFACTORY_URL }}/artifactory/api/npm/virtual-npm-thirdparty/
-      NPM_CI_LOG: ${{ runner.temp }}/npm-ci.log
+      # github.workspace, not runner.temp: the runner context is unavailable in
+      # a job-level env block and referencing it fails the workflow at startup.
+      NPM_CI_LOG: ${{ github.workspace }}/npm-ci.log
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
