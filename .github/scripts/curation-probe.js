@@ -131,17 +131,32 @@ const mapLimit = async (items, limit, fn) => {
   return out;
 };
 
-// The versions worth suggesting: the next few above the blocked one within its
-// own major (the smallest upgrade that might clear curation), then the newest
-// of every later major (the option that is actually maintained).
+// Picks which versions above the blocked one to probe. Sampling only the next
+// few is not enough: for axios@1.3.4 the next four are all blocked too, so the
+// report came back with no allowed version even though 1.20.0 is fine.
+//
+// So: always include the newest release of every major, which is where a
+// maintained version lives, plus the nearest couple for the smallest possible
+// bump, plus a spread across the rest to catch a mid-range cutoff.
 const candidatesFor = (stable, blocked) => {
   const above = stable.filter((v) => cmp(v, blocked) > 0);
-  const major = blocked.split('.')[0];
-  const sameMajor = above.filter((v) => v.split('.')[0] === major).slice(0, 4);
-  const laterMajors = [
-    ...new Map(above.filter((v) => v.split('.')[0] !== major).map((v) => [v.split('.')[0], v])).values(),
-  ];
-  return [...new Set([...sameMajor, ...laterMajors])].slice(0, CANDIDATES_PER_PACKAGE);
+  if (above.length <= CANDIDATES_PER_PACKAGE) {
+    return above;
+  }
+
+  const picks = new Set();
+  // Last entry per major wins, so this is the newest of each.
+  for (const newest of new Map(above.map((v) => [v.split('.')[0], v])).values()) {
+    picks.add(newest);
+  }
+  above.slice(0, 2).forEach((v) => picks.add(v));
+
+  const step = Math.ceil(above.length / CANDIDATES_PER_PACKAGE);
+  for (let i = 0; i < above.length && picks.size < CANDIDATES_PER_PACKAGE; i += step) {
+    picks.add(above[i]);
+  }
+
+  return [...picks].sort(cmp).slice(0, CANDIDATES_PER_PACKAGE);
 };
 
 const suggestFor = async ({ name, version }) => {
