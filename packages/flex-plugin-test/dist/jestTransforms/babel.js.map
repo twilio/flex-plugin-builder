@@ -1,0 +1,1 @@
+{"version":3,"file":"babel.js","sourceRoot":"","sources":["../../src/jestTransforms/babel.ts"],"names":[],"mappings":";;;;;AAAA,qBAAqB;AACrB,0DAAmC;AAEnC,MAAM,CAAC,OAAO,GAAI,oBAAiB,CAAC,iBAAiB,CAAC;IACpD,OAAO,EAAE,CAAC,OAAO,CAAC,OAAO,CAAC,wBAAwB,CAAC,CAAC;IACpD,OAAO,EAAE,KAAK;IACd,UAAU,EAAE,KAAK;CAClB,CAAC,CAAC;AACH,oBAAoB"}

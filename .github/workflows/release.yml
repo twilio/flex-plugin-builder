@@ -187,10 +187,16 @@ jobs:
             echo "Publishing ${name}@${VERSION} from ${dir}"
             (
               cd "$dir"
+              # --ignore-scripts because plugin-flex's prepack shells out to
+              # node_modules/.bin/oclif-dev, which the disabled install no
+              # longer provides. Its oclif.manifest.json is committed instead,
+              # so nothing is lost; skipping postpack also stops it deleting
+              # that committed file.
               npm publish \
                 --registry https://registry.npmjs.org \
                 --tag "$distTag" \
                 --access public \
+                --ignore-scripts \
                 --provenance
             )
           done
