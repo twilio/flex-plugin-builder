@@ -198,12 +198,21 @@ jobs:
               # longer provides. Its oclif.manifest.json is committed instead,
               # so nothing is lost; skipping postpack also stops it deleting
               # that committed file.
+              # No --registry: npm's built-in default is already
+              # https://registry.npmjs.org/ and npm decides whether a publish is
+              # eligible for trusted publishing by comparing the registry URL.
+              # Passing the same host without its trailing slash risks looking
+              # like a third-party registry, which would skip OIDC entirely.
+              #
+              # --verbose so npm's OIDC token-exchange attempt is visible. At
+              # default verbosity a failed exchange is silent and shows up only
+              # as ENEEDAUTH, which is indistinguishable from never trying.
               npm publish \
-                --registry https://registry.npmjs.org \
                 --tag "$distTag" \
                 --access public \
                 --ignore-scripts \
-                --provenance
+                --provenance \
+                --verbose
             )
           done
         env:
