@@ -1,0 +1,51 @@
+name: Lockfile Hygiene
+
+# ADR 1634 Rule 3b — keep this public repo resolvable by external consumers.
+# CI jobs redirect npm to Artifactory at build time (the artifactory-oidc
+# action writes ~/.npmrc); the committed .npmrc / package-lock.json must
+# always point at the public registry. Both jobs are secret-less and resolve
+# from registry.npmjs.org only (no Artifactory, no OIDC).
+#
+# No paths-ignore: lockfile-only changes are exactly what this must check.
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  detect:
+    name: Detect Artifactory hosts
+    runs-on: ubuntu-x64
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Scan committed lockfiles & resolver config
+        run: bash .github/scripts/lockfile-hygiene.sh
+
+  clean-room-resolve:
+    name: Clean-room public resolve
+    runs-on: ubuntu-x64
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22'
+      - name: Strip any resolver config (simulate an external consumer)
+        run: |
+          rm -f ~/.npmrc || true
+          echo "registry=https://registry.npmjs.org/" > ~/.npmrc
+          echo "Effective npm registry:"
+          npm config get registry
+      - name: Clean-room install from the committed lockfile
+        env:
+          npm_config_registry: https://registry.npmjs.org/
+        run: |
+          npm ci --ignore-scripts --no-audit --fund=false
+          echo "✓ Lockfile resolves against the public registry."

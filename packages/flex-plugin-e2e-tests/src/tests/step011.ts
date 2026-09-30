@@ -20,9 +20,10 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     pluginHelper.waitForPluginToStart(url, testParams.config.start.timeout, testParams.config.start.pollInterval);
 
   // Start all 3 plugins (Note: cwd is plugin3 in this scenario since plugin is the remote one)
+  const wp5Flag = scenario.wp5 ? ['--wp5'] : [];
   const twilioCliResult = await spawn(
     'twilio',
-    ['flex:plugins:start', '--name', `${plugin1.name}@${plugin1.version}`, '--name', plugin2.name],
+    ['flex:plugins:start', '--name', `${plugin1.name}@${plugin1.version}`, '--name', plugin2.name, ...wp5Flag],
     { detached: true, cwd: plugin3.dir },
   );
   await Promise.all([startPlugin(plugin2.localhostUrl), startPlugin(plugin3.localhostUrl)]);
