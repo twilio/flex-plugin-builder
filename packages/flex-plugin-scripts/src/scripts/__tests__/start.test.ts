@@ -187,6 +187,13 @@ describe('StartScript', () => {
     const pluginServer = jest.spyOn(pluginServerScripts, 'default');
 
     beforeEach(() => {
+      /*
+       * Not mockReturnThis: TypeScript 4.5 and later emit a call through a
+       * module binding as `(0, config_1.default)(...)`, and the comma operator
+       * drops the `this` binding, so mockReturnThis would resolve to undefined.
+       * _startDevServer passes this value on to pluginServer and
+       * webpackDevServer, where expect.anything() rejects undefined.
+       */
       getConfiguration.mockResolvedValue({} as never);
       getLocalAndNetworkUrls.mockReturnValue({ local: url, network: url });
       compiler.mockReturnThis();

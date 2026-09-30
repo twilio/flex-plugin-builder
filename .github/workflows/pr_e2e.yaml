@@ -29,21 +29,13 @@ jobs:
           echo "version=${semver[0]}.${semver[1]}.$((semver[2] + 1))-alpha.$(date '+%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
         id: alphaVersion
 
-  release-alpha-version:
-    needs: get-version
-    uses: ./.github/workflows/~reusable_publish.yaml
-    if: ${{ github.event.label.name == vars.PUBLISH_AND_E2E_LABEL }}
-    with:
-      TAG: alpha
-      VERSION: ${{ needs.get-version.outputs.version }}
-      BRANCH: ${{ needs.get-version.outputs.branch }}
-      ENVIRONMENT: alpha_release
-    secrets:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-      SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
+  # Publishing no longer happens here. Calling publish.yml as a reusable
+  # workflow made the OIDC token report pr_e2e.yaml as the workflow, which
+  # cannot match a trusted publisher registered against publish.yml. Run
+  # publish.yml directly instead, then label the pull request for e2e.
 
   e2e-test:
-    needs: [ get-version, release-alpha-version ]
+    needs: [ get-version ]
     uses: ./.github/workflows/~reusable_e2e_all_OS.yaml
     if: ${{ always() && ((github.event.label.name == vars.E2E_LABEL) || (github.event.label.name == vars.PUBLISH_AND_E2E_LABEL)) }}
     with:
@@ -72,8 +64,8 @@ jobs:
     runs-on: ubuntu-latest-large
     steps:
       - name: Remove label on failure
-        # Only on an actual failure. `!= 'success'` also matched skipped, so any
-        # unrelated label added to the PR triggered this job and got removed.
+        # Only on an actual failure: `!= 'success'` also matches skipped, which
+        # would strip any unrelated label added to the PR.
         if: needs.e2e-test.result == 'failure'
         run: gh pr edit ${{ github.event.pull_request.number }} --repo ${{ github.repository }} --remove-label "${{ github.event.label.name }}"
         env:

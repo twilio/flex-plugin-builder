@@ -1,0 +1,241 @@
+on:
+  # Dispatched directly, so that this file is the workflow GitHub names in the
+  # OIDC token. When a reusable workflow is called, the token's workflow_ref is
+  # the caller's, and only job_workflow_ref names this file, so a publish run
+  # through pr_e2e presented itself as pr_e2e.yaml and could never match a
+  # trusted publisher registered against publish.yml.
+  workflow_dispatch:
+    inputs:
+      TAG:
+        description: 'Release type'
+        required: true
+        type: choice
+        options:
+          - alpha
+          - beta
+          - rc
+          - dev
+          - public
+      VERSION:
+        description: 'Exact version to release, or a bump level (patch | minor | major) for a public release'
+        required: true
+        type: string
+      BRANCH:
+        description: 'Branch being released'
+        required: true
+        type: string
+      ENVIRONMENT:
+        description: 'Environment gating the release'
+        required: true
+        type: choice
+        default: alpha_release
+        options:
+          - alpha_release
+          - production
+          - public_release
+
+  workflow_call:
+    inputs:
+      TAG:
+        description: 'A tag passed from the caller workflow, it decides the type of release. Allowed values are [rc | beta | alpha | public | dev]'
+        required: true
+        type: string
+      VERSION:
+        description: 'A specific version passed from the caller workflow which will be release as it is.'
+        required: true
+        type: string
+      BRANCH:
+        description: 'A branch passed from the caller workflow, it decides which branch will be pushed to npm.'
+        required: true
+        type: string
+      ENVIRONMENT:
+        description: 'A environment passed from the caller workflow, it controls the reviewing process of a release.'
+        required: true
+        type: string
+        default: alpha_release
+    secrets:
+      SLACK_WEB_HOOK:
+        required: true
+      G_TOKEN:
+        required: false
+      APP_ID:
+        required: false
+      APP_KEY:
+        required: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-x64
+    environment: production
+    permissions:
+      # Used twice over: Artifactory exchanges it for an access token to install
+      # with, and npm exchanges it for a registry token to publish with.
+      id-token: write
+      contents: write # the public release pushes a version-bump branch
+    env:
+      ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
+      ARTIFACTORY_NPM_REGISTRY: ${{ vars.ARTIFACTORY_URL }}/artifactory/api/npm/virtual-npm-thirdparty/
+    steps:
+      # Disabled: public-release-only step.
+      # - name: Create GitHub App token (public releases only)
+      #   if: inputs.TAG == 'public'
+      #   uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+      #   id: get_app_token
+      #   with:
+      #     client-id: ${{ secrets.APP_ID }}
+      #     private_key: ${{ secrets.APP_KEY }}
+      #
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      # No registry-url on purpose. Given one, setup-node writes an .npmrc with
+      # //registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN} and, with no token
+      # supplied, exports NODE_AUTH_TOKEN as the literal placeholder
+      # XXXXX-XXXXX-XXXXX-XXXXX. npm then has a credential, uses it, and never
+      # attempts the OIDC exchange, so trusted publishing is bypassed and the
+      # registry rejects the placeholder. bin/publish passes --registry
+      # explicitly instead.
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22'
+
+      # Dependencies come from the curated Artifactory repository, so a release
+      # is built against the versions curation actually allows. Only the install
+      # is redirected: the default registry stays on public npm so the publish
+      # below can use npm trusted publishing.
+      #
+      # The lockfile's resolved URLs all name registry.npmjs.org, but npm
+      # rewrites a resolved host that matches replaceRegistryHost (which
+      # defaults to registry.npmjs.org) to whatever --registry says, so the
+      # tarballs are fetched from Artifactory.
+      - name: Install dependencies (curated Artifactory)
+        run: |
+          installed=false
+          for i in 1 2 3; do # Retry logic, retry 3 times
+            # Artifactory's OIDC token lasts about ten minutes, so take a fresh
+            # one per attempt and keep each attempt inside that window.
+            .github/scripts/artifactory-npm-auth.sh
+            echo "Starting npm ci against $ARTIFACTORY_NPM_REGISTRY (attempt $i/3, 8-minute timeout)"
+            if timeout 8m npm ci --registry="$ARTIFACTORY_NPM_REGISTRY" --verbose; then
+              installed=true
+              break
+            fi
+            echo "npm ci failed, retrying ($i/3)..."
+          done
+          if [ "$installed" != true ]; then
+            echo "::error::npm ci failed after 3 attempts"
+            exit 1
+          fi
+
+      - name: Build packages
+        run: |
+          npm run lint:fix
+          npm run build
+
+      # Disabled: public-release-only step.
+      # - name: Slack Started Notification (public releases only)
+      #   if: inputs.TAG == 'public'
+      #   run: |
+      #     curl -X POST "${{ secrets.SLACK_WEB_HOOK }}" \
+      #       -H 'Content-Type: application/json' \
+      #       -d "{
+      #         \"username\": \"Github Actions\",
+      #         \"icon_emoji\": \":ship:\",
+      #         \"attachments\": [{
+      #           \"color\": \"good\",
+      #           \"title\": \"Flex Plugins CLI\",
+      #           \"text\": \":ship_it_parrot: Releasing new public *version* of \\\`flex-plugin-builder\\\`\",
+      #           \"actions\": [{
+      #             \"type\": \"button\",
+      #             \"text\": \"View Action\",
+      #             \"url\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"
+      #           }]
+      #         }]
+      #       }"
+      #
+      # # node 22 bundles npm 10.x, which has no trusted-publishing support.
+      # # OIDC token exchange on publish needs npm >= 11.5.1. Upgrading only here
+      # # keeps `npm ci` above on the npm that CI already validates.
+      - name: Upgrade npm for trusted publishing
+        run: |
+          npm install -g npm@^11.5.1
+          npm --version
+
+      - name: Publish Version
+        run: |
+          if [ "${{ inputs.TAG }}" = "public" ]; then
+            git config user.name github-actions
+            git config user.email noreply@github.com
+          fi
+          npm run publish:${{ inputs.TAG }} ${{ inputs.VERSION }}
+        env:
+          VERSION: ${{ inputs.VERSION }}
+          BRANCH: ${{ inputs.BRANCH }}
+          NODE_OPTIONS: --no-experimental-fetch
+          CI: ''
+          # No NODE_AUTH_TOKEN: the npm CLI authenticates via OIDC trusted publishing.
+
+      - name: Retrieve Version (public releases only)
+        if: inputs.TAG == 'public'
+        id: publicVersion
+        run: |
+          echo "version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)"
+          echo "version=$(awk '/version/{gsub(/("|",)/,"",$2);print $2}' lerna.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Slack Completion Notification
+        if: always()
+        run: |
+          STATUS_COLOR="good"
+          if [ "${{ job.status }}" = "failure" ]; then
+            STATUS_COLOR="danger"
+          elif [ "${{ job.status }}" = "cancelled" ]; then
+            STATUS_COLOR="warning"
+          fi
+
+          if [ "${{ inputs.TAG }}" = "public" ]; then
+            MESSAGE="🎉:tada: Released a new public *version* \\\`${{ steps.publicVersion.outputs.version }}\\\`"
+          else
+            MESSAGE="🎉 Released a new version with *tag* \\\`${{ inputs.TAG }}\\\` and *version* \\\`${{ inputs.VERSION }}\\\`"
+          fi
+
+          curl -X POST "${{ secrets.SLACK_WEB_HOOK }}" \
+            -H 'Content-Type: application/json' \
+            -d "{
+              \"username\": \"Github Actions\",
+              \"icon_emoji\": \":ship:\",
+              \"attachments\": [{
+                \"color\": \"${STATUS_COLOR}\",
+                \"title\": \"Flex Plugins CLI\",
+                \"text\": \"${MESSAGE}\",
+                \"actions\": [{
+                  \"type\": \"button\",
+                  \"text\": \"View Action\",
+                  \"url\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"
+                }]
+              }]
+            }"
+
+      # Disabled: public-release-only step.
+      # - name: Commit Version (public releases only)
+      #   if: inputs.TAG == 'public'
+      #   id: commit_version
+      #   run: |
+      #     git checkout -b bump-version-"$VERSION_NUMBER"
+      #     git push origin bump-version-"$VERSION_NUMBER" --no-verify
+      #   env:
+      #     VERSION_NUMBER: ${{ steps.publicVersion.outputs.version }}
+      #
+      # Disabled: public-release-only step.
+      # - name: Create PR for version (public releases only)
+      #   if: inputs.TAG == 'public'
+      #   run: |
+      #     gh pr create --base main --title "Update version" --body "Update version"
+      #   env:
+      #     GITHUB_TOKEN: ${{ steps.get_app_token.outputs.token }}
+      #
+      - name: Approve and Merge PR (public releases only)
+        if: inputs.TAG == 'public'
+        run: |
+          gh pr review --approve
+          gh pr merge --auto --merge
+        env:
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
