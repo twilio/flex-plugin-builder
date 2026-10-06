@@ -1,4 +1,4 @@
-name: PR Validator - E2E - WebPack5 (Node 24)
+name: PR Validator - E2E - WebPack5 (Node 22)
 
 on:
   pull_request:
@@ -14,7 +14,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
-          node-version: '24'
+          node-version: '22'
       - name: Extract branch name
         run: |
           echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
@@ -28,7 +28,7 @@ jobs:
     with:
       BRANCH: ${{ needs.get-version.outputs.branch }}
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-      NODE_VERSION: '24'
+      NODE_VERSION: '22'
       WP5: true
       # wp5 never publishes an alpha, so it always exercises the released plugin
       PACKAGE_VERSION: latest

@@ -1,4 +1,4 @@
-name: Flex Plugins CLI - E2E Nightly - WebPack5 (Node 24)
+name: Flex Plugins CLI - E2E Nightly - WebPack5 (Node 22)
 
 on:
   schedule:
@@ -16,7 +16,7 @@ jobs:
       OS: ubuntu-latest-large
       BRANCH: main
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-      NODE_VERSION: '24'
+      NODE_VERSION: '22'
       WP5: true
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
@@ -43,7 +43,7 @@ jobs:
       OS: macos-latest
       BRANCH: main
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-      NODE_VERSION: '24'
+      NODE_VERSION: '22'
       WP5: true
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
@@ -70,7 +70,7 @@ jobs:
       OS: windows-latest-large
       BRANCH: main
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
-      NODE_VERSION: '24'
+      NODE_VERSION: '22'
       WP5: true
       PACKAGE_VERSION: latest
       FLEX_UI_VERSION: latest
