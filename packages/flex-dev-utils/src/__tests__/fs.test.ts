@@ -877,7 +877,6 @@ describe('fs', () => {
           '@twilio/flex-plugin': '',
         },
         devDependencies: {
-          '@twilio/flex-plugin-scripts': '',
           'not-a-valid-package': '',
         } as any,
       });
@@ -894,7 +893,6 @@ describe('fs', () => {
           '@twilio/flex-plugin': '',
         },
         devDependencies: {
-          '@twilio/flex-plugin-scripts': '',
           '@twilio/flex-ui': '^1',
         } as any,
       });

@@ -236,7 +236,6 @@ export const _getBasePlugins = (environment: Environment): Plugin[] => {
   const defined = {
     __FPB_PLUGIN_UNIQUE_NAME: `'${getPaths().app.name}'`,
     __FPB_PLUGIN_VERSION: `'${getPaths().app.version}'`,
-    __FPB_FLEX_PLUGIN_SCRIPTS_VERSION: `'${getDependencyVersion('@twilio/flex-plugin-scripts')}'`,
     __FPB_FLEX_PLUGIN_VERSION: `'${getDependencyVersion('@twilio/flex-plugin')}'`,
     __FPB_FLEX_UI_VERSION: `'${flexUIVersion}'`,
     __FPB_REACT_VERSION: `'${reactVersion}'`,
@@ -325,6 +324,7 @@ export const _getJSPlugins = (environment: Environment): Plugin[] => {
       tsconfig: getPaths().app.tsConfigPath,
       reportFiles: [
         '**',
+        '!**/node_modules/**',
         '!**/__tests__/**',
         '!**/__mocks__/**',
         '!**/?(*.)(spec|test).*',
