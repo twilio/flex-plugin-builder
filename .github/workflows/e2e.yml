@@ -6,6 +6,11 @@ name: E2E
 # freshly computed timestamp, so there was no way to point e2e at a particular
 # alpha. This takes the version as an input.
 #
+# Runs the suite for every combination of webpack (4, 5) and Node (22, 24).
+# max-parallel is 1 because each OS leg uses a single Twilio account, and two
+# combinations against it at once would collide on plugins and releases.
+# fail-fast is off so one failing combination does not hide the others.
+#
 # Like publish.yml, this has to exist on the default branch for GitHub to expose
 # the workflow_dispatch trigger; a run can then target any branch.
 
@@ -29,12 +34,21 @@ on:
 
 jobs:
   e2e-test:
+    name: e2e (webpack ${{ matrix.webpack }}, node ${{ matrix.node }})
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        webpack: [4, 5]
+        node: ['22', '24']
     uses: ./.github/workflows/~reusable_e2e_all_OS.yaml
     with:
       BRANCH: ${{ inputs.BRANCH }}
       NPM_IGNORE_PREFIX: ${{ vars.NPM_IGNORE_PREFIX }}
       PACKAGE_VERSION: ${{ inputs.PACKAGE_VERSION }}
       FLEX_UI_VERSION: ${{ inputs.FLEX_UI_VERSION }}
+      NODE_VERSION: ${{ matrix.node }}
+      WP5: ${{ matrix.webpack == 5 }}
       SEND_NOTIFICATION: false
     secrets:
       CONSOLE_EMAIL: ${{ secrets.CONSOLE_EMAIL }}
