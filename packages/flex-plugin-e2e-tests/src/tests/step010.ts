@@ -29,22 +29,25 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     throw new Error(`Did not find plugin with name: ${plugin.name} in released plugins`);
   }
 
-  await Browser.create({ flex: config.hostedFlexBaseUrl, twilioConsole: config.consoleBaseUrl });
-  // Log into Flex
-  await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort);
+  const loginAndAssert = async (firstLoad: boolean) => {
+    // Recreate browser on each attempt to avoid using detached pages
+    if (!firstLoad) {
+      await Browser.kill();
+    }
+    await Browser.create({ flex: config.hostedFlexBaseUrl, twilioConsole: config.consoleBaseUrl });
 
-  await assertion.app.view.adminDashboard.isVisible();
+    // Log into Flex
+    await Browser.app.twilioConsole.login('admin', secrets.api.accountSid, config.localhostPort);
 
-  // Verify that user is on the right account
-  const accountSid = await Browser.app.getFlexAccountSid();
-  assertion.equal(accountSid, secrets.api.accountSid);
-  // Make sure that /plugins contain the plugin
-  await pluginHelper.waitForPluginToRelease(releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
-  // await assertRetry();
+    await assertion.app.view.adminDashboard.isVisible();
 
-  const loginAndAssert = async () => {
+    // Verify that user is on the right account
+    const accountSid = await Browser.app.getFlexAccountSid();
+    assertion.equal(accountSid, secrets.api.accountSid);
+    // Make sure that /plugins contain the plugin
+    await pluginHelper.waitForPluginToRelease(releasedPlugin, PLUGIN_RELEASED_TIMEOUT, PLUGIN_RELEASED_POLL_INTERVAL);
+
     // Load local plugin
-
     await Browser.app.agentDesktop.open();
     logger.info('Agent Desktop opened');
 
@@ -52,8 +55,12 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     await assertion.app.view.plugins.plugin.isVisible(plugin.newlineValue!);
   };
 
-  const onError = async (e: any) => {
-    await Browser.app.takeScreenshot(environment.cwd, 'step010_failure.png');
+  const onError = async () => {
+    try {
+      await Browser.app.takeScreenshot(environment.cwd, 'step010_failure.png');
+    } catch (screenshotError) {
+      logger.error('Failed to take screenshot:', screenshotError);
+    }
   };
 
   const onFinally = async () => {

@@ -1,5 +1,6 @@
 /* eslint-disable import/no-unused-modules */
 import semver from 'semver';
+import { logger } from '@twilio/flex-dev-utils';
 
 import { TestSuite, TestParams, testParams } from '../core';
 import { spawn, Browser, pluginHelper, api, assertion, killChildProcess, retryOnError } from '../utils';
@@ -51,9 +52,13 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     testParams.config.start.pollInterval,
   );
 
-  await Browser.create({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
-
   const loginAndAssert = async (firstLoad: boolean) => {
+    // Recreate browser on each attempt to avoid using detached pages
+    if (!firstLoad) {
+      await Browser.kill();
+    }
+    await Browser.create({ flex: plugin3.localhostUrl, twilioConsole: config.consoleBaseUrl });
+
     await Browser.app.twilioConsole.login('agent-desktop', secrets.api.accountSid, config.localhostPort, firstLoad);
 
     // Check if local plugin loaded okay
@@ -65,8 +70,12 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
     await assertion.app.view.plugins.plugin.isVisible(plugin3.componentText);
   };
 
-  const onError = async (e: any) => {
-    await Browser.app.takeScreenshot(environment.cwd, 'step012_failure.png');
+  const onError = async () => {
+    try {
+      await Browser.app.takeScreenshot(environment.cwd, 'step012_failure.png');
+    } catch (screenshotError) {
+      logger.error('Failed to take screenshot:', screenshotError);
+    }
   };
 
   const onFinally = async () => {
