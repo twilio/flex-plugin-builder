@@ -15,7 +15,6 @@ describe('@twilio/flex-plugin', () => {
   const PLUGIN_NAME = 'Test Plugin';
   const PLUGIN_VERSION = '1.0.0';
   const UNIQUE_NAME = 'plugin-identifier';
-  const FLEX_PLUGIN_SCRIPTS_VERSION = '2.0.0';
   const FLEX_PLUGIN_VERSION = '2.1.0';
   const FLEX_UI_VERSION = '2.3.0';
   const REACT_VERSION = '2.4.0';
