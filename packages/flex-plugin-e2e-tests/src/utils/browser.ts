@@ -16,19 +16,19 @@ export class Browser {
   /**
    * Initializes browser object
    */
-  static async create(baseUrls: BaseUrl): Promise<void> {
-    this._browser = await Puppeteer.launch({
-      headless: true,
-      protocolTimeout: 300000,
-      args: [
-        '--use-fake-ui-for-media-stream',
-        '--disable-features=site-per-process',
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-      ],
-    });
-    this._page = await this._browser.newPage();
-    await this._page.setRequestInterception(true);
+  static async create(baseUrls: BaseUrl, maxAttempts = 3): Promise<void> {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        await this._launch();
+        break;
+      } catch (e) {
+        logger.error(`Browser launch attempt ${attempt} of ${maxAttempts} failed`, e);
+        await this._browser?.close().catch(() => undefined);
+        if (attempt === maxAttempts) {
+          throw e;
+        }
+      }
+    }
     this._attachLogListener();
     this._attachNetworkInterceptor();
     this.app = new App(this._page, baseUrls);
@@ -43,6 +43,25 @@ export class Browser {
     } catch (e) {
       logger.error('Failed to quit browser');
     }
+  }
+
+  /**
+   * Launches Chrome and opens a page with request interception enabled
+   */
+  private static async _launch(): Promise<void> {
+    this._browser = await Puppeteer.launch({
+      headless: true,
+      protocolTimeout: 300000,
+      args: [
+        '--use-fake-ui-for-media-stream',
+        '--disable-features=site-per-process',
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+      ],
+    });
+    this._page = await this._browser.newPage();
+    await this._page.setRequestInterception(true);
   }
 
   /**
