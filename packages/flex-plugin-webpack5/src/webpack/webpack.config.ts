@@ -163,16 +163,16 @@ const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
     const loaders: RuleSetUseItem[] = [];
 
     // Main style loader to work when compiled
-    loaders.push(require.resolve('style-loader'));
+    loaders.push(require.resolve('style-loader-wp5'));
 
     // All css loader
     loaders.push(
       {
-        loader: require.resolve('css-loader'),
+        loader: require.resolve('css-loader-wp5'),
         options,
       },
       {
-        loader: require.resolve('postcss-loader'),
+        loader: require.resolve('postcss-loader-wp5'),
         options: {
           postcssOptions: {
             plugins: () => [
@@ -246,7 +246,7 @@ const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
           importLoaders: 3,
           sourceMap: isProd,
         },
-        'sass-loader',
+        'sass-loader-wp5',
         'node-sass',
       ),
       sideEffects: true,
@@ -259,7 +259,7 @@ const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
           sourceMap: isProd,
           modules: true,
         },
-        'sass-loader',
+        'sass-loader-wp5',
         'node-sass',
       ),
     },
