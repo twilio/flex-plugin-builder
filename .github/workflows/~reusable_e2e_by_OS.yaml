@@ -169,6 +169,9 @@ jobs:
         run: |
           echo "os is: ${{ inputs.OS }} ${{ runner.os }}"
           taskkill /f /im node.exe
+          # taskkill exits 128 when no node.exe is left, which is expected here
+          # because the e2e run already stopped its own processes.
+          if ($LASTEXITCODE -eq 128) { exit 0 }
       - name: Run e2e tests - TS (Linux)
         if: ${{ inputs.OS == 'ubuntu-latest-large' }}
         env:
