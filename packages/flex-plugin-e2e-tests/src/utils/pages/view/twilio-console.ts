@@ -87,9 +87,10 @@ export class TwilioConsole extends Base {
               credentials: 'include',
               method: 'POST',
             })
-              .then((response) => {
+              .then(async (response) => {
                 return {
                   status: response.status,
+                  body: (await response.text()).slice(0, 300),
                   headers: (() => {
                     const headersObj = {};
                     response.headers.forEach((value, key) => {
@@ -113,6 +114,13 @@ export class TwilioConsole extends Base {
             twVisitorCookie,
           },
         );
+        const loginResult = result as { status?: number; body?: string; headers?: Record<string, string>; error?: string };
+        if (loginResult.error || !loginResult.status || loginResult.status >= 400) {
+          // Fail here with the response instead of waiting on a Flex page that a rejected login never reaches
+          logger.error('Twilio Console login was rejected:', JSON.stringify(loginResult));
+          throw new Error(`Twilio Console login failed: ${loginResult.error || `HTTP ${loginResult.status}`}`);
+        }
+
         // Wait for cookies to be set after successful login
         await sleep(2000);
 
