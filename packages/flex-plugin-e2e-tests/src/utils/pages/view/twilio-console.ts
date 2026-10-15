@@ -118,7 +118,9 @@ export class TwilioConsole extends Base {
         if (loginResult.error || !loginResult.status || loginResult.status >= 400) {
           // Fail here with the response instead of waiting on a Flex page that a rejected login never reaches
           logger.error('Twilio Console login was rejected:', JSON.stringify(loginResult));
-          throw new Error(`Twilio Console login failed: ${loginResult.error || `HTTP ${loginResult.status}`}`);
+          const loginError = new Error(`Twilio Console login failed: ${loginResult.error || `HTTP ${loginResult.status}`}`);
+          loginError.name = 'TwilioConsoleLoginError';
+          throw loginError;
         }
 
         // Wait for cookies to be set after successful login
