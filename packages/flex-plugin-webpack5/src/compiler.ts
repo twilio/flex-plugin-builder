@@ -7,12 +7,12 @@ import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import type { Issue } from 'fork-ts-checker-webpack-plugin/lib/issue/issue';
 import webpack, { Compiler as WebpackCompiler, Configuration, StatsError, WebpackError, Stats } from 'webpack5';
 import { getCliPaths, getPaths, readRunPluginsJson, writeJSONFile } from '@twilio/flex-dev-utils/dist/fs';
-import webpackFormatMessages from '@k88/format-webpack-messages';
 import { getLocalAndNetworkUrls } from '@twilio/flex-dev-utils/dist/urls';
 
 import { OnCompileCompletePayload } from './devServer/ipcServer';
 import { OnRemotePlugins, Plugin } from './devServer/pluginServer';
 import { devServerSuccessful } from './prints';
+import { CompilerMessage, formatMessages } from './formatMessages';
 import ToJsonOutput = webpack.StatsCompilation;
 
 interface ErrorsAndWarnings {
@@ -197,13 +197,13 @@ export const compilerRenderer = (
       }
 
       Object.keys(results).forEach((name) => {
-        const formatted = webpackFormatMessages({
-          errors: results[name].errors as unknown as string[],
-          warnings: results[name].warnings as unknown as string[],
-        });
+        const formatted = formatMessages(
+          results[name].errors as CompilerMessage[],
+          results[name].warnings as CompilerMessage[],
+        );
 
         // Only show errors if both exist
-        if ((results[name].errors as unknown as string[]).length) {
+        if (formatted.errors.length) {
           /*
            * Most errors are duplicate of the same error
            * So only show the first error
@@ -216,7 +216,7 @@ export const compilerRenderer = (
           return;
         }
 
-        if ((results[name].warnings as unknown as string[]).length) {
+        if (formatted.warnings.length) {
           logger.warning(`Compiled plugin ${logger.colors.yellow.bold(name)} with warning(s).`);
           logger.info(formatted.warnings.join('\n'));
           logger.newline();
