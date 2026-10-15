@@ -103,6 +103,23 @@ describe('WebpackConfiguration', () => {
       expect(configDev.devtool).toEqual('source-map');
     });
 
+    it('should keep the development source map under the proxied plugin path', () => {
+      jest.spyOn(webpackConfig, '_getJavaScriptEntries').mockReturnValue([]);
+      jest.spyOn(webpackConfig, '_getOptimization').mockReturnValue({
+        splitChunks: false,
+        runtimeChunk: false,
+        minimize: false,
+        minimizer: [],
+      });
+      jest.spyOn(webpackConfig, '_getJSPlugins').mockReturnValue([]);
+
+      const configProd = webpackConfig._getJavaScriptConfiguration({}, Environment.Production);
+      const configDev = webpackConfig._getJavaScriptConfiguration({}, Environment.Development);
+
+      expect(configDev.output?.sourceMapFilename).toEqual(`plugins/${paths.app.name}.js.map`);
+      expect(configProd.output?.sourceMapFilename).toEqual(`${paths.app.name}.[contenthash].js.map`);
+    });
+
     it('should get production config', () => {
       const _getJavaScriptEntries = jest.spyOn(webpackConfig, '_getJavaScriptEntries').mockReturnValue([]);
       const _getOptimization = jest.spyOn(webpackConfig, '_getOptimization').mockReturnValue({

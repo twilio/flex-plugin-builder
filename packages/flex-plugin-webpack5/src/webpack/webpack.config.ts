@@ -552,7 +552,11 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
     path: getPaths().app.buildDir,
     pathinfo: !isProd,
     filename: `${outputName}.js`,
-    sourceMapFilename: `${outputName}.[contenthash].js.map`,
+    /*
+     * In development the plugin is served on its own port and reached through a proxy that only forwards
+     * /plugins/<name>.js*, so a hashed map name never reaches the plugin and the browser gets a 404.
+     */
+    sourceMapFilename: isProd ? `${outputName}.[contenthash].js.map` : `${outputName}.js.map`,
     publicPath: '/',
     globalObject: 'this',
   };
