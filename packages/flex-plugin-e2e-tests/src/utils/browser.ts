@@ -50,7 +50,8 @@ export class Browser {
    */
   private static async _launch(): Promise<void> {
     this._browser = await Puppeteer.launch({
-      headless: true,
+      // 'shell' is the old headless mode; the new one (puppeteer's default true) gets the Twilio login blocked with a 403
+      headless: 'shell',
       protocolTimeout: 300000,
       args: [
         '--use-fake-ui-for-media-stream',
