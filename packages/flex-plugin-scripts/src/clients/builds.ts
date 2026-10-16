@@ -41,7 +41,7 @@ export default class BuildClient {
    * Pin the Serverless build runtime rather than tracking 'latest'; a new default Node
    * version rolling out on the Runtime side must not change how plugins are deployed.
    */
-  private static NodeEngine = 'node22';
+  private static NodeEngine = 'latest';
 
   private static timeoutMsec: number = 60_000;
 

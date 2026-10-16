@@ -41,7 +41,8 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   ]);
 
   // Start 1 local plugin and all remote plugins (note: local is plugin3 by cwd)
-  const twilioCliResult = await spawn('twilio', ['flex:plugins:start --include-remote'], {
+  const wp5Flag = scenario.wp5 ? ' --wp5' : '';
+  const twilioCliResult = await spawn('twilio', [`flex:plugins:start --include-remote${wp5Flag}`], {
     detached: true,
     cwd: plugin3.dir,
   });
