@@ -1,7 +1,8 @@
 /* eslint-disable global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires */
 /// <reference path="../module.d.ts" />
 
-import InterpolateHtmlPlugin from '@k88/interpolate-html-plugin';
+import { readFileSync } from 'fs';
+
 import ModuleScopePlugin from '@k88/module-scope-plugin';
 import typescriptFormatter from '@k88/typescript-compile-error-formatter';
 import { semver, env } from '@twilio/flex-dev-utils';
@@ -273,20 +274,21 @@ export const _getStaticPlugins = (environment: Environment): Plugin[] => {
   // index.html entry point
   if (environment === Environment.Development) {
     plugins.push(new HotModuleReplacementPlugin());
+    /*
+     * The placeholder is replaced here, while the template is read, instead of by @k88/interpolate-html-plugin.
+     * That plugin requires its own copy of html-webpack-plugin, and when the package manager installs a second copy
+     * it hooks into the wrong one, never fires, and the page is served with a literal %__FPB_JS_SCRIPTS%.
+     */
     plugins.push(
       new HtmlWebpackPlugin({
         inject: false,
         hash: false,
-        template: getPaths().scripts.indexHTMLPath,
-      }),
-    );
-    plugins.push(
-      new InterpolateHtmlPlugin({
-        __FPB_JS_SCRIPTS: _getJSScripts(
-          dependencies.flexUI.version,
-          dependencies.react.version,
-          dependencies.reactDom.version,
-        ).join('\n'),
+        templateContent: () =>
+          readFileSync(getPaths().scripts.indexHTMLPath, 'utf8').replace(/%__FPB_JS_SCRIPTS%/g, () =>
+            _getJSScripts(dependencies.flexUI.version, dependencies.react.version, dependencies.reactDom.version).join(
+              '\n',
+            ),
+          ),
       }),
     );
   }
