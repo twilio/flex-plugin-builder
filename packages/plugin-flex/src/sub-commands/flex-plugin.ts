@@ -121,6 +121,11 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       default: process.env.TWILIO_REGION,
       hidden: true,
     }),
+    // Only start and build act on it (they redeclare it as a visible flag); everywhere else it is accepted and ignored
+    wp5: flags.boolean({
+      hidden: true,
+      default: false,
+    }),
   };
 
   protected static DATE_FIELDS = ['datecreated', 'dateupdated', 'created', 'updated'];

@@ -2,9 +2,6 @@
   "name": "{{name}}",
   "version": "0.0.0",
   "private": true,
-  "scripts": {
-    "postinstall": "flex-plugin pre-script-check"
-  },
   "dependencies": {
     "@twilio/flex-plugin": "{{flexPluginVersion}}",
     "react": "17.0.2",

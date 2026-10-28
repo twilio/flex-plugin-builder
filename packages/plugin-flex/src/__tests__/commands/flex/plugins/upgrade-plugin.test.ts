@@ -164,6 +164,17 @@ describe('Commands/FlexPluginsStart', () => {
     );
   });
 
+  it('should not add a postinstall script, since the upgraded plugin no longer has flex-plugin-scripts', async () => {
+    const cmd = await createCommand();
+
+    mockGetPkg(cmd, { scripts: { build: 'craco build' } });
+    const writeJSONFile = jest.spyOn(fs, 'writeJSONFile').mockReturnThis();
+
+    await cmd.removePackageScripts([{ name: 'build', it: 'craco build' }]);
+
+    expect(writeJSONFile).toHaveBeenCalledWith({ scripts: {} }, expect.any(String), 'package.json');
+  });
+
   it('should remove craco.config.js', async () => {
     const cmd = await createCommand();
 

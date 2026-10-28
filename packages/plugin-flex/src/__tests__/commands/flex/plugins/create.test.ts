@@ -64,4 +64,19 @@ describe('Commands/FlexPluginsCreate', () => {
     await cmd.run();
     expect(spy).toHaveBeenCalled();
   });
+
+  it('should accept --wp5 and not pass it on to the creator', async () => {
+    const parse = jest.fn().mockResolvedValue(true);
+    const cmd = await createTest(FlexPluginsCreate)('plugin-sample-one', '--typescript', '--wp5');
+    // @ts-ignore
+    jest.spyOn(createFlexPlugin, 'default').mockReturnValue({ parse });
+
+    await cmd.run();
+
+    expect(parse).toHaveBeenCalledTimes(1);
+    const args = parse.mock.calls[0];
+    expect(args).toContain('plugin-sample-one');
+    expect(args).toContain('--typescript');
+    expect(args).not.toContain('--wp5');
+  });
 });

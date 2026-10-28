@@ -442,7 +442,6 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
           this.prints.warnNotRemoved(`Script {{${script.name}}} was not removed because it has been modified`);
         }
       });
-      pkg.scripts.postinstall = 'flex-plugin pre-script-check';
 
       writeJSONFile(pkg, this.cwd, 'package.json');
     });
