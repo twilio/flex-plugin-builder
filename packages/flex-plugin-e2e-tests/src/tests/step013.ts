@@ -31,7 +31,16 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   plugin1.version = semver.inc(oldVersion, 'patch') as string;
   await spawn(
     'twilio',
-    ['flex:plugins:deploy', '--changelog', `"${plugin1.changelog}"`, '--patch', '-l', 'debug', ...config.regionFlag],
+    [
+      'flex:plugins:deploy',
+      '--changelog',
+      `"${plugin1.changelog}"`,
+      '--patch',
+      '-l',
+      'debug',
+      ...config.regionFlag,
+      ...(scenario.wp5 ? ['--wp5'] : []),
+    ],
     {
       cwd: plugin1.dir,
     },
