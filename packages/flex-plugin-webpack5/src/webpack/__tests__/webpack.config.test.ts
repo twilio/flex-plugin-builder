@@ -277,6 +277,58 @@ describe('WebpackConfiguration', () => {
     });
   });
 
+  describe('node core polyfills', () => {
+    const browserVersions = (): string[] =>
+      Object.values(webpackConfig.NODE_POLYFILLS).filter((target): target is string => typeof target === 'string');
+
+    it('should fall back to browser versions of the commonly needed core modules', () => {
+      isTSProject.mockReturnValue(false);
+      const { fallback } = webpackConfig._getBase(Environment.Development).resolve as webpack.ResolveOptions;
+
+      expect(Object.keys(fallback as Record<string, string>).sort((a, b) => a.localeCompare(b))).toEqual([
+        'assert',
+        'buffer',
+        'events',
+        'fs',
+        'net',
+        'path',
+        'process',
+        'querystring',
+        'stream',
+        'string_decoder',
+        'timers',
+        'url',
+        'util',
+      ]);
+    });
+
+    it('should give an empty module for modules that have no browser equivalent, like webpack 4 did', () => {
+      expect(webpackConfig.NODE_POLYFILLS.fs).toBe(false);
+      expect(webpackConfig.NODE_POLYFILLS.net).toBe(false);
+    });
+
+    it('should use bare module names, which the ModuleScopePlugin accepts, not absolute paths', () => {
+      browserVersions().forEach((target) => {
+        expect(target.startsWith('/')).toBe(false);
+        expect(target).not.toMatch(/^[a-zA-Z]:/);
+      });
+    });
+
+    it('should have every polyfill installed with this package', () => {
+      // A missing dependency would only surface as "Module not found" in a customer's build
+      browserVersions().forEach((target) => {
+        expect(() => require.resolve(target)).not.toThrow();
+      });
+    });
+
+    it('should provide Buffer and process only where they are referenced', () => {
+      const plugins = webpackConfig._getBasePlugins(Environment.Production);
+
+      expect(plugins.some((p) => p instanceof webpack.ProvidePlugin)).toBe(true);
+      expect(webpackConfig.NODE_GLOBALS).toEqual({ Buffer: ['buffer', 'Buffer'], process: 'process/browser' });
+    });
+  });
+
   describe('_getStaticConfiguration', () => {
     it('should add static plugins', () => {
       jest.spyOn(webpackConfig, '_getStaticPlugins').mockReturnValue([]);

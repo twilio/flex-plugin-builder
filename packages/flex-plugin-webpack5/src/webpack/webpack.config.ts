@@ -13,6 +13,7 @@ import {
   Configuration,
   DefinePlugin,
   HotModuleReplacementPlugin,
+  ProvidePlugin,
   RuleSetRule,
   RuleSetUseItem,
   WebpackPluginInstance,
@@ -267,6 +268,46 @@ const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
 };
 
 /**
+ * Webpack 5 stopped bundling browser versions of the Node core modules that webpack 4 supplied on its own,
+ * so a plugin (or a library it uses) importing `path`, `url` and the like fails with "Module not found".
+ * These are the small, commonly needed ones. They are only bundled when a plugin actually imports them.
+ *
+ * Bare module names are used on purpose: the ModuleScopePlugin rejects absolute paths outside `src/`, and the
+ * bare names resolve through the builder's own node_modules (see `resolve.modules`). Trailing slashes keep
+ * `buffer/`, `events/` and the like pointing at the npm package rather than the Node core module.
+ *
+ * `false` means "an empty module", which is what webpack 4 gave for modules that have no browser equivalent,
+ * so code that merely imports `fs` or `net` keeps building. Calling into it still fails at runtime.
+ *
+ * Heavier ones (crypto, http, https, zlib, ...) are intentionally left out, since a browser already provides
+ * `window.crypto` and `fetch` and the polyfills add hundreds of KB. A plugin can still add them itself.
+ */
+export const NODE_POLYFILLS: Record<string, string | false> = {
+  assert: 'assert/',
+  buffer: 'buffer/',
+  events: 'events/',
+  fs: false,
+  net: false,
+  path: 'path-browserify',
+  process: 'process/browser',
+  querystring: 'querystring-es3',
+  stream: 'stream-browserify',
+  // eslint-disable-next-line camelcase
+  string_decoder: 'string_decoder/',
+  timers: 'timers-browserify',
+  url: 'url/',
+  util: 'util/',
+};
+
+/**
+ * The globals that Node code expects to exist, supplied only to modules that reference them
+ */
+export const NODE_GLOBALS = {
+  Buffer: ['buffer', 'Buffer'],
+  process: 'process/browser',
+};
+
+/**
  * Returns an array of {@link Plugin} for Webpack
  * @param environment the environment
  * @private
@@ -303,6 +344,7 @@ export const _getBasePlugins = (environment: Environment) => {
   }
 
   plugins.push(new DefinePlugin({ ...defined, ...getSanitizedProcessEnv() }));
+  plugins.push(new ProvidePlugin(NODE_GLOBALS));
 
   return plugins;
 };
@@ -481,6 +523,7 @@ const _getResolve = (environment: Environment) => {
     alias: {
       '@twilio/flex-ui': FLEX_SHIM,
     },
+    fallback: { ...NODE_POLYFILLS },
     plugins: [PnpWebpackPlugin, new ModuleScopePlugin(paths.app.srcDir, [paths.app.pkgPath])],
   };
 
