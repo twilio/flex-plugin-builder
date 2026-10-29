@@ -104,6 +104,10 @@ export default class FlexPluginsDeploy extends FlexPlugin {
       description: FlexPluginsDeploy.topic.flags['bypass-validation'],
       default: false,
     }),
+    wp5: flags.boolean({
+      description: FlexPluginsDeploy.topic.flags.wp5,
+      default: false,
+    }),
   };
 
   // @ts-ignore
@@ -113,6 +117,8 @@ export default class FlexPluginsDeploy extends FlexPlugin {
     [Options.Fix]: '1. Go back and fix these issues now (recommended)',
     [Options.Deploy]: '2. Continue with the deployment, understanding the risks.',
   };
+
+  protected supportsWp5 = true;
 
   // @ts-ignore
   private prints;
@@ -199,6 +205,9 @@ export default class FlexPluginsDeploy extends FlexPlugin {
           const buildArgs = [...args];
           if (this.nextVersion) {
             buildArgs.push('--version', this.nextVersion);
+          }
+          if (this._flags.wp5) {
+            buildArgs.push('--wp5');
           }
           return this.runScript('build', [...buildArgs]);
         },

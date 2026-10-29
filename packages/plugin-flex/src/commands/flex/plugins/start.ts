@@ -48,6 +48,8 @@ export default class FlexPluginsStart extends FlexPlugin {
   // @ts-ignore
   public _flags: OutputFlags<typeof FlexPluginsStart.flags>;
 
+  protected supportsWp5 = true;
+
   constructor(argv: string[], config: ConfigData, secureStorage: SecureStorage) {
     super(argv, config, secureStorage, { strict: false, runTelemetryAsync: false });
   }

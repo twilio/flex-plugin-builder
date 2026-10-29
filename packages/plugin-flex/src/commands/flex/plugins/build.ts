@@ -27,6 +27,8 @@ export default class FlexPluginsBuild extends FlexPlugin {
   // @ts-ignore
   public _flags: OutputFlags<typeof FlexPluginsBuild.flags>;
 
+  protected supportsWp5 = true;
+
   async init(): Promise<void> {
     this._flags = (await this.parseCommand(FlexPluginsBuild)).flags;
   }

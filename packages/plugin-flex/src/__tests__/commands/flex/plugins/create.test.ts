@@ -1,5 +1,6 @@
 import { baseCommands } from '@twilio/cli-core';
 import { Config, ConfigData } from '@twilio/cli-core/src/services/config';
+import * as devUtils from '@twilio/flex-dev-utils';
 import * as createFlexPlugin from '@twilio/create-flex-plugin/dist/lib/cli';
 
 import FlexPluginsCreate from '../../../../commands/flex/plugins/create';
@@ -78,5 +79,17 @@ describe('Commands/FlexPluginsCreate', () => {
     expect(args).toContain('plugin-sample-one');
     expect(args).toContain('--typescript');
     expect(args).not.toContain('--wp5');
+  });
+
+  it('should say --wp5 is not supported only when it is passed', async () => {
+    const info = jest.spyOn(devUtils.logger, 'info').mockReturnThis();
+    // @ts-ignore
+    jest.spyOn(createFlexPlugin, 'default').mockReturnValue({ parse: jest.fn().mockResolvedValue(true) });
+
+    await (await createTest(FlexPluginsCreate)('plugin-sample-one')).run();
+    expect(info).not.toHaveBeenCalledWith(expect.stringContaining('--wp5'));
+
+    await (await createTest(FlexPluginsCreate)('plugin-sample-one', '--wp5')).run();
+    expect(info).toHaveBeenCalledWith(expect.stringContaining('--wp5 flag is not supported'));
   });
 });

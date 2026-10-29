@@ -2,9 +2,9 @@ import { baseCommands } from '@twilio/cli-core';
 import CreateFlexPlugin from '@twilio/create-flex-plugin';
 import { flags } from '@oclif/command';
 import { Options } from 'yargs';
-import { env, checkForUpdate } from '@twilio/flex-dev-utils';
+import { env, checkForUpdate, logger } from '@twilio/flex-dev-utils';
 
-import { createDescription } from '../../../utils/general';
+import { createDescription, wp5NotSupportedInfo } from '../../../utils/general';
 import { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 
 interface YArgs {
@@ -102,6 +102,9 @@ export default class FlexPluginsCreate extends baseCommands.TwilioClientCommand 
     }
 
     const createFlexPlugin = new CreateFlexPlugin();
+    if (instanceFlags.wp5) {
+      logger.info(wp5NotSupportedInfo);
+    }
     const createFlags: Record<string, unknown> = { ...instanceFlags };
     delete createFlags.wp5;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

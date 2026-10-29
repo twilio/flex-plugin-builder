@@ -38,7 +38,7 @@ import * as Parser from '@oclif/parser';
 
 import parser from '../utils/parser';
 import * as flags from '../utils/flags';
-import { exit, instanceOf } from '../utils/general';
+import { exit, instanceOf, wp5NotSupportedInfo } from '../utils/general';
 import { toSentenceCase } from '../utils/strings';
 import prints from '../prints';
 import FlexConfigurationClient, { FlexConfigurationClientOptions } from '../clients/FlexConfigurationClient';
@@ -168,6 +168,9 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   protected internalScriptArgs: string[];
 
   protected _telemetryProperties: Record<string, any>;
+
+  // Commands that build a bundle or start the dev server turn this on; everywhere else --wp5 is ignored with an info message
+  protected supportsWp5 = false;
 
   private _pluginsApiToolkit?: FlexPluginsAPIToolkit;
 
@@ -449,6 +452,11 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
 
     if (this._flags?.['clear-terminal']) {
       this._logger.clearTerminal();
+    }
+
+    const { wp5, json, silent } = (this._flags || {}) as unknown as Record<string, unknown>;
+    if (wp5 && !this.supportsWp5 && !json && !silent) {
+      this._logger.info(wp5NotSupportedInfo);
     }
 
     if (this.opts.runInDirectory) {
