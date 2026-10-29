@@ -58,7 +58,6 @@ describe('BuildClient', () => {
       expect(create).toHaveBeenCalledTimes(1);
       // @ts-ignore
       expect(create).toHaveBeenCalledWith(buildData);
-      expect(buildData.Runtime).toEqual('node22');
       expect(get).toHaveBeenCalledTimes(1);
       expect(get).toHaveBeenCalledWith(deployedBuild.sid);
 

@@ -153,12 +153,15 @@ export const retryOnError = async (
   maxRetries: number,
 ): Promise<void> => {
   let attempts = 1;
+  // Later attempts skip the login because the session already exists, unless the login itself was what failed
+  let firstLoad = true;
   while (attempts <= maxRetries) {
     try {
-      await method(attempts === 1); // Attempt the main operation
+      await method(firstLoad); // Attempt the main operation
       break; // If operation succeeds, exit the loop
     } catch (error) {
       logger.info('Error occured', error);
+      firstLoad = (error as Error)?.name === 'TwilioConsoleLoginError';
       if (attempts === maxRetries) {
         await onError(error); // Handle error if all retries fail
         await onFinally(); // cleanup

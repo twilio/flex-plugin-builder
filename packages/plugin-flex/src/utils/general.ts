@@ -3,6 +3,9 @@ type Constructable<T> = new (...args: any[]) => T;
 
 export const _runInformation = 'This command needs to be invoked inside a plugin directory.';
 
+export const wp5NotSupportedInfo =
+  'The --wp5 flag is not supported by this command and was ignored. It only applies to flex:plugins:start, flex:plugins:build and flex:plugins:deploy.';
+
 /**
  * Creates the description for the command
  *

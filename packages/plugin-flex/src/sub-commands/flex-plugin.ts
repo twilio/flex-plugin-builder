@@ -38,7 +38,7 @@ import * as Parser from '@oclif/parser';
 
 import parser from '../utils/parser';
 import * as flags from '../utils/flags';
-import { exit, instanceOf } from '../utils/general';
+import { exit, instanceOf, wp5NotSupportedInfo } from '../utils/general';
 import { toSentenceCase } from '../utils/strings';
 import prints from '../prints';
 import FlexConfigurationClient, { FlexConfigurationClientOptions } from '../clients/FlexConfigurationClient';
@@ -54,6 +54,7 @@ interface FlexPluginOption {
   runTelemetryAsync: boolean;
 }
 
+const flexPlugin = '@twilio/flex-plugin';
 const flexPluginScripts = '@twilio/flex-plugin-scripts';
 
 export type ConfigData = typeof services.config.ConfigData;
@@ -120,6 +121,11 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       default: process.env.TWILIO_REGION,
       hidden: true,
     }),
+    // Only start and build act on it (they redeclare it as a visible flag); everywhere else it is accepted and ignored
+    wp5: flags.boolean({
+      hidden: true,
+      default: false,
+    }),
   };
 
   protected static DATE_FIELDS = ['datecreated', 'dateupdated', 'created', 'updated'];
@@ -162,6 +168,9 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
   protected internalScriptArgs: string[];
 
   protected _telemetryProperties: Record<string, any>;
+
+  // Commands that build a bundle or start the dev server turn this on; everywhere else --wp5 is ignored with an info message
+  protected supportsWp5 = false;
 
   private _pluginsApiToolkit?: FlexPluginsAPIToolkit;
 
@@ -295,11 +304,7 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
    */
   get builderVersion(): number | null {
     const { pkg } = this;
-    const script =
-      pkg.dependencies[flexPluginScripts] ||
-      pkg.devDependencies[flexPluginScripts] ||
-      pkg.dependencies['flex-plugin-scripts'] ||
-      pkg.devDependencies['flex-plugin-scripts'];
+    const script = pkg.dependencies[flexPlugin] || pkg.devDependencies[flexPlugin];
     if (!script) {
       return null;
     }
@@ -449,9 +454,14 @@ export default class FlexPlugin extends baseCommands.TwilioClientCommand {
       this._logger.clearTerminal();
     }
 
+    const { wp5, json, silent } = (this._flags || {}) as unknown as Record<string, unknown>;
+    if (wp5 && !this.supportsWp5 && !json && !silent) {
+      this._logger.info(wp5NotSupportedInfo);
+    }
+
     if (this.opts.runInDirectory) {
-      const pluginScriptVersion = FlexPlugin.getPackageVersion(join(this.cwd, 'node_modules', flexPluginScripts));
-      this.logger.debug(`Using ${flexPluginScripts} version ${pluginScriptVersion}`);
+      const pluginScriptVersion = FlexPlugin.getPackageVersion(join(this.cwd, 'node_modules', flexPlugin));
+      this.logger.debug(`Using ${flexPlugin} version ${pluginScriptVersion}`);
 
       if (!this.isPluginFolder()) {
         throw new TwilioCliError(this.pluginFolderErrorMessage);

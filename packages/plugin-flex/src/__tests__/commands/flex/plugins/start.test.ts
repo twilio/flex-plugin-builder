@@ -37,7 +37,7 @@ describe('Commands/FlexPluginsStart', () => {
   const pkg = {
     name: pluginNameOne,
     dependencies: {
-      '@twilio/flex-plugin-scripts': '4.0.0',
+      '@twilio/flex-plugin': '4.0.0',
     },
   };
   const badVersionPkg = {

@@ -50,6 +50,7 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
       '-l',
       'debug',
       ...config.regionFlag,
+      ...(scenario.wp5 ? ['--wp5'] : []),
     ],
     {
       cwd: plugin.dir,
@@ -80,6 +81,7 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
       '-l',
       'debug',
       ...config.regionFlag,
+      ...(scenario.wp5 ? ['--wp5'] : []),
     ],
     {
       cwd: plugin.dir,
@@ -109,6 +111,7 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
       '-l',
       'debug',
       ...config.regionFlag,
+      ...(scenario.wp5 ? ['--wp5'] : []),
     ],
     {
       cwd: plugin.dir,
@@ -134,7 +137,16 @@ const testSuite: TestSuite = async ({ scenario, config }: TestParams): Promise<v
   logger.info('Running {{flex:plugins:deploy}} on a plugin with 0 valdiation issues');
   result = await spawn(
     'twilio',
-    ['flex:plugins:deploy', '--changelog', `"${plugin.changelog}"`, '--patch', '-l', 'debug', ...config.regionFlag],
+    [
+      'flex:plugins:deploy',
+      '--changelog',
+      `"${plugin.changelog}"`,
+      '--patch',
+      '-l',
+      'debug',
+      ...config.regionFlag,
+      ...(scenario.wp5 ? ['--wp5'] : []),
+    ],
     {
       cwd: plugin.dir,
     },

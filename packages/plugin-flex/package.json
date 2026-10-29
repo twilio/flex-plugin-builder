@@ -71,7 +71,7 @@
     "twilio": "^3.71.2"
   },
   "engines": {
-    "node": "^16 || ^18 || ^20 || ^22"
+    "node": "^20 || ^22 || ^24"
   },
   "publishConfig": {
     "access": "public"
@@ -123,7 +123,8 @@
           "changelog": "The changes (added/removed) made in this plugin version.",
           "description": "The description of this Flex plugin.",
           "option": "Option to automatically pick post validation of the plugin.",
-          "bypass-validation": "Validates the plugin and continues to plugin deployment ignoring validation issues, if any."
+          "bypass-validation": "Validates the plugin and continues to plugin deployment ignoring validation issues, if any.",
+          "wp5": "Use webpack 5 for building the plugin"
         }
       },
       "flex:plugins:create-configuration": {

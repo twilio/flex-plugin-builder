@@ -184,6 +184,36 @@ describe('SubCommands/FlexPlugin', () => {
     expect(fs.addCWDNodeModule).toHaveBeenCalledTimes(1);
   });
 
+  describe('--wp5 on commands that do not use it', () => {
+    const runWith = async (...args: string[]) => {
+      const cmd = await createCommand(...args);
+
+      jest.spyOn(devUtils, 'checkForUpdate').mockReturnThis();
+      jest.spyOn(cmd, 'isPluginFolder').mockReturnValue(true);
+      jest.spyOn(cmd, 'setupEnvironment').mockReturnThis();
+      jest.spyOn(cmd, 'doRun').mockResolvedValue(null);
+      jest.spyOn(cmd, 'trackTopic').mockImplementationOnce(async () => Promise.resolve());
+      // @ts-ignore
+      const info = jest.spyOn(cmd._logger, 'info').mockReturnThis();
+
+      await cmd.run();
+
+      return info;
+    };
+
+    it('should tell the user the flag is ignored', async () => {
+      expect(await runWith('--wp5')).toHaveBeenCalledWith(expect.stringContaining('--wp5 flag is not supported'));
+    });
+
+    it('should stay quiet without the flag', async () => {
+      expect(await runWith()).not.toHaveBeenCalledWith(expect.stringContaining('--wp5'));
+    });
+
+    it('should stay quiet when the output is json', async () => {
+      expect(await runWith('--wp5', '--json')).not.toHaveBeenCalledWith(expect.stringContaining('--wp5'));
+    });
+  });
+
   it('should return raw format', async () => {
     const cmd = await createCommand('--json');
 
@@ -246,7 +276,7 @@ describe('SubCommands/FlexPlugin', () => {
     jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {},
       dependencies: {
-        '@twilio/flex-plugin-scripts': '1.2.3',
+        '@twilio/flex-plugin': '1.2.3',
       },
     });
 
@@ -258,7 +288,7 @@ describe('SubCommands/FlexPlugin', () => {
 
     jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {
-        '@twilio/flex-plugin-scripts': '^2.3.4-beta.0',
+        '@twilio/flex-plugin': '^2.3.4-beta.0',
       },
       dependencies: {},
     });
@@ -271,7 +301,7 @@ describe('SubCommands/FlexPlugin', () => {
 
     jest.spyOn(fs, 'readJsonFile').mockReturnValue({
       devDependencies: {
-        '@twilio/flex-plugin-scripts': 'not-a-semver',
+        '@twilio/flex-plugin': 'not-a-semver',
       },
       dependencies: {},
     });
