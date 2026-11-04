@@ -1,6 +1,8 @@
 /* eslint-disable global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires */
 /// <reference path="../module.d.ts" />
 
+import { dirname } from 'path';
+
 import ModuleScopePlugin from '@k88/module-scope-plugin';
 import { semver, env } from '@twilio/flex-dev-utils';
 import { Environment } from '@twilio/flex-dev-utils/dist/env';
@@ -273,8 +275,9 @@ const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
  * These are the small, commonly needed ones. They are only bundled when a plugin actually imports them.
  *
  * Bare module names are used on purpose: the ModuleScopePlugin rejects absolute paths outside `src/`, and the
- * bare names resolve through the builder's own node_modules (see `resolve.modules`). Trailing slashes keep
- * `buffer/`, `events/` and the like pointing at the npm package rather than the Node core module.
+ * bare names resolve through the folders listed in `resolve.modules`, which include wherever the polyfill
+ * packages themselves are installed (see `_getPolyfillModuleDirs`). Trailing slashes keep `buffer/`, `events/`
+ * and the like pointing at the npm package rather than the Node core module.
  *
  * `false` means "an empty module", which is what webpack 4 gave for modules that have no browser equivalent,
  * so code that merely imports `fs` or `net` keeps building. Calling into it still fails at runtime.
@@ -297,6 +300,33 @@ export const NODE_POLYFILLS: Record<string, string | false> = {
   timers: 'timers-browserify',
   url: 'url/',
   util: 'util/',
+};
+
+/**
+ * Returns the `node_modules` folders that hold the polyfill packages, wherever the package manager put them.
+ *
+ * Where they end up depends on how the CLI was installed (npm hoists them next to this package's other
+ * dependencies, Yarn puts them at the top of ~/.twilio-cli/node_modules), and that folder is not always one the
+ * plugin or the builder already searches. Without it a polyfill like `util/` cannot be found and webpack fails
+ * with "Recursion in resolving", or a polyfill cannot find its own dependency (path-browserify needs `process`).
+ * @private
+ */
+export const _getPolyfillModuleDirs = (): string[] => {
+  const dirs = new Set<string>();
+
+  Object.values(NODE_POLYFILLS).forEach((target) => {
+    if (typeof target !== 'string') {
+      return;
+    }
+
+    try {
+      dirs.add(dirname(dirname(require.resolve(`${target.split('/')[0]}/package.json`))));
+    } catch (e) {
+      // The package is not installed; webpack reports it only if a plugin actually imports it
+    }
+  });
+
+  return Array.from(dirs);
 };
 
 /**
@@ -518,6 +548,7 @@ const _getResolve = (environment: Environment) => {
       paths.scripts.nodeModulesDir,
       paths.webpack.nodeModulesDir,
       paths.cli.nodeModulesDir,
+      ...self._getPolyfillModuleDirs(),
     ],
     extensions: extensions.map((e) => `.${e}`),
     alias: {

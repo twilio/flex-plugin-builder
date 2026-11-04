@@ -1,3 +1,7 @@
+import nodeFs from 'fs';
+import os from 'os';
+import path from 'path';
+
 import * as webpack from 'webpack5';
 import { Environment } from '@twilio/flex-dev-utils/dist/env';
 import * as fs from '@twilio/flex-dev-utils/dist/fs';
@@ -326,6 +330,71 @@ describe('WebpackConfiguration', () => {
 
       expect(plugins.some((p) => p instanceof webpack.ProvidePlugin)).toBe(true);
       expect(webpackConfig.NODE_GLOBALS).toEqual({ Buffer: ['buffer', 'Buffer'], process: 'process/browser' });
+    });
+
+    describe('where the polyfill packages are installed', () => {
+      // The resolver webpack itself uses, so the test fails the way a customer's build did
+      const resolveFrom = async (
+        modules: string[],
+        request: string,
+        context: string = os.tmpdir(),
+      ): Promise<string | false | undefined> => {
+        // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+        const enhancedResolve = require(require.resolve('enhanced-resolve', { paths: [require.resolve('webpack5')] }));
+        const resolver = enhancedResolve.ResolverFactory.createResolver({
+          fileSystem: new enhancedResolve.CachedInputFileSystem(nodeFs, 4000),
+          modules,
+          fallback: { ...webpackConfig.NODE_POLYFILLS },
+          extensions: ['.js'],
+          mainFields: ['browser', 'main'],
+          conditionNames: ['browser', 'require'],
+        });
+
+        return new Promise((resolve, reject) => {
+          resolver.resolve({}, context, request, {}, (err: Error | null, result?: string | false) =>
+            err ? reject(err) : resolve(result),
+          );
+        });
+      };
+
+      it('should search the folder holding every polyfill package', () => {
+        const dirs = webpackConfig._getPolyfillModuleDirs();
+
+        browserVersions().forEach((target) => {
+          const installedIn = path.dirname(path.dirname(require.resolve(`${target.split('/')[0]}/package.json`)));
+          expect(dirs).toContain(installedIn);
+        });
+      });
+
+      it('should add those folders to the module lookup of the build', () => {
+        isTSProject.mockReturnValue(false);
+        const { modules } = webpackConfig._getBase(Environment.Development).resolve as webpack.ResolveOptions;
+
+        expect(modules).toEqual(expect.arrayContaining(webpackConfig._getPolyfillModuleDirs()));
+      });
+
+      it('should fail to resolve util/ when the package is in none of the searched folders', async () => {
+        // This is what broke builds when the packages sat in a folder nobody searched
+        await expect(resolveFrom([], 'util')).rejects.toThrow(/Recursion in resolving|Can't resolve/);
+      });
+
+      it.each(['util', 'url', 'assert', 'string_decoder', 'querystring', 'path', 'process', 'events', 'buffer'])(
+        'should resolve %s from a plugin that has none of the polyfills installed',
+        async (request) => {
+          const result = await resolveFrom(webpackConfig._getPolyfillModuleDirs(), request);
+
+          expect(typeof result).toBe('string');
+          expect(result).toContain('node_modules');
+        },
+      );
+
+      it('should let path-browserify find its own process dependency', async () => {
+        // path-browserify requires `process/browser`; with no `process` installed beside it, that failed
+        const pathBrowserifyDir = path.dirname(require.resolve('path-browserify/package.json'));
+        const result = await resolveFrom(webpackConfig._getPolyfillModuleDirs(), 'process/browser', pathBrowserifyDir);
+
+        expect(result).toContain(`${path.sep}process${path.sep}`);
+      });
     });
   });
 
