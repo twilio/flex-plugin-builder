@@ -1,6 +1,7 @@
 /* eslint-disable global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires */
 /// <reference path="../module.d.ts" />
 
+import { readFileSync } from 'fs';
 import { dirname } from 'path';
 
 import ModuleScopePlugin from '@k88/module-scope-plugin';
@@ -282,24 +283,42 @@ const _getStyleLoaders = (isProd: boolean): RuleSetRule[] => {
  * `false` means "an empty module", which is what webpack 4 gave for modules that have no browser equivalent,
  * so code that merely imports `fs` or `net` keeps building. Calling into it still fails at runtime.
  *
- * Heavier ones (crypto, http, https, zlib, ...) are intentionally left out, since a browser already provides
- * `window.crypto` and `fetch` and the polyfills add hundreds of KB. A plugin can still add them itself.
+ * The heavier ones (crypto, http, https, zlib, ...) are included too, so that a plugin which built on webpack 4
+ * keeps building on webpack 5. Like the rest, they add nothing to a bundle unless a plugin (or a library it
+ * uses) imports them.
  */
 export const NODE_POLYFILLS: Record<string, string | false> = {
   assert: 'assert/',
   buffer: 'buffer/',
+  // eslint-disable-next-line camelcase
+  child_process: false,
+  constants: 'constants-browserify',
+  crypto: 'crypto-browserify',
+  dgram: false,
+  dns: false,
+  domain: 'domain-browser',
   events: 'events/',
   fs: false,
+  http: 'stream-http',
+  https: 'https-browserify',
+  module: false,
   net: false,
+  os: 'os-browserify/browser',
   path: 'path-browserify',
   process: 'process/browser',
+  punycode: 'punycode/',
   querystring: 'querystring-es3',
   stream: 'stream-browserify',
   // eslint-disable-next-line camelcase
   string_decoder: 'string_decoder/',
+  sys: 'util/',
   timers: 'timers-browserify',
+  tls: false,
+  tty: 'tty-browserify',
   url: 'url/',
   util: 'util/',
+  vm: 'vm-browserify',
+  zlib: 'browserify-zlib',
 };
 
 /**
@@ -335,6 +354,20 @@ export const _getPolyfillModuleDirs = (): string[] => {
 export const NODE_GLOBALS = {
   Buffer: ['buffer', 'Buffer'],
   process: 'process/browser',
+  setImmediate: ['timers-browserify', 'setImmediate'],
+  clearImmediate: ['timers-browserify', 'clearImmediate'],
+};
+
+/**
+ * Webpack 4 defined `global`, `__dirname` and `__filename` for every module. Webpack 5 does not, so a dependency
+ * that was written for Node and uses them (for example `global.setTimeout`) fails at load time with
+ * "global is not defined". `global` becomes the browser's global object, and the other two the same
+ * placeholder values webpack 4 gave.
+ */
+export const NODE_VARIABLES: NonNullable<Configuration['node']> = {
+  global: true,
+  __dirname: 'mock',
+  __filename: 'mock',
 };
 
 /**
@@ -529,6 +562,34 @@ export const _getOptimization = (environment: Environment): any => {
 };
 
 /**
+ * The `resolve.alias` entries that make webpack 5 prefer the browser versions of the core modules, as webpack 4 did.
+ *
+ * Targets such as `util/` (trailing slash, to mean the npm package rather than the core module) cannot be used in an
+ * alias: webpack reads `util/` as "the `util` module, directory form", which matches the `util$` alias again and
+ * recurses forever. They are therefore aimed at the package's main file instead, e.g. `util/util.js`.
+ * @private
+ */
+export const _getPolyfillAliases = (): Record<string, string | false> => {
+  const aliases: Record<string, string | false> = {};
+
+  Object.entries(NODE_POLYFILLS).forEach(([name, target]) => {
+    let aliased = target;
+    if (typeof target === 'string' && target.endsWith('/')) {
+      const packageName = target.slice(0, -1);
+      try {
+        const pkg = JSON.parse(readFileSync(require.resolve(`${packageName}/package.json`), 'utf8'));
+        aliased = `${packageName}/${String(pkg.main || 'index.js').replace(/^\.\//, '')}`;
+      } catch (e) {
+        // The package is not installed; webpack reports it only if a plugin actually imports the core module
+      }
+    }
+    aliases[`${name}$`] = aliased;
+  });
+
+  return aliases;
+};
+
+/**
  * Returns the `resolve` key of webpack
  * @param environment the environment
  * @private
@@ -553,8 +614,23 @@ const _getResolve = (environment: Environment) => {
     extensions: extensions.map((e) => `.${e}`),
     alias: {
       '@twilio/flex-ui': FLEX_SHIM,
+      /*
+       * Exact-match aliases rather than only a `fallback`: webpack 4 always preferred its own browser versions of
+       * these modules, whereas a fallback applies only when normal resolution fails. Without this, an unrelated npm
+       * package that happens to share a core module's name (`os`, `crypto`, `path`, ... exist on npm and are found in
+       * the CLI's own node_modules) silently wins and the plugin gets an empty or wrong module.
+       */
+      ...self._getPolyfillAliases(),
     },
     fallback: { ...NODE_POLYFILLS },
+    /*
+     * Webpack 4 ignored a package's `exports`; webpack 5 honors it and resolves ES imports with the `import`
+     * condition. A package that only declares `require` (common for CommonJS-only libraries) then fails with
+     * `"." is not exported under the conditions [...]`, so accept `require` as a last resort.
+     */
+    byDependency: {
+      esm: { conditionNames: ['...', 'require'] },
+    },
     plugins: [PnpWebpackPlugin, new ModuleScopePlugin(paths.app.srcDir, [paths.app.pkgPath])],
   };
 
@@ -637,7 +713,11 @@ export const _getJavaScriptConfiguration = (config: Configuration, environment: 
   config.bail = isProd;
   config.devtool = isProd ? 'cheap-source-map' : 'source-map';
   config.optimization = self._getOptimization(environment);
-  config.node = false;
+  /*
+   * Not `false`: that switches off `global`, `__dirname` and `__filename` as well, and a dependency written for
+   * Node that uses any of them then fails at load time with "<name> is not defined".
+   */
+  config.node = { ...NODE_VARIABLES };
   config.plugins.push(...self._getJSPlugins(environment));
 
   return config;

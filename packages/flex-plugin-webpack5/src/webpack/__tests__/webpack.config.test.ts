@@ -289,26 +289,52 @@ describe('WebpackConfiguration', () => {
       isTSProject.mockReturnValue(false);
       const { fallback } = webpackConfig._getBase(Environment.Development).resolve as webpack.ResolveOptions;
 
-      expect(Object.keys(fallback as Record<string, string>).sort((a, b) => a.localeCompare(b))).toEqual([
+      expect(Object.keys(fallback as Record<string, string>).sort((a, b) => a.localeCompare(b))).toEqual(
+        Object.keys(webpackConfig.NODE_POLYFILLS).sort((a, b) => a.localeCompare(b)),
+      );
+    });
+
+    it('should cover every core module that webpack 4 resolved, so plugins that built on webpack 4 keep building', () => {
+      // Taken from running the same imports through both webpack versions (see local-tests/wp5 builtins group)
+      const webpack4Modules = [
         'assert',
         'buffer',
+        'child_process',
+        'constants',
+        'crypto',
+        'dgram',
+        'dns',
+        'domain',
         'events',
         'fs',
+        'http',
+        'https',
+        'module',
         'net',
+        'os',
         'path',
         'process',
+        'punycode',
         'querystring',
         'stream',
         'string_decoder',
+        'sys',
         'timers',
+        'tls',
+        'tty',
         'url',
         'util',
-      ]);
+        'vm',
+        'zlib',
+      ];
+
+      expect(webpack4Modules.filter((m) => !(m in webpackConfig.NODE_POLYFILLS))).toEqual([]);
     });
 
     it('should give an empty module for modules that have no browser equivalent, like webpack 4 did', () => {
-      expect(webpackConfig.NODE_POLYFILLS.fs).toBe(false);
-      expect(webpackConfig.NODE_POLYFILLS.net).toBe(false);
+      ['child_process', 'dgram', 'dns', 'fs', 'module', 'net', 'tls'].forEach((name) => {
+        expect(webpackConfig.NODE_POLYFILLS[name]).toBe(false);
+      });
     });
 
     it('should use bare module names, which the ModuleScopePlugin accepts, not absolute paths', () => {
@@ -329,8 +355,46 @@ describe('WebpackConfiguration', () => {
       const plugins = webpackConfig._getBasePlugins(Environment.Production);
 
       expect(plugins.some((p) => p instanceof webpack.ProvidePlugin)).toBe(true);
-      expect(webpackConfig.NODE_GLOBALS).toEqual({ Buffer: ['buffer', 'Buffer'], process: 'process/browser' });
+      expect(webpackConfig.NODE_GLOBALS).toEqual({
+        Buffer: ['buffer', 'Buffer'],
+        process: 'process/browser',
+        setImmediate: ['timers-browserify', 'setImmediate'],
+        clearImmediate: ['timers-browserify', 'clearImmediate'],
+      });
     });
+
+    describe('Node variables that webpack 4 defined', () => {
+      it('should define global, __dirname and __filename like webpack 4 did, in every environment', () => {
+        jest.spyOn(webpackConfig, '_getJavaScriptEntries').mockReturnValue([]);
+        jest.spyOn(webpackConfig, '_getOptimization').mockReturnValue({});
+        jest.spyOn(webpackConfig, '_getJSPlugins').mockReturnValue([]);
+
+        [Environment.Development, Environment.Production].forEach((environment) => {
+          const { node } = webpackConfig._getJavaScriptConfiguration({}, environment);
+
+          // `false` here is what used to turn all three off
+          expect(node).toEqual({ global: true, __dirname: 'mock', __filename: 'mock' });
+        });
+      });
+
+      it('should keep the globals provided by the polyfills installed', () => {
+        // the ProvidePlugin entries must point at packages this package depends on
+        Object.values(webpackConfig.NODE_GLOBALS).forEach((target) => {
+          const name = (Array.isArray(target) ? target[0] : target).split('/')[0];
+          expect(() => require.resolve(`${name}/package.json`)).not.toThrow();
+        });
+      });
+    });
+
+    it.each([Environment.Development, Environment.Production])(
+      'should resolve packages whose exports only declare "require" for ES imports in %s',
+      (environment) => {
+        const { conditionNames } = webpackConfig._getBase(environment).resolve?.byDependency?.esm || {};
+
+        // '...' keeps webpack's own conditions (import, module, ...); 'require' is the last resort for CJS-only packages
+        expect(conditionNames).toEqual(['...', 'require']);
+      },
+    );
 
     describe('where the polyfill packages are installed', () => {
       // The resolver webpack itself uses, so the test fails the way a customer's build did
@@ -338,12 +402,14 @@ describe('WebpackConfiguration', () => {
         modules: string[],
         request: string,
         context: string = os.tmpdir(),
+        alias: Record<string, string | false> = {},
       ): Promise<string | false | undefined> => {
         // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
         const enhancedResolve = require(require.resolve('enhanced-resolve', { paths: [require.resolve('webpack5')] }));
         const resolver = enhancedResolve.ResolverFactory.createResolver({
           fileSystem: new enhancedResolve.CachedInputFileSystem(nodeFs, 4000),
           modules,
+          alias,
           fallback: { ...webpackConfig.NODE_POLYFILLS },
           extensions: ['.js'],
           mainFields: ['browser', 'main'],
@@ -373,20 +439,102 @@ describe('WebpackConfiguration', () => {
         expect(modules).toEqual(expect.arrayContaining(webpackConfig._getPolyfillModuleDirs()));
       });
 
+      describe('when an unrelated npm package shares a core module name', () => {
+        // e.g. the empty `os` package that sits in the CLI's own node_modules
+        let decoyDir: string;
+
+        beforeEach(() => {
+          decoyDir = nodeFs.mkdtempSync(path.join(os.tmpdir(), 'decoy-'));
+          nodeFs.mkdirSync(path.join(decoyDir, 'os'));
+          nodeFs.writeFileSync(path.join(decoyDir, 'os', 'package.json'), '{"name":"os","version":"0.1.2"}');
+          nodeFs.writeFileSync(path.join(decoyDir, 'os', 'index.js'), 'module.exports = {};');
+        });
+
+        afterEach(() => {
+          nodeFs.rmSync(decoyDir, { recursive: true, force: true });
+        });
+
+        it('should resolve to the decoy with only a fallback (the bug: webpack 4 never did this)', async () => {
+          const result = await resolveFrom([decoyDir, ...webpackConfig._getPolyfillModuleDirs()], 'os');
+
+          expect(result).toContain(path.join('decoy-'));
+        });
+
+        it('should resolve to the browser version when aliased, as webpack 4 did', async () => {
+          isTSProject.mockReturnValue(false);
+          const { alias } = webpackConfig._getBase(Environment.Development).resolve as webpack.ResolveOptions;
+          const result = await resolveFrom(
+            [decoyDir, ...webpackConfig._getPolyfillModuleDirs()],
+            'os',
+            undefined,
+            alias as Record<string, string | false>,
+          );
+
+          expect(result).toContain('os-browserify');
+        });
+      });
+
+      it('should alias every core module with an exact match so subpath imports like util/ are untouched', () => {
+        isTSProject.mockReturnValue(false);
+        const { alias } = webpackConfig._getBase(Environment.Development).resolve as webpack.ResolveOptions;
+
+        Object.keys(webpackConfig.NODE_POLYFILLS).forEach((name) => {
+          expect(alias).toHaveProperty([`${name}$`]);
+          expect(alias).not.toHaveProperty(name);
+        });
+      });
+
+      it('should never alias to a trailing-slash target, which webpack reads as the aliased name and loops on', () => {
+        Object.values(webpackConfig._getPolyfillAliases()).forEach((target) => {
+          expect(typeof target === 'string' ? target.endsWith('/') : false).toBe(false);
+        });
+      });
+
+      it.each(Object.keys(webpackConfig.NODE_POLYFILLS))(
+        'should resolve %s through the alias without recursing',
+        async (name) => {
+          const aliases = webpackConfig._getPolyfillAliases();
+          const result = await resolveFrom(webpackConfig._getPolyfillModuleDirs(), name, undefined, aliases);
+
+          // `false` is the empty module
+          expect(result === false ? 'empty' : typeof result).toBe(
+            webpackConfig.NODE_POLYFILLS[name] === false ? 'empty' : 'string',
+          );
+        },
+      );
+
       it('should fail to resolve util/ when the package is in none of the searched folders', async () => {
         // This is what broke builds when the packages sat in a folder nobody searched
         await expect(resolveFrom([], 'util')).rejects.toThrow(/Recursion in resolving|Can't resolve/);
       });
 
-      it.each(['util', 'url', 'assert', 'string_decoder', 'querystring', 'path', 'process', 'events', 'buffer'])(
-        'should resolve %s from a plugin that has none of the polyfills installed',
-        async (request) => {
-          const result = await resolveFrom(webpackConfig._getPolyfillModuleDirs(), request);
+      it.each([
+        'util',
+        'url',
+        'assert',
+        'string_decoder',
+        'querystring',
+        'path',
+        'process',
+        'events',
+        'buffer',
+        'crypto',
+        'http',
+        'https',
+        'zlib',
+        'vm',
+        'tty',
+        'constants',
+        'domain',
+        'os',
+        'punycode',
+        'sys',
+      ])('should resolve %s from a plugin that has none of the polyfills installed', async (request) => {
+        const result = await resolveFrom(webpackConfig._getPolyfillModuleDirs(), request);
 
-          expect(typeof result).toBe('string');
-          expect(result).toContain('node_modules');
-        },
-      );
+        expect(typeof result).toBe('string');
+        expect(result).toContain('node_modules');
+      });
 
       it('should let path-browserify find its own process dependency', async () => {
         // path-browserify requires `process/browser`; with no `process` installed beside it, that failed
