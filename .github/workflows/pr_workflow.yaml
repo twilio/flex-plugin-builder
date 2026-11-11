@@ -8,6 +8,7 @@ on:
       - 'lerna.json'
       - '**/package-lock.json'
       - '**/package.json'
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -15,6 +16,9 @@ on:
       - 'lerna.json'
       - '**/package-lock.json'
       - '**/package.json'
+
+env:
+  ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
 
 jobs:
   build-and-test:

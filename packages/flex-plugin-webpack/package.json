@@ -40,7 +40,6 @@
     "@babel/preset-react": "^7.16.0",
     "@k88/cra-webpack-hot-dev-client": "^1.1.0",
     "@k88/format-webpack-messages": "^1.1.0",
-    "@k88/interpolate-html-plugin": "^1.0.5",
     "@k88/module-scope-plugin": "^1.1.0",
     "@k88/typescript-compile-error-formatter": "^1.0.3",
     "@twilio/flex-dev-utils": "7.1.3",
@@ -60,7 +59,7 @@
     "postcss-loader": "^4.2.0",
     "postcss-preset-env": "^9.1.4",
     "resolve-url-loader": "^5.0.0",
-    "sass": "^1.32.8",
+    "sass": "1.58.3",
     "sass-loader": "^10.1.1",
     "style-loader": "^2.0.0",
     "tapable": "^1.1.3",
@@ -81,7 +80,7 @@
     "typescript": "^4.9.5"
   },
   "engines": {
-    "node": "^16 || ^18 || ^20 || ^22"
+    "node": "^20 || ^22 || ^24"
   },
   "publishConfig": {
     "access": "public"

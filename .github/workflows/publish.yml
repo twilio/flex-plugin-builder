@@ -85,7 +85,12 @@ jobs:
       #     client-id: ${{ secrets.APP_ID }}
       #     private_key: ${{ secrets.APP_KEY }}
       #
+      # Check out the branch being released. Without a ref, checkout builds the
+      # ref the workflow was dispatched from, so releasing a branch while
+      # dispatching from main published main's code under the branch's name.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.BRANCH }}
 
       # No registry-url on purpose. Given one, setup-node writes an .npmrc with
       # //registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN} and, with no token

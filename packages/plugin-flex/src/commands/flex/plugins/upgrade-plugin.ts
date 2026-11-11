@@ -83,7 +83,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   };
 
   static packagesToRemove = [
-    scopedFlexPluginScriptPackage, // remove and then re-add
+    scopedFlexPluginScriptPackage, // no longer a dependency of a plugin
     'react-app-rewire-flex-plugin',
     'react-app-rewired',
     'react-scripts',
@@ -186,10 +186,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       return;
     }
 
-    const pkgJson = await packages.getRegistryVersion(
-      scopedFlexPluginScriptPackage,
-      this._flags.beta ? 'beta' : 'latest',
-    );
+    const pkgJson = await packages.getRegistryVersion(scopedFlexPluginPackage, this._flags.beta ? 'beta' : 'latest');
     const latestVersion = pkgJson ? semver.coerce(pkgJson.version as string)?.major : 0;
     if (currentPkgVersion !== latestVersion) {
       await this.cleanupNodeModules();
@@ -447,7 +444,6 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
           this.prints.warnNotRemoved(`Script {{${script.name}}} was not removed because it has been modified`);
         }
       });
-      pkg.scripts.postinstall = 'flex-plugin pre-script-check';
 
       writeJSONFile(pkg, this.cwd, 'package.json');
     });
@@ -537,7 +533,6 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
         [scopedFlexPluginPackage]: '*',
       },
       devDeps: {
-        [scopedFlexPluginScriptPackage]: '*',
         [flexUI]: '^1',
         'react-test-renderer': react,
       },
@@ -584,16 +579,19 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
    */
   get pkgVersion(): number | undefined {
     const pkg =
-      this.pkg.dependencies[scopedFlexPluginScriptPackage] ||
-      this.pkg.devDependencies[scopedFlexPluginScriptPackage] ||
-      this.pkg.dependencies[flexPluginScriptPackage] ||
-      this.pkg.devDependencies[flexPluginScriptPackage] ||
       this.pkg.dependencies[scopedFlexPluginPackage] ||
       this.pkg.devDependencies[scopedFlexPluginPackage] ||
       this.pkg.dependencies[flexPluginPackage] ||
-      this.pkg.devDependencies[flexPluginPackage];
+      this.pkg.devDependencies[flexPluginPackage] ||
+      // Plugins created before the scripts package was dropped only list it
+      this.pkg.dependencies[scopedFlexPluginScriptPackage] ||
+      this.pkg.devDependencies[scopedFlexPluginScriptPackage] ||
+      this.pkg.dependencies[flexPluginScriptPackage] ||
+      this.pkg.devDependencies[flexPluginScriptPackage];
     if (!pkg) {
-      throw new TwilioCliError(`Package '${scopedFlexPluginScriptPackage}' was not found`);
+      throw new TwilioCliError(
+        `Package '${scopedFlexPluginPackage}' was not found (nor '${scopedFlexPluginScriptPackage}') in the plugin's package.json`,
+      );
     }
 
     return semver.coerce(pkg)?.major;

@@ -2,9 +2,9 @@ import { baseCommands } from '@twilio/cli-core';
 import CreateFlexPlugin from '@twilio/create-flex-plugin';
 import { flags } from '@oclif/command';
 import { Options } from 'yargs';
-import { env, checkForUpdate } from '@twilio/flex-dev-utils';
+import { env, checkForUpdate, logger } from '@twilio/flex-dev-utils';
 
-import { createDescription } from '../../../utils/general';
+import { createDescription, wp5NotSupportedInfo } from '../../../utils/general';
 import { ConfigData, SecureStorage } from '../../../sub-commands/flex-plugin';
 
 interface YArgs {
@@ -21,6 +21,11 @@ export default class FlexPluginsCreate extends baseCommands.TwilioClientCommand 
 
   static flags = {
     ...FlexPluginsCreate.parseYargs(CreateFlexPlugin.flags),
+    // Accepted and ignored: a plugin is not tied to a bundler, --wp5 only matters on start and build
+    wp5: flags.boolean({
+      hidden: true,
+      default: false,
+    }),
   };
 
   static args = [
@@ -83,7 +88,10 @@ export default class FlexPluginsCreate extends baseCommands.TwilioClientCommand 
     await checkForUpdate();
 
     // @ts-ignore
-    const { flags: instanceFlags, args } = await this.parse(FlexPluginsCreate);
+    const { flags: parsedFlags, args } = await this.parse(FlexPluginsCreate);
+    // The static flags type no longer carries the yargs-derived keys once wp5 is added, so widen it here
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const instanceFlags: Record<string, any> = parsedFlags;
 
     if (!instanceFlags.accountSid && this.currentProfile && this.currentProfile.accountSid) {
       instanceFlags.accountSid = this.currentProfile.accountSid;
@@ -94,8 +102,13 @@ export default class FlexPluginsCreate extends baseCommands.TwilioClientCommand 
     }
 
     const createFlexPlugin = new CreateFlexPlugin();
+    if (instanceFlags.wp5) {
+      logger.info(wp5NotSupportedInfo);
+    }
+    const createFlags: Record<string, unknown> = { ...instanceFlags };
+    delete createFlags.wp5;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const scriptArgs = FlexPluginsCreate.toArgv(instanceFlags as any);
+    const scriptArgs = FlexPluginsCreate.toArgv(createFlags as any);
     scriptArgs.unshift(args.name);
 
     await createFlexPlugin.parse(...scriptArgs);

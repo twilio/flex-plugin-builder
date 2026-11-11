@@ -128,7 +128,9 @@ function linkDependencies(packages) {
       for (const depName of localDependencies) {
         try {
           log(`${colors.cyan}  Linking ${depName} to ${pkg.name}...${colors.reset}`, colors.cyan);
-          execCommand(`npm link "${depName}"`, pkg.path);
+          // --force is needed because this repo has pre-existing, unrelated peer dependency
+          // conflicts (react 16 vs 17) that npm's strict resolver refuses to auto-resolve.
+          execCommand(`npm link "${depName}" --force`, pkg.path);
           log(`${colors.green}  ✓ Successfully linked ${depName} to ${pkg.name}${colors.reset}`, colors.green);
         } catch (error) {
           log(`${colors.red}  ✗ Failed to link ${depName} to ${pkg.name}${colors.reset}`, colors.red);

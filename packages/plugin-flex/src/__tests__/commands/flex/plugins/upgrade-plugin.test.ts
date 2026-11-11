@@ -66,25 +66,54 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd.getTopicName()).toContain(FlexPluginsUpgradePlugin.topicName);
   });
 
-  it('should should return then version of @twilio/flex-plugin-scripts from dependencies', async () => {
+  it('should should return then version of @twilio/flex-plugin from dependencies', async () => {
     const cmd = await createCommand();
 
     mockGetPkg(cmd, {
-      dependencies: { '@twilio/flex-plugin-scripts': '3.0.0' },
+      dependencies: { '@twilio/flex-plugin': '3.0.0' },
       devDependencies: {},
     });
     expect(cmd.pkgVersion).toEqual(3);
   });
 
-  it('should should return the version of @twilio/flex-plugin-scripts from devDependencies', async () => {
+  it('should should return the version of @twilio/flex-plugin from devDependencies', async () => {
     const cmd = await createCommand();
 
     mockGetPkg(cmd, {
       dependencies: {},
-      devDependencies: { '@twilio/flex-plugin-scripts': '4.0.0' },
+      devDependencies: { '@twilio/flex-plugin': '4.0.0' },
     });
 
     expect(cmd.pkgVersion).toEqual(4);
+  });
+
+  it.each([
+    ['dependencies', '@twilio/flex-plugin-scripts'],
+    ['devDependencies', '@twilio/flex-plugin-scripts'],
+    ['dependencies', 'flex-plugin-scripts'],
+    ['devDependencies', 'flex-plugin-scripts'],
+  ])('should fall back to %s %s for plugins that predate dropping the scripts package', async (kind, name) => {
+    const cmd = await createCommand();
+
+    mockGetPkg(cmd, { dependencies: {}, devDependencies: {}, [kind]: { [name]: '^4.3.3' } });
+
+    expect(cmd.pkgVersion).toEqual(4);
+  });
+
+  it('should prefer @twilio/flex-plugin over a stale flex-plugin-scripts', async () => {
+    const cmd = await createCommand();
+
+    mockGetPkg(cmd, {
+      dependencies: { '@twilio/flex-plugin': '7.1.3' },
+      devDependencies: { '@twilio/flex-plugin-scripts': '4.3.3' },
+    });
+
+    expect(cmd.pkgVersion).toEqual(7);
+  });
+
+  it('should remove the scripts package when upgrading so it is not left behind', () => {
+    expect(FlexPluginsUpgradePlugin.packagesToRemove).toContain('@twilio/flex-plugin-scripts');
+    expect(FlexPluginsUpgradePlugin.packagesToRemove).toContain('flex-plugin-scripts');
   });
 
   it('should should throw exception if no version is found', async () => {
@@ -162,6 +191,17 @@ describe('Commands/FlexPluginsStart', () => {
       expect.any(String),
       expect.any(String),
     );
+  });
+
+  it('should not add a postinstall script, since the upgraded plugin no longer has flex-plugin-scripts', async () => {
+    const cmd = await createCommand();
+
+    mockGetPkg(cmd, { scripts: { build: 'craco build' } });
+    const writeJSONFile = jest.spyOn(fs, 'writeJSONFile').mockReturnThis();
+
+    await cmd.removePackageScripts([{ name: 'build', it: 'craco build' }]);
+
+    expect(writeJSONFile).toHaveBeenCalledWith({ scripts: {} }, expect.any(String), 'package.json');
   });
 
   it('should remove craco.config.js', async () => {
@@ -738,7 +778,6 @@ describe('Commands/FlexPluginsStart', () => {
       devDependencies: {
         '@twilio/flex-ui': '^1',
         'react-test-renderer': '16.0.0',
-        '@twilio/flex-plugin-scripts': '4.1.3',
       },
       dependencies: {
         react: '15.0.2',
@@ -754,7 +793,6 @@ describe('Commands/FlexPluginsStart', () => {
         'react-dom': 'react || 16.5.2',
       },
       devDeps: {
-        '@twilio/flex-plugin-scripts': '*',
         '@twilio/flex-ui': '^1',
         'react-test-renderer': 'react || 16.5.2',
       },

@@ -26,7 +26,6 @@ export interface FlexPluginArguments extends CLIArguments {
   name: string;
   targetDirectory: string;
   flexSdkVersion: string;
-  pluginScriptsVersion: string;
   flexPluginVersion: string;
   pluginClassName: string;
   pluginNamespace: string;
@@ -107,7 +106,7 @@ export const track = (timeTaken: number, config: FlexPluginArguments): void => {
   const telemetry = new Telemetry();
   const accountSid: string = String(config.accountSid);
   const properties = {
-    cliVersion: config.pluginScriptsVersion,
+    cliVersion: config.flexPluginVersion,
     command: 'create',
     xtime: Math.round(timeTaken),
     pluginName: config.name,

@@ -15,7 +15,6 @@ describe('@twilio/flex-plugin', () => {
   const PLUGIN_NAME = 'Test Plugin';
   const PLUGIN_VERSION = '1.0.0';
   const UNIQUE_NAME = 'plugin-identifier';
-  const FLEX_PLUGIN_SCRIPTS_VERSION = '2.0.0';
   const FLEX_PLUGIN_VERSION = '2.1.0';
   const FLEX_UI_VERSION = '2.3.0';
   const REACT_VERSION = '2.4.0';
@@ -24,8 +23,6 @@ describe('@twilio/flex-plugin', () => {
   global.__FPB_PLUGIN_UNIQUE_NAME = UNIQUE_NAME;
   // @ts-ignore
   global.__FPB_PLUGIN_VERSION = PLUGIN_VERSION;
-  // @ts-ignore
-  global.__FPB_FLEX_PLUGIN_SCRIPTS_VERSION = FLEX_PLUGIN_SCRIPTS_VERSION;
   // @ts-ignore
   global.__FPB_FLEX_PLUGIN_VERSION = FLEX_PLUGIN_VERSION;
   // @ts-ignore
@@ -67,7 +64,6 @@ describe('@twilio/flex-plugin', () => {
       expect(plugin.name).toEqual(PLUGIN_NAME);
       expect(plugin.version).toEqual(PLUGIN_VERSION);
       expect(plugin.uniqueName).toEqual(UNIQUE_NAME);
-      expect(plugin.dependencies['@twilio/flex-plugin-scripts']).toEqual(FLEX_PLUGIN_SCRIPTS_VERSION);
       expect(plugin.dependencies['@twilio/flex-plugin']).toEqual(FLEX_PLUGIN_VERSION);
       expect(plugin.dependencies['flex-ui']).toEqual(FLEX_UI_VERSION);
       expect(plugin.dependencies.react).toEqual(REACT_VERSION);

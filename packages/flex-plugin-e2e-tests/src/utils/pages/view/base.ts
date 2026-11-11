@@ -108,14 +108,11 @@ export abstract class Base {
   ): Promise<ElementHandle<Node | Element>> {
     const waitOptions = { timeout };
 
-    let element: ElementHandle<Element | Node> | null;
-
-    if (seletor.startsWith('//')) {
-      element = await this.page.waitForXPath(seletor, waitOptions);
-    } else {
-      // @ts-ignore
-      element = await this.page.waitForSelector(seletor, waitOptions);
-    }
+    // XPath selectors are passed through Puppeteer's `xpath/` query handler (waitForXPath was removed in v22)
+    const element: ElementHandle<Element | Node> | null = await this.page.waitForSelector(
+      seletor.startsWith('//') ? `xpath/${seletor}` : seletor,
+      waitOptions,
+    );
 
     if (!element) {
       throw new Error(`Element: ${elementName} is not visible in the UI`);

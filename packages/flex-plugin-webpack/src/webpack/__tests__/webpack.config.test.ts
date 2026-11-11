@@ -1,3 +1,7 @@
+import { mkdtempSync, writeFileSync } from 'fs';
+import { tmpdir } from 'os';
+import { join } from 'path';
+
 import * as webpack from 'webpack';
 import { Environment } from '@twilio/flex-dev-utils/dist/env';
 import * as fs from '@twilio/flex-dev-utils/dist/fs';
@@ -181,7 +185,6 @@ describe('WebpackConfiguration', () => {
 
   describe('_getBasePlugins', () => {
     const depVersions = {
-      '@twilio/flex-plugin-scripts': '1.0.0',
       '@twilio/flex-plugin': '1.1.0',
       '@twilio/flex-ui': '1.2.0',
       react: '1.3.0',
@@ -196,7 +199,6 @@ describe('WebpackConfiguration', () => {
         expect.objectContaining({
           __FPB_PLUGIN_UNIQUE_NAME: `'${paths.app.name}'`,
           __FPB_PLUGIN_VERSION: `'${paths.app.version}'`,
-          __FPB_FLEX_PLUGIN_SCRIPTS_VERSION: `'${depVersions['@twilio/flex-plugin-scripts']}'`,
           __FPB_FLEX_PLUGIN_VERSION: `'${depVersions['@twilio/flex-plugin']}'`,
           __FPB_FLEX_UI_VERSION: `'${depVersions['@twilio/flex-ui']}'`,
           __FPB_REACT_VERSION: `'${depVersions.react}'`,
@@ -252,6 +254,38 @@ describe('WebpackConfiguration', () => {
 
       expect(webpackConfig._getStaticPlugins).toHaveBeenCalledTimes(1);
       expect(webpackConfig._getStaticPlugins).toHaveBeenCalledWith(Environment.Development);
+    });
+  });
+  describe('_getStaticPlugins', () => {
+    const getTemplate = () => {
+      const plugins = webpackConfig._getStaticPlugins(Environment.Development);
+      const htmlPlugin = plugins.find((p) => p.constructor.name === 'HtmlWebpackPlugin');
+
+      // @ts-ignore
+      return htmlPlugin?.options?.templateContent as () => string;
+    };
+
+    it('should replace the scripts placeholder itself rather than through another html-webpack-plugin copy', () => {
+      const indexHTMLPath = join(mkdtempSync(join(tmpdir(), 'fpb-')), 'index.html');
+      writeFileSync(indexHTMLPath, '<body>\n%__FPB_JS_SCRIPTS%\n</body>');
+      jest.spyOn(fs, 'getPaths').mockReturnValue({
+        ...paths,
+        scripts: { ...paths.scripts, indexHTMLPath },
+        app: {
+          ...paths.app,
+          dependencies: {
+            flexUI: { version: '2.0.0' },
+            react: { version: '17.0.2' },
+            reactDom: { version: '17.0.2' },
+          },
+        },
+      } as unknown as ReturnType<typeof fs.getPaths>);
+      jest.spyOn(webpackConfig, '_getJSScripts').mockReturnValue(['<script a>', '<script b>']);
+
+      const html = getTemplate()();
+
+      expect(html).toEqual('<body>\n<script a>\n<script b>\n</body>');
+      expect(html).not.toContain('%__FPB_JS_SCRIPTS%');
     });
   });
 });

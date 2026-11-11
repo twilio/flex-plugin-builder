@@ -24,7 +24,16 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   plugin2.version = semver.inc(oldVersion, 'patch') as string;
   await spawn(
     'twilio',
-    ['flex:plugins:deploy', '--changelog', `"${plugin2.changelog}"`, '--patch', '-l', 'debug', ...config.regionFlag],
+    [
+      'flex:plugins:deploy',
+      '--changelog',
+      `"${plugin2.changelog}"`,
+      '--patch',
+      '-l',
+      'debug',
+      ...config.regionFlag,
+      ...(scenario.wp5 ? ['--wp5'] : []),
+    ],
     {
       cwd: plugin2.dir,
     },
@@ -41,7 +50,8 @@ const testSuite: TestSuite = async ({ scenario, config, secrets, environment }: 
   ]);
 
   // Start 1 local plugin and all remote plugins (note: local is plugin3 by cwd)
-  const twilioCliResult = await spawn('twilio', ['flex:plugins:start --include-remote'], {
+  const wp5Flag = scenario.wp5 ? ' --wp5' : '';
+  const twilioCliResult = await spawn('twilio', [`flex:plugins:start --include-remote${wp5Flag}`], {
     detached: true,
     cwd: plugin3.dir,
   });

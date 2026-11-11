@@ -191,6 +191,39 @@ describe('Commands/FlexPluginsDeploy', () => {
     expect(cmd.registerPluginVersion).toHaveBeenCalledTimes(1);
   });
 
+  describe('building the bundle', () => {
+    const buildArgsFor = async (...flags: string[]): Promise<string[] | undefined> => {
+      const cmd = await createCommand('--changelog', defaultChangelog, ...flags);
+
+      jest.spyOn(cmd, 'checkServerlessInstance').mockReturnThis();
+      jest.spyOn(cmd, 'checkForLegacy').mockReturnThis();
+      jest.spyOn(cmd, 'validatePlugin').mockReturnThis();
+      jest.spyOn(cmd, 'runScript').mockImplementation(async (scriptName) => {
+        if (scriptName === 'validate') {
+          return Promise.resolve({ violations: [], vtime: 0 });
+        }
+        return Promise.resolve(this);
+      });
+      jest.spyOn(cmd, 'hasCollisionAndOverwrite').mockReturnThis();
+      jest.spyOn(deployScript, '_verifyFlexUIConfiguration').mockResolvedValue();
+      jest.spyOn(cmd, 'registerPlugin').mockReturnThis();
+      jest.spyOn(cmd, 'registerPluginVersion').mockReturnThis();
+      mockGetPkg(cmd, pkg);
+
+      await cmd.doRun();
+
+      return (cmd.runScript as jest.Mock).mock.calls.find(([scriptName]) => scriptName === 'build')?.[1];
+    };
+
+    it('should build with webpack 5 when --wp5 is passed', async () => {
+      expect(await buildArgsFor('--wp5')).toContain('--wp5');
+    });
+
+    it('should not build with webpack 5 by default', async () => {
+      expect(await buildArgsFor()).not.toContain('--wp5');
+    });
+  });
+
   it('should continue deploy when validate script returns an error', async () => {
     const cmd = await createCommand('--changelog', defaultChangelog);
 
