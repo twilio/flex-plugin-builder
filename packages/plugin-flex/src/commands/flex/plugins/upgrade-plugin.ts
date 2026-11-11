@@ -24,6 +24,7 @@ const appConfig = 'appConfig.js';
 const crackoConfig = 'craco.config.js';
 
 const flexUI = '@twilio/flex-ui';
+const scopedFlexPluginScriptPackage = '@twilio/flex-plugin-scripts';
 const flexPluginScriptPackage = 'flex-plugin-scripts';
 const scopedFlexPluginPackage = '@twilio/flex-plugin';
 const flexPluginPackage = 'flex-plugin';
@@ -82,6 +83,7 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
   };
 
   static packagesToRemove = [
+    scopedFlexPluginScriptPackage, // no longer a dependency of a plugin
     'react-app-rewire-flex-plugin',
     'react-app-rewired',
     'react-scripts',
@@ -580,9 +582,16 @@ export default class FlexPluginsUpgradePlugin extends FlexPlugin {
       this.pkg.dependencies[scopedFlexPluginPackage] ||
       this.pkg.devDependencies[scopedFlexPluginPackage] ||
       this.pkg.dependencies[flexPluginPackage] ||
-      this.pkg.devDependencies[flexPluginPackage];
+      this.pkg.devDependencies[flexPluginPackage] ||
+      // Plugins created before the scripts package was dropped only list it
+      this.pkg.dependencies[scopedFlexPluginScriptPackage] ||
+      this.pkg.devDependencies[scopedFlexPluginScriptPackage] ||
+      this.pkg.dependencies[flexPluginScriptPackage] ||
+      this.pkg.devDependencies[flexPluginScriptPackage];
     if (!pkg) {
-      throw new TwilioCliError(`Package '${scopedFlexPluginPackage}' was not found`);
+      throw new TwilioCliError(
+        `Package '${scopedFlexPluginPackage}' was not found (nor '${scopedFlexPluginScriptPackage}') in the plugin's package.json`,
+      );
     }
 
     return semver.coerce(pkg)?.major;

@@ -296,6 +296,34 @@ describe('SubCommands/FlexPlugin', () => {
     expect(cmd.builderVersion).toEqual(2);
   });
 
+  it.each([
+    ['@twilio/flex-plugin-scripts', 'devDependencies'],
+    ['@twilio/flex-plugin-scripts', 'dependencies'],
+    ['flex-plugin-scripts', 'devDependencies'],
+    ['flex-plugin-scripts', 'dependencies'],
+  ])('should fall back to %s in %s for plugins created before the scripts package was dropped', async (name, kind) => {
+    const cmd = await createCommand();
+
+    jest.spyOn(fs, 'readJsonFile').mockReturnValue({
+      devDependencies: {},
+      dependencies: {},
+      [kind]: { [name]: '^5.1.0' },
+    });
+
+    expect(cmd.builderVersion).toEqual(5);
+  });
+
+  it('should prefer @twilio/flex-plugin over a stale flex-plugin-scripts', async () => {
+    const cmd = await createCommand();
+
+    jest.spyOn(fs, 'readJsonFile').mockReturnValue({
+      devDependencies: { '@twilio/flex-plugin-scripts': '^4.3.3' },
+      dependencies: { '@twilio/flex-plugin': '^7.1.3' },
+    });
+
+    expect(cmd.builderVersion).toEqual(7);
+  });
+
   it('should return null if invalid version', async () => {
     const cmd = await createCommand();
 

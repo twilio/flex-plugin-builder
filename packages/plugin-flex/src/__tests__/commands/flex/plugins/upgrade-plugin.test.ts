@@ -87,6 +87,35 @@ describe('Commands/FlexPluginsStart', () => {
     expect(cmd.pkgVersion).toEqual(4);
   });
 
+  it.each([
+    ['dependencies', '@twilio/flex-plugin-scripts'],
+    ['devDependencies', '@twilio/flex-plugin-scripts'],
+    ['dependencies', 'flex-plugin-scripts'],
+    ['devDependencies', 'flex-plugin-scripts'],
+  ])('should fall back to %s %s for plugins that predate dropping the scripts package', async (kind, name) => {
+    const cmd = await createCommand();
+
+    mockGetPkg(cmd, { dependencies: {}, devDependencies: {}, [kind]: { [name]: '^4.3.3' } });
+
+    expect(cmd.pkgVersion).toEqual(4);
+  });
+
+  it('should prefer @twilio/flex-plugin over a stale flex-plugin-scripts', async () => {
+    const cmd = await createCommand();
+
+    mockGetPkg(cmd, {
+      dependencies: { '@twilio/flex-plugin': '7.1.3' },
+      devDependencies: { '@twilio/flex-plugin-scripts': '4.3.3' },
+    });
+
+    expect(cmd.pkgVersion).toEqual(7);
+  });
+
+  it('should remove the scripts package when upgrading so it is not left behind', () => {
+    expect(FlexPluginsUpgradePlugin.packagesToRemove).toContain('@twilio/flex-plugin-scripts');
+    expect(FlexPluginsUpgradePlugin.packagesToRemove).toContain('flex-plugin-scripts');
+  });
+
   it('should should throw exception if no version is found', async () => {
     const cmd = await createCommand();
 
